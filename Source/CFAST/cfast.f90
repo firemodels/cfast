@@ -106,8 +106,7 @@
     use setup_data, only: validation_flag, iofill, stopfile
     
     character(len=*), intent(in) :: name
-    integer, intent(in) :: errorcode
-
+    integer :: errorcode
 
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
@@ -116,6 +115,7 @@
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
             if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
             if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'')')
+            errorcode = 0
         else
             write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
             if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
@@ -127,7 +127,12 @@
     
     call closeoutputfiles
     call delete_output_files (stopfile)
-
+    
+    if (errorcode==0) then
+        stop
+    else
+        error stop 1
+    end if
     stop
 
     end subroutine cfastexit

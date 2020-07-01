@@ -1471,8 +1471,6 @@ module isosurface
     subroutine chkmemerr(codesect,varname,izero)
 
     ! memory checking routine
-    
-    external cfastexit
 
     character(len=*), intent(in) :: codesect, varname
     integer izero
@@ -1482,7 +1480,7 @@ module isosurface
 
     write (message,'(4a)') 'ERROR: Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
     write (*,*) message
-    call cfastexit('CFAST',4)
+    call cfastexit('chkmemerr',1)
 
     end subroutine chkmemerr
 

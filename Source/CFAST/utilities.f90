@@ -134,9 +134,10 @@
         d1mach = b**(1-digits(x))      ! the largest relative spacing.
     case (5)
         d1mach = log10(b)
-        case default
-        write (*, '(''1error    1 in d1mach - i out of bounds'')')
-        stop
+    case default
+        write (*,'(''***Error: Internal error, illegal bounds in d1mach '',i0)') i
+        write (iofill,'(''***Error: Internal error, illegal bounds in d1mach '',i0)') i
+        call cfastexit('d1mach',1) 
     end select
     return
     end function d1mach
@@ -527,6 +528,7 @@
 
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
         write (*,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
+        call cfastexit('read_command_options',1)
         stop
     end if
     if (cmdflag('C',iopt)/=0) outputformat = 1
@@ -695,7 +697,7 @@
     else 
         write(*,*) '***Error: nend is less than nstart but >= 0, illogical'
         write(iofill,*)'***Error: nend is less than nstart but >= 0, illogical'
-        call cfastexit('spreadsheet_input_routines: readcsvformat',1)
+        call cfastexit('readcsvformat',1)
     end if
 
     ! if we have header rows, then skip them
@@ -703,7 +705,7 @@
         do  i=1,nstart-1
             read (iunit,'(A)', end = 100, iostat=ios) in
             if (ios /= 0) then
-                call cfastexit('spreadsheet_input_routines: readcsvformat',2)
+                call cfastexit('readcsvformat',2)
             end if
         end do
     end if
@@ -724,7 +726,7 @@
     if (maxrow>numr) then
         write (*,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
         write (iofill,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
-        call cfastexit('spreadsheet_input_routines: readcsvformat',3)
+        call cfastexit('sreadcsvformat',3)
     end if
 
     nc=0
@@ -746,7 +748,7 @@
         else
             write (*,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
             write (iofill,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
-            call cfastexit('spreadsheet_input_routines: readcsvformat',4)
+            call cfastexit('readcsvformat',4)
         end if
         go to 30
     end if

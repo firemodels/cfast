@@ -2,8 +2,8 @@ module initialization_routines
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use numerics_routines, only: dnrm2, dscal
-    use output_routines, only : delete_output_files
     use solve_routines, only : update_data
     use utility_routines, only: indexi    
 
@@ -35,7 +35,6 @@ module initialization_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, alloc_vent, init_vent
 
     implicit none
-    external cfastexit
 
     private
 

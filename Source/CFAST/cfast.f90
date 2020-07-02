@@ -26,6 +26,7 @@
 
     use precision_parameters
     
+    use exit_routines, only: cfastexit
     use initialization_routines, only : initialize_memory, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
@@ -39,7 +40,6 @@
         ss_out_interval
 
     implicit none
-    external cfastexit
 
     real(eb) :: xdelt, tstop, tbeg, tend 
 
@@ -93,48 +93,3 @@
 5010 format ('Total time steps = ',i10)
 
     end program cfast
-    
-! --------------------------- cfastexit -------------------------------------------
-
-!> \brief   called when CFAST exits, printing an error code if necessary
-!> \param   name        routine name calling for exit
-!> \param   errorcode   numeric code indicating which call to cfastexit in routine
-
-    subroutine cfastexit (name, errorcode)
-
-    use output_routines, only: closeoutputfiles, delete_output_files
-    use setup_data, only: validation_flag, iofill, stopfile
-    
-    character(len=*), intent(in) :: name
-    integer :: errorcode
-
-    if (errorcode/=0) then
-        if (trim(name)=='solve_simulation' .and. errorcode==5) then
-            ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
-            !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
-            !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
-            if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
-            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'')')
-            errorcode = 0
-        else
-            write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
-            if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
-        end if
-    else
-        if (.not.validation_flag) write (*, '(''Normal exit from CFAST'')')
-        if (iofill/=0) write (iofill, '(''Normal exit from CFAST'')')
-    end if
-    
-    call closeoutputfiles
-    call delete_output_files (stopfile)
-    
-    if (errorcode==0) then
-        stop
-    else
-        error stop 1
-    end if
-    stop
-
-    end subroutine cfastexit
-    
-

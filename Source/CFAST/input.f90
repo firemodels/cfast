@@ -2,12 +2,13 @@
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit, delete_output_files
     use fire_routines, only: flame_height
     use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, offset
-    use numerics_routines, only : dnrm2
-    use output_routines, only: open_output_files, delete_output_files
-    use utility_routines, only: emix
     use namelist_input_routines, only: namelist_input, read_misc
+    use numerics_routines, only : dnrm2
+    use output_routines, only: open_output_files
+    use utility_routines, only: emix
     
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, material_type, vent_type, &
         visual_type
@@ -31,7 +32,7 @@
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
-    external get_info, cfastexit
+    external get_info
 
     private
 

@@ -2,6 +2,7 @@ module spreadsheet_routines
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
@@ -28,7 +29,6 @@ module spreadsheet_routines
     use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
-    external cfastexit
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 

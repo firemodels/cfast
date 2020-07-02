@@ -1,6 +1,8 @@
     module utility_routines
 
     use precision_parameters
+    
+    use exit_routines, only: cfastexit
 
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
@@ -8,7 +10,6 @@
         netheatflux
 
     implicit none
-    external cfastexit
 
     character(len=lbufln) :: lbuf
 

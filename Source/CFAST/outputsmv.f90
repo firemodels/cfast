@@ -2,6 +2,7 @@
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use fire_routines, only: get_gas_tempandvelocity
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: tointstring
@@ -17,7 +18,6 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
-    external cfastexit
 
     private
 
@@ -602,16 +602,19 @@ end module smokeview_routines
 module isosurface
 
     use precision_parameters
-    use cfast_types, only: room_type
-    use fire_routines, only: get_gas_tempandvelocity
-    use room_data, only: roominfo
 
-    use setup_data
+    use exit_routines, only: cfastexit
+    use fire_routines, only: get_gas_tempandvelocity
+    
+    
+    use cfast_types, only: room_type
+
     use cenviro
+    use room_data, only: roominfo
+    use setup_data
     use smkview_data
 
     implicit none
-    external cfastexit
 
     private
 

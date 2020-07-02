@@ -2,6 +2,7 @@
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use fire_routines, only: flame_height
     use initialization_routines, only: initialize_memory
 
@@ -40,7 +41,6 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, init_vent
 
     implicit none
-    external cfastexit
     
     private
 

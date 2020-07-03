@@ -18,8 +18,10 @@ module exit_routines
     subroutine cfastexit (name, errorcode)
     
     character(len=*), intent(in) :: name
-    integer :: errorcode
+    integer, intent(in) :: errorcode
+    integer exitcode
 
+    exitcode = errorcode
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
             ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
@@ -27,10 +29,10 @@ module exit_routines
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
             if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
             if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'')')
-            errorcode = 0
+            exitcode = 0
         else
-            write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
-            if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
+            write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') exitcode, trim(name)
+            if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') exitcode, trim(name)
         end if
     else
         if (.not.validation_flag) write (*, '(''Normal exit from CFAST'')')
@@ -40,7 +42,7 @@ module exit_routines
     call closeoutputfiles
     call delete_output_files (stopfile)
     
-    if (errorcode==0) then
+    if (exitcode==0) then
         stop
     else
         error stop 1

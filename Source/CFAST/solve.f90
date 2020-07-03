@@ -5,13 +5,14 @@ module solve_routines
     use conduction_routines, only: conduction
     use convection_routines, only: convection
     use debug_routines, only: output_spreadsheet_residuals
+    use exit_routines, only: cfastexit, delete_output_files
     use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_objects
     use isosurface, only: output_isodata
     use hflow_routines, only: horizontal_flow, leakage_flow
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : get_vent_opening
-    use output_routines, only: output_results, output_status, output_debug, delete_output_files, write_error_component
+    use output_routines, only: output_results, output_status, output_debug, write_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
@@ -44,7 +45,7 @@ module solve_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
-    external cfastexit, grabky
+    external grabky
 
     private
 
@@ -524,7 +525,6 @@ module solve_routines
             call write_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
             write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-            call cfastexit ('solve_simulation', 1)
             stop
         end if
 
@@ -534,11 +534,10 @@ module solve_routines
                 stpmin_cnt = stpmin_cnt + 1
                 if (stpmin_cnt>stpmin_cnt_max) then
                     ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
-                    write (*,'(i0,a,e11.4,a,e11.4)') &
-                        '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    write (iofill,'(i0,a,e11.4,a,e11.4)') &
-                        '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    call cfastexit ('solve_simulation',2)
+                    write (*,'(a,i0,a,e11.4,a,e11.4)') &
+                        '***Error: ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
+                    write (iofill,'(a,i0,a,e11.4,a,e11.4)') &
+                        '***Error: ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
                     stop
                 end if
             else

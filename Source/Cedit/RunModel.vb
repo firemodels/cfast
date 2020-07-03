@@ -3,7 +3,7 @@ Public Class RunModel
     'Public CFastInputFile As String
     'Public CFASTSimulationTime As Single
     'Public CommandWindowVisible As Boolean = False
-    'Public ExitCode As Integer = 0
+    Private ExitCode As Integer = 0
     Private ProcessID As Integer
     Private localById As Process
     Private FileName As String, IO As Integer = 1, RunhasFinished As Boolean = False
@@ -226,7 +226,7 @@ Public Class RunModel
 
 #End Region
     Private Sub RunModel_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim CommandString As String, found As Integer
+        Dim Arguments As String, found As Integer
         RunSummary(0, 1) = "Upper Layer" + Chr(10) + "Temperature" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Temperature).Units.Substring(1) + ")"
         RunSummary(0, 2) = "Lower Layer" + Chr(10) + "Temperature" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Temperature).Units.Substring(1) + ")"
         RunSummary(0, 3) = "Interface Height" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Length).Units.Substring(1) + ")"
@@ -264,18 +264,18 @@ Public Class RunModel
         ' Start the model run and then just look for the status file every so often
         found = CFastInputFilewithExtension.IndexOf(" ", 0)
         If found <= 0 Then
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + CFastInputFilewithExtension
+            Arguments = CFastInputFilewithExtension
         Else
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" """ + CFastInputFilewithExtension + """"
+            Arguments = """" + CFastInputFilewithExtension + """"
         End If
         RunOptions.Text = "RunOptions: "
         If NetHeatFluxCFASTOutput Then
-            CommandString += " -N"
+            Arguments += " -N"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Net Heat Flux Output"
         End If
         If ValidationOutput Then
-            CommandString += " -V"
+            Arguments += " -V"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Validation Output"
         End If
@@ -284,14 +284,31 @@ Public Class RunModel
         RunUpdate.Enabled = True
         ExitCode = 0
         RunProgress.Value = 0
-        RunTimer.Enabled = True
-        If CommandWindowVisible Then
-            ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus)
-        Else
-            ProcessID = Shell(CommandString, AppWinStyle.Hide)
-        End If
 
-        localById = System.Diagnostics.Process.GetProcessById(ProcessID)
+        Try
+            localById = New Process
+            localById.StartInfo.UseShellExecute = False
+            localById.StartInfo.FileName = """" + Application.StartupPath + "\CFAST.exe"" "
+            localById.StartInfo.Arguments = Arguments
+            If CommandWindowVisible Then
+                localById.StartInfo.CreateNoWindow = False
+            Else
+                localById.StartInfo.CreateNoWindow = True
+            End If
+            localById.StartInfo.RedirectStandardOutput = True
+            localById.StartInfo.RedirectStandardError = True
+            localById.Start()
+            RunTimer.Enabled = True
+        Catch oops As Exception
+            MsgBox((oops.Message))
+        End Try
+
+        'If CommandWindowVisible Then
+        ' ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus)
+        ' Else
+        ' ProcessID = Shell(CommandString, AppWinStyle.Hide)
+        ' End If
+
     End Sub
     Private Sub RunTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunTimer.Tick
         RunTimer.Enabled = False
@@ -303,6 +320,7 @@ Public Class RunModel
         Dim LogFileExists As Boolean
         If localById.HasExited Then
             RunTimer.Enabled = False
+            Dim exitcode As Integer = localById.ExitCode
             RunOK.Enabled = True
             RunStop.Enabled = False
             RunUpdate.Enabled = False
@@ -322,6 +340,17 @@ Public Class RunModel
                         If Not ln.StartsWith("Write to the history") Then myErrors.Add(ln, ErrorMessages.TypeCFastLog)
                     Loop
                     FileClose(IO)
+
+                    ln = localById.StandardOutput.ReadToEnd
+                    If ln <> "" Then
+                        If Not ln.StartsWith("Total execution") Then myErrors.Add(ln, ErrorMessages.TypeCFASTError)
+                    End If
+
+                    ln = localById.StandardError.ReadToEnd
+                    If ln <> "" Then myErrors.Add(ln, ErrorMessages.TypeCFASTError)
+
+                    If localById.ExitCode <> 0 Then myErrors.Add("CFAST exited with a non-zero exit code: " + localById.ExitCode.ToString, ErrorMessages.TypeCFASTError)
+
                     If myErrors.Count > 0 Then
                         Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()
                         While myEnumerator.MoveNext()

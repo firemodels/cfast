@@ -2,8 +2,8 @@ module initialization_routines
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use numerics_routines, only: dnrm2, dscal
-    use output_routines, only : delete_output_files
     use solve_routines, only : update_data
     use utility_routines, only: indexi    
 
@@ -71,6 +71,7 @@ module initialization_routines
     missingtpp = name
     write (*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     write (iofill,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    call cfastexit('get_thermal_property',1)
     stop
 
     end subroutine get_thermal_property
@@ -727,6 +728,7 @@ module initialization_routines
         if (iroom<1.or.iroom>n_rooms) then
             write (*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             write (iofill,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
+            call cfastexit('initialize_targets',1)
             stop
         end if
         roomptr => roominfo(iroom)
@@ -744,6 +746,7 @@ module initialization_routines
                 targptr%center(1), targptr%center(2), targptr%center(3)
             write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
                 targptr%center(1), targptr%center(2), targptr%center(3)
+            call cfastexit('initialize_targets',2)
             stop
         end if
 
@@ -776,6 +779,7 @@ module initialization_routines
                             itarg
                         write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ',&
                             itarg
+                        call cfastexit('initialize_targets',3)
                         stop
                     end if
                 end if

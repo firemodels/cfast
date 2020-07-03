@@ -8,6 +8,7 @@ Public Class ErrorMessages
     Public Const TypeFatal As Integer = 2
     Public Const TypeCFastLog As Integer = 3
     Public Const TypeNothing As Integer = 4
+    Public Const TypeCFASTError As Integer = 5
     Public Sub New()
         Queue.Clear()
         Queue.Enqueue("No Errors or Warnings")

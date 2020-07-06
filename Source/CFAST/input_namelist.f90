@@ -2,6 +2,7 @@
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use fire_routines, only: flame_height
     use initialization_routines, only: initialize_memory
 
@@ -40,7 +41,6 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, init_vent
 
     implicit none
-    external cfastexit
     
     private
 
@@ -1208,7 +1208,7 @@ continue
             if (iroom<1.or.iroom>n_rooms) then
                 write (*,5320) iroom
                 write (iofill,5320) iroom
-                call cfastexit('read_tabl',3)
+                call cfastexit('read_fire',3)
             end if
             roomptr => roominfo(iroom)
 
@@ -1233,7 +1233,7 @@ continue
             if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
                 write (*,5323) ii
                 write (iofill,5323) ii
-                call cfastexit('read_fire',4)
+                call cfastexit('read_fire',5)
             end if
 
             if (trim(ignition_criterion) /= 'NULL') then
@@ -1253,13 +1253,13 @@ continue
                         if (fireptr%ignition_target==0) then
                             write (*,5324) n_fires
                             write (iofill,5324) n_fires
-                            call cfastexit('read_fire',5)
+                            call cfastexit('read_fire',6)
                         end if
                     end if
                 else
                     write (*,5322)
                     write (iofill,5322)
-                    call cfastexit('read_fire',6)
+                    call cfastexit('read_fire',7)
                 end if
             end if
 
@@ -1288,7 +1288,7 @@ continue
                 else
                     write (*,5358) fireptr%ignition_type
                     write (iofill,5358) fireptr%ignition_type
-                    call cfastexit('read_fire',7)
+                    call cfastexit('read_fire',8)
                 end if
             else
                 fireptr%ignited  = .true.
@@ -1756,7 +1756,7 @@ continue
                     if (iroom == -101) then
                         write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
                         write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('READ_VENT',4)
+                        call cfastexit('read_vent',5)
                     end if
 
                     if (mm == 1) i = iroom
@@ -2007,7 +2007,7 @@ continue
                             else
                                 write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                                 write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                call cfastexit('read_vent',13)
+                                call cfastexit('read_vent',15)
                             end if
                         end if
 
@@ -2038,7 +2038,7 @@ continue
                             if (ventptr%opening_target==0) then
                                 write (*,*) '***Error: Vent opening specification requires an associated target.'
                                 write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                                call cfastexit('read_vent',14)
+                                call cfastexit('read_vent',16)
                             end if
                             ventptr%opening_initial_fraction = initialfraction
                             ventptr%opening_final_fraction = finalfraction
@@ -2053,7 +2053,7 @@ continue
                     else
                         write (*,*) 'Inputs for mechanical vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
                         write (iofill,*) 'Inputs for mechanical vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        call cfastexit('read_vent',15)
+                        call cfastexit('read_vent',17)
                     end if
                 end if
 
@@ -2201,7 +2201,7 @@ continue
                     else
                         write (*,*) 'Inputs for ceiling/floor vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
                         write (iofill,*) 'Inputs for ceiling/floor vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        call cfastexit('read_vent',21)
+                        call cfastexit('read_vent',24)
                     end if
 
                 end if
@@ -2662,7 +2662,7 @@ continue
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                     write (*, 5403) counter
                     write (iofill, 5403) counter
-                    call cfastexit('read_slcf',7)
+                    call cfastexit('read_slcf',8)
                 end if
             end if
 
@@ -2934,7 +2934,7 @@ continue
                     ' number ',counter
                 write(iofill,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
-                call cfastexit('read_dump',3)
+                call cfastexit('read_dump',4)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
@@ -2943,21 +2943,21 @@ continue
                     ' number ',counter
                 write(iofill,*) 'Error in &DUMP: Invalid specification for type ',trim(type), &
                     ' number ',counter
-                call cfastexit('read_dump',4)
+                call cfastexit('read_dump',5)
             end if
             if (first_device==' ') then
                 write(*,*) 'Error in &DUMP: FIRST_DEVICE must be defined', &
                     ' number ',counter
                 write(iofill,*) 'Error in &DUMP: first_device must be defined', &
                     ' number ',counter
-                call cfastexit('read_dump',5)
+                call cfastexit('read_dump',6)
             end if 
             if (first_measurement==' ') then
                 write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
                 write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
-                call cfastexit('read_dump',6)
+                call cfastexit('read_dump',7)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_device==' ')) then
                 write(*,*) 'Error in &DUMP: SECOND_DEVICE must be defined for type ', &
@@ -2966,47 +2966,47 @@ continue
                 write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type), &
                     ' number ',counter
-                call cfastexit('read_dump',7)
+                call cfastexit('read_dump',8)
             end if
             if ((type(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
                 write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_dump',8)
+                call cfastexit('read_dump',9)
             end if
             if ((type(1:9)=='INTEGRATE').and.(second_device==' ')) then
                 write(*,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type)
                 write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type)
-                call cfastexit('read_dump',9)
+                call cfastexit('read_dump',10)
             end if
             if ((trim(type)=='INTEGRATE').and.(second_measurement==' ')) then
                 write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_dump',10)
+                call cfastexit('read_dump',11)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_device(1:4)/='Time')) then
                 write(*,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_dump',11)
+                call cfastexit('read_dump',12)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_measurement(1:15)/='Simulation Time')) then
                 write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_dump',12)
+                call cfastexit('read_dump',13)
             end if
             if ((type(1:8)=='TRIGGER_').and.(criteria<=0)) then
                 write(*,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
                 write(iofill,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                call cfastexit('read_dump',13)
+                call cfastexit('read_dump',14)
             end if
             
             n_dumps = n_dumps + 1

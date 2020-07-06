@@ -2,6 +2,7 @@ module spreadsheet_routines
 
     use precision_parameters
 
+    use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
@@ -28,7 +29,6 @@ module spreadsheet_routines
     use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
-    external cfastexit
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
@@ -1544,7 +1544,7 @@ module spreadsheet_routines
     case default
         write(*, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
         write(iofill, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
-        call cfastexit('outputspreadsheet',1)
+        call cfastexit('ssaddvaluetooutput',1)
         stop
     end select
     
@@ -1953,7 +1953,7 @@ module spreadsheet_routines
     if (mxr < 2) then
         write(*,*)'Error: need at least two rows to use fnd_col mxr = ',mxr
         write(iofill,*)'Error: need at least two rows to use fnd_col mxr = ',mxr
-        call cfastexit('spreadsheet_routines: fnd_col',1)
+        call cfastexit('fnd_col',1)
     end if
     do i = 1, mxc
         if (trim(instrument) == trim(c(instrumentRow,i))) then

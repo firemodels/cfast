@@ -698,11 +698,7 @@
     else 
         write(*,*) '***Error: nend is less than nstart but >= 0, illogical'
         write(iofill,*)'***Error: nend is less than nstart but >= 0, illogical'
-<<<<<<< HEAD
-        call cfastexit('utilities: readcsvformat',1)
-=======
         call cfastexit('readcsvformat',1)
->>>>>>> firemodels/master
     end if
 
     ! if we have header rows, then skip them
@@ -710,11 +706,7 @@
         do  i=1,nstart-1
             read (iunit,'(A)', end = 100, iostat=ios) in
             if (ios /= 0) then
-<<<<<<< HEAD
-                call cfastexit('utilities: readcsvformat',2)
-=======
                 call cfastexit('readcsvformat',2)
->>>>>>> firemodels/master
             end if
         end do
     end if
@@ -735,11 +727,7 @@
     if (maxrow>numr) then
         write (*,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
         write (iofill,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
-<<<<<<< HEAD
-        call cfastexit('utilities: readcsvformat',3)
-=======
         call cfastexit('sreadcsvformat',3)
->>>>>>> firemodels/master
     end if
 
     nc=0
@@ -761,11 +749,7 @@
         else
             write (*,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
             write (iofill,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
-<<<<<<< HEAD
-            call cfastexit('utilities: readcsvformat',4)
-=======
             call cfastexit('readcsvformat',4)
->>>>>>> firemodels/master
         end if
         go to 30
     end if

@@ -1,9 +1,8 @@
 module accumulator_routines
     
     use precision_parameters
-    
-    use setup_data, only: datapath, project, extension, iofill, cfast_input_file_position 
-    
+        
+    use exit_routines, only: cfastexit
     use input_routines, only: exehandle
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds
@@ -12,9 +11,10 @@ module accumulator_routines
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
         add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
     use utility_routines, only: readcsvformat
+
+    use setup_data, only: datapath, project, extension, iofill, cfast_input_file_position 
     
     implicit none
-    external cfastexit
     
     private
 

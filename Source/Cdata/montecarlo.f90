@@ -2,6 +2,8 @@
 
     use precision_parameters
     
+    use exit_routines, only: cfastexit
+    
     use setup_data, only: datapath, project, extension
     
     use montecarlo_data, only: mc_filename_pattern, mc_number_of_cases, mc_datapath

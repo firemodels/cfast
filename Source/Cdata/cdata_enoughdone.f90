@@ -12,7 +12,6 @@ module enoughdone_routines
         add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
     
     implicit none
-    external cfastexit
     
     private
 

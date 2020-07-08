@@ -42,17 +42,18 @@ module accumulator_routines
     
     integer :: i, j, maxrowend
     character(len=256) :: infile, cmdfile, outfile, tmpext, inpath, outpath
-    character(len=512) :: lbuf
+    character(len=512) :: lbuf, obuf
 
     
-    allocate(iossx(numr, numc), tmpx(2, numc))
-    allocate(iossc(numr, numc), tmpc(2, numc))
+    allocate(iossx(numr, numc), tmpx(numr, numc))
+    allocate(iossc(numr, numc), tmpc(numr, numc))
     
 ! Body of GetData
     
     call do_cmd_line(infile, inpath, outfile, outpath)
     lbuf = ' '
     lbuf = trim(inpath) // trim(infile)
+    obuf = trim(outpath) // trim(outfile)
     open(newunit = iunit, file = trim(lbuf))
     
     nstart = 1
@@ -64,14 +65,14 @@ module accumulator_routines
         call fndOpenMCFile(iossc(2,1), inpath, iunit2)
         call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
         close(iunit2)
-        if (.not.lend) then
+        if (.not. lend) then
             do  j = 2, maxcoltmp
                 iossc(1,maxcolio + j - 1) = tmpc(1,j)
                 iossx(2,maxcolio + j - 1) = tmpx(2,j)
                 write(iossc(2,maxcolio + j - 1),*) iossx(2,maxcolio + j - 1)
             end do 
-            maxcolout = maxcolio + maxcoltmp-1
-            open(newunit = iunit2, file = outfile)
+            maxcolout = maxcolio + maxcoltmp - 1
+            open(newunit = iunit2, file = obuf)
             call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 2, maxcolout, iofill)
             close(iunit2)
         else
@@ -82,26 +83,20 @@ module accumulator_routines
         write(*,*) 'Number 1 could not read iofile'
         call cfastexit('acumulator', 2)
     end if
-        
     
-    nstart = nstart + 2
-    call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 1, maxrowio, maxcolio, lend, iofill)
     do while (.not. lend)
-        write(*,*)'file = ',trim(iossc(i,1))
-        if (.not. lend) then
-            call fndOpenMCFile(iossc(i,1), inpath, iunit2)
-            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
-            close(iunit2)
-            do j = 2, maxcoltmp
-                iossx(1,maxcolio + j - 1) = tmpx(2,j)
-                write(iossc(i,maxcolio + j - 1),*) iossx(i,maxcolio + j - 1)
-            end do 
-            open(newunit=iunit2,file = outfile, position = 'append')
-            call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 1, maxcolout, iofill)
-            close(iunit2)
-        end if 
-        nstart = nstart + 1
-        call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 1, maxrowio, maxcolio, lend, iofill)
+        call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend, iofill)
+        write(*,*)'file = ',trim(iossc(1,1))
+        call fndOpenMCFile(iossc(1,1), inpath, iunit2)
+        call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, lend, iofill)
+        close(iunit2)
+        do j = 2, maxcoltmp
+            iossx(1,maxcolio + j - 1) = tmpx(2,j)
+            write(iossc(1,maxcolio + j - 1),*) iossx(1,maxcolio + j - 1)
+        end do 
+        open(newunit=iunit2,file = obuf, position = 'append')
+        call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 1, maxcolout, iofill)
+        close(iunit2)
     end do 
     close(iunit)
 
@@ -117,14 +112,14 @@ module accumulator_routines
     integer :: narg, iarg, status
     integer(kind=4) :: ilen
     
-    narg = command_argument_count()
+    narg = command_argument_count() + 1
     cfast_input_file_position = 3
     
     if (narg >= 3) then
         call exehandle(exepath, inpath, infile, ext1)
     end if
     
-    iarg = 4
+    iarg = 3
     do while(iarg <= narg)
         call get_command_argument(iarg, lbuf, ilen, status)
         if (ilen>0) then
@@ -171,7 +166,7 @@ module accumulator_routines
     integer, intent(in) :: iunit, numr, numc, nstart, iofill, maxrow, maxcol
 
     real(eb), intent(in) :: x(numr,numc)
-    character, intent(inout) :: c(numr,numc)*(*)
+    character, intent(inout) :: c(numr,numc)*(128)
 
     character :: buf*204800, token*128
     integer :: i, j, nrcurrent, ic, icomma, ios, nc, ie
@@ -190,6 +185,7 @@ module accumulator_routines
             buf(ic:ic) = ','
             ic = ic+1
         end do
+        write(*,*) buf(ic-5:ic)
         write(iunit,'(A)') buf(1:ic)
     end do
     
@@ -242,7 +238,7 @@ module accumulator_routines
         end if
     end do
     
-    fn = trim(path) // fn(fc:lc) // '_mc.csv'
+    fn = trim(path) // fn(fc:lc) // '_calculations.csv'
     open(newunit = iunit,file = fn)
     
     return

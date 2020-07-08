@@ -30,6 +30,7 @@ module preprocessor_types
                                                         !                       BETA, NORMAL, LOG_NORMAL
         character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
         character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
+        integer :: num_discrete_values                   ! number of values in arrays for discrere probablities 
         real(eb) :: real_array(mxpntsarray)             ! values for discrete distributions with real type
         integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
         logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
@@ -98,9 +99,10 @@ module preprocessor_types
     
     type, extends(preprocessor_type) :: fire_generator_type
         character(len=90) :: fireid
-        integer :: num_sections
+        integer :: fire_generator_type
+        integer :: num_sections, num_firefiles
         logical :: first_section_smoldering 
-        integer, allocatable, dimension(:) :: time_points
+        real(eb), allocatable, dimension(:) :: time_points
         character(len=128), allocatable, dimension(:,:) :: rand_gen
         real(eb), allocatable, dimension(:) :: fix_final_hrr
         real(eb), allocatable, dimension(:) :: fix_times
@@ -113,6 +115,9 @@ module preprocessor_types
         real(eb), allocatable, dimension(:) :: hcn_yield
         real(eb), allocatable, dimension(:) :: hcl_yield
         real(eb), allocatable, dimension(:) :: trace_yield
+        character(len=128), allocatable, dimension(:) :: inputfile_list
+        character(len=128), allocatable, dimension(:) :: fire_list
+        integer, allocatable, dimension(:) :: fireidx_list
         logical :: add_flaming_start
         logical :: add_hrr
         logical :: add_times
@@ -173,7 +178,7 @@ module preprocessor_types
         class(random_generator_type) :: me
         class(value_wrapper_type), intent(inout) :: val
         real(eb) :: x
-        integer :: tmpseeds(mxseeds)
+        integer :: tmpseeds(mxseeds), ii, idx
         
         if (me%first) then
             me%first = .false.
@@ -189,39 +194,61 @@ module preprocessor_types
                 me%base_seeds = me%seeds
             end if
         end if
-        if (me%value_type == val_types(idx_real)) then
-            if (me%type_dist == rand_dist(idx_uniform)) then
-                call RANDOM_SEED(GET=tmpseeds)
-                call RANDOM_SEED(PUT=me%seeds)
-                call RANDOM_NUMBER(x)
-                call RANDOM_SEED(GET=me%seeds)
-                call RANDOM_SEED(PUT = tmpseeds)
-            else 
-                call me%errorcall('RAND', 2)
-            end if
+        
+        if (me%type_dist == rand_dist(idx_uniform)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            call RANDOM_NUMBER(x)
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
+            select type (val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        val%val = me%min + x*(me%max - me%min)
+                    else 
+                        call me%errorcall('RAND', 1)
+                    end if
+                class default
+                        call me%errorcall('RAND', 2)
+            end select 
+        else if (me%type_dist == rand_dist(idx_user_defined_discrete)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            call RANDOM_NUMBER(x)
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
+            do ii = 1, me%num_discrete_values
+                if (x < me%prob_array(ii)) then
+                    idx = ii
+                    exit
+                end if
+            end do 
+            select type (val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        val%val = me%real_array(idx)
+                    else 
+                        call me%errorcall('RAND', 3)
+                    end if
+                type is (random_int_type)
+                    if (me%value_type == val_types(idx_int)) then
+                        val%val = me%int_array(idx)
+                    else 
+                        call me%errorcall('RAND', 4)
+                    end if
+                type is (random_char_type)
+                    if (me%value_type == val_types(idx_char)) then
+                        val%val = me%char_array(idx) 
+                    else 
+                        call me%errorcall('RAND', 5)
+                    end if
+                class default 
+                    call me%errorcall('RAND', 6)
+            end select
         else
-            call me%errorcall('RAND', 3)
+            call me%errorcall('RAND', 1000)
         end if
-        
-        select type (val)
-        type is (value_wrapper_type)
-            call me%errorcall('RAND', 4)
-        type is (random_real_type)
-            if (me%value_type == val_types(idx_real)) then
-                val%val = me%min + x*(me%max-me%min)
-            else 
-                call me%errorcall('RAND', 5)
-            end if
-        type is (random_int_type)
-            call me%errorcall('RAND', 6)
-        type is (random_logic_type)
-            call me%errorcall('RAND', 7)
-        type is (random_char_type)
-            call me%errorcall('RAND', 8)
-        class default
-            call me%errorcall('RAND', 9)
-        end select
-        
+            
         return
     end subroutine rand
     

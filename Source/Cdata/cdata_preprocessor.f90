@@ -135,8 +135,10 @@ module preprocessor_routines
     n_rndfires = 0
     allocate(randfireinfo(mxrandfires))
     randfireinfo(1:mxrandfires)%id = 'NULL'
+    randfireinfo(1:mxrandfires)%fire_generator_type = 'NULL'
     randfireinfo(1:mxrandfires)%fireid = 'NULL'
     randfireinfo(1:mxrandfires)%num_sections = 0
+    !randfireinfo(1:mxrandfires)%
     
     
     return

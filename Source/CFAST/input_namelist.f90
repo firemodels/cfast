@@ -3185,6 +3185,7 @@ continue
     call initialize_memory
     
     convert_negative_distances = .false.
+    call read_tabl(iofili)
     call read_fire(iofili)
     call read_vent(iofili)
     call read_devc(iofili)

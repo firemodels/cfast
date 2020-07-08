@@ -38,9 +38,12 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
-                idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections
+        idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
+        mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens
+        
     use preprocessor_types, only: random_generator_type, field_pointer
-    use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds
+    use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
+        randfireinfo
     
     use namelist_input_routines, only: checkread
 
@@ -147,17 +150,21 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii
+    integer :: ios, ii, jj
     logical :: mrndflag
     type(random_generator_type), pointer :: genptr
     
     character(len=128) :: id, fyi
-    character(len=9) :: type_dist
+    character(len=35) :: type_dist
     integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak
-    integer ::initial_seed_values(mxseeds)
+    integer ::initial_seed_values(mxseeds), ndx
+    real(eb) :: discrete_probabilities(mxpntsarray), discrete_real_values(mxpntsarray) 
+    integer :: discrete_integer_values(mxpntsarray)
+    character(len = 128) :: discrete_string_values(mxpntsarray)
 
-    namelist /MRND/ id, fyi, type_dist, minimum, maximum, mean, stdev, alpha, beta, peak, initial_seed_values
+    namelist /MRND/ id, fyi, type_dist, minimum, maximum, mean, stdev, alpha, beta, peak, initial_seed_values, &
+        discrete_real_values, discrete_integer_values, discrete_string_values, discrete_probabilities 
                     
     
     ios = 1
@@ -223,6 +230,39 @@
                 genptr%type_dist = type_dist
                 genptr%min = minimum
                 genptr%max = maximum
+            else if (trim(type_dist) == trim(rand_dist(idx_user_defined_discrete))) then
+                ndx = 1
+                genptr%type_dist = type_dist
+                ndx_loop: do while(ndx <= mxpntsarray)
+                    if (discrete_probabilities(ndx) >= 0._eb) then
+                        ndx = ndx + 1
+                    else
+                        exit ndx_loop
+                    end if
+                end do ndx_loop
+                genptr%num_discrete_values = ndx
+                genptr%prob_array(1) = discrete_probabilities(1)
+                do jj = 2, ndx
+                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + discrete_probabilities(jj)
+                end do 
+                if (discrete_real_values(1) /= -1001._eb) then
+                    genptr%value_type = val_types(idx_real)
+                    do jj = 1, ndx
+                        genptr%real_array(jj) = discrete_real_values(jj)
+                    end do
+                else if (discrete_integer_values(1) /= -1001) then
+                    genptr%value_type = val_types(idx_int)
+                    do jj = 1, ndx
+                        genptr%int_array(jj) = discrete_integer_values(jj)
+                    end do
+                else if (trim(discrete_string_values(1)) /= 'NULL') then
+                    genptr%value_type = val_types(idx_char)
+                    do jj = 1, ndx
+                        genptr%char_array(jj) = discrete_string_values(jj)
+                    end do 
+                else
+                    call cfastexit('read_mrnd', 5)
+                end if 
             else
                 call cfastexit('read_mrnd',1000)
             end if
@@ -246,6 +286,10 @@
     alpha = -1001._eb
     beta = -1001._eb
     initial_seed_values(1:mxseeds) = -1001
+    discrete_real_values = -1001._eb
+    discrete_integer_values = -1001
+    discrete_string_values = 'NULL'
+    discrete_probabilities = -1001._eb
 
     end subroutine set_defaults
 
@@ -371,11 +415,14 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios
+    integer :: ios, ii
     logical :: mfirflag
-    character(len=128) :: id, fire_id
+    character(len=128) :: id, fire_id, fire_gen_id
     
     logical :: first_section_smoldering
+    character(len=35) :: fire_generator_type
+    character(len=128) :: input_file_list(mxfires), fire_id_list(mxfires), random_generator_id(mxfiresections)
+    integer :: number_of_fires 
     integer, dimension(mxfiresections) :: number_of_points_for_section, final_hrr_for_section
     real(eb), dimension(mxfiresections) :: exponent_for_section, time_for_section
     logical :: include_hrr_parameters, include_time_parameters, include_flaming_ignition_time
@@ -385,7 +432,8 @@
     namelist /MFIR/ id, fire_id, first_section_smoldering, number_of_points_for_section, exponent_for_section, &
         time_for_section, final_hrr_for_section, include_hrr_parameters, include_time_parameters, &
         include_flaming_ignition_time, fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
-        hcn_yield, hcl_yield, trace_yield
+        hcn_yield, hcl_yield, trace_yield, fire_generator_type, input_file_list, fire_id_list, &
+        random_generator_id
     
     ios = 1
 
@@ -400,13 +448,36 @@
             exit mfir_loop
         end if
         read(lu,MFIR,iostat=ios)
-        n_fields = n_fields + 1
+        n_rndfires = n_rndfires + 1
         if (ios>0) then
             write(iofill, '(a)') '***Error in &MFIR: Invalid specification for inputs.'
             call cfastexit('read_mfir',1)
         end if
     end do mfir_loop
 
+    if (n_rndfires>mxrndfires) then
+        write (*,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
+        write (iofill,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
+        call cfastexit('read_mfir',2)
+    end if
+
+    if (.not.mfirflag) then
+        write (*, '(/, "***Error: &MFIR inputs are required.")')
+        write (iofill, '(/, "***Error: &MFIR inputs are required.")')
+        call cfastexit('read_mfir',3)
+    end if
+
+     ! we found one. read it (only the first one counts; others are ignored)
+    mfir_flag: if (mfirflag) then
+
+        rewind (lu)
+        input_file_line_number = 0
+
+        ! Assign value to CFAST variables for further calculations
+        read_mfir_loop: do ii=1,n_rndfires
+            
+        end do read_mfir_loop
+    end if mfir_flag
     
     contains
     
@@ -429,6 +500,11 @@
     hcn_yield = 0._eb
     hcl_yield = 0._eb
     trace_yield = 0._eb
+    fire_generator_type = 'NULL'
+    random_generator_id(1:mxfiresections) = 'NULL'
+    input_file_list(1:mxfires) = 'NULL'
+    fire_id_list(1:mxfires) = 'NULL'
+    
     
     end subroutine set_defaults
     

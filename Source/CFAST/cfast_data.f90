@@ -339,6 +339,7 @@ module setup_data
     character(len=60) :: nnfile = " ", datafile
     integer :: cfast_input_file_position = 2
     logical :: init_scalars = .true.  
+    character(len=5) :: program_name
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &

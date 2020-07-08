@@ -37,12 +37,13 @@
     use dump_data, only: n_dumps
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval
+        ss_out_interval, program_name
 
     implicit none
 
     real(eb) :: xdelt, tstop, tbeg, tend 
 
+    program_name = 'CFAST'
     cfast_version = 7600        ! Current CFAST version number
 
     if (command_argument_count().eq.0) then

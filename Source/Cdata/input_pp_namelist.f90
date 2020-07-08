@@ -3,6 +3,7 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
+    use exit_routines, only: cfastexit
     use utility_routines, only: d1mach
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
@@ -48,7 +49,6 @@
     use namelist_input_routines, only: checkread
 
     implicit none
-    external cfastexit
     
     private
 

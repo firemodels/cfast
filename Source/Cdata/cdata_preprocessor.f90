@@ -10,9 +10,10 @@ module preprocessor_routines
         ss_out_interval, inputfile, datapath, project, extension, cfast_input_file_position, iofili
     
     !-----------------------CFAST routines-----------------------------------------
+    use exit_routines, only: cfastexit
     use initialization_routines, only : initialize_memory
     use input_routines, only : open_files, read_input_file
-    use output_routines, only: delete_output_files, closeoutputfiles
+    use exit_routines, only: delete_output_files, closeoutputfiles
     use namelist_input_routines, only: cdata_rereadinputfile
     use utility_routines, only : read_command_options
     
@@ -32,7 +33,6 @@ module preprocessor_routines
     use write_inputfile_routines, only: write_cfast_infile
     
     implicit none
-    external cfastexit
     
     private
 

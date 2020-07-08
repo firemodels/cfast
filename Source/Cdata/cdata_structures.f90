@@ -1,6 +1,7 @@
 module preprocessor_types
 
     use precision_parameters
+    use exit_routines, only: cfastexit
     use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
                      val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds

@@ -14,7 +14,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" RuntimeLibrary="rtMultiThreadedDLL"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" RuntimeLibrary="rtMultiThreadedDLL"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
@@ -32,6 +32,7 @@
 		<File RelativePath="..\CFAST\cfast_structures.f90"/>
 		<File RelativePath="..\CFAST\prec.f90"/></Filter>
 		<Filter Name="Source Files">
+		<File RelativePath="..\CFAST\cfastexit.f90"/>
 		<File RelativePath="..\CFAST\compartments.f90"/>
 		<File RelativePath="..\CFAST\conduction.f90"/>
 		<File RelativePath="..\CFAST\convection.f90"/>

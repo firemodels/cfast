@@ -3,7 +3,7 @@ module exit_routines
     use precision_parameters
     
     use setup_data, only: validation_flag, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile    
+        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name  
     
     implicit none
 
@@ -27,16 +27,17 @@ module exit_routines
             ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
             !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
-            if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
-            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'')')
+            if (.not.validation_flag) write (*, '(''Maximum iteration exit from '',a)') program_name
+            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'',a)') program_name
             exitcode = 0
         else
-            write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') exitcode, trim(name)
-            if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') exitcode, trim(name)
+            write (*,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, exitcode, trim(name)
+            if (iofill/=0) write (iofill,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, &
+                exitcode, trim(name)
         end if
     else
-        if (.not.validation_flag) write (*, '(''Normal exit from CFAST'')')
-        if (iofill/=0) write (iofill, '(''Normal exit from CFAST'')')
+        if (.not.validation_flag) write (*, '(''Normal exit from '',a)') program_name
+        if (iofill/=0) write (iofill, '(''Normal exit from '',a)') program_name
     end if
     
     call closeoutputfiles

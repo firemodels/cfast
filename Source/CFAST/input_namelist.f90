@@ -624,7 +624,7 @@
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
 
-    real(eb) :: front_surface_temperature, temperature_depth, rti, setpoint, spray_density
+    real(eb) :: thickness, front_surface_temperature, temperature_depth, rti, setpoint, spray_density
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
     character(len=64) :: comp_id, id, matl_id, type, depth_units, front_surface_orientation
@@ -632,7 +632,7 @@
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
     namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, front_surface_orientation, &
-        front_surface_temperature, rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
+        front_surface_temperature, thickness, rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
 
     ios = 1
 
@@ -727,6 +727,8 @@
                 targptr%normal = normal
                 targptr%front_surface_orientation = front_surface_orientation
                 targptr%front_surface_temperature = front_surface_temperature
+                
+                targptr%thickness = thickness
 
                 targptr%depth_loc = temperature_depth
                 targptr%depth_units = depth_units
@@ -908,6 +910,7 @@
     normal(:)                       = (/0., 0., 1./)
     front_surface_orientation       = "NULL"
     front_surface_temperature       = interior_ambient_temperature
+    thickness                       = 0._eb
     rti                             = default_rti
     setpoint                        = -1001._eb
     setpoints                       = (/-1001._eb, -1001._eb/)

@@ -799,7 +799,7 @@ module initialization_routines
         targptr%k = thrmpptr%k(1)
         targptr%c = thrmpptr%c(1)
         targptr%rho = thrmpptr%rho(1)
-        targptr%thickness = thrmpptr%thickness(1)
+        if (targptr%thickness<=0._eb) targptr%thickness = thrmpptr%thickness(1)
         if (targptr%depth_units=='FRACTION') then
             targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
         else

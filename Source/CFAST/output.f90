@@ -110,9 +110,9 @@ module output_routines
     if (outputformat>1) then
         call output_initial_overview
         call output_initial_ambient_conditions
+        call output_initial_thermal_properties
         call output_initial_compartments
         call output_initial_vents
-        call output_initial_thermal_properties
         call output_initial_fires
         call output_initial_targets
         call output_initial_detectors
@@ -707,10 +707,11 @@ module output_routines
 
     ! output initial test case geometry
 
-    integer i
+    integer i, j, k
     real(eb) :: wallleakarea, floorleakarea
     type(room_type), pointer :: roomptr
     character :: hall, shaft
+    character(len=7), parameter :: surfaces(3) = ['Ceiling','Floor  ','Walls  ']
 
     write (iofilo,5000)
     do i = 1, n_rooms
@@ -719,18 +720,47 @@ module output_routines
         hall = '' ; if (roomptr%hall) hall = '*'
         wallleakarea = (2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight) * roomptr%leak_area_ratios(1)
         floorleakarea = (roomptr%cwidth * roomptr%cdepth) * roomptr%leak_area_ratios(2)
-        write (iofilo,5010) i, trim(roomptr%id), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
-            shaft, hall, wallleakarea, floorleakarea
+        write (iofilo,5010) i, trim(roomptr%id)//repeat(' ',13), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, &
+            roomptr%z0, roomptr%z1, shaft, hall, wallleakarea, floorleakarea
     end do
-    if (adiabatic_walls) write (iofilo,*) 'All compartment surfaces are adiabatic'
+    if (adiabatic_walls) then
+        write (iofilo,*) 'All compartment surfaces are adiabatic'
+    else
+        write (iofilo,5020)
+        do i = 1, n_rooms
+            roomptr => roominfo(i)
+            do j = 1, 3     ! loop over the surface
+                do k = 1, roomptr%nslab_w(j) ! loop over the layers
+                    if (j==1.and.k==1) then
+                        write (iofilo,5030) i, trim(roomptr%id)//repeat(' ',13), trim(surfaces(j))//repeat(' ',7), k, &
+                            roomptr%k_w(k,j), roomptr%c_w(k,j), roomptr%rho_w(k,j), roomptr%thick_w(k,j), roomptr%eps_w(j), &
+                            trim(roomptr%matl(k,j))
+                    else if (k==1) then
+                        write (iofilo,5040) trim(surfaces(j))//repeat(' ',7), k, roomptr%k_w(k,j), roomptr%c_w(k,j), &
+                            roomptr%rho_w(k,j), roomptr%thick_w(k,j), roomptr%eps_w(j), trim(roomptr%matl(k,j))
+                    else
+                        write (iofilo,5050) k, roomptr%k_w(k,j), roomptr%c_w(k,j), roomptr%rho_w(k,j), roomptr%thick_w(k,j), &
+                            roomptr%eps_w(j), trim(roomptr%matl(k,j))
+                    end if
+                end do
+            end do
+        end do
+    end if
+    
     return
-    5000 format (//,'COMPARTMENTS',//, &
+    
+5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling    ', &
     'Shaft    Hall   Wall         Floor',/, &
     '                                                                        Height       Height                     ', &
     'Leakage      Leakage',/, 33x,5('(m)',10x),14x,2('(m^2)',8x),/,133('-'))
-5010  format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
-      
+5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
+     5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment  Name              Surface      Layer      Conductivity    ', &
+          'Specific Heat    Density        Thickness     Emissivity      Material',/, &
+          '                                                       (kW/(m °C))     (kJ/(m °C))      (kg/m^3)       (m)',/,146('-'))  
+5030 format (i5,8x,a13,5x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
+5040 format (31x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
+5050 format (43x,i2,6x,5(1pg13.3,3x),2x,a)
     end subroutine output_initial_compartments
 
 ! --------------------------- output_initial_vents -------------------------------------------
@@ -948,7 +978,7 @@ module output_routines
             roomptr => roominfo(i)
             do j = 1, nwal
                 do k = 1,3
-                    if (roomptr%surface_on(j).and.roomptr%matl(k,j)/=' ') go to 30
+                    if (roomptr%surface_on(j).and.roomptr%matl(k,j)/=' ') go to 10
                 end do
             end do
         end do
@@ -956,15 +986,8 @@ module output_routines
     write (iofilo,5000)
     return
 
-    ! some surfaces are on, do the printout of the surfaces
-30  write (iofilo,5010)
-    do  i = 1, n_rooms
-        roomptr => roominfo(i)
-        write (iofilo,5020) roomptr%id, roomptr%matl(1,1), roomptr%matl(1,3), roomptr%matl(1,2)
-    end do
-
-    ! print out the properties of the materials used
-    write (iofilo,5030)
+    ! some surfaces are on, do the printout of the material properties
+10  write (iofilo,5010)
     do i = 1, n_matl
         thrmpptr => material_info(i)
         write (iofilo,5040) thrmpptr%id, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
@@ -976,10 +999,8 @@ module output_routines
     return
 
 5000 format (//,'All compartment surfaces are adiabatic.')
-5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,47('-'))
-5020 format (a13,3(a10,3x))
-5030 format (//,'Name',4X,'Conductivity',6X,'Specific Heat',5X,&
-          'Density',8X,'Thickness',5X,'Emissivity',/,83('-'))
+     5010 format (//,'THERMAL PROPERTIES',//,'Name',4X,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
+          5X,'Emissivity',/,8x, '(kW/(m °C))       (kJ/(m °C))       (kg/m^3)       (m)',/,83('-'))
 5040 format (a8,5(1pg13.3,3x),5e10.2)
 5050 format (8x,4(1pg13.3,3x))
 5060 format (' ')
@@ -1054,7 +1075,7 @@ module output_routines
 
     if (n_targets/=0) write (iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',21x,'Compartment',10x,'Position (x, y, z)',9x,&
-         'Back', 11x, 'Direction (x, y, z)',8x,'Int. Temp. At',4x,'Material'/,149('-'))
+         'Back', 11x, 'Direction (x, y, z)',8x,'Int. Temp. At',4x,'Thickness',4x,'Material',/,155('-'))
 
     do itarg = 1, n_targets
         targptr => targetinfo(itarg)
@@ -1065,8 +1086,8 @@ module output_routines
             location_type = 'Exterior'
         end if
         write (iofilo,5010) itarg, targptr%id, roomptr%id, (targptr%center(j),j=1,3), location_type, &
-            (targptr%normal(j),j=1,3), targptr%depth_loc, trim(targptr%material)
-5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),f8.3,12x,a)
+            (targptr%normal(j),j=1,3), targptr%depth_loc,  targptr%thickness, trim(targptr%material)
+5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),f8.3,11x,f8.3,6x,a)
     end do
     return
     end subroutine output_initial_targets

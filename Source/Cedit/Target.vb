@@ -37,6 +37,7 @@ Public Class Target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
     Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
+    Private aThickness As Single                ' Target thickness. If zero, we use the material thickness from thermal properties tab
     Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no longer supported
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationType As Integer          ' Used to maintain compatibility with older smoke dtector inputs. 0 for temperature, 1 for obscuration. 
@@ -64,6 +65,7 @@ Public Class Target
         aZNormal = 1.0
         aInternalLocation = 0.5
         aMaterial = "Off"
+        aThickness = 0
         aSolutionType = 0
         aDetectorType = 1
         aActivationTemperature = HeatDetectorActiviationTemperature
@@ -299,6 +301,17 @@ Public Class Target
             If Value <> aMaterial Then
                 aMaterial = myThermalProperties.ValidThermalProperty(Value, "Target")
                 If myTargets.DoChange Then aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property Thickness() As Single
+        Get
+            Return aThickness
+        End Get
+        Set(ByVal Value As Single)
+            If Value <> aThickness Then
+                aThickness = Value
+                aChanged = True
             End If
         End Set
     End Property
@@ -664,6 +677,7 @@ Public Class TargetCollection
         ToTarget.YNormal = FromTarget.YNormal
         ToTarget.ZNormal = FromTarget.ZNormal
         ToTarget.Material = FromTarget.Material
+        ToTarget.Thickness = FromTarget.Thickness
         ToTarget.SolutionType = FromTarget.SolutionType
         ToTarget.DetectorType = FromTarget.DetectorType
         ToTarget.ActivationTemperature = FromTarget.ActivationTemperature

@@ -567,7 +567,7 @@ Module IO
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type, fyi, targetfacing As String
         Dim tempdepthunits As String = "FRACTION"
-        Dim fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Single
+        Dim thickness, fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3), coeffs(2) As Single
         Dim valid, lvalid, adiabatic As Boolean
         Dim aTempOffset As Single = 273.15
@@ -578,7 +578,6 @@ Module IO
                 coeffs(1) = 0
                 coeffs(2) = 0
                 tempdepth = 0.5
-                fixedtemperature = 0
                 rti = 130
                 setp = -1
                 id = ""
@@ -588,6 +587,7 @@ Module IO
                 fyi = ""
                 targetfacing = ""
                 fixedtemperature = -1001
+                thickness = 0
 
                 For k = 0 To 2
                     loc(k) = -1
@@ -615,6 +615,8 @@ Module IO
                         Else
                             myErrors.Add("In DEVC namelist for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "THICKNESS" Then
+                        thickness = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "DEPTH_UNITS" Then
                         tempdepthunits = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TEMPERATURE_DEPTH" Then
@@ -725,10 +727,16 @@ Module IO
                             atype = Target.ThermallyThick
                         End If
                         aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
+                        If thickness < 0 Then
+                            myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because thickness is less than zero", ErrorMessages.TypeFatal)
+                        End If
+                        If thickness > 0 Then
+                            aDetect.Thickness = thickness
+                        End If
                         If tempdepthunits = "FRACTION" Then
                             Dim MaterialIndex As Integer = myThermalProperties.GetIndex(matlid)
                             If MaterialIndex >= 0 Then
-                                Dim thickness As Single = myThermalProperties(MaterialIndex).Thickness
+                                If thickness = 0 Then thickness = myThermalProperties(MaterialIndex).Thickness
                                 aDetect.InternalLocation = Math.Max(0, Math.Min(tempdepth * thickness, thickness))
                             Else
                                 aDetect.InternalLocation = tempdepth
@@ -2761,6 +2769,9 @@ Module IO
                         ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
                     End If
                 End If
+                PrintLine(IO, ln)
+                ln = ""
+                If aTarg.Thickness > 0 Then ln += "THICKNESS = " + aTarg.Thickness.ToString
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.FixedTemperature <> myEnvironment.IntAmbTemperature And aTarg.FixedTemperature <> -1001 Then

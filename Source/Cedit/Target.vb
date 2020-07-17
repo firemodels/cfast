@@ -677,6 +677,7 @@ Public Class TargetCollection
         ToTarget.YNormal = FromTarget.YNormal
         ToTarget.ZNormal = FromTarget.ZNormal
         ToTarget.Material = FromTarget.Material
+        ToTarget.Thickness = FromTarget.Thickness
         ToTarget.SolutionType = FromTarget.SolutionType
         ToTarget.DetectorType = FromTarget.DetectorType
         ToTarget.ActivationTemperature = FromTarget.ActivationTemperature

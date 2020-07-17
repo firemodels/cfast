@@ -743,21 +743,23 @@ Public Class UpdateGUI
             MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType
             MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString + myUnits.Convert(UnitsNum.Length).Units
             If aTarget.Material <> "Default" And aTarget.Material <> "Off" Then
+                MainWin.TargetThickness.Enabled = True
                 Dim aThermalProperty As New ThermalProperty
                 aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aTarget.Material))
-                MainWin.TargetConduct.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
-                MainWin.TargetSpecHeat.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
-                MainWin.TargetDensity.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
                 If MainWin.TargetSolutionType.SelectedIndex = Target.Cylindrical Then
-                    MainWin.TargetThickness.Text = "Diameter: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                    MainWin.TargetThicknessLabel.Text = "Diameter: "
                 Else
-                    MainWin.TargetThickness.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                    MainWin.TargetThicknessLabel.Text = "Thickness: "
+                End If
+                If aTarget.Thickness = 0 Then
+                    MainWin.TargetThickness.Text = aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                Else
+                    MainWin.TargetThickness.Text = aTarget.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
                 End If
             Else
-                MainWin.TargetConduct.Text = "Conductivity:"
-                MainWin.TargetSpecHeat.Text = "Specific Heat: "
-                MainWin.TargetDensity.Text = "Density: "
-                MainWin.TargetThickness.Text = "Thickness: "
+                MainWin.TargetThicknessLabel.Text = "Thickness: "
+                MainWin.TargetThickness.Text = ""
+                MainWin.TargetThickness.Enabled = False
             End If
 
             numTargets = myTargets.Count

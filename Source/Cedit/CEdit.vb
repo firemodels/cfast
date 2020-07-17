@@ -10,6 +10,13 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents TargetInternalLocation As TextBox
+    Friend WithEvents Label59 As Label
+    Friend WithEvents TargetThicknessLabel As Label
+    Friend WithEvents TargetMaterial As ComboBox
+    Friend WithEvents TargetThickness As TextBox
+    Friend WithEvents Label78 As Label
 
 #Region " Windows Form Designer generated code "
 
@@ -174,13 +181,6 @@ Public Class CeditMain
     Friend WithEvents MainGeometry As System.Windows.Forms.Button
     Friend WithEvents Label56 As System.Windows.Forms.Label
     Friend WithEvents Label57 As System.Windows.Forms.Label
-    Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-    Friend WithEvents TargetConduct As System.Windows.Forms.Label
-    Friend WithEvents TargetSpecHeat As System.Windows.Forms.Label
-    Friend WithEvents TargetDensity As System.Windows.Forms.Label
-    Friend WithEvents TargetThickness As System.Windows.Forms.Label
-    Friend WithEvents TargetInternalLocation As System.Windows.Forms.TextBox
-    Friend WithEvents Label59 As System.Windows.Forms.Label
     Friend WithEvents Label65 As System.Windows.Forms.Label
     Friend WithEvents Label64 As System.Windows.Forms.Label
     Friend WithEvents MainOpen As System.Windows.Forms.Button
@@ -255,7 +255,6 @@ Public Class CeditMain
     Friend WithEvents Label72 As System.Windows.Forms.Label
     Friend WithEvents Label73 As System.Windows.Forms.Label
     Friend WithEvents Label79 As System.Windows.Forms.Label
-    Friend WithEvents Label78 As System.Windows.Forms.Label
     Friend WithEvents Label74 As System.Windows.Forms.Label
     Friend WithEvents GroupBox28 As System.Windows.Forms.GroupBox
     Friend WithEvents Label75 As System.Windows.Forms.Label
@@ -348,7 +347,6 @@ Public Class CeditMain
     Friend WithEvents TargetDup As System.Windows.Forms.Button
     Friend WithEvents StatusBar As System.Windows.Forms.StatusBar
     Friend WithEvents HVentMoveDown As System.Windows.Forms.Button
-    Friend WithEvents TargetMaterial As System.Windows.Forms.ComboBox
     Friend WithEvents TargetZNormal As System.Windows.Forms.TextBox
     Friend WithEvents TargetYNormal As System.Windows.Forms.TextBox
     Friend WithEvents TargetXNormal As System.Windows.Forms.TextBox
@@ -728,10 +726,7 @@ Public Class CeditMain
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.TargetInternalLocation = New System.Windows.Forms.TextBox()
         Me.Label59 = New System.Windows.Forms.Label()
-        Me.TargetSpecHeat = New System.Windows.Forms.Label()
-        Me.TargetDensity = New System.Windows.Forms.Label()
-        Me.TargetThickness = New System.Windows.Forms.Label()
-        Me.TargetConduct = New System.Windows.Forms.Label()
+        Me.TargetThicknessLabel = New System.Windows.Forms.Label()
         Me.TargetMaterial = New System.Windows.Forms.ComboBox()
         Me.Label78 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
@@ -839,6 +834,7 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.TargetThickness = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3706,23 +3702,23 @@ Public Class CeditMain
         Me.GroupTargets.Controls.Add(Me.GroupBox28)
         Me.GroupTargets.Location = New System.Drawing.Point(61, 275)
         Me.GroupTargets.Name = "GroupTargets"
-        Me.GroupTargets.Size = New System.Drawing.Size(855, 270)
+        Me.GroupTargets.Size = New System.Drawing.Size(855, 294)
         Me.GroupTargets.TabIndex = 7
         Me.GroupTargets.TabStop = False
         Me.GroupTargets.Text = "Target 1"
         '
         'TargetName
         '
-        Me.TargetName.Location = New System.Drawing.Point(113, 34)
+        Me.TargetName.Location = New System.Drawing.Point(337, 19)
         Me.TargetName.Name = "TargetName"
-        Me.TargetName.Size = New System.Drawing.Size(98, 20)
+        Me.TargetName.Size = New System.Drawing.Size(208, 20)
         Me.TargetName.TabIndex = 807
         Me.TargetName.Text = "New Target"
         '
         'Label116
         '
         Me.Label116.AutoSize = True
-        Me.Label116.Location = New System.Drawing.Point(86, 37)
+        Me.Label116.Location = New System.Drawing.Point(310, 22)
         Me.Label116.Name = "Label116"
         Me.Label116.Size = New System.Drawing.Size(21, 13)
         Me.Label116.TabIndex = 810
@@ -3731,24 +3727,22 @@ Public Class CeditMain
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.TargetThickness)
         Me.GroupBox3.Controls.Add(Me.TargetInternalLocation)
         Me.GroupBox3.Controls.Add(Me.Label59)
-        Me.GroupBox3.Controls.Add(Me.TargetSpecHeat)
-        Me.GroupBox3.Controls.Add(Me.TargetDensity)
-        Me.GroupBox3.Controls.Add(Me.TargetThickness)
-        Me.GroupBox3.Controls.Add(Me.TargetConduct)
+        Me.GroupBox3.Controls.Add(Me.TargetThicknessLabel)
         Me.GroupBox3.Controls.Add(Me.TargetMaterial)
         Me.GroupBox3.Controls.Add(Me.Label78)
-        Me.GroupBox3.Location = New System.Drawing.Point(521, 75)
+        Me.GroupBox3.Location = New System.Drawing.Point(521, 136)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(267, 175)
+        Me.GroupBox3.Size = New System.Drawing.Size(267, 104)
         Me.GroupBox3.TabIndex = 56
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Target Construction"
         '
         'TargetInternalLocation
         '
-        Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
+        Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 68)
         Me.TargetInternalLocation.Name = "TargetInternalLocation"
         Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
         Me.TargetInternalLocation.TabIndex = 819
@@ -3757,61 +3751,34 @@ Public Class CeditMain
         'Label59
         '
         Me.Label59.AutoSize = True
-        Me.Label59.Location = New System.Drawing.Point(7, 144)
+        Me.Label59.Location = New System.Drawing.Point(7, 72)
         Me.Label59.Name = "Label59"
         Me.Label59.Size = New System.Drawing.Size(120, 13)
         Me.Label59.TabIndex = 40
         Me.Label59.Text = "Internal Temperature at:"
         '
-        'TargetSpecHeat
+        'TargetThicknessLabel
         '
-        Me.TargetSpecHeat.AutoSize = True
-        Me.TargetSpecHeat.Location = New System.Drawing.Point(7, 75)
-        Me.TargetSpecHeat.Name = "TargetSpecHeat"
-        Me.TargetSpecHeat.Size = New System.Drawing.Size(74, 13)
-        Me.TargetSpecHeat.TabIndex = 39
-        Me.TargetSpecHeat.Text = "Specific Heat:"
-        '
-        'TargetDensity
-        '
-        Me.TargetDensity.AutoSize = True
-        Me.TargetDensity.Location = New System.Drawing.Point(7, 98)
-        Me.TargetDensity.Name = "TargetDensity"
-        Me.TargetDensity.Size = New System.Drawing.Size(45, 13)
-        Me.TargetDensity.TabIndex = 38
-        Me.TargetDensity.Text = "Density:"
-        '
-        'TargetThickness
-        '
-        Me.TargetThickness.AutoSize = True
-        Me.TargetThickness.Location = New System.Drawing.Point(7, 121)
-        Me.TargetThickness.Name = "TargetThickness"
-        Me.TargetThickness.Size = New System.Drawing.Size(59, 13)
-        Me.TargetThickness.TabIndex = 37
-        Me.TargetThickness.Text = "Thickness:"
-        '
-        'TargetConduct
-        '
-        Me.TargetConduct.AutoSize = True
-        Me.TargetConduct.Location = New System.Drawing.Point(7, 52)
-        Me.TargetConduct.Name = "TargetConduct"
-        Me.TargetConduct.Size = New System.Drawing.Size(68, 13)
-        Me.TargetConduct.TabIndex = 36
-        Me.TargetConduct.Text = "Conductivity:"
+        Me.TargetThicknessLabel.AutoSize = True
+        Me.TargetThicknessLabel.Location = New System.Drawing.Point(68, 48)
+        Me.TargetThicknessLabel.Name = "TargetThicknessLabel"
+        Me.TargetThicknessLabel.Size = New System.Drawing.Size(59, 13)
+        Me.TargetThicknessLabel.TabIndex = 37
+        Me.TargetThicknessLabel.Text = "Thickness:"
         '
         'TargetMaterial
         '
         Me.TargetMaterial.ItemHeight = 13
-        Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
+        Me.TargetMaterial.Location = New System.Drawing.Point(71, 19)
         Me.TargetMaterial.Name = "TargetMaterial"
-        Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
+        Me.TargetMaterial.Size = New System.Drawing.Size(157, 21)
         Me.TargetMaterial.TabIndex = 818
         Me.TargetMaterial.Text = "GYPSUM"
         '
         'Label78
         '
         Me.Label78.AutoSize = True
-        Me.Label78.Location = New System.Drawing.Point(7, 22)
+        Me.Label78.Location = New System.Drawing.Point(18, 22)
         Me.Label78.Name = "Label78"
         Me.Label78.Size = New System.Drawing.Size(47, 13)
         Me.Label78.TabIndex = 35
@@ -3821,7 +3788,7 @@ Public Class CeditMain
         'Label79
         '
         Me.Label79.AutoSize = True
-        Me.Label79.Location = New System.Drawing.Point(607, 37)
+        Me.Label79.Location = New System.Drawing.Point(569, 65)
         Me.Label79.Name = "Label79"
         Me.Label79.Size = New System.Drawing.Size(68, 13)
         Me.Label79.TabIndex = 40
@@ -3832,7 +3799,7 @@ Public Class CeditMain
         '
         Me.TargetComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.TargetComp.ItemHeight = 13
-        Me.TargetComp.Location = New System.Drawing.Point(343, 33)
+        Me.TargetComp.Location = New System.Drawing.Point(145, 60)
         Me.TargetComp.Name = "TargetComp"
         Me.TargetComp.Size = New System.Drawing.Size(208, 21)
         Me.TargetComp.TabIndex = 808
@@ -3840,7 +3807,7 @@ Public Class CeditMain
         'Label74
         '
         Me.Label74.AutoSize = True
-        Me.Label74.Location = New System.Drawing.Point(262, 37)
+        Me.Label74.Location = New System.Drawing.Point(64, 64)
         Me.Label74.Name = "Label74"
         Me.Label74.Size = New System.Drawing.Size(72, 13)
         Me.Label74.TabIndex = 34
@@ -3851,7 +3818,7 @@ Public Class CeditMain
         '
         Me.TargetSolutionType.ItemHeight = 13
         Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
-        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 33)
+        Me.TargetSolutionType.Location = New System.Drawing.Point(646, 61)
         Me.TargetSolutionType.Name = "TargetSolutionType"
         Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
         Me.TargetSolutionType.TabIndex = 809
@@ -3874,7 +3841,7 @@ Public Class CeditMain
         Me.GroupBox28.Controls.Add(Me.TargetXPosition)
         Me.GroupBox28.Controls.Add(Me.Label73)
         Me.GroupBox28.Controls.Add(Me.Label77)
-        Me.GroupBox28.Location = New System.Drawing.Point(66, 75)
+        Me.GroupBox28.Location = New System.Drawing.Point(66, 101)
         Me.GroupBox28.Name = "GroupBox28"
         Me.GroupBox28.Size = New System.Drawing.Size(378, 175)
         Me.GroupBox28.TabIndex = 55
@@ -4838,6 +4805,14 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
+        '
+        'TargetThickness
+        '
+        Me.TargetThickness.Location = New System.Drawing.Point(133, 42)
+        Me.TargetThickness.Name = "TargetThickness"
+        Me.TargetThickness.Size = New System.Drawing.Size(96, 20)
+        Me.TargetThickness.TabIndex = 820
+        Me.TargetThickness.Text = "0.5"
         '
         'CeditMain
         '
@@ -5813,7 +5788,7 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalType.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalType.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave, TargetThickness.Leave
         Dim aTarget As New Target
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
@@ -5826,6 +5801,7 @@ Public Class CeditMain
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
             If sender Is TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
+            If sender Is TargetThickness Then aTarget.Thickness = Val(TargetThickness.Text)
             If sender Is TargetSolutionType Then
                 aTarget.SolutionType = TargetSolutionType.SelectedIndex
             End If

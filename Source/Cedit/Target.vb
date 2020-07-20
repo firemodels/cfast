@@ -594,6 +594,7 @@ Public Class Target
                     End If
                     If myThermalProperties.GetIndex(aMaterial) >= 0 Then
                         Dim thickness As Single = myThermalProperties(myThermalProperties.GetIndex(aMaterial)).Thickness
+                        If aThickness > 0 Then thickness = aThickness
                         If aInternalLocation > thickness Then
                             myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is greater than target thickness.", ErrorMessages.TypeFatal)
                             HasErrors += 1

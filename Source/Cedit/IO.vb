@@ -623,6 +623,8 @@ Module IO
                         tempdepth = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FRONT_SURFACE_TEMPERATURE" Then
                         fixedtemperature = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SURFACE_TEMPERATURE" Then
+                        fixedtemperature = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RTI" Then
                         rti = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
@@ -649,6 +651,8 @@ Module IO
                             myErrors.Add("In DEVC namelist for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "FRONT_SURFACE_ORIENTATION" Then
+                        targetfacing = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SURFACE_ORIENTATION" Then
                         targetfacing = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "NORMAL" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -2748,25 +2752,25 @@ Module IO
                 ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
                 If aTarg.TargetFacing = "-" Then
                     If aTarg.XNormal = 0 And aTarg.YNormal = 0 And aTarg.ZNormal = 1 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'CEILING'"
+                        ln += "SURFACE_ORIENTATION = 'CEILING'"
                     ElseIf aTarg.XNormal = 0 And aTarg.YNormal = 0 And aTarg.ZNormal = -1 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'FLOOR'"
+                        ln += "SURFACE_ORIENTATION = 'FLOOR'"
                     ElseIf aTarg.XNormal = 1 And aTarg.YNormal = 0 And aTarg.ZNormal = 0 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'FRONT WALL'"
+                        ln += "SURFACE_ORIENTATION = 'FRONT WALL'"
                     ElseIf aTarg.XNormal = -1 And aTarg.YNormal = 0 And aTarg.ZNormal = 0 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'BACK WALL'"
+                        ln += "SURFACE_ORIENTATION = 'BACK WALL'"
                     ElseIf aTarg.XNormal = 0 And aTarg.YNormal = 1 And aTarg.ZNormal = 0 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'RIGHT WALL'"
+                        ln += "SURFACE_ORIENTATION = 'RIGHT WALL'"
                     ElseIf aTarg.XNormal = 0 And aTarg.YNormal = -1 And aTarg.ZNormal = 0 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = 'LEFT WALL'"
+                        ln += "SURFACE_ORIENTATION = 'LEFT WALL'"
                     Else
                         ln += "NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
                     End If
                 Else
                     If InStr(Data.NormalPointsTo.ToUpper, aTarg.TargetFacing.ToUpper, CompareMethod.Text) > 0 Then
-                        ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing.ToUpper + "'"
+                        ln += "SURFACE_ORIENTATION = '" + aTarg.TargetFacing.ToUpper + "'"
                     Else
-                        ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
+                        ln += "SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
                     End If
                 End If
                 PrintLine(IO, ln)
@@ -2775,7 +2779,7 @@ Module IO
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.FixedTemperature <> myEnvironment.IntAmbTemperature And aTarg.FixedTemperature <> -1001 Then
-                    ln += " FRONT_SURFACE_TEMPERATURE = " + aTarg.FixedTemperature.ToString
+                    ln += " SURFACE_TEMPERATURE = " + aTarg.FixedTemperature.ToString
                 End If
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString

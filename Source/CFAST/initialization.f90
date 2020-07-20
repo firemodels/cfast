@@ -751,22 +751,22 @@ module initialization_routines
         end if
 
         ! set up normal vector
-        if (targptr%front_surface_orientation == "CEILING") then
+        if (targptr%surface_orientation == "CEILING") then
             targptr%normal = (/0._eb, 0._eb, 1._eb/)
-        else if (targptr%front_surface_orientation == "FLOOR") then
+        else if (targptr%surface_orientation == "FLOOR") then
             targptr%normal = (/0._eb, 0._eb, -1._eb/)
-        else if (targptr%front_surface_orientation == "FRONT WALL") then
+        else if (targptr%surface_orientation == "FRONT WALL") then
             targptr%normal = (/1._eb, 0._eb, 0._eb/)
-        else if (targptr%front_surface_orientation == "BACK WALL") then
+        else if (targptr%surface_orientation == "BACK WALL") then
             targptr%normal = (/-1._eb, 0._eb, 0._eb/)
-        else if (targptr%front_surface_orientation == "RIGHT WALL") then
+        else if (targptr%surface_orientation == "RIGHT WALL") then
             targptr%normal = (/0._eb, 1._eb, 0._eb/)
-        else if (targptr%front_surface_orientation == "LEFT WALL") then
+        else if (targptr%surface_orientation == "LEFT WALL") then
             targptr%normal = (/0._eb, -1._eb, 0._eb/)
         else
             do j = 1, n_fires
                 fireptr => fireinfo(j)
-                if (targptr%front_surface_orientation == fireptr%id) then
+                if (targptr%surface_orientation == fireptr%id) then
                     hypotenuse = sqrt((fireptr%x_position-targptr%center(1))**2 + &
                         (fireptr%y_position-targptr%center(2))**2 + &
                         (fireptr%height(1)-targptr%center(3))**2)

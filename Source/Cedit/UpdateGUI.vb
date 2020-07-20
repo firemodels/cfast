@@ -1225,7 +1225,7 @@ Public Class UpdateGUI
         If aTarget.ZPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Floor")
         If aTarget.YPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Front Wall")
         If aTarget.Compartment >= 0 Then
-            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Rear Wall")
+            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Back Wall")
         End If
         If aTarget.XPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Left Wall")
         If aTarget.Compartment >= 0 Then

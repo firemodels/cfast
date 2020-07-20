@@ -2760,18 +2760,18 @@ Module IO
                     ElseIf aTarg.XNormal = 0 And aTarg.YNormal = -1 And aTarg.ZNormal = 0 Then
                         ln += "FRONT_SURFACE_ORIENTATION = 'LEFT WALL'"
                     Else
-                        ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
+                        ln += "NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
                     End If
                 Else
-                    If InStr(aTarg.TargetFacing.ToUpper, Data.NormalPointsTo.ToUpper, CompareMethod.Text) > 0 Then
+                    If InStr(Data.NormalPointsTo.ToUpper, aTarg.TargetFacing.ToUpper, CompareMethod.Text) > 0 Then
                         ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing.ToUpper + "'"
                     Else
                         ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
                     End If
                 End If
                 PrintLine(IO, ln)
-                ln = ""
-                If aTarg.Thickness > 0 Then ln += "THICKNESS = " + aTarg.Thickness.ToString
+                ln = "    "
+                If aTarg.Thickness > 0 Then ln += " THICKNESS = " + aTarg.Thickness.ToString
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.FixedTemperature <> myEnvironment.IntAmbTemperature And aTarg.FixedTemperature <> -1001 Then
@@ -2805,9 +2805,9 @@ Module IO
                     ln += " TYPE = 'HEAT_DETECTOR' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " /"
                 ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
                     If aTarg.ActivationObscurationSmoldering = 0 Then
-                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                        ln += " TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscurationFlaming.ToString + " /"
                     Else
-                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                        ln += " TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
                     End If
                 Else
                     ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString

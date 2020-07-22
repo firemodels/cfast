@@ -849,15 +849,19 @@ Public Class Vent
                         myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m² in size in from compartment.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstArea > 1.0 Then
-                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m² in size in from compartment.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
+                        If Data.Update = False Then
+                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m² in size in from compartment.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
                     End If
                     If aSecondArea <= 0.0 Then
                         myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m² in size in to compartment.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aSecondArea > 1.0 Then
-                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m² in size in to compartment.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
+                        If Data.Update = False Then
+                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m² in size in to compartment.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
                     End If
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
                         myUnits.SI = True
@@ -878,8 +882,10 @@ Public Class Vent
                             End If
                         End If
                         If aFlowRate > 10 * aComp1.RoomWidth * aComp1.RoomDepth * aComp1.RoomHeight / 3600.0 Then
-                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour out of compartment.", ErrorMessages.TypeWarning)
-                            HasErrors += 1
+                            If Data.Update = False Then
+                                myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour out of compartment.", ErrorMessages.TypeWarning)
+                                HasErrors += 1
+                            End If
                         End If
                         myUnits.SI = False
                     End If
@@ -894,8 +900,10 @@ Public Class Vent
                             End If
                         End If
                         If aFlowRate > 10 * aComp2.RoomWidth * aComp2.RoomDepth * aComp2.RoomHeight / 3600.0 Then
-                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour into compartment.", ErrorMessages.TypeWarning)
-                            HasErrors += 1
+                            If Data.Update = False Then
+                                myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour into compartment.", ErrorMessages.TypeWarning)
+                                HasErrors += 1
+                            End If
                         End If
                         myUnits.SI = False
                     End If

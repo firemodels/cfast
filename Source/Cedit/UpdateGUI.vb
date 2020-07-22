@@ -39,10 +39,14 @@ Public Class UpdateGUI
         Dim sLen As Integer, aVersion As String
         sLen = Len(Application.ProductVersion)
         aVersion = Application.ProductVersion.Substring(0, sLen - 2)
-        If myEnvironment.InputFileName = Nothing Then
-            MainWin.Text = "CEdit " + aVersion + " (Newfile)"
+        If Data.Update = True Then
+            MainWin.Text = "CEdit " + aVersion + " (Updating " + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
         Else
-            MainWin.Text = "CEdit " + aVersion + " (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
+            If myEnvironment.InputFileName = Nothing Then
+                MainWin.Text = "CEdit " + aVersion + " (Newfile)"
+            Else
+                MainWin.Text = "CEdit " + aVersion + " (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
+            End If
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
         If DoErrorCheck Then

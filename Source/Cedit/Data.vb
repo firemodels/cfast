@@ -9,6 +9,7 @@ Friend Module Data
     Friend myEnvironment As New Environment
     Friend Const ErrorNames As String = "WarningError  Fatal  Log           CFAST  "
     Friend myErrors As New ErrorMessages
+    Friend Update As Boolean = False
 
     Friend myVisuals As New VisualCollection
     Friend Const VisualTypeNames As String = "2-D       3-D       Isosurface"

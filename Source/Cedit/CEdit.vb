@@ -6262,6 +6262,7 @@ Public Class CeditMain
         UpdateAll()
     End Sub
     Private Sub MenuHelpUpdate_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdate.Click
+        Data.Update = True
         OpenDataFileDialog.FilterIndex = 1
         OpenDataFileDialog.Multiselect = True
         OpenDataFileDialog.ShowDialog()
@@ -6271,6 +6272,7 @@ Public Class CeditMain
             For Each FileName In OpenDataFileDialog.FileNames
                 InitNew()
                 OpenDataFile(FileName)
+                UpdateGUI.General()
                 SaveDataFile(False, True)
                 If myErrors.Count > 0 Then
                     Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()
@@ -6283,6 +6285,7 @@ Public Class CeditMain
             myInputFiles.ShowDialog()
         End If
         OpenDataFileDialog.Multiselect = False
+        Data.Update = False
         InitNew()
     End Sub
     Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
@@ -6545,9 +6548,9 @@ Public Class CeditMain
             ReadInputFile(FileName)
             myEnvironment.InputFileName = FileName
             myEnvironment.InputFilePath = FileName
-            myRecentFiles.Add(FileName)
+            If Data.Update = False Then myRecentFiles.Add(FileName)
             myUnits.SI = False
-            UpdateAll()
+            If Data.Update = False Then UpdateAll()
             myCompartments(CurrentCompartment).Changed = False
         Else
             MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
@@ -6688,6 +6691,7 @@ Public Class CeditMain
             fireFilesComments.Remove(fireFilesComments.Count)
         Loop
         CurrentCompartment = 0
+        CurrentThermalProperty = 0
         CurrentHVent = 0
         CurrentVVent = 0
         CurrentMVent = 0

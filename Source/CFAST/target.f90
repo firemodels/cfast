@@ -370,9 +370,9 @@ module target_routines
         targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_convection(i) + targptr%flux_target(i)
 
-        call convective_flux (iw,tg,targptr%front_surface_temperature,q1g)
+        call convective_flux (iw,tg,targptr%surface_temperature,q1g)
         targptr%flux_convection_gauge = q1g
-        targptr%flux_target_gauge(i) = -temis*sigma*targptr%front_surface_temperature**4
+        targptr%flux_target_gauge(i) = -temis*sigma*targptr%surface_temperature**4
         targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_target_gauge(i)
         targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &

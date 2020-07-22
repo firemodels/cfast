@@ -39,10 +39,14 @@ Public Class UpdateGUI
         Dim sLen As Integer, aVersion As String
         sLen = Len(Application.ProductVersion)
         aVersion = Application.ProductVersion.Substring(0, sLen - 2)
-        If myEnvironment.InputFileName = Nothing Then
-            MainWin.Text = "CEdit " + aVersion + " (Newfile)"
+        If Data.Update = True Then
+            MainWin.Text = "CEdit " + aVersion + " (Updating " + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
         Else
-            MainWin.Text = "CEdit " + aVersion + " (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
+            If myEnvironment.InputFileName = Nothing Then
+                MainWin.Text = "CEdit " + aVersion + " (Newfile)"
+            Else
+                MainWin.Text = "CEdit " + aVersion + " (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
+            End If
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
         If DoErrorCheck Then
@@ -1225,7 +1229,7 @@ Public Class UpdateGUI
         If aTarget.ZPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Floor")
         If aTarget.YPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Front Wall")
         If aTarget.Compartment >= 0 Then
-            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Rear Wall")
+            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Back Wall")
         End If
         If aTarget.XPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Left Wall")
         If aTarget.Compartment >= 0 Then

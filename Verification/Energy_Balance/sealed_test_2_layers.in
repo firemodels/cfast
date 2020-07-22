@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Compartment 1'
-      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Fires 
@@ -16,3 +17,5 @@
 &TABL ID = '100 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = '100 kW_Fire', DATA = 0, 100, 0, 0.3, 0, 0, 0, 0, 0 /
 &TABL ID = '100 kW_Fire', DATA = 1800, 100, 0, 0.3, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

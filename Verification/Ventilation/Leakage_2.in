@@ -1,4 +1,4 @@
-&HEAD VERSION = 7500, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 1 HEIGHT = 1 WIDTH = 1 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      DEPTH = 1 HEIGHT = 1 WIDTH = 1 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.01 /
  
 !! Mechanical Vents

@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 5000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Fires 
@@ -19,3 +20,5 @@
  
 !! Devices
 &DEVC ID = 'Sprinkler_1' COMP_ID = 'Comp 1' LOCATION = 2, 2, 3.96 TYPE = 'SPRINKLER' SETPOINT = 40, RTI = 100 SPRAY_DENSITY = 7E-05 /
+ 
+&TAIL /

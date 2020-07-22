@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 5000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 50 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
@@ -25,3 +26,5 @@
  
 !! Visualizations
 &SLCF DOMAIN = '2-D'  POSITION = 0, PLANE = 'X' / 
+ 
+&TAIL /

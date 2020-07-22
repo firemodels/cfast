@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Default example fire for user guide' /
+&HEAD VERSION = 7600, TITLE = 'Default example fire for user guide' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 30 / 
@@ -7,10 +7,12 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 5 HEIGHT = 4 WIDTH = 9 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 5 HEIGHT = 4 WIDTH = 9
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Comp 2'
-      DEPTH = 5 HEIGHT = 2 WIDTH = 9 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 5 HEIGHT = 2 WIDTH = 9
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 4 GRID = 50, 50, 50 /
  
 !! Ceiling and Floor Vents 
@@ -24,3 +26,5 @@
 &TABL ID = 'simple burner_Fire', DATA = 30, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
 &TABL ID = 'simple burner_Fire', DATA = 330, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
 &TABL ID = 'simple burner_Fire', DATA = 360, 0, 0, 0.07069, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

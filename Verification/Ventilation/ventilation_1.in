@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 108000 PRINT = 100 SMOKEVIEW = 100 SPREADSHEET = 100 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      DEPTH = 5 HEIGHT = 3 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
@@ -16,7 +17,9 @@
  
 !! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
-      AREAS = 1, 1 HEIGHTS = 1.5, 1.5 FLOW = 0.01 CUTOFFS = 1000000, 1100000 OFFSETS = 0, 2.5 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+      AREAS = 1, 1 HEIGHTS = 1.5, 1.5 FLOW = 0.01 CUTOFFS = 1000000, 1100000 OFFSETS = 0, 2.5 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 !! Visualizations
 &SLCF DOMAIN = '2-D'  POSITION = 0, PLANE = 'X' / 
+ 
+&TAIL /

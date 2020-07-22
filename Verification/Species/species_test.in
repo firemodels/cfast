@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Species Verification Test' /
+&HEAD VERSION = 7600, TITLE = 'Species Verification Test' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 200 PRINT = 200 SMOKEVIEW = 0 SPREADSHEET = 1 / 
@@ -7,7 +7,8 @@
  
 !! Compartments 
 &COMP ID = 'Room_1'
-      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Fires 
@@ -19,3 +20,5 @@
 &TABL ID = 'Species_Fire', DATA = 99.999, 5, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
 &TABL ID = 'Species_Fire', DATA = 100.001, 0, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
 &TABL ID = 'Species_Fire', DATA = 200, 0, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
+ 
+&TAIL /

@@ -305,45 +305,73 @@ Public Class UpdateGUI
             End If
 
             NumCompartments = myCompartments.Count
-                ClearGrid(MainWin.CompSummary)
-                If NumCompartments > 0 Then
-                    For i = 1 To NumCompartments
-                        aCompartment = myCompartments.Item(i - 1)
-                        MainWin.CompSummary(i, 0) = aCompartment.Name
-                        MainWin.CompSummary(i, 1) = i.ToString
-                        MainWin.CompSummary(i, 2) = aCompartment.RoomWidth.ToString
-                        MainWin.CompSummary(i, 3) = aCompartment.RoomDepth.ToString
-                        MainWin.CompSummary(i, 4) = aCompartment.RoomHeight.ToString
-                        MainWin.CompSummary(i, 5) = aCompartment.RoomOriginX.ToString
-                        MainWin.CompSummary(i, 6) = aCompartment.RoomOriginY.ToString
-                        MainWin.CompSummary(i, 7) = aCompartment.RoomOriginZ.ToString
+            ClearGrid(MainWin.CompSummary)
+            If NumCompartments > 0 Then
+                For i = 1 To NumCompartments
+                    aCompartment = myCompartments.Item(i - 1)
+                    MainWin.CompSummary(i, 0) = aCompartment.Name
+                    MainWin.CompSummary(i, 1) = i.ToString
+                    MainWin.CompSummary(i, 2) = aCompartment.RoomWidth.ToString
+                    MainWin.CompSummary(i, 3) = aCompartment.RoomDepth.ToString
+                    MainWin.CompSummary(i, 4) = aCompartment.RoomHeight.ToString
+                    MainWin.CompSummary(i, 5) = aCompartment.RoomOriginX.ToString
+                    MainWin.CompSummary(i, 6) = aCompartment.RoomOriginY.ToString
+                    MainWin.CompSummary(i, 7) = aCompartment.RoomOriginZ.ToString
+                    Dim nCeilings As Integer = 0, nWalls As Integer = 0, nFloors As Integer = 0
+                    If aCompartment.CeilingMaterial(1) <> "" Then nCeilings += 1
+                    If aCompartment.CeilingMaterial(2) <> "" Then nCeilings += 1
+                    If aCompartment.CeilingMaterial(3) <> "" Then nCeilings += 1
+                    If nCeilings = 0 Then
+                        MainWin.CompSummary(i, 8) = ""
+                    ElseIf nCeilings = 1 Then
                         MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial(1).ToLower
+                    Else
+                        MainWin.CompSummary(i, 8) = nCeilings.ToString + " Layers"
+                    End If
+                    If aCompartment.WallMaterial(1) <> "" Then nWalls += 1
+                    If aCompartment.WallMaterial(2) <> "" Then nWalls += 1
+                    If aCompartment.WallMaterial(3) <> "" Then nWalls += 1
+                    If nWalls = 0 Then
+                        MainWin.CompSummary(i, 9) = ""
+                    ElseIf nWalls = 1 Then
                         MainWin.CompSummary(i, 9) = aCompartment.WallMaterial(1).ToLower
+                    Else
+                        MainWin.CompSummary(i, 9) = nWalls.ToString + " Layers"
+                    End If
+                    If aCompartment.FloorMaterial(1) <> "" Then nFloors += 1
+                    If aCompartment.FloorMaterial(2) <> "" Then nFloors += 1
+                    If aCompartment.FloorMaterial(3) <> "" Then nFloors += 1
+                    If nFloors = 0 Then
+                        MainWin.CompSummary(i, 10) = ""
+                    ElseIf nFloors = 1 Then
                         MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial(1).ToLower
-                        MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
-                        MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
-                        MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)
-                        MainWin.CompSummary(i, 14) = myMVents.NumberofConnections(i - 1)
-                        MainWin.CompSummary(i, 15) = myDetectors.NumberofConnections(i - 1)
-                        MainWin.CompSummary(i, 16) = myTargets.NumberofConnections(i - 1)
-                    Next
-                    MainWin.CompSummary.Select(index + 1, 0, index + 1, MainWin.CompSummary.Cols.Count - 1, True)
-                    InitCompartmentList(MainWin.HVentComp1)
-                    InitCompartmentList(MainWin.HVentComp2)
-                    InitCompartmentList(MainWin.VVentCompTop)
-                    InitCompartmentList(MainWin.VVentCompBottom)
-                    InitCompartmentList(MainWin.MVentFromComp)
-                    InitCompartmentList(MainWin.MventToComp)
-                    InitCompartmentList(MainWin.TargetComp)
-                    InitCompartmentList(MainWin.DetectorComp)
-                    InitCompartmentList(MainWin.HHeatComp1)
-                    InitCompartmentList(MainWin.HHeatComp2)
-                    InitCompartmentList(MainWin.VHeatComp1)
-                    InitCompartmentList(MainWin.VHeatComp2)
-                    InitCompartmentList(MainWin.FireComp)
-                    InitCompartmentList(MainWin.VisualizationComp)
-                End If
+                    Else
+                        MainWin.CompSummary(i, 10) = nFloors.ToString + " Layers"
+                    End If
+                    MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 14) = myMVents.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 15) = myDetectors.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 16) = myTargets.NumberofConnections(i - 1)
+                Next
+                MainWin.CompSummary.Select(index + 1, 0, index + 1, MainWin.CompSummary.Cols.Count - 1, True)
+                InitCompartmentList(MainWin.HVentComp1)
+                InitCompartmentList(MainWin.HVentComp2)
+                InitCompartmentList(MainWin.VVentCompTop)
+                InitCompartmentList(MainWin.VVentCompBottom)
+                InitCompartmentList(MainWin.MVentFromComp)
+                InitCompartmentList(MainWin.MventToComp)
+                InitCompartmentList(MainWin.TargetComp)
+                InitCompartmentList(MainWin.DetectorComp)
+                InitCompartmentList(MainWin.HHeatComp1)
+                InitCompartmentList(MainWin.HHeatComp2)
+                InitCompartmentList(MainWin.VHeatComp1)
+                InitCompartmentList(MainWin.VHeatComp2)
+                InitCompartmentList(MainWin.FireComp)
+                InitCompartmentList(MainWin.VisualizationComp)
             End If
+        End If
     End Sub
     Public Sub HVents(ByVal index As Integer)
         General()

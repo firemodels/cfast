@@ -7,7 +7,7 @@
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
-        netheatflux
+        netheatflux, ssoutoptions
 
     implicit none
 
@@ -503,9 +503,10 @@
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
     !     n to output just target fluxes relative to ambient (smoke still in od)
 
-    integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
+    integer :: year, month, day, iarg(8), iopt(26), nargs, values(8), i
     character(len=60) :: strs(8)
     character(len=10) :: big_ben(3)
+    character(len=26) :: ssselected
 
     ! current date
     call date_and_time(big_ben(1),big_ben(2),big_ben(3),values)
@@ -525,6 +526,17 @@
     if (cmdflag('D',iopt)/=0) debugging = .true.
     if (cmdflag('V',iopt)/=0) validation_flag = .true.
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
+    if (cmdflag('S',iopt)/=0) then
+        ssoutoptions = 0
+        ssselected = strs(cmdflag('S',iopt))
+        do i = 1,len(trim(ssselected))
+            if (ssselected(i:i)>='A'.and.ssselected(i:i)<='Z') then
+                ssoutoptions(ichar(ssselected(i:i))-ichar('A')+1) = i
+            else if (ssselected(i:i)>='a'.and.ssselected(i:i)<='z') then
+                ssoutoptions(ichar(ssselected(i:i))-ichar('a')+1) = i
+            end if
+        end do
+    end if
     iofill = 3
 
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then

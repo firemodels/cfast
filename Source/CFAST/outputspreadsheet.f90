@@ -22,7 +22,7 @@ module spreadsheet_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo
     use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
+        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
@@ -45,11 +45,11 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    call output_spreadsheet_compartments (time)
-    call output_spreadsheet_devices (time)
-    call output_spreadsheet_masses (time)
-    call output_spreadsheet_vents (time)
-    call output_spreadsheet_walls (time)
+    if (ssoutoptions(ichar('C')-ichar('A')+1)>0) call output_spreadsheet_compartments (time)
+    if (ssoutoptions(ichar('D')-ichar('A')+1)>0) call output_spreadsheet_devices (time)
+    if (ssoutoptions(ichar('M')-ichar('A')+1)>0) call output_spreadsheet_masses (time)
+    if (ssoutoptions(ichar('V')-ichar('A')+1)>0) call output_spreadsheet_vents (time)
+    if (ssoutoptions(ichar('W')-ichar('A')+1)>0) call output_spreadsheet_walls (time)
     
     if (radi_verification_flag) call output_spreadsheet_diag(time)
 

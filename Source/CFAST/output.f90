@@ -22,7 +22,7 @@ module output_routines
         iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
-        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
+        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
@@ -1428,15 +1428,15 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
-        open(newunit=iofilssc, file=sscompartment,form='formatted')
+        if (ssoutoptions(ichar('C')-ichar('A')+1)>0) open(newunit=iofilssc, file=sscompartment,form='formatted')
         iocsv(iocsv_compartments) = iofilssc
-        open(newunit=iofilssd, file=ssdevice,form='formatted')
+        if (ssoutoptions(ichar('D')-ichar('A')+1)>0) open(newunit=iofilssd, file=ssdevice,form='formatted')
         iocsv(iocsv_devices) = iofilssd
-        open(newunit=iofilssm, file=ssmasses,form='formatted')
+        if (ssoutoptions(ichar('M')-ichar('A')+1)>0) open(newunit=iofilssm, file=ssmasses,form='formatted')
         iocsv(iocsv_masses) = iofilssm
-        open(newunit=iofilssv, file=ssvent,form='formatted')
+        if (ssoutoptions(ichar('V')-ichar('A')+1)>0) open(newunit=iofilssv, file=ssvent,form='formatted')
         iocsv(iocsv_vents) = iofilssv
-        open(newunit=iofilssw, file=sswall,form='formatted')
+        if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(newunit=iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw
         
         if (n_dumps/=0) then

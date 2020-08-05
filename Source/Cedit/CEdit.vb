@@ -10,13 +10,6 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents GroupBox3 As GroupBox
-    Friend WithEvents TargetInternalLocation As TextBox
-    Friend WithEvents Label59 As Label
-    Friend WithEvents TargetThicknessLabel As Label
-    Friend WithEvents TargetMaterial As ComboBox
-    Friend WithEvents TargetThickness As TextBox
-    Friend WithEvents Label78 As Label
 
 #Region " Windows Form Designer generated code "
 
@@ -46,6 +39,19 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents TargetInternalLocation As TextBox
+    Friend WithEvents Label59 As Label
+    Friend WithEvents TargetThicknessLabel As Label
+    Friend WithEvents TargetMaterial As ComboBox
+    Friend WithEvents TargetThickness As TextBox
+    Friend WithEvents OutputWalls As CheckBox
+    Friend WithEvents OutputVents As CheckBox
+    Friend WithEvents OutputMasses As CheckBox
+    Friend WithEvents OutputDevices As CheckBox
+    Friend WithEvents OutputCompartments As CheckBox
+    Friend WithEvents OutputSelectAll As CheckBox
+    Friend WithEvents Label78 As Label
     Friend WithEvents CompMaterials As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents CompFloorLeak As TextBox
     Friend WithEvents Label71 As Label
@@ -724,6 +730,7 @@ Public Class CeditMain
         Me.TargetName = New System.Windows.Forms.TextBox()
         Me.Label116 = New System.Windows.Forms.Label()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.TargetThickness = New System.Windows.Forms.TextBox()
         Me.TargetInternalLocation = New System.Windows.Forms.TextBox()
         Me.Label59 = New System.Windows.Forms.Label()
         Me.TargetThicknessLabel = New System.Windows.Forms.Label()
@@ -800,6 +807,12 @@ Public Class CeditMain
         Me.Label104 = New System.Windows.Forms.Label()
         Me.ThermalShortName = New System.Windows.Forms.TextBox()
         Me.TabOutput = New System.Windows.Forms.TabPage()
+        Me.OutputSelectAll = New System.Windows.Forms.CheckBox()
+        Me.OutputWalls = New System.Windows.Forms.CheckBox()
+        Me.OutputVents = New System.Windows.Forms.CheckBox()
+        Me.OutputMasses = New System.Windows.Forms.CheckBox()
+        Me.OutputDevices = New System.Windows.Forms.CheckBox()
+        Me.OutputCompartments = New System.Windows.Forms.CheckBox()
         Me.OutputValidation = New System.Windows.Forms.CheckBox()
         Me.OutputShowCFAST = New System.Windows.Forms.CheckBox()
         Me.GroupVisualResolution = New System.Windows.Forms.GroupBox()
@@ -834,7 +847,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.TargetThickness = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3740,6 +3752,14 @@ Public Class CeditMain
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Target Construction"
         '
+        'TargetThickness
+        '
+        Me.TargetThickness.Location = New System.Drawing.Point(133, 42)
+        Me.TargetThickness.Name = "TargetThickness"
+        Me.TargetThickness.Size = New System.Drawing.Size(96, 20)
+        Me.TargetThickness.TabIndex = 820
+        Me.TargetThickness.Text = "0.5"
+        '
         'TargetInternalLocation
         '
         Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 68)
@@ -4478,6 +4498,12 @@ Public Class CeditMain
         '
         'TabOutput
         '
+        Me.TabOutput.Controls.Add(Me.OutputSelectAll)
+        Me.TabOutput.Controls.Add(Me.OutputWalls)
+        Me.TabOutput.Controls.Add(Me.OutputVents)
+        Me.TabOutput.Controls.Add(Me.OutputMasses)
+        Me.TabOutput.Controls.Add(Me.OutputDevices)
+        Me.TabOutput.Controls.Add(Me.OutputCompartments)
         Me.TabOutput.Controls.Add(Me.OutputValidation)
         Me.TabOutput.Controls.Add(Me.OutputShowCFAST)
         Me.TabOutput.Controls.Add(Me.GroupVisualResolution)
@@ -4491,10 +4517,70 @@ Public Class CeditMain
         Me.TabOutput.Text = "Output"
         Me.TabOutput.UseVisualStyleBackColor = True
         '
+        'OutputSelectAll
+        '
+        Me.OutputSelectAll.AutoSize = True
+        Me.OutputSelectAll.Location = New System.Drawing.Point(784, 269)
+        Me.OutputSelectAll.Name = "OutputSelectAll"
+        Me.OutputSelectAll.Size = New System.Drawing.Size(168, 17)
+        Me.OutputSelectAll.TabIndex = 126
+        Me.OutputSelectAll.Text = "Select All Spreadsheet Output"
+        Me.OutputSelectAll.UseVisualStyleBackColor = True
+        '
+        'OutputWalls
+        '
+        Me.OutputWalls.AutoSize = True
+        Me.OutputWalls.Location = New System.Drawing.Point(784, 392)
+        Me.OutputWalls.Name = "OutputWalls"
+        Me.OutputWalls.Size = New System.Drawing.Size(90, 17)
+        Me.OutputWalls.TabIndex = 125
+        Me.OutputWalls.Text = "Walls  Output"
+        Me.OutputWalls.UseVisualStyleBackColor = True
+        '
+        'OutputVents
+        '
+        Me.OutputVents.AutoSize = True
+        Me.OutputVents.Location = New System.Drawing.Point(784, 367)
+        Me.OutputVents.Name = "OutputVents"
+        Me.OutputVents.Size = New System.Drawing.Size(88, 17)
+        Me.OutputVents.TabIndex = 124
+        Me.OutputVents.Text = "Vents Output"
+        Me.OutputVents.UseVisualStyleBackColor = True
+        '
+        'OutputMasses
+        '
+        Me.OutputMasses.AutoSize = True
+        Me.OutputMasses.Location = New System.Drawing.Point(784, 342)
+        Me.OutputMasses.Name = "OutputMasses"
+        Me.OutputMasses.Size = New System.Drawing.Size(100, 17)
+        Me.OutputMasses.TabIndex = 123
+        Me.OutputMasses.Text = "Masses  Output"
+        Me.OutputMasses.UseVisualStyleBackColor = True
+        '
+        'OutputDevices
+        '
+        Me.OutputDevices.AutoSize = True
+        Me.OutputDevices.Location = New System.Drawing.Point(784, 317)
+        Me.OutputDevices.Name = "OutputDevices"
+        Me.OutputDevices.Size = New System.Drawing.Size(100, 17)
+        Me.OutputDevices.TabIndex = 122
+        Me.OutputDevices.Text = "Devices Output"
+        Me.OutputDevices.UseVisualStyleBackColor = True
+        '
+        'OutputCompartments
+        '
+        Me.OutputCompartments.AutoSize = True
+        Me.OutputCompartments.Location = New System.Drawing.Point(784, 292)
+        Me.OutputCompartments.Name = "OutputCompartments"
+        Me.OutputCompartments.Size = New System.Drawing.Size(128, 17)
+        Me.OutputCompartments.TabIndex = 121
+        Me.OutputCompartments.Text = "Compartments Output"
+        Me.OutputCompartments.UseVisualStyleBackColor = True
+        '
         'OutputValidation
         '
         Me.OutputValidation.AutoSize = True
-        Me.OutputValidation.Location = New System.Drawing.Point(818, 253)
+        Me.OutputValidation.Location = New System.Drawing.Point(784, 193)
         Me.OutputValidation.Name = "OutputValidation"
         Me.OutputValidation.Size = New System.Drawing.Size(107, 17)
         Me.OutputValidation.TabIndex = 118
@@ -4504,7 +4590,7 @@ Public Class CeditMain
         'OutputShowCFAST
         '
         Me.OutputShowCFAST.AutoSize = True
-        Me.OutputShowCFAST.Location = New System.Drawing.Point(818, 323)
+        Me.OutputShowCFAST.Location = New System.Drawing.Point(784, 170)
         Me.OutputShowCFAST.Name = "OutputShowCFAST"
         Me.OutputShowCFAST.Size = New System.Drawing.Size(132, 17)
         Me.OutputShowCFAST.TabIndex = 120
@@ -4522,14 +4608,14 @@ Public Class CeditMain
         Me.GroupVisualResolution.Controls.Add(Me.VisualResolutionSummary)
         Me.GroupVisualResolution.Location = New System.Drawing.Point(25, 315)
         Me.GroupVisualResolution.Name = "GroupVisualResolution"
-        Me.GroupVisualResolution.Size = New System.Drawing.Size(743, 223)
+        Me.GroupVisualResolution.Size = New System.Drawing.Size(721, 223)
         Me.GroupVisualResolution.TabIndex = 117
         Me.GroupVisualResolution.TabStop = False
         Me.GroupVisualResolution.Text = "Resolution"
         '
         'Label35
         '
-        Me.Label35.Location = New System.Drawing.Point(487, 126)
+        Me.Label35.Location = New System.Drawing.Point(468, 126)
         Me.Label35.Name = "Label35"
         Me.Label35.Size = New System.Drawing.Size(90, 23)
         Me.Label35.TabIndex = 119
@@ -4538,14 +4624,14 @@ Public Class CeditMain
         '
         'VisualizationZ
         '
-        Me.VisualizationZ.Location = New System.Drawing.Point(583, 129)
+        Me.VisualizationZ.Location = New System.Drawing.Point(564, 129)
         Me.VisualizationZ.Name = "VisualizationZ"
         Me.VisualizationZ.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationZ.TabIndex = 1114
         '
         'Label32
         '
-        Me.Label32.Location = New System.Drawing.Point(487, 100)
+        Me.Label32.Location = New System.Drawing.Point(468, 100)
         Me.Label32.Name = "Label32"
         Me.Label32.Size = New System.Drawing.Size(90, 23)
         Me.Label32.TabIndex = 117
@@ -4554,14 +4640,14 @@ Public Class CeditMain
         '
         'VisualizationY
         '
-        Me.VisualizationY.Location = New System.Drawing.Point(583, 103)
+        Me.VisualizationY.Location = New System.Drawing.Point(564, 103)
         Me.VisualizationY.Name = "VisualizationY"
         Me.VisualizationY.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationY.TabIndex = 1113
         '
         'Label31
         '
-        Me.Label31.Location = New System.Drawing.Point(484, 74)
+        Me.Label31.Location = New System.Drawing.Point(465, 74)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(93, 23)
         Me.Label31.TabIndex = 115
@@ -4570,7 +4656,7 @@ Public Class CeditMain
         '
         'VisualizationX
         '
-        Me.VisualizationX.Location = New System.Drawing.Point(583, 77)
+        Me.VisualizationX.Location = New System.Drawing.Point(564, 77)
         Me.VisualizationX.Name = "VisualizationX"
         Me.VisualizationX.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationX.TabIndex = 1111
@@ -4600,7 +4686,7 @@ Public Class CeditMain
         'OutputDebug
         '
         Me.OutputDebug.AutoSize = True
-        Me.OutputDebug.Location = New System.Drawing.Point(818, 288)
+        Me.OutputDebug.Location = New System.Drawing.Point(784, 216)
         Me.OutputDebug.Name = "OutputDebug"
         Me.OutputDebug.Size = New System.Drawing.Size(93, 17)
         Me.OutputDebug.TabIndex = 119
@@ -4624,7 +4710,7 @@ Public Class CeditMain
         Me.GroupVisualizations.Controls.Add(Me.VisualizationRemove)
         Me.GroupVisualizations.Location = New System.Drawing.Point(25, 15)
         Me.GroupVisualizations.Name = "GroupVisualizations"
-        Me.GroupVisualizations.Size = New System.Drawing.Size(743, 294)
+        Me.GroupVisualizations.Size = New System.Drawing.Size(721, 294)
         Me.GroupVisualizations.TabIndex = 116
         Me.GroupVisualizations.TabStop = False
         Me.GroupVisualizations.Text = "Visualizations"
@@ -4653,7 +4739,7 @@ Public Class CeditMain
         '
         'VisualizationAxisLabel
         '
-        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(486, 178)
+        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(467, 178)
         Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
         Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
         Me.VisualizationAxisLabel.TabIndex = 115
@@ -4672,7 +4758,7 @@ Public Class CeditMain
         '
         Me.VisualizationAxis.ItemHeight = 13
         Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
-        Me.VisualizationAxis.Location = New System.Drawing.Point(583, 180)
+        Me.VisualizationAxis.Location = New System.Drawing.Point(564, 180)
         Me.VisualizationAxis.MaxDropDownItems = 3
         Me.VisualizationAxis.Name = "VisualizationAxis"
         Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
@@ -4682,7 +4768,7 @@ Public Class CeditMain
         '
         Me.VisualizationType.ItemHeight = 13
         Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
-        Me.VisualizationType.Location = New System.Drawing.Point(583, 94)
+        Me.VisualizationType.Location = New System.Drawing.Point(564, 94)
         Me.VisualizationType.MaxDropDownItems = 3
         Me.VisualizationType.Name = "VisualizationType"
         Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
@@ -4690,7 +4776,7 @@ Public Class CeditMain
         '
         'VisualizationValueLabel
         '
-        Me.VisualizationValueLabel.Location = New System.Drawing.Point(505, 149)
+        Me.VisualizationValueLabel.Location = New System.Drawing.Point(486, 149)
         Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
         Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
         Me.VisualizationValueLabel.TabIndex = 113
@@ -4707,7 +4793,7 @@ Public Class CeditMain
         '
         'Label29
         '
-        Me.Label29.Location = New System.Drawing.Point(486, 123)
+        Me.Label29.Location = New System.Drawing.Point(467, 123)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(91, 23)
         Me.Label29.TabIndex = 112
@@ -4717,7 +4803,7 @@ Public Class CeditMain
         'VisualizationComp
         '
         Me.VisualizationComp.ItemHeight = 13
-        Me.VisualizationComp.Location = New System.Drawing.Point(583, 123)
+        Me.VisualizationComp.Location = New System.Drawing.Point(564, 123)
         Me.VisualizationComp.Name = "VisualizationComp"
         Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
         Me.VisualizationComp.TabIndex = 1107
@@ -4732,7 +4818,7 @@ Public Class CeditMain
         '
         'Label7
         '
-        Me.Label7.Location = New System.Drawing.Point(473, 94)
+        Me.Label7.Location = New System.Drawing.Point(454, 94)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 111
@@ -4741,7 +4827,7 @@ Public Class CeditMain
         '
         'VisualizationValue
         '
-        Me.VisualizationValue.Location = New System.Drawing.Point(583, 152)
+        Me.VisualizationValue.Location = New System.Drawing.Point(564, 152)
         Me.VisualizationValue.Name = "VisualizationValue"
         Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationValue.TabIndex = 1108
@@ -4805,14 +4891,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'TargetThickness
-        '
-        Me.TargetThickness.Location = New System.Drawing.Point(133, 42)
-        Me.TargetThickness.Name = "TargetThickness"
-        Me.TargetThickness.Size = New System.Drawing.Size(96, 20)
-        Me.TargetThickness.TabIndex = 820
-        Me.TargetThickness.Text = "0.5"
         '
         'CeditMain
         '
@@ -6304,6 +6382,51 @@ Public Class CeditMain
             MenuView.Enabled = True
         End If
     End Sub
+    Private Sub SpreadsheetOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputSelectAll.CheckedChanged, OutputCompartments.CheckedChanged, OutputDevices.CheckedChanged, OutputMasses.CheckedChanged, OutputVents.CheckedChanged, OutputWalls.CheckedChanged
+        If sender Is OutputSelectAll Then
+            OutputCompartments.Checked = True
+            OutputDevices.Checked = True
+            OutputMasses.Checked = True
+            OutputVents.Checked = True
+            OutputWalls.Checked = True
+        End If
+        If sender Is OutputCompartments Then
+            If OutputCompartments.Checked Then
+                SSOutputCompartments = True
+            Else
+                SSOutputCompartments = False
+            End If
+        End If
+        If sender Is OutputDevices Then
+            If OutputDevices.Checked Then
+                SSOutputDevices = True
+            Else
+                SSOutputDevices = False
+            End If
+        End If
+        If sender Is OutputMasses Then
+            If OutputMasses.Checked Then
+                SSOutputMasses = True
+            Else
+                SSOutputMasses = False
+            End If
+        End If
+        If sender Is OutputVents Then
+            If OutputVents.Checked Then
+                SSOutputVents = True
+            Else
+                SSOutputVents = False
+            End If
+        End If
+        If sender Is OutputWalls Then
+            If OutputWalls.Checked Then
+                SSOutputWalls = True
+            Else
+                SSOutputWalls = False
+            End If
+        End If
+        UpdateGUI.General()
+    End Sub
     Private Sub ValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputValidation.CheckedChanged
         If OutputValidation.Checked Then
             ValidationOutput = True
@@ -6456,7 +6579,6 @@ Public Class CeditMain
             End If
         End If
     End Sub
-
     Friend Sub CopyFireData(ByVal aFire As Fire)
         ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
@@ -6471,7 +6593,6 @@ Public Class CeditMain
             aFire.SetFireData(aFireTimeSeries)
         End If
     End Sub
-
     Friend ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
         ' Find the last non-blank row of a grid on the GUI
         Get

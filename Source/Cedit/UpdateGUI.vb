@@ -31,9 +31,6 @@ Public Class UpdateGUI
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewOutput.Enabled = True
         FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewLog.Enabled = True
-
-        MainWin.OutputShowCFAST.Checked = CommandWindowVisible
-        MainWin.OutputValidation.Checked = ValidationOutput
     End Sub
     Public Sub General()
         Dim sLen As Integer, aVersion As String
@@ -53,6 +50,14 @@ Public Class UpdateGUI
             ' myErrors.Queue.Clear()
             UpdateErrorCheck()
         End If
+
+        MainWin.OutputShowCFAST.Checked = CommandWindowVisible
+        MainWin.OutputValidation.Checked = ValidationOutput
+        MainWin.OutputCompartments.Checked = SSOutputCompartments
+        MainWin.OutputDevices.Checked = SSOutputDevices
+        MainWin.OutputMasses.Checked = SSOutputMasses
+        MainWin.OutputVents.Checked = SSOutputVents
+        MainWin.OutputWalls.Checked = SSOutputWalls
 
         Dim OutputOptions As String
         If ValidationOutput Or DebugOutput Or CommandWindowVisible Then

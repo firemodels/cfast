@@ -64,6 +64,12 @@ Friend Module Data
     Friend NetHeatFluxCFASTOutput As Boolean = True                 ' True if heat flux output is to be net heat flux rather than incident heat flux (adds -N option to CFAST execution command)
     Friend ValidationOutput As Boolean = False                      ' True if heat flux output is to be net heat flux (adds -V option to CFAST execution command)
     Friend DebugOutput As Boolean = False                           ' True if CFAST is to output debug file from successful RESID Dumps (creates casename.resid file when checked)
+
+    Friend SSOutputCompartments As Boolean = True                   ' True if CFAST run should generate a compartments spreadsheet
+    Friend SSOutputDevices As Boolean = True                        ' True if CFAST run should generate a devices spreadsheet
+    Friend SSOutputMasses As Boolean = True                         ' True if CFAST run should generate a masses spreadsheet
+    Friend SSOutputVents As Boolean = True                          ' True if CFAST run should generate a vents spreadsheet
+    Friend SSOutputWalls As Boolean = True                          ' True if CFAST run should generate a walls spreadsheet
     Friend Enum BaseUnitsNum    ' Provides an index into the array of base units conversion by type of conversion
         Length = 0
         Mass

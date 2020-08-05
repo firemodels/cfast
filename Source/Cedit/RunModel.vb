@@ -226,7 +226,7 @@ Public Class RunModel
 
 #End Region
     Private Sub RunModel_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim Arguments As String, found As Integer
+        Dim Arguments As String, found As Integer, Outputs As String
         RunSummary(0, 1) = "Upper Layer" + Chr(10) + "Temperature" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Temperature).Units.Substring(1) + ")"
         RunSummary(0, 2) = "Lower Layer" + Chr(10) + "Temperature" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Temperature).Units.Substring(1) + ")"
         RunSummary(0, 3) = "Interface Height" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Length).Units.Substring(1) + ")"
@@ -261,7 +261,8 @@ Public Class RunModel
             RunJac.Visible = False
         End If
         JacobianOn = False
-        ' Start the model run and then just look for the status file every so often
+
+        ' Set up the command line and options for the run
         found = CFastInputFilewithExtension.IndexOf(" ", 0)
         If found <= 0 Then
             Arguments = CFastInputFilewithExtension
@@ -279,12 +280,21 @@ Public Class RunModel
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Validation Output"
         End If
+        Outputs = " -S:"
+        If SSOutputCompartments Then Outputs += "C"
+        If SSOutputDevices Then Outputs += "D"
+        If SSOutputMasses Then Outputs += "M"
+        If SSOutputVents Then Outputs += "V"
+        If SSOutputWalls Then Outputs += "W"
+        If Outputs <> " -S:" And Outputs <> " -S:CDMVW" Then Arguments += Outputs
+
         RunOK.Enabled = False
         RunStop.Enabled = True
         RunUpdate.Enabled = True
         ExitCode = 0
         RunProgress.Value = 0
 
+        ' Start the model run and then just look for the status file every so often
         Try
             localById = New Process
             localById.StartInfo.UseShellExecute = False
@@ -302,12 +312,6 @@ Public Class RunModel
         Catch oops As Exception
             MsgBox((oops.Message))
         End Try
-
-        'If CommandWindowVisible Then
-        ' ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus)
-        ' Else
-        ' ProcessID = Shell(CommandString, AppWinStyle.Hide)
-        ' End If
 
     End Sub
     Private Sub RunTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunTimer.Tick

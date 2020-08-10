@@ -30,15 +30,16 @@ module fire_routines
         update_fire_objects, update_species
 
     contains
+
 ! --------------------------- fires -------------------------------------------
 
-    subroutine fire (tsec,flows_fires)
-
-    ! physical interface routine to calculate the current rates of mass and energy flows into the layers from
-    !   all fires in the building.
+!> \brief   physical interface routine to calculate the current rates of mass and energy flows 
+!>          into the layers fromall fires in the building.
     
-    ! input   tsec          current simulation time (s)
-    ! output  flows_fires   mass and energy flows into layers due to fires.
+!> \param   tsec (input): current simulation time (s)
+!> \param   flows_fires (output): mass and energy flows into layers due to fires
+    
+    subroutine fire (tsec,flows_fires)
 
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
@@ -97,24 +98,29 @@ module fire_routines
     end subroutine fire
 
 ! --------------------------- interpolate_pyrolysis -------------------------------------------
+    
+!> \brief   returns fire yields at current time interpolated from user input
+
+!> \param   ifire (input): fire number
+!> \param   tsec (input): current simulation time (s)
+!> \param   iroom (input): room containing the fire
+!> \param   mdot_t (output): current pyrolysis rate of the fire
+!> \param   area_t (output): current area of the base of the fire
+!> \param   height_t (output): current height of the base of the fire
+!> \param   qdot_t (output): current total HRR of the fire
+!> \param   hoc_t (output): current heat of combustion of the fire
+!> \param   n_C (output): carbon molecules in the fuel; these can be fractional
+!> \param   n_H (output): hydrogen molecules in the fuel; these can be fractional
+!> \param   n_O (output): oxygen molecules in the fuel; these can be fractional
+!> \param   n_N (output): nitrogen molecules in the fuel; these can be fractional
+!> \param   n_Cl (output): chlorine molecules in the fuel; these can be fractional
+!> \param   y_soot (output): current soot yield for the fire
+!> \param   y_co (output): current CO yield for the fire
+!> \param   y_hcn (output): current HCN yield for the fire
+!> \param   y_trace (output): current trace species yield for the fire
 
     subroutine interpolate_pyrolysis (ifire,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
                                       y_soot_flaming, y_soot_smolder,y_co,y_hcn, y_trace)
-
-    ! returns fire yields at current time interpolated from user input
-    
-    ! inputs   ifire                        fire pointer number
-    !          tsec                         current simulation time (s)
-    !          iroom                        room contining the object
-    ! outputs  mdot_t                       pyrolysis rate of object
-    !          area_t                       area of pyrolysis of object
-    !          height_t                     height of fire
-    !          qdot_t                       HRR
-    !          hoc_t                        heat of combustion
-    !          n_C, n_H, n_O, n_N, n_Cl     molecular formula for the fuel; these can be fractional;
-    !                                       yields of O2, HCl, and HCN are determined from this
-    !          y_soot, y_co, y_hcn, y_trace species yields for soot, CO, HCN, and trace species;
-    !                                       others are calculated from the molecular formula of the fuel
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: tsec

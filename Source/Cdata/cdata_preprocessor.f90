@@ -14,14 +14,14 @@ module preprocessor_routines
     use initialization_routines, only : initialize_memory
     use input_routines, only : open_files, read_input_file
     use exit_routines, only: delete_output_files, closeoutputfiles
-    use namelist_input_routines, only: cdata_rereadinputfile
+    use namelist_input_routines, only: cdata_preprocessor_rereadinputfile
     use utility_routines, only : read_command_options
     
     !------------------------CData data-----------------------------------------------
-    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires
-    
+    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
+        mxiterations
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
-        n_rndfires, randfireinfo
+        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile
     use preprocessor_types, only: random_generator_type
     
     !------------------------CData routines-------------------------------------
@@ -29,7 +29,7 @@ module preprocessor_routines
     use namelist_input_pp_routines, only: namelist_pp_input
     use preprocessor_output_routines, only: flush_parameters_buffer, setup_col_parameters_output, &
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
-        add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
+        add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer, finish_batch
     use write_inputfile_routines, only: write_cfast_infile
     
     implicit none
@@ -61,7 +61,7 @@ module preprocessor_routines
     cfast_input_file_position = 2
     
     call preprocessor_initialize
-    call cdata_rereadinputfile
+    call cdata_preprocessor_rereadinputfile
     call namelist_pp_input
     call process_mc_filename_pattern
     call initialize_output_files
@@ -71,6 +71,7 @@ module preprocessor_routines
         call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
+    call finish_batch
     call write_seeds_outputfile
     
     end subroutine preprocessor 
@@ -101,6 +102,8 @@ module preprocessor_routines
     rnd_seeds(1) = mod((rnd_seeds(1)+restart_values(7))*restart_values(8),restart_values(9))
     call RANDOM_SEED(PUT=rnd_seeds)
     mc_write_seeds = .false.
+    
+    mc_max_iterations = mxiterations
     
     n_generators = 0
     allocate(generatorinfo(mxgenerators))
@@ -171,7 +174,7 @@ module preprocessor_routines
     integer :: ios, i
     
     call initialize_preprocessor_output_routines(mxfields, mxseeds, mxgenerators)
-    call open_preprocessor_outputfiles(datapath, project, ios)
+    call open_preprocessor_outputfiles(datapath, workpath, project, parameterfile, ios)
     if (ios /= 0) then
         call cfastexit('initialize_output_files',1)
     end if

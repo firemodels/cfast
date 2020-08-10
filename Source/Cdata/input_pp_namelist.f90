@@ -32,7 +32,7 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -40,11 +40,14 @@
     
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
-        mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens
+        mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
+        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img
         
     use preprocessor_types, only: random_generator_type, field_pointer
+    use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo
+        randfireinfo, workpath, parameterfile
+    use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
 
@@ -52,7 +55,7 @@
     
     private
 
-    public namelist_pp_input
+    public namelist_pp_input, namelist_acc_input
 
     contains
     
@@ -75,6 +78,22 @@
 
     end subroutine namelist_pp_input
     
+    ! --------------------------- namelist_acc_input ----------------------------------
+    subroutine namelist_acc_input
+
+    implicit none
+    
+    integer :: ios
+    
+    close(iofili)
+    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    call read_mhdr(iofili)
+    close (iofili)
+    
+    return
+
+    end subroutine namelist_acc_input
+    
     
     !--------------------------------------------read_mhdr----------------------
     subroutine read_mhdr(lu)
@@ -83,10 +102,12 @@
     real(eb) :: monte_carlo_number_of_cases
     integer :: seeds(2)
     logical :: mhdrflag, write_seeds
+    character(len=256) :: work_directory, output_directory, parameter_filename
     
     integer, intent(in) :: lu
 
-    namelist /MHDR/ monte_carlo_number_of_cases, seeds, write_seeds
+    namelist /MHDR/ monte_carlo_number_of_cases, seeds, write_seeds, work_directory, &
+        output_directory, parameter_filename
 
     ios = 1
 
@@ -129,6 +150,9 @@
             call RANDOM_SEED(PUT=seeds)
         end if
         mc_write_seeds = write_seeds
+        workpath = work_directory
+        outpath = output_directory
+        parameterfile = parameter_filename
 
     end if mhdr_flag
 
@@ -139,6 +163,9 @@
     monte_carlo_number_of_cases = -1001
     seeds(1:mxseeds) = -1001
     write_seeds = .false.
+    work_directory = 'NULL'
+    output_directory = 'NULL'
+    parameter_filename = 'NULL'
 
     end subroutine set_defaults
 
@@ -406,6 +433,132 @@
     end subroutine set_defaults
 
     end subroutine read_mfld
+    
+    !
+    !--------------------------------------------read_mstt----------------------
+    !
+    subroutine read_mstt(lu)
+    
+    integer, intent(in) :: lu
+    
+    integer :: ios, ii, jj, kk, iend, iex, iendname
+    integer :: ncnts(mxanalys), idx
+    logical :: msttflag, found
+    type(stat_type), pointer :: statptr
+    
+    
+    character(len=128) :: id, fyi, analysis_type, input_filename, output_filename, error_filename, &
+        log_filename, column_title
+
+    namelist /MSTT/ id, fyi, analysis_type, input_filename, output_filename, error_filename, log_filename, &
+        column_title 
+                    
+    
+    ios = 1
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    ! scan entire file to look for &HEAD input
+    mstt_loop: do
+        call checkread ('MSTT', lu, ios)
+        if (ios==0) msttflag=.true.
+        if (ios==1) then
+            exit mstt_loop
+        end if
+        read(lu,MSTT,iostat=ios)
+        n_stats = n_stats + 1
+        if (ios>0) then
+            write(iofill, '(a)') '***Error in &MSTT: Invalid specification for inputs.'
+            call cfastexit('read_mstt',1)
+        end if
+    end do mstt_loop
+
+    if (n_stats>mxstats) then
+        write (*,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxstats
+        write (iofill,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxstats
+        call cfastexit('read_mstt',2)
+    end if
+
+    if (.not.msttflag) then
+        write (*, '(/, "***Error: &MSTT inputs are required.")')
+        write (iofill, '(/, "***Error: &MTT inputs are required.")')
+        call cfastexit('read_mstt',3)
+    end if
+
+    mstt_flag: if (msttflag) then
+
+        rewind (lu)
+
+        ! Assign value to CData variables for further calculations
+        read_mstt_loop: do ii=1,n_stats
+
+            statptr => statinfo(ii)
+
+            call checkread('MSTT',lu,ios)
+            call set_defaults
+            read(lu,MSTT)
+            
+            statptr => statinfo(ii)
+            do jj = 1, mxanalys
+                if (trim(analysis_type) == trim(analysis_list(jj))) then
+                    idx = jj
+                    statptr%analysis_type = analysis_list(jj)
+                    ncnts(jj) = ncnts(jj) + 1
+                    exit
+                end if
+                call cfastexit('read_mstt',4)
+            end do
+            statptr%id = id
+            statptr%fyi = fyi
+            if (trim(input_filename) == 'NULL') then
+                statptr%infile = trim(project) // '_parameters.csv'
+            else
+                statptr%infile = input_filename
+            end if 
+            if (trim(output_filename) == 'NULL') then
+                write(statptr%outfile, '(a,a1,i0,a1,a)') trim(project), '_', ncnts(idx), '_', trim(analysis_list(idx))
+                statptr%img_format = imgformat_list(default_img)
+            else
+                iend = len_trim(output_filename)
+                do jj = iend, 1, -1
+                    if (output_filename(jj:jj) == '.') then
+                        do kk = 1, mximgformats
+                            if (output_filename(jj+1:jj+3) == imgformatext_list(kk)) then
+                                statptr%img_format = imgformat_list(kk)
+                                statptr%outfile = output_filename(1:jj-1)
+                                exit
+                            end if
+                        end do 
+                        call cfastexit('rean_mstt',5)
+                    end if
+                end do
+                if (trim(statptr%outfile) == 'NULL') then
+                    call cfastexit('read_mstt',6)
+                end if 
+            end if
+            statptr%col_title = column_title 
+                
+        end do read_mstt_loop
+
+    end if mstt_flag
+        
+
+    contains
+
+    subroutine set_defaults
+
+    id = 'NULL'
+    fyi = 'NULL'
+    input_filename = 'NULL'
+    output_filename = 'NULL'
+    error_filename = 'NULL'
+    log_filename = 'NULL'
+    column_title = 'NULL'
+
+    end subroutine set_defaults
+    
+    end subroutine read_mstt
     
     !
     !--------read_mfir--------

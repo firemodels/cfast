@@ -8,7 +8,8 @@
     
     integer, parameter :: mxpntsarray = 50, mxranddists = 7, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
     integer, parameter :: mxrndfires = mxfires
-    integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100
+    integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100, mxiterations = 100000
+    integer, parameter :: mxstats = 10
     integer, parameter :: idx_uniform = 1, idx_trangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6
     integer, parameter :: idx_log_normal = 7, mxfields = 10
@@ -31,6 +32,16 @@
     
     integer :: rnd_seeds(mxseeds)
     integer :: restart_values(9)
+    
+    integer, parameter :: mxanalys = 4
+    character(len = 20), parameter :: analysis_list(mxanalys) = (/'CORRELATION_TREES  ', &
+                                                                  'CONVERGENCE_OF_MEAN', &
+                                                                  'HISTOGRAM          ', &
+                                                                  'ESTIMATION_OF_PDF  '/)
+    
+    integer, parameter :: mximgformats = 5, default_img = 5
+    character(len=3), parameter :: imgformatext_list(mximgformats) = (/'jpg', 'svg', 'tif', 'pdf', 'png'/)
+    character(len=5), parameter :: imgformat_list(mximgformats) = (/'jpeg', 'svg ', 'tiff', 'pdf ', 'png '/)
     
     end module pp_params
     

@@ -337,3 +337,27 @@ module preprocessor_types
     end subroutine write_fire_values 
     
     end module preprocessor_types
+    
+    !
+    !--------------------analysis_types module----------------------------------
+    !
+    module analysis_types
+    
+    use precision_parameters
+    
+    use preprocessor_types, only: preprocessor_type
+    
+    !
+    !-------------------stat_type--------------------------
+    !
+    type, extends(preprocessor_type) :: stat_type
+        character(len=128) :: analysis_type
+        character(len=256) :: infile
+        character(len=256) :: outfile
+        character(len=256) :: errfile
+        character(len=256) :: logfile
+        character(len=256) :: col_title
+        character(len=5) :: img_format 
+    end type stat_type
+    
+    end module analysis_types

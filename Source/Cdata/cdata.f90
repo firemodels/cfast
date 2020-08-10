@@ -20,8 +20,7 @@
     use montecarlo_data, only: mc_number_of_cases
     use preprocessor_routines, only: preprocessor
     use accumulator_routines, only: accumulator
-    use correlationtree_routines, only: correlationtree
-    use enoughdone_routines, only: enoughdone 
+    use statistics_routines, only: statistics
     use preprocessor_output_routines, only: flush_parameters_buffer
     use setup_data, only: program_name
 
@@ -41,10 +40,8 @@
                 call preprocessor 
             elseif (trim(buf) == 'accumulator') then
                 call accumulator
-            elseif (trim(buf) == 'correlationtree') then
-                call correlationtree
-            elseif (trim(buf) == 'enoughdone') then
-                call enoughdone
+            elseif (trim(buf) == 'statistics') then
+                call statistics  
             else 
                 call cfastexit('CData Main', 2)
             end if  

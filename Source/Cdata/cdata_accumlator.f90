@@ -1,18 +1,25 @@
 module accumulator_routines
     
     use precision_parameters
+    use setup_data, only: datapath, project, extension, iofill, cfast_input_file_position 
         
     use exit_routines, only: cfastexit
     use input_routines, only: exehandle
-    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
-    use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds
+    use initialization_routines, only : initialize_memory
+    use input_routines, only : open_files, read_input_file
+    use utility_routines, only : read_command_options, readcsvformat
+    
     use preprocessor_types, only: random_generator_type
+    
+    use analysis_data, only: n_stats, statinfo, outpath
+    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
+    use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, &
+        workpath, parameterfile
+    
+    use namelist_input_pp_routines, only: namelist_acc_input
     use preprocessor_output_routines, only: flush_parameters_buffer, setup_col_parameters_output, &
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
         add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
-    use utility_routines, only: readcsvformat
-
-    use setup_data, only: datapath, project, extension, iofill, cfast_input_file_position 
     
     implicit none
     
@@ -35,13 +42,13 @@ module accumulator_routines
     
     integer :: iunit, maxrowio, maxcolio, maxrowcmd, maxcolcmd, nstart, iunit2, maxrowtmp, maxcoltmp
     integer :: nend, maxcolout
-    logical :: lend
+    logical :: lend, tmplend
     
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
     character, allocatable :: iossc(:, :)*(128), tmpc(:,:)*(128)
     
     integer :: i, j, maxrowend
-    character(len=256) :: infile, cmdfile, outfile, tmpext, inpath, outpath
+    character(len=256) :: infile, cmdfile, outfile, tmpext, inpath
     character(len=512) :: lbuf, obuf
 
     
@@ -50,9 +57,33 @@ module accumulator_routines
     
 ! Body of GetData
     
-    call do_cmd_line(infile, inpath, outfile, outpath)
+    !call do_cmd_line(infile, inpath, outfile, outpath)
+    cfast_input_file_position = 3
+    call initialize_memory
+    call read_command_options
+    call open_files
+    cfast_input_file_position = 2
+    
+    call namelist_acc_input
+    
+    if (trim(workpath) == 'NULL') then
+        workpath = ' '
+        workpath = trim(datapath)
+    end if 
+    if (trim(parameterfile) == 'NULL') then
+        parameterfile = ' '
+        parameterfile = trim(project) // '_parameters.csv'
+    end if 
+    if (trim(outpath) == 'NULL') then
+        outpath = ' '
+        outpath = trim(datapath)
+    end if
+    outfile = ' '
+    outfile = trim(project) // '_accumulate.csv'
+    
     lbuf = ' '
-    lbuf = trim(inpath) // trim(infile)
+    lbuf = trim(workpath) // trim(parameterfile)
+    obuf = ' '
     obuf = trim(outpath) // trim(outfile)
     open(newunit = iunit, file = trim(lbuf))
     
@@ -62,7 +93,7 @@ module accumulator_routines
     i = 1
     call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 2, maxrowio, maxcolio, lend, iofill)
     if (.not.lend) then
-        call fndOpenMCFile(iossc(2,1), inpath, iunit2)
+        call fndOpenMCFile(iossc(2,1), workpath, iunit2)
         call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
         close(iunit2)
         if (.not. lend) then
@@ -87,8 +118,8 @@ module accumulator_routines
     do while (.not. lend)
         call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend, iofill)
         write(*,*)'file = ',trim(iossc(1,1))
-        call fndOpenMCFile(iossc(1,1), inpath, iunit2)
-        call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, lend, iofill)
+        call fndOpenMCFile(iossc(1,1), workpath, iunit2)
+        call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend, iofill)
         close(iunit2)
         do j = 2, maxcoltmp
             iossx(1,maxcolio + j - 1) = tmpx(2,j)
@@ -126,7 +157,7 @@ module accumulator_routines
             if (lbuf(1:1) /= '-') then
                 cfast_input_file_position = iarg
                 call exehandle(exepath, outpath, outfile, ext2)
-                infile = trim(infile) // '.csv'
+                infile = trim(infile) // '.in'
                 outfile = trim(outfile) // '.csv'
                 return
             end if
@@ -136,7 +167,7 @@ module accumulator_routines
     
     outpath = inpath
     outfile = trim(infile) // '_out.csv'
-    infile = trim(infile) // '.csv'
+    infile = trim(infile) // '.in'
     
     return
     end subroutine do_cmd_line

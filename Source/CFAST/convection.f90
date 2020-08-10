@@ -17,15 +17,16 @@
 
     contains
 
-    subroutine convection (flows_convection,fluxes_convection)
+! --------------------------- convection -------------------------------------------
 
-    ! interface between calculate_residuals and convective_flux.  loops over rooms setting up varibles.  
-    ! passes to convective_flux if ceiling jet for a surface is off, otherwise sets fluxes_convection to 0.0 and then
-    ! solves for flows_convection
+!> \brief   interface between calculate_residuals and convective_flux.  loops over rooms setting up varibles.  
+!> \        passes to convective_flux if ceiling jet for a surface is off, otherwise sets fluxes_convection to 0.0 and then
+!> \        solves for flows_convection
     
-    ! outputs  flows_convection  net enthalphy into each layer
-    !          fluxes_convection net heat flux onto surface
+!> \param   flows_convection (output): net enthalphy into each layer    
+!> \param   fluxes_convection (output): net heat flux onto surface
 
+    subroutine convection (flows_convection,fluxes_convection)
 
     real(eb), intent(out) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
 
@@ -82,15 +83,15 @@
     end subroutine convection
 
 ! --------------------------- convective_flux -------------------------------------------
-
-    subroutine convective_flux (iw,tg,tw,qdinl)
-
-    ! calculate convective heat transfer for a wall segment.
     
-    ! inputs   iw     wall number, standand cfast numbering convention
-    !          tg     temperature of gas layer adjacent to wall surface
-    !          tw     wall surface temperature
-    ! output   qdinl  convective flux into wall surface iw
+!> \brief   calculate convective heat transfer for a wall segment.
+        
+!> \param   iw (input): wall number, standand cfast numbering convention
+!> \param   tg (input): temperature of gas layer adjacent to wall surface
+!> \param   tw (input): wall surface temperature
+!> \param   qdinl (output): convective flux into wall surface iw
+    
+    subroutine convective_flux (iw,tg,tw,qdinl)
 
     integer, intent(in) :: iw
     real(eb), intent(in) :: tg, tw
@@ -106,6 +107,7 @@
 
     qdinl = h * (tg - tw)
     return
+
     end subroutine convective_flux
 
  end module convection_routines

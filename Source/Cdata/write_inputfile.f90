@@ -396,10 +396,10 @@
                 call add_token_str(iounit, buf, 'DEPTH_UNITS = ', targptr%depth_units)
             end if
             call add_token_rarray(iounit, buf, 'LOCATION = ', targptr%center, 3)
-            if (trim(targptr%front_surface_orientation) == 'NULL') then
+            if (trim(targptr%surface_orientation) == 'NULL') then
                 call add_token_rarray(iounit, buf, 'NORMAL = ', targptr%normal, 3)
             else
-                call add_token_str(iounit, buf, 'FRONT_SURFACE_OREINTATION = ', targptr%front_surface_orientation)
+                call add_token_str(iounit, buf, 'SURFACE_OREINTATION = ', targptr%surface_orientation)
             end if 
             if (targptr%adiabatic) call add_token_bool(iounit, buf, 'ADIABATIC_TARGET = ', targptr%adiabatic)
             if (targptr%h_conv(1) /= 0._eb .or. targptr%h_conv(2) /= 0._eb) then 

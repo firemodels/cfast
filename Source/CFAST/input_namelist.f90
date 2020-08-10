@@ -44,7 +44,7 @@
     
     private
 
-    public namelist_input, read_misc, checkread, cdata_rereadinputfile
+    public namelist_input, read_misc, checkread, cdata_preprocessor_rereadinputfile
 
     contains
     ! --------------------------- namelist_input ----------------------------------
@@ -3172,7 +3172,7 @@ continue
     
     !---------------------cdata_rereadinputfile---------------------------
     
-    subroutine cdata_rereadinputfile
+    subroutine cdata_preprocessor_rereadinputfile
     
     integer :: ios
     character(len=256) :: buf
@@ -3196,6 +3196,6 @@ continue
     
     close(iofili)
     
-    end subroutine cdata_rereadinputfile
+    end subroutine cdata_preprocessor_rereadinputfile
 
     end module namelist_input_routines

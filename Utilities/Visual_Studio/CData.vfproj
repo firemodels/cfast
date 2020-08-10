@@ -3,7 +3,7 @@
 	<Platforms>
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
-		<Configuration Name="Debug|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp">
+		<Configuration Name="Debug|Win32">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
@@ -13,7 +13,7 @@
 				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp">
+		<Configuration Name="Release|Win32">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" RuntimeLibrary="rtMultiThreadedDLL"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
@@ -63,8 +63,7 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\cdata.f90"/>
 		<File RelativePath=".\cdata_accumlator.f90"/>
-		<File RelativePath=".\cdata_correlationtree.f90"/>
-		<File RelativePath=".\cdata_enoughdone.f90"/>
+		<File RelativePath=".\cdata_statistics.f90"/>
 		<File RelativePath=".\cdata_output.f90"/>
 		<File RelativePath=".\cdata_preprocessor.f90"/>
 		<File RelativePath=".\input_pp_namelist.f90"/>

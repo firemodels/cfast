@@ -142,7 +142,7 @@ Continuing support for CFAST is via internal funding at NIST. In addition, suppo
 
 In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
 
-While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis. The result of this effort is the CFAST Fire Data Generator (CData). 
+While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis. The result of this effort is the CFAST Fire Data Generator (CData).
 
 %
 % -------------------  Defining the Analysis ------------------------
@@ -161,7 +161,7 @@ As briefly discussed in the introduction a significant amount of work has gone i
 
 Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between compartments and the outside, and the range of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to study tenability of egress paths, fire severity, or building structural integrity, for example). All of these may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
 
-\section{Defining Compartment Geometry}
+\section{Building Characteristics}
 
 In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.  Example compartment definitions that include the size and placement of each compartment is shown below.
 
@@ -190,7 +190,22 @@ In CFAST, compartment geometry includes definition of the number of compartments
 
 Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
 
-The set of buildings for study can also be chosen from distributions of building and room 
+The set of buildings for study can also be chosen from distributions of building and room characteristics. Figure \ref{sample_room_distribution} shows the distribution of the total floor area in a residence, the number of bedrooms in a residence depending on the total floor area, the total number of rooms given a certain number of bedrooms (here shown for residences from 1000~ft$^2$ to 1500~ft$^2$), all taken from the 2015 U.S. Housing Survey.
+
+\begin{figure}[p]
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=2.5in]{FIGURES/Total_Floor_Area} \\
+(a) Total Floor Area in a Residence \\
+\includegraphics[height=2.5in]{FIGURES/Number_of_Bedrooms} \\
+(b) Number of Bedrooms in a Residence as a Function of Total Floor Area \\
+\includegraphics[height=2.5in]{FIGURES/Total_Rooms} \\
+(a) Total Number of Rooms as a Function of the Number of Bedrooms in a Residence with  \\
+1000 ft$^2$ - 1500 ft$^2$ of Total Floor Area  \\
+\end{tabular*}
+\caption[Example Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms (excluding Bathrooms) taken from the 2015 U.S. Housing Survey]
+{Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms}
+\label{sample_room_distribution}
+\end{figure}
 
 \section{Defining Data for Analysis}
 
@@ -199,7 +214,7 @@ The set of buildings for study can also be chosen from distributions of building
 %
 
 \chapter{CData PreProcessor}
-The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section XXX discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done. 
+The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section XXX discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done.
 
 \section{Basic Philosophy}
 
@@ -210,7 +225,7 @@ The CData prograim has several functions. One of them is as a PrePorocessor to g
 \subsection{Example 3}
 
 \section{Commands}
-Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands. 
+Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands.
 
 \subsection{Namelist DUMP}
 

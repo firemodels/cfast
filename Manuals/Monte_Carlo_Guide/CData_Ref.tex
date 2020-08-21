@@ -150,7 +150,7 @@ While at one time the issue was one of both computational power and tools design
 
 \chapter{Defining the Question and the Analysis}
 
-As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis[1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
+As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis [1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
 
 \begin{enumerate}
   \item Community / Building / Occupant characteristics
@@ -190,7 +190,16 @@ In CFAST, compartment geometry includes definition of the number of compartments
 
 Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
 
-The set of buildings for study can also be chosen from distributions of building and room characteristics. Figure \ref{sample_room_distribution} shows the distribution of the total floor area in a residence, the number of bedrooms in a residence depending on the total floor area, the total number of rooms given a certain number of bedrooms (here shown for residences from 1000~ft$^2$ to 1500~ft$^2$), all taken from the 2015 U.S. Housing Survey.
+The set of buildings for study can also be chosen from distributions of building and room characteristics. Figure \ref{sample_room_distribution} shows the distribution of the total floor area in a residence, the number of bedrooms in a residence depending on the total floor area, the total number of rooms given a certain number of bedrooms (here shown for residences from 1000~ft$^2$ to 1500~ft$^2$), all taken from the 2015 U.S. Housing Survey \cite{AHS2015}. Creating a compartment geometry from these data can be thought of as a six step process:
+
+\begin{enumerate}
+    \item randomly select the total floor area of the structure, Fig. \ref{sample_room_distribution}(a);
+    \item randomly select the total number of bedrooms for a structure of the size chosen in step 1, Fig. \ref{sample_room_distribution}(b);
+    \item randomly select the total number of rooms in the structure of the chosen size and number of bedrooms (Fig. \ref{sample_room_distribution}(c) shows a sample distribution for homes ranging from 1000~ft$^2$ to 1500~ft$^2$. Distributions for other home sizes are available in ref. \cite{AHS2015});
+    \item determine room sizes bases on a distribution of bedroom sizes, allocating left over space to the other rooms;
+    \item connect compartments as desired (for example by randomly setting vents as open or closed between compartment pairs); and
+    \item ensure that the resulting structure is realizable (This random approach to generating connections has a probability of resulting in a floorplan that cannot be instantiated in a single story. More technically, if the floorplan is thought of as a graph with the rooms as vertices and the connections as edges, some of the randomly generated graphs will be nonplanar for cases with more than four rooms. A planar graph is one that can be drawn on a piece of paper and none of the edges cross. The probability of generating a nonplanar floorplan increases as the number of rooms increases. In order to eliminate such nonphysical cases from the analysis, any randomly generated floorplan can be checked for planarity and rejected if necessary and replaced by a new randomly generated floorplan).
+\end{enumerate}
 
 \begin{figure}[p]
 \begin{tabular*}{\textwidth}{c}
@@ -199,13 +208,17 @@ The set of buildings for study can also be chosen from distributions of building
 \includegraphics[height=2.5in]{FIGURES/Number_of_Bedrooms} \\
 (b) Number of Bedrooms in a Residence as a Function of Total Floor Area \\
 \includegraphics[height=2.5in]{FIGURES/Total_Rooms} \\
-(a) Total Number of Rooms as a Function of the Number of Bedrooms in a Residence with  \\
+(c) Total Number of Rooms as a Function of the Number of Bedrooms in a Residence with  \\
 1000 ft$^2$ - 1500 ft$^2$ of Total Floor Area  \\
 \end{tabular*}
-\caption[Example Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms (excluding Bathrooms) taken from the 2015 U.S. Housing Survey]
-{Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms}
+\caption[Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms]
+{Example Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms (excluding Bathrooms) taken from the 2015 U.S. Housing Survey \cite{AHS2015}}
 \label{sample_room_distribution}
 \end{figure}
+
+Other characteristics of the structure such as materials of construction, vent openings, and detection devices can be varied as desired for the problem being studied.
+
+\section{Fire Scenarios}
 
 \section{Defining Data for Analysis}
 

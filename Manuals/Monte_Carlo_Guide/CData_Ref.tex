@@ -140,7 +140,7 @@ Continuing support for CFAST is via internal funding at NIST. In addition, suppo
 
 \chapter{Introduction}
 
-In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
+The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results." with Stanislaw Ulam credited with inventing the modern version of the Markov Chain Monte Carlo method working on nuclear weapons projects in the 1940s. In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. Bruns \cite{bruns_tn_2016} formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular preformance based designs. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
 
 While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis. The result of this effort is the CFAST Fire Data Generator (CData).
 
@@ -222,59 +222,64 @@ Other characteristics of the structure such as materials of construction, vent o
 
 \section{Defining Data for Analysis}
 
+\section{Examples}
+
+\subsection{Example 1: Impact of new detector standard}
+
+\subsection{Example 2: Impact of inner liners on residential upholstered furniture fires}
+
+\subsection{Example 3: Impact of periodically active wireless detectors}
+
 %
-%---------------------PreProcessor----------------------------------
+%---------------------User's Guide----------------------------------
 %
 
-\chapter{CData PreProcessor}
-The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section XXX discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done.
+\chapter{CData User's Guide}
+The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done.
 
 \section{Basic Philosophy}
 
-\subsection{Example 1}
+\section{PreProcessor}
 
-\subsection{Example 2}
+\subsection{Commands}
+\label{commands_section}
+Each subsection will discuss one namelist and what each of the parameters do. The tables presented in each subsection are combined in Appendix \ref{preprocessor_reference}  to serve as a refence for commands.
 
-\subsection{Example 3}
+\subsubsection{Namelist DUMP}
 
-\section{Commands}
-Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands.
+\subsubsection{Namelist MHDR}
 
-\subsection{Namelist DUMP}
+\subsubsection{Namelist MRND}
 
-\subsection{Namelist MHDR}
+\subsubsection{Namelist MFLD}
 
-\subsection{Namelist MRND}
+\subsubsection{Namelist MFIR}
 
-\subsection{Namelist MFLD}
+\section{Running CFAST}
 
-\subsection{Namelist MFIR}
+\subsection{Running on Different Operating Systems}
 
-\section{The Issue of Storage}
+\subsection{The Question of Storage}
 
-%
-% -------------------  Running CFAST ------------------------
-%
-
-\chapter{Running CFAST}
-
-\section{Running on Different Machines and Operating Systems}
-
-\section{Summary of Results from CFAST Runs}
+\section{Generating Statistics}
 
 \subsection{Accumulator}
 
+\subsection{Statistics}
+
+\subsubsection{Determining If Enough Runs Have Been Made}
+
+\subsubsection{Correlation Trees}
+
 %
-% -------------------  Analysis ------------------------
+%-------------------------Analysis of Data-------------------------------------------
 %
 
 \chapter{Analysis of Data}
 
-\section{Determining If Enough Runs Have Been Made}
-
-\section{Correlation Trees}
-
 \section{General Analysis}
+
+\section{Examples}
 
 \subsection{Example 1}
 
@@ -312,7 +317,19 @@ $A$                 & area, m$^2$ \\
 
 \chapter{PreProcessor Reference}
 \label{preprocessor_reference}
+Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands. 
 
+\section{Namelist DUMP}
+
+\section{Namelist MHDR}
+
+\section{Namelist MRND}
+
+\section{Namelist MFLD}
+
+\section{Namelist MFIR}
+
+\section {Namelist MSTT}
 \chapter{Supplemental Material}
 
 \chapter{Change Log}

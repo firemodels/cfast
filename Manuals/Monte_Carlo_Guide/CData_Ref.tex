@@ -131,6 +131,8 @@ Continuing support for CFAST is via internal funding at NIST. In addition, suppo
 \clearpage
 \listoffigures
 
+\listoftables
+
 
 \mainmatter
 
@@ -199,12 +201,11 @@ The set of buildings for study can also be chosen from distributions of building
 \label{sample_room_distribution}
 \end{figure}
 
-Other characteristics of the structure such as materials of construction, vent openings, and detection devices can be varied as desired for the problem being studied. Table \ref{table_distributable_variables} shows variables in the modeling that can be varied based on user-defined distributions, adapted from B-Risk \cite{BranzFire} to be applicable to the calculational capabilities of the CFAST model.
-
+Other characteristics of the structure such as materials of construction, vent openings, fire definitions, measurement targets, sprinklers, and detection devices can be varied as desired for the problem being studied. Table \ref{tbl:distributable_variables} shows variables in the modeling that can be varied based on user-defined distributions \footnote{The content of this table follows the form of that used in B-Risk \cite{BranzFire}, adapted to be applicable to the calculational capabilities of the CFAST model.}.
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
 \caption[CFAST Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Inputs That Can be Varied Based on User-Defined Distributions}
-\label{BranzFire} \\ \hline
+\label{tbl:distributable_variables} \\ \hline
 \parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline
@@ -253,7 +254,7 @@ Compartments            & Width                         & m                 \\
                         & Final Opening Fraction        & 0-1               \\
                         & Setpoint                      & \degc or kW/m$^2$ \\
                         & Pre-Activation Fraction       & 0-1               \\
-                        & Post-Activation Fraction      & 0-1               \\ 
+                        & Post-Activation Fraction      & 0-1               \\
                         & Filter Efficiency             & \%                \\
                         & Begin Filtering Time          & s                 \\ \hline
 Fires                   &                               &                   \\ \hline
@@ -267,7 +268,7 @@ Targets                 & Width Target Position         & m                 \\
                         & Internal Temperature Location & m                 \\ \hline
 Detection / Suppression & Width Position                & m                 \\
                         & Depth Position                & m                 \\
-                        & Height Position               & m                 \\ 
+                        & Height Position               & m                 \\
                         & Activation Temperature        & \degc             \\
                         & Activation Obscuration        & \%/m              \\
                         & RTI                           & (m~s)$^{1/2}$       \\

@@ -150,7 +150,7 @@ While at one time the issue was one of both computational power and tools design
 
 \chapter{Defining the Question and the Analysis}
 
-As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis [1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
+As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis in a fire safety analysis [1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
 
 \begin{enumerate}
   \item Community / Building / Occupant characteristics
@@ -163,30 +163,13 @@ Community, building, and fire characteristics define the physical geometries of 
 
 \section{Building Characteristics}
 
-In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.  Example compartment definitions that include the size and placement of each compartment is shown below.
+In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Sample_Visualization.png}
 \caption{Sample CFAST visualization of a single structure subject to a fire.}
 \label{sample_visualization}
 \end{figure}
-
-\lstset{backgroundcolor=\color{light-gray}}
-\begin{lstlisting}[basicstyle=\small\ttfamily,stringstyle=\ttfamily,numberstyle=\ttfamily,language=,frame=single, framerule=0pt]
-!! Compartments
-&COMP ID = 'Living Room'
-      DEPTH = 4.672 HEIGHT = 2.4384 WIDTH = 3.3798
-      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
-      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
-      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
-      ORIGIN = 0, 0, 2.4384 GRID = 50, 50, 50 /
-&COMP ID = 'Kitchen'
-      DEPTH = 2.74 HEIGHT = 2.4384 WIDTH = 5.1514
-      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
-      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
-      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
-      ORIGIN = 0, 4.672, 2.4384 GRID = 50, 50, 50 /
-\end{lstlisting}
 
 Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
 
@@ -216,7 +199,82 @@ The set of buildings for study can also be chosen from distributions of building
 \label{sample_room_distribution}
 \end{figure}
 
-Other characteristics of the structure such as materials of construction, vent openings, and detection devices can be varied as desired for the problem being studied.
+Other characteristics of the structure such as materials of construction, vent openings, and detection devices can be varied as desired for the problem being studied. Table \ref{table_distributable_variables} shows variables in the modeling that can be varied based on user-defined distributions, adapted from B-Risk \cite{BranzFire} to be applicable to the calculational capabilities of the CFAST model.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Inputs That Can be Varied Based on User-Defined Distributions}
+\label{BranzFire} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
+Ambient Conditions      & Interior Temperature          & \degc             \\
+                        & Exterior Temperature          & \degc             \\
+                        & Relative Humidity             & \%                \\ \hline
+Thermal Properties      & Thermal Conductivity          & kW/(m~\degc)      \\
+                        & Specific Heat                 & kJ/(kg~\degc)     \\
+                        & Density                       & kg/m$^3$          \\
+                        & Default Thickness             & m                 \\
+                        & Emissivity                    &                   \\ \hline
+Compartments            & Width                         & m                 \\
+                        & Depth                         & m                 \\
+                        & Height                        & m                 \\
+                        & Width Position                & m                 \\
+                        & Depth Position                & m                 \\
+                        & Height Position               & m                 \\
+                        & Wall Leak Area Ratio          & m$^2$/m$^2$       \\
+                        & Floor Leak Area Ratio         & m$^2$/m$^2$       \\ \hline
+ Wall Vents             & Sill                          & m                 \\
+                        & Soffit                        & m                 \\
+                        & Width                         & m                 \\
+                        & Initial Opening Fraction      & 0-1               \\
+                        & Open/Close Time               & s                 \\
+                        & Final Opening Fraction        & 0-1               \\
+                        & Setpoint                      & \degc or kW/m$^2$ \\
+                        & Pre-Activation Fraction       & 0-1               \\
+                        & Post-Activation Fraction      & 0-1               \\ \hline
+ Ceiling / Floor Vents  & Cross-Sectional Area          & m$^2$             \\
+                        & Initial Opening Fraction      & 0-1               \\
+                        & Open/Close Time               & s                 \\
+                        & Final Opening Fraction        & 0-1               \\
+                        & Setpoint                      & \degc or kW/m$^2$ \\
+                        & Pre-Activation Fraction       & 0-1               \\ \hline
+ Mechanical Vents       & From Compartment Area         & m$^2$             \\
+                        & From Compartment Height       & m                 \\
+                        & To Compartment Area           & m$^2$             \\
+                        & To Compartment Height         & m                 \\
+                        & Flow Rate                     & m$^3$/s           \\
+                        & Begin Dropoff                 & Pa                \\
+                        & End Dropoff                   & Pa                \\
+                        & Initial Opening Fraction      & 0-1               \\
+                        & Open/Close Time               & s                 \\
+                        & Final Opening Fraction        & 0-1               \\
+                        & Setpoint                      & \degc or kW/m$^2$ \\
+                        & Pre-Activation Fraction       & 0-1               \\
+                        & Post-Activation Fraction      & 0-1               \\ 
+                        & Filter Efficiency             & \%                \\
+                        & Begin Filtering Time          & s                 \\ \hline
+Fires                   &                               &                   \\ \hline
+Targets                 & Width Target Position         & m                 \\
+                        & Depth Target Position         & m                 \\
+                        & Height Target Position        & m                 \\
+                        & Width Normal Vector           & 0-1               \\
+                        & Depth Normal Vector           & 0-1               \\
+                        & Height Normal Vector          & 0-1               \\
+                        & Thickness                     & m                 \\
+                        & Internal Temperature Location & m                 \\ \hline
+Detection / Suppression & Width Position                & m                 \\
+                        & Depth Position                & m                 \\
+                        & Height Position               & m                 \\ 
+                        & Activation Temperature        & \degc             \\
+                        & Activation Obscuration        & \%/m              \\
+                        & RTI                           & (m~s)$^{1/2}$       \\
+                        & Spray Density                 & m/s               \\ \hline
+\end{longtable}
+
+\clearpage
 
 \section{Fire Scenarios}
 
@@ -317,7 +375,7 @@ $A$                 & area, m$^2$ \\
 
 \chapter{PreProcessor Reference}
 \label{preprocessor_reference}
-Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands. 
+Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands.
 
 \section{Namelist DUMP}
 

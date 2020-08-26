@@ -202,6 +202,7 @@ The set of buildings for study can also be chosen from distributions of building
 \end{figure}
 
 Other characteristics of the structure such as materials of construction, vent openings, fire definitions, measurement targets, sprinklers, and detection devices can be varied as desired for the problem being studied. Table \ref{tbl:distributable_variables} shows variables in the modeling that can be varied based on user-defined distributions \footnote{The content of this table follows the form of that used in B-Risk \cite{BranzFire}, adapted to be applicable to the calculational capabilities of the CFAST model.}.
+
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
 \caption[CFAST Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Inputs That Can be Varied Based on User-Defined Distributions}
@@ -211,68 +212,69 @@ Other characteristics of the structure such as materials of construction, vent o
 \caption[]{Continued} \\ \hline
 \parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
 \endhead
-Ambient Conditions      & Interior Temperature          & \degc             \\
-                        & Exterior Temperature          & \degc             \\
-                        & Relative Humidity             & \%                \\ \hline
-Thermal Properties      & Thermal Conductivity          & kW/(m~\degc)      \\
-                        & Specific Heat                 & kJ/(kg~\degc)     \\
-                        & Density                       & kg/m$^3$          \\
-                        & Default Thickness             & m                 \\
-                        & Emissivity                    &                   \\ \hline
-Compartments            & Width                         & m                 \\
-                        & Depth                         & m                 \\
-                        & Height                        & m                 \\
-                        & Width Position                & m                 \\
-                        & Depth Position                & m                 \\
-                        & Height Position               & m                 \\
-                        & Wall Leak Area Ratio          & m$^2$/m$^2$       \\
-                        & Floor Leak Area Ratio         & m$^2$/m$^2$       \\ \hline
- Wall Vents             & Sill                          & m                 \\
-                        & Soffit                        & m                 \\
-                        & Width                         & m                 \\
-                        & Initial Opening Fraction      & 0-1               \\
-                        & Open/Close Time               & s                 \\
-                        & Final Opening Fraction        & 0-1               \\
-                        & Setpoint                      & \degc or kW/m$^2$ \\
-                        & Pre-Activation Fraction       & 0-1               \\
-                        & Post-Activation Fraction      & 0-1               \\ \hline
- Ceiling / Floor Vents  & Cross-Sectional Area          & m$^2$             \\
-                        & Initial Opening Fraction      & 0-1               \\
-                        & Open/Close Time               & s                 \\
-                        & Final Opening Fraction        & 0-1               \\
-                        & Setpoint                      & \degc or kW/m$^2$ \\
-                        & Pre-Activation Fraction       & 0-1               \\ \hline
- Mechanical Vents       & From Compartment Area         & m$^2$             \\
-                        & From Compartment Height       & m                 \\
-                        & To Compartment Area           & m$^2$             \\
-                        & To Compartment Height         & m                 \\
-                        & Flow Rate                     & m$^3$/s           \\
-                        & Begin Dropoff                 & Pa                \\
-                        & End Dropoff                   & Pa                \\
-                        & Initial Opening Fraction      & 0-1               \\
-                        & Open/Close Time               & s                 \\
-                        & Final Opening Fraction        & 0-1               \\
-                        & Setpoint                      & \degc or kW/m$^2$ \\
-                        & Pre-Activation Fraction       & 0-1               \\
-                        & Post-Activation Fraction      & 0-1               \\
-                        & Filter Efficiency             & \%                \\
-                        & Begin Filtering Time          & s                 \\ \hline
-Fires                   & \multicolumn{2}{|c|}{See Section \ref{Fire_Scenarios}}  \\ \hline
-Targets                 & Width Target Position         & m                 \\
-                        & Depth Target Position         & m                 \\
-                        & Height Target Position        & m                 \\
-                        & Width Normal Vector           & 0-1               \\
-                        & Depth Normal Vector           & 0-1               \\
-                        & Height Normal Vector          & 0-1               \\
-                        & Thickness                     & m                 \\
-                        & Internal Temperature Location & m                 \\ \hline
-Detection / Suppression & Width Position                & m                 \\
-                        & Depth Position                & m                 \\
-                        & Height Position               & m                 \\
-                        & Activation Temperature        & \degc             \\
-                        & Activation Obscuration        & \%/m              \\
-                        & RTI                           & (m~s)$^{1/2}$       \\
-                        & Spray Density                 & m/s               \\ \hline
+Ambient Conditions      & Interior Temperature          & \degc                     \\
+                        & Exterior Temperature          & \degc                     \\
+                        & Relative Humidity             & \%                        \\ \hline
+Thermal Properties      & Thermal Conductivity          & kW/(m~\degc)              \\
+                        & Specific Heat                 & kJ/(kg~\degc)             \\
+                        & Density                       & kg/m$^3$                  \\
+                        & Default Thickness             & m                         \\
+                        & Emissivity                    &                           \\ \hline
+Compartments            & Width                         & m                         \\
+                        & Depth                         & m                         \\
+                        & Height                        & m                         \\
+                        & Width Position                & m                         \\
+                        & Depth Position                & m                         \\
+                        & Height Position               & m                         \\
+                        & Wall Leak Area Ratio          & m$^2$/m$^2$               \\
+                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\ \hline
+ Wall Vents             & Sill                          & m                         \\
+                        & Soffit                        & m                         \\
+                        & Width                         & m                         \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\ \hline
+ Ceiling / Floor Vents  & Cross-Sectional Area          & m$^2$                     \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\ \hline
+ Mechanical Vents       & From Compartment Area         & m$^2$                     \\
+                        & From Compartment Height       & m                         \\
+                        & To Compartment Area           & m$^2$                     \\
+                        & To Compartment Height         & m                         \\
+                        & Flow Rate                     & m$^3$/s                   \\
+                        & Begin Dropoff                 & Pa                        \\
+                        & End Dropoff                   & Pa                        \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\
+                        & Filter Efficiency             & \%                        \\
+                        & Begin Filtering Time          & s                         \\ \hline
+Fires                   & \multicolumn{2}{|c|}{See Section \ref{Fire_Scenarios}}    \\ \hline
+Targets                 & Width Target Position         & m                         \\
+                        & Depth Target Position         & m                         \\
+                        & Height Target Position        & m                         \\
+                        & Width Normal Vector           & 0-1                       \\
+                        & Depth Normal Vector           & 0-1                       \\
+                        & Height Normal Vector          & 0-1                       \\
+                        & Target Points To              & Selection List            \\
+                        & Thickness                     & m                         \\
+                        & Internal Temperature Location & m                         \\ \hline
+Detection / Suppression & Width Position                & m                         \\
+                        & Depth Position                & m                         \\
+                        & Height Position               & m                         \\
+                        & Activation Temperature        & \degc                     \\
+                        & Activation Obscuration        & \%/m                      \\
+                        & RTI                           & (m~s)$^{1/2}$             \\
+                        & Spray Density                 & m/s                       \\ \hline
 \end{longtable}
 
 \clearpage
@@ -280,7 +282,42 @@ Detection / Suppression & Width Position                & m                 \\
 \section{Fire Scenarios}
 \label{Fire_Scenarios}
 
+The quantitative definition of fires is arguably the most important \cite{Babrauskas:1992} and complex of all the inputs in any fire modeling scenario. It includes specification of the fire location, fuel composition, ignition criterion, heat release rate, burning area, and species yields, most of which can vary with time over the course of the fire.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions}
+\label{tbl:fire_variables} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
+Fire Location           & Compartment                   & Selection List            \\
+                        & Width Position                & m                         \\
+                        & Depth Position                & m                         \\ \hline
+Fuel Composition        & Carbon Molecules              & > 0                       \\
+                        & Hydrogen Molecules            & > 0                       \\
+                        & Oxygen Molecules              & > 0                       \\
+                        & Nitrogen Molecules            & > 0                       \\
+                        & Chlorine Molecules            & > 0                       \\
+                        & Heat of Combustion            & kJ/kg                     \\
+                        & Radiative Fraction            & 0 - 1                     \\ \hline
+Ignition Criteria       & Ignition Criterion            & Selection List            \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\ \hline
+Time Histories          & HRR                           & kW                        \\
+                        & Fire Height                   & m                         \\
+                        & Fire Area                     & m$^2$, >0                 \\
+                        & CO Yield                      & kg CO/kg fuel             \\
+                        & Soot Yield                    & kg Soot/kg fuel           \\
+                        & HCN Yield                     & kg HCN/kg fuel            \\ \hline
+\end{longtable}
+
+Some example of different definitions of time histories go here.
+
 \section{Defining Data for Analysis}
+
+Choosing modeling results for analysis depends on the goals of the hazard analysis and the particular technology under study. In the most general sense, this means understanding what results are indicative of improved fire safety. This is not a cost benefit analysis, which is a superset of this analysis and outside the scope of this project. To improve fire safety generally means reducing the deaths and injuries due to a fire. So, the goal is to identify which variables, that can be calculated, would give an indication that a new technology, in our case the new smoke alarm technology, will reduce deaths and injuries.
 
 \section{Examples}
 
@@ -295,7 +332,7 @@ Detection / Suppression & Width Position                & m                 \\
 %
 
 \chapter{CData User's Guide}
-The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done.
+The CData program has several functions. One of them is as a PreProcessor used to create a set of data files that CFAST runs to generate data for an analysis. This chapter discusses how the PreProcessor works with some simple examples to demonstrate certain aspects of the system. First is an overview of the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
 
 \section{Basic Philosophy}
 

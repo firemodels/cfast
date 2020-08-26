@@ -282,6 +282,8 @@ Detection / Suppression & Width Position                & m                     
 \section{Fire Scenarios}
 \label{Fire_Scenarios}
 
+\subsection{Individual Variables}
+
 The quantitative definition of fires is arguably the most important \cite{Babrauskas:1992} and complex of all the inputs in any fire modeling scenario. It includes specification of the fire location, fuel composition, ignition criterion, heat release rate, burning area, and species yields, most of which can vary with time over the course of the fire.
 
 \noindent
@@ -293,18 +295,35 @@ The quantitative definition of fires is arguably the most important \cite{Babrau
 \caption[]{Continued} \\ \hline
 \parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
 \endhead
-Fire Location           & Compartment                   & Selection List            \\
-                        & Width Position                & m                         \\
-                        & Depth Position                & m                         \\ \hline
-Fuel Composition        & Carbon Molecules              & > 0                       \\
-                        & Hydrogen Molecules            & > 0                       \\
-                        & Oxygen Molecules              & > 0                       \\
-                        & Nitrogen Molecules            & > 0                       \\
-                        & Chlorine Molecules            & > 0                       \\
-                        & Heat of Combustion            & kJ/kg                     \\
-                        & Radiative Fraction            & 0 - 1                     \\ \hline
-Ignition Criteria       & Ignition Criterion            & Selection List            \\
-                        & Setpoint                      & s, \degc, or kW/m$^2$     \\ \hline
+Fire Location           & Compartment                   & Selection List                \\
+                        & Width Position                & m                             \\
+                        & Depth Position                & m                             \\ \hline
+Fuel Composition        & Carbon Molecules              & $\geq$ 0                      \\
+                        & Hydrogen Molecules            & $\geq$ 0                      \\
+                        & Oxygen Molecules              & $\geq$ 0                      \\
+                        & Nitrogen Molecules            & $\geq$ 0                      \\
+                        & Chlorine Molecules            & $\geq$ 0                      \\
+                        & Heat of Combustion            & kJ/kg                         \\
+                        & Radiative Fraction            & 0 - 1                         \\ \hline
+Ignition Criteria       & Ignition Criterion            & Selection List                \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$         \\ \hline
+Time Histories          & \multicolumn{2}{|c|}{See Section \ref{Fire_Time_Histories}}   \\ \hline
+\end{longtable}
+
+\subsection{Time Histories}
+\label{Fire_Time_Histories}
+
+Some examples of different definitions of time histories go here.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Fire Time Histories That Can be Varied Based on One or More User-Defined Distributions]{CFAST Fire Time Histories That Can be Varied Based on One or More User-Defined Distributions}
+\label{tbl:fire_variables} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
 Time Histories          & HRR                           & kW                        \\
                         & Fire Height                   & m                         \\
                         & Fire Area                     & m$^2$, >0                 \\
@@ -312,8 +331,6 @@ Time Histories          & HRR                           & kW                    
                         & Soot Yield                    & kg Soot/kg fuel           \\
                         & HCN Yield                     & kg HCN/kg fuel            \\ \hline
 \end{longtable}
-
-Some example of different definitions of time histories go here.
 
 \section{Defining Data for Analysis}
 

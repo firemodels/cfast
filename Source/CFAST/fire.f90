@@ -343,8 +343,8 @@ module fire_routines
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
             call heskestad_plume(hrr, hrr_c, fire_area, &
-                min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position, &
-                lower_plume_height, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, entrainment_rate))
+                min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
+                lower_plume_height, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, entrainment_rate)
 
             if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
@@ -385,8 +385,8 @@ module fire_routines
         upper_plume_height = max (0.0_eb, min(layer_thickness,(room_height - z_fire_position)))
 
         call heskestad_plume (hrr, hrr_c, upper_plume_height, fire_area, &
-           min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position, &
-            interior_ambient_temperature, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper))
+           min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
+            interior_ambient_temperature, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper)
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &

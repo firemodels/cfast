@@ -21,20 +21,20 @@ module hflow_routines
 
     private
 
-    public horizontal_flow, leakage_flow
+    public wall_flow, leakage_flow
 
     contains
 
-    ! --------------------------- horizontal_flow -------------------------------------------
+    ! --------------------------- wall_flow -------------------------------------------
 
-    subroutine horizontal_flow(tsec,epsp,uflw_hf)
+!> \brief   physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
+!>          it returns rates of mass and energy flows into the layers from all vents in the building.
 
-    ! physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
-    ! it returns rates of mass and energy flows into the layers from all vents in the building.
+!> \param   tsec (input): current simulation time (s)
+!> \param   epsp (input): pressure error tolerance
+!> \param   uflw_hf (output): change in mass and energy for each layer of each compartment via flow through horizontal vents
 
-    ! inputs    tsec    current simulation time (s)
-    !           epsp    pressure error tolerance
-    ! output    uflw_hf change in mass and energy for each layer of each compartment via flow through horizontal vents
+    subroutine wall_flow (tsec,epsp,uflw_hf)
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_hf(mxrooms,ns+2,2)
@@ -88,7 +88,7 @@ module hflow_routines
         ventptr%ytop_slab(1:mxfslab) = 0.0_eb
 
         ! setup data structures for from and to room
-        call getvars(iroom1,iroom2,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
+        call get_wall_flow_variables(iroom1,iroom2,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
 
         ! convert vent dimensions to absolute dimensions
         yvbot = ventptr%sill + zflor(1)
@@ -163,18 +163,17 @@ module hflow_routines
         call SSprintslab (position, outarray)
     end if
     return
-    end subroutine horizontal_flow
+    end subroutine wall_flow
 
     ! --------------------------- leakage_flow -------------------------------------------
 
     subroutine leakage_flow(epsp,uflw_lk)
 
-    ! physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
-    ! it returns rates of mass and energy flows into the layers from all vents in the building.
+!> \brief   calculate leakage flow between compartments with specified leakage to the outside
+!>          leakage is just calculated as a wall vent at the floor or along a wall corner
 
-    ! inputs    tsec    current simulation time (s)
-    !           epsp    pressure error tolerance
-    ! output    uflw_lk change in mass and energy for each layer of each compartment via flow through horizontal vents
+!> \param   epsp (input): pressure error tolerance
+!> \param   uflw_lk (output): change in mass and energy for each layer of each compartment via leakage
 
     real(eb), intent(in) :: epsp
     real(eb), intent(out) :: uflw_lk(mxrooms,ns+2,2)
@@ -220,7 +219,7 @@ module hflow_routines
         ventptr%ytop_slab(1:mxfslab) = 0.0_eb
 
         ! setup data structures for from and to room
-        call getvars(iroom1,iroom2,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
+        call get_wall_flow_variables(iroom1,iroom2,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
 
         ! convert vent dimensions to absolute dimensions
         yvbot = ventptr%sill + zflor(1)
@@ -272,26 +271,27 @@ module hflow_routines
 
     ! --------------------------- spill_plume -------------------------------------------
 
-    subroutine spill_plume (dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
+!> \brief   calculate plume entrainment for a door mixing
+!> \param   dirs12 (input): direction of the room 1 to room flow in each slab
+!> \param   yslab (input): slab heights in rooms 1,2 above absolute reference elevation [m]
+!> \param   width (input): slab width [m]
+!> \param   xmslab (input): magnitude of the mass flow rate in slabs [kg/s]
+!> \param   nslab (input): number of slabs between bottom and top of vent
+!> \param   tu (input): upper layer temperature in each room [k]
+!> \param   tl (input): lower layer temperature in each room [k]
+!> \param   cp (input): specific heat of air
+!> \param   zlay (input): height of layer in each room above absolute reference elevation [m]
+!> \param   conl (input): species concentrations in lower layer of from room
+!> \param   conu (input): species concentrations in upper layer of from room
+!> \param   yvbot (input): absolute height of vent bottom
+!> \param   yvtop (input): absolute height of vent top
+    
+!> \param   pmix (output): species concentrations in plume
+!> \param   uflw3(i,1:3,j) (output): mass, enthalpy, and species flows to upper (j=2) or lower (j=1) layer of room i
+!> \param   vsas (output): mixing flow mass from upper layer due to entrainment
+!> \param   vasa (output): mixing flow mass from lower layer due to entrainment
 
-    ! calculate plume entrainment for a door mixing
-    ! inputs    dirs12          direction of the room 1 to room flow in each slab
-    !           yslab           slab heights in rooms 1,2 above absolute reference elevation [m]
-    !           width           slab width [m]
-    !           xmslab          magnitude of the mass flow rate in slabs [kg/s]
-    !           nslab           number of slabs between bottom and top of vent
-    !           tu              upper layer temperature in each room [k]
-    !           tl              lower layer temperature in each room [k]
-    !           cp              specific heat of air
-    !           zlay            height of layer in each room above absolute reference elevation [m]
-    !           conl            species concentrations in lower layer of from room
-    !           conu            species concentrations in upper layer of from room
-    !           yvbot           absolute height of vent bottom
-    !           yvtop           absolute height of vent top
-    ! outputs   pmix            species concentrations in plume
-    !           uflw3(i,1:3,j)  mass, enthalpy, and species flows to upper (j=2) or lower (j=1) layer of room i due to entrainment
-    !           vsas            mixing flow mass from upper layer due to entrainment
-    !           vasa            mixing flow mass from lower layer due to entrainment
+    subroutine spill_plume (dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
 
     integer, intent(in) :: dirs12(10), nslab
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(ns,2), conu(ns,2), yvbot, yvtop, width
@@ -386,17 +386,17 @@ module hflow_routines
 
     ! --------------------------- poreh_plume -------------------------------------------
 
+!> \brief   vent jet plumes are assumed to be spill plumes from poreh, et. al., Fire Safety Journal, 30:1-19, 1998.
+!>          at the moment, we do this by flow slab consistent with the original method that used mccaffrey's plume
+
+!> \param   tu (input): upper layer temperature in the from room (K)
+!> \param   tl (input): lower layer temperature in the to room (K)
+!> \param   mdot (input): mass flow, from room --> to room (kg/s)
+!> \param   w (input): vent width (m)
+!> \param   z (input): height over which entrainment takes place (m)
+!> \param   entrainment_rate (output): mass entrained (output) (kg/s)
+
     subroutine poreh_plume (tu, tl, mdot, z, w, entrainment_rate)
-
-    ! doorway plumes are assumed to be spill plumes from poreh, et. al., Fire Safety Journal, 30:1-19, 1998.
-    ! At the moment, we do this by flow slab consistent with the original method that used mccaffrey's plume
-
-    ! inputs    tu                  upper layer temperature in the from room (K)
-    !           tl                  lower layer temperature in the to room (K)
-    !           mdot                mass flow, from room --> to room (kg/s)
-    !           w                   vent width (m)
-    !           z                   height over which entrainment takes place (m)
-    ! output    entrainment_rate    mass entrained (output) (kg/s)
 
     real(eb), intent(in) :: tu, tl, mdot, z, w
     real(eb), intent(out) :: entrainment_rate
@@ -409,42 +409,42 @@ module hflow_routines
     return
     end subroutine poreh_plume
 
-    ! --------------------------- vent -------------------------------------------
+    ! --------------------------- ventw -------------------------------------------
+    
+!> \brief   calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
+!>          constant-width vent in a wall segment common to two rooms. 
+    
+!> \param   zflor (input): height of floor above absolute reference elevation (m)
+!> \param   zlay (input): height of layer above absolute reference elevation (m)
+!> \param   tu (input): upper layer temperature (K)
+!> \param   tl (input): lower layer temperature (K)
+!> \param   denl (input): lower layer density (kg/m**3)
+!> \param   denu (input): upper layer density (kg/m**3)
+!> \param   pflor (input): pressure at floor above absolute reference pressure (kg/(m*s**2) = Pa)
+!> \param   yvtop (input): elevation of top of vent above absolute reference elevation (m)
+!> \param   yvbot (input): elevation of bottom of vent above absolute reference elevation (m)
+!> \param   avent (input): area of the vent (m**2)
+!> \param   dp1m2 (input): pressure in room 1 - pressure in room 2 at elevations yelev (kg/(m*s**2) = Pa)
+!> \param   cp (input): specific heat (w*s/(kg*k))
+!> \param   conl (input): concentration of each product in lower layer (unit of product/(kg layer))
+!> \param   conu (input): concentration of each product in upper layer (unit of product/(kg layer))
+!> \param   mxfslab (input): maximum number of slabs
+!> \param   epsp (input): error tolerance for pressures at floor
+    
+!> \param   dirs12 (output): direction of the room 1 to room 2 flow in each slab
+!> \param   nslab (output): number of slabs between bottom and top of the vent
+!> \param   cslab (output): concentration of other products in each slab (unit product/(kg slab))
+!> \param   pslab (output): amount of other products in each slab (unit product/s)
+!> \param   qslab (output): enthalpy flow rate in each slab (w)
+!> \param   rslab (output): density of the flow in each slab (kg/m**3)
+!> \param   tslab (output): absolute temperature of the flow in each slab (K)
+!> \param   yslab (output): elevations above the absolute reference elevation of the centroids of momentum of each slab (m)
+!> \param   yvelev (output): elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes (m)
+!> \param   xmslab (output): magnitude of the mass flow rate in slabs (kg/s)
+!> \param   n_velev (output): number of unique elevations delineating slabs
 
-    subroutine ventw(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,epsp,cslab,pslab,qslab, &
+    subroutine ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,epsp,cslab,pslab,qslab, &
         vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
-    
-    ! calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
-    ! constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing
-    ! the two-layer environment in each of the two rooms and other input data.
-    
-    ! inputs    zflor   height of floor above absolute reference elevation [m]
-    !           zlay    height of layer above absolute reference elevation [m]
-    !           tu      upper layer temperature [k]
-    !           tl      lower layer temperature [k]
-    !           denl    lower layer density [kg/m**3]
-    !           denu    upper layer density [kg/m**3]
-    !           pflor   pressure at floor above absolute reference pressure [kg/(m*s**2) = pascal]
-    !           yvtop   elevation of top of vent above absolute reference elevation [m]
-    !           yvbot   elevation of bottom of vent above absolute reference elevation [m]
-    !           avent   area of the vent [m**2]
-    !           dp1m2   pressure in room 1 - pressure in room 2 at elevations yelev [kg/(m*s**2) = pascal]
-    !           cp      specific heat [w*s/(kg*k)]
-    !           conl    concentration of each product in lower layer [unit of product/(kg layer)]
-    !           conu    concentration of each product in upper layer [unit of product/(kg layer)]
-    !           mxfslab maximum number of slabs currently available
-    !           epsp    error tolerance for pressures at floor
-    ! outputs   dirs12  direction of the room 1 to room 2 flow in each slab
-    !           nslab   number of slabs between bottom and top of the vent
-    !           cslab   concentration of other products in each slab [unit product/(kg slab)]
-    !           pslab   amount of other products in each slab [unit product/s]
-    !           qslab   enthalpy flow rate in each slab [w]
-    !           rslab   density of the flow in each slab [kg/m**3]
-    !           tslab   absolute temperature of the flow in each slab [k]
-    !           yslab   elevations above the absolute reference elevation of the centroids of momentum of each slab [m]
-    !           yvelev  elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
-    !           xmslab  magnitude of the mass flow rate in slabs [kg/s]
-    !           n_velev number of unique elevations delineating slabs
 
     integer, intent(in) :: mxfslab
     integer, intent(out) :: nslab, dirs12(*)
@@ -462,7 +462,7 @@ module hflow_routines
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
 
     ! create initial elevation height array (ignoring neutral planes)
-    call getelev(yvbot,yvtop,zlay,yelev,nelev)
+    call get_slab_elevations(yvbot,yvtop,zlay,yelev,nelev)
 
     ! find pressure drops at above elevations
     call delp(yelev,nelev,zflor,zlay,denl,denu,pflor,epsp,dp1m2)
@@ -587,19 +587,19 @@ module hflow_routines
         end if
     end do
     return
-    end subroutine ventw
+        end subroutine ventw
 
-    ! --------------------------- getelev -------------------------------------------
+    ! --------------------------- get_slab_elevations -------------------------------------------
+    
+!> \brief   determines elevation of flow slabs in wall vent flow
+    
+!> \param   yvbot (input): absolute elevation of bottom of the vent
+!> \param   yvtop (input): absolute elevation of top of the vent
+!> \param   zlay (input): absolute elevation of the layers in rooms connected to the vent
+!> \param   yelev (output): absolute elevations of flow slabs in the vent
+!> \param   nelev (output): number of flow slabs in the vent
 
-    subroutine getelev (yvbot,yvtop,zlay,yelev,nelev)
-    
-    ! determines elevation of flow slabs in horizontal vent flow
-    
-    ! inputs    yvbot   absolute elevation of bottom of the vent
-    !           yvtop   absolute elevation of top of the vent
-    !           zlay    absolute elevation of the layers in rooms connected to the vent
-    ! outputs   yelev   absolute elevations of flow slabs in the vent
-    !           nelev   number of flow slabs in the vent
+    subroutine get_slab_elevations (yvbot,yvtop,zlay,yelev,nelev)
 
     integer, intent(out) :: nelev
     real(eb), intent(in) :: zlay(*), yvbot, yvtop
@@ -637,28 +637,29 @@ module hflow_routines
         end if
     end if
     return
-    end subroutine getelev
+    end subroutine get_slab_elevations
 
-    ! --------------------------- getvars -------------------------------------------
+    ! --------------------------- get_wall_flow_variables -------------------------------------------
 
-    subroutine getvars(from_room,to_room,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
-
-    ! routine to interface between global data structures and natural vent data structures.
-    ! gets room and vent data for calculation of horizontal flow through a wall vent
+!> \brief   routine to interface between global data structures and natural vent data structures.
+!>          gets room and vent data for calculation of horizontal flow through a wall vent
     
-    ! inputs    ivent - vent number
-    !           from_room   first room number connected to vent
-    !           to_room     second room number connected to vent
-    ! outputs   zflor       height of floor above absolute reference elevation [m]
-    !           zceil       height of ceiling above absolute reference elevation [m]
-    !           zlay        height of layer above absolute reference elevation [m]
-    !           pflor       pressure at floor relative to ambient [p]
-    !           denl        density of lower layer [kg/m**3]
-    !           denu        density of upper layer [kg/m**3]
-    !           conl        concentration of lower layer for each product [unit of product/kg of layer]
-    !           conu        concentration of upper layer for each product [unit of product/kg of layer]
-    !           tl          temperature of lower layer [k]
-    !           tu          temperature of upper layer [k]
+!> \param   ivent (input): vent number
+!> \param   from_room (input): first room number connected to vent
+!> \param   to_room (input): second room number connected to vent
+    
+!> \param   zflor (output): height of floor above absolute reference elevation (m)
+!> \param   zceil (output): height of ceiling above absolute reference elevation (m)
+!> \param   zlay (output): height of layer above absolute reference elevation (m)
+!> \param   pflor (output): pressure at floor relative to ambient (p)
+!> \param   denl (output): density of lower layer (kg/m**3)
+!> \param   denu (output): density of upper layer (kg/m**3)
+!> \param   conl (output): concentration of lower layer for each product (unit of product/kg of layer)
+!> \param   conu (output): concentration of upper layer for each product (unit of product/kg of layer)
+!> \param   tl (output): temperature of lower layer (K)
+!> \param   tu (output): temperature of upper layer (K)
+
+    subroutine get_wall_flow_variables(from_room,to_room,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
 
     integer, intent(in) :: from_room, to_room
     real(eb), intent(out) :: conl(ns,2), conu(ns,2)
@@ -690,37 +691,37 @@ module hflow_routines
     end do
     return
 
-    end subroutine getvars
+    end subroutine get_wall_flow_variables
 
     ! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfslab,mflows,uflw2)
-
-
-    ! deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
-    ! through a vertical, constant-width vent.  
+!> \brief   calculate distribution of mass, enthalpy, oxygen, and other product-of-combustion flows passing between 
+!>          layers in two rooms through a vertical, constant-width vent.  
     
-    !inputs     dirs12          a measure of the direction of the room 1 to room 2 flow in each slab, 
-    !                           = 1--> 2, -1 = 2 --> 1, 0 = no flow
-    !           yslab           slab heights in rooms 1,2 above absolute reference elevation [m]
-    !           xmslab          mass flow rate in slabs [kg/s]
-    !           tslab           temperature of slabs [K]
-    !           nslab           number of slabs between bottom and top of vent
-    !           tu,tl           upper and lower layer temperatures in rooms 1,2
-    !           zlay            height of layer in each room above absolute reference elevation [m]
-    !           qslab           enthalpy flow rate in each slab [w]
-    !           pslab           flow rate of product in each slab [(unit of product)/s]
-    !           mxfslab         maximum number of slabs currently available.
-    ! outputs   mflows(i,j)     i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination
-    !                           identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
-    !           uflw2(i,1,j)    i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer
-    !                           of room i due to all slab flows of vent [kg/s]
-    !           uflw2(i,2,j)    i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1)
-    !                           layer of room i due to all slab flows of vent [w]
-    !           uflw2(i,3,j)    i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer
-    !                           of room i due to all slab flows of vent [(kg oxygen)/s]
-    !           uflw2(i,3+k,j)  i=1 or 2, k=2 to ns, j=1 or 2 (output) - product k flow rate to upper (j=2)
-    !                           or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
+!> \param   dirs12 (input): a measure of the direction of the room 1 to room 2 flow in each slab, 
+!>                          = 1--> 2, -1 = 2 --> 1, 0 = no flow
+!> \param   yslab (input): slab heights in rooms 1,2 above absolute reference elevation (m)
+!> \param   xmslab (input): mass flow rate in slabs (kg/s)
+!> \param   tslab (input): temperature of slabs (K)
+!> \param   nslab (input): number of slabs between bottom and top of vent
+!> \param   tu,tl (input): upper and lower layer temperatures in rooms 1,2
+!> \param   zlay (input): height of layer in each room above absolute reference elevation (m)
+!> \param   qslab (input): enthalpy flow rate in each slab (w)
+!> \param   pslab (input): flow rate of product in each slab ((unit of product)/s)
+!> \param   mxfslab (input): maximum number of slabs currently available.
+    
+!> \param   mflows(i,j) (output): i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination
+!>                                  identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
+!> \param   uflw2(i,1,j) (output): i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer
+!>                                 of room i due to all slab flows of vent (kg/s)
+!> \param   uflw2(i,2,j) (output): i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1)
+!>                                 layer of room i due to all slab flows of vent (w)
+!> \param   uflw2(i,3,j) (output): i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer
+!>                                 of room i due to all slab flows of vent ((kg oxygen)/s)
+!> \param   uflw2(i,3+k,j) (output): i=1 or 2, k=2 to ns, j=1 or 2 (output) - product k flow rate to upper (j=2)
+!>                                   or lower (j=1) layer of room i due to all slab flows of vent ((unit product k)/s)
+
+    subroutine flogo (dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfslab,mflows,uflw2)
 
     integer, intent(in) :: dirs12(*)
     integer, intent(in) :: nslab, mxfslab
@@ -799,20 +800,20 @@ module hflow_routines
 
     ! --------------------------- delp -------------------------------------------
 
-    subroutine delp(y,nelev,zflor,zlay,denl,denu,pflor,epsp,dp)
-
-    ! calculate the absolute hydrostatic pressures at a specified elevation in each of two adjacent
-    ! rooms and the pressure difference.  the basic calculation involves a determination and differencing of
-    ! hydrostatic pressures above a specified absolute reference pressure.
+!> \brief   calculate the absolute hydrostatic pressures at a specified elevation in each of two adjacent
+!>          rooms and the pressure difference.  the basic calculation involves a determination and differencing of
+!>          hydrostatic pressures above a specified absolute reference pressure.
     
-    ! inputs    y       vector of heights above absolute reference elevation where pressure difference is to be calculated [m]
-    !           nelev   number of heights to be calculated
-    !           zflor   height of floor in each room above absolute reference elevation [m]
-    !           zlay    height of layer in each room above absolute reference elevation [m]
-    !           denl    lower layer density in each room [kg/m**3]
-    !           denu    upper layer density in each room [kg/m**3]
-    !           pflor   pressure at base of each room above absolute reference pressure [kg/(m*s**2) = pascal]
-    ! outputs   dp      change in pressure between two rooms [kg/(m*s**2) = pascal]
+!> \param   y (input): vector of heights above absolute reference elevation where pressure difference is to be calculated (m)
+!> \param   nelev (input): number of heights to be calculated
+!> \param   zflor (input): height of floor in each room above absolute reference elevation (m)
+!> \param   zlay (input): height of layer in each room above absolute reference elevation (m)
+!> \param   denl (input): lower layer density in each room (kg/m**3)
+!> \param   denu (input): upper layer density in each room (kg/m**3)
+!> \param   pflor (input): pressure at base of each room above absolute reference pressure (kg/(m*s**2) = Pa)
+!> \param   dp (input): change in pressure between two rooms (kg/(m*s**2) = Pa)
+
+    subroutine delp(y,nelev,zflor,zlay,denl,denu,pflor,epsp,dp)
 
     integer, intent(in) :: nelev
     real(eb), intent(in) :: y(*),  zflor(*), zlay(*), denl(*), denu(*), pflor(*), epsp

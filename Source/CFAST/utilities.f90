@@ -795,7 +795,7 @@
     !		(3) Is the time to complete the change, Time+Decay_time, and
     !		(4) Is the final fraction
 
-    ! The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
+    ! The open/close function is done in the physical/mode interface, wall_flow, vertical_flow and mechanical_flow
     
     use precision_parameters
     

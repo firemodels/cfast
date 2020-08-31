@@ -122,7 +122,7 @@ module fire_data
 
     ! fire variables
 
-    real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and door jets
+    real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and vent jets
     real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
     real(eb) :: summed_total_trace                      ! total trace species released by all fires
     real(eb), dimension(2) :: sigma_s = default_sigma_s ! extinction coefficient for flaming and smoldering smoke
@@ -230,7 +230,7 @@ module option_data
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet
         (/  on,          on,          on,        on,         on,  &
-        !   door-fire,  convec,     rad,        conduct,    debug
+        !   vent jets,  convec,     rad,        conduct,    debug
             on,         on,          on,          on,          off,  &
         !   gas absorb,          h_mflow,   keyboard,   steady state initialization,    dassl debug
         !   on means calculate
@@ -484,7 +484,7 @@ module vent_data
     integer :: n_hvents                                                 ! number of horizontal vents
     type (vent_type), allocatable, dimension(:), target  :: hventinfo   ! structured horizontal vent data
     
-    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for door jet fires (u or l)
+    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for vent jet fires (u or l)
     
     ! horizontal vent flow slab data by elevation in vent
     integer :: nvelev                                                   ! current number of slabs

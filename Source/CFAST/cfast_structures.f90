@@ -209,7 +209,7 @@ module cfast_types
         real(eb), dimension(nnodes,nwal) :: t_profile   ! temperature profile within compartment surfaces
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
-        real(eb) :: qdot_doorjet                        ! HRR of door jet fires at the current time
+        real(eb) :: qdot_doorjet                        ! HRR of vent jet fires at the current time
     end type room_type
     
     ! time-dependent fire parameters table input data structure

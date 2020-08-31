@@ -223,7 +223,7 @@ module output_routines
         end do
     end if
 
-    ! door jet fires
+    ! vent jet fires
     write (iofilo,'(a)') ' '
     do icomp = 1, n_rooms+1
         roomptr => roominfo(icomp)

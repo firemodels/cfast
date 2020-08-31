@@ -112,7 +112,7 @@ module debug_routines
     ! data structures for mechanical vents
     real(eb), intent(in) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
 
-    ! data structures for door jet fires
+    ! data structures for vent jet fires
     real(eb), intent(in) :: flows_doorjets(mxrooms,ns+2,2)
     
     real(eb), intent(in) :: flows_convection_layers(mxrooms,ns+2,2)

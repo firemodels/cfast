@@ -4,7 +4,7 @@ module target_routines
 
     use conduction_routines, only: conductive_flux, cylindrical_conductive_flux
     use convection_routines, only: convective_flux
-    use fire_routines, only: get_gas_tempandvelocity, flame_height
+    use fire_routines, only: get_gas_temp_and_velocity, flame_height
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
     
@@ -328,7 +328,7 @@ module target_routines
     xtarg = targptr%center(1)
     ytarg = targptr%center(2)
     ztarg = targptr%center(3)
-    call get_gas_tempandvelocity(iroom,xtarg,ytarg,ztarg,tg,vg)
+    call get_gas_temp_and_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     targptr%tgas = tg
     if (targptr%back==interior) then
         tgb = tg
@@ -916,7 +916,7 @@ module target_routines
             dtectptr%velocity = 0.1_eb
         else
             ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
-            call get_gas_tempandvelocity (iroom,xloc,yloc,zloc,tg,vg)
+            call get_gas_temp_and_velocity (iroom,xloc,yloc,zloc,tg,vg)
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
             if (zloc>roomptr%depth(l)) then

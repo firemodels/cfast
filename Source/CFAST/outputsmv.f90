@@ -3,7 +3,7 @@
     use precision_parameters
 
     use exit_routines, only: cfastexit
-    use fire_routines, only: get_gas_tempandvelocity
+    use fire_routines, only: get_gas_temp_and_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: tointstring
 
@@ -433,7 +433,7 @@
                 yy = roomptr%yplt(sf%ijk(3)+jj) - roomptr%y0
                 do kk = 0, nz-1
                     zz = roomptr%zplt(sf%ijk(5)+kk) - roomptr%z0
-                    call get_gas_tempandvelocity(roomnum,xx,yy,zz,tgas, vgas)
+                    call get_gas_temp_and_velocity(roomnum,xx,yy,zz,tgas, vgas)
                     tslicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
                     uslicedata(ii,jj,kk) = real(vgas(1),fb)
                     vslicedata(ii,jj,kk) = real(vgas(2),fb)
@@ -604,7 +604,7 @@ module isosurface
     use precision_parameters
 
     use exit_routines, only: cfastexit
-    use fire_routines, only: get_gas_tempandvelocity
+    use fire_routines, only: get_gas_temp_and_velocity
     
     
     use cfast_types, only: room_type
@@ -660,7 +660,7 @@ module isosurface
                 yy = roomptr%yplt(jj) - roomptr%y0
                 do kk = 0, kbar
                     zz = roomptr%zplt(kk) - roomptr%z0
-                    call get_gas_tempandvelocity(roomnum,xx,yy,zz,tgas,vgas)
+                    call get_gas_temp_and_velocity(roomnum,xx,yy,zz,tgas,vgas)
                     isodataf(ii+1,jj+1,kk+1) = real(tgas-273.15_eb,fb)
                 end do
             end do

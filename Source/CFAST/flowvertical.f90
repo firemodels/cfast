@@ -23,17 +23,18 @@ module vflow_routines
 
 ! --------------------------- vertical_flow -------------------------------------------
 
-    subroutine vertical_flow (tsec,epsp,uflw_vf)
+!> \brief   interface between cfast and the vertical vent physical routines
 
-    ! interface between cfast and the vertical vent physical routines.
-    ! arguments: tsec    current simulation time
-    !            epsp    pressure error tolerance
-    !            uflw_vf change in mass and energy for each layer of each compartment via flow through vertical vents
+!> \param   tsec (input): current simulation time
+!> \param   epsp (input): pressure error tolerance
+!> \param   uflw_vf (output): change in mass and energy for each layer of each compartment via flow through vertical vents
+
+    subroutine vertical_flow (tsec,epsp,uflw_vf)
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_vf(mxrooms,ns+2,2)
 
-    real(eb) :: vvent(2), xmvent(2), tmvent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
+    real(eb) :: velocity_vent(2), mass_flow_vent(2), temperature_vent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
@@ -60,13 +61,13 @@ module vflow_routines
         ventptr%opening_fraction = fraction
         ventptr%current_area = area
         ishape = ventptr%shape
-        call ventcf (itop, ibot, area, ishape, epsp, xmvent, vvent, tmvent)
+        call ventcf (itop, ibot, area, ishape, epsp, mass_flow_vent, velocity_vent, temperature_vent)
 
         ventptr%n_slabs = 2
         do iflow = 1, 2
             ! flow information for smokeview is relative to top room
-            ventptr%temp_slab(iflow) = tmvent(iflow)
-            ventptr%flow_slab(iflow) = xmvent(iflow)
+            ventptr%temp_slab(iflow) = temperature_vent(iflow)
+            ventptr%flow_slab(iflow) = mass_flow_vent(iflow)
             ventptr%ybot_slab(iflow) = max(0.0_eb,(ventptr%area - sqrt(area))/2.0_eb)
             ventptr%ytop_slab(iflow) = min(ventptr%area,(ventptr%area + sqrt(area))/2.0_eb)
         end do
@@ -87,10 +88,10 @@ module vflow_routines
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=n_rooms) then
                 roomptr => roominfo(ifrm)
-                if (tmvent(iflow)>interior_ambient_temperature) then
+                if (temperature_vent(iflow)>interior_ambient_temperature) then
                     zlayer = roomptr%depth(ilay)
-                    froude(iflow) = vvent(iflow) / &
-                        sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
+                    froude(iflow) = velocity_vent(iflow) / &
+                        sqrt(grav_con*zlayer**5*(temperature_vent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if
@@ -109,14 +110,14 @@ module vflow_routines
                         2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
-                frommu = fu*xmvent(iflow)
-                fromml = fl*xmvent(iflow)
+                frommu = fu*mass_flow_vent(iflow)
+                fromml = fl*mass_flow_vent(iflow)
                 fromqu = cp*frommu*roomptr%temp(u)
                 fromql = cp*fromml*roomptr%temp(l)
                 from_temp = fu*roomptr%temp(u) + fl*roomptr%temp(l)
             else
                 frommu = 0.0_eb
-                fromml = xmvent(iflow)
+                fromml = mass_flow_vent(iflow)
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_ambient_temperature
                 from_temp = exterior_ambient_temperature
@@ -140,8 +141,8 @@ module vflow_routines
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu
-            tomu = fu*xmvent(iflow)
-            toml = fl*xmvent(iflow)
+            tomu = fu*mass_flow_vent(iflow)
+            toml = fl*mass_flow_vent(iflow)
             toqu = fu*fromtq
             toql = fl*fromtq
 
@@ -184,26 +185,27 @@ module vflow_routines
 
 ! --------------------------- ventcf -------------------------------------------
 
-    subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, vvent, tmvent)
+!> brief    calculate the flow of mass, enthalpy, and products of combustion through a vent joining
+!>          an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of
+!>          inside rooms and the uniform environment in outside spaces.
+    
+!> \param   itop (input): top room number (physically with respect to the second compartment)
+!> \param   ibot (input): bottom room number
+!> \param   avent (input): area of the vent (m**2)
+!> \param   nshape (input): number characterizing vent shape: 1 = circle, 2 = square
+!> \param   epsp (input): error tolerance for dpref [dimensionless]
+!> \param   velocity_vent(i) (output): i = 1, velocity of flow from room ibot to room itop
+!>                                     i = 2, velocity of flow from toom itop to room ibot
+!> \param   mass_flow_vent(i) (output): i = 1, mass flow from room ibot to room itop
+!>                                      i = 2, mass flow from room itop to room ibot
+!> \param   temperature_vent(i) (output): i = 1, temperature in layer next to vent in top room
+!>                                        i = 2, temperature in layer next to vent in bottom room
 
-    ! calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining
-    ! an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of
-    ! inside rooms and the uniform environment in outside spaces.
-    ! arguments: itop: top room number (physically with respect to the second compartment)
-    !            ibot: bottom room number
-    !            avent: area of the vent [m**2]
-    !            nshape: number characterizing vent shape: 1 = circle, 2 = square
-    !            epsp: error tolerance for dpref [dimensionless]
-    !            vvent(i)    i = 1, velocity of flow from room ibot to room itop
-    !                        i = 2, velocity of flow from toom itop to room ibot
-    !            xmvent(i)   i = 1, mass flow from room ibot to room itop
-    !                        i = 2, mass flow from room itop to room ibot
-    !            tmvent(i)   i = 1, temperature in layer next to vent in top room
-    !                        i = 2, temperature in layer next to vent in bottom room
+    subroutine ventcf (itop, ibot, avent, nshape, epsp, mass_flow_vent, velocity_vent, temperature_vent)
 
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
-    real(eb), intent(out) :: vvent(2), xmvent(2), tmvent(2)
+    real(eb), intent(out) :: velocity_vent(2), mass_flow_vent(2), temperature_vent(2)
 
     real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2)
     integer ::  iroom(2), ilay(2)
@@ -317,20 +319,20 @@ module vflow_routines
     denvnt(1) = den(2)
     denvnt(2) = den(1)
 
-    ! calculate the vent flow rates, vvent(i), the volume flow rate through the vent into space i
-    !                                xmvent(i), the mass flow rate through the vent into space i
+    ! calculate the vent flow rates, velocity_vent(i), the volume flow rate through the vent into space i
+    !                                mass_flow_vent(i), the mass flow rate through the vent into space i
     iroom(1) = ibot
     iroom(2) = itop
     do i = 1, 2
-        vvent(i) = vst(i) + vex
-        xmvent(i) = denvnt(i)*vvent(i)
+        velocity_vent(i) = vst(i) + vex
+        mass_flow_vent(i) = denvnt(i)*velocity_vent(i)
         if (iroom(i)<=n_rooms) then
             ! iroom(i) is an inside room so use the appropriate layer temperature
             roomptr => roominfo(iroom(i))
-            tmvent(i) = roomptr%temp(ilay(3-i))
+            temperature_vent(i) = roomptr%temp(ilay(3-i))
         else
             ! iroom(i) is an outside room so use exterior_ambient_temperature for temperature
-            tmvent(i) = exterior_ambient_temperature
+            temperature_vent(i) = exterior_ambient_temperature
         end if
     end do
     return

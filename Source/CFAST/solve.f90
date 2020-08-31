@@ -6,7 +6,7 @@ module solve_routines
     use convection_routines, only: convection
     use debug_routines, only: output_spreadsheet_residuals
     use exit_routines, only: cfastexit, delete_output_files
-    use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_objects
+    use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_ignition
     use isosurface, only: output_isodata
     use hflow_routines, only: horizontal_flow, leakage_flow
     use mflow_routines, only: mechanical_flow
@@ -554,7 +554,7 @@ module solve_routines
         idsave = 0
         call get_detector_temp_and_velocity
         call update_detectors (check_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-        call update_fire_objects (check_state,told,dt,ifobj,tobj)
+        call update_fire_ignition (check_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
@@ -571,14 +571,14 @@ module solve_routines
         ! object ignition is the first thing to happen
         if (ifobj>0.and.ifobj <=n_fires.and.tobj<=td) then
             fireptr => fireinfo(ifobj)
-            call update_fire_objects (set_state,told,dt,ifobj,tobj)
+            call update_fire_ignition (set_state,told,dt,ifobj,tobj)
             idsave = idset
             td = tdtect
             fireptr%ignited = .true.
             call set_info_flags(info,rwork)
             ifobj = 0
         else
-            call update_fire_objects (update_state,told,dt,ifobj,tobj)
+            call update_fire_ignition (update_state,told,dt,ifobj,tobj)
         end if
 
         if (idsave/=0) then

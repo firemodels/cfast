@@ -26,8 +26,8 @@ module fire_routines
 
     private
 
-    public door_jets, fire, flame_height, get_gas_tempandvelocity, integrate_mass, collect_fire_data_for_smokeview, &
-        update_fire_objects, update_species
+    public door_jets, fire, flame_height, get_gas_temp_and_velocity, integrate_mass, collect_fire_data_for_smokeview, &
+        update_fire_ignition, update_species
 
     contains
 
@@ -226,44 +226,51 @@ module fire_routines
     end if
 
     return
+    
     end subroutine interpolate_pyrolysis
 
 ! --------------------------- do_fire -------------------------------------------
+    
+!> \brief   do heat release rate and chemistry for a fire
+
+!> \param   ifire (input): fire number
+!> \param   iroom (input): room containing the fire
+!> \param   pyrolysis_rate (input): pyrolysis rate of the fire (kg/s)
+!> \param   room_height (input): height of the room (z direction) (m)
+!> \param   room_widt (input): breadth of the room (x direction) (m)
+!> \param   room_depth (input): depth of the room (z direction) (m)
+!> \param   hoc (input): current heat of combustion (j/kg)
+!> \param   y_soot (input): current species yield for soot overall (kg/kg)
+!> \param   y_soot_smolder (input): current species yield for smoldering soot (kg/kg)
+!> \param   y_soot_flaming (input): current species yield for flaming soot (kg/kg)
+!> \param   hoc (input): y_co (input): current species yield for CO (kg/kg)
+!> \param   hoc (input): y_hcn (input): current species yield for HCN (kg/kg)
+!> \param   hoc (input): y_trace (input): current species yield for trace species (kg/kg)
+!> \param   n_C (input): molecules of Carbon in fuel; these can be fractional
+!> \param   n_H (input): molecules of Hyrodgen in fuel; these can be fractional
+!> \param   n_O (input): molecules of Oxygen in fuel; these can be fractional
+!> \param   n_N (input): molecules of Nitrogen in fuel; these can be fractional
+!> \param   n_Cl (input): molecules of Chlorine in fuel; these can be fractional
+!> \param   molar_mass (input): molar mass of the fuel (kg/mol)
+!> \param   species_mass (input): mass of a species in a layer in the room (kg)
+!> \param   x_fire_position (input): position of the fire in x direction (m)
+!> \param   y_fire_position (input): position of the fire in y direction (m)
+!> \param   z_fire_position (input): position of the fire in z direction (m)
+!> \param   fire_area (input): characteristic fire diameter for plume models (m)
+!> \param   entrainment_rate (output): plume entrainment rate (kg/s)
+!> \param   plume_flow_rate (output): plume flow rate into the upper layer (kg/s)
+!> \param   hrr (output): actual heat release rate of the fire (w)
+!> \param   species_mass_rate (output): net change in mass of a species in a layer
+!> \param   hrr_c (output): net convection into upper layer (w)
+!> \param   hrr_r (output): net radiation from fire (w)
+!> \param   hrr_lower (output): heat release in the lower plume (w)
+!> \param   hrr_upper (output): heat release rate in the upper plume (w)
 
     subroutine do_fire (ifire, iroom, pyrolysis_rate, room_height, room_width, room_depth, hoc, &
         y_soot, y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, molar_mass, species_mass, &
         x_fire_position, y_fire_position, z_fire_position, fire_area, entrainment_rate, plume_flow_rate, hrr, &
         species_mass_rate, hrr_c, hrr_r, hrr_lower, hrr_upper)
-
-    ! do heat release and species from a fire
     
-    ! inputs  ifire:            fire number
-    !         iroom:            room containing the fire
-    !         pyrolysis_rate    pyrolysis rate of the fire (kg/s)
-    !         room_height       height of the room (m)
-    !         room_width        breadth of the room (m)
-    !         room_depth        depth of the room (m)
-    !         hoc               current heat of combustion (j/kg)
-    !         y_soot            also y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species;
-    !                               others are calculated from the molecular formula of the fuel 
-    !                               (kg species produced/kg fuel pyrolyzed)
-    !         n_C               also n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields
-    !                               of O2, HCl, and HCN are determined from this
-    !         molar_mass        molar mass of the fuel (kg/mol)
-    !         species_mass      mass of a species in a layer in the room (kg)
-    !         x_fire_position   position of the fire in x direction
-    !         y_fire_position   position of the fire in y direction
-    !         z_fire_position   position of the fire in z direction
-    !         fire_area         characteristic object diameter for plume models
-    ! outputs  entrainment_rate     plume entrainment rate (kg/s)
-    !          plume_flow_rate      plume flow rate into the upper layer (kg/s)
-    !          hrr                  actual heat release rate of the fire (w)
-    !          species_mass_rate    net change in mass of a species in a layer
-    !          hrr_c                net convection into upper layer (w)
-    !          hrr_r                net radiation from fire (w)
-    !          hrr_lower            heat release in the lower plume (w)
-    !          hrr_upper            heat release rate in the upper plume (w)
-
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
                             y_co, y_hcn, y_trace
@@ -335,9 +342,9 @@ module fire_routines
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call heskestad_plume(hrr, hrr_c, lower_plume_height, interior_ambient_temperature, &
-                pyrolysis_rate, plume_flow_rate, entrainment_rate, fire_area, &
-                min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
+            call heskestad_plume(hrr, hrr_c, fire_area, &
+                min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
+                lower_plume_height, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, entrainment_rate)
 
             if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
@@ -377,9 +384,9 @@ module fire_routines
         hrr = hrr_c/(1.0_eb-chirad)
         upper_plume_height = max (0.0_eb, min(layer_thickness,(room_height - z_fire_position)))
 
-        call heskestad_plume (hrr, hrr_c, upper_plume_height, interior_ambient_temperature, pyrolysis_rate_upper, &
-            plume_flow_rate_upper, entrainment_rate_upper, fire_area, &
-           min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
+        call heskestad_plume (hrr, hrr_c, upper_plume_height, fire_area, &
+           min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
+            interior_ambient_temperature, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper)
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
@@ -426,19 +433,21 @@ module fire_routines
 
 ! --------------------------- heskestad plume -------------------------------------------
 
-    subroutine heskestad_plume (q_t, q_c, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate, fire_area, x, y)
+!> \brief   calculate plume entrainment for a fire from heskestad's variant of zukoski's correlation
 
-    ! calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
-    
-    ! inputs    q_t                 fire size (w)
-    !           z                   plume height (m)
-    !           t_inf               ambient temperature at base of the fire
-    !           pyrolysis_rate      mass loss rate of the fire (kg/s)
-    !           fire_area           cross sectional area at the base of the fire
-    !           x                   distance from fire to wall in x direction (m)
-    !           y                   distance from fire to wall in y direction (m)
-    ! outputs   plume_flow_rate     total mass transfer rate up to height z (kg/s)
-    !           entrainment_rate    net entrainment rate up to height z (kg/s)
+!> \param   q_t (input): total fire HRR (w)
+!> \param   q_c (input): convective fire HRR (w)
+!> \param   fire_area (input): cross sectional area at the base of the fire
+!> \param   x (input): distance from fire to wall in x direction (m)
+!> \param   y (input): distance from fire to wall in y direction (m)
+!> \param   z (input): height of the base of the fire (m)
+!> \param   t_inf (input): ambient temperature at base of the fire
+!> \param   pyrolysis_rate (input): mass loss rate of the fire (kg/s)
+!> \param   fire_area (input): cross sectional area at the base of the fire
+!> \param   plume_flow_rate (output): total mass transfer rate up to height z (kg/s)
+!> \param   entrainment_rate (output): net entrainment rate up to height z (kg/s)
+
+    subroutine heskestad_plume (q_t, q_c, fire_area, x, y, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate)
 
     real(eb), intent(in) :: q_t, q_c, z, t_inf, pyrolysis_rate, fire_area, x, y
     real(eb), intent(out) :: plume_flow_rate, entrainment_rate
@@ -486,32 +495,37 @@ module fire_routines
 
 ! --------------------------- chemistry -------------------------------------------
 
+!> \brief   do the combustion chemistry - for plumes in both the upper and lower layers.
+
+!> \param   pyrolysis_rate (input): calculated pyrolysis rate of the fuel (kg/s)
+!> \param   molar_mass (input): molar mass of the fuel (kg/mol)
+!> \param   entrainment_rate (input): calculated entrainment rate (kg/s)
+!> \param   source_room (input): compartment that contains this fire
+!> \param   hoc (input): heat of combustion of the fuel (W/kg))
+!> \param   y_soot (input): current species yield for soot overall (kg/kg)
+!> \param   y_soot_smolder (input): current species yield for smoldering soot (kg/kg)
+!> \param   y_soot_flaming (input): current species yield for flaming soot (kg/kg)
+!> \param   hoc (input): y_co (input): current species yield for CO (kg/kg)
+!> \param   hoc (input): y_hcn (input): current species yield for HCN (kg/kg)
+!> \param   hoc (input): y_trace (input): current species yield for trace species (kg/kg)
+!> \param   n_C (input): molecules of Carbon in fuel; these can be fractional
+!> \param   n_H (input): molecules of Hyrodgen in fuel; these can be fractional
+!> \param   n_O (input): molecules of Oxygen in fuel; these can be fractional
+!> \param   n_N (input): molecules of Nitrogen in fuel; these can be fractional
+!> \param   n_Cl (input): molecules of Chlorine in fuel; these can be fractional
+!> \param   source_o2 (input): oxygen concentration in the source layer of the compartment
+!> \param   lower_o2_limit (input): lower oxygen limit for combustion (as a fraction)
+!> \param   hrr_constrained (output): actual HRR of the fire constrained by available oxygen (W)
+!> \param   pyrolysis_rate_constrained (output): actual pyrolysis rate of the fuel constrained by available oxygen (kg/s)
+!> \param   species_rates (output): production rates of species based on calculated yields and constrained (kg/s)
+!> \param   pyrolysis rate (output): fuel and oxygen are naturally negative (kg/s)
+
     subroutine chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
        y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
-    ! do the combustion chemistry - for plumes in both the upper and lower layers.
     ! note that the kinetics scheme is implemented here.  however, applying it to the
     ! various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is
     ! somewhat complex. Care should be exercised in making changes either here or in the source interface routine.
-    
-    !inputs     pyrolysis_rate      calculated pyrolysis rate of the fuel (kg/s)
-    !           molar_mass          molar mass of the fuel (kg/mol)
-    !           entrainment_rate    calculated entrainment rate (kg/s)
-    !           source_room         compartment that contains this fire
-    !           hoc                 heat of combustion of the fuel (W/kg)
-    !           y_soot              also y_soot_flaming, y_soot_smolder: species yields for soot
-    !           y_co                species yield for CO
-    !           y_hcn               species yield for HCN, may be limited by the amount of nitrogen in the fuel
-    !                               others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
-    !           n_C                 also n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional;
-    !                               yields of O2, HCl, and HCN are determined from this
-    !           source_o2           oxygen concentration in the source layer of the compartment
-    !           lower_o2_limit      lower oxygen limit for combustion (as a fraction)
-    ! outputs   hrr_constrained     actual HRR of the fire constrained by available oxygen (W)
-    !                               pyrolysis_rate_constrained (output): actual pyrolysis rate of the fuel
-    !                               constrained by available oxygen (kg/s)
-    !           species_rates       production rates of species based on calculated yields and constrained
-    !                               pyrolysis rate (kg/s); fuel and oxygen are naturally negative
 
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: y_soot_flaming, y_soot_smolder
@@ -526,10 +540,9 @@ module fire_routines
 
     ! calculate the actual burning rate constrained by available o2.
 
-    ! note the scaling in the tanh function.  tanh approaches ~2 at
-    ! about ~4. the function inside the tanh scales the ordinate to
-    ! ~o2range.  the remainder of the function scales the result
-    ! to 0-1
+    ! note the scaling in the tanh function.  tanh approaches ~2 at about ~4. 
+    ! the function inside the tanh scales the ordinate to ~o2range.  
+    ! the remainder of the function scales the result to 0-1
     o2_entrained = entrainment_rate*source_o2
     o2_factor = tanhsmooth(source_o2, lower_o2_limit+0.01_eb, lower_o2_limit, 1.0_eb, 0.0_eb)
     o2_available = o2_entrained*o2_factor
@@ -598,13 +611,12 @@ module fire_routines
 
 ! --------------------------- integrate_mass -------------------------------------------
 
-    subroutine integrate_mass (tsec, deltt)
+!> \brief   integrate the pyrolysis rate of species to get total mass
 
-    ! routine to integrate the pyrolysis rate of species to get total mass. We also integrate the trace species release 
-    !   and total for all fires
+!> \param   tsec (input): current simulation time (s)
+!> \param   deltt (input): current time step
     
-    ! inputs    tsec    current simulation time
-    !           deltt   current time step
+    subroutine integrate_mass (tsec, deltt)
 
     real(eb), intent(in) :: tsec, deltt
 
@@ -649,15 +661,15 @@ module fire_routines
 
 ! --------------------------- door_jets -------------------------------------------
 
+!> \brief   calculate rates of mass and energy flows into the layers from all door jet fires in the building
+
+!> \param   nfire (input): total number of user-specified fires
+!> \param   flows_doorjets (output): mass and energy flows into layers due to door jet fires
+
     subroutine door_jets (flows_doorjets, djetflg)
 
-    ! physical interface routine to calculate the current
-    ! calculates rates of mass and energy flows into the layers from all door jet fires in the building.
     ! note that we presume that this calculation is performed after the normal fires and flow through vents so we
-    ! have an effetive heat of combustion to use for the burning fuel. 
-
-    ! input     nfire           total number of normal fires
-    ! output    flows_doorjets  mass and energy flows into layers due to fires.
+    ! have an effetive heat of combustion to use for the burning fuel
 
     logical, intent(out) :: djetflg
     real(eb), intent(out) :: flows_doorjets(mxrooms,ns+2,2)
@@ -738,17 +750,17 @@ module fire_routines
 
 ! --------------------------- door_jet_fire -------------------------------------------
 
-    subroutine door_jet_fire (ito, ifrom, netfuel, entrainment_rate, hrr, species_mass_rate, djflowflg)
+!> \brief   calculate heat and combustion chemistry for a door jet fire
 
-    ! calculate heat and combustion chemistry for a door jet fire
-    
-    ! inputs    ito                 room number door jet is flowing into
-    !           ifrom               room number door jet is flowing from
-    !           netfuel             net fuel available to be burned
-    !           entrainment_rate    mass flow rate of entrained air in door jet
-    ! outputs   hrr                 total heat released by door jet fire
-    !           species_mass_rate   net change in mass of each species in door jet
-    !           djflowflg           true if there are door jets at this vent
+!> \param   ito (input): room number door jet is flowing into
+!> \param   ifrom (input): room number door jet is flowing from
+!> \param    netfuel (input): net fuel available to be burned
+!> \param   entrainment_rate (input): mass flow rate of entrained air in door jet
+!> \param   hrr (output): total heat released by door jet fire
+!> \param   species_mass_rate (output): net change in mass of each species in door jet
+!> \param   djflowflg (output): true if there are door jets at this vent
+
+    subroutine door_jet_fire (ito, ifrom, netfuel, entrainment_rate, hrr, species_mass_rate, djflowflg)
 
     integer, intent(in) :: ito, ifrom
     real(eb), intent(in) :: netfuel, entrainment_rate
@@ -817,14 +829,12 @@ module fire_routines
 
 ! --------------------------- flame_height -------------------------------------------
 
-    real(kind=eb) function flame_height (hrr, fire_area)
+!> \brief   calculate flame height for a given fire size and fire_area from Heskestad's correlation
 
-    ! calculates flame height for a given fire size and fire_area
-    ! SFPE handbook, Section 2, Chapter 1
-    
-    ! inputs    hrr             fire Size (W)
-    !           fire_area       area of the base of the fire (m^2)
-    ! output    f_height    calculated flame height (m)
+!> \param   hrr (input): fire size (W)
+!> \param   fire_area (input): area of the base of the fire (m^2)
+
+    real(kind=eb) function flame_height (hrr, fire_area)
 
     real(eb), intent(in) :: hrr, fire_area
     real(eb)  :: f_height
@@ -843,16 +853,18 @@ module fire_routines
     end function flame_height
 
 
-! --------------------------- get_gas_tempandvelocity -------------------------------------------
+! --------------------------- get_gas_temp_and_velocity -------------------------------------------
 
-    subroutine get_gas_tempandvelocity (iroom, x, y, z, tg, vg)
+!> \brief   calculate gas temperature and velocity near a target
 
-    ! calculate gas temperature nearby a target
-    
-    ! inputs    iroom   compartment number
-    !           x, y, z position of target in compartment
-    ! outputs   tg      calculated gas temperature
-    !           vg      calculated gas velocity
+!> \param   iroom (input): compartment number that contains the target
+!> \param   x (input): distance from target to wall in x direction (m)
+!> \param   y (input): distance from target to wall in y direction (m)
+!> \param   z (input): distance from target to floor in z direction (m)
+!> \param   tg (output): calculated gas temperature
+!> \param   vg (output): calculated gas velocity
+
+    subroutine get_gas_temp_and_velocity (iroom, x, y, z, tg, vg)
 
     integer, intent(in) :: iroom
     real(eb), intent(in) :: x, y, z
@@ -913,11 +925,11 @@ module fire_routines
                 hall_width = 0.0_eb
             end if
             ! first calculate plume temperature at desired location
-            call get_plume_tempandvelocity (hrr, chirad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
+            call get_plume_temp_and_velocity (hrr, chirad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
-            call get_plume_tempandvelocity (hrr, chirad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, &
+            call get_plume_temp_and_velocity (hrr, chirad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, &
                 tplume_ceiling, vplume_ceiling)
-            call get_ceilingjet_tempandvelocity(hrr, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, &
+            call get_ceiling_jet_temp_and_velocity(hrr, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, &
                 hall_width, tcj, vcj)
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
@@ -930,29 +942,28 @@ module fire_routines
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
     return
 
-    end subroutine get_gas_tempandvelocity
+    end subroutine get_gas_temp_and_velocity
 
-! --------------------------- get_ceilingjet_tempandvelocity --------------------------------------
+! --------------------------- get_ceiling_jet_temp_and_velocity --------------------------------------
 
-    subroutine get_ceilingjet_tempandvelocity (hrr, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w, tcj, vcj)
+!> \brief   calculate ceiling jet temperature and velocity at a specified distance from the fire 
+!>          from Alpert / Heskestad correlation or Delichastsios correlation (for long hallways)
 
-    ! calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
-    !
-    ! Uses Alpert / Heskestad's correlation to calculate plume  temperature
-    
-    ! inputs    hrr    total heat release rate of the fire (W)
-    !           tu      upper layer gas temperature (K)
-    !           tl      lower layer gas temperature (K)
-    !           tplume  plume temperature at ceiling (K)
-    !           zfire   height of the base of the fire (m)
-    !           zlayer  height of the hot/cold gas layer interface (m)
-    !           zceil   height of the compartment ceiling (m)
-    !           zin     position to calculate temperature (m)
-    !           xin     distance to calculate temperature (parallel to long wall ... for hallways) (m)
-    !           r       horizontal distance from fire centerline (m)
-    !           w       width of hallway is compartment is designated as a hallway, zero otherwisw
-    ! outputs   tcj     temperature at height zin and radius r (K)
-    !           vcj     velocity at height zin and radius r (m/s)
+!> \param   hrr (input): total heat release rate of the fire (W)
+!> \param   tu (input): upper layer gas temperature (K)
+!> \param   tl (input): lower layer gas temperature (K)
+!> \param   tplume (input): plume temperature at ceiling (K)
+!> \param   zfire (input): height of the base of the fire (m)
+!> \param   zlayer (input): height of the hot/cold gas layer interface (m)
+!> \param   zceil (input): height of the compartment ceiling (m)
+!> \param   zin (input): position to calculate temperature (m)
+!> \param   xin (input): distance to calculate temperature (parallel to long wall ... for hallways) (m)
+!> \param   r (input): horizontal distance from fire centerline (m)
+!> \param   w (input): width of hallway is compartment is designated as a hallway, zero otherwise
+!> \param   tcj (output): temperature at height zin and radius r (K)
+!> \param   vcj (output): velocity at height zin and radius r or distance xin (m/s)
+
+    subroutine get_ceiling_jet_temp_and_velocity (hrr, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w, tcj, vcj)
 
     real(eb), intent(in) :: hrr, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
@@ -1019,28 +1030,27 @@ module fire_routines
     end if
 
     return
-    end subroutine get_ceilingjet_tempandvelocity
+    end subroutine get_ceiling_jet_temp_and_velocity
 
-! --------------------------- get_plume_tempandvelocity -------------------------------------------
+! --------------------------- get_plume_temp_and_velocity -------------------------------------------
 
-    subroutine get_plume_tempandvelocity (hrr, chirad, area, tu, tl, zfire, zlayer, zin, r, tplume, uplume)
+!> \brief   calculate plume centerline temperature at a specified height and distance from the fire.
+!>          uses Heskestad's correlation to calculate plume temperature with Evan's method to determine virtual 
+!>          fire size and fire origin when fire is in the lower layer and position is in the upper layer
 
-    ! calculates plume centerline temperature at a specified height and distance from the fire.
-    !
-    ! Uses Heskestad's correlation to calculate plume  temperature with Evan's method to determine virtual 
-    ! fire size and fire origin when fire is in the lower layer and position is in the upper layer
-    
-    ! inputs    hrr         total heat release rate of the fire (W)
-    !           chirad        fraction of fire HRR released as radiation
-    !           area        fire diamater (m)
-    !           tu          upper layer gas temperature (K)
-    !           tl          lower layer gas temperature (K)
-    !           zfire       height of the base of the fire (m)
-    !           zlayer      height of the hot/cold gas layer interface (m)
-    !           zin         position to calculate plume centerline temperature (m)
-    !           r           horizontal distance from fire centerline (m)
-    ! outputs   tplume      plume temperature at height zin and radius r (K)
-    !           uplume      plume velocity at height zin and radius r (m/s)
+!> \param   hrr (input): total heat release rate of the fire (W)
+!> \param   chirad (input): fraction of fire HRR released as radiation
+!> \param   area (input): fire area at the base of the fire (m)
+!> \param   tu (input): upper layer gas temperature (K)
+!> \param   tl (input): lower layer gas temperature (K)
+!> \param   zfire (input): height of the base of the fire (m)
+!> \param   zlayer (input): height of the hot/cold gas layer interface (m)
+!> \param   zin (input): position to calculate plume centerline temperature (m)
+!> \param   r (input): horizontal distance from fire centerline (m)
+!> \param   tplume (output): plume temperature at height zin and radius r (K)
+!> \param   uplume (output): plume velocity at height zin and radius r (m/s)
+
+    subroutine get_plume_temp_and_velocity (hrr, chirad, area, tu, tl, zfire, zlayer, zin, r, tplume, uplume)
 
     real(eb), intent(in) :: hrr, chirad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, uplume
@@ -1103,15 +1113,16 @@ module fire_routines
         end if
     end if
     return
-    end subroutine get_plume_tempandvelocity
+    end subroutine get_plume_temp_and_velocity
 
 ! --------------------------- update_species (toxict) -------------------------------------------
 
-    subroutine update_species (deltt)
-
-    ! calculate species concentrations (molar/volume fraction), mass density (kg/m^3), opacity (1/m), ct (mg-s/m^3)
+!> \brief   calculate species in appropriate output units
+!>          (molar/volume fraction or %), mass density (kg/m^3), opacity (1/m), ct (mg-s/m^3)
     
-    ! input     deltt   length of the latest time step (s)
+!> \param   deltt (input): current time step (s)
+
+    subroutine update_species (deltt)
 
     real(eb), intent(in) :: deltt
 
@@ -1196,11 +1207,11 @@ module fire_routines
 
 ! --------------------------- collect_fire_data_for_smokeview -------------------------------------------
 
-    subroutine collect_fire_data_for_smokeview (nfires)
-
-    ! collect fire information into a single list for smokeview
+!> \brief   collect fire information into a single list for smokeview
     
-    ! output    nfires  number of fires
+!> \param   nfires (ouput): number of fires
+
+    subroutine collect_fire_data_for_smokeview (nfires)
 
     integer, intent(out) :: nfires
 
@@ -1223,16 +1234,17 @@ module fire_routines
     return
     end subroutine collect_fire_data_for_smokeview
 
-! --------------------------- update_fire_objects -------------------------------------------
+! --------------------------- update_fire_ignition -------------------------------------------
 
-    subroutine update_fire_objects (iflag, told, dt, ifobj, tobj)
+!> \brief   check for and set fire ignition
 
-    ! check for and set object fire ignition
-    ! inputs    iflag   flags if check, set, or update variables
-    !           told    time previous to this time step
-    !           dt      length of last time step
-    !           ifobj   object number that ignites (return)
-    !           tobj    time object ignites
+!> \param   iflag (input): flags if check, set, or update variables
+!> \param   told (input): time previous to this time step (s)
+!> \param   dt (input): length of last time step (s)
+!> \param   ifobj (output): object number that ignites
+!> \param   tobj (output): time fire ignites (s)
+
+    subroutine update_fire_ignition (iflag, told, dt, ifobj, tobj)
 
     integer, intent(in) :: iflag
     integer, intent(out) :: ifobj
@@ -1268,15 +1280,15 @@ module fire_routines
                 end if
             else if (ignflg==trigger_by_temp) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition (told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion, &
+                call check_fire_ignition (told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion, &
                     fireptr%temperature,i,ifobj,tobj,tmpob(1,i))
             else if (ignflg==trigger_by_flux) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
+                call check_fire_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
                     fireptr%incident_flux,i,ifobj,tobj,tmpob(1,i))
             else
-                write(iofill, '(a)') '***Error in Update_fire_objects: Incorrectly defined ignition type in input file.'
-                call cfastexit('update_fire_objects',1)
+                write(iofill, '(a)') '***Error in update_fire_ignition: Incorrectly defined ignition type in input file.'
+                call cfastexit('update_fire_ignition',1)
                 stop
             end if
         end if
@@ -1312,11 +1324,23 @@ module fire_routines
     end if
 
     return
-    end subroutine update_fire_objects
+    end subroutine update_fire_ignition
 
-! --------------------------- check_object_ignition -------------------------------------------
+! --------------------------- check_fire_ignition -------------------------------------------
+    
+!> \brief   determine if a fire has ignited
+    
+!> \param   iobj (input): pointer to current fire being tested
+!> \param   told (input): simulation time at previous time step
+!> \param   dt (input): current time step
+!> \param   cond (input): current value of condition being tested (could be time, temperature or heat flux)
+!> \param   trip (input): trigger value for ignition in units consistent with cond
+!> \param   oldcond (input): previous value of condition being tested
+!> \param   ifobj (output): fire number of first item ignited
+!> \param   tobj (output): ignition time of first item ignited
+!> \param   tmpob (output): (1) = 1 if ignition has occured for this fire, (2) ignition time for this fire
 
-    subroutine check_object_ignition(told, dt, cond, trip, oldcond, iobj, ifobj, tobj, tmpob)
+    subroutine check_fire_ignition (told, dt, cond, trip, oldcond, iobj, ifobj, tobj, tmpob)
     
     ! determine if a fire has ignited
     
@@ -1353,6 +1377,6 @@ module fire_routines
 
     return
 
-    end subroutine check_object_ignition
+    end subroutine check_fire_ignition
 
 end module fire_routines

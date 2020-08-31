@@ -510,7 +510,7 @@ Natural flow through windows and doors is governed by the vertical stratificatio
 \label{fig:Flow_Patterns}
 \end{figure}
 
-\subsection{Calculating flow Through Wall Vents}
+\subsection{Calculating Flow Through Wall Vents}
 
 Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at these heights.  Because a given segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating Bernoulli's equation from $b$ to $t$:
 \begin{eqnarray}
@@ -542,7 +542,7 @@ Assuming that $T_{\rm u,1} > T_{\rm l,2}$, the mass entrainment of the spill plu
 \ee
 where $C_{\rm m}$ is an empirical constant equal to 0.44, $w$ is the width of the opening, $z_{\rm I}$ is the height of the layer interface, and $z_{\rm N}$ is the height of the neutral plane. Suggested values for $C_{\rm m}$ vary between 0.44 and 0.66, all of which were determined empirically in a number of different experimental configurations.
 
-For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above.
+For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright vent mixing, above.
 
 %For leakage, the flow coefficient is taken to be 0.68, consistent with a wide range of experimental leakage tests compiled in the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
 
@@ -560,7 +560,7 @@ Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\
 \ee
 Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,   $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor, $C_{\rm s}$, is 0.754 for round and 0.942 for square openings.
 
-As with doors and windows, mass and heat are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and heat extracted from the layers of the lower compartment, and then consider where this mass and heat are deposited in the upper compartment. First, the mass and heat are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
+As with wall vents, mass and heat are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and heat extracted from the layers of the lower compartment, and then consider where this mass and heat are deposited in the upper compartment. First, the mass and heat are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
 \begin{eqnarray}
   \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \\[.1in]
   \doh_{\rm up} &=& \alpha \; \cp \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; \cp \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl

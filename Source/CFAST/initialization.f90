@@ -39,19 +39,19 @@ module initialization_routines
     private
 
     public get_thermal_property, initialize_leakage, initialize_targets, initialize_ambient, offset, &
-        initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
+        initialize_memory, initialize_fires, initialize_species, initialize_walls
 
     contains
 
 
 ! --------------------------- get_thermal_property -------------------------------------------
 
-    subroutine get_thermal_property (name, tp)
-
-    ! check for and return index to a thermal property
+!> \brief   check for and return index to a thermal property
     
-    ! input     name    desired thermal property name
-    ! output    tp      thermal property number of desired thermal property
+!> \param   name (input): desired thermal property name
+!> \param   tp (output): thermal property number of desired thermal property
+
+    subroutine get_thermal_property (name, tp)
     
     implicit none
     character(len=*), intent(in) :: name
@@ -78,10 +78,10 @@ module initialization_routines
 
 ! --------------------------- initialize_ambient -------------------------------------------
 
-    subroutine initialize_ambient ()
+!> \brief   compute initializations for variables related to ambient conditions.  
+!>          this initialization is done after we read in the input file
 
-    ! computes initializations for variables related to ambient conditions.  
-    ! this initialization is done after we read in the input file
+    subroutine initialize_ambient ()
 
     real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
     integer i, ii, iwall, iroom, itarg
@@ -216,10 +216,10 @@ module initialization_routines
     end subroutine initialize_ambient
 
 ! --------------------------- initialize_leakage -------------------------------------------
+    
+!> \brief   initialize specified leakage by creating vents adding up to specified area
 
     subroutine initialize_leakage
-    
-    ! initializes specified leakage by creating vents adding up to specified area
     
     integer iroom, counter
     real(eb) :: area
@@ -284,9 +284,9 @@ module initialization_routines
 
 ! --------------------------- initialize_memory -------------------------------------------
 
-    subroutine initialize_memory
+!>  initializes main model variable
 
-    !     initializes main memory
+    subroutine initialize_memory
 
     integer i
     type(room_type), pointer :: roomptr
@@ -524,7 +524,7 @@ module initialization_routines
     end if 
     
     ! fires
-    call initialize_fire_objects
+    call initialize_fires
     
     ! spreadsheet output data
     if (alloc_ss) then
@@ -566,9 +566,11 @@ module initialization_routines
     end subroutine initialize_memory
     
 
-! --------------------------- initialize_fire_objects -------------------------------------------
+! --------------------------- initialize_fires -------------------------------------------
+    
+!> \brief   initialize fire variables
 
-    subroutine initialize_fire_objects
+    subroutine initialize_fires
     
     integer i, lsp
 
@@ -627,13 +629,13 @@ module initialization_routines
     end if
 
     return
-    end subroutine initialize_fire_objects
+    end subroutine initialize_fires
 
-! --------------------------- initspecc -------------------------------------------
+! --------------------------- initialize_species -------------------------------------------
+    
+!> \brief   initialize species variables
 
     subroutine initialize_species
-
-    ! initializes variables associated with species
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,mxrooms,ns)
     integer i, j, k, ip, iprod, isof, lsp
@@ -706,10 +708,10 @@ module initialization_routines
     end subroutine initialize_species
 
 ! --------------------------- initialize_targets -------------------------------------------
+    
+!> \brief   initialize target variables
 
     subroutine initialize_targets
-
-    ! initialize target data structures
 
     real(eb) :: hypotenuse
     integer :: itarg, iroom, tp, j
@@ -786,8 +788,6 @@ module initialization_routines
             end do
         end if
 
-
-
         ! set up target thermal properties
         tcname = targptr%material
         if (tcname==' ') then
@@ -813,11 +813,12 @@ module initialization_routines
 
 ! --------------------------- initialize_walls  -------------------------------------------
 
-    subroutine initialize_walls (tstop)
+!> \brief   initializes data structures associated with walls and targets
 
-    ! initializes data structures associated with walls and targets
-    ! input  tstop  simulation time. used to estimate a characteristic thermal penetration time and make sure
-    !               explicit calculation will converge
+!> \param   tstop (input): total simulation time. used to estimate a characteristic thermal penetration time 
+    !>                     and ensure the explicit calculation will converge
+
+    subroutine initialize_walls (tstop)
 
     ! kw = thermal conductivity
     ! cw = specific heat (j/kg)

@@ -6,9 +6,9 @@ module solve_routines
     use convection_routines, only: convection
     use debug_routines, only: output_spreadsheet_residuals
     use exit_routines, only: cfastexit, delete_output_files
-    use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_ignition
+    use fire_routines, only: fire, vent_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_ignition
     use isosurface, only: output_isodata
-    use hflow_routines, only: horizontal_flow, leakage_flow
+    use hflow_routines, only: wall_flow, leakage_flow
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : get_vent_opening
@@ -916,16 +916,16 @@ module solve_routines
 
     epsp = rpar(1)
 
-    ! calculate flow due to unforced vents (horizontal_flow for doors/windows
+    ! calculate flow due to unforced vents (wall_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
-    call horizontal_flow (tsec,epsp,flows_hvents)
+    call wall_flow (tsec,epsp,flows_hvents)
     call leakage_flow (epsp,flows_leaks)
     call vertical_flow (tsec,epsp,flows_vvents)
     call mechanical_flow (tsec,epsp,flows_mvents,filtered)
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flows_fires)
-    call door_jets (flows_doorjets,djetflg)
+    call vent_jets (flows_doorjets,djetflg)
     
     ! calculation opening fraction for radiation loss and etc
     call wall_opening_fraction (tsec)

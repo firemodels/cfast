@@ -26,7 +26,7 @@ module fire_routines
 
     private
 
-    public door_jets, fire, flame_height, get_gas_temp_and_velocity, integrate_mass, collect_fire_data_for_smokeview, &
+    public vent_jets, fire, flame_height, get_gas_temp_and_velocity, integrate_mass, collect_fire_data_for_smokeview, &
         update_fire_ignition, update_species
 
     contains
@@ -400,7 +400,7 @@ module fire_routines
     hrr_r = hrr*chirad
     hrr_c = hrr*(1.0_eb-chirad)
     
-    ! keep track of unburned fuel composition because it may burn later in a door jet
+    ! keep track of unburned fuel composition because it may burn later in a vent jet
     if (species_mass_rate(u,fuel)>0.0_eb) then
         pyrolysis_rate_upper = species_mass_rate(u,fuel)
         source_o2 = lower_o2_limit+0.02
@@ -524,7 +524,7 @@ module fire_routines
        y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     ! note that the kinetics scheme is implemented here.  however, applying it to the
-    ! various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is
+    ! various pieces, namely the lower layer plume, the upper layer plume, and the vent jet fires, is
     ! somewhat complex. Care should be exercised in making changes either here or in the source interface routine.
 
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl
@@ -659,14 +659,14 @@ module fire_routines
     return
     end subroutine integrate_mass
 
-! --------------------------- door_jets -------------------------------------------
+! --------------------------- vent_jets -------------------------------------------
 
-!> \brief   calculate rates of mass and energy flows into the layers from all door jet fires in the building
+!> \brief   calculate rates of mass and energy flows into the layers from all vent jet fires in the building
 
 !> \param   nfire (input): total number of user-specified fires
-!> \param   flows_doorjets (output): mass and energy flows into layers due to door jet fires
+!> \param   flows_doorjets (output): mass and energy flows into layers due to vent jet fires
 
-    subroutine door_jets (flows_doorjets, djetflg)
+    subroutine vent_jets (flows_doorjets, djetflg)
 
     ! note that we presume that this calculation is performed after the normal fires and flow through vents so we
     ! have an effetive heat of combustion to use for the burning fuel
@@ -689,11 +689,11 @@ module fire_routines
     djetflg = .false.
     if (option(fdfire)/=on.or.n_fires<=0) return
 
-    ! if no vents have a door jet fire then exit
+    ! if no vents have a vent jet fire then exit
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        ! is there a door jet fire into room iroom1
+        ! is there a vent jet fire into room iroom1
         iroom1 = ventptr%room1
         room1ptr => roominfo(iroom1)
         if (room1ptr%temp(u)>=tgignt) then
@@ -704,7 +704,7 @@ module fire_routines
             end if
         end if
 
-        !is there a door jet fire into room iroom2
+        !is there a vent jet fire into room iroom2
         iroom2 = ventptr%room2
         room2ptr => roominfo(iroom2)
         if (room2ptr%temp(u)>=tgignt) then
@@ -717,7 +717,7 @@ module fire_routines
     end do
     if (.not.djetflg)return
 
-    ! calculate the heat for each of the door jet fires
+    ! calculate the heat for each of the vent jet fires
 
         do i = 1, n_hvents
             ventptr=>hventinfo(i)
@@ -727,8 +727,8 @@ module fire_routines
                 room2ptr => roominfo(iroom2)
                 flw1to2 = room1ptr%species_fraction(u,fuel)*(vss(1,i)+vsa(1,i))
                 flw2to1 = room2ptr%species_fraction(u,fuel)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,iroom1,flw1to2,vsas(2,i),qpyrol2,species_mass_rate2,dj2flag)
-                call door_jet_fire (iroom1,iroom2,flw2to1,vsas(1,i),qpyrol1,species_mass_rate1,dj1flag)
+                call vent_jet_fire (iroom2,iroom1,flw1to2,vsas(2,i),qpyrol2,species_mass_rate2,dj2flag)
+                call vent_jet_fire (iroom1,iroom2,flw2to1,vsas(1,i),qpyrol1,species_mass_rate1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if (dj1flag) then
@@ -746,25 +746,25 @@ module fire_routines
         roomptr%qdot_doorjet = flows_doorjets(i,q,u) + flows_doorjets(i,q,l)
     end do
     return
-    end subroutine door_jets
+    end subroutine vent_jets
 
-! --------------------------- door_jet_fire -------------------------------------------
+! --------------------------- vent_jet_fire -------------------------------------------
 
-!> \brief   calculate heat and combustion chemistry for a door jet fire
+!> \brief   calculate heat and combustion chemistry for a vent jet fire
 
-!> \param   ito (input): room number door jet is flowing into
-!> \param   ifrom (input): room number door jet is flowing from
+!> \param   ito (input): room number vent jet is flowing into
+!> \param   ifrom (input): room number vent jet is flowing from
 !> \param    netfuel (input): net fuel available to be burned
-!> \param   entrainment_rate (input): mass flow rate of entrained air in door jet
-!> \param   hrr (output): total heat released by door jet fire
-!> \param   species_mass_rate (output): net change in mass of each species in door jet
-!> \param   djflowflg (output): true if there are door jets at this vent
+!> \param   entrainment_rate (input): mass flow rate of entrained air in vent jet
+!> \param   hrr (output): total heat released by vent jet fire
+!> \param   species_mass_rate (output): net change in mass of each species in vent jet
+!> \param   vent_jet_flow_flag (output): true if there are vent jets at this vent
 
-    subroutine door_jet_fire (ito, ifrom, netfuel, entrainment_rate, hrr, species_mass_rate, djflowflg)
+    subroutine vent_jet_fire (ito, ifrom, netfuel, entrainment_rate, hrr, species_mass_rate, vent_jet_flow_flag)
 
     integer, intent(in) :: ito, ifrom
     real(eb), intent(in) :: netfuel, entrainment_rate
-    logical, intent(out) :: djflowflg
+    logical, intent(out) :: vent_jet_flow_flag
     real(eb), intent(out) :: hrr, species_mass_rate(2,ns)
 
     real(eb) :: xmass(ns), source_o2, xxmolar_mass, hrr_constrained, pyrolysis_rate_constrained, tjet, hoc, flowfrac
@@ -774,16 +774,16 @@ module fire_routines
     type(room_type), pointer :: room1ptr, room2ptr
 
     hrr = 0.0_eb
-    djflowflg = .false.
+    vent_jet_flow_flag = .false.
     room1ptr => roominfo(ito)
     room2ptr => roominfo(ifrom)
     tjet = room2ptr%temp(u)
 
-    ! we only want to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
+    ! we only want to do the vent jet calculation if there is fuel, oxygen, and sufficient temperature in the vent jet
     if (netfuel>0.0_eb.and.entrainment_rate>0.0_eb.and.tjet>=tgignt.and.room2ptr%species_mass(u,fuel_Q)>0.0_eb.and. &
         room2ptr%species_mass(u,fuel_moles)>0.0_eb) then
 
-        djflowflg = .true.
+        vent_jet_flow_flag = .true.
         xmass(1:ns) = 0.0_eb
         
         source_o2 = room1ptr%species_fraction(l,o2)
@@ -825,7 +825,7 @@ module fire_routines
         species_mass_rate(u,fuel_h2o) = -flowfrac*room2ptr%species_mass(u,fuel_h2o)
     end if
     return
-    end subroutine door_jet_fire
+    end subroutine vent_jet_fire
 
 ! --------------------------- flame_height -------------------------------------------
 

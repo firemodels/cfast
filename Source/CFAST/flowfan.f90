@@ -23,15 +23,15 @@ module mflow_routines
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered)
-
-    ! physical interface routine to calculate flow through all forced vents (mechanical flow).
-    ! it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
+!> \brief   physical interface routine to calculate flow through all forced vents (mechanical flow).
+!>          it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
     
-    ! inputs    tsec            current simulation time (s)
-    !           epsp            pressure error tolerance
-    ! outputs   uflw_mf         change in mass and energy for each layer / compartment via flow through mechanical vents
-    !           iflw_filtered   mass and energy removed from system via filtering at mechanical vents
+!> \param   tsec (input): current simulation time (s)
+!> \param   epsp (input): pressure error tolerance
+!> \param   uflw_mf (output): change in mass and energy for each layer / compartment via flow through mechanical vents
+!> \param   iflw_filtered (output): mass and energy removed from system via filtering at mechanical vents
+
+    subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered)
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2)
@@ -169,14 +169,14 @@ module mflow_routines
     end subroutine mechanical_flow
 
 ! --------------------------- mv_fan -------------------------------------------
+    
+!> \brief   calculate the fan flow in m^3/s.  at the moment, it's just a constant flow fan
+    
+!> \param   ventptr (input) pointer to vent of interest
+!> \param   epsp (input) pressure error tolerance
+!> \param   fraction (input) current vent opening fraction
 
     real(eb) function mv_fan (ventptr, epsp, fraction)
-    
-    ! calculates the fan flow in m^3/s.  At the moment, it's just a constant flow fan
-    
-    ! inputs    ventptr     pointer to vent of interest
-    !           epsp        pressure error tolerance
-    !           fraction    current vent opening fraction
 
     type(vent_type), intent(in) :: ventptr
     real(eb), intent(in) :: epsp, fraction
@@ -190,12 +190,12 @@ module mflow_routines
 
 ! --------------------------- mv_pressure -------------------------------------------
     
+!> \brief   calculate the absolute pressure in the vented compartment at the specified height
+    
+!> \param   iroom (input) compartment number
+!> \param   height (input) height within compartment where pressure is calculated
+    
     real(eb) function mv_pressure(iroom, height)
-    
-    ! calculates the absolute pressure in the vented compartment at the specified height
-    
-    ! inputs    iroom   compartment number
-    !           height  height within compartment where pressure is calculated
     
     integer, intent(in) :: iroom
     real(eb), intent(in) :: height
@@ -219,14 +219,14 @@ module mflow_routines
 
 ! --------------------------- mv_fraction -------------------------------------------
     
+!> \brief   calculate the fraction of mechanical flow that come from or goes to a layer
+    
+!> \param   ventptr (input) pointer to vent of interest
+!> \param   ifromto (input) 1 = flow from first compartment from specified layer
+!>                          2 = flow into second compartment into specified layer
+!> \param   layer (input) 1 for upper layer, 2 for lower layer
+    
     real(eb) function mv_fraction (ventptr, ifromto, layer)
-    
-    ! calculates the fraction of mechanical flow that come from or goes to a layer
-    
-    ! inputs    ventptr pointer to vent of interest
-    !           ifromto 1 = flow from first compartment from specified layer
-    !                   2 = flow into second compartment into specified layer
-    !           layer   1 for upper layer, 2 for lower layer
     
     integer, intent(in) :: ifromto, layer
     type(vent_type), intent(in) :: ventptr

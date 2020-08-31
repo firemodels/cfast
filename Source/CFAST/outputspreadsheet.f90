@@ -150,14 +150,14 @@ module spreadsheet_routines
             call ssaddtoheader (sscompinfo, n_sscomp, 'FLHGT_'//trim(cFire), 'Flame Height', fireptr%id, 'm')
         end do
         
-        ! Door jet fire results
+        ! vent jet fire results
         do i = 1, n_rooms+1
             if (i==n_rooms+1) then
-                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//'Outside', 'HRR Door Jet Fires', 'Outside', 'W')
+                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//'Outside', 'HRR vent jet Fires', 'Outside', 'W')
             else
                 call toIntString(i,cRoom)
                 roomptr => roominfo(i)
-                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//trim(cRoom), 'HRR Door Jet Fires', roomptr%id, 'W')
+                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//trim(cRoom), 'HRR vent jet Fires', roomptr%id, 'W')
             end if
         end do
         
@@ -1279,7 +1279,7 @@ module spreadsheet_routines
                 call ssaddtolist (position,f_height,outarray)
             end if
         end do
-    case ('HRR Door Jet Fires')
+    case ('HRR vent jet Fires')
         do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (i<n_rooms+1.and.roomptr%id==device) then

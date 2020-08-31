@@ -224,7 +224,7 @@ module spreadsheet_header_routines
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
-       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', 'Mixing Between Layers', &
+       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'vent jet Fire Flow', 'Mixing Between Layers', &
     'Convective Flow', 'Radiative Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'K', 'K', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/

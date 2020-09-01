@@ -4,7 +4,7 @@
 
     use exit_routines, only: cfastexit, delete_output_files
     use fire_routines, only: flame_height
-    use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, offset
+    use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, initialize_solver_vector
     use namelist_input_routines, only: namelist_input, read_misc
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files
@@ -42,9 +42,9 @@
 
     ! --------------------------- read_input_file -------------------------------------------
 
-    subroutine read_input_file ()
+!> \brief   read the input file and set up the data for processing
 
-    ! read the input file and set up the data for processing
+    subroutine read_input_file ()
 
     implicit none
 
@@ -142,7 +142,7 @@
     call initialize_targets
 
     ! now calculate the offsets - the order is important
-    call offset
+    call initialize_solver_vector
 
     ! check fire objects
     do i = 1, n_fires
@@ -481,13 +481,11 @@
 
     ! --------------------------- open_files -------------------------------------------
 
+!> \brief   get the paths and project base name open the input file for reading, delete the output files, and open the log file
+
     subroutine open_files ()
     
     use namelist_data
-
-    ! get the paths and project base name open the input file for reading
-    ! delete the output files
-    ! open the log file
 
     logical ex
     integer :: lp, ld, le, ios
@@ -589,15 +587,17 @@
 
     end subroutine open_files
 
-    ! --------------------------- exehandle -------------------------------------------
+    ! --------------------------- exehandle -------------------------------------------)
 
+!> \brief   get the arguments used to call the main program
+
+!> \param   exepath (output): path (without the name) to the folder where the executable resides
+!> \param   datapath (output): path (without a file name) to the folder where the project data file resides
+!> \param   project  (output): name of the project - this name cannot exceed 64 charcters. the total length
+!>          of datapath + project cannot exceed 256 characters
+!> \param   extension (output): file extension of input file
+    
     subroutine exehandle (exepath, datapath, project, extension)
-
-    ! get the arguments used to call the main program
-    ! arguments: exepath - path (without the name) to the folder where the executable resides
-    !            datapath - path (without a file name) to the folder where the project data file resides
-    !		     project - name of the project - this name cannot exceed 64 charcters. the total lenght of
-    !                          datapath + project cannot exceed 256 characters
 
     character(len=*), intent(out) :: exepath, datapath, project, extension
 
@@ -690,6 +690,8 @@
     end subroutine exehandle
 
     ! --------------------------- setup_slice_iso -------------------------------------------
+    
+!> \brief   allocate and initialize slice file and iso surface variables after reading input file
 
     subroutine setup_slice_iso
 

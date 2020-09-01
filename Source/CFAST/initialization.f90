@@ -38,7 +38,7 @@ module initialization_routines
 
     private
 
-    public get_thermal_property, initialize_leakage, initialize_targets, initialize_ambient, offset, &
+    public get_thermal_property, initialize_leakage, initialize_targets, initialize_ambient, initialize_solver_vector, &
         initialize_memory, initialize_fires, initialize_species, initialize_walls
 
     contains
@@ -816,7 +816,7 @@ module initialization_routines
 !> \brief   initializes data structures associated with walls and targets
 
 !> \param   tstop (input): total simulation time. used to estimate a characteristic thermal penetration time 
-    !>                     and ensure the explicit calculation will converge
+!>                         and ensure the explicit calculation will converge
 
     subroutine initialize_walls (tstop)
 
@@ -881,7 +881,7 @@ module initialization_routines
                 n_nodes = roomptr%nodes_w(1:mxslb+1,j)
                 wtemps = roomptr%t_profile(1:nnodes,j)
                 walldx = roomptr%walldx(1:nnodes,j)
-                call wset(n_nodes,nslab,tstop,walldx,slab_splits,k_w,c_w,rho_w,thick_w,&
+                call initialize_wall_nodes(n_nodes,nslab,tstop,walldx,slab_splits,k_w,c_w,rho_w,thick_w, &
                    thick,wtemps,interior_ambient_temperature,exterior_ambient_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = n_nodes
                 roomptr%t_profile(1:nnodes,j) = wtemps
@@ -957,25 +957,26 @@ module initialization_routines
     return
     end subroutine initialize_walls
 
-! --------------------------- wset -------------------------------------------
+! --------------------------- initialize_wall_nodes -------------------------------------------
 
-    subroutine wset (n_nodes,nslab,tstop,walldx,slab_splits,wk,wspec,wrho,slab_thickness,wall_thickness,wtemp,tamb,text)
-
-    ! initializes temperature profiles, breakpoints used in wall conduction calculations
+!> \brief   initialize temperature profiles, breakpoints used in wall conduction calculations
     
-    ! inputs    n_nodes         number of nodes in each slab
-    !           nslab           number of slabs
-    !           tstop           final simulation time
-    !           slab_splits     fraction of points assigned to slabs 1, 2 and 3
-    !           wk              wall thermal conductivity
-    !           wspec           wall specific heat
-    !           wrho            wall density
-    !           slab_thickness  thickness of each slab
-    !           tamb            ambient temperature seen by interior wall
-    !           text            ambient temperature seen by exterior wall
-    ! outputs   wall_thickness  total thickness of wall
-    !           wtemp           wall temperature profile
-    !           walldx          wall node positions
+!> \param   n_nodes (input): number of nodes in each slab
+!> \param   nslab (input): number of slabs
+!> \param   tstop (input): final simulation time
+!> \param   slab_splits (input): fraction of points assigned to slabs 1, 2 and 3
+!> \param   wk (input): wall thermal conductivity
+!> \param   wspec (input): wall specific heat
+!> \param   wrho (input): wall density
+!> \param   slab_thickness (input): thickness of each slab
+!> \param   tamb (input): ambient temperature seen by interior wall
+!> \param   text (input): ambient temperature seen by exterior wall
+!> \param   wall_thickness (output): total thickness of wall
+!> \param   wtemp (output): wall temperature profile
+!> \param   walldx (output): wall node positions
+
+    subroutine initialize_wall_nodes (n_nodes, nslab, tstop, walldx, slab_splits, wk, wspec, wrho, slab_thickness, &
+        wall_thickness, wtemp, tamb, text)
 
     integer, intent(in) :: nslab
     real(eb), intent(in) :: tstop, slab_splits(*), wk(*), wspec(*), wrho(*), slab_thickness(*), tamb, text
@@ -1105,11 +1106,13 @@ module initialization_routines
         wtemp(i) = tamb + (xwall(i)-xwall(2))*dtdw
     end do
     return
-    end subroutine wset
+    end subroutine initialize_wall_nodes
 
-! --------------------------- offset -------------------------------------------
+! --------------------------- initialize_solver_vector -------------------------------------------
+    
+!> \brief   set up pointers to each variable type in the main solver array
 
-    subroutine offset ()
+    subroutine initialize_solver_vector ()
 
     ! offset in the following context is the beginning of the vector for that particular variable minus one.
     !   thus, the actual pressure array goes from nofp+1 to nofp+n_rooms.  the total number of equations to be considered
@@ -1170,6 +1173,6 @@ module initialization_routines
     nequals = nofprd + 2*n_rooms*ns
 
     return
-    end subroutine offset
+    end subroutine initialize_solver_vector
 
 end module initialization_routines

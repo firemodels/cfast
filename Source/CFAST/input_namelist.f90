@@ -47,7 +47,11 @@
     public namelist_input, read_misc, checkread, cdata_preprocessor_rereadinputfile
 
     contains
+
     ! --------------------------- namelist_input ----------------------------------
+
+!> \brief   read and interpret each of the namelists in the input file
+
     subroutine namelist_input
 
     implicit none
@@ -80,8 +84,12 @@
 
     end subroutine namelist_input
 
+    ! --------------------------- read_head --------------------------------------
+    
+!> \brief   read in &HEAD namelist that includes model version and title for the run
+    
+!> \param   lu (input): logical input unit number for the open input file
 
-    ! --------------------------- head --------------------------------------
     subroutine read_head (lu)
 
     integer :: ios, version
@@ -147,7 +155,11 @@
     end subroutine read_head
 
 
-    ! --------------------------- time -------------------------------------------
+    ! --------------------------- read_time -------------------------------------------
+    
+!> \brief   read in &TIME namelist that includes simulation time and output intervals
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_time (lu)
 
@@ -212,7 +224,11 @@
 
     end subroutine read_time
 
-    ! --------------------------- init ------------------------------------------
+    ! --------------------------- read_init ------------------------------------------
+    
+!> \brief   read in &INIT namelist that includes ambient conditions
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_init (lu)
 
@@ -274,7 +290,12 @@
     end subroutine read_init
 
 
-    ! --------------------------- misc -------------------------------------------
+    ! --------------------------- read_misc -------------------------------------------
+    
+!> \brief   read in &MISC namelist that includes various special inputs
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_misc (lu)
 
     integer, intent(in) :: lu
@@ -338,7 +359,12 @@
     end subroutine read_misc
 
 
-    ! --------------------------- MATL -------------------------------------------
+    ! --------------------------- read_matl -------------------------------------------
+    
+!> \brief   read in &MATL namelist that includes material thermal properties
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_matl (lu)
 
 
@@ -431,7 +457,12 @@
     end subroutine read_matl
 
 
-    ! --------------------------- COMP -------------------------------------------
+    ! --------------------------- read_comp -------------------------------------------
+    
+!> \brief   read in &COMP namelist that includes compartment specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_comp (lu)
 
     integer, intent(in) :: lu
@@ -609,7 +640,12 @@
     end subroutine read_comp
 
 
-    ! --------------------------- DEVC -------------------------------------------
+    ! --------------------------- read_devc -------------------------------------------
+    
+!> \brief   read in &DEVC namelist that includes target and detector specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+
     subroutine read_devc (lu)
 
     integer, intent(in) :: lu
@@ -908,8 +944,8 @@
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)
-    surface_orientation       = "NULL"
-    surface_temperature       = interior_ambient_temperature
+    surface_orientation             = "NULL"
+    surface_temperature             = interior_ambient_temperature
     thickness                       = 0._eb
     rti                             = default_rti
     setpoint                        = -1001._eb
@@ -923,7 +959,12 @@
     end subroutine read_devc
 
 
-    ! --------------------------- RAMP -------------------------------------------
+    ! --------------------------- read_ramp -------------------------------------------
+    
+!> \brief   read in &RAMP namelist that includes time ramp specifications (deprecated at this point)
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_ramp (lu)
 
     integer, intent(in) :: lu
@@ -1030,7 +1071,11 @@
     end subroutine read_ramp
 
 
-    ! --------------------------- TABL (time-dependent table of inputs, currently just for fires) ------------------------
+    ! --------------------------- read_tabl ------------------------
+    
+!> \brief   read in &TABL namelist that includes fire time history inputs
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_tabl (lu)
     
@@ -1133,7 +1178,11 @@ continue
     
     end subroutine read_tabl
 
-    ! --------------------------- FIRE (place an instance of a fire into a compartment) ----------------------------------
+    ! --------------------------- read_fire ----------------------------------
+    
+!> \brief   read in &FIRE namelist that includes fire specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_fire (lu)
 
@@ -1334,7 +1383,12 @@ continue
     end subroutine read_fire
 
 
-    ! --------------------------- CHEM (chemistry of the fire) -------------------------------------------
+    ! --------------------------- read_chem -------------------------------------------
+    
+!> \brief   read in &CHEM namelist that includes fire chemsitry specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_chem (lu)
 
     integer, intent(in) :: lu
@@ -1521,7 +1575,7 @@ continue
                     fireptr%t_mdot = fireptr%t_qdot
                     fireptr%n_mdot = fireptr%n_qdot
                     ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-                    call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+                    call set_heat_of_combustion (fireptr%n_qdot, ohcomb, fireptr%mdot, fireptr%qdot, fireptr%hoc)
                     fireptr%t_hoc = fireptr%t_qdot
                     fireptr%n_hoc = fireptr%n_qdot
 
@@ -1613,8 +1667,16 @@ continue
     end subroutine set_defaults
 
     ! --------------------------- set_heat_of_combustion -------------------------------------------
+    
+!> \brief   calculates a (typically) constant or time-dependent heat of combustion
+    
+!> \param   maxint (input): number of data points in the neat of combustion curve; typically 1
+!> \param   hinitial (input): constant heat of combustion
+!> \param   qdot (input): heat release rate (kW)
+!> \param   hdot (output): time-dependent heat of combustion (kJ/kg)
+!> \param   mdot (output): mass loss rate (kg/s)
 
-    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+    subroutine set_heat_of_combustion (maxint, hinitial, mdot, qdot, hdot)
 
     ! set the heat of combustion for all fires
 
@@ -1645,7 +1707,12 @@ continue
     end subroutine read_chem
 
 
-    ! --------------------------- VENT -------------------------------------------
+    ! --------------------------- read_vent -------------------------------------------
+    
+!> \brief   read in &VENT namelist that includes all vent specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+
     subroutine read_vent (lu)
 
     integer, intent(in) :: lu
@@ -2257,7 +2324,12 @@ continue
     end subroutine read_vent
 
 
-    ! --------------------------- CONN -------------------------------------------
+    ! --------------------------- read_conn -------------------------------------------
+    
+!> \brief   read in &CONN namelist that includes surface heat transfer connection specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+    
     subroutine read_conn (lu)
 
     integer, intent(in) :: lu
@@ -2445,7 +2517,12 @@ continue
     end subroutine read_conn
 
 
-    ! --------------------------- ISOF --------------------------------------------
+    ! --------------------------- read_isof --------------------------------------------
+    
+!> \brief   read in &ISOF namelist that includes isofurface specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
+
     subroutine read_isof (lu)
 
     integer, intent(in) :: lu
@@ -2536,7 +2613,11 @@ continue
 
     end subroutine read_isof
 
-    ! --------------------------- SLCF --------------------------------------------
+    ! --------------------------- read_slcf --------------------------------------------
+    
+!> \brief   read in &SLCF namelist that includes slice file specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_slcf (lu)
 
@@ -2689,7 +2770,11 @@ continue
     end subroutine read_slcf
 
 
-    ! --------------------------- diag -------------------------------------------
+    ! --------------------------- read_diag -------------------------------------------
+    
+!> \brief   read in &DIAG namelist that includes inputs to control diagnostic calculations and output
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_diag (lu)
 
@@ -2863,7 +2948,11 @@ continue
 
     end subroutine read_diag
 
-    ! --------------------------- DUMP --------------------------------------------
+    ! --------------------------- read_dump --------------------------------------------
+    
+!> \brief   read in &DUMP namelist that includes optional output specifications
+    
+!> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_dump (lu)
 
@@ -3070,6 +3159,13 @@ continue
     
     ! --------------------------- checkread ---------------------------------------
     
+!> \brief   read input file checking for the next specified namelist input.
+!>          on successful search the file is left at the line before the found item so the input routine can read it
+
+!> \param   name (input): namelist to  be looked for
+!> \param   lu (input): logicial unit number of the open input file to be read
+!> \param   ios (output): status returned. 0 if OK, 1 if error
+    
     subroutine checkread(name,lu,ios)
 
     ! look for the namelist variable name and then stop at that line.
@@ -3103,8 +3199,13 @@ continue
     end subroutine checkread
     
     !-------------------------------newid--------------------------------------
+
+!> \brief   check for an existing id to make sure all ids in the file are unique. Returns false if id already exists
+    
+!> \param   id (input) name to be checked against all existing ids
     
     logical function newid(id)
+    
     character(len=*), intent(in) :: id
     
     integer :: i
@@ -3123,7 +3224,6 @@ continue
     enddo
     do i = 1, n_hvents
         if (trim(id)==trim(hventinfo(i)%id)) then
-            write(*,*)'id = ',trim(id),' ventid = ',trim(hventinfo(i)%id),' |'
             newid = .false.
             return
         end if
@@ -3171,6 +3271,8 @@ continue
     end function newid
     
     !---------------------cdata_rereadinputfile---------------------------
+    
+!> \brief reread CFAST input file for CData file generation
     
     subroutine cdata_preprocessor_rereadinputfile
     

@@ -1,12 +1,12 @@
 
 ! --------------------------- grabky -------------------------------------------
+    
+!> \brief   interogates keyboard for a key press
+    
+!> \param   ich (output): ASCII character number of key pressed
+!> \param   hit (output): =2 if new key pressed; =1 otherwise
 
     subroutine grabky (ich, hit)
-    
-    ! interogates keyboard for a key press
-    
-    ! outputs   ich     ASCII character number of key pressed
-    !           hit     =2 if new key pressed; =1 otherwise
 
     implicit none
 
@@ -31,5 +31,6 @@
     end if
 
     return
+    
     end subroutine grabky
 

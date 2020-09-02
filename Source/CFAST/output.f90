@@ -45,11 +45,11 @@ module output_routines
 
 ! --------------------------- output_version -------------------------------------------
 
-    subroutine output_version (iunit)
-
-    ! put the header information in the output file. we assume the file is open
+!> \brief   put the header information in the output file. we assume the file is open
     
-    ! input iunit   logical unit number to write output
+!> \param   iunit (input): logical unit number to write output
+
+    subroutine output_version (iunit)
 
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
@@ -72,15 +72,15 @@ module output_routines
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------
+    
+!> \brief   parse program version as integers
+    
+!> \param (input):  version     integer version number of the code
+!> \param   imajor (output): major version number
+!> \param   iminor (output): minor version number
+!> \param   iminorrev (output): minor revision number
 
     subroutine splitversion (version,imajor,iminor,iminorrev)
-    
-    ! get program version as integers
-    
-    ! input     version     integer version number of the code
-    ! outputs   imajor      major version number
-    !           iminor      minor version number
-    !           iminorrev   minor revision number
 
     integer, intent(in) :: version
     integer, intent(out) :: imajor,iminor,iminorrev
@@ -100,9 +100,9 @@ module output_routines
 
 ! --------------------------- output_initial_conditions -------------------------------------------
 
-    subroutine output_initial_conditions
+!> \brief   output initial test case description
 
-    ! output initial test case description
+    subroutine output_initial_conditions
 
     call output_version (iofilo)
 
@@ -125,17 +125,18 @@ module output_routines
 
 ! --------------------------- output_results -------------------------------------------
 
+!> \brief   output the results of the simulation at the current time
+
+!> \param   time (input): current simulation time (s)
+
     subroutine output_results(time)
 
-    ! output the results of the simulation at the current time
     !       results_layers      basic environment
     !       results_fires       fires
     !       results_targets     targets and walls - temperature, radiation and convective flux
     !       results_detectors   sprinkler and detector information
     !       results_species     species
     !       results_vent_flows  wall, ceiling/floor, and mechanical vents
-
-    ! input time  current simulation time (s)
 
     real(eb), intent(in) :: time
 
@@ -161,9 +162,9 @@ module output_routines
 
 ! --------------------------- results_layers -------------------------------------------
 
-    subroutine results_layers
+!> \brief   output the 2 layer environment at the current time
 
-    ! output the 2 layer environment at the current time
+    subroutine results_layers
 
     integer :: icomp, ivolpercent
     type(room_type), pointer :: roomptr
@@ -199,9 +200,9 @@ module output_routines
 
 ! --------------------------- results_fires -------------------------------------------
 
-    subroutine results_fires
+!> \brief   output the fire environment at the current time
 
-    ! output the fire environment at the current time
+    subroutine results_fires
 
     integer i, icomp
     real(eb) :: f_height, xems, pyrolysis_rate, xqf, xqupr, xqlow
@@ -267,9 +268,9 @@ module output_routines
 
 ! --------------------------- results_species -------------------------------------------
 
-    subroutine results_species
+!> \brief   output the layer and wall species at the current time
 
-    ! output the layer and wall species at the current time
+    subroutine results_species 
 
     character(len=10), dimension(ns_mass+4) :: stype = (/character(len=10) :: &
         'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
@@ -329,9 +330,9 @@ module output_routines
 
 ! --------------------------- results_vent_flows -------------------------------------------
 
-    subroutine results_vent_flows
+!> \brief   output the vent flow at the current time
 
-    ! output the vent flow at the current time
+    subroutine results_vent_flows
 
     integer :: i, j, ifrom, ito
     real(eb), dimension(8) :: flow
@@ -490,11 +491,11 @@ module output_routines
 
 ! --------------------------- results_compressed -------------------------------------------
 
-    subroutine results_compressed (iounit)
-
-    ! output a compressed output for 80 column screens
+!> \brief   output a compressed output for 80 column screens
     
-    ! input iounit  logical unit number for output
+!> \param   iounit (input): logical unit number of opened file for output
+
+    subroutine results_compressed (iounit)
 
     integer, intent(in) :: iounit
 
@@ -542,9 +543,9 @@ module output_routines
 
 ! --------------------------- results_targets -------------------------------------------
 
-    subroutine results_targets
+!> \brief   output the temperatures and fluxes on surfaces and targets at the current time
 
-    ! output the temperatures and fluxes on surfaces and targets at the current time
+    subroutine results_targets
 
     integer :: i, iw, itarg
     real(eb) :: itotal, total, tgtemp, tttemp, tctemp, gasfed, heatfed
@@ -611,9 +612,9 @@ module output_routines
 
 ! --------------------------- results_detectors -------------------------------------------
 
-    subroutine results_detectors
+!> \brief   output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
-    ! output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
+    subroutine results_detectors
 
     integer :: i, iroom, itype
     real(eb) :: zdetect, tlay, tjet, vel, obs, tlink
@@ -668,9 +669,9 @@ module output_routines
 
 ! --------------------------- output_initial_overview -------------------------------------------
 
-    subroutine output_initial_overview
+!> \brief   output initial test case overview
 
-    ! output initial test case overview
+    subroutine output_initial_overview
 
     write (iofilo,5000)
     write (iofilo,5010) n_rooms, n_hvents, n_vvents, n_mvents
@@ -685,9 +686,9 @@ module output_routines
 
 ! --------------------------- output_initial_ambient_conditions -------------------------------------------
 
-    subroutine output_initial_ambient_conditions
+!> \brief   output initial test case ambient conditions
 
-    ! output initial test case ambient conditions
+    subroutine output_initial_ambient_conditions
 
     write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
        exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
@@ -703,9 +704,9 @@ module output_routines
 
 ! --------------------------- output_initial_compartments -------------------------------------------
 
-    subroutine output_initial_compartments
+!> \brief   output initial test case geometry
 
-    ! output initial test case geometry
+    subroutine output_initial_compartments
 
     integer i, j, k
     real(eb) :: wallleakarea, floorleakarea
@@ -765,9 +766,9 @@ module output_routines
 
 ! --------------------------- output_initial_vents -------------------------------------------
 
-    subroutine output_initial_vents
+!> \brief   output initial test case vent connections
 
-    ! output initial test case vent connections
+    subroutine output_initial_vents
 
     integer :: i, j, iramp
     character(len=14) :: ciout, cjout 
@@ -964,9 +965,9 @@ module output_routines
 
 ! --------------------------- output_initial_thermal_properties -------------------------------------------
 
-    subroutine output_initial_thermal_properties
+!> \brief   output initial test case thermal properties
 
-    ! output initial test case thermal properties
+    subroutine output_initial_thermal_properties
 
     integer i, j, k
     type(room_type), pointer :: roomptr
@@ -1009,10 +1010,9 @@ module output_routines
 
 ! --------------------------- output_initial_fires -------------------------------------------
 
-    subroutine output_initial_fires
+!> \brief   outputs the fire specification for all the object fires
 
-    ! outputs the fire specification for all the object fires
-    ! arguments: none
+    subroutine output_initial_fires
 
     integer :: io, i, is
     real(eb) :: y_hcn, y_hcl
@@ -1063,9 +1063,9 @@ module output_routines
 
 ! --------------------------- output_initial_targets -------------------------------------------
 
-    subroutine output_initial_targets
+!> \brief   output initial test case target specifications
 
-    ! output initial test case target specifications
+    subroutine output_initial_targets
 
     integer :: itarg, j
     character(len=8) :: location_type
@@ -1094,9 +1094,9 @@ module output_routines
 
 ! --------------------------- output_initial_detectors -------------------------------------------
 
-    subroutine output_initial_detectors
+!> \brief   output initial test case target specifications
 
-    ! output initial test case target specifications
+    subroutine output_initial_detectors
 
     integer :: idtect, iroom, itype
     character(len=200) :: outbuf
@@ -1141,9 +1141,19 @@ module output_routines
 
 ! --------------------------- flwout -------------------------------------------
 
-    subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
+!> \brief   format the flow output with appropriate precision eliminating appropriate zeroes
+    
+!> \param   outbuf (output): text string of formatted flow outputs
+!> \param   flow1 (input): upper layer flow into room 1
+!> \param   flow2 (input): upper layer flow out of room 1
+!> \param   flow3 (input): lower layer flow into room 1
+!> \param   flow4 (input): lower layer flow out of room 1
+!> \param   flow5 (input): upper layer flow into room 2
+!> \param   flow6 (input): upper layer flow out of room 2
+!> \param   flow7 (input): lower layer flow into room 2
+!> \param   flow8 (input): lower layer flow out of room 2
 
-    ! stuff the flow output after blanking appropriate zeros
+    subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
 
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
     character(len=*), intent(out) :: outbuf
@@ -1193,34 +1203,37 @@ module output_routines
 5050 format (2x,e11.4)
     end subroutine flwout
 
-
 ! --------------------------- write_error_component -------------------------------------------
 
-    subroutine write_error_component (icomp)
+!> \brief   write most important variable causing solution failure
+    
+!> \param   equation_pointer (input): pointer into P array of variable with the highest error when DASSL solution fails
 
-    integer, intent(in) :: icomp
+    subroutine write_error_component (equation_pointer)
+
+    integer, intent(in) :: equation_pointer
 
     integer :: itmp, irm, iw
 
     write (*,'(a)')'Solution component with the greatest error is'
-    if (icomp<=nofp+n_rooms) then
-        write (*,'(a,i2)')' pressure in room ',icomp
-    else if (icomp<=noftu) then
-        write (*,'(a,i2)')' either hvac or fsm ',icomp-n_rooms
-    else if (icomp<=nofvu) then
-        write (*,'(a,i2)')' upper layer temp in room ',icomp-noftu
-    else if (icomp<=noftl) then
-        write (*,'(a,i2)')' upper layer vol in room ',icomp-nofvu
-    else if (icomp<=noftl+n_rooms) then
-        write (*,'(a,i2)')' lower layer temp in room ',icomp-noftl
-    else if (icomp<=nofwt) then
+    if (equation_pointer<=nofp+n_rooms) then
+        write (*,'(a,i2)')' pressure in room ',equation_pointer
+    else if (equation_pointer<=noftu) then
+        write (*,'(a,i2)')' either hvac or fsm ',equation_pointer-n_rooms
+    else if (equation_pointer<=nofvu) then
+        write (*,'(a,i2)')' upper layer temp in room ',equation_pointer-noftu
+    else if (equation_pointer<=noftl) then
+        write (*,'(a,i2)')' upper layer vol in room ',equation_pointer-nofvu
+    else if (equation_pointer<=noftl+n_rooms) then
+        write (*,'(a,i2)')' lower layer temp in room ',equation_pointer-noftl
+    else if (equation_pointer<=nofwt) then
         if (option(foxygen)==on) then
-            write (*,'(a,i2)')' oxygen component ',icomp-nofoxyl
+            write (*,'(a,i2)')' oxygen component ',equation_pointer-nofoxyl
         else
-            write (*,'(a,i2)')' target number ',icomp
+            write (*,'(a,i2)')' target number ',equation_pointer
         end if
-    else if (icomp<=nofprd) then
-        itmp = icomp - nofwt
+    else if (equation_pointer<=nofprd) then
+        itmp = equation_pointer - nofwt
         irm = surface_connections(itmp,w_from_room)
         iw = surface_connections(itmp,w_from_wall)
         if (iw==1) then
@@ -1238,6 +1251,13 @@ module output_routines
     end subroutine write_error_component
 
 ! --------------------------- output_debug -------------------------------------------
+
+!> \brief   output requested details of model calculations at the current time
+    
+!> \param   ikey (input): function key pressed
+!> \param   t (input): current simulation time (s)
+!> \param   dt (input): current time step (s)
+!> \param   ieqmax (input):  number of equations in solution vector
 
     subroutine output_debug (ikey,t,dt,ieqmax)
 
@@ -1388,9 +1408,10 @@ module output_routines
 
 ! --------------------------- open_output_files -------------------------------------------
 
+!> \brief   open the appropriate files
+
     subroutine open_output_files
 
-    !	Now that we know what output is needed, open the appropriate files
     !	Unit numbers are automatically defined
 
     !	Unit numbers defined for various I/O purposes

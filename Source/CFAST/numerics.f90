@@ -12,6 +12,34 @@ module numerics_routines
 
     contains
 ! --------------------------- ddassl -------------------------------------------
+    
+!> \brief   solves a system of differential/algebraic equations of the form g(t,y,yprime) = 0.
+    
+!> \param   res (external): subroutine which you provide to define the differential/algebraic system.
+!> \param   neq (input): number of equations to be solved.
+!> \param   t (input/output): current value of the independent variable.
+!> \param   y (input/output): array containing the solution components at t.
+!> \param   yprime (input/output): array containing the derivatives of the solution components at t.
+!> \param   tout (input): point at which a solution is desired.
+!> \param   info (input): the basic task of the code is to solve the system from t to tout and return an answer at tout.
+!>                        info is an integer array which is used to communicate exactly how you want this task to be carried out.
+!> \param   rtol (input): quantities representing relative error tolerances which you provide to 
+!>                        indicate how you wish the solution to be computed.
+!>                        you may choose rtol and atol to be both scalars or both vectors.
+!> \param   atol (input): absolute error tolerances which you provide to indicate how you wish the solution to be computed.
+!>                        you may choose rtol and atol to be both scalars or both vectors.
+!> \param   idid (ouptut): indicator reporting what the code did.  
+!>                         you must monitor this integer variable to decide what action to take next.
+!> \param   rwork (work array): a real work array of length lrw which provides the code with needed storage space.
+!> \param   lrw (input): the length of rwork.
+!> \param   iwork (work array): an integer work array of length liw which probides the code with needed storage space.
+!> \param   liw (input): the length of iwork.
+!> \param   rpar (input/output): real parameter arrays which you can use for communication between your calling
+!>                               program and the res subroutine (and the jac subroutine)
+!> \param   ipar (input/output): integer parameter arrays which you can use for communication between your calling
+!>                               program and the res subroutine (and the jac subroutine)
+!> \param   jac (external): this is the name of a subroutine which you may choose to provide for defining a matrix of partial 
+!>                          derivatives.
 
     subroutine ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
     !
@@ -72,7 +100,7 @@ module numerics_routines
     !
     !  idid:out  this scalar quantity is an indicator reporting what the
     !            code did.  you must monitor this integer variable to decide
-    !            what action to take n_mvext.
+    !            what action to take next.
     !
     !  rwork:work  a real work array of length lrw which provides the
     !               code with needed storage space.

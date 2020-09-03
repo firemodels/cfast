@@ -383,7 +383,30 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 
 \subsubsection{Determining If Enough Runs Have Been Made}
 
-\subsubsection{Correlation Trees}
+Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers. The Law of Large Numbers states that for a large-enough number of independent samples, the average converges to the expected value. For example, if we want to know what the probability of flashover is in the kitchen for a certain class of fires, the Law of Large Numbers assures us that the percentage of Monte Carlo runs where flashover occurs converges to the probability as the number of runs becomes large.
+
+The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be usable? Two strategies are used here. The first is graphing the evolution of the mean versus number of runs. The second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on how much accuracy is needed.
+
+\subsubsection{Histograms}
+
+In some cases what is of interest is the distribution of values. There are two approaches to evaluating that  included here. First is a histogram, where the data are sorted into a set of equal bins, and the number of elements in each bin is displayed on a chart. The number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: \[k = \lceil \log_2 n \rceil + 1\], where  \[ \lceil \rceil\] represents the ceiling function.
+
+\subsubsection{Empirical Probability Density Function}
+
+The post-processor is also capable of generating an empirical probability density function. It does so using the techniques of Kernal Density Estimation \cite{Haste_2009}. To determine the probability density at a point \textit{x} it associates a weight with each point in the data set. The weight is a function of the distance between the point in the data set and \textit{x}. The probability density is then the sum of those weights.
+
+Typically the Gaussian function is used as the Kernal (i.e., the weighting function), although other Kernals are also commonly used. For the Gaussian Kernal (which is used here) the estimated probability density at a point \textit{x} is:
+
+\[f(x) = \frac{1}{Nb}\sum_{j=1}^{N} \phi\left(\frac{x - x_j}{b} \right) \]
+
+where \textit{N} is the number of data points, \[x_j\] is an individual data point, \[\phi\] is the standard normal density function, and \textit{b} is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
+
+\subsubsection{Decision Trees}
+
+Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For classification trees, each leaf node is associated with the best-fit category. For regression trees, each leaf node is associated with the average of the data that arrives at that node.
+
+Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
+
 
 %
 %-------------------------Analysis of Data-------------------------------------------

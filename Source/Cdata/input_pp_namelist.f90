@@ -55,7 +55,7 @@
     
     private
 
-    public namelist_pp_input, namelist_acc_input
+    public namelist_pp_input, namelist_acc_input, namelist_stt_input
 
     contains
     
@@ -93,6 +93,22 @@
     return
 
     end subroutine namelist_acc_input
+    
+    ! --------------------------- namelist_stt_input ----------------------------------
+    subroutine namelist_stt_input
+
+    implicit none
+    
+    integer :: ios
+    
+    close(iofili)
+    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    call read_mhdr(iofili)
+    close (iofili)
+    
+    return
+
+    end subroutine namelist_stt_input
     
     
     !--------------------------------------------read_mhdr----------------------

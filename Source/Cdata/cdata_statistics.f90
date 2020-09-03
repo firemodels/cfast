@@ -9,6 +9,10 @@ module statistics_routines
     
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, &
         mxstats
+    use setup_data, only: cfast_input_file_position, iofili, inputfile
+    
+    use input_routines, only: exehandle
+    use namelist_input_pp_routines, only: namelist_stt_input
     
     use preprocessor_types, only: random_generator_type
     use analysis_types, only: stat_type
@@ -32,11 +36,20 @@ module statistics_routines
     subroutine statistics 
     
     character(len=256) :: buf, frm
+    character(len=256) :: exepath, datapath, project, extension
     integer(4) :: status
-    integer :: i, ioerr
+    integer :: i, ioerr, ios
     
     call init_stats
-    call test_stats
+    !call test_stats
+    cfast_input_file_position = 3
+    call exehandle(exepath, datapath, project, extension)
+    buf = trim(datapath) // trim(project) // '.' // trim(extension)
+    inputfile = trim(buf)
+    call namelist_stt_input
+    
+    
+    
     open(newunit = ioerr, file = 'cdata_statistics.log')
     
     do  i = 1, n_stats
@@ -59,6 +72,7 @@ module statistics_routines
         write(ioerr,'(a)') buf
         status = system(buf)
     end do 
+    close(ioerr)
     
     end subroutine statistics
     

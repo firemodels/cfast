@@ -47,7 +47,7 @@ module accumulator_routines
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
     character, allocatable :: iossc(:, :)*(128), tmpc(:,:)*(128)
     
-    integer :: i, j, maxrowend
+    integer :: i, j, maxrowend, ierr
     character(len=256) :: infile, cmdfile, outfile, tmpext, inpath
     character(len=512) :: lbuf, obuf
 
@@ -93,19 +93,23 @@ module accumulator_routines
     i = 1
     call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 2, maxrowio, maxcolio, lend, iofill)
     if (.not.lend) then
-        call fndOpenMCFile(iossc(2,1), workpath, iunit2)
-        call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
-        close(iunit2)
-        if (.not. lend) then
-            do  j = 2, maxcoltmp
-                iossc(1,maxcolio + j - 1) = tmpc(1,j)
-                iossx(2,maxcolio + j - 1) = tmpx(2,j)
-                write(iossc(2,maxcolio + j - 1),*) iossx(2,maxcolio + j - 1)
-            end do 
+        call fndOpenMCFile(iossc(2,1), workpath, iunit2, ierr)
+        if (ierr == 0) then
+            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
+            close(iunit2)
+            if (.not. lend) then
+                do  j = 2, maxcoltmp
+                    iossc(1,maxcolio + j - 1) = tmpc(1,j)
+                    iossx(2,maxcolio + j - 1) = tmpx(2,j)
+                    write(iossc(2,maxcolio + j - 1),*) iossx(2,maxcolio + j - 1)
+                end do
+            else
+                maxcoltmp = 0
+            end if
             maxcolout = maxcolio + maxcoltmp - 1
             open(newunit = iunit2, file = obuf)
             call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 2, maxcolout, iofill)
-            close(iunit2)
+            close(iunit2) 
         else
             write(*,*) 'Number 2 first case does not open'
             call cfastexit('accumulator', 1)
@@ -118,9 +122,13 @@ module accumulator_routines
     do while (.not. lend)
         call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend, iofill)
         write(*,*)'file = ',trim(iossc(1,1))
-        call fndOpenMCFile(iossc(1,1), workpath, iunit2)
-        call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend, iofill)
-        close(iunit2)
+        call fndOpenMCFile(iossc(1,1), workpath, iunit2, ierr)
+        if (ierr == 0) then
+            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend, iofill)
+            close(iunit2)
+        else
+            maxcoltmp = 0
+        end if 
         do j = 2, maxcoltmp
             iossx(1,maxcolio + j - 1) = tmpx(2,j)
             write(iossc(1,maxcolio + j - 1),*) iossx(1,maxcolio + j - 1)
@@ -248,18 +256,20 @@ module accumulator_routines
     
     !---------------------------------------fndOpenMCFile(filename, path, iunit)---------------------------------------------------------------------------------------------
     
-    subroutine fndOpenMCFile(filename, path, iunit)
+    subroutine fndOpenMCFile(filename, path, iunit, ierr)
     
     implicit none
 
     integer, parameter :: eb = selected_real_kind(12)
     
     character, intent(in) :: filename*(*), path*(*)
-    integer, intent(out) :: iunit
+    integer, intent(out) :: iunit, ierr
     
     character :: fn*(128)
     integer :: i, j, lc, fc
+    logical :: exists
     
+    ierr = 0
     fn = trim(filename)
     lc = len_trim(fn)
     do i = lc-1, 1, -1
@@ -270,7 +280,12 @@ module accumulator_routines
     end do
     
     fn = trim(path) // fn(fc:lc) // '_calculations.csv'
-    open(newunit = iunit,file = fn)
+    inquire(file = fn, exist = exists)
+    if (exists) then 
+        open(newunit = iunit, file = fn, iostat = ierr)
+    else
+        ierr = -1
+    end if 
     
     return
     end subroutine fndOpenMCFile

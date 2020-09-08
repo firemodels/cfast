@@ -367,9 +367,135 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 
 \subsubsection{Namelist DUMP}
 
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Output and Post-Run Calculation parameters ({\ct DUMP} namelist group)]{}
+\label{tbl:DUMP} \\
+\hline
+\multicolumn{4}{|c|}{{\ct DUMP} (Output and Post-Run Calculation Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct DUMP} (CALCULATION Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endhead
+{\ct ID}                    & Character        &          &        \\ \hline
+{\ct FILE\_TYPE} \footnote{{\ct FILE\_TYPE} must be one of the CFAST spreadsheet outputs: {\ct NORMAL}, {\ct FLOW}, {\ct MASS}, {\ct SPECIES}, or {\ct WALL}.}
+
+                            & Selection List   &          &         \\ \hline
+{\ct TYPE} \footnote{{\ct TYPE} must be {\ct TRIGGER\_GREATER}, {\ct TRIGGER\_LESSER}, {\ct MINIMUM}, {\ct MAXIMUM}, {\ct INTEGRATE}, or {\ct CHECK\_TOTAL\_HRR}}
+                            & Selection List   &          &         \\ \hline
+{\ct CRITERIA}              & Real             &          &         \\ \hline
+{\ct FIRST\_DEVICE}         & Character        &          &        \\ \hline
+{\ct FIRST\_MEASUREMENT}    & Character        &          &        \\ \hline
+{\ct SECOND\_DEVICE}        & Character        &          &        \\ \hline
+{\ct SECOND\_MEASUREMENT}   & Character        &          &       \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&DUMP ID = 'Total Time Completed'
+     FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
+&DUMP ID = 'Fire Room Ion Detector'
+     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
+     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
+\end{lstlisting}
+
+\clearpage
+
 \subsubsection{Namelist MHDR}
 
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Main Monte Carlo parameters ({\ct MHDR} namelist group)]{}
+\label{tbl:MHDR} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MHDR} (Main Monte Carlo parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MHDR} (CALCULATION Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endhead
+{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}                    & Integer        &          &        \\ \hline
+{\ct OUTPUT\_DIRECTORY} & Character  &         &  Local directory      \\ \hline
+{\ct PARAMETER\_FILENAME} & Character   &         &  'filename'\_parameters      \\ \hline
+{\ct SEEDS}              & 2 Integers             &         &        \\ \hline
+{\ct WORK\_DIRECTORY}         & Character        &         &  Local directory      \\ \hline
+{\ct WRITE\_SEEDS}    & Logical        &         &{\ct  .FALSE.}       \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MHDR MONTE_CARLO_NUMBER_OF_FILES = 10000 /
+&MHDR MONTE_CARLO_NUMBER_OF_FILES = 20000 WRITE_SEEDS = .TRUE.
+	PARAMETER_FILE = 'Outputfile' WORK_DIRECTORY = 'Z:\' 
+	OUTPUT_DIRECTORY = '..\project'/
+\end{lstlisting}
+
+\clearpage
+
 \subsubsection{Namelist MRND}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Random generator parameters ({\ct MRND} namelist group)]{}
+\label{tbl:MRND} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MRND} (Random generator parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MRND} (CALCULATION Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endhead
+{\ct ID}   & Character        &          &        \\ \hline
+{\ct FYI} & Character  &         &        \\ \hline
+{\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE}, 
+			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, or {\ct CONSTANT}} & Selection List   &         &      \\ \hline
+{\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &       \\ \hline
+{\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &        \\ \hline
+{\ct MAXIMUM}         & Real        &         &       \\ \hline
+{\ct MEAN}    & Real        &         &       \\ \hline
+{\ct STDEV}    & Real        &         &       \\ \hline
+{\ct ALPHA}    & Real        &         &       \\ \hline
+{\ct PEAK}    & Real        &         &       \\ \hline
+{\ct BETA}    & Real        &         &       \\ \hline
+{\ct DESCRETE\_REAL\_VALUES}    & Real array        &         &       \\ \hline
+{\ct DESCRETE\_INTEGER\_VALUES}    & Integer array        &         &       \\ \hline
+{\ct DESCRETE\_CHARACTER\_VALUES}    & Character array        &         &       \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MRND ID = 'Example rand generator', TYPE_DIST = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
+&MRND ID ='Second rand generator', TYPE_DIST = 'NORMAL', MEAN = 0, STDEV = 1 /
+\end{lstlisting}
+
+\clearpage
 
 \subsubsection{Namelist MFLD}
 

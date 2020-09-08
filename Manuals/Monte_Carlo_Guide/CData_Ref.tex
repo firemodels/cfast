@@ -340,15 +340,15 @@ Choosing modeling results for analysis depends on the goals of the hazard analys
 
 \subsection{Example 1: Impact of inner liners on residential upholstered furniture fires}
 
-In this example we look at a single room and the impact of inner liners on the hazard posed by residential upholstered furniture (RUF). 
+In this example we look at a single room and the impact of inner liners on the hazard posed by residential upholstered furniture (RUF).
 
 \subsection{Example 2: Impact of new detector standard}
 
-In this example we look at the potential impact of the new Underwriters Labroratory's (UL) new smoke detector standard. We will use a single story ranch house with various fire and detector locations. 
+In this example we look at the potential impact of the new Underwriters Labroratory's (UL) new smoke detector standard. We will use a single story ranch house with various fire and detector locations.
 
 \subsection{Example 3: Impact of periodically active wireless detectors}
 
-For the final example we look at the impact of a periodic activation of wireless communications in detectors. We will use the ranch house from example 2 and a two story house to broden the analysis. 
+For the final example we look at the impact of a periodic activation of wireless communications in detectors. We will use the ranch house from example 2 and a two story house to broden the analysis.
 
 %
 %---------------------User's Guide----------------------------------
@@ -370,7 +370,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
 \caption[Output and Post-Run Calculation parameters ({\ct DUMP} namelist group)]{}
 \label{tbl:DUMP} \\
 \hline
@@ -417,7 +417,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
 \caption[Main Monte Carlo parameters ({\ct MHDR} namelist group)]{}
 \label{tbl:MHDR} \\
 \hline
@@ -445,7 +445,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \begin{lstlisting}
 &MHDR MONTE_CARLO_NUMBER_OF_FILES = 10000 /
 &MHDR MONTE_CARLO_NUMBER_OF_FILES = 20000 WRITE_SEEDS = .TRUE.
-	PARAMETER_FILE = 'Outputfile' WORK_DIRECTORY = 'Z:\' 
+	PARAMETER_FILE = 'Outputfile' WORK_DIRECTORY = 'Z:\'
 	OUTPUT_DIRECTORY = '..\project'/
 \end{lstlisting}
 
@@ -456,7 +456,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
 \caption[Random generator parameters ({\ct MRND} namelist group)]{}
 \label{tbl:MRND} \\
 \hline
@@ -472,7 +472,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \endhead
 {\ct ID}   & Character        &          &        \\ \hline
 {\ct FYI} & Character  &         &        \\ \hline
-{\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE}, 
+{\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE},
 			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, or {\ct CONSTANT}} & Selection List   &         &      \\ \hline
 {\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &       \\ \hline
 {\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &        \\ \hline

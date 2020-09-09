@@ -28,7 +28,7 @@ module preprocessor_types
     type, extends(preprocessor_type) :: random_generator_type
         character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
                                                         !                       USER_DEFINED_DISCRETE, USER_DEFINED_CONTINOUS_INTERVAL,
-                                                        !                       BETA, NORMAL, LOG_NORMAL
+                                                        !                       BETA, NORMAL, LOG_NORMAL, CONSTANT
         character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
         character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
         integer :: num_discrete_values                   ! number of values in arrays for discrere probablities 
@@ -40,6 +40,7 @@ module preprocessor_types
         real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
         real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
         real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
+        real(eb) :: constant                            ! for constant value functions
         logical :: first                                ! logical used in conjunction with 
         logical :: use_seeds                            ! determines if seeds have been supplied. 
         integer :: seeds(mxseeds)                       ! seed values
@@ -245,6 +246,17 @@ module preprocessor_types
                     end if
                 class default 
                     call me%errorcall('RAND', 6)
+            end select
+        else if (me%type_dist == rand_dist(idx_const)) then
+            select type(val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        val%val = me%constant
+                    else
+                        call me%errorcall('RAND', 7)
+                    end if
+                class default
+                    call me%errorcall('RAND',8)
             end select
         else
             call me%errorcall('RAND', 1000)

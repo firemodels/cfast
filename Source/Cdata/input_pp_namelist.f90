@@ -41,7 +41,7 @@
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
-        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img
+        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const
         
     use preprocessor_types, only: random_generator_type, field_pointer
     use analysis_types, only: stat_type
@@ -103,8 +103,16 @@
     
     close(iofili)
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
-    call read_mhdr(iofili)
-    close (iofili)
+    if (ios == 0) then
+        call read_mstt(iofili)
+        close (iofili)
+    elseif(ios == 29) then
+        write(*,*) 'file ', trim(inputfile), ' not found'
+        call cfastexit('namelist_stt_input', 1)
+    else
+        write(*,*) 'error namelist_stt_input, ios = ', ios
+        call cfastexit('namelist_stt_input', 2)
+    end if 
     
     return
 
@@ -200,14 +208,15 @@
     character(len=128) :: id, fyi
     character(len=35) :: type_dist
     integer, parameter :: no_seed_value = -1001
-    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak
+    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, constant_value
     integer ::initial_seed_values(mxseeds), ndx
     real(eb) :: discrete_probabilities(mxpntsarray), discrete_real_values(mxpntsarray) 
     integer :: discrete_integer_values(mxpntsarray)
     character(len = 128) :: discrete_string_values(mxpntsarray)
 
     namelist /MRND/ id, fyi, type_dist, minimum, maximum, mean, stdev, alpha, beta, peak, initial_seed_values, &
-        discrete_real_values, discrete_integer_values, discrete_string_values, discrete_probabilities 
+        discrete_real_values, discrete_integer_values, discrete_string_values, discrete_probabilities, &
+        constant_value
                     
     
     ios = 1
@@ -305,7 +314,11 @@
                     end do 
                 else
                     call cfastexit('read_mrnd', 5)
-                end if 
+                end if
+            else if (trim(type_dist) == trim(rand_dist(idx_const))) then
+                genptr%type_dist = type_dist
+                genptr%value_type = val_types(idx_real)
+                genptr%constant = constant_value
             else
                 call cfastexit('read_mrnd',1000)
             end if
@@ -461,6 +474,7 @@
     integer :: ncnts(mxanalys), idx
     logical :: msttflag, found
     type(stat_type), pointer :: statptr
+    character(len=5) :: extension
     
     
     character(len=128) :: id, fyi, analysis_type, input_filename, output_filename, error_filename, &
@@ -516,6 +530,7 @@
             read(lu,MSTT)
             
             statptr => statinfo(ii)
+            idx = 0
             do jj = 1, mxanalys
                 if (trim(analysis_type) == trim(analysis_list(jj))) then
                     idx = jj
@@ -523,8 +538,11 @@
                     ncnts(jj) = ncnts(jj) + 1
                     exit
                 end if
-                call cfastexit('read_mstt',4)
             end do
+            if (idx == 0) then
+                write(*,*) 'analysis_type ',trim(analysis_type),' not recognized'
+                call cfastexit('read_mstt', 4)
+            end if
             statptr%id = id
             statptr%fyi = fyi
             if (trim(input_filename) == 'NULL') then
@@ -537,21 +555,26 @@
                 statptr%img_format = imgformat_list(default_img)
             else
                 iend = len_trim(output_filename)
+                extension = ' '
+                statptr%img_format = 'NULL'
                 do jj = iend, 1, -1
                     if (output_filename(jj:jj) == '.') then
+                        extension = output_filename(jj+1:jj+3)
                         do kk = 1, mximgformats
-                            if (output_filename(jj+1:jj+3) == imgformatext_list(kk)) then
+                            if (trim(extension) == imgformatext_list(kk)) then
+                                statptr%img_format = ' '
                                 statptr%img_format = imgformat_list(kk)
                                 statptr%outfile = output_filename(1:jj-1)
                                 exit
                             end if
                         end do 
-                        call cfastexit('rean_mstt',5)
+                        exit
                     end if
                 end do
-                if (trim(statptr%outfile) == 'NULL') then
-                    call cfastexit('read_mstt',6)
-                end if 
+                if (statptr%img_format(1:4) == 'NULL') then
+                    write(*,*) 'extension file format not recognized'
+                    call cfastexit('read_mstt', 5)
+                end if
             end if
             statptr%col_title = column_title 
                 

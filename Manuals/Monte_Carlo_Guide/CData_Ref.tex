@@ -482,6 +482,7 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 {\ct ALPHA}    & Real        &         &       \\ \hline
 {\ct PEAK}    & Real        &         &       \\ \hline
 {\ct BETA}    & Real        &         &       \\ \hline
+{\ct DESCRETE\_PROBABILITIES} \footnote{ Sum of probabilites must equal one}  & Real array  &      &     \\ \hline
 {\ct DESCRETE\_REAL\_VALUES}    & Real array        &         &       \\ \hline
 {\ct DESCRETE\_INTEGER\_VALUES}    & Integer array        &         &       \\ \hline
 {\ct DESCRETE\_CHARACTER\_VALUES}    & Character array        &         &       \\ \hline
@@ -498,6 +499,41 @@ Each subsection will discuss one namelist and what each of the parameters do. Th
 \clearpage
 
 \subsubsection{Namelist MFLD}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
+\caption[Feild to be varied parameters ({\ct MFLD} namelist group)]{}
+\label{tbl:MFLD} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MFLD} (Field to vary parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct MFLD} (CALCULATION Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endhead
+{\ct ID}   & Character        &          &        \\ \hline
+{\ct FYI} & Character  &         &        \\ \hline
+{\ct OBJECT\_ID} \footnote{{\ct OBJECT\_ID} must be the {\ct ID} of a namelist defined in the input file} & Character   &         &      \\ \hline
+{\ct FIELD\_NAME} \footnote{{\ct FIELD\_NAME} must be a defined field of the namelist object identified by {\ct OBJECT\_ID}}& Character  &       &       \\ \hline
+{\ct RAND\_ID} \footnote{{\ct RAND\_ID} must be the {\ct ID} of a {\ct MRND} defined in input file}              & Character           &         &        \\ \hline
+{\ct PARAMETER\_HEADER}         & Character        &         &       \\ \hline
+{\ct ADD\_TO\_PARAMETERS}    & Logical        &         & {\ct .FALSE.}      \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MFLD ID = 'Height_bedroom' OBJECT_ID = 'Bedroom' FIELD_NAME = hieght RAND_ID = 'uniform_generator' PARAMETER_HEADER = 'Bedroom height' ADD_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+\clearpage
 
 \subsubsection{Namelist MFIR}
 

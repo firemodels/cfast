@@ -44,7 +44,7 @@ module statistics_routines
     !call test_stats
     cfast_input_file_position = 3
     call exehandle(exepath, datapath, project, extension)
-    buf = trim(datapath) // trim(project) // '.' // trim(extension)
+    buf = trim(datapath) // trim(project) // trim(extension)
     inputfile = trim(buf)
     call namelist_stt_input
     
@@ -55,19 +55,23 @@ module statistics_routines
     do  i = 1, n_stats
         buf = ' '
         if (trim(statinfo(i).analysis_type) == 'CORRELATION_TREE') then 
-            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.R outname='''
+            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.R outname="'
         else if (trim(statinfo(i).analysis_type) == 'CONVERGENCE_OF_MEAN') then
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" converg.R outname='''
         else if (trim(statinfo(i).analysis_type) == 'HISTOGRAM') then
-            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" hist.R outname='''
+            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" hist.R outname="'
         else if (trim(statinfo(i).analysis_type) == 'PDF_ESTIMATE') then
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" dens.R outname='''
         else 
             call cfastexit('statistics',1)
         end if 
-        buf = trim(buf) // trim(statinfo(i).outfile) // ''' fname=''' // trim(statinfo(i).infile)
-        buf = trim(buf) // ''' i_fmt=''' // trim(statinfo(i).img_format) // ''' yvar=''' // trim(statinfo(i).col_title)
-        buf = trim(buf) // ''' >' // trim(statinfo(i).logfile)
+        buf = trim(buf) // trim(statinfo(i).outfile) // '" fname="' // trim(statinfo(i).infile)
+        buf = trim(buf) // '" i_fmt="' // trim(statinfo(i).img_format) // '" yvar="' // trim(statinfo(i).col_title)
+        if (trim(statinfo(i).logfile) == 'NULL') then
+            statinfo(i).logfile = ' '
+            statinfo(i).logfile = trim(statinfo(i).outfile) // '.err'
+        endif 
+        buf = trim(buf) // '" >' // trim(statinfo(i).logfile)
         write(*,*) buf
         write(ioerr,'(a)') buf
         status = system(buf)

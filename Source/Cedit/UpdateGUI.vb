@@ -4,7 +4,7 @@ Public Class UpdateGUI
     Public DoErrorCheck As Boolean = True
 
     Private MainWin As CeditMain
-    Private AreaPoints() As Single, HeightPoints() As Single, OpeningTimes() As Single, OpeningFractions() As Single
+    Private AreaPoints() As Double, HeightPoints() As Double, OpeningTimes() As Double, OpeningFractions() As Double
     Private NumPoints As Integer, i As Integer, j As Integer, NumCompartments As Integer
     Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer,
     numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer, numVisuals As Integer
@@ -98,7 +98,7 @@ Public Class UpdateGUI
         MainWin.EnvAdiabatic.Checked = myEnvironment.AdiabaticWalls
         MainWin.EnvLOI.Text = myEnvironment.LowerOxygenLimit.ToString
 
-        Dim value As Single
+        Dim value As Double
         value = Val(MainWin.EnvTimeStep.Text)
         If value > 0 Then
             MainWin.EnvTimeStep.Text = value.ToString + myUnits.Convert(UnitsNum.Time).Units
@@ -988,7 +988,7 @@ Public Class UpdateGUI
     End Sub
     Public Sub Fires(ByVal index As Integer)
         General()
-        Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
+        Dim afireTimeSeries(12, 0) As Double, NumPoints As Integer
         Dim IgnitionTypeLabel As String = ""
         Dim ir, ic As Integer
 
@@ -1142,8 +1142,8 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
         Dim aFire As New Fire
-        Dim aFireData(12, 0) As Single, numPoints As Integer, iSelectedColumn As Integer
-        Dim x() As Single, y() As Single, j As Integer
+        Dim aFireData(12, 0) As Double, numPoints As Integer, iSelectedColumn As Integer
+        Dim x() As Double, y() As Double, j As Integer
         aFire = myFireProperties(index)
         MainWin.FirePlot.Clear()
         aFire.GetFireData(aFireData, numPoints)

@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 2400 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'PLATETC' MATERIAL = 'Plate Thermocouple 304 Stainless (0.7 mm)', 
@@ -20,7 +19,7 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.8
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.8
   FACE = 'RIGHT' OFFSET = 0.8 /
  
 !! Fires 

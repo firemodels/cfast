@@ -13,10 +13,10 @@
     Friend Const fdx As Integer = 1
     Friend Const ErrorVal As Integer = -1
 
-    Private aName As String                         'Single word name used as ID of the ramp
-    Private aRampData(2, 0) As Single               'Array for the series data the 0 row is the independent data and 1 is the dependent of f data
-    Private aX(0) As Single                         'Array for the independent variable for the ramp data
-    Private aF(0) As Single                         'Array for the dependent variable for the ramp data
+    Private aName As String                         'Double word name used as ID of the ramp
+    Private aRampData(2, 0) As Double               'Array for the series data the 0 row is the independent data and 1 is the dependent of f data
+    Private aX(0) As Double                         'Array for the independent variable for the ramp data
+    Private aF(0) As Double                         'Array for the dependent variable for the ramp data
     Private aIsT As Boolean                         'Logical flag is true if the independant variable is time t 
     Private aMaxNumRamp As Integer                  'Number of data points in arrays af and ax
     Private aType(4) As String                      'Selection list that determines units of the function
@@ -57,7 +57,7 @@
             End If
         End Set
     End Property
-    Public ReadOnly Property MaxNumRamp() As Single
+    Public ReadOnly Property MaxNumRamp() As Double
         Get
             Return aX.GetUpperBound(0)
         End Get
@@ -102,7 +102,7 @@
             End If
         End Set
     End Property
-    Public Property X(ByVal i As Integer) As Single
+    Public Property X(ByVal i As Integer) As Double
         Get
             If i >= 0 And i <= aX.GetUpperBound(0) Then
                 Return aX(i)
@@ -110,7 +110,7 @@
                 Return ErrorVal
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If i < 0 Then Return
             If i <= aX.GetUpperBound(0) Then
                 aX(i) = value
@@ -128,7 +128,7 @@
             aChange = True
         End Set
     End Property
-    Public Property F(ByVal i As Integer) As Single
+    Public Property F(ByVal i As Integer) As Double
         Get
             If i >= 0 And i <= aX.GetUpperBound(0) Then
                 Return aF(i)
@@ -136,7 +136,7 @@
                 Return ErrorVal
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If i < 0 Then Return
             If i <= aF.GetUpperBound(0) Then
                 aF(i) = value
@@ -154,7 +154,7 @@
             aChange = True
         End Set
     End Property
-    Public Property RampData(ByVal i As Integer, ByVal j As Integer) As Single
+    Public Property RampData(ByVal i As Integer, ByVal j As Integer) As Double
         Get
             If i = xdx Then
                 Return X(j)
@@ -164,7 +164,7 @@
                 Return ErrorVal
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If i = xdx Then
                 X(j) = value
             ElseIf i = fdx Then
@@ -224,7 +224,7 @@
         aType(IdxLength) = TypeLength
         aChange = False
     End Sub
-    Public Sub New(ByVal Name As String, ByVal Type As String, ByVal x() As Single, ByVal f() As Single, ByVal IsT As Boolean)
+    Public Sub New(ByVal Name As String, ByVal Type As String, ByVal x() As Double, ByVal f() As Double, ByVal IsT As Boolean)
         Me.New
         Me.Name = Name
         Me.IsT = IsT
@@ -232,7 +232,7 @@
         Me.Type = Type
         aChange = True
     End Sub
-    Public Sub SetRampData(ByVal aX() As Single, ByVal aF() As Single)
+    Public Sub SetRampData(ByVal aX() As Double, ByVal aF() As Double)
         Dim i As Integer = 0
 
         DimX = Math.Min(aX.GetUpperBound(0), aF.GetUpperBound(0))
@@ -242,7 +242,7 @@
         Next
         aChange = True
     End Sub
-    Public Sub SetRampData(ByVal aRampData(,) As Single)
+    Public Sub SetRampData(ByVal aRampData(,) As Double)
         Dim i As Integer
         If aRampData.GetUpperBound(0) = 2 Then
             aMaxNumRamp = aRampData.GetUpperBound(1)
@@ -253,7 +253,7 @@
             Next
         End If
     End Sub
-    Public Sub GetRampData(ByRef aRampData(,) As Single)
+    Public Sub GetRampData(ByRef aRampData(,) As Double)
         Dim i As Integer
         ReDim aRampData(2, MaxNumRamp)
         For i = 0 To aMaxNumRamp
@@ -261,7 +261,7 @@
             aRampData(Ramp.fdx, i) = F(i)
         Next
     End Sub
-    Public Shared Function ValidRamp(ByVal name As String, ByVal type As String, ByVal x() As Single, ByVal f() As Single) As Boolean
+    Public Shared Function ValidRamp(ByVal name As String, ByVal type As String, ByVal x() As Double, ByVal f() As Double) As Boolean
         Dim valid As Boolean
         Dim i As Integer
 
@@ -312,7 +312,7 @@
         End If
         Return equal
     End Function
-    Public Function IsEqual(ByVal name As String, ByVal type As String, ByVal x() As Single, ByVal f() As Single, ByVal isT As Boolean) As Boolean
+    Public Function IsEqual(ByVal name As String, ByVal type As String, ByVal x() As Double, ByVal f() As Double, ByVal isT As Boolean) As Boolean
         Dim equal As Boolean
         Dim i As Integer
 

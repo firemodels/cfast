@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 40 INTERIOR_TEMPERATURE = 27 EXTERIOR_TEMPERATURE = 27 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'MARIBE3' MATERIAL = 'Marinite ICFMP BE3 (2 1/2 in layers)', 
@@ -26,7 +25,7 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 3.82, BOTTOM = 3.81, WIDTH = 8.33
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 3.81 HEIGHT = 0.00999999999999979, WIDTH = 8.33
   FACE = 'LEFT' OFFSET = 0.555 /
  
 !! Fires 

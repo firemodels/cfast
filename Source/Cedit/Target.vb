@@ -2,13 +2,13 @@ Public Class Target
 
     Friend Const TypeTarget As Integer = 0
     Friend Const TypeDetector As Integer = 1
-    Friend Const SmokeDetectorActivationTemperature As Single = 30.0    ' Default Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5 or obscuration of 8 %/ft
-    Friend Const SmokeDetectorRTI As Single = 5.0
-    Friend Const SmokeDetectorActivationObscuration As Single = 100 * (1 - (1 - 8 / 100) ^ (1 / 0.3048))
-    Friend Const HeatDetectorActiviationTemperature As Single = 57.22 + 273.15   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1805, table 12-2
-    Friend Const HeatDetectorRTI As Single = 404.0
-    Friend Const SprinklerActivationTemperature As Single = 73.89 + 273.15       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
-    Friend Const SprinklerRTI As Single = 130
+    Friend Const SmokeDetectorActivationTemperature As Double = 30.0    ' Default Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5 or obscuration of 8 %/ft
+    Friend Const SmokeDetectorRTI As Double = 5.0
+    Friend Const SmokeDetectorActivationObscuration As Double = 100 * (1 - (1 - 8 / 100) ^ (1 / 0.3048))
+    Friend Const HeatDetectorActiviationTemperature As Double = 57.22 + 273.15   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1805, table 12-2
+    Friend Const HeatDetectorRTI As Double = 404.0
+    Friend Const SprinklerActivationTemperature As Double = 73.89 + 273.15       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
+    Friend Const SprinklerRTI As Double = 130
     Friend Const Implicit As Integer = 0
     Friend Const Explicit As Integer = 1
     Friend Const Steady As Integer = 2
@@ -23,29 +23,29 @@ Public Class Target
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aAdiabaticTarget As Boolean = False ' True for Dump of adiabatic surface temperature of target
-    Private aConvectionCoefficients(2) As Single ' Front(1) and back(2) convection coefficients for Dump of adiabatic target temperature 
+    Private aConvectionCoefficients(2) As Double ' Front(1) and back(2) convection coefficients for Dump of adiabatic target temperature 
     Private aType As Integer                    ' 0 for target and 1 for detector
     Private aName As String                     ' Target name (at the moment, only used for targets, not detectors)
     Private aCompartment As Integer             ' Compartment number where target or detector is located
-    Private aXPosition As Single                ' X Position of target or detector
-    Private aYPosition As Single                ' Y Position of target or detector
-    Private aZPosition As Single                ' Z Position of target or detector
+    Private aXPosition As Double                ' X Position of target or detector
+    Private aYPosition As Double                ' Y Position of target or detector
+    Private aZPosition As Double                ' Z Position of target or detector
     Private aTargetFacing As String             ' Front face orientation of target: UP, DOWN, FRONT, BACK, LEFT, RIGHT, or a fire ID
-    Private aFixedTemperature As Single         ' Fixed front surfae temperature for calculation of gauge heat flux
-    Private aXNormal As Single                  ' X component of normal vector from chosen surface of target
-    Private aYNormal As Single                  ' Y component of normal vector from chosen surface of target
-    Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
-    Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
+    Private aFixedTemperature As Double         ' Fixed front surfae temperature for calculation of gauge heat flux
+    Private aXNormal As Double                  ' X component of normal vector from chosen surface of target
+    Private aYNormal As Double                  ' Y component of normal vector from chosen surface of target
+    Private aZNormal As Double                  ' Z component of normal vector from chosen surface of target
+    Private aInternalLocation As Double         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
-    Private aThickness As Single                ' Target thickness. If zero, we use the material thickness from thermal properties tab
+    Private aThickness As Double                ' Target thickness. If zero, we use the material thickness from thermal properties tab
     Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no longer supported
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationType As Integer          ' Used to maintain compatibility with older smoke dtector inputs. 0 for temperature, 1 for obscuration. 
-    Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type
-    Private aActivationObscurationFlaming As Single ' Activation obscuration for smoke detectors from flaming smoke
-    Private aActivationObscurationSmoldering As Single ' Activation obscuration for smoke detectors from smoldering smoke
-    Private aRTI As Single                      ' Detector RTI value
-    Private aSprayDensity As Single             ' Sprinkler spray density
+    Private aActivationTemperature As Double    ' Activation temperature for all detector types.  Default depends on type
+    Private aActivationObscurationFlaming As Double ' Activation obscuration for smoke detectors from flaming smoke
+    Private aActivationObscurationSmoldering As Double ' Activation obscuration for smoke detectors from smoldering smoke
+    Private aRTI As Double                      ' Detector RTI value
+    Private aSprayDensity As Double             ' Sprinkler spray density
     Private aFYI As String                      ' Descriptor for additional user supplied information
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer                ' Temp variable that holds error count during error check
@@ -110,11 +110,11 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property XPosition() As Single
+    Public Property XPosition() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -133,11 +133,11 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property YPosition() As Single
+    Public Property YPosition() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -156,11 +156,11 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property ZPosition() As Single
+    Public Property ZPosition() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aZPosition)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aZPosition Then
                     aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -222,7 +222,7 @@ Public Class Target
                                 Return aFire.Name
                             ElseIf aValue = aFire.Name Then
                                 Return aFire.Name
-                                ' Dim Hypotenuse As Single, FHeight As Single
+                                ' Dim Hypotenuse As Double, FHeight As Double
                                 'FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
                                 'Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
                                 'If Hypotenuse <> 0 Then
@@ -238,55 +238,55 @@ Public Class Target
             Return "-"
         End Get
     End Property
-    Public Property XNormal() As Single
+    Public Property XNormal() As Double
         Get
             Return aXNormal
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aXNormal Then
                 aXNormal = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property YNormal() As Single
+    Public Property YNormal() As Double
         Get
             Return aYNormal
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aYNormal Then
                 aYNormal = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property ZNormal() As Single
+    Public Property ZNormal() As Double
         Get
             Return aZNormal
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aZNormal Then
                 aZNormal = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property InternalLocation() As Single
+    Public Property InternalLocation() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aInternalLocation)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aInternalLocation <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                 aInternalLocation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FixedTemperature() As Single
+    Public Property FixedTemperature() As Double
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aFixedTemperature)
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aFixedTemperature <> myUnits.Convert(UnitsNum.Temperature).ToSI(value) Then
                 aFixedTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(value)
                 aChanged = True
@@ -304,11 +304,11 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property Thickness() As Single
+    Public Property Thickness() As Double
         Get
             Return aThickness
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aThickness Then
                 aThickness = Value
                 aChanged = True
@@ -347,7 +347,7 @@ Public Class Target
             ActivationType = aActivationType
         End Get
     End Property
-    Public Property ActivationObscurationSmoldering() As Single
+    Public Property ActivationObscurationSmoldering() As Double
         Get
             If aActivationObscurationSmoldering <> 0 Then
                 Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscurationSmoldering)
@@ -355,7 +355,7 @@ Public Class Target
                 Return 0
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> 0 Then
                 If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscurationSmoldering Then
                     aActivationObscurationSmoldering = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
@@ -373,7 +373,7 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property ActivationObscurationFlaming() As Single
+    Public Property ActivationObscurationFlaming() As Double
         Get
             If aActivationObscurationFlaming <> 0 Then
                 Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscurationFlaming)
@@ -381,7 +381,7 @@ Public Class Target
                 Return 0
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> 0 Then
                 If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscurationFlaming Then
                     aActivationObscurationFlaming = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
@@ -399,11 +399,11 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property ActivationTemperature() As Single
+    Public Property ActivationTemperature() As Double
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aActivationTemperature)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aActivationTemperature Then
                 aActivationTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
                 aChanged = True
@@ -413,22 +413,22 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property RTI() As Single
+    Public Property RTI() As Double
         Get
             Return myUnits.Convert(UnitsNum.RTI).FromSI(aRTI)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.RTI).ToSI(Value) <> aRTI Then
                 aRTI = myUnits.Convert(UnitsNum.RTI).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property SprayDensity() As Single
+    Public Property SprayDensity() As Double
         Get
             Return myUnits.Convert(UnitsNum.Velocity).FromSI(aSprayDensity)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Velocity).ToSI(Value) <> aSprayDensity Then
                 aSprayDensity = myUnits.Convert(UnitsNum.Velocity).ToSI(Value)
                 aChanged = True
@@ -454,12 +454,12 @@ Public Class Target
             aChanged = Value
         End Set
     End Property
-    Public Sub SetPosition(ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single)
+    Public Sub SetPosition(ByVal XPosition As Double, ByVal YPosition As Double, ByVal ZPosition As Double)
         Me.XPosition = XPosition
         Me.YPosition = YPosition
         Me.ZPosition = ZPosition
     End Sub
-    Public Sub SetPosition(ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single, ByVal XNormal As Single, ByVal YNormal As Single, ByVal ZNormal As Single)
+    Public Sub SetPosition(ByVal XPosition As Double, ByVal YPosition As Double, ByVal ZPosition As Double, ByVal XNormal As Double, ByVal YNormal As Double, ByVal ZNormal As Double)
         Me.XPosition = XPosition
         Me.YPosition = YPosition
         Me.ZPosition = ZPosition
@@ -499,7 +499,7 @@ Public Class Target
             If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
-    Public Sub SetTarget(ByVal index As Integer, ByVal ActivationTemperature As Single)
+    Public Sub SetTarget(ByVal index As Integer, ByVal ActivationTemperature As Double)
         ' This defines a simple heat detector (no water spray)
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
@@ -512,7 +512,7 @@ Public Class Target
             If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
-    Public Sub SetTarget(ByVal index As Integer, ByVal DetectorType As Integer, ByVal ActivationTemperature As Single, ByVal RTI As Single, ByVal SprayDensity As Single)
+    Public Sub SetTarget(ByVal index As Integer, ByVal DetectorType As Integer, ByVal ActivationTemperature As Double, ByVal RTI As Double, ByVal SprayDensity As Double)
         ' This is a detector with water spray
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
@@ -527,7 +527,7 @@ Public Class Target
             If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
-    Public Sub SetConvectionCoefficients(ByVal isAdiabatic As Boolean, ByVal Coeff1 As Single, ByVal Coeff2 As Single)
+    Public Sub SetConvectionCoefficients(ByVal isAdiabatic As Boolean, ByVal Coeff1 As Double, ByVal Coeff2 As Double)
         Me.Adiabatic = isAdiabatic
         Me.aConvectionCoefficients(1) = Coeff1
         Me.aConvectionCoefficients(2) = Coeff2
@@ -543,7 +543,7 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property Convection_Coefficient(index As Integer) As Single
+    Public Property Convection_Coefficient(index As Integer) As Double
         Get
             If index >= 1 And index <= 2 Then
                 Convection_Coefficient = aConvectionCoefficients(index)
@@ -552,7 +552,7 @@ Public Class Target
                 HasErrors += 1
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If value <> aConvectionCoefficients(index) Then
                 aConvectionCoefficients(index) = value
                 aChanged = True
@@ -593,7 +593,7 @@ Public Class Target
                         HasErrors += 1
                     End If
                     If myThermalProperties.GetIndex(aMaterial) >= 0 Then
-                        Dim thickness As Single = myThermalProperties(myThermalProperties.GetIndex(aMaterial)).Thickness
+                        Dim thickness As Double = myThermalProperties(myThermalProperties.GetIndex(aMaterial)).Thickness
                         If aThickness > 0 Then thickness = aThickness
                         If aInternalLocation > thickness Then
                             myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is greater than target thickness.", ErrorMessages.TypeFatal)

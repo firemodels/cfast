@@ -328,7 +328,7 @@ Public Class EngineeringUnits
     Public Convert(18) As Conversion
     Public ConvertFireData(12) As Conversion
     Private aSI As Boolean = False, aSITemp As Boolean, SIStack As New Stack
-    Private aValue As Single
+    Private aValue As Double
     Private i As Integer
     Public Property SI() As Boolean
         Get
@@ -347,46 +347,46 @@ Public Class EngineeringUnits
         End Set
     End Property
     Public Sub New()
-        Dim Zero() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+        Dim Zero() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim DefaultUnits() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         ' These conversion factors are all from the given units to SI according to NIST SP 811
         ' All the conversions except smoke are of the form y=(x+b)*m, though usually b is 0.0
         ' Smoke is a special case to properly convert % obscuration from %/m to/from %/m
 
         ' Length conversions
-        Dim mLength() As Single = {1.0, 0.01, 0.001, 0.3048, 0.0254}
+        Dim mLength() As Double = {1.0, 0.01, 0.001, 0.3048, 0.0254}
         Dim LLength() As String = {"m", "cm", "mm", "ft", "in"}
         Dim aLengthConversion As New Conversions(mLength, Zero, LLength)
         BaseUnits(BaseUnitsNum.Length) = aLengthConversion
         ' Mass conversions
-        Dim MMass() As Single = {1.0, 0.001, 0.4535924, 0.02834952}
+        Dim MMass() As Double = {1.0, 0.001, 0.4535924, 0.02834952}
         Dim LMass() As String = {"kg", "g", "lb", "oz"}
         Dim aMassConversion As New Conversions(MMass, Zero, LMass)
         BaseUnits(BaseUnitsNum.Mass) = aMassConversion
         ' Time conversions
-        Dim MTime() As Single = {1.0, 60.0, 3600.0}
+        Dim MTime() As Double = {1.0, 60.0, 3600.0}
         Dim LTime() As String = {"s", "min", "h"}
         Dim aTimeConversion As New Conversions(MTime, Zero, LTime)
         BaseUnits(BaseUnitsNum.Time) = aTimeConversion
         ' Temperature conversions
-        Dim MTemperature() As Single = {1.0, 1.0, 0.5555556, 0.5555556}, BTemperature() As Single = {273.15, 0.0, 459.67, 0.0}
+        Dim MTemperature() As Double = {1.0, 1.0, 0.5555556, 0.5555556}, BTemperature() As Double = {273.15, 0.0, 459.67, 0.0}
         MTemperature(2) = 5.0 / 9.0 ' to correct a round-off error in display of °C, we'll use the full precision for this constant
         MTemperature(3) = 5.0 / 9.0
         Dim LTemperature() As String = {"°C", "K", "°F", "°R"}
         Dim aTemperatureConversion As New Conversions(MTemperature, BTemperature, LTemperature)
         BaseUnits(BaseUnitsNum.Temperature) = aTemperatureConversion
         ' Pressure conversions
-        Dim MPressure() As Single = {1.0, 133.3224, 249.0889, 101325.0}
+        Dim MPressure() As Double = {1.0, 133.3224, 249.0889, 101325.0}
         Dim Lpressure() As String = {"Pa", "mm Hg", "in H2O", "atm"}
         Dim aPressureConversion As New Conversions(MPressure, Zero, Lpressure)
         BaseUnits(BaseUnitsNum.Pressure) = aPressureConversion
         ' Energy conversions
-        Dim MEnergy() As Single = {1000.0, 1.0, 1000000.0, 1054.35, 4.184}
+        Dim MEnergy() As Double = {1000.0, 1.0, 1000000.0, 1054.35, 4.184}
         Dim LEnergy() As String = {"kJ", "J", "MJ", "BTU", "cal"}
         Dim aEnergyConversion As New Conversions(MEnergy, Zero, LEnergy)
         BaseUnits(BaseUnitsNum.Energy) = aEnergyConversion
         ' Smoke conversions (We treat this as a base unit to limit it to %/ft and %/m)
-        Dim MSmoke() As Single = {1, 0.3048}
+        Dim MSmoke() As Double = {1, 0.3048}
         Dim LSmoke() As String = {"%/m", "%/ft"}
         Dim aSmokeConversion As New Conversions(MSmoke, Zero, LSmoke)
         BaseUnits(BaseUnitsNum.Smoke) = aSmokeConversion
@@ -395,9 +395,9 @@ Public Class EngineeringUnits
     End Sub
     Public Sub InitConversionFactors(ByVal DesiredUnits() As Integer)
         Dim i As Integer
-        Dim m As Single, b As Single, Label As String
+        Dim m As Double, b As Double, Label As String
 
-        Dim mLength As Single, mMass As Single, mTime As Single, mTemperature As Single, mPressure As Single, mEnergy As Single, mSmoke As Single
+        Dim mLength As Double, mMass As Double, mTime As Double, mTemperature As Double, mPressure As Double, mEnergy As Double, mSmoke As Double
         Dim lLength As String, lMass As String, lTime As String, lTemperature As String, lPressure As String, lEnergy As String, lSmoke As String
         mLength = BaseUnits(BaseUnitsNum.Length).m(DesiredUnits(BaseUnitsNum.Length))
         mMass = BaseUnits(BaseUnitsNum.Mass).m(DesiredUnits(BaseUnitsNum.Mass))
@@ -552,23 +552,23 @@ Public Class EngineeringUnits
     End Sub
 End Class
 Public Class Conversion
-    Private aM As Single, aB As Single          ' Conversion constants to SI for current units
+    Private aM As Double, aB As Double          ' Conversion constants to SI for current units
     Private aLabel As String                    ' Units label for current units
-    Private aValue As Single
+    Private aValue As Double
     Private aType As Integer                    ' 0 for linear conversion, 1 for % obscuration conversion
-    Friend Sub New(ByVal m As Single, ByVal b As Single, ByVal Label As String)
+    Friend Sub New(ByVal m As Double, ByVal b As Double, ByVal Label As String)
         aType = 0
         aM = m
         aB = b
         aLabel = Label
     End Sub
-    Friend Sub New(ByVal m As Single, ByVal b As Single, ByVal Label As String, Type As Integer)
+    Friend Sub New(ByVal m As Double, ByVal b As Double, ByVal Label As String, Type As Integer)
         aType = Type
         aM = m
         aB = b
         aLabel = Label
     End Sub
-    Friend ReadOnly Property ToSI(ByVal EngineeringUnits As Single) As Single
+    Friend ReadOnly Property ToSI(ByVal EngineeringUnits As Double) As Double
         ' Conversion to SI units is of the form y=(x+b)*m
         Get
             If myUnits.SI Then
@@ -586,7 +586,7 @@ Public Class Conversion
             End If
         End Get
     End Property
-    Friend ReadOnly Property FromSI(ByVal SIUnits As Single) As Single
+    Friend ReadOnly Property FromSI(ByVal SIUnits As Double) As Double
         ' Conversion from SI units is inverse of conversion to SI ... x=y/m-b
         Get
             If myUnits.SI Then
@@ -611,10 +611,10 @@ Public Class Conversion
     End Property
 End Class
 Public Class Conversions
-    Private aM() As Single, aB() As Single   ' Holds values for conversion constants to SI Units
+    Private aM() As Double, aB() As Double   ' Holds values for conversion constants to SI Units
     Private aLabels() As String              ' Labels cooresponding to the constants
-    Private aValue As Single
-    Public Sub New(ByVal m() As Single, ByVal b() As Single, ByVal Labels() As String)
+    Private aValue As Double
+    Public Sub New(ByVal m() As Double, ByVal b() As Double, ByVal Labels() As String)
         Dim i As Integer
         ReDim aM(m.GetUpperBound(0)), aB(b.GetUpperBound(0)), aLabels(Labels.GetUpperBound(0))
         For i = 0 To m.GetUpperBound(0)
@@ -623,14 +623,14 @@ Public Class Conversions
             aLabels(i) = Labels(i)
         Next
     End Sub
-    Public ReadOnly Property m(ByVal CurrentUnits As Integer) As Single
+    Public ReadOnly Property m(ByVal CurrentUnits As Integer) As Double
         Get
             If CurrentUnits >= 0 And CurrentUnits <= 6 Then
                 Return aM(CurrentUnits)
             End If
         End Get
     End Property
-    Public ReadOnly Property b(ByVal CurrentUnits As Integer) As Single
+    Public ReadOnly Property b(ByVal CurrentUnits As Integer) As Double
         Get
             If CurrentUnits >= 0 And CurrentUnits <= 6 Then
                 Return aB(CurrentUnits)

@@ -7,13 +7,13 @@ Public Class ThermalProperty
 
     Private aShortName As String                ' One word name for material
     Private aName As String                     ' Material Name
-    Private aConductivity As Single             ' Thermal conductivity
-    Private aSpecificHeat As Single             ' Specific Heat
-    Private aDensity As Single                  ' Density in kg/m^3
-    Private aThickness As Single                ' Material Thickness in m
-    Private aEmissivity As Single               ' Emissivity
+    Private aConductivity As Double             ' Thermal conductivity
+    Private aSpecificHeat As Double             ' Specific Heat
+    Private aDensity As Double                  ' Density in kg/m^3
+    Private aThickness As Double                ' Material Thickness in m
+    Private aEmissivity As Double               ' Emissivity
     Private Const HClDim As Integer = 6              '
-    Private aHClDeposition(HClDim) As Single    ' HCl Deposition Coefficients
+    Private aHClDeposition(HClDim) As Double    ' HCl Deposition Coefficients
     Private aFYI As String                  ' Descriptor for additional user supplied information
     Public Sub New()
         aShortName = ""
@@ -30,8 +30,8 @@ Public Class ThermalProperty
         Next
         aChanged = True
     End Sub
-    Public Sub New(ByVal ShortName As String, ByVal Name As String, ByVal Conductivity As Single, ByVal SpecificHeat As Single, _
-    ByVal Density As Single, ByVal Thickness As Single, ByVal Emissivity As Single)
+    Public Sub New(ByVal ShortName As String, ByVal Name As String, ByVal Conductivity As Double, ByVal SpecificHeat As Double, _
+    ByVal Density As Double, ByVal Thickness As Double, ByVal Emissivity As Double)
         Me.ShortName = ShortName
         Me.Name = Name
         Me.Conductivity = Conductivity
@@ -45,8 +45,8 @@ Public Class ThermalProperty
         Next
         aChanged = True
     End Sub
-    Public Sub GetThermalProperties(ByRef ShortName As String, ByRef Name As String, ByRef Conductivity As Single, ByRef SpecificHeat As Single, _
-    ByRef Density As Single, ByRef Thickness As Single, ByRef Emissivity As Single)
+    Public Sub GetThermalProperties(ByRef ShortName As String, ByRef Name As String, ByRef Conductivity As Double, ByRef SpecificHeat As Double, _
+    ByRef Density As Double, ByRef Thickness As Double, ByRef Emissivity As Double)
         ShortName = Me.ShortName
         Name = Me.Name
         Conductivity = Me.Conductivity
@@ -77,66 +77,66 @@ Public Class ThermalProperty
             End If
         End Set
     End Property
-    Friend Property HClDeposition(ByVal i As Integer) As Single
+    Friend Property HClDeposition(ByVal i As Integer) As Double
         Get
             Return aHClDeposition(i)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aHClDeposition(i) Then
                 aHClDeposition(i) = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property Emissivity() As Single
+    Friend Property Emissivity() As Double
         Get
             Return aEmissivity
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aEmissivity Then
                 aEmissivity = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property Thickness() As Single
+    Friend Property Thickness() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aThickness)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aThickness Then
                 aThickness = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property Density() As Single
+    Friend Property Density() As Double
         Get
             Return myUnits.Convert(UnitsNum.Density).FromSI(aDensity)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Density).ToSI(Value) <> aDensity Then
                 aDensity = myUnits.Convert(UnitsNum.Density).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property SpecificHeat() As Single
+    Friend Property SpecificHeat() As Double
         Get
             Return myUnits.Convert(UnitsNum.SpecificHeat).FromSI(aSpecificHeat)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.SpecificHeat).ToSI(Value) <> aSpecificHeat Then
                 aSpecificHeat = myUnits.Convert(UnitsNum.SpecificHeat).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property Conductivity() As Single
+    Friend Property Conductivity() As Double
         Get
             Return myUnits.Convert(UnitsNum.Conductivity).FromSI(aConductivity)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Conductivity).ToSI(Value) <> aConductivity Then
                 aConductivity = myUnits.Convert(UnitsNum.Conductivity).ToSI(Value)
                 aChanged = True
@@ -162,14 +162,14 @@ Public Class ThermalProperty
             aChanged = Value
         End Set
     End Property
-    Public Sub GetHCl(ByRef HClCoefficients() As Single)
+    Public Sub GetHCl(ByRef HClCoefficients() As Double)
         Dim i As Integer
         ReDim HClCoefficients(HClDim)
         For i = 0 To HClDim
             HClCoefficients(i) = HClDeposition(i)
         Next
     End Sub
-    Public Sub SetHCl(ByVal HClCoefficients() As Single)
+    Public Sub SetHCl(ByVal HClCoefficients() As Double)
         Dim i As Integer
         If HClCoefficients.GetUpperBound(0) = HClDim Then
             For i = 0 To HClDim
@@ -301,7 +301,7 @@ Public Class ThermalPropertiesCollection
         ToMaterial.Density = FromMaterial.Density
         ToMaterial.Thickness = FromMaterial.Thickness
         ToMaterial.Emissivity = FromMaterial.Emissivity
-        Dim Vector1() As Single = {0}
+        Dim Vector1() As Double = {0}
         FromMaterial.GetHCl(Vector1)
         ToMaterial.SetHCl(Vector1)
         List.Item(indexTo) = ToMaterial

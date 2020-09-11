@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 31 EXTERIOR_TEMPERATURE = 31 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Fiberboard' MATERIAL = 'Fiber Board', 
@@ -16,7 +15,7 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 1.83, BOTTOM = 0, WIDTH = 0.74
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 1.83, WIDTH = 0.74
   FACE = 'FRONT' OFFSET = 1.28 /
  
 !! Fires 

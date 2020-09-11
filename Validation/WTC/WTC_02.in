@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 25 EXTERIOR_TEMPERATURE = 25 /
-&MISC  MAX_TIME_STEP = 0.1 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 0.1 / 
  
 !! Material Properties 
 &MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)', 
@@ -22,21 +22,21 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0.28 HEIGHT = 0.7, WIDTH = 0.5
   FACE = 'LEFT' OFFSET = 0.3 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0.28 HEIGHT = 0.7, WIDTH = 0.76
   FACE = 'LEFT' OFFSET = 1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0.28 HEIGHT = 0.7, WIDTH = 0.76
   FACE = 'LEFT' OFFSET = 1.9 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0.28 HEIGHT = 0.7, WIDTH = 0.5
   FACE = 'LEFT' OFFSET = 2.8 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 2.12 HEIGHT = 0.7, WIDTH = 0.5
   FACE = 'RIGHT' OFFSET = 0.3 /
-&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
+&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 2.12 HEIGHT = 0.7, WIDTH = 0.76
   FACE = 'RIGHT' OFFSET = 1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
+&VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 2.12 HEIGHT = 0.7, WIDTH = 0.76
   FACE = 'RIGHT' OFFSET = 1.9 /
-&VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
+&VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 2.12 HEIGHT = 0.7, WIDTH = 0.5
   FACE = 'RIGHT' OFFSET = 2.8 /
  
 !! Fires 

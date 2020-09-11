@@ -1,53 +1,53 @@
 Public Class Environment
 
-    Public Const MinTemp As Single = 223.15           ' Minimum ambient temperature limit
-    Public Const MaxTemp As Single = 373.15           ' Maximum ambient temperature limit
-    Public Const DefaultMaximumTimeStep As Single = 2 ' Default maximum solver time step
-    Public Const DefaultLOI As Single = 0.15          ' Default limiting oxygen index. This needs to be consistent with CFAST
-    Public Const DefaultNonValue As Single = -1001.0  ' Default non value
+    Public Const MinTemp As Double = 223.15           ' Minimum ambient temperature limit
+    Public Const MaxTemp As Double = 373.15           ' Maximum ambient temperature limit
+    Public Const DefaultMaximumTimeStep As Double = 2 ' Default maximum solver time step
+    Public Const DefaultLOI As Double = 0.15          ' Default limiting oxygen index. This needs to be consistent with CFAST
+    Public Const DefaultNonValue As Double = -1001.0  ' Default non value
     Public Const DIAGon As Integer = 1                ' For DIAG namelist, is the integer value for something being on
     Public Const DIAGoff As Integer = 0               ' For DIAG namelist, is the integer value for something being off
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
     Private aVersion As Integer                     ' CFAST version number
-    Private aSimulationTime As Single               ' Total simulation time
-    Private aOutputInterval As Single               ' Time interval for printed output, + is compact output and - is full output
-    Private aSpreadsheetInterval As Single          ' Time interval for comma-separated output
-    Private aSmokeviewInterval As Single            ' Time interval for smokeview output
-    Private aIntAmbTemperature As Single            ' Ambient temperature inside the structure at t=0
-    Private aIntAmbPressure As Single               ' Ambient pressure inside the structure at t=0
-    Private aIntAmbElevation As Single              ' Reference elevation for measurement of ambients inside the structure
-    Private aIntAmbRH As Single                     ' Ambient relative humidity inside the structure at t=0
-    Private aExtAmbTemperature As Single            ' Ambient temperature outside the structure at t=0
-    Private aExtAmbPressure As Single               ' Ambient pressure outside the structure at t=0
-    Private aExtAmbElevation As Single              ' Reference elevation for measurement of ambients outside the structure
-    Private aExtWindSpeed As Single                 ' Ambient wind speed outside the structure
-    Private aExtScaleHeight As Single               ' Height at which wind speed is measured
-    Private aExtPowerLawCoefficient As Single       ' Power law coefficient for Dump of wind speed at height, normally 0.16
-    Private aLowerOxygenLimit As Single             ' Oxygen concentration below which burning will not take place.  Default is 15 % by volume
-    Private aIgnitionTemp As Single                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
-    Private aMaximumTimeStep As Single              ' Maximum time step for model Dumps
+    Private aSimulationTime As Double               ' Total simulation time
+    Private aOutputInterval As Double               ' Time interval for printed output, + is compact output and - is full output
+    Private aSpreadsheetInterval As Double          ' Time interval for comma-separated output
+    Private aSmokeviewInterval As Double            ' Time interval for smokeview output
+    Private aIntAmbTemperature As Double            ' Ambient temperature inside the structure at t=0
+    Private aIntAmbPressure As Double               ' Ambient pressure inside the structure at t=0
+    Private aIntAmbElevation As Double              ' Reference elevation for measurement of ambients inside the structure
+    Private aIntAmbRH As Double                     ' Ambient relative humidity inside the structure at t=0
+    Private aExtAmbTemperature As Double            ' Ambient temperature outside the structure at t=0
+    Private aExtAmbPressure As Double               ' Ambient pressure outside the structure at t=0
+    Private aExtAmbElevation As Double              ' Reference elevation for measurement of ambients outside the structure
+    Private aExtWindSpeed As Double                 ' Ambient wind speed outside the structure
+    Private aExtScaleHeight As Double               ' Height at which wind speed is measured
+    Private aExtPowerLawCoefficient As Double       ' Power law coefficient for Dump of wind speed at height, normally 0.16
+    Private aLowerOxygenLimit As Double             ' Oxygen concentration below which burning will not take place.  Default is 15 % by volume
+    Private aIgnitionTemp As Double                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
+    Private aMaximumTimeStep As Double              ' Maximum time step for model Dumps
     Private aInputFileName As String                ' Current input data file name
     Private aInputFilePath As String                ' Path to current input data file
     Private aAdiabaticWalls As Boolean              ' True if all walls are adiabatic
-    Private aExtinctionFlaming As Single = 8700     ' Soot concentration to OD for flaming soot
-    Private aExtinctionSmoldering As Single = 4400  ' Soot concentration to OD for flaming soot
+    Private aExtinctionFlaming As Double = 8700     ' Soot concentration to OD for flaming soot
+    Private aExtinctionSmoldering As Double = 4400  ' Soot concentration to OD for flaming soot
     Private aOverwrite As Boolean = True
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
     ' all variables below are for the &DIAG namelist. 
-    Private aDIAGf(0) As Single
-    Private aDIAGt(0) As Single
-    Private aDIAGGasTemp As Single
-    Private aDIAGPartPressH2O As Single
-    Private aDIAGPartPressCO2 As Single
-    Private aDIAGUpperLayerThickness As Single
-    Private aDIAGFireHeatFlux As Single
-    Private aDIAGVerificationTimeStep As Single
+    Private aDIAGf(0) As Double
+    Private aDIAGt(0) As Double
+    Private aDIAGGasTemp As Double
+    Private aDIAGPartPressH2O As Double
+    Private aDIAGPartPressCO2 As Double
+    Private aDIAGUpperLayerThickness As Double
+    Private aDIAGFireHeatFlux As Double
+    Private aDIAGVerificationTimeStep As Double
     Private aDIAGRadSolver As String
     Private aDiagAdiabaticTargetVerification As Boolean
-    Private aDiagAdiabaticTargetFlux As Single
+    Private aDiagAdiabaticTargetFlux As Double
     Private aDIAGfire As Integer
     Private aDIAGhflow As Integer
     Private aDIAGentrain As Integer
@@ -142,159 +142,159 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property SimulationTime() As Single
+    Friend Property SimulationTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSimulationTime)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSimulationTime Then
                 aChanged = True
                 aSimulationTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property OutputInterval() As Single
+    Friend Property OutputInterval() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aOutputInterval)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aOutputInterval Then
                 aChanged = True
                 aOutputInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property SpreadsheetInterval() As Single
+    Friend Property SpreadsheetInterval() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSpreadsheetInterval)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSpreadsheetInterval Then
                 aChanged = True
                 aSpreadsheetInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property SmokeviewInterval() As Single
+    Friend Property SmokeviewInterval() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSmokeviewInterval)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSmokeviewInterval Then
                 aChanged = True
                 aSmokeviewInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property IntAmbTemperature() As Single
+    Friend Property IntAmbTemperature() As Double
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aIntAmbTemperature)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aIntAmbTemperature Then
                 aChanged = True
                 aIntAmbTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
             End If
         End Set
     End Property
-    Friend ReadOnly Property IntAmbPressure() As Single
+    Friend ReadOnly Property IntAmbPressure() As Double
         Get
             Return myUnits.Convert(UnitsNum.Pressure).FromSI(aExtAmbPressure * aIntAmbTemperature / aExtAmbTemperature)
         End Get
     End Property
-    Friend Property IntAmbRH() As Single
+    Friend Property IntAmbRH() As Double
         Get
             Return aIntAmbRH
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> IntAmbRH Then
                 aChanged = True
                 aIntAmbRH = Value
             End If
         End Set
     End Property
-    Friend Property ExtAmbTemperature() As Single
+    Friend Property ExtAmbTemperature() As Double
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aExtAmbTemperature)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aExtAmbTemperature Then
                 aChanged = True
                 aExtAmbTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property ExtAmbPressure() As Single
+    Friend Property ExtAmbPressure() As Double
         Get
             Return myUnits.Convert(UnitsNum.Pressure).FromSI(aExtAmbPressure)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aExtAmbPressure Then
                 aChanged = True
                 aExtAmbPressure = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property ExtWindSpeed() As Single
+    Friend Property ExtWindSpeed() As Double
         Get
             Return myUnits.Convert(UnitsNum.Velocity).FromSI(aExtWindSpeed)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Velocity).ToSI(Value) <> aExtWindSpeed Then
                 aChanged = True
                 aExtWindSpeed = myUnits.Convert(UnitsNum.Velocity).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property ExtScaleHeight() As Single
+    Friend Property ExtScaleHeight() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aExtScaleHeight)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aExtScaleHeight Then
                 aChanged = True
                 aExtScaleHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property ExtPowerLawCoefficient() As Single
+    Friend Property ExtPowerLawCoefficient() As Double
         Get
             Return aExtPowerLawCoefficient
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aExtPowerLawCoefficient Then
                 aChanged = True
                 aExtPowerLawCoefficient = Value
             End If
         End Set
     End Property
-    Friend Property LowerOxygenLimit() As Single
+    Friend Property LowerOxygenLimit() As Double
         Get
             Return aLowerOxygenLimit
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aLowerOxygenLimit Then
                 aChanged = True
                 aLowerOxygenLimit = Value
             End If
         End Set
     End Property
-    Property IgnitionTemp() As Single
+    Property IgnitionTemp() As Double
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aIgnitionTemp)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aIgnitionTemp <> myUnits.Convert(UnitsNum.Temperature).ToSI(Value) Then
                 aIgnitionTemp = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property MaximumTimeStep() As Single
+    Friend Property MaximumTimeStep() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aMaximumTimeStep)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> 0 Then
                 If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumTimeStep Then
                     aMaximumTimeStep = myUnits.Convert(UnitsNum.Time).ToSI(Value)
@@ -314,22 +314,22 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property FlamingExtinctionCoefficient() As Single
+    Friend Property FlamingExtinctionCoefficient() As Double
         Get
             Return aExtinctionFlaming
         End Get
-        Set(Value As Single)
+        Set(Value As Double)
             If aExtinctionFlaming <> Value Then
                 aExtinctionFlaming = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property SmolderingExtinctionCoefficient() As Single
+    Friend Property SmolderingExtinctionCoefficient() As Double
         Get
             Return aExtinctionSmoldering
         End Get
-        Set(Value As Single)
+        Set(Value As Double)
             If aExtinctionSmoldering <> Value Then
                 aExtinctionSmoldering = Value
                 aChanged = True
@@ -397,7 +397,7 @@ Public Class Environment
             aChanged = Value
         End Set
     End Property
-    Friend Property DIAGf(ByVal idx As Integer) As Single
+    Friend Property DIAGf(ByVal idx As Integer) As Double
         Get
             If idx >= 0 And idx <= aDIAGf.GetUpperBound(0) Then
                 Return aDIAGf(idx)
@@ -405,7 +405,7 @@ Public Class Environment
                 Return DefaultNonValue
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             Dim i As Integer = aDIAGf.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
                 If aDIAGf(idx) <> value Then
@@ -423,7 +423,7 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property DIAGt(ByVal idx As Integer) As Single
+    Friend Property DIAGt(ByVal idx As Integer) As Double
         Get
             If idx >= 0 And idx <= aDIAGt.GetUpperBound(0) Then
                 Return aDIAGt(idx)
@@ -431,7 +431,7 @@ Public Class Environment
                 Return DefaultNonValue
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             Dim i As Integer = aDIAGt.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
                 If aDIAGt(idx) <> value Then
@@ -449,63 +449,63 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property DIAGGasTemp As Single
+    Friend Property DIAGGasTemp As Double
         Get
             Return aDIAGGasTemp
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aDIAGGasTemp <> value Then
                 aDIAGGasTemp = value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property DIAGPartPressH2O As Single
+    Friend Property DIAGPartPressH2O As Double
         Get
             Return aDIAGPartPressH2O
         End Get
-        Set(value As Single)
+        Set(value As Double)
             aDIAGPartPressH2O = value
         End Set
     End Property
-    Friend Property DIAGPartPressCO2 As Single
+    Friend Property DIAGPartPressCO2 As Double
         Get
             Return aDIAGPartPressCO2
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aDIAGPartPressCO2 <> value Then
                 aDIAGPartPressCO2 = value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property DIAGUpperLayerThickness As Single
+    Friend Property DIAGUpperLayerThickness As Double
         Get
             Return aDIAGUpperLayerThickness
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aDIAGUpperLayerThickness <> value Then
                 aDIAGUpperLayerThickness = value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property DIAGFireHeatFlux As Single
+    Friend Property DIAGFireHeatFlux As Double
         Get
             Return aDIAGFireHeatFlux
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aDIAGFireHeatFlux <> value Then
                 aDIAGFireHeatFlux = value
                 aChanged = True
             End If
         End Set
     End Property
-    Friend Property DIAGVerificationTimeStep As Single
+    Friend Property DIAGVerificationTimeStep As Double
         Get
             Return aDIAGVerificationTimeStep
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If aDIAGVerificationTimeStep <> value Then
                 aDIAGVerificationTimeStep = value
                 aChanged = True
@@ -523,7 +523,7 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Sub SetDIAGf(ByVal F() As Single)
+    Friend Sub SetDIAGf(ByVal F() As Double)
         Dim i As Integer
         If F.GetUpperBound(0) <> aDIAGf.GetUpperBound(0) Then
             ReDim aDIAGf(F.GetUpperBound(0))
@@ -533,7 +533,7 @@ Public Class Environment
         Next
         aChanged = True
     End Sub
-    Friend Sub SetDIAGt(ByVal T() As Single)
+    Friend Sub SetDIAGt(ByVal T() As Double)
         Dim i As Integer
         If T.GetUpperBound(0) <> aDIAGt.GetUpperBound(0) Then
             ReDim aDIAGt(T.GetUpperBound(0))
@@ -543,7 +543,7 @@ Public Class Environment
         Next
         aChanged = True
     End Sub
-    Friend Sub GetDIAGf(ByRef F() As Single)
+    Friend Sub GetDIAGf(ByRef F() As Double)
         Dim i As Integer
         If F.GetUpperBound(0) <> aDIAGf.GetUpperBound(0) Then
             ReDim F(aDIAGf.GetUpperBound(0))
@@ -552,7 +552,7 @@ Public Class Environment
             F(i) = aDIAGf(i)
         Next
     End Sub
-    Friend Sub GetDIAGt(ByRef T() As Single)
+    Friend Sub GetDIAGt(ByRef T() As Double)
         Dim i As Integer
         If T.GetUpperBound(0) <> aDIAGt.GetUpperBound(0) Then
             ReDim T(aDIAGt.GetUpperBound(0))
@@ -572,11 +572,11 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property DIAGAdiabaticTargetFlux As Single
+    Friend Property DIAGAdiabaticTargetFlux As Double
         Get
             Return aDiagAdiabaticTargetFlux
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If value <> aDiagAdiabaticTargetFlux Then
                 aDiagAdiabaticTargetFlux = value
                 aChanged = True

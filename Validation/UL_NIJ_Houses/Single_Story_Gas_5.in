@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Gyp' MATERIAL = 'Gypsum Board', 
@@ -46,39 +45,39 @@
       ORIGIN = 8.06, 3.63, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000858 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Living Room' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.89
+&VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Living Room' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.89
   CRITERION = 'TIME' T = 0, 1290, 1291 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Kitchen Door' COMP_IDS = 'Kitchen' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1.8
+&VENT TYPE = 'WALL' ID = 'Kitchen Door' COMP_IDS = 'Kitchen' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 1.8
   CRITERION = 'TIME' T = 0, 300, 301 F = 0, 0, 1 FACE = 'REAR' OFFSET = 0.5 /
-&VENT TYPE = 'WALL' ID = 'Kitchen Window' COMP_IDS = 'Kitchen' 'OUTSIDE'  TOP = 1.92, BOTTOM = 1.07, WIDTH = 0.85
+&VENT TYPE = 'WALL' ID = 'Kitchen Window' COMP_IDS = 'Kitchen' 'OUTSIDE' , BOTTOM = 1.07 HEIGHT = 0.85, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 1845, 1846 F = 0, 0, 0 FACE = 'REAR' OFFSET = 4.48 /
-&VENT TYPE = 'WALL' ID = 'Dining Room Window' COMP_IDS = 'Dining Room' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 1.78
+&VENT TYPE = 'WALL' ID = 'Dining Room Window' COMP_IDS = 'Dining Room' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 1.78
   CRITERION = 'TIME' T = 0, 1875, 1876 F = 0, 0, 0 FACE = 'FRONT' OFFSET = 0.47 /
-&VENT TYPE = 'WALL' ID = 'Living Room Window' COMP_IDS = 'Living Room' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 2.67
+&VENT TYPE = 'WALL' ID = 'Living Room Window' COMP_IDS = 'Living Room' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 2.67
   CRITERION = 'TIME' T = 0, 1200, 1201 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 2.05 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 1 Front Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Front Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 600, 601 F = 0, 0, 0 FACE = 'FRONT' OFFSET = 1.49 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 1 Side Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Side Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 600, 601 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.4 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 2 Back Window' COMP_IDS = 'Bedroom 2' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+&VENT TYPE = 'WALL' ID = 'Bedroom 2 Back Window' COMP_IDS = 'Bedroom 2' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 900, 901 F = 0, 0, 0 FACE = 'REAR' OFFSET = 0.92 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 3 Back Window' COMP_IDS = 'Bedroom 3' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+&VENT TYPE = 'WALL' ID = 'Bedroom 3 Back Window' COMP_IDS = 'Bedroom 3' 'OUTSIDE' , BOTTOM = 0.61 HEIGHT = 1.46, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 1830, 1831 F = 0, 0, 0 FACE = 'REAR' OFFSET = 0.79 /
-&VENT TYPE = 'WALL' ID = 'DR LR 1' COMP_IDS = 'Dining Room', 'DR LR Hall' TOP = 2.4, BOTTOM = 0, WIDTH = 0.96
+&VENT TYPE = 'WALL' ID = 'DR LR 1' COMP_IDS = 'Dining Room', 'DR LR Hall', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.96
   FACE = 'RIGHT' OFFSET = 3 /
-&VENT TYPE = 'WALL' ID = 'DR LR 2' COMP_IDS = 'DR LR Hall', 'Living Room' TOP = 2.4, BOTTOM = 0, WIDTH = 0.96
+&VENT TYPE = 'WALL' ID = 'DR LR 2' COMP_IDS = 'DR LR Hall', 'Living Room', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.96
   FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'DR Kit' COMP_IDS = 'Dining Room', 'Kitchen' TOP = 2.4, BOTTOM = 0, WIDTH = 1.3
+&VENT TYPE = 'WALL' ID = 'DR Kit' COMP_IDS = 'Dining Room', 'Kitchen', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 1.3
   FACE = 'REAR' OFFSET = 1.42 /
-&VENT TYPE = 'WALL' ID = 'KIt LR' COMP_IDS = 'Kitchen', 'Living Room' TOP = 2, BOTTOM = 0, WIDTH = 0.8
+&VENT TYPE = 'WALL' ID = 'KIt LR' COMP_IDS = 'Kitchen', 'Living Room', BOTTOM = 0 HEIGHT = 2, WIDTH = 0.8
   FACE = 'FRONT' OFFSET = 4.9 /
-&VENT TYPE = 'WALL' ID = 'LR to BR Hall' COMP_IDS = 'Living Room', 'LR BR Hall' TOP = 2.4, BOTTOM = 0, WIDTH = 1.1
+&VENT TYPE = 'WALL' ID = 'LR to BR Hall' COMP_IDS = 'Living Room', 'LR BR Hall', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 1.1
   FACE = 'REAR' OFFSET = 4.46 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 1 Door' COMP_IDS = 'Bedroom 1', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Door' COMP_IDS = 'Bedroom 1', 'LR BR Hall', BOTTOM = 0 HEIGHT = 2.1, WIDTH = 0.7
   FACE = 'REAR' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 2 Door' COMP_IDS = 'Bedroom 2', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+&VENT TYPE = 'WALL' ID = 'Bedroom 2 Door' COMP_IDS = 'Bedroom 2', 'LR BR Hall', BOTTOM = 0 HEIGHT = 2.1, WIDTH = 0.7
   FACE = 'LEFT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Bedroom 3 Door' COMP_IDS = 'Bedroom 3', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+&VENT TYPE = 'WALL' ID = 'Bedroom 3 Door' COMP_IDS = 'Bedroom 3', 'LR BR Hall', BOTTOM = 0 HEIGHT = 2.1, WIDTH = 0.7
   FACE = 'FRONT' OFFSET = 1.92 /
  
 !! Fires 

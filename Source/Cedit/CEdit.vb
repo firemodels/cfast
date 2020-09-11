@@ -2370,7 +2370,7 @@ Public Class CeditMain
         Me.CompShaft.Name = "CompShaft"
         Me.CompShaft.Size = New System.Drawing.Size(145, 17)
         Me.CompShaft.TabIndex = 315
-        Me.CompShaft.Text = "Shaft (Single-zone model)"
+        Me.CompShaft.Text = "Shaft (Double-zone model)"
         Me.CompShaft.UseVisualStyleBackColor = True
         '
         'Label65
@@ -5313,7 +5313,7 @@ Public Class CeditMain
     Private Sub CompVariableArea_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles CompVariableArea.BeforeRowColChange
         Dim aCompartment As New Compartment
         Dim numPoints As Integer, ir As Integer
-        Dim aArea As Single
+        Dim aArea As Double
         numPoints = UpdateGUI.CountGridPoints(CompVariableArea)
         For ir = 1 To numPoints
             If CType(CompVariableArea(ir, 0), String) + " " = " " Then
@@ -5326,12 +5326,12 @@ Public Class CeditMain
             aCompartment = myCompartments.Item(CurrentCompartment)
             numPoints = UpdateGUI.CountGridPoints(CompVariableArea)
             If numPoints = 0 Then
-                Dim AreaPoints(0) As Single, HeightPoints(0) As Single
+                Dim AreaPoints(0) As Double, HeightPoints(0) As Double
                 aCompartment.SetVariableArea(AreaPoints, HeightPoints)
                 myCompartments.Item(CurrentCompartment) = aCompartment
                 UpdateGUI.Compartment(CurrentCompartment)
             ElseIf numPoints > 0 Then
-                Dim AreaPoints(numPoints) As Single, HeightPoints(numPoints) As Single
+                Dim AreaPoints(numPoints) As Double, HeightPoints(numPoints) As Double
                 For ir = 1 To numPoints
                     HeightPoints(ir) = Val(CompVariableArea(ir, 0))
                     AreaPoints(ir) = Val(CompVariableArea(ir, 1))
@@ -5712,7 +5712,7 @@ Public Class CeditMain
     End Sub
     Private Sub Referenced_Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReferencedFireDefinition.SelectedIndexChanged
         If CurrentFire >= 0 And myFires.Count > 0 Then
-            Dim aFireTimeSeries(12, 0) As Single
+            Dim aFireTimeSeries(12, 0) As Double
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFires(CurrentFire)
             FireIndex = ReferencedFireDefinition.SelectedIndex - 1
@@ -5727,7 +5727,7 @@ Public Class CeditMain
     End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged, FireDefinitionName.Leave
         If CurrentFire >= 0 And myFires.Count > 0 Then
-            Dim aFireTimeSeries(12, 0) As Single
+            Dim aFireTimeSeries(12, 0) As Double
             Dim aFire As New Fire, aFireInstance As New Fire
             aFireInstance = myFires(CurrentFire)
 
@@ -6572,7 +6572,7 @@ Public Class CeditMain
         Dim numPoints As Integer, ir As Integer, ic As Integer
         numPoints = CountGridPoints(FireDataSS)
         If numPoints > 0 Then
-            Dim aFireTimeSeries(12, numPoints - 1) As Single
+            Dim aFireTimeSeries(12, numPoints - 1) As Double
             For ir = 0 To numPoints - 1
                 For ic = 0 To 12
                     aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
@@ -6601,10 +6601,10 @@ Public Class CeditMain
         Dim NumPoints As Integer, ir As Integer
         NumPoints = CountGridPoints(ss)
         If NumPoints = 0 Then
-            Dim TimePoints(0) As Single, FractionPoints(0) As Single
+            Dim TimePoints(0) As Double, FractionPoints(0) As Double
             aVent.SetRamp(TimePoints, FractionPoints)
         Else
-            Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
+            Dim TimePoints(NumPoints) As Double, FractionPoints(NumPoints) As Double
             For ir = 1 To NumPoints
                 TimePoints(ir) = Val(ss(ir, 0))
                 FractionPoints(ir) = Val(ss(ir, 1))

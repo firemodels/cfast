@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 45 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'FireBrickNBS' MATERIAL = 'Fire Brick NBS', 
@@ -40,15 +39,15 @@
       ORIGIN = 2.07, 2.57, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Fire Room', 'Entry to Fire Room' TOP = 1.6, BOTTOM = 0, WIDTH = 0.81
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Fire Room', 'Entry to Fire Room', BOTTOM = 0 HEIGHT = 1.6, WIDTH = 0.81
   FACE = 'REAR' OFFSET = 1.42 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Entry to Fire Room', 'Corridor' TOP = 1.6, BOTTOM = 0, WIDTH = 0.81
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Entry to Fire Room', 'Corridor', BOTTOM = 0 HEIGHT = 1.6, WIDTH = 0.81
   FACE = 'REAR' OFFSET = 0.11 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Corridor' 'OUTSIDE'  TOP = 2.44, BOTTOM = 2.43, WIDTH = 0.76
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Corridor' 'OUTSIDE' , BOTTOM = 2.43 HEIGHT = 0.00999999999999979, WIDTH = 0.76
   FACE = 'LEFT' OFFSET = 0.84 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Corridor', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Corridor', 'Entry to Target Room', BOTTOM = 0 HEIGHT = 2.04, WIDTH = 0.79
   CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'FRONT' OFFSET = 2.14 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Target Room', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Target Room', 'Entry to Target Room', BOTTOM = 0 HEIGHT = 2.04, WIDTH = 0.79
   CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'REAR' OFFSET = 0.075 /
  
 !! Fires 

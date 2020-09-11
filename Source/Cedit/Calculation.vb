@@ -7,7 +7,7 @@ Public Class Dump
     Private aID As String                   ' id used a heading for output column
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
-    Private aCriteria As Single             ' Value used in 'trigger_...' analysis
+    Private aCriteria As Double             ' Value used in 'trigger_...' analysis
     Private aFirstMeasurement As String     ' Name of measurement, second row in spreadsheet
     Private aFirstDevice As String            ' Name of instrument within the measurement, third row in spreadsheet
     Private aSecondMeasurement As String    ' Name of measure for second instrument, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
@@ -25,7 +25,7 @@ Public Class Dump
         aSecondDevice = ""
         aFYI = ""
     End Sub
-    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Single, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, fyi As String)
+    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Double, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, fyi As String)
         aID = ID
         aFileType = FileType
         aType = Type
@@ -51,7 +51,7 @@ Public Class Dump
             Return aType
         End Get
     End Property
-    Public ReadOnly Property Criteria As Single
+    Public ReadOnly Property Criteria As Double
         Get
             Return aCriteria
         End Get
@@ -86,7 +86,7 @@ Public Class Dump
             End If
         End Set
     End Property
-    Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         aID = ID
         FileType = aFileType
         Type = aType

@@ -7,7 +7,7 @@
 
     Private aType As Integer
     Private aCompartment As Integer
-    Private aValue As Single
+    Private aValue As Double
     Private aAxis As Integer
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
@@ -17,7 +17,7 @@
         aValue = 0.0
         aAxis = 0
     End Sub
-    Public Sub New(ByVal Type As Integer, ByVal Axis As Integer, ByVal Value As Single, ByVal Compartment As Integer)
+    Public Sub New(ByVal Type As Integer, ByVal Axis As Integer, ByVal Value As Double, ByVal Compartment As Integer)
         aType = Type
         aAxis = Axis
         aValue = Value
@@ -45,7 +45,7 @@
             End If
         End Set
     End Property
-    Property Value() As Single
+    Property Value() As Double
         Get
             If aType = IsoSurface Then
                 Return myUnits.Convert(UnitsNum.Temperature).FromSI(aValue)
@@ -53,7 +53,7 @@
                 Return myUnits.Convert(UnitsNum.Length).FromSI(aValue)
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aType = IsoSurface Then
                 If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aValue And Value > 0.0 Then
                     aChanged = True

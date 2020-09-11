@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'CSRConcrete' MATERIAL = 'CSR Concrete (user''s guide)' 
@@ -20,11 +19,11 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE'  TOP = 0.01, BOTTOM = 0, WIDTH = 2
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.01, WIDTH = 2
   FACE = 'FRONT' OFFSET = 5 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE'  TOP = 0.01, BOTTOM = 0, WIDTH = 2
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.01, WIDTH = 2
   FACE = 'FRONT' OFFSET = 33 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE'  TOP = 2, BOTTOM = 0.01, WIDTH = 2
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0.01 HEIGHT = 1.99, WIDTH = 2
   CRITERION = 'TIME' T = 0, 770, 771 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 33 /
  
 !! Mechanical Vents

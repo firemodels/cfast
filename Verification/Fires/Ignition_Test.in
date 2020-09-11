@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 700 PRINT = 1 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'HARDWOOD' MATERIAL = '"Wood, Hardwoods (oak, maple) (3/4 in)"', 
@@ -16,7 +15,7 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 1
   FACE = 'FRONT' OFFSET = 2 /
  
 !! Fires 

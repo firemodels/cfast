@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 600 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'SteelBE2' MATERIAL = 'Steel ICFMP BE2', 
@@ -22,13 +21,13 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.71, BOTTOM = 0, WIDTH = 0.71
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.71, WIDTH = 0.71
   FACE = 'LEFT' OFFSET = 6.55 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.71, BOTTOM = 0, WIDTH = 0.71
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.71, WIDTH = 0.71
   FACE = 'RIGHT' OFFSET = 6.55 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 12.71, BOTTOM = 12, WIDTH = 0.71
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 12 HEIGHT = 0.710000000000001, WIDTH = 0.71
   FACE = 'LEFT' OFFSET = 6.55 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 12.71, BOTTOM = 12, WIDTH = 0.71
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 12 HEIGHT = 0.710000000000001, WIDTH = 0.71
   FACE = 'RIGHT' OFFSET = 6.55 /
  
 !! Fires 

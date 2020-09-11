@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 2300 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'ConcreteBE4' MATERIAL = 'Concrete ICFMP BE4 and BE5', 
@@ -22,9 +21,9 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 3.6, BOTTOM = 1.4, WIDTH = 0.7
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 1.4 HEIGHT = 2.2, WIDTH = 0.7
   FACE = 'FRONT' OFFSET = 1.8 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 1.4, BOTTOM = 0.7, WIDTH = 0.6
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0.7 HEIGHT = 0.7, WIDTH = 0.6
   FACE = 'RIGHT' OFFSET = 1.8 /
  
 !! Fires 

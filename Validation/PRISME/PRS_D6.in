@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 100805 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 25 EXTERIOR_TEMPERATURE = 25 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Wool' MATERIAL = 'Rock Wool', 
@@ -32,15 +31,15 @@
       ORIGIN = 10, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2.15, BOTTOM = 0, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2', BOTTOM = 0 HEIGHT = 2.15, WIDTH = 0.72
   FACE = 'RIGHT' OFFSET = 2.64 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 2', 'Comp 3' TOP = 2.15, BOTTOM = 0, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 2', 'Comp 3', BOTTOM = 0 HEIGHT = 2.15, WIDTH = 0.72
   FACE = 'RIGHT' OFFSET = 2.64 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.0068, WIDTH = 1
   FACE = 'FRONT' OFFSET = 2 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Comp 2' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Comp 2' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.0068, WIDTH = 1
   FACE = 'FRONT' OFFSET = 2 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Comp 3' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.0068, WIDTH = 1
   FACE = 'FRONT' OFFSET = 2 /
  
 !! Mechanical Vents

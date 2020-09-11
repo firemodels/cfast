@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1680 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 32 EXTERIOR_TEMPERATURE = 32 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Concrete' MATERIAL = 'Concrete (NBS88-3752)', 
@@ -30,15 +29,15 @@
       ORIGIN = 7.1, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'West Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'West Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 116, 117, 538, 539, 685, 686, 1025, 1026, 1195, 1196 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.15 /
-&VENT TYPE = 'WALL' ID = 'East Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'East Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 369, 370, 522, 523, 911, 912, 1012, 1013, 1446, 1447 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.05 /
-&VENT TYPE = 'WALL' ID = 'South Door' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'South Door' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 3200 F = 0, 0 FACE = 'LEFT' OFFSET = 2.6 /
-&VENT TYPE = 'WALL' ID = 'North East Door' COMP_IDS = 'Comp 2', 'Comp 3' TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'North East Door' COMP_IDS = 'Comp 2', 'Comp 3', BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 1.075 /
-&VENT TYPE = 'WALL' ID = 'South East Door' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'South East Door' COMP_IDS = 'Comp 1', 'Comp 2', BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 4.125 /
  
 !! Ceiling and Floor Vents 

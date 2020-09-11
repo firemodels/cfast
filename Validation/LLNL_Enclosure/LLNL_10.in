@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 4450 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 28 EXTERIOR_TEMPERATURE = 28 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'LLNL Walls' MATERIAL = 'Test Cell Walls', 
@@ -18,7 +17,7 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0001375 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Full Test Cell' 'OUTSIDE'  TOP = 0.567, BOTTOM = 0.433, WIDTH = 0.175
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Full Test Cell' 'OUTSIDE' , BOTTOM = 0.433 HEIGHT = 0.134, WIDTH = 0.175
   FACE = 'FRONT' OFFSET = 1 /
  
 !! Mechanical Vents

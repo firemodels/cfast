@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 18 EXTERIOR_TEMPERATURE = 18 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'ULCONCRETE' MATERIAL = 'UL Concrete', 
@@ -20,13 +19,13 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 7.6, BOTTOM = 0, WIDTH = 20.4
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 7.6, WIDTH = 20.4
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 7.6, BOTTOM = 0, WIDTH = 20.4
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 7.6, WIDTH = 20.4
   FACE = 'REAR' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 7.6, BOTTOM = 0, WIDTH = 21.6
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 7.6, WIDTH = 21.6
   FACE = 'LEFT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 7.6, BOTTOM = 0, WIDTH = 21.6
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 7.6, WIDTH = 21.6
   FACE = 'RIGHT' OFFSET = 0 /
  
 !! Ceiling and Floor Vents 

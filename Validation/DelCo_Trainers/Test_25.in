@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 960 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 32 EXTERIOR_TEMPERATURE = 32 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Concrete' MATERIAL = 'Concrete (NBS88-3752)', 
@@ -60,35 +59,35 @@
       ORIGIN = 2.5, 3, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'First Floor East Double Door A6' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'First Floor East Double Door A6' COMP_IDS = 'Floor 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 836, 837 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.1 /
-&VENT TYPE = 'WALL' ID = 'First Floor West Double Door A5' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'First Floor West Double Door A5' COMP_IDS = 'Floor 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 244, 245 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2 /
-&VENT TYPE = 'WALL' ID = 'Second Floor South Door A11' COMP_IDS = 'Floor 2 Hallway' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Second Floor South Door A11' COMP_IDS = 'Floor 2 Hallway' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 474, 475 F = 0, 0, 1 FACE = 'LEFT' OFFSET = 0.15 /
-&VENT TYPE = 'WALL' ID = 'Second Floor West Double Door A13' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Second Floor West Double Door A13' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 353, 354 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.1 /
-&VENT TYPE = 'WALL' ID = 'Second Floor East Double Door A14' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Second Floor East Double Door A14' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 930 F = 0, 0 FACE = 'RIGHT' OFFSET = 2.2 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 Stairwell Door' COMP_IDS = 'Stairwell', 'Floor 2 North Room Front' TOP = 4.4, BOTTOM = 2.4, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Floor 2 Stairwell Door' COMP_IDS = 'Stairwell', 'Floor 2 North Room Front', BOTTOM = 2.4 HEIGHT = 2, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 112, 113 F = 0.19, 0.19, 1 FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Floor 1 Room to Vestibule' COMP_IDS = 'Floor 1', 'Floor 1 Vestibule' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Floor 1 Room to Vestibule' COMP_IDS = 'Floor 1', 'Floor 1 Vestibule', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.9
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Floor 1 Vestibule to Stairwell' COMP_IDS = 'Floor 1 Vestibule', 'Stairwell' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Floor 1 Vestibule to Stairwell' COMP_IDS = 'Floor 1 Vestibule', 'Stairwell', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 Nook to Hallway' COMP_IDS = 'Floor 2 Nook', 'Floor 2 Hallway' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Floor 2 Nook to Hallway' COMP_IDS = 'Floor 2 Nook', 'Floor 2 Hallway', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.9
   FACE = 'REAR' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 Hallway to North Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 North Room Front' TOP = 2.4, BOTTOM = 0, WIDTH = 1.2
+&VENT TYPE = 'WALL' ID = 'Floor 2 Hallway to North Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 North Room Front', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 1.2
   FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'FLoor 2 Hallway to South Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 South Room Nook' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'FLoor 2 Hallway to South Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 South Room Nook', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.9
   FACE = 'REAR' OFFSET = 1.9 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 North Front to Rear' COMP_IDS = 'Floor 2 North Room Front', 'Floor 2 North Room Rear' TOP = 2.4, BOTTOM = 0, WIDTH = 5
+&VENT TYPE = 'WALL' ID = 'Floor 2 North Front to Rear' COMP_IDS = 'Floor 2 North Room Front', 'Floor 2 North Room Rear', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 5
   FACE = 'REAR' OFFSET = 1.7 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 North to South' COMP_IDS = 'Floor 2 North Room Rear', 'Floor 2 South Room Rear' TOP = 2.4, BOTTOM = 0, WIDTH = 1.2
+&VENT TYPE = 'WALL' ID = 'Floor 2 North to South' COMP_IDS = 'Floor 2 North Room Rear', 'Floor 2 South Room Rear', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 1.2
   FACE = 'LEFT' OFFSET = 0.4 /
-&VENT TYPE = 'WALL' ID = 'Floor South Rear to Front' COMP_IDS = 'Floor 2 South Room Rear', 'Floor 2 South Room Front' TOP = 2.4, BOTTOM = 0, WIDTH = 2.8
+&VENT TYPE = 'WALL' ID = 'Floor South Rear to Front' COMP_IDS = 'Floor 2 South Room Rear', 'Floor 2 South Room Front', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 2.8
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Floor 2 South to Nook' COMP_IDS = 'Floor 2 South Room Front', 'Floor 2 South Room Nook' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+&VENT TYPE = 'WALL' ID = 'Floor 2 South to Nook' COMP_IDS = 'Floor 2 South Room Front', 'Floor 2 South Room Nook', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 0.9
   FACE = 'FRONT' OFFSET = 1.9 /
  
 !! Fires 

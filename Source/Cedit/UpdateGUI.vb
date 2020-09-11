@@ -398,8 +398,8 @@ Public Class UpdateGUI
                 MainWin.HVentComp2.SelectedIndex = aVent.SecondCompartment + 1
             End If
             MainWin.HVentOffset.Text = aVent.Offset.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.HVentSill.Text = aVent.Sill.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.HVentSoffit.Text = aVent.Soffit.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.HVentBottom.Text = aVent.Bottom.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.HVentHeight.Text = aVent.Height.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentWidth.Text = aVent.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentFace.SelectedIndex = aVent.Face - 1
 
@@ -476,8 +476,8 @@ Public Class UpdateGUI
                     Else
                         MainWin.HVentSummary(i, 4) = "Not defined"
                     End If
-                    MainWin.HVentSummary(i, 6) = aVent.Sill.ToString
-                    MainWin.HVentSummary(i, 7) = aVent.Soffit.ToString
+                    MainWin.HVentSummary(i, 6) = aVent.Bottom.ToString
+                    MainWin.HVentSummary(i, 7) = aVent.Height.ToString
                     MainWin.HVentSummary(i, 8) = aVent.Width.ToString
                     MainWin.HVentSummary(i, 9) = aVent.InitialOpening.ToString
                     MainWin.HVentSummary(i, 10) = FaceNames.Substring((aVent.Face - 1) * 5, 5)

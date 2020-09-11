@@ -1727,14 +1727,15 @@ continue
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
 
-    real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction, filter_time, filter_efficiency
+    real(eb) :: area, bottom, flow, height, offset, setpoint, top, width, pre_fraction, post_fraction, &
+        filter_time, filter_efficiency
     real(eb), dimension(2) :: areas, cutoffs, heights, offsets
     real(eb), dimension(mxpts) :: t, f
     character(len=64),dimension(2) :: comp_ids, orientations
     character(len=64) :: criterion, devc_id, face, id, shape, type
     character(len=128) :: fyi
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
-        filter_time, flow, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
+        filter_time, flow, height, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
         setpoint, shape, t, top, type, width, fyi
 
     ios = 1
@@ -1868,8 +1869,9 @@ continue
                     if (top<0._eb) top = roomptr%cheight + top
                     if (bottom<0._eb) bottom = roomptr%cheight + bottom
                 end if
-                ventptr%soffit = top
                 ventptr%sill   = bottom
+                ventptr%soffit = top
+                if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
 
                 if  (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
                     ventptr%offset(1) = offset

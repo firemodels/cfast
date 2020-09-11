@@ -248,7 +248,6 @@ Public Class CeditMain
     Friend WithEvents Label50 As System.Windows.Forms.Label
     Friend WithEvents Label51 As System.Windows.Forms.Label
     Friend WithEvents Label45 As System.Windows.Forms.Label
-    Friend WithEvents Label47 As System.Windows.Forms.Label
     Friend WithEvents TabFires As System.Windows.Forms.TabPage
     Friend WithEvents TabDetection As System.Windows.Forms.TabPage
     Friend WithEvents TabTargets As System.Windows.Forms.TabPage
@@ -378,9 +377,9 @@ Public Class CeditMain
     Friend WithEvents Label19 As System.Windows.Forms.Label
     Friend WithEvents HVentOffset As System.Windows.Forms.TextBox
     Friend WithEvents HVentComp1 As System.Windows.Forms.ComboBox
-    Friend WithEvents HVentSoffit As System.Windows.Forms.TextBox
+    Friend WithEvents HVentHeight As System.Windows.Forms.TextBox
     Friend WithEvents Label34 As System.Windows.Forms.Label
-    Friend WithEvents HVentSill As System.Windows.Forms.TextBox
+    Friend WithEvents HVentBottom As System.Windows.Forms.TextBox
     Friend WithEvents Label33 As System.Windows.Forms.Label
     Friend WithEvents HVentWidth As System.Windows.Forms.TextBox
     Friend WithEvents Label23 As System.Windows.Forms.Label
@@ -526,9 +525,9 @@ Public Class CeditMain
         Me.HVentComp2 = New System.Windows.Forms.ComboBox()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
         Me.HVentComp1 = New System.Windows.Forms.ComboBox()
-        Me.HVentSoffit = New System.Windows.Forms.TextBox()
+        Me.HVentHeight = New System.Windows.Forms.TextBox()
         Me.Label34 = New System.Windows.Forms.Label()
-        Me.HVentSill = New System.Windows.Forms.TextBox()
+        Me.HVentBottom = New System.Windows.Forms.TextBox()
         Me.Label33 = New System.Windows.Forms.Label()
         Me.HVentWidth = New System.Windows.Forms.TextBox()
         Me.Label23 = New System.Windows.Forms.Label()
@@ -654,7 +653,6 @@ Public Class CeditMain
         Me.MVentFromComp = New System.Windows.Forms.ComboBox()
         Me.MVentFlow = New System.Windows.Forms.TextBox()
         Me.Label45 = New System.Windows.Forms.Label()
-        Me.Label47 = New System.Windows.Forms.Label()
         Me.TabFires = New System.Windows.Forms.TabPage()
         Me.Label60 = New System.Windows.Forms.Label()
         Me.FireDataSS = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -1409,9 +1407,9 @@ Public Class CeditMain
         Me.GroupHVentGeometry.Controls.Add(Me.Label37)
         Me.GroupHVentGeometry.Controls.Add(Me.GroupBox14)
         Me.GroupHVentGeometry.Controls.Add(Me.GroupBox13)
-        Me.GroupHVentGeometry.Controls.Add(Me.HVentSoffit)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentHeight)
         Me.GroupHVentGeometry.Controls.Add(Me.Label34)
-        Me.GroupHVentGeometry.Controls.Add(Me.HVentSill)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentBottom)
         Me.GroupHVentGeometry.Controls.Add(Me.Label33)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentWidth)
         Me.GroupHVentGeometry.Controls.Add(Me.Label23)
@@ -1631,36 +1629,36 @@ Public Class CeditMain
         Me.HVentComp1.Size = New System.Drawing.Size(328, 21)
         Me.HVentComp1.TabIndex = 407
         '
-        'HVentSoffit
+        'HVentHeight
         '
-        Me.HVentSoffit.Location = New System.Drawing.Point(212, 233)
-        Me.HVentSoffit.Name = "HVentSoffit"
-        Me.HVentSoffit.Size = New System.Drawing.Size(96, 20)
-        Me.HVentSoffit.TabIndex = 410
+        Me.HVentHeight.Location = New System.Drawing.Point(212, 233)
+        Me.HVentHeight.Name = "HVentHeight"
+        Me.HVentHeight.Size = New System.Drawing.Size(96, 20)
+        Me.HVentHeight.TabIndex = 410
         '
         'Label34
         '
-        Me.Label34.Location = New System.Drawing.Point(164, 232)
+        Me.Label34.Location = New System.Drawing.Point(154, 232)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(40, 23)
+        Me.Label34.Size = New System.Drawing.Size(50, 23)
         Me.Label34.TabIndex = 19
-        Me.Label34.Text = "Soffit:"
+        Me.Label34.Text = "Height:"
         Me.Label34.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'HVentSill
+        'HVentBottom
         '
-        Me.HVentSill.Location = New System.Drawing.Point(212, 207)
-        Me.HVentSill.Name = "HVentSill"
-        Me.HVentSill.Size = New System.Drawing.Size(96, 20)
-        Me.HVentSill.TabIndex = 409
+        Me.HVentBottom.Location = New System.Drawing.Point(212, 207)
+        Me.HVentBottom.Name = "HVentBottom"
+        Me.HVentBottom.Size = New System.Drawing.Size(96, 20)
+        Me.HVentBottom.TabIndex = 409
         '
         'Label33
         '
-        Me.Label33.Location = New System.Drawing.Point(164, 206)
+        Me.Label33.Location = New System.Drawing.Point(154, 206)
         Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(40, 23)
+        Me.Label33.Size = New System.Drawing.Size(50, 23)
         Me.Label33.TabIndex = 17
-        Me.Label33.Text = "Sill:"
+        Me.Label33.Text = "Bottom:"
         Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'HVentWidth
@@ -2526,7 +2524,6 @@ Public Class CeditMain
         Me.GroupMVents.Controls.Add(Me.GroupBox21)
         Me.GroupMVents.Controls.Add(Me.MVentFlow)
         Me.GroupMVents.Controls.Add(Me.Label45)
-        Me.GroupMVents.Controls.Add(Me.Label47)
         Me.GroupMVents.Location = New System.Drawing.Point(128, 189)
         Me.GroupMVents.Name = "GroupMVents"
         Me.GroupMVents.Size = New System.Drawing.Size(720, 390)
@@ -2944,15 +2941,6 @@ Public Class CeditMain
         Me.Label45.TabIndex = 21
         Me.Label45.Text = "Flow Rate:"
         Me.Label45.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label47
-        '
-        Me.Label47.Location = New System.Drawing.Point(313, 136)
-        Me.Label47.Name = "Label47"
-        Me.Label47.Size = New System.Drawing.Size(40, 23)
-        Me.Label47.TabIndex = 19
-        Me.Label47.Text = "Soffit:"
-        Me.Label47.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'TabFires
         '
@@ -5438,14 +5426,14 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged, HVentInitialFraction.Leave, HVentFinalFraction.Leave, HVentName.Leave
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentBottom.Leave, HVentHeight.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged, HVentInitialFraction.Leave, HVentFinalFraction.Leave, HVentName.Leave
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
             If sender Is HVentName Then aVent.Name = HVentName.Text
             If sender Is HVentOffset Then aVent.Offset = Val(HVentOffset.Text)
-            If sender Is HVentSill Then aVent.Sill = Val(HVentSill.Text)
-            If sender Is HVentSoffit Then aVent.Soffit = Val(HVentSoffit.Text)
+            If sender Is HVentBottom Then aVent.Bottom = Val(HVentBottom.Text)
+            If sender Is HVentHeight Then aVent.Height = Val(HVentHeight.Text)
             If sender Is HVentWidth Then aVent.Width = Val(HVentWidth.Text)
             If sender Is HVentFace Then aVent.Face = HVentFace.SelectedIndex + 1
             If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1

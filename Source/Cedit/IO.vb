@@ -66,7 +66,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
-        Dim print, sim, smoke, ss As Single
+        Dim print, sim, smoke, ss As Double
 
         print = 60
         sim = 900
@@ -97,7 +97,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLInit(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
-        Dim pressure, rh, intemp, extemp As Single
+        Dim pressure, rh, intemp, extemp As Double
 
         pressure = 101325
         rh = 50
@@ -129,7 +129,7 @@ Module IO
     Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, max As Integer
         Dim adiabatic, overwrite As Boolean
-        Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Single
+        Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Double
 
         adiabatic = False
         overwrite = True
@@ -185,10 +185,10 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
         Dim i, j As Integer
-        Dim conduct, dens, emiss, spech, thick As Single
+        Dim conduct, dens, emiss, spech, thick As Double
         Dim id, matl, fyi As String
         Dim valid As Boolean
-        Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+        Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim iProp As Integer
 
         For i = 1 To NMList.TotNMList
@@ -266,7 +266,7 @@ Module IO
     Private Sub ReadInputFileNMLRamp(ByVal NMList As NameListFile)
         Const maxnum As Integer = 1000
         Dim i, j, k As Integer
-        Dim x(1), f(1) As Single
+        Dim x(1), f(1) As Double
         Dim max As Integer
         Dim id, type As String
         Dim isT, def1, def2, deff As Boolean
@@ -353,10 +353,10 @@ Module IO
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
         Dim rampid, id, fyi As String
-        Dim depth, height, width As Single
+        Dim depth, height, width As Double
         Dim shaft, hall, valid, leakasarea, leakasratio As Boolean
         Dim grid(3) As Integer
-        Dim origin(3), leakareas(2), leakratios(2), comparea(0), compheight(0) As Single
+        Dim origin(3), leakareas(2), leakratios(2), comparea(0), compheight(0) As Double
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
@@ -373,9 +373,9 @@ Module IO
                 Dim ceilid As String() = {"", "", "", ""}
                 Dim floorid As String() = {"", "", "", ""}
                 Dim wallid As String() = {"", "", "", ""}
-                Dim ceilthick As Single() = {0.0, 0.0, 0.0, 0.0}
-                Dim floorthick As Single() = {0.0, 0.0, 0.0, 0.0}
-                Dim wallthick As Single() = {0.0, 0.0, 0.0, 0.0}
+                Dim ceilthick As Double() = {0.0, 0.0, 0.0, 0.0}
+                Dim floorthick As Double() = {0.0, 0.0, 0.0, 0.0}
+                Dim wallthick As Double() = {0.0, 0.0, 0.0, 0.0}
                 ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
@@ -567,10 +567,10 @@ Module IO
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type, fyi, targetfacing As String
         Dim tempdepthunits As String = "FRACTION"
-        Dim thickness, fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Single
-        Dim loc(3), norm(3), coeffs(2) As Single
+        Dim thickness, fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Double
+        Dim loc(3), norm(3), coeffs(2) As Double
         Dim valid, lvalid, adiabatic As Boolean
-        Dim aTempOffset As Single = 273.15
+        Dim aTempOffset As Double = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DEVC") Then
@@ -798,9 +798,9 @@ Module IO
     Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile, ByRef someFireInstances As FireCollection)
         Dim i, j, k, max As Integer
         Dim compid, id, devcid, ignitcrit, fireid, fyi As String
-        Dim setp As Single
-        Dim loc(1) As Single
-        Dim aDummy As Single = 273.15
+        Dim setp As Double
+        Dim loc(1) As Double
+        Dim aDummy As Double = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "FIRE") Then
@@ -869,8 +869,8 @@ Module IO
     Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile, ByRef someFires As FireCollection)
         Dim i, j As Integer
         Dim id As String
-        Dim carbon, chlorine, flametime, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
-        Dim aFireCurves(12, 0) As Single
+        Dim carbon, chlorine, flametime, hoc, hydrogen, nitrogen, oxygen, radfrac As Double
+        Dim aFireCurves(12, 0) As Double
         Dim valid As Boolean
 
         For i = 1 To NMList.TotNMList
@@ -935,7 +935,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef Valid As Boolean)
+    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Double, ByRef Valid As Boolean)
         Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
@@ -1018,8 +1018,8 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
         Dim i, j, k, max As Integer
-        Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Single
-        Dim tt(0), ff(0) As Single
+        Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Double
+        Dim tt(0), ff(0) As Double
         Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
         Dim valid As Boolean
         Dim comp0dx, comp1dx As Integer
@@ -1350,7 +1350,7 @@ Module IO
     Private Sub ReadInputFileNMLConn(ByVal NMList As NameListFile, ByRef someHHeats As VentCollection, ByRef someVHeats As VentCollection)
         Dim i, j, k, max, cFirst, cSecond As Integer
         Dim compid, compids(1), type As String
-        Dim f(1) As Single
+        Dim f(1) As Double
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "CONN") Then
@@ -1422,8 +1422,8 @@ Module IO
     Private Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid As String
-        Dim value As Single
-        Dim aTempOffset As Single = 273.15
+        Dim value As Double
+        Dim aTempOffset As Double = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "ISOF") Then
@@ -1455,7 +1455,7 @@ Module IO
     Private Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid, domain, plane As String
-        Dim pos As Single
+        Dim pos As Double
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "SLCF") Then
@@ -1503,13 +1503,13 @@ Module IO
     End Sub
     Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
-        Dim f(0), t(0) As Single
-        Dim ppco2, pph2o, gastemp, ULThickness, verificationstep, fireheatflux As Single
+        Dim f(0), t(0) As Double
+        Dim ppco2, pph2o, gastemp, ULThickness, verificationstep, fireheatflux As Double
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim residdbprn, layermixing As Integer
         Dim dummy As String
-        Dim adiabatic As Boolean, fluxAST As Single
+        Dim adiabatic As Boolean, fluxAST As Double
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DIAG") Then
@@ -1677,7 +1677,7 @@ Module IO
     Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As DumpCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
-        Dim criteria As Single
+        Dim criteria As Double
 
         For i = 1 To NMList.TotNMList
             id = ""
@@ -1755,7 +1755,7 @@ Module IO
     Public Sub FindThermalPropertiesCSV(ByVal csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
         Dim i As Integer
         ' do material properties so they are defined for compartments, fires, and targets
-        Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+        Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim iProp As Integer
         i = 1
         myUnits.SI = True
@@ -1843,7 +1843,7 @@ Module IO
         Dim i, j, k, iStart, index As Integer
         Dim rowidx(csv.MaxRow) As Integer
         Dim rdx As Integer = 0
-        Dim ChemicalCompound() As Single = {0.0, 1.0, 4.0, 0.0, 0.0, 0.0}
+        Dim ChemicalCompound() As Double = {0.0, 1.0, 4.0, 0.0, 0.0, 0.0}
         Dim NewFileformat, NewFireFormat As Boolean
 
         myUnits.SI = True
@@ -1878,7 +1878,7 @@ Module IO
                                     End If
                                 Next
 
-                                Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+                                Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
                                 Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0
                                 Dim fireComplete As Integer = 0
                                 Do Until fireComplete >= NumFireCurves + 1
@@ -1914,7 +1914,7 @@ Module IO
                                 aFireObject.Changed = False
                                 TempFires.Add(aFireObject)
 
-                                Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Single
+                                Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Double
 
                                 For j = 0 To csv.num(iTime, 0) - 2
                                     For k = 1 To NumFireCurves
@@ -1955,7 +1955,7 @@ Module IO
                 TempFires.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.num(rowidx(11), 1), csv.num(rowidx(6), 1)))
                 ' Check for thermal property of the fire object and find it if necessary
 
-                Dim firedata(12, CInt(csv.num(rowidx(1), 1) - 1)) As Single
+                Dim firedata(12, CInt(csv.num(rowidx(1), 1) - 1)) As Double
                 For i = 0 To csv.num(rowidx(1), 1) - 1
                     For j = 0 To 12
                         firedata(j, i) = csv.num(rowidx(1 + i), firefile(j))
@@ -1979,7 +1979,7 @@ Module IO
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 Select Case csv.str(i, CFASTlnNum.keyWord).Trim
                     Case "FIRE"
-                        Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+                        Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
                         Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0
                         Dim fireComplete As Integer = 0
                         Do Until fireComplete >= NumFireCurves + 1
@@ -2016,7 +2016,7 @@ Module IO
                         aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
                         aFireIns.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition),
                             csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
-                        Dim z_position As Single
+                        Dim z_position As Double
                         z_position = csv.num(iFire, fireNum.zposition)
                         aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
                         If InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) > 0 Then
@@ -2038,7 +2038,7 @@ Module IO
                         End If
                         aFireIns.IgnitionValue = csv.num(iFire, fireNum.ignCriterion)
 
-                        Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Single
+                        Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Double
 
                         For j = 0 To csv.num(iTime, 0) - 2
                             For k = 1 To NumFireCurves
@@ -2159,7 +2159,7 @@ Module IO
 
     Private Sub WriteOutputFileNMLDiag(ByVal IO As Integer, ByRef Myenvironment As Environment)
         Dim ln As String, wrtDIAG As Boolean, wrtSlash As Boolean
-        Dim x(0), f(0) As Single, i As Integer
+        Dim x(0), f(0) As Double, i As Integer
 
         'Writing Diagnostics 
         If Myenvironment.DIAGRadSolver = "DEFAULT" Then
@@ -2365,7 +2365,7 @@ Module IO
 
     Private Sub WriteOutputFileNMLComp(ByVal IO As Integer, MyCompartments As CompartmentCollection)
         Dim ln As String, aComp As Compartment, i, j, k As Integer
-        Dim x(0), f(0) As Single
+        Dim x(0), f(0) As Double
 
         ' Writing COMP namelist
         If MyCompartments.Count > 0 Then
@@ -2483,7 +2483,7 @@ Module IO
                 PrintLine(IO, ln)
                 ln = " "
                 If aVent.OpenType = Vent.OpenbyTime Then
-                    Dim ff(2), xx(2), numpoints As Single
+                    Dim ff(2), xx(2), numpoints As Double
                     aVent.GetRamp(xx, ff, numpoints)
                     If numpoints > 1 Then
                         ln += " CRITERION = 'TIME'"
@@ -2557,7 +2557,7 @@ Module IO
                     ln += " AREA = " + aVent.Area.ToString + ", SHAPE = 'SQUARE' "
                 End If
                 If aVent.OpenType = Vent.OpenbyTime Then
-                    Dim ff(2), xx(2), numpoints As Single
+                    Dim ff(2), xx(2), numpoints As Double
                     aVent.GetRamp(xx, ff, numpoints)
                     If numpoints >= 1 Then
                         PrintLine(IO, ln)
@@ -2626,7 +2626,7 @@ Module IO
                 ln += " FLOW = " + aVent.FlowRate.ToString + " CUTOFFS = " + aVent.BeginFlowDropoff.ToString + ", " + aVent.ZeroFlow.ToString
                 ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
                 If aVent.OpenType = Vent.OpenbyTime Then
-                    Dim ff(2), xx(2), numpoints As Single
+                    Dim ff(2), xx(2), numpoints As Double
                     aVent.GetRamp(xx, ff, numpoints)
                     If numpoints > 1 Then
                         PrintLine(IO, ln)
@@ -2668,7 +2668,7 @@ Module IO
 
     Private Sub WriteOutputFileNMLFire(ByVal IO As Integer, ByRef MyFireProperties As FireCollection)
         Dim ln As String, aFire As Fire, i, j, k, l As Integer
-        Dim aFireCurves(12, 0) As Single
+        Dim aFireCurves(12, 0) As Double
 
         'Writing Fires
         If myFires.Count + MyFireProperties.Count > 0 Then

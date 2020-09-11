@@ -33,7 +33,7 @@ Module Copy
         ToFire.HCNRampID = FromFire.HCNRampID
         ToFire.SootRampID = FromFire.SootRampID
         ToFire.TraceRampID = FromFire.TraceRampID
-        Dim aFireData(12, 0) As Single
+        Dim aFireData(12, 0) As Double
         FromFire.GetFireData(aFireData, NumDataPoints)
         ToFire.SetFireData(aFireData)
         ToFire.Changed = FromFire.Changed
@@ -47,7 +47,7 @@ Module Copy
         ToMaterial.Density = FromMaterial.Density
         ToMaterial.Thickness = FromMaterial.Thickness
         ToMaterial.Emissivity = FromMaterial.Emissivity
-        Dim Vector1() As Single = {0}
+        Dim Vector1() As Double = {0}
         FromMaterial.GetHCl(Vector1)
         ToMaterial.SetHCl(Vector1)
     End Sub
@@ -56,7 +56,7 @@ Module Copy
         ToRamp.Name = FromRamp.Name
         ToRamp.IsT = FromRamp.IsT
         ToRamp.Type = FromRamp.Type
-        Dim aRampData(2, 0) As Single
+        Dim aRampData(2, 0) As Double
         FromRamp.GetRampData(aRampData)
         ToRamp.SetRampData(aRampData)
     End Sub

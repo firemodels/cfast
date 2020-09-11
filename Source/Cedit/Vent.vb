@@ -20,42 +20,42 @@ Public Class Vent
     Private Const minValueOpenType As Integer = 0
     Private Const maxValueOpenType As Integer = 2
 
-    Public Const MaxPressure As Single = 8000.0
+    Public Const MaxPressure As Double = 8000.0
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
     Private aFirstCompartment As Integer        ' First of compartments connected by vent
     Private aSecondCompartment As Integer       ' Second of compartments connected by vent
-    Private aOffset As Single                   ' vent position along wall from end of first compartment for Wall vents
-    Private aOffsetX As Single                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
-    Private aOffsetY As Single                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
-    Private aWidth As Single                    ' Width of the wall vent
-    Private aHeight As Single                   ' Height of the wall vent relative to the bottom of the vent
-    Private aBottom As Single                   ' Bottom (bottom of vent) height from floor of first comparment for Wall vents
+    Private aOffset As Double                   ' vent position along wall from end of first compartment for Wall vents
+    Private aOffsetX As Double                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
+    Private aOffsetY As Double                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
+    Private aWidth As Double                    ' Width of the wall vent
+    Private aHeight As Double                   ' Height of the wall vent relative to the bottom of the vent
+    Private aBottom As Double                   ' Bottom (bottom of vent) height from floor of first comparment for Wall vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for right, 3 for back, 4 for left
     Private aOpenType As Integer                ' Vent opening by time, temperature, or incident heat flux
-    Private aOpenValue As Single                ' Vent opening criterion if by temperature or flux
+    Private aOpenValue As Double                ' Vent opening criterion if by temperature or flux
     Private aOpenTarget As String               ' Associated target for vent opening by temperature or flux
-    Private aInitialOpening As Single           ' Fraction vent is open at t=0 for flow vents
-    Private aInitialOpeningTime As Single       ' Last time vent is open at initial opening fraction
-    Private aFinalOpening As Single             ' EVENT vent opening fraction or HHEAT connected fraction
-    Private aFinalOpeningTime As Single         ' EVENT vent opening times
-    Private aRampTimePoints(0) As Single        ' Vent opening times from RAMP input
-    Private aRampFractionPoints(0) As Single    ' Vent open fractions from RAMP input
+    Private aInitialOpening As Double           ' Fraction vent is open at t=0 for flow vents
+    Private aInitialOpeningTime As Double       ' Last time vent is open at initial opening fraction
+    Private aFinalOpening As Double             ' EVENT vent opening fraction or HHEAT connected fraction
+    Private aFinalOpeningTime As Double         ' EVENT vent opening times
+    Private aRampTimePoints(0) As Double        ' Vent opening times from RAMP input
+    Private aRampFractionPoints(0) As Double    ' Vent open fractions from RAMP input
     Private aRampID As String                   ' One word name of ramp for RAMP input
-    Private aArea As Single                     ' Cross-sectional area of vent for Ceiling/Floor vents
+    Private aArea As Double                     ' Cross-sectional area of vent for Ceiling/Floor vents
     Private aShape As Integer                   ' Ceiling/Floor vent shape, 1 for circular and 2 for square
-    Private aFirstArea As Single                ' Mechanical vent opening size in first compartment
-    Private aFirstCenterHeight As Single        ' Height of center of Mechanical vent opening
+    Private aFirstArea As Double                ' Mechanical vent opening size in first compartment
+    Private aFirstCenterHeight As Double        ' Height of center of Mechanical vent opening
     Private aFirstOrientation As Integer        ' Orientation of Mechanical vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
-    Private aSecondArea As Single               ' Mechanical vent opening size in second compartment
-    Private aSecondCenterHeight As Single       ' Height of center of Mechanical vent opening
+    Private aSecondArea As Double               ' Mechanical vent opening size in second compartment
+    Private aSecondCenterHeight As Double       ' Height of center of Mechanical vent opening
     Private aSecondOrientation As Integer       ' Orientation of Mechanical vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
-    Private aFlowRate As Single                 ' Fan flow rate for Mechanical vents
-    Private aBeginFlowDropoff As Single         ' Beginning backward pressure for flow dropoff in mechanical vents
-    Private aZeroFlow As Single                 ' Backward pressure for zero flow in mechanical vents
-    Private aFilterEfficiency As Single         ' EVENT Fraction of smoke and user-specified species that gets through filter
-    Private aFilterTime As Single               ' EVENT begin filter operation time
+    Private aFlowRate As Double                 ' Fan flow rate for Mechanical vents
+    Private aBeginFlowDropoff As Double         ' Beginning backward pressure for flow dropoff in mechanical vents
+    Private aZeroFlow As Double                 ' Backward pressure for zero flow in mechanical vents
+    Private aFilterEfficiency As Double         ' EVENT Fraction of smoke and user-specified species that gets through filter
+    Private aFilterTime As Double               ' EVENT begin filter operation time
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer = 0            ' Temporary variable to indicate whether there are errors in the specification
     Private aName As String                     ' User supplied vent name 
@@ -126,11 +126,11 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property Offset() As Single
+    Public Property Offset() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffset)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value = -1 Then
                 If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
@@ -148,11 +148,11 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property OffsetX() As Single
+    Public Property OffsetX() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetX)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value < 0 Then
                 If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
@@ -171,11 +171,11 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property OffsetY() As Single
+    Public Property OffsetY() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetY)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value < 0 Then
                 If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
@@ -194,11 +194,11 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property Width() As Single
+    Public Property Width() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aWidth)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aWidth Then
                 aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 Offset = -1
@@ -206,22 +206,22 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property Bottom() As Single
+    Public Property Bottom() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aBottom)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aBottom Then
                 aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property Height() As Single
+    Public Property Height() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aHeight Then
                 aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
@@ -241,7 +241,7 @@ Public Class Vent
             End If
         End Set
     End Property
-    Property OpenValue() As Single
+    Property OpenValue() As Double
         Get
             If aOpenType = OpenbyTime Then
                 Return myUnits.Convert(UnitsNum.Time).FromSI(aOpenValue)
@@ -253,7 +253,7 @@ Public Class Vent
                 Return 0.0
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aOpenType = OpenbyTime Then
                 If aOpenValue <> myUnits.Convert(UnitsNum.Time).ToSI(Value) And Value >= 0.0 Then
                     aOpenValue = myUnits.Convert(UnitsNum.Time).ToSI(Value)
@@ -284,44 +284,44 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property InitialOpeningTime() As Single
+    Public Property InitialOpeningTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aInitialOpeningTime)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aInitialOpeningTime Then
                 aInitialOpeningTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property InitialOpening() As Single
+    Public Property InitialOpening() As Double
         Get
             Return aInitialOpening
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aInitialOpening Then
                 aInitialOpening = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FinalOpening() As Single
+    Public Property FinalOpening() As Double
         Get
             Return aFinalOpening
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aFinalOpening Then
                 aFinalOpening = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FinalOpeningTime() As Single
+    Public Property FinalOpeningTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aFinalOpeningTime)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aFinalOpeningTime Then
                 aFinalOpeningTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
@@ -340,11 +340,11 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property Area() As Single
+    Public Property Area() As Double
         Get
             Return myUnits.Convert(UnitsNum.Area).FromSI(aArea)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aArea Then
                 aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
                 aChanged = True
@@ -362,22 +362,22 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property FirstArea() As Single
+    Public Property FirstArea() As Double
         Get
             Return myUnits.Convert(UnitsNum.Area).FromSI(aFirstArea)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aFirstArea Then
                 aFirstArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FirstCenterHeight() As Single
+    Public Property FirstCenterHeight() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aFirstCenterHeight)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aFirstCenterHeight Then
                 aFirstCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
@@ -395,22 +395,22 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property SecondArea() As Single
+    Public Property SecondArea() As Double
         Get
             Return myUnits.Convert(UnitsNum.Area).FromSI(aSecondArea)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aSecondArea Then
                 aSecondArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property SecondCenterHeight() As Single
+    Public Property SecondCenterHeight() As Double
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aSecondCenterHeight)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSecondCenterHeight Then
                 aSecondCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
@@ -428,55 +428,55 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property FlowRate() As Single
+    Public Property FlowRate() As Double
         Get
             Return myUnits.Convert(UnitsNum.Flowrate).FromSI(aFlowRate)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Flowrate).ToSI(Value) <> aFlowRate Then
                 aFlowRate = myUnits.Convert(UnitsNum.Flowrate).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property BeginFlowDropoff() As Single
+    Public Property BeginFlowDropoff() As Double
         Get
             Return myUnits.Convert(UnitsNum.Pressure).FromSI(aBeginFlowDropoff)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aBeginFlowDropoff Then
                 aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property ZeroFlow() As Single
+    Public Property ZeroFlow() As Double
         Get
             Return myUnits.Convert(UnitsNum.Pressure).FromSI(aZeroFlow)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aZeroFlow Then
                 aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FilterEfficiency() As Single
+    Public Property FilterEfficiency() As Double
         Get
             Return aFilterEfficiency * 100.0
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value <> aFilterEfficiency Then
                 aFilterEfficiency = Value / 100.0
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FilterTime() As Single
+    Public Property FilterTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aFilterTime)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aFilterTime Then
                 aFilterTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
@@ -524,7 +524,7 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Fraction As Single)
+    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Fraction As Double)
         ' Wall heat transfer connection of two compartments by a specified fraction
         aVentType = TypeHHeat
         aFirstCompartment = FirstCompartment
@@ -538,7 +538,7 @@ Public Class Vent
         aSecondCompartment = SecondCompartment
         aInitialOpening = 1.0
     End Sub
-    Public Sub GetVent(ByRef FirstCompartment As Integer, ByRef SecondCompartment As Integer, ByRef Width As Single, ByRef Height As Single, ByRef Bottom As Single)
+    Public Sub GetVent(ByRef FirstCompartment As Integer, ByRef SecondCompartment As Integer, ByRef Width As Double, ByRef Height As Double, ByRef Bottom As Double)
         ' Wall vent connection
         FirstCompartment = Me.FirstCompartment
         SecondCompartment = Me.SecondCompartment
@@ -546,7 +546,7 @@ Public Class Vent
         Height = Me.Height
         Bottom = Me.Bottom
     End Sub
-    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Single, ByVal Height As Single, ByVal Bottom As Single)
+    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Double, ByVal Height As Double, ByVal Bottom As Double)
         ' Wall vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
@@ -557,14 +557,14 @@ Public Class Vent
         aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Bottom)
         aFace = 1
     End Sub
-    Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
+    Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Double, ByVal Shape As Integer)
         ' Ceiling/Floor vent connection
         TopCompartment = FirstCompartment
         BottomCompartment = SecondCompartment
         Area = Me.Area
         Shape = Me.Shape
     End Sub
-    Public Sub SetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
+    Public Sub SetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Double, ByVal Shape As Integer)
         ' Ceiling/Floor vent connection
         VentType = TypeVVent
         FirstCompartment = TopCompartment
@@ -572,7 +572,7 @@ Public Class Vent
         Me.Area = Area
         Me.Shape = Shape
     End Sub
-    Public Sub GetVent(ByRef FromCompartment As Integer, ByRef FromArea As Single, ByRef FromCenterHeight As Single, ByRef FromOrientation As String, ByRef ToCompartment As Integer, ByRef ToArea As Single, ByRef ToCenterHeight As Single, ByRef ToOrientation As String, ByRef FlowRate As Single, ByRef BeginFlowDropoff As Single, ByRef ZeroFlow As Single)
+    Public Sub GetVent(ByRef FromCompartment As Integer, ByRef FromArea As Double, ByRef FromCenterHeight As Double, ByRef FromOrientation As String, ByRef ToCompartment As Integer, ByRef ToArea As Double, ByRef ToCenterHeight As Double, ByRef ToOrientation As String, ByRef FlowRate As Double, ByRef BeginFlowDropoff As Double, ByRef ZeroFlow As Double)
         ' Mechanical vent connection
         aVentType = TypeMVent
         FromCompartment = FirstCompartment
@@ -595,7 +595,7 @@ Public Class Vent
         BeginFlowDropoff = Me.BeginFlowDropoff
         ZeroFlow = Me.ZeroFlow
     End Sub
-    Public Sub SetVent(ByVal FromCompartment As Integer, ByVal FromArea As Single, ByVal FromCenterHeight As Single, ByVal FromOrientation As String, ByVal ToCompartment As Integer, ByVal ToArea As Single, ByVal ToCenterHeight As Single, ByVal ToOrientation As String, ByVal FlowRate As Single, ByVal BeginFlowDropoff As Single, ByVal ZeroFlow As Single)
+    Public Sub SetVent(ByVal FromCompartment As Integer, ByVal FromArea As Double, ByVal FromCenterHeight As Double, ByVal FromOrientation As String, ByVal ToCompartment As Integer, ByVal ToArea As Double, ByVal ToCenterHeight As Double, ByVal ToOrientation As String, ByVal FlowRate As Double, ByVal BeginFlowDropoff As Double, ByVal ZeroFlow As Double)
         ' Mechanical vent connection
         aVentType = TypeMVent
         aFirstCompartment = FromCompartment
@@ -618,7 +618,7 @@ Public Class Vent
         aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(BeginFlowDropoff)
         aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(ZeroFlow)
     End Sub
-    Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumPoints As Integer)
+    Public Sub GetRamp(ByRef TimePoints() As Double, ByRef FractionPoints() As Double, ByRef NumPoints As Integer)
         Dim i As Integer
         NumPoints = 0
         If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
@@ -641,7 +641,7 @@ Public Class Vent
         'NumPoints = 0
         'End If
     End Sub
-    Public Sub SetRamp(ByVal TimePoints() As Single, ByVal FractionPoints() As Single)
+    Public Sub SetRamp(ByVal TimePoints() As Double, ByVal FractionPoints() As Double)
         Dim i As Integer
         If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
             ReDim aRampTimePoints(TimePoints.GetUpperBound(0)), aRampFractionPoints(FractionPoints.GetUpperBound(0))
@@ -652,21 +652,21 @@ Public Class Vent
             aChanged = True
         End If
     End Sub
-    Public Sub GetRampFractions(ByRef FractionPoints() As Single)
+    Public Sub GetRampFractions(ByRef FractionPoints() As Double)
         Dim i As Integer
         ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
             FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
         Next
     End Sub
-    Public Sub GetRampTimes(ByRef TimePoints() As Single)
+    Public Sub GetRampTimes(ByRef TimePoints() As Double)
         Dim i As Integer
         ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)
             TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
         Next
     End Sub
-    Public Sub SetRampFractions(ByVal FractionPoints() As Single)
+    Public Sub SetRampFractions(ByVal FractionPoints() As Double)
         Dim i As Integer
         ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
@@ -674,7 +674,7 @@ Public Class Vent
         Next
         aChanged = True
     End Sub
-    Public Sub SetRampTimes(ByVal TimePoints() As Single)
+    Public Sub SetRampTimes(ByVal TimePoints() As Double)
         Dim i As Integer
         ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)
@@ -1004,7 +1004,7 @@ Public Class VentCollection
         ToVent.OpenValue = FromVent.OpenValue
         ToVent.Target = FromVent.Target
         ToVent.VentType = FromVent.VentType
-        Dim Vector1() As Single = {0}, Vector2() As Single = {0}, aNum As Integer
+        Dim Vector1() As Double = {0}, Vector2() As Double = {0}, aNum As Integer
         FromVent.GetRamp(Vector1, Vector2, aNum)
         ToVent.SetRamp(Vector1, Vector2)
 
@@ -1121,10 +1121,10 @@ Public Class VentCollection
             Return numVents
         End Get
     End Property
-    Public ReadOnly Property ConnectedFraction(ByVal index As Integer) As Single
+    Public ReadOnly Property ConnectedFraction(ByVal index As Integer) As Double
         Get
             Dim aVent As Vent
-            Dim TotalFraction As Single = 0
+            Dim TotalFraction As Double = 0
             If Count > 0 And FromConnections(index) <> 0 Then
                 For i = 0 To Count - 1
                     aVent = CType(List.Item(i), Vent)
@@ -1204,7 +1204,7 @@ Public Class VentCollection
     End Property
     Public ReadOnly Property IsValid() As Integer
         Get
-            Dim FractionTotal As Single, i As Integer
+            Dim FractionTotal As Double, i As Integer
             HasError = 0
             If Count > 0 Then
                 Dim aVent As Vent

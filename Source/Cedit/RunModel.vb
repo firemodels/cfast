@@ -1,7 +1,7 @@
 Public Class RunModel
     Inherits System.Windows.Forms.Form
     'Public CFastInputFile As String
-    'Public CFASTSimulationTime As Single
+    'Public CFASTSimulationTime As Double
     'Public CommandWindowVisible As Boolean = False
     Private ExitCode As Integer = 0
     Private ProcessID As Integer
@@ -9,7 +9,7 @@ Public Class RunModel
     Private FileName As String, IO As Integer = 1, RunhasFinished As Boolean = False
     Friend WithEvents RunOptions As System.Windows.Forms.Label
     Friend WithEvents RunJac As System.Windows.Forms.Button
-    Private CurrentTime As Single
+    Private CurrentTime As Double
     Private DebugOn As Boolean = False
     Friend WithEvents RunErrors As System.Windows.Forms.TextBox
     Private JacobianOn As Boolean = False

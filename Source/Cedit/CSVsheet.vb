@@ -2,14 +2,14 @@ Imports System
 Imports System.IO
 
 Public Class CSVcell
-    Private cellNum As Single
+    Private cellNum As Double
     Private cellStr As String
 
-    Property Num() As Single
+    Property Num() As Double
         Get
             Return cellNum
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value = Nothing Then
                 cellNum = 0.0
             Else
@@ -73,7 +73,7 @@ End Class
 Public Class CSVrow
     Private cCol() As CSVcell
 
-    Property Num(ByVal col As Integer) As Single
+    Property Num(ByVal col As Integer) As Double
         Get
             If col > cCol(0).Num Then
                 Return 0.0
@@ -81,7 +81,7 @@ Public Class CSVrow
                 Return cCol(col).Num
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If col > cCol(0).Num Then
                 ReDim Preserve cCol(col)
                 Dim i As Integer
@@ -320,7 +320,7 @@ Public Class CSVsheet
     Private mxRow As Integer
     Private mxCol As Integer
 
-    Property num(ByVal row As Integer, ByVal col As Integer) As Single
+    Property num(ByVal row As Integer, ByVal col As Integer) As Double
         Get
             If row > mxRow Then
                 Return 0.0
@@ -328,7 +328,7 @@ Public Class CSVsheet
                 Return cRow(row).Num(col)
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value = Nothing Then Value = 0.0
             If row > mxRow Then
                 ReDim Preserve cRow(row)

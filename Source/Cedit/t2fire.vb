@@ -1,44 +1,44 @@
 Public Class t2Fire
-    Private aGrowthTime As Single = 300.0
-    Private aSteadyTime As Single = 300.0
-    Private aPeakHRR As Single = 1054000.0
-    Private aDecayTime As Single = 300.0
-    Private t2Constants(,) As Single = {{0.0, 0.0, 0.0, 0.0}, {600.0, 300.0, 1054000.0, 600.0}, {300.0, 300.0, 1054000.0, 300.0}, {150.0, 300.0, 1054000.0, 150.0}, {75.0, 300.0, 1054000.0, 75.0}}
+    Private aGrowthTime As Double = 300.0
+    Private aSteadyTime As Double = 300.0
+    Private aPeakHRR As Double = 1054000.0
+    Private aDecayTime As Double = 300.0
+    Private t2Constants(,) As Double = {{0.0, 0.0, 0.0, 0.0}, {600.0, 300.0, 1054000.0, 600.0}, {300.0, 300.0, 1054000.0, 300.0}, {150.0, 300.0, 1054000.0, 150.0}, {75.0, 300.0, 1054000.0, 75.0}}
     Private Enum t2FireType
         Slow = 1
         Medium
         Fast
         Ultrafast
     End Enum
-    Public Property GrowthTime() As Single
+    Public Property GrowthTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aGrowthTime)
         End Get
-        Set(ByVal value As Single)
+        Set(ByVal value As Double)
             aGrowthTime = myUnits.Convert(UnitsNum.Time).ToSI(value)
         End Set
     End Property
-    Public Property SteadyTime() As Single
+    Public Property SteadyTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSteadyTime)
         End Get
-        Set(ByVal value As Single)
+        Set(ByVal value As Double)
             aSteadyTime = myUnits.Convert(UnitsNum.Time).ToSI(value)
         End Set
     End Property
-    Public Property PeakHRR() As Single
+    Public Property PeakHRR() As Double
         Get
             Return myUnits.Convert(UnitsNum.HRR).FromSI(aPeakHRR)
         End Get
-        Set(ByVal value As Single)
+        Set(ByVal value As Double)
             aPeakHRR = myUnits.Convert(UnitsNum.HRR).ToSI(value)
         End Set
     End Property
-    Public Property DecayTime() As Single
+    Public Property DecayTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aDecayTime)
         End Get
-        Set(ByVal value As Single)
+        Set(ByVal value As Double)
             aDecayTime = myUnits.Convert(UnitsNum.Time).ToSI(value)
         End Set
     End Property
@@ -86,8 +86,8 @@ Public Class t2Fire
     End Sub
     Private Sub Updatet2Plot()
         Dim aFireObject As New Fire
-        Dim aFireData(12, 0) As Single, numPoints As Integer
-        Dim x() As Single, y() As Single, j As Integer, iSelectedColumn As Integer
+        Dim aFireData(12, 0) As Double, numPoints As Integer
+        Dim x() As Double, y() As Double, j As Integer, iSelectedColumn As Integer
         aFireObject = New Fire(GrowthTime, PeakHRR, SteadyTime, DecayTime)
         FireObjectPlot.Clear()
         aFireObject.GetFireData(aFireData, numPoints)

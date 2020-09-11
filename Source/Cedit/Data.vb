@@ -2,7 +2,7 @@ Friend Module Data
 
     Friend CFastInputFile As String
     Friend CFastInputFilewithExtension As String
-    Friend CFASTSimulationTime As Single
+    Friend CFASTSimulationTime As Double
     Friend ExitCode As Integer = 0
 
     Friend myRecentFiles As RecentFiles

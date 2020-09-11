@@ -43,7 +43,7 @@ Public Class NameListFile
             Return ssht.CSVcell(fsht.num(idx, 1) + jdx, 3 + kdx)
         End Get
     End Property
-    Public ReadOnly Property ForNMListVarGetNum(ByVal idx As Integer, ByVal jdx As Integer, ByVal kdx As Integer) As Single
+    Public ReadOnly Property ForNMListVarGetNum(ByVal idx As Integer, ByVal jdx As Integer, ByVal kdx As Integer) As Double
         Get
             Return ssht.num(fsht.num(idx, 1) + jdx, 3 + kdx)
         End Get

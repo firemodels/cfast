@@ -22,41 +22,41 @@ Public Class Fire
     Friend Const MaximumFires As Integer = 200
     Friend Const MaximumFireObjects As Integer = 200
 
-    Private Const MinTemperature As Single = 173.15
-    Private Const MaxTemperature As Single = 873.15
-    Private Const MaxFlux As Single = 50000.0
-    Private Const MaxMolarMass As Single = 292.0
-    Private Const MaxTotalMass As Single = 10000.0
-    Private Const MinHeatofCombustion As Single = 10000000.0
-    Private Const MaxHeatofCombustion As Single = 1000000000.0
-    Private Const MaxHRR As Single = 10000000000.0
-    Private Const MaxMdot As Single = 1500.0
-    Private Const MinArea As Single = 0
-    Private Const MaxCO As Single = 0.4
-    Private Const MaxSoot As Single = 99.0
-    Private Const MaxHC As Single = 4.03176 / 12.0107
-    Private Const MaxO2 As Single = 99.0
-    Private Const MaxHCN As Single = 1.0
-    Private Const MaxHCl As Single = 1.0
-    Private Const MaxCt As Single = 100.0
-    Private Const MaxTS As Single = 0.001
+    Private Const MinTemperature As Double = 173.15
+    Private Const MaxTemperature As Double = 873.15
+    Private Const MaxFlux As Double = 50000.0
+    Private Const MaxMolarMass As Double = 292.0
+    Private Const MaxTotalMass As Double = 10000.0
+    Private Const MinHeatofCombustion As Double = 10000000.0
+    Private Const MaxHeatofCombustion As Double = 1000000000.0
+    Private Const MaxHRR As Double = 10000000000.0
+    Private Const MaxMdot As Double = 1500.0
+    Private Const MinArea As Double = 0
+    Private Const MaxCO As Double = 0.4
+    Private Const MaxSoot As Double = 99.0
+    Private Const MaxHC As Double = 4.03176 / 12.0107
+    Private Const MaxO2 As Double = 99.0
+    Private Const MaxHCN As Double = 1.0
+    Private Const MaxHCl As Double = 1.0
+    Private Const MaxCt As Double = 100.0
+    Private Const MaxTS As Double = 0.001
 
     Private aChanged As Boolean = False
     Private HasErrors As Integer                    ' Temp variable that holds error count during error check
     Private ir As Integer, ic As Integer
-    Private aValue, aPeak As Single
+    Private aValue, aPeak As Double
     Private aString As String
 
     Private aObjectType As Integer
 
     ' Variables for current instance of a fire
     Private aCompartment As Integer                 ' Compartment where the fire is located
-    Private aXPosition As Single                    ' X (width) position of the fire in the Compartment
-    Private aYPosition As Single                    ' Y (depth) position of the fire in the Compartment
+    Private aXPosition As Double                    ' X (width) position of the fire in the Compartment
+    Private aYPosition As Double                    ' Y (depth) position of the fire in the Compartment
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
     Private Const minValueIgnType As Integer = 0
     Private Const maxValueIgnType As Integer = 2
-    Private aIgnitionValue As Single                ' Value at ignition for chosen igntion criterion
+    Private aIgnitionValue As Double                ' Value at ignition for chosen igntion criterion
     Private aIgnitionTarget As String               ' Target assigned for ignition by temperature or flux
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
@@ -64,22 +64,22 @@ Public Class Fire
     Private aReferencedFireDefinition As String      ' Link from a instance in myFires to the fire in the myFireProperties collection
 
     ' Variables for the current fire object definition (that can be used for one or more instances)
-    Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
+    Private aName As String                         ' Double word name for the fire ... used as a filename for the fire as an object
     Private aFYI As String                          ' Descriptor for additional user supplied information
-    Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
-    Private aMolarMass As Single                    ' Molecular weight of the fuel
-    Private aHRR As Single                          ' Constant heat release rate
-    Private aHeatofCombustion As Single             ' Heat of Combustion
-    Private aRadiativeFraction As Single            ' Radiative fraction
-    Private aArea As Single                         ' Constant fire area
-    Private aHeight As Single                       ' Constant fire height
-    Private aCOYield As Single                      ' Constant CO yield
-    Private aFlamingTransitionTime As Single        ' Time of transition from smoldering to flaming combustion
-    Private aHClYield As Single                     ' Constant HCl yield
-    Private aHCNYield As Single                     ' Constant HCN yield
-    Private aSootYield As Single                    ' Constant soot yield
-    Private aTSYield As Single                      ' Constant trace species yield
-    Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
+    Private aChemicalFormula(5) As Double           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
+    Private aMolarMass As Double                    ' Molecular weight of the fuel
+    Private aHRR As Double                          ' Constant heat release rate
+    Private aHeatofCombustion As Double             ' Heat of Combustion
+    Private aRadiativeFraction As Double            ' Radiative fraction
+    Private aArea As Double                         ' Constant fire area
+    Private aHeight As Double                       ' Constant fire height
+    Private aCOYield As Double                      ' Constant CO yield
+    Private aFlamingTransitionTime As Double        ' Time of transition from smoldering to flaming combustion
+    Private aHClYield As Double                     ' Constant HCl yield
+    Private aHCNYield As Double                     ' Constant HCN yield
+    Private aSootYield As Double                    ' Constant soot yield
+    Private aTSYield As Double                      ' Constant trace species yield
+    Private aFireTimeSeries(12, 0) As Double        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
@@ -116,7 +116,7 @@ Public Class Fire
         aCommentsIndex = -1
         Me.InitilizeFireTimeSeries()
     End Sub
-    Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Single, ByVal Hoc As Single, ByVal RadiativeFraction As Single)
+    Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Double, ByVal Hoc As Double, ByVal RadiativeFraction As Double)
         ' New to define a fire object with all the details
         Me.New()
         aName = Name
@@ -132,12 +132,12 @@ Public Class Fire
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
     End Sub
-    Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
+    Public Sub New(ByVal TimetoPeak As Double, ByVal PeakHRR As Double, ByVal SteadyBurningTime As Double, ByVal DecayTime As Double)
         ' New to define a t^2 fire object
         Me.New()
         Dim ir As Integer
-        Dim FireTimeSeries(12, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single
-        Dim aTimetoPeak As Single, aPeakHRR As Single, aSteadyBurningTime As Single, aDecayTime As Single
+        Dim FireTimeSeries(12, 22) As Double, AlphaGrowth As Double, AlphaDecay As Double
+        Dim aTimetoPeak As Double, aPeakHRR As Double, aSteadyBurningTime As Double, aDecayTime As Double
         aTimetoPeak = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(TimetoPeak)
         aPeakHRR = myUnits.ConvertFireData(UnitsNum.FireQdot).ToSI(PeakHRR)
         aSteadyBurningTime = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(SteadyBurningTime)
@@ -181,7 +181,7 @@ Public Class Fire
         SetFireData(FireTimeSeries)
         myUnits.SI = False
     End Sub
-    Public Sub PeakFireValues(ByRef PeakHeight As Single, ByRef PeakArea As Single, ByRef PeakHRR As Single, ByRef PeakCO As Single, ByRef PeakC As Single, ByRef PeakHCN As Single, ByRef PeakHCl As Single)
+    Public Sub PeakFireValues(ByRef PeakHeight As Double, ByRef PeakArea As Double, ByRef PeakHRR As Double, ByRef PeakCO As Double, ByRef PeakC As Double, ByRef PeakHCN As Double, ByRef PeakHCl As Double)
         Dim NumPoints, j As Integer
         NumPoints = Me.DimFireTimeSeries
         PeakHeight = 0.0
@@ -211,7 +211,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    ReadOnly Property Peak(ByVal whichItem As Integer) As Single
+    ReadOnly Property Peak(ByVal whichItem As Integer) As Double
         Get
             aPeak = -10 ^ 99
             If whichItem >= 0 And whichItem <= 12 Then
@@ -223,13 +223,13 @@ Public Class Fire
             Return aPeak
         End Get
     End Property
-    ReadOnly Property MaxHClYield() As Single
+    ReadOnly Property MaxHClYield() As Double
         Get
             aPeak = (1.00794 + 35.453) / 1000.0 / aMolarMass * aChemicalFormula(formula.Cl)
             MaxHClYield = aPeak
         End Get
     End Property
-    ReadOnly Property MaxHCNYield() As Single
+    ReadOnly Property MaxHCNYield() As Double
         Get
             aPeak = (1.00794 + 12.0107 + 14.01) / 1000.0 / aMolarMass * aChemicalFormula(formula.N)
             MaxHCNYield = aPeak
@@ -246,7 +246,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property XPosition() As Single
+    Property XPosition() As Double
         Get
             If aXPosition = -1 Then
                 Return -1
@@ -254,7 +254,7 @@ Public Class Fire
                 Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -276,7 +276,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property YPosition() As Single
+    Property YPosition() As Double
         Get
             If aYPosition = -1 Then
                 Return -1
@@ -284,7 +284,7 @@ Public Class Fire
                 Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -306,7 +306,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property Height() As Single
+    Property Height() As Double
         Get
             If aHeight = -1 Then
                 Return -1
@@ -314,7 +314,7 @@ Public Class Fire
                 Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If Value >= 0 Then
                 If aHeight <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
@@ -347,7 +347,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property IgnitionValue() As Single
+    Property IgnitionValue() As Double
         Get
             If aIgnitionType = FireIgnitionbyTime Then
                 Return myUnits.Convert(UnitsNum.Time).FromSI(aIgnitionValue)
@@ -359,7 +359,7 @@ Public Class Fire
                 Return 0.0
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aIgnitionType = FireIgnitionbyTime Then
                 If aIgnitionValue <> myUnits.Convert(UnitsNum.Time).ToSI(Value) And Value >= 0.0 Then
                     aIgnitionValue = myUnits.Convert(UnitsNum.Time).ToSI(Value)
@@ -415,7 +415,7 @@ Public Class Fire
             Return aString
         End Get
     End Property
-    Property ChemicalFormula(whichAtom As Integer) As Single
+    Property ChemicalFormula(whichAtom As Integer) As Double
         Get
             If whichAtom >= 1 And whichAtom <= 5 Then
                 Return aChemicalFormula(whichAtom)
@@ -423,15 +423,15 @@ Public Class Fire
                 Return -1
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             If whichAtom >= 1 And whichAtom <= 5 Then
                 aChemicalFormula(whichAtom) = value
             End If
         End Set
     End Property
-    ReadOnly Property MolarMass() As Single
+    ReadOnly Property MolarMass() As Double
         Get
-            Dim MW As Single
+            Dim MW As Double
             MW = (12.0107 * aChemicalFormula(1) + 1.00794 * aChemicalFormula(2) + 15.9994 * aChemicalFormula(3) + 14.0067 * aChemicalFormula(4) + 35.453 * aChemicalFormula(5)) / 1000.0
             Return myUnits.Convert(UnitsNum.Mass).FromSI(MW)
         End Get
@@ -447,117 +447,117 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property FlamingTransitionTime() As Single
+    Property FlamingTransitionTime() As Double
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aFlamingTransitionTime)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aFlamingTransitionTime <> myUnits.Convert(UnitsNum.Time).ToSI(Value) And Value > 0.0 Then
                 aFlamingTransitionTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Property HRR() As Single
+    Property HRR() As Double
         Get
             Return myUnits.Convert(UnitsNum.HRR).FromSI(aHRR)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aHRR <> myUnits.Convert(UnitsNum.HRR).ToSI(Value) And Value > 0.0 Then
                 aHRR = myUnits.Convert(UnitsNum.HRR).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Property HeatofCombustion() As Single
+    Property HeatofCombustion() As Double
         Get
             Return myUnits.Convert(UnitsNum.HoC).FromSI(aHeatofCombustion)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aHeatofCombustion <> myUnits.Convert(UnitsNum.HoC).ToSI(Value) And Value > 0.0 Then
                 aHeatofCombustion = myUnits.Convert(UnitsNum.HoC).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Property RadiativeFraction() As Single
+    Property RadiativeFraction() As Double
         Get
             Return aRadiativeFraction
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aRadiativeFraction <> Value And Value >= 0.0 Then
                 aRadiativeFraction = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property Area() As Single
+    Property Area() As Double
         Get
             Return myUnits.Convert(UnitsNum.Area).FromSI(aArea)
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aArea <> myUnits.Convert(UnitsNum.Area).ToSI(Value) And Value > 0.0 Then
                 aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Property COYield() As Single
+    Property COYield() As Double
         Get
             Return aCOYield
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aCOYield <> Value And Value >= 0.0 Then
                 aCOYield = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property HClYield() As Single
+    Property HClYield() As Double
         Get
             Return aHClYield
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aHClYield <> Value And Value >= 0.0 Then
                 aHClYield = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property HCNYield() As Single
+    Property HCNYield() As Double
         Get
             Return aHCNYield
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aHCNYield <> Value And Value >= 0.0 Then
                 aHCNYield = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property SootYield() As Single
+    Property SootYield() As Double
         Get
             Return aSootYield
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aSootYield <> Value And Value >= 0.0 Then
                 aSootYield = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property TSYield() As Single
+    Property TSYield() As Double
         Get
             Return aTSYield
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If aTSYield <> Value And Value >= 0.0 Then
                 aTSYield = Value
                 aChanged = True
             End If
         End Set
     End Property
-    Property FireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
+    Property FireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Double
         Get
             If i <= aFireTimeSeries.GetUpperBound(0) And i >= 0 And j >= 0 And j <= aFireTimeSeries.GetUpperBound(1) Then
                 Return myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
@@ -565,7 +565,7 @@ Public Class Fire
                 Return -1.0
             End If
         End Get
-        Set(ByVal Value As Single)
+        Set(ByVal Value As Double)
             If i <= aFireTimeSeries.GetUpperBound(0) And i >= 0 And j >= 0 And j < aFireTimeSeries.GetUpperBound(1) Then
                 If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
                     aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
@@ -642,7 +642,7 @@ Public Class Fire
             aCompartment = index
         End If
     End Sub
-    Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single)
+    Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Double, ByVal YPosition As Double, ByVal ZPosition As Double)
         If index <= myCompartments.Count - 1 Then
             Compartment = index
             Me.XPosition = XPosition
@@ -650,7 +650,7 @@ Public Class Fire
             Me.Height = ZPosition
         End If
     End Sub
-    Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
+    Public Sub GetFireData(ByRef FireTimeSeries(,) As Double, ByRef NumDataPoints As Integer)
         Dim i As Integer, j As Integer
         If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
             ReDim FireTimeSeries(aFireTimeSeries.GetUpperBound(0), aFireTimeSeries.GetUpperBound(1))
@@ -662,7 +662,7 @@ Public Class Fire
             NumDataPoints = aFireTimeSeries.GetUpperBound(1)
         End If
     End Sub
-    Public Sub SetFireData(ByVal FireTimeSeries(,) As Single)
+    Public Sub SetFireData(ByVal FireTimeSeries(,) As Double)
         Dim i As Integer, j As Integer
         If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
             If FireTimeSeries.GetUpperBound(1) <> aFireTimeSeries.GetUpperBound(1) Then
@@ -727,7 +727,7 @@ Public Class Fire
             Next
         End Set
     End Property
-    Private Property BaseFireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
+    Private Property BaseFireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Double
         Get
             If i < 0 Or i > Me.NumFireTimeSeries Or j < 0 Or j > Me.DimFireTimeSeries Then
                 Return -1
@@ -737,7 +737,7 @@ Public Class Fire
                 Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j)
             End If
         End Get
-        Set(value As Single)
+        Set(value As Double)
             Dim k As Integer
             If i >= 0 And i <= Me.NumFireTimeSeries And j >= 0 And j <= Me.DimFireTimeSeries Then
                 If i = 0 Then
@@ -881,7 +881,7 @@ Public Class Fire
                                         FireCurveErrors(FireHRR) = True
                                         HasErrors += 1
                                     End If
-                                'Dim aD As Single, qstar As Single, FlameLength As Single, HRRpm3 As Single
+                                'Dim aD As Double, qstar As Double, FlameLength As Double, HRRpm3 As Double
                                 'aD = Math.Max(0.3, aFireTimeSeries(FireArea, ir))
                                 'qstar = aFireTimeSeries(FireHRR, ir) / (1.29 * 1012.0 * 288.0) * Math.Sqrt(9.8 * aD) * aD * aD
                                 'FlameLength = Math.Max(0.0, aD * (3.7 * qstar ^ 0.4 - 1.02))

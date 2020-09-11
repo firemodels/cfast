@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Compartments 
 &COMP ID = 'Comp 1 Up'
@@ -56,7 +55,7 @@
       ORIGIN = 21, 0, 10 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 3 All Vents' 'OUTSIDE'  TOP = 2.75, BOTTOM = 2.25, WIDTH = 0.5
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 3 All Vents' 'OUTSIDE' , BOTTOM = 2.25 HEIGHT = 0.5, WIDTH = 0.5
   CRITERION = 'TIME' T = 0, 0 F = 1, 1 FACE = 'FRONT' OFFSET = 2.25 /
  
 !! Ceiling and Floor Vents 

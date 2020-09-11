@@ -338,16 +338,17 @@ Examples of each of the inputs are included in the sections that follow.  All ex
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
-{\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
+{\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}              &                             &                 \\ \hline
+{\ct HEIGHT}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline 
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSET}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      0        \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline               &                             &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct WALL} to specify a wall vent. } *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
-{\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct WIDTH}*                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
 \end{longtable}
 \end{minipage}
@@ -1014,7 +1015,7 @@ Detectors& Sensor Surrounding Gas Temperature   & Device is identified by user-s
 
 \chapter{Running CFAST from a Command Prompt}
 
-The model CFAST can also be run from a Windows command prompt.  CFAST can be run from any folder, and refer to a data file in any other folder. 
+The model CFAST can also be run from a Windows command prompt.  CFAST can be run from any folder, and refer to a data file in any other folder.
 
 \begin{lstlisting}
 [drive1:\][folder1\]cfast [drive2:\][folder2\]project

@@ -29,9 +29,9 @@ Public Class Vent
     Private aOffset As Single                   ' vent position along wall from end of first compartment for Wall vents
     Private aOffsetX As Single                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
     Private aOffsetY As Single                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
-    Private aWidth As Single                    ' Width of the Wall vent
-    Private aSoffit As Single                   ' Soffit (top of vent) height from floor of first compartment for Wall vents
-    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for Wall vents
+    Private aWidth As Single                    ' Width of the wall vent
+    Private aHeight As Single                   ' Height of the wall vent relative to the bottom of the vent
+    Private aBottom As Single                   ' Bottom (bottom of vent) height from floor of first comparment for Wall vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for right, 3 for back, 4 for left
     Private aOpenType As Integer                ' Vent opening by time, temperature, or incident heat flux
     Private aOpenValue As Single                ' Vent opening criterion if by temperature or flux
@@ -105,7 +105,7 @@ Public Class Vent
                     OffsetY = -1
                 End If
                 aChanged = True
-                End If
+            End If
         End Set
     End Property
     Public Property SecondCompartment() As Integer
@@ -206,24 +206,24 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property Sill() As Single
+    Public Property Bottom() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aSill)
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aBottom)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSill Then
-                aSill = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aBottom Then
+                aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property Soffit() As Single
+    Public Property Height() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aSoffit)
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSoffit Then
-                aSoffit = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aHeight Then
+                aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -525,36 +525,36 @@ Public Class Vent
         End Set
     End Property
     Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Fraction As Single)
-        ' HHEAT connection of two compartments by a specified fraction
+        ' Wall heat transfer connection of two compartments by a specified fraction
         aVentType = TypeHHeat
         aFirstCompartment = FirstCompartment
         aSecondCompartment = SecondCompartment
         aInitialOpening = Fraction
     End Sub
     Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer)
-        ' VHeat connection of two compartments
+        ' Ceiling/Floor heat transfer connection of two compartments
         aVentType = TypeVHeat
         aFirstCompartment = FirstCompartment
         aSecondCompartment = SecondCompartment
         aInitialOpening = 1.0
     End Sub
-    Public Sub GetVent(ByRef FirstCompartment As Integer, ByRef SecondCompartment As Integer, ByRef Width As Single, ByRef Soffit As Single, ByRef Sill As Single)
+    Public Sub GetVent(ByRef FirstCompartment As Integer, ByRef SecondCompartment As Integer, ByRef Width As Single, ByRef Height As Single, ByRef Bottom As Single)
         ' Wall vent connection
         FirstCompartment = Me.FirstCompartment
         SecondCompartment = Me.SecondCompartment
         Width = Me.Width
-        Soffit = Me.Soffit
-        Sill = Me.Sill
+        Height = Me.Height
+        Bottom = Me.Bottom
     End Sub
-    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Single, ByVal Soffit As Single, ByVal Sill As Single)
+    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Single, ByVal Height As Single, ByVal Bottom As Single)
         ' Wall vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
         aOffset = 0.0
         aSecondCompartment = SecondCompartment
         aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Width)
-        aSoffit = myUnits.Convert(UnitsNum.Length).ToSI(Soffit)
-        aSill = myUnits.Convert(UnitsNum.Length).ToSI(Sill)
+        aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Height)
+        aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Bottom)
         aFace = 1
     End Sub
     Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
@@ -764,12 +764,12 @@ Public Class Vent
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
-                        If aSill < 0.0 Or aSill > aComp1.RoomHeight Then
-                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Sill is below floor level or above ceiling level.", ErrorMessages.TypeFatal)
+                        If aBottom < 0.0 Or aBottom > aComp1.RoomHeight Then
+                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Vent Bottom is below floor level or above ceiling level of first compartment.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
-                        If aSoffit < 0.0 Or aSoffit <= aSill Or aSoffit > aComp1.RoomHeight Then
-                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of first compartment.", ErrorMessages.TypeFatal)
+                        If aBottom < 0 Or aHeight < 0 Or aBottom + aHeight < 0.0 Or aBottom + aHeight > aComp1.RoomHeight Then
+                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Vent top is below  floor level or above ceiling level of first compartment.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
                         If aWidth <= 0.0 Or aWidth > Math.Max(aComp1.RoomWidth, aComp1.RoomDepth) Then
@@ -779,8 +779,8 @@ Public Class Vent
                         If aSecondCompartment >= 0 And aSecondCompartment < myCompartments.Count Then
                             Dim aComp2 As New Compartment
                             aComp2 = myCompartments(aSecondCompartment)
-                            If aSill + aComp1.RoomOriginZ < aComp2.RoomOriginZ Or aSoffit + aComp1.RoomOriginZ > aComp2.RoomOriginZ + aComp2.RoomHeight Then
-                                myErrors.Add("Wall vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of second compartment.", ErrorMessages.TypeFatal)
+                            If aBottom + aComp1.RoomOriginZ < aComp2.RoomOriginZ Or aBottom + aHeight + aComp1.RoomOriginZ > aComp2.RoomOriginZ + aComp2.RoomHeight Then
+                                myErrors.Add("Wall vent " + VentNumber.ToString + ". Vent top is below floor level or above ceiling level of second compartment.", ErrorMessages.TypeFatal)
                                 HasErrors += 1
                             End If
                         End If
@@ -976,8 +976,8 @@ Public Class VentCollection
         ToVent.Offset = FromVent.Offset
         ToVent.SecondCompartment = FromVent.SecondCompartment
         ToVent.Width = FromVent.Width
-        ToVent.Soffit = FromVent.Soffit
-        ToVent.Sill = FromVent.Sill
+        ToVent.Height = FromVent.Height
+        ToVent.Bottom = FromVent.Bottom
         ToVent.InitialOpening = FromVent.InitialOpening
         ToVent.Face = FromVent.Face
         ToVent.FinalOpening = FromVent.FinalOpening

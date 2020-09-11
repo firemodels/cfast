@@ -1018,7 +1018,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
         Dim i, j, k, max As Integer
-        Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
+        Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Single
         Dim tt(0), ff(0) As Single
         Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
         Dim valid As Boolean
@@ -1028,6 +1028,8 @@ Module IO
             If (NMList.GetNMListID(i) = "VENT") Then
                 area = -1
                 bot = -1
+                top = -1
+                height = -1
                 crit = "TIME"
                 devcid = ""
                 setp = 0.0
@@ -1052,7 +1054,6 @@ Module IO
                 Next
                 openramp = ""
                 shape = ""
-                top = -1
                 type = ""
                 width = -1
                 ReDim ff(0), tt(0)
@@ -1096,6 +1097,10 @@ Module IO
                         area = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "BOTTOM" Then
                         bot = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TOP" Then
+                        top = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHT" Then
+                        height = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_TIME" Then
                         filttime = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_EFFICIENCY" Then
@@ -1110,8 +1115,6 @@ Module IO
                         postfrac = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
                         setp = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "TOP" Then
-                        top = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
                         width = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "AREAS" Then
@@ -1207,7 +1210,11 @@ Module IO
                         Else
                             comp1dx = myCompartments.GetCompIndex(compids(1))
                         End If
-                        aVent.SetVent(comp0dx, comp1dx, width, top, bot)
+                        If height <= 0 And top <= 0 Then
+                            myErrors.Add("In &VENT namelist " + NMList.ForNMListGetVar(i, j) + " Both TOP and HEIGHT are specified. HEIGHT was used.", ErrorMessages.TypeFatal)
+                        End If
+                        If height <= 0 And top > 0 Then height = top - bot
+                        aVent.SetVent(comp0dx, comp1dx, width, height, bot)
                         ' This is the new format that includes trigger by flux or temperature
                         If face = "FRONT" Then
                             aVent.Face = 1
@@ -2472,7 +2479,7 @@ Module IO
                 Else
                     ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
                 End If
-                ln += " TOP = " + aVent.Soffit.ToString + ", BOTTOM = " + aVent.Sill.ToString + ", WIDTH = " + aVent.Width.ToString
+                ln += ", BOTTOM = " + aVent.Bottom.ToString + " HEIGHT = " + aVent.Height.ToString + ", WIDTH = " + aVent.Width.ToString
                 PrintLine(IO, ln)
                 ln = " "
                 If aVent.OpenType = Vent.OpenbyTime Then

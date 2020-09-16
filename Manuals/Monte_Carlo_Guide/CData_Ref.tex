@@ -341,7 +341,7 @@ Choosing modeling results for analysis depends on the goals of the hazard analys
 
 \subsection{Example 1: Flashover in a compartment}
 
-The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton and Thomas \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. Deal and Beyler \cite{Valid:DealandBeyler} evaluated some of these correlations with a database derived from more than 250 room fire experiments and provided additional guidance for cases involving forced ventilation. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations. 
+The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton and Thomas \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. Deal and Beyler \cite{Valid:DealandBeyler} evaluated some of these correlations with a database derived from more than 250 room fire experiments and provided additional guidance for cases involving forced ventilation. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations.
 
 \begin{figure}[h!]
 \centering
@@ -353,9 +353,9 @@ The occurrence of flashover within a room is of considerable interest since it i
 A single compartment with gypsum ceiling and walls and a concrete floor includes a single vent. For this example, the room dimensions, vent dimensions, and fire growth rate are varied as follows:
 
 \begin{description}
-\item[Compartment dimensions:] uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 10 m x 10 m x 10 m.
-\item[Vent dimensions:] uniform distribution scaling vent bottom from 0 m to 1.5 m; uniform distribution scaling vent top from 2 m to 9 m limited by compartment height; uniform distribution scaling vent width from 0.25 m to 9 m limited by compartment width.
-\item[Fire growth rate:] uniform distribution ranging from 75 s to 1 MW to 600 s to 1 MW. Peak heat release rate set to 10 MW to ensure flashover in the compartment when there is sufficient oxygen.
+\item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 10 m x 10 m x 10 m.
+\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 2 m to 9 m limited by compartment height, and a uniform distribution scaling vent width from 0.25 m to 9 m limited by compartment width.
+\item[Fire growth rate:] Fire size varied with a uniform distribution ranging from 75 s to 1 MW to 600 s to 1 MW. Peak heat release rate set to 10 MW to ensure flashover in the compartment when there is sufficient oxygen.
 \end{description}
 
 \subsection{Example 2: Impact of smoke detector interconnection}
@@ -374,8 +374,10 @@ In this simplified example based on earlier work \cite{Cleary_2019}, we look at 
 For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
 
 \begin{description}
-\item[Fire location:] random placement in the center of any of the compartments in the structure.
-\item[Initial fire growth rate:] fire grows from zero to a normal distribution of 23 kW $\pm$ 7 kW in 207 s $\pm$ 46 s.
+\item[Fire location:] Fire is placed randomly in the center of any of the compartments in the structure and is equally split between flaming and smoldering fires.
+\item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution.
+\item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation.
+\item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a geometric distribution of 3.0~\%/ft $\pm$ 1.3 \%/ft for flaming fires and 5.0~\%/ft $\pm$ 1.3 \%/ft for smoldering fires.
 \end{description}
 
 \subsection{Example 3: Model Sensitivity}

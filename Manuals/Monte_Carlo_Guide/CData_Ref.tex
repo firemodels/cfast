@@ -168,7 +168,8 @@ Community, building, and fire characteristics define the physical geometries of 
 In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.
 
 \begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Sample_Visualization.png}
+\centering
+\includegraphics[width=4.5in]{FIGURES/Sample_Visualization.png}
 \caption{Sample CFAST visualization of a single structure subject to a fire.}
 \label{sample_visualization}
 \end{figure}
@@ -344,16 +345,38 @@ The occurrence of flashover within a room is of considerable interest since it i
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=4in]{FIGURES/Flashover.png}
-\caption{CFAST visualization of a single compartment structure use for example 1.}
+\includegraphics[width=4.5in]{FIGURES/Flashover.png}
+\caption{Sample CFAST visualization of a single compartment structure use for example 1.}
 \label{flashover_geometry}
 \end{figure}
 
 A single compartment with gypsum ceiling and walls and a concrete floor includes a single vent. For this example, the room dimensions, vent dimensions, and fire growth rate are varied as follows:
 
+\begin{description}
+\item[Compartment dimensions:] uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 10 m x 10 m x 10 m.
+\item[Vent dimensions:] uniform distribution scaling vent bottom from 0 m to 1.5 m; uniform distribution scaling vent top from 2 m to 9 m limited by compartment height; uniform distribution scaling vent width from 0.25 m to 9 m limited by compartment width.
+\item[Fire growth rate:] uniform distribution ranging from 75 s to 1 MW to 600 s to 1 MW. Peak heat release rate set to 10 MW to ensure flashover in the compartment when there is sufficient oxygen.
+\end{description}
+
 \subsection{Example 2: Impact of smoke detector interconnection}
 
-In this example, we look at the impact of a periodic activation of wireless communications in detectors. We will use a single-story residential structure for the analysis.
+Battery-powered smoke alarms with wireless interconnect signal transmission allow for retrofitting of homes with interconnected smoke alarms up to the current code-required installation locations without hardwiring. However, wireless communication draws additional current beyond basic smoke alarm operation and will affect battery life. To receive an interconnect signal, wireless smoke alarms must periodically power up the transceiver and listen for a transmitted signal from another alarm that initially responds to smoke. Naturally a question arises: what is an acceptable maximum delay time for wireless interconnected smoke alarms given the desire to extend battery life?
+
+In this simplified example based on earlier work \cite{Cleary_2019}, we look at the impact of a periodic activation of wireless communications in detectors. We will use a fixed single-story residential structure for the simulations, varying the fire placement and size, the opening/closing of doors within the structure, and the properties of the smoke detectors placed in each compartment. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=6.5in]{FIGURES/Detectors.png}
+\caption{Sample CFAST visualization of a single story structure use for example 2.}
+\label{detector_geometry}
+\end{figure}
+
+For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
+
+\begin{description}
+\item[Fire location:] random placement in the center of any of the compartments in the structure.
+\item[Initial fire growth rate:] fire grows from zero to a normal distribution of 23 kW $\pm$ 7 kW in 207 s $\pm$ 46 s.
+\end{description}
 
 \subsection{Example 3: Model Sensitivity}
 

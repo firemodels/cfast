@@ -340,7 +340,16 @@ Choosing modeling results for analysis depends on the goals of the hazard analys
 
 \subsection{Example 1: Flashover in a compartment}
 
-The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton and Thomas \cite{Walton:2016} provide a review of available methods for calculating temperatures in compartment fires. Three methods are identified from the works of Babrauskas [31], McCaffrey et al. [19] and Thomas [14]. Additional correlations by Babrauskas [31] and H\"ugglund [32] are available. Deal and Beyler [33] evaluated some of these correlations with a database derived from more than 250 room fire experiments and provided additional guidance for cases involving forced ventilation.
+The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton and Thomas \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. Deal and Beyler \cite{Valid:DealandBeyler} evaluated some of these correlations with a database derived from more than 250 room fire experiments and provided additional guidance for cases involving forced ventilation. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4in]{FIGURES/Flashover.png}
+\caption{CFAST visualization of a single compartment structure use for example 1.}
+\label{flashover_geometry}
+\end{figure}
+
+A single compartment with gypsum ceiling and walls and a concrete floor includes a single vent. For this example, the room dimensions, vent dimensions, and fire growth rate are varied as follows:
 
 \subsection{Example 2: Impact of smoke detector interconnection}
 

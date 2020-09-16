@@ -391,9 +391,24 @@ For the final example we look at a simple fire model sensitivity analysis, which
 \begin{figure}[h!]
 \centering
 \includegraphics[width=6.5in]{FIGURES/Sensitivity.png}
-\caption{Sample CFAST visualization of a single story commercial structure usde for example 3.}
+\caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
 \label{sensitivity_geometry}
 \end{figure}
+
+A sensitivity analysis involves defining a base case scenario, and varying selected input parameters. The resultant variations in the model output are then measured with respect to the base case scenario, in order to consider the extent to which uncertainty in model inputs influences model output. Therefore, a sensitivity analysis of CFAST should account for variations in the extensive number of input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires.
+
+For this example, we will vary the following inputs, recognizing that these are not an exhaustive list of input variables, but which should represent the major model inputs to a simulation:
+
+\begin{description}
+\item[Compartment geometry:] Compartment size will be scaled to $\pm$ 10~\% of base size in all dimensions.
+\item[Compartment materials:] Thermal properties for all materials will be varied by $\pm$ 10~\% of base values for thermal conductivity, density, and specific heat. Thickness will be  varied by $\pm$ 10~\% of base values.
+\item[Compartment doors:] The size of compartment doors, both interior and exterior, will be  varied by $\pm$ 10~\% of base values for height and width. All interior vents will be open for this example.
+\item[Mechanical ventilation:] For mechanical ventilation, the height of each vent, area of each vent, and fan flowrate will each be varied by $\pm$ 10~\% of base values.
+\item[Fire:] Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value.
+\item[Detectors:] Sensitivity of heat detectors will be varied by $\pm$ 10~\% of base values for activation temperature and RTI. Smoke detector activation obscuration will be varied by $\pm$ 10~\% of base values.
+\end{description}
+
+In the analysis, we will look at typically-used outputs to determine those which are more sensitive (a 10 ~\% change in an input value leads to more than a 10~\% change in an output) and less sensitive (a 10 ~\% change in an input value leads to less than a 10~\% change in an output) to a change in selected model inputs to identify the relative importance of selected model inputs to the results of a simulation.
 
 %
 %---------------------User's Guide----------------------------------

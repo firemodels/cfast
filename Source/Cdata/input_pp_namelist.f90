@@ -379,9 +379,17 @@
     type(field_pointer), pointer :: fldptr
     
     
-    character(len=128) :: id, object_id, rand_id, field_name, parameter_header
+    character(len=128) :: id, object_id, rand_id, field_name, parameter_header, fyi, field_type, type_of_index 
+    real(eb) ::base_scaling_value
+    integer ::number_in_index
+    real(eb), dimension(mxpntsarray) :: real_array_values
+    integer, dimension(mxpntsarray) :: integer_array_values
+    logical, dimension(mxpntsarray) :: logical_array_values
+    character(len=128), dimension(mxpntsarray) :: character_array_values, scenario_title_array
 
-    namelist /MFLD/ id, object_id, field_name, rand_id, parameter_header, add_to_parameters
+    namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
+        real_array_values, integer_array_values, character_array_values, logical_array_values, &
+        scenario_title_array, type_of_index, number_in_index, base_scaling_value
                     
     
     ios = 1
@@ -436,12 +444,6 @@
                 call cfastexit('read_mfld',4)
             end if
             fldptr%id = id
-            call find_object(object_id, fldptr, found)
-            if (found) then
-                call find_field(field_name, fldptr%itemptr, fldptr, found)
-            else
-                call cfastexit('read_mfld',5)
-            end if
             test: do jj = 1, n_generators
                 if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
                     fldptr%genptr => generatorinfo(jj)
@@ -450,6 +452,62 @@
                     end if
                 end if
             end do test
+            if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
+                fldptr%field_type = trim(field_type)
+                call find_object(object_id, fldptr, found)
+                if (found) then
+                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                else
+                    call cfastexit('read_mfld',5)
+                end if
+            elseif (field_type == fldptr%fld_types(fldptr%idx_index)) then
+                fldptr%field_type = trim(field_type)
+                if (trim(type_of_index) == val_types(idx_real)) then
+                    fldptr%nidx = number_in_index
+                    do jj = 1, number_in_index
+                        fldptr%real_array(jj) = real_array_values(jj)
+                    end do
+                elseif (trim(type_of_index) == val_types(idx_int)) then
+                    fldptr%nidx = number_in_index
+                    do jj = 1, number_in_index
+                        fldptr%int_array(jj) = integer_array_values(jj)
+                    end do
+                elseif (trim(type_of_index) == val_types(idx_char)) then
+                    fldptr%nidx = number_in_index
+                    do jj = 1, number_in_index
+                        fldptr%char_array(jj) = character_array_values(jj)
+                    end do
+                elseif (trim(type_of_index) == val_types(idx_logic)) then
+                    fldptr%nidx = number_in_index
+                    do jj = 1, number_in_index
+                        fldptr%logic_array(jj) = logical_array_values(jj)
+                    end do
+                else
+                    call cfastexit('read_mfld',6)
+                end if
+            elseif (field_type == fldptr%fld_types(fldptr%idx_scale)) then
+                fldptr%field_type = trim(field_type)
+                call find_object(object_id, fldptr, found)
+                if (found) then
+                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                else
+                    call cfastexit('read_mfld',5)
+                end if
+                fldptr%scale_base_value = base_scaling_value
+            elseif (field_type == fldptr%fld_types(fldptr%idx_label)) then
+                fldptr%field_type = trim(field_type)
+                scenaro_loop: do jj = 1, mxpntsarray
+                    if (trim(scenario_title_array(jj)) == 'NULL') then
+                        fldptr%nlabel = jj - 1
+                        exit scenaro_loop
+                    else
+                        fldptr%label_array(jj) = scenario_title_array(jj)
+                    end if    
+                    fldptr%nlabel = jj
+                end do scenaro_loop
+            else
+                call cfastexit('read_mfld',7)
+            end if
             if (add_to_parameters) then
                 fldptr%add_to_parameters = add_to_parameters
                 if (trim(parameter_header) == 'NULL') then

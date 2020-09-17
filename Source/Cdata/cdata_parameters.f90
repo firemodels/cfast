@@ -6,7 +6,7 @@
     use cparams, only: mxfires
     save
     
-    integer, parameter :: mxpntsarray = 50, mxranddists = 9, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
+    integer, parameter :: mxpntsarray = 100, mxranddists = 9, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
     integer, parameter :: mxrndfires = mxfires
     integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100, mxiterations = 100000
     integer, parameter :: mxstats = 10

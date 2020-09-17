@@ -71,16 +71,17 @@ module preprocessor_types
         type(random_real_type) :: realval
         type(random_int_type) :: intval
         type(random_logic_type) :: logicval
-        integer :: index, maxidx
+        integer :: index, nidx, nlabel
         type(random_int_type) :: idxptr
         integer :: index_value
         type(random_real_type) ::scaleptr
         real(eb) :: scale_value
         real(eb) :: scale_base_value
-        real(eb), dimension(20) :: real_array
-        integer, dimension(20) :: int_array
-        logical, dimension(20) :: logic_array
-        character(len=128), dimension(20) :: char_array
+        real(eb), dimension(mxpntsarray) :: real_array
+        integer, dimension(mxpntsarray) :: int_array
+        logical, dimension(mxpntsarray) :: logic_array
+        character(len=128), dimension(mxpntsarray) :: char_array
+        character(len=128), dimension(mxpntsarray) :: label_array
         logical :: conditional_min, conditional_max
     contains
         procedure :: do_rand

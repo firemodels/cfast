@@ -205,18 +205,24 @@
     logical :: mrndflag
     type(random_generator_type), pointer :: genptr
     
-    character(len=128) :: id, fyi
-    character(len=35) :: type_dist
+    character(len=128) :: id, fyi, value_type
+    character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, constant_value
     integer ::initial_seed_values(mxseeds), ndx
     real(eb) :: discrete_probabilities(mxpntsarray), discrete_real_values(mxpntsarray) 
     integer :: discrete_integer_values(mxpntsarray)
     character(len = 128) :: discrete_string_values(mxpntsarray)
+    real(eb) :: real_constant_value
+    integer :: integer_constant_value
+    character(len=128) :: character_constant_value
+    logical :: logical_constant_value
+    character(len=128) :: minimum_field_id,  maximum_field_id
 
-    namelist /MRND/ id, fyi, type_dist, minimum, maximum, mean, stdev, alpha, beta, peak, initial_seed_values, &
-        discrete_real_values, discrete_integer_values, discrete_string_values, discrete_probabilities, &
-        constant_value
+    namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
+        peak, initial_seed_values, discrete_real_values, discrete_integer_values, discrete_string_values, &
+        discrete_probabilities, real_constant_value, integer_constant_value, character_constant_value, &
+        logical_constant_value, minimum_field_id, maximum_field_id
                     
     
     ios = 1
@@ -274,17 +280,21 @@
                 genptr%use_seeds = .true. 
             end if 
         
-            if (type_dist == rand_dist(idx_uniform)) then
-                if (maximum<minimum) then
-                    call cfastexit('read_mrnd',4)
+            if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
+                genptr%type_dist = distribution_type
+                if (trim(minimum_field_id) /= 'NULL') then
+                    call genptr%set_min_to_use_field(minimum_field_id)
+                else
+                    call genptr%set_min_value(minimum)
                 end if
-                genptr%value_type = val_types(idx_real)
-                genptr%type_dist = type_dist
-                genptr%min = minimum
-                genptr%max = maximum
-            else if (trim(type_dist) == trim(rand_dist(idx_user_defined_discrete))) then
+                if (trim(maximum_field_id) /= 'NULL') then
+                    call genptr%set_max_to_use_field(minimum_field_id)
+                else
+                    call genptr%set_max_value(maximum)
+                end if
+            else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
                 ndx = 1
-                genptr%type_dist = type_dist
+                genptr%type_dist = distribution_type
                 ndx_loop: do while(ndx <= mxpntsarray)
                     if (discrete_probabilities(ndx) >= 0._eb) then
                         ndx = ndx + 1
@@ -315,8 +325,8 @@
                 else
                     call cfastexit('read_mrnd', 5)
                 end if
-            else if (trim(type_dist) == trim(rand_dist(idx_const))) then
-                genptr%type_dist = type_dist
+            else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
+                genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%constant = constant_value
             else
@@ -334,7 +344,8 @@
 
     id = 'NULL'
     fyi = 'NULL'
-    type_dist = 'NULL'
+    distribution_type = 'NULL'
+    value_type = 'NULL'
     minimum = d1mach(2)
     maximum = -d1mach(2)
     mean = d1mach(2)
@@ -346,6 +357,12 @@
     discrete_integer_values = -1001
     discrete_string_values = 'NULL'
     discrete_probabilities = -1001._eb
+    real_constant_value = -1001.0_eb
+    integer_constant_value = -1001
+    character_constant_value = 'NULL'
+    logical_constant_value = .false.
+    minimum_field_id = 'NULL'
+    maximum_field_id = 'NULL'
 
     end subroutine set_defaults
 
@@ -616,13 +633,13 @@
     character(len=128) :: input_file_list(mxfires), fire_id_list(mxfires), random_generator_id(mxfiresections)
     integer :: number_of_fires 
     integer, dimension(mxfiresections) :: number_of_points_for_section, final_hrr_for_section
-    real(eb), dimension(mxfiresections) :: exponent_for_section, time_for_section
+    real(eb), dimension(mxfiresections) :: exponent_for_section, final_time_for_section
     logical :: include_hrr_parameters, include_time_parameters, include_flaming_ignition_time
     real(eb), dimension(mxfiresections) :: fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
         hcn_yield, hcl_yield, trace_yield
 
     namelist /MFIR/ id, fire_id, first_section_smoldering, number_of_points_for_section, exponent_for_section, &
-        time_for_section, final_hrr_for_section, include_hrr_parameters, include_time_parameters, &
+        final_time_for_section, final_hrr_for_section, include_hrr_parameters, include_time_parameters, &
         include_flaming_ignition_time, fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
         hcn_yield, hcl_yield, trace_yield, fire_generator_type, input_file_list, fire_id_list, &
         random_generator_id
@@ -680,7 +697,7 @@
     first_section_smoldering = .false.
     number_of_points_for_section = 0
     exponent_for_section = 1._eb
-    time_for_section = -1001._eb
+    final_time_for_section = -1001._eb
     final_hrr_for_section = -1001._eb
     include_hrr_parameters = .false.
     include_time_parameters = .false.

@@ -67,7 +67,7 @@ module preprocessor_routines
     call initialize_output_files
     do i = 1, mc_number_of_cases
         call create_mc_filename(i, infilecase)
-        call create_case(infilecase)
+        call create_case(infilecase, i)
         call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
@@ -119,8 +119,8 @@ module preprocessor_routines
         generatorinfo(i)%prob_array(1:mxpntsarray) = -1001._eb 
         generatorinfo(i)%seeds(1:mxseeds) = -1001
     end do
-    generatorinfo(1:mxgenerators)%max = 0._eb
-    generatorinfo(1:mxgenerators)%min = 0._eb
+    generatorinfo(1:mxgenerators)%maxval = 0._eb
+    generatorinfo(1:mxgenerators)%minval = 0._eb
     generatorinfo(1:mxgenerators)%mean = 0._eb
     generatorinfo(1:mxgenerators)%stdev = 0._eb
     generatorinfo(1:mxgenerators)%alpha = 0._eb
@@ -152,14 +152,14 @@ module preprocessor_routines
     !-------------------create_case---------------------------
     !
     
-    subroutine create_case(filename)
+    subroutine create_case(filename, iteration)
     
     character(len=*), intent(in) :: filename
-    integer :: i
+    integer :: i, iteration
     
     call add_filename_to_parameters(filename)
     do i = 1, n_fields
-        call fieldinfo(i)%genptr%rand(fieldinfo(i)%valptr)
+        call fieldinfo(i)%genptr%rand(fieldinfo(i)%valptr, iteration)
         call fieldinfo(i)%write_value
     end do 
     

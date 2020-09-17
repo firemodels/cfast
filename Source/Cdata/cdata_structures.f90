@@ -16,39 +16,10 @@ module preprocessor_types
     
     type preprocessor_type                              !Base type all other types extend 
         character(len=128) :: id = 'NULL'               ! Name of a particulear intant of an object
-        character(len=128) :: fyi                       ! line available for comments or extra input
+        character(len=128) :: fyi = 'NULL'              ! line available for comments or extra input
     contains
         procedure errorcall
     end type preprocessor_type
-    
-    !
-    !-----------random_generator_type--------
-    !
-    
-    type, extends(preprocessor_type) :: random_generator_type
-        character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
-                                                        !                       USER_DEFINED_DISCRETE, USER_DEFINED_CONTINOUS_INTERVAL,
-                                                        !                       BETA, NORMAL, LOG_NORMAL, CONSTANT
-        character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
-        character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
-        integer :: num_discrete_values                   ! number of values in arrays for discrere probablities 
-        real(eb) :: real_array(mxpntsarray)             ! values for discrete distributions with real type
-        integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
-        logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
-        real(eb) :: prob_array(mxpntsarray)             ! user defined probablities for both descreet and continous 
-        real(eb) :: max, min                            ! the ends of the interval used for the random generator
-        real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
-        real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
-        real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
-        real(eb) :: constant                            ! for constant value functions
-        logical :: first                                ! logical used in conjunction with 
-        logical :: use_seeds                            ! determines if seeds have been supplied. 
-        integer :: seeds(mxseeds)                       ! seed values
-        integer :: base_seeds(mxseeds)                  ! first seeds used 
-        real(eb) :: range
-    contains
-        procedure :: rand
-    end type random_generator_type
     
     !
     !--------value_wrapper_type--------
@@ -59,6 +30,7 @@ module preprocessor_types
         logical :: parameter_field_set = .false. 
         character(len=128) :: parameter_header
         character(len=128), pointer :: paramptr
+        logical :: pointer_set = .false.
     contains
         procedure :: add_header
         procedure :: write_value
@@ -66,7 +38,7 @@ module preprocessor_types
     
     type, extends(value_wrapper_type) :: random_char_type
         character(len=9) :: value_type = val_types(idx_char)
-        character, pointer :: val
+        character(len=128), pointer :: val
     end type random_char_type
     
     type, extends(value_wrapper_type) :: random_real_type
@@ -85,15 +57,104 @@ module preprocessor_types
     end type random_logic_type
     
     type, extends(value_wrapper_type) :: field_pointer
+        character(len=7), dimension(4) :: fld_types = (/'VAULE  ', &
+                                                        'INDEX  ', &
+                                                        'SCALING', &
+                                                        'LABEL  '/)
+        character(len=7) :: field_type = 'NULL'
+        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4
         character(len=9) :: value_type = 'NULL'
         class(cfast_type), pointer :: itemptr
-        class(value_wrapper_type), pointer :: valptr
         type(random_generator_type), pointer :: genptr
+        class(value_wrapper_type), pointer :: valptr
         type(random_char_type) :: charval
         type(random_real_type) :: realval
         type(random_int_type) :: intval
         type(random_logic_type) :: logicval
+        integer :: index, maxidx
+        type(random_int_type) :: idxptr
+        integer :: index_value
+        type(random_real_type) ::scaleptr
+        real(eb) :: scale_value
+        real(eb) :: scale_base_value
+        real(eb), dimension(20) :: real_array
+        integer, dimension(20) :: int_array
+        logical, dimension(20) :: logic_array
+        character(len=128), dimension(20) :: char_array
+        logical :: conditional_min, conditional_max
+    contains
+        procedure :: do_rand
+        procedure :: dependencies => field_dependencies
+        procedure :: dependencies_set => field_dependencies_set
+        procedure :: min_dependent => field_min_dependent
+        procedure :: max_dependent => field_max_dependent
+        procedure :: min_dependency => field_min_dependency
+        procedure :: max_dependency => field_max_dependency 
+        procedure :: set_min_value => field_set_min_value
+        procedure :: set_max_value => field_set_max_value
+        procedure :: set_min_field => field_set_min_field
+        procedure :: set_max_field => field_set_max_field
     end type
+    
+    !
+    !-----------random_generator_type--------
+    !
+    
+    type, extends(preprocessor_type) :: random_generator_type
+        character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
+                                                        !                       USER_DEFINED_DISCRETE, USER_DEFINED_CONTINOUS_INTERVAL,
+                                                        !                       BETA, NORMAL, LOG_NORMAL, CONSTANT, VALUE
+        character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
+        character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
+        integer :: num_discrete_values                  ! number of values in arrays for discrere probablities 
+        real(eb) :: real_array(mxpntsarray)             ! values for discrete distributions with real type
+        integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
+        logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
+        real(eb) :: prob_array(mxpntsarray)             ! user defined probablities for both descreet and continous 
+        real(eb) :: maxval, minval                      ! the ends of the interval used for the random generator
+        real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
+        real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
+        real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
+        real(eb) :: constant                            ! for constant value functions
+        logical :: first                                ! logical used in conjunction with 
+        logical :: use_seeds                            ! determines if seeds have been supplied. 
+        integer :: seeds(mxseeds)                       ! seed values
+        integer :: base_seeds(mxseeds)                  ! first seeds used 
+        integer :: current_iteration
+        type(field_pointer) :: current_val
+        real(eb) :: current_real_val
+        integer :: current_int_val
+        character(len=128) :: current_char_val
+        logical :: current_logic_val
+        real(eb) :: range
+        type(field_pointer), pointer :: maxptr, minptr
+        character(len=128) :: maxfieldid = 'NULL', minfieldid = 'NULL'
+        logical :: mindependent = .false., maxdependent = .false. 
+        logical :: min_set = .true., max_set = .true.
+    contains
+        procedure :: rand
+        procedure :: max => rand_max
+        procedure :: min => rand_min
+        procedure :: set_current_value
+        procedure :: set_min_value 
+        procedure :: set_max_value
+        procedure :: set_min_field
+        procedure :: set_max_field
+        procedure :: dependencies
+        procedure :: dependencies_set
+        procedure :: max_dependent
+        procedure :: min_dependent
+        procedure :: min_dependency_set
+        procedure :: max_dependency_set
+        procedure :: min_dependency
+        procedure :: max_dependency
+        procedure :: set_min_to_use_field
+        procedure :: set_max_to_use_field
+        procedure, private :: rand_mm_sub1
+        procedure, private :: rand_mm_sub2
+    end type random_generator_type
+    
+     
     
     !
     !-----------------------fire_generator_type---------
@@ -175,15 +236,17 @@ module preprocessor_types
     !--------rand---------------
     !
     
-    subroutine rand(me, val)
+    subroutine rand(me, val, iteration)
     
         class(random_generator_type) :: me
         class(value_wrapper_type), intent(inout) :: val
+        integer :: iteration
         real(eb) :: x
         integer :: tmpseeds(mxseeds), ii, idx
         
         if (me%first) then
             me%first = .false.
+            me%current_iteration = iteration - 1
             if (me%use_seeds) then
                 me%seeds = me%base_seeds
             else
@@ -197,6 +260,40 @@ module preprocessor_types
             end if
         end if
         
+        if (me%current_iteration == iteration) then
+            select type(val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        val%val = me%current_real_val
+                    else 
+                        call me%errorcall('Random_Generator_Type:Rand', 1)
+                    end if
+                type is (random_int_type)
+                    if (me%value_type == val_types(idx_int)) then
+                        val%val = me%current_int_val
+                    else 
+                        call me%errorcall('Random_Generator_Type:Rand', 2)
+                    end if
+                type is (random_char_type)
+                    if (me%value_type == val_types(idx_char)) then
+                        val%val = me%current_char_val
+                    else 
+                        call me%errorcall('Random_Generator_Type:Rand', 3)
+                    end if
+                type is (random_logic_type)
+                    if (me%value_type == val_types(idx_logical)) then
+                        val%val = me%current_logic_val
+                    else 
+                        call me%errorcall('Random_Generator_Type:Rand', 4)
+                    end if
+                class default
+                    call me%errorcall('Random_Generator_Type:Rand',5)
+            end select
+            return
+        end if
+        
+        me%current_iteration = iteration
+        
         if (me%type_dist == rand_dist(idx_uniform)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
@@ -206,12 +303,13 @@ module preprocessor_types
             select type (val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = me%min + x*(me%max - me%min)
+                        me%current_real_val = me%min()+ x*(me%max() - me%min())
+                        val%val = me%current_real_val
                     else 
-                        call me%errorcall('RAND', 1)
+                        call me%errorcall('RAND', 6)
                     end if
                 class default
-                        call me%errorcall('RAND', 2)
+                        call me%errorcall('RAND', 7)
             end select 
         else if (me%type_dist == rand_dist(idx_user_defined_discrete)) then
             call RANDOM_SEED(GET=tmpseeds)
@@ -228,38 +326,41 @@ module preprocessor_types
             select type (val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = me%real_array(idx)
+                        me%current_real_val = me%real_array(idx)
+                        val%val = me%current_real_val
                     else 
-                        call me%errorcall('RAND', 3)
+                        call me%errorcall('RAND', 8)
                     end if
                 type is (random_int_type)
                     if (me%value_type == val_types(idx_int)) then
-                        val%val = me%int_array(idx)
+                        me%current_int_val = me%int_array(idx)
+                        val%val = me%current_int_val
                     else 
-                        call me%errorcall('RAND', 4)
+                        call me%errorcall('RAND', 9)
                     end if
                 type is (random_char_type)
                     if (me%value_type == val_types(idx_char)) then
-                        val%val = me%char_array(idx) 
+                        me%current_char_val = me%char_array(idx) 
+                        val%val = me%current_char_val
                     else 
-                        call me%errorcall('RAND', 5)
+                        call me%errorcall('RAND', 10)
                     end if
                 class default 
-                    call me%errorcall('RAND', 6)
+                    call me%errorcall('RAND', 11)
             end select
         else if (me%type_dist == rand_dist(idx_const)) then
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = me%constant
+                        val%val = me%current_real_val
                     else
-                        call me%errorcall('RAND', 7)
+                        call me%errorcall('RAND', 12)
                     end if
                 class default
-                    call me%errorcall('RAND',8)
+                    call me%errorcall('RAND',13)
             end select
         else
-            call me%errorcall('RAND', 1000)
+            call me%errorcall('RAND', 14)
         end if
             
         return
@@ -289,9 +390,8 @@ module preprocessor_types
     
     subroutine write_value(me)
     
-        character(len=100) :: buf
-    
         class(value_wrapper_type), intent(inout) :: me
+        character(len=100) :: buf
     
         if (me%add_to_parameters .and. me%parameter_field_set) then
             select type (me)
@@ -310,24 +410,28 @@ module preprocessor_types
                      write(me%paramptr,'(a)') '.FALSE.'
                 end if
             type is (field_pointer)
-                select case (me%value_type)
-                case ('NULL')
-                    call me%errorcall('write_value',1)
-                case (val_types(idx_real))
-                    write(me%paramptr,'(e13.6)') me%realval%val
-                case (val_types(idx_int))
-                    write(me%paramptr,'(i10)') me%intval%val
-                case (val_types(idx_char))
-                    write(me%paramptr,'(a)') me%charval%val
-                case (val_types(idx_logic))
-                    if (me%logicval%val) then
-                        write(me%paramptr,'(a)') '.TRUE.'
-                    else
-                        write(me%paramptr,'(a)') '.FALSE.'
-                    end if
-                case default
-                    call me%errorcall('write_value',2)
-                end select
+                if (me%field_type == me%fld_types(idx_label)) then
+                    write(me%paramptr, '(a)') me%char_array(me%idxptr%val)
+                else
+                    select case (me%value_type)
+                    case ('NULL')
+                        call me%errorcall('write_value',1)
+                    case (val_types(idx_real))
+                        write(me%paramptr,'(e13.6)') me%realval%val
+                    case (val_types(idx_int))
+                        write(me%paramptr,'(i10)') me%intval%val
+                    case (val_types(idx_char))
+                        write(me%paramptr,'(a)') me%charval%val
+                    case (val_types(idx_logic))
+                        if (me%logicval%val) then
+                            write(me%paramptr,'(a)') '.TRUE.'
+                        else
+                            write(me%paramptr,'(a)') '.FALSE.'
+                        end if
+                    case default
+                        call me%errorcall('write_value',2)
+                    end select
+                end if
             class default
                 call me%errorcall('write_value',3)
             end select
@@ -336,7 +440,7 @@ module preprocessor_types
     
     subroutine add_fire_headers(me, icol, array)
     
-        class(fire_generator_type), intent(inout) :: me
+        class(fire_generator_type) :: me
         integer, intent(inout) :: icol
         character(len=*), intent(out), target :: array(*)
         
@@ -347,6 +451,365 @@ module preprocessor_types
         class(fire_generator_type), intent(inout) :: me
         
     end subroutine write_fire_values 
+    
+    subroutine do_rand(me, val, iteration)
+    
+        class(field_pointer) :: me
+        class(value_wrapper_type), intent(inout) :: val
+        integer, intent(in) :: iteration
+    
+        if (me%field_type == me%fld_types(idx_value)) then 
+            call me%genptr%rand(me%valptr, iteration)
+        elseif (me%field_type == me%fld_types(idx_index)) then
+            call me%genptr%rand(me%idxptr, iteration)
+            if (me%value_type == val_types(idx_real)) then
+                select type(val)
+                    type is (random_real_type)
+                        val%val = me%real_array(me%idxptr%val)
+                    class default
+                        call me%errorcall('DO_RAND',1)
+                end select
+            elseif (me%value_type == val_types(idx_char)) then
+                select type(val)
+                    type is (random_char_type)
+                        val%val = me%char_array(me%idxptr%val)
+                    class default
+                        call me%errorcall('DO_RAND',2)
+                end select
+            elseif (me%value_type == val_types(idx_int)) then
+                select type(val)
+                    type is (random_int_type)
+                        val%val = me%int_array(me%idxptr%val)
+                    class default
+                        call me%errorcall('DO_RAND',3)
+                end select
+            elseif (me%value_type == val_types(idx_logic)) then
+                select type(val)
+                    type is (random_logic_type)
+                        val%val = me%logic_array(me%idxptr%val)
+                    class default
+                        call me%errorcall('DO_RAND',4)
+                end select
+            else
+                call me%errorcall('DO_RAND',5)
+            end if 
+        elseif (me%field_type == me%fld_types(idx_scale)) then
+            call me%genptr%rand(me%scaleptr, iteration)
+                select type(val)
+                    type is (random_real_type)
+                        val%val = me%scaleptr%val * me%scale_base_value
+                    class default
+                        call me%errorcall('DO_RAND',6)
+                    end select
+        elseif (me%field_type == me%fld_types(idx_label)) then
+            call me%genptr%rand(me%idxptr, iteration)
+        else
+            call me%errorcall('DO_RAND',7)
+        end if 
+        
+    end subroutine do_rand
+    
+    function rand_max(me) result(max)
+    
+        class(random_generator_type) :: me
+        character(len=256) :: buf
+        real(eb) :: max
+        
+        if (me%maxdependent) then
+            call me%rand_mm_sub1(me%maxptr, max)
+        else
+            max = me%maxval
+        end if
+        
+    end function rand_max
+    
+    function rand_min(me) result(min)
+    
+        class(random_generator_type) :: me
+        character(len=256) :: buf
+        real(eb) :: min
+        
+        if (me%mindependent) then
+            call me%rand_mm_sub1(me%minptr, min)
+        else
+            min = me%maxval
+        end if
+        
+    end function rand_min
+    
+    subroutine rand_mm_sub1(me, ptr, val)
+    
+        class(random_generator_type) :: me
+        type(field_pointer) :: ptr
+        real(eb) :: val
+        
+        call me%rand_mm_sub2(ptr%valptr, val)
+         
+    end subroutine rand_mm_sub1
+    
+    subroutine rand_mm_sub2(me, ptr, val)
+    
+        class(random_generator_type) :: me
+        class(value_wrapper_type), pointer :: ptr
+        real(eb) :: val
+        
+        select type(ptr)
+            type is (random_real_type)
+                val = ptr%val
+            class default
+                call me%errorcall('RAND_MM_SUB2',1)
+        end select
+            
+    end subroutine rand_mm_sub2
+    
+    subroutine set_min_to_use_field(me, field_id)
+    
+        class(random_generator_type) :: me
+        character(len=128) :: field_id
+        
+        me%minfieldid = field_id
+        me%mindependent = .true. 
+        
+    end subroutine set_min_to_use_field
+    
+    subroutine set_max_to_use_field(me, field_id)
+    
+        class(random_generator_type) :: me
+        character(len=128) :: field_id
+        
+        me%maxfieldid = field_id
+        me%maxdependent = .true. 
+        
+    end subroutine set_max_to_use_field
+    
+    subroutine set_min_value(me, minimum)
+        
+        class(random_generator_type), target :: me
+        real(eb) :: minimum
+        
+        me%minval = minimum
+        me%min_set = .true. 
+    
+    end subroutine set_min_value
+    
+    subroutine set_max_value(me, maximum)
+        
+        class(random_generator_type), target :: me
+        real(eb) :: maximum
+        
+        me%maxval = maximum
+        me%max_set = .true.
+    
+    end subroutine set_max_value
+    
+    subroutine set_min_field(me, field)
+    
+        class(random_generator_type), target :: me
+        type(field_pointer), target :: field
+        
+        me%minptr => field
+        me%min_set = .true. 
+        
+    end subroutine set_min_field
+    
+    subroutine set_max_field(me, field)
+    
+        class(random_generator_type), target :: me
+        class(field_pointer), target :: field
+        
+        me%maxptr => field
+        me%max_set = .true.
+        
+    end subroutine set_max_field
+    
+    function min_dependent(me) result(dependent)
+        
+        class(random_generator_type) :: me
+        logical :: dependent
+            
+        dependent = me%mindependent
+            
+    end function min_dependent
+    
+    function max_dependent(me) result(dependent)
+        
+        class(random_generator_type) :: me
+        logical :: dependent
+            
+        dependent = me%maxdependent
+            
+    end function max_dependent
+    
+    function dependencies(me) result(dependent)
+    
+        class(random_generator_type) :: me
+        logical :: dependent
+        
+        dependent = me%mindependent .or. me%maxdependent
+    
+    end function dependencies
+    
+    function dependencies_set(me) result(set)
+    
+        class(random_generator_type) :: me
+        logical :: set
+        
+        set = me%min_set .or. me%max_set
+    
+    end function dependencies_set
+    
+    function min_dependency(me) result(field_id)
+    
+        class(random_generator_type) :: me
+        character(len=128) :: field_id
+        
+        field_id = me%minfieldid
+        
+    end function min_dependency
+    
+    function max_dependency(me) result(field_id)
+    
+        class(random_generator_type) :: me
+        character(len=128) :: field_id
+        
+        field_id = me%maxfieldid
+        
+    end function max_dependency
+    
+    function min_dependency_set(me) result(set)
+    
+        class(random_generator_type) :: me
+        logical :: set
+        
+        set = me%min_set
+    
+    end function min_dependency_set
+    
+    function max_dependency_set(me) result(set)
+    
+        class(random_generator_type) :: me
+        logical :: set
+        
+        set = me%max_set
+    
+    end function max_dependency_set
+    
+    function field_dependencies(me) result(dependent)
+        
+        class(field_pointer) :: me
+        logical :: dependent
+        
+        depentent = dependencies(me%genptr)
+    
+    end function field_dependencies
+    
+    function field_dependencies_set(me) result(set)
+        
+        class(field_pointer) :: me
+        logical :: set
+        
+        set = dependencies_set(me%genptr)
+    
+    end function field_dependencies_set
+    
+    function field_min_dependent(me) result(dependent)
+        
+        class(field_pointer) :: me
+        logical :: dependent
+        
+        depentent = min_dependent(me%genptr)
+    
+    end function field_min_dependent
+    
+    function field_max_dependent(me) result(dependent)
+        
+        class(field_pointer) :: me
+        logical :: dependent
+        
+        depentent = max_dependent(me%genptr)
+    
+    end function field_max_dependent
+    
+    function field_min_dependency(me) result(field_id)
+        
+        class(field_pointer) :: me
+        character(len=28) :: field_id
+        
+        field_id = min_dependency(me%genptr)
+    
+    end function field_min_dependency
+    
+    function field_max_dependency(me) result(field_id)
+        
+        class(field_pointer) :: me
+        character(len=28) :: field_id
+        
+        field_id = max_dependency(me%genptr)
+    
+    end function field_max_dependency
+    
+    subroutine field_set_min_value(me, minimum)
+    
+        class(field_pointer) :: me
+        real(eb) :: minimum
+        
+        call set_min_value(me%genptr, minimum)
+        
+    end subroutine field_set_min_value
+    
+    subroutine field_set_max_value(me, maximum)
+    
+        class(field_pointer) :: me
+        real(eb) :: maximum
+        
+        call set_max_value(me%genptr, maximum)
+        
+    end subroutine field_set_max_value
+    
+    subroutine field_set_min_field(me, field)
+    
+        class(field_pointer) :: me
+        type(field_pointer) :: field
+        
+        call set_min_field(me%genptr, field)
+        
+    end subroutine field_set_min_field
+    
+    subroutine field_set_max_field(me, field)
+    
+        class(field_pointer) :: me
+        type(field_pointer) :: field
+        
+        call set_max_field(me%genptr, field)
+        
+    end subroutine field_set_max_field
+    
+    subroutine set_current_value(me)
+        
+        class(random_generator_type), target :: me
+        character(len=128) :: val_type
+        
+        if (trim(me%value_type) == trim(val_types(idx_real))) then
+            me%current_val%realval%val => me%current_real_val
+            me%current_val%value_type = val_types(idx_real)
+            me%current_val%valptr => me%current_val%realval
+        else if (trim(me%value_type) == trim(val_types(idx_int))) then
+            me%current_val%intval%val => me%current_int_val
+            me%current_val%value_type = val_types(idx_int)
+            me%current_val%valptr => me%current_val%intval
+        else if (trim(me%value_type) == trim(val_types(idx_char))) then
+            me%current_val%charval%val => me%current_char_val
+            me%current_val%value_type = val_types(idx_char)
+            me%current_val%valptr => me%current_val%charval
+        else if (trim(me%value_type) == trim(val_types(idx_logic))) then
+            me%current_val%logicval%val => me%current_logic_val
+            me%current_val%value_type = val_types(idx_logic)
+            me%current_val%valptr => me%current_val%logicval
+        else
+            call me%errorcall('rand_geneator_type: set_current_value', 1)
+        end if
+        
+    end subroutine set_current_value
     
     end module preprocessor_types
     

@@ -3,7 +3,6 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Gyp' MATERIAL = 'Gypsum Board', 
@@ -78,44 +77,54 @@
       ORIGIN = 10.2108, 4.597299, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0.0012, 0.00017 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Foyer' 'OUTSIDE'  TOP = 2.1336, BOTTOM = 0, WIDTH = 1.8288
+&VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Foyer' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 1.8288
   FACE = 'LEFT' OFFSET = 1.041548 /
-&VENT TYPE = 'WALL' ID = 'Office #1 Door' COMP_IDS = 'Office #1', 'Odd Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #1 Door' COMP_IDS = 'Office #1', 'Odd Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'FRONT' OFFSET = 1.49855 /
-&VENT TYPE = 'WALL' ID = 'Office #3 Door' COMP_IDS = 'Office #3', 'Odd Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #3 Door' COMP_IDS = 'Office #3', 'Odd Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'FRONT' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Office #5 Door' COMP_IDS = 'Office #5', 'Odd Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #5 Door' COMP_IDS = 'Office #5', 'Odd Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'FRONT' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Office #2 Door' COMP_IDS = 'Office #2', 'Even Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #2 Door' COMP_IDS = 'Office #2', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'REAR' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Office #4 Door' COMP_IDS = 'Office #4', 'Even Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #4 Door' COMP_IDS = 'Office #4', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'REAR' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Office #6 Door' COMP_IDS = 'Office # 6', 'Even Hallway' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #6 Door' COMP_IDS = 'Office # 6', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'REAR' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Bathroom Door' COMP_IDS = 'Bathroom Hall', 'Bathroom' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Bathroom Door' COMP_IDS = 'Bathroom Hall', 'Bathroom', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'RIGHT' OFFSET = 0.2286 /
-&VENT TYPE = 'WALL' ID = 'Foyer2FrontHall' COMP_IDS = 'Foyer', 'Front Hall' TOP = 3.6576, BOTTOM = 0, WIDTH = 2.9718
+&VENT TYPE = 'WALL' ID = 'Foyer2FrontHall' COMP_IDS = 'Foyer', 'Front Hall', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 2.9718
   FACE = 'RIGHT' OFFSET = 0.4700473 /
-&VENT TYPE = 'WALL' ID = 'Foyer2OddHall' COMP_IDS = 'Foyer', 'Odd Hallway' TOP = 3.6576, BOTTOM = 0, WIDTH = 0.4700473
+&VENT TYPE = 'WALL' ID = 'Foyer2OddHall' COMP_IDS = 'Foyer', 'Odd Hallway', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 0.4700473
   FACE = 'RIGHT' OFFSET = 3.44424 /
-&VENT TYPE = 'WALL' ID = 'Foyer2EvenHall' COMP_IDS = 'Foyer', 'Even Hallway' TOP = 3.6576, BOTTOM = 0, WIDTH = 0.4700473
+&VENT TYPE = 'WALL' ID = 'Foyer2EvenHall' COMP_IDS = 'Foyer', 'Even Hallway', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 0.4700473
   FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'FrontHall2EvenHall' COMP_IDS = 'Even Hallway', 'Front Hall' TOP = 3.6576, BOTTOM = 0, WIDTH = 1.524
+&VENT TYPE = 'WALL' ID = 'FrontHall2EvenHall' COMP_IDS = 'Even Hallway', 'Front Hall', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 1.524
   FACE = 'REAR' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'FrontHall2OddHall' COMP_IDS = 'Odd Hallway', 'Front Hall' TOP = 3.6576, BOTTOM = 0, WIDTH = 1.524
+&VENT TYPE = 'WALL' ID = 'FrontHall2OddHall' COMP_IDS = 'Odd Hallway', 'Front Hall', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 1.524
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'BackHall2EvenHall' COMP_IDS = 'Even Hallway', 'Back Hall' TOP = 3.6576, BOTTOM = 0, WIDTH = 1.524
+&VENT TYPE = 'WALL' ID = 'BackHall2EvenHall' COMP_IDS = 'Even Hallway', 'Back Hall', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 1.524
   FACE = 'REAR' OFFSET = 6.298997 /
-&VENT TYPE = 'WALL' ID = 'BackHall2OddHall' COMP_IDS = 'Odd Hallway', 'Back Hall' TOP = 3.6576, BOTTOM = 0, WIDTH = 1.524
+&VENT TYPE = 'WALL' ID = 'BackHall2OddHall' COMP_IDS = 'Odd Hallway', 'Back Hall', BOTTOM = 0 HEIGHT = 3.6576, WIDTH = 1.524
   FACE = 'FRONT' OFFSET = 6.298997 /
-&VENT TYPE = 'WALL' ID = 'BathroomHall2BackHall' COMP_IDS = 'Bathroom Hall', 'Back Hall' TOP = 3.048, BOTTOM = 0, WIDTH = 1.3716
+&VENT TYPE = 'WALL' ID = 'BathroomHall2BackHall' COMP_IDS = 'Bathroom Hall', 'Back Hall', BOTTOM = 0 HEIGHT = 3.048, WIDTH = 1.3716
   FACE = 'LEFT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Laboratory Door' COMP_IDS = 'Laboratory', 'Back Hall' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Laboratory Door' COMP_IDS = 'Laboratory', 'Back Hall', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'LEFT' OFFSET = 0.1524 /
-&VENT TYPE = 'WALL' ID = 'Conference Room Door' COMP_IDS = 'Conference Room', 'Foyer' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Conference Room Door' COMP_IDS = 'Conference Room', 'Foyer', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'LEFT' OFFSET = 1.0287 /
-&VENT TYPE = 'WALL' ID = 'Inventory Door' COMP_IDS = 'Inventory', 'Bathroom Hall' TOP = 2.1336, BOTTOM = 0, WIDTH = 0.6096
+&VENT TYPE = 'WALL' ID = 'Inventory Door' COMP_IDS = 'Inventory', 'Bathroom Hall', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.6096
   FACE = 'REAR' OFFSET = 2.501798 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MV in #1' COMP_IDS = 'OUTSIDE', 'Even Hallway'
+      AREAS = 0.3, 0.3 HEIGHTS = 3.65, 3.6 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.0734 CUTOFFS = 200, 300 OFFSETS = 3, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MV in #2' COMP_IDS = 'OUTSIDE', 'Odd Hallway'
+      AREAS = 0.3, 0.3 HEIGHTS = 3.65, 3.6 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.0734 CUTOFFS = 200, 300 OFFSETS = 3, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MV out #1' COMP_IDS = 'Even Hallway', 'OUTSIDE'
+      AREAS = 0.3, 0.3 HEIGHTS = 3.65, 3.65 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.0734 CUTOFFS = 200, 300 OFFSETS = 6, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MV out #2' COMP_IDS = 'Odd Hallway', 'OUTSIDE'
+      AREAS = 0.3, 0.3 HEIGHTS = 3.65, 3.6 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.0734 CUTOFFS = 200, 300 OFFSETS = 6, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 !! Fires 
 &FIRE ID = 'New Fire 1'  COMP_ID = 'Laboratory', FIRE_ID = 'New Fire 1'  LOCATION = 2.806598, 3.0099 / 

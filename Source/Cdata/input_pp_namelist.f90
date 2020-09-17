@@ -935,6 +935,27 @@
         else
             call cfastexit('find_field', 4)
         end if
+    class is (detector_type)
+        if (trim(fieldid) == 'TRIGGER') then
+            found = .true.
+            fldptr%realval%val => item%trigger
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        elseif (trim(fieldid)  == 'TRIGGER_SMOLDER') then
+            found = .true.
+            fldptr%realval%val => item%trigger_smolder
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else
+            call cfastexit('find_field',5)
+        end if
+    class is (fire_type)
+        if (trim(fieldid) == 'ROOM') then
+            found = .true.
+            fldptr%intval%val => item%room
+            fldptr%value_type = val_types(idx_int)
+            fldptr%valptr => fldptr%intval
+        end if
     class default
         call cfastexit('find_field',99)
     end select

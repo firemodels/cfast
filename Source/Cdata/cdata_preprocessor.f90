@@ -132,8 +132,16 @@ module preprocessor_routines
     n_fields = 0
     allocate(fieldinfo(mxfields))
     fieldinfo(1:mxfields)%id = 'NULL'
+    fieldinfo(1:mxfields)%fyi = 'NULL'
     fieldinfo(1:mxfields)%add_to_parameters = .false.
     fieldinfo(1:mxfields)%parameter_header = 'NULL'
+    do i = 1, mxfields
+        fieldinfo(i)%real_array(1:mxpntsarray) = -1001.0_eb
+        fieldinfo(i)%int_array(1:mxpntsarray) = -1001
+        fieldinfo(i)%logic_array(1:mxpntsarray) = .false.
+        fieldinfo(i)%char_array(1:mxpntsarray) = 'NULL'
+        fieldinfo(i)%label_array(1:mxpntsarray) = 'NULL'
+    end do
     
     n_rndfires = 0
     allocate(randfireinfo(mxrandfires))

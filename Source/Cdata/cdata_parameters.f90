@@ -6,13 +6,13 @@
     use cparams, only: mxfires
     save
     
-    integer, parameter :: mxpntsarray = 50, mxranddists = 8, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
+    integer, parameter :: mxpntsarray = 50, mxranddists = 9, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
     integer, parameter :: mxrndfires = mxfires
     integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100, mxiterations = 100000
     integer, parameter :: mxstats = 10
     integer, parameter :: idx_uniform = 1, idx_trangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6
-    integer, parameter :: idx_log_normal = 7, idx_const = 8, mxfields = 10
+    integer, parameter :: idx_log_normal = 7, idx_const = 8, idx_value = 9, mxfields = 10
     character(len=35), parameter :: rand_dist(mxranddists) =  (/'UNIFORM                            ',  &
                                                                 'TRIANGLE                           ',  &
                                                                 'USER_DEFINED_DISCRETE              ',  &
@@ -20,7 +20,8 @@
                                                                 'BETA                               ',  &
                                                                 'NORMAL                             ',  &
                                                                 'LOG_NORMAL                         ',  &
-                                                                'CONSTANT                           '/)
+                                                                'CONSTANT                           ',  &
+                                                                'VALUE                              '/)
     
     integer, parameter :: idx_real = 1, idx_char = 2, idx_int = 3, idx_logic = 4
     character(len=9), parameter :: val_types(mxvaltypes) = (/'REAL(eb) ', &

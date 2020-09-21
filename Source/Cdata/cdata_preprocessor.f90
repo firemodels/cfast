@@ -2,6 +2,7 @@ module preprocessor_routines
     
     !-------------CFAST data---------------------------------------------
     use precision_parameters
+    use cparams
 
     use dump_data, only: n_dumps
     use namelist_data, only: convert_negative_distances
@@ -140,16 +141,30 @@ module preprocessor_routines
         fieldinfo(i)%int_array(1:mxpntsarray) = -1001
         fieldinfo(i)%logic_array(1:mxpntsarray) = .false.
         fieldinfo(i)%char_array(1:mxpntsarray) = 'NULL'
-        fieldinfo(i)%label_array(1:mxpntsarray) = 'NULL'
     end do
     
     n_rndfires = 0
     allocate(randfireinfo(mxrandfires))
     randfireinfo(1:mxrandfires)%id = 'NULL'
-    randfireinfo(1:mxrandfires)%fire_generator_type = 'NULL'
     randfireinfo(1:mxrandfires)%fireid = 'NULL'
-    randfireinfo(1:mxrandfires)%num_sections = 0
-    !randfireinfo(1:mxrandfires)%
+    randfireinfo(1:mxrandfires)%basefireid = 'NULL'
+    randfireinfo(1:mxrandfires)%hrrscalegenid = 'NULL'
+    randfireinfo(1:mxrandfires)%timescalegenid = 'NULL'
+    randfireinfo(1:mxrandfires)%smoldergenid = 'NULL'
+    randfireinfo(1:mxrandfires)%smoldertimegenid = 'NULL'
+    do i = 1, mxrandfires
+        randfireinfo(i)%compname(1:mxrooms) = 'NULL'
+        randfireinfo(i)%compindex(1:mxrooms) = -1001
+    end do
+    randfireinfo(1:mxrandfires)%first_time_point_smoldering = .false.
+    randfireinfo(1:mxrandfires)%modifyfirearea = .false.
+    randfireinfo(1:mxrandfires)%scalehrr = .false.
+    randfireinfo(1:mxrandfires)%scaletime = .false.
+    randfireinfo(1:mxrandfires)%dostime = .false. 
+    randfireinfo(1:mxrandfires)%smoldervalue = .false. 
+    randfireinfo(1:mxrandfires)%hrrscalevalue = -1001.0_eb
+    randfireinfo(1:mxrandfires)%timescalevalue = -1001.0_eb
+    randfireinfo(1:mxrandfires)%stimevalue = -1001.0_eb
     
     
     return
@@ -167,7 +182,7 @@ module preprocessor_routines
     
     call add_filename_to_parameters(filename)
     do i = 1, n_fields
-        call fieldinfo(i)%genptr%rand(fieldinfo(i)%valptr, iteration)
+        call fieldinfo(i)%do_rand(fieldinfo(i)%valptr, iteration)
         call fieldinfo(i)%write_value
     end do 
     

@@ -6,7 +6,8 @@ module preprocessor_types
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
                      val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds
     
-    use cfast_types, only: cfast_type
+    use cparams
+    use cfast_types, only: cfast_type, fire_type
     
     intrinsic random_seed, random_number
     
@@ -71,17 +72,16 @@ module preprocessor_types
         type(random_real_type) :: realval
         type(random_int_type) :: intval
         type(random_logic_type) :: logicval
+        class(value_wrapper_type), pointer :: randptr
+        type(random_int_type) :: indexval
+        type(random_real_type) :: scaleval
         integer :: index, nidx, nlabel
-        type(random_int_type) :: idxptr
-        integer :: index_value
-        type(random_real_type) ::scaleptr
         real(eb) :: scale_value
         real(eb) :: scale_base_value
         real(eb), dimension(mxpntsarray) :: real_array
         integer, dimension(mxpntsarray) :: int_array
         logical, dimension(mxpntsarray) :: logic_array
         character(len=128), dimension(mxpntsarray) :: char_array
-        character(len=128), dimension(mxpntsarray) :: label_array
         logical :: conditional_min, conditional_max
     contains
         procedure :: do_rand
@@ -117,7 +117,7 @@ module preprocessor_types
         real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
         real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
         real(eb) :: constant                            ! for constant value functions
-        logical :: first                                ! logical used in conjunction with 
+        logical :: first = .true.                       ! logical used in conjunction with 
         logical :: use_seeds                            ! determines if seeds have been supplied. 
         integer :: seeds(mxseeds)                       ! seed values
         integer :: base_seeds(mxseeds)                  ! first seeds used 
@@ -161,35 +161,20 @@ module preprocessor_types
     !-----------------------fire_generator_type---------
     !
     
-    type, extends(preprocessor_type) :: fire_generator_type
-        character(len=90) :: fireid
-        integer :: fire_generator_type
-        integer :: num_sections, num_firefiles
-        logical :: first_section_smoldering 
-        real(eb), allocatable, dimension(:) :: time_points
-        character(len=128), allocatable, dimension(:,:) :: rand_gen
-        real(eb), allocatable, dimension(:) :: fix_final_hrr
-        real(eb), allocatable, dimension(:) :: fix_times
-        real(eb), allocatable, dimension(:) :: fix_powers
-        real(eb), allocatable, dimension(:) :: area
-        real(eb), allocatable, dimension(:) :: rel_area
-        real(eb), allocatable, dimension(:) :: height
-        real(eb), allocatable, dimension(:) :: co_yield
-        real(eb), allocatable, dimension(:) :: soot_yield
-        real(eb), allocatable, dimension(:) :: hcn_yield
-        real(eb), allocatable, dimension(:) :: hcl_yield
-        real(eb), allocatable, dimension(:) :: trace_yield
-        character(len=128), allocatable, dimension(:) :: inputfile_list
-        character(len=128), allocatable, dimension(:) :: fire_list
-        integer, allocatable, dimension(:) :: fireidx_list
-        logical :: add_flaming_start
-        logical :: add_hrr
-        logical :: add_times
-        character(len=128), pointer :: flamingptr
-        character(len=128), dimension(:,:), pointer :: paramptrs
+    type, extends(value_wrapper_type) :: fire_generator_type
+        character(len=128) :: fireid, basefireid, hrrscalegenid, timescalegenid, smoldergenid, &
+            smoldertimegenid
+        character(len=128), dimension(mxrooms) :: compname 
+        integer, dimension(mxrooms) :: compindex
+        logical :: first_time_point_smoldering, scalehrr, scaletime, dostime
+        type(fire_type), pointer :: fire, base
+        type(random_generator_type), pointer :: hrrscale, timescale, smoldergen, stimegen
+        real(eb) :: hrrscalevalue, timescalevalue, stimevalue
+        type(random_real_type) :: hrrscaleval, timescaleval, stimeval
+        logical :: smoldervalue, modifyfirearea
+        type(random_logic_type) :: smolderval
     contains
-        procedure :: add_fire_headers
-        procedure :: write_fire_values
+    
     end type
     
     !
@@ -411,8 +396,8 @@ module preprocessor_types
                      write(me%paramptr,'(a)') '.FALSE.'
                 end if
             type is (field_pointer)
-                if (me%field_type == me%fld_types(idx_label)) then
-                    write(me%paramptr, '(a)') me%char_array(me%idxptr%val)
+                if (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
+                    write(me%paramptr, '(a)') me%char_array(me%index)
                 else
                     select case (me%value_type)
                     case ('NULL')
@@ -433,25 +418,13 @@ module preprocessor_types
                         call me%errorcall('write_value',2)
                     end select
                 end if
+            type is (fire_generator_type)
+                write(me%paramptr,'(e13.6)') me%hrrscalevalue
             class default
                 call me%errorcall('write_value',3)
             end select
         end if
     end subroutine write_value
-    
-    subroutine add_fire_headers(me, icol, array)
-    
-        class(fire_generator_type) :: me
-        integer, intent(inout) :: icol
-        character(len=*), intent(out), target :: array(*)
-        
-    end subroutine add_fire_headers
-    
-    subroutine write_fire_values(me)
-    
-        class(fire_generator_type), intent(inout) :: me
-        
-    end subroutine write_fire_values 
     
     subroutine do_rand(me, val, iteration)
     
@@ -459,51 +432,51 @@ module preprocessor_types
         class(value_wrapper_type), intent(inout) :: val
         integer, intent(in) :: iteration
     
-        if (me%field_type == me%fld_types(idx_value)) then 
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
             call me%genptr%rand(me%valptr, iteration)
-        elseif (me%field_type == me%fld_types(idx_index)) then
-            call me%genptr%rand(me%idxptr, iteration)
+        elseif (trim(me%field_type) == trim(me%fld_types(me%idx_index))) then
+            call me%genptr%rand(me%randptr, iteration)
             if (me%value_type == val_types(idx_real)) then
                 select type(val)
                     type is (random_real_type)
-                        val%val = me%real_array(me%idxptr%val)
+                        val%val = me%real_array(me%index)
                     class default
                         call me%errorcall('DO_RAND',1)
                 end select
             elseif (me%value_type == val_types(idx_char)) then
                 select type(val)
                     type is (random_char_type)
-                        val%val = me%char_array(me%idxptr%val)
+                        val%val = me%char_array(me%index)
                     class default
                         call me%errorcall('DO_RAND',2)
                 end select
             elseif (me%value_type == val_types(idx_int)) then
                 select type(val)
                     type is (random_int_type)
-                        val%val = me%int_array(me%idxptr%val)
+                        val%val = me%int_array(me%index)
                     class default
                         call me%errorcall('DO_RAND',3)
                 end select
             elseif (me%value_type == val_types(idx_logic)) then
                 select type(val)
                     type is (random_logic_type)
-                        val%val = me%logic_array(me%idxptr%val)
+                        val%val = me%logic_array(me%index)
                     class default
                         call me%errorcall('DO_RAND',4)
                 end select
             else
                 call me%errorcall('DO_RAND',5)
             end if 
-        elseif (me%field_type == me%fld_types(idx_scale)) then
-            call me%genptr%rand(me%scaleptr, iteration)
+        elseif (trim(me%field_type) == trim(me%fld_types(me%idx_scale))) then
+            call me%genptr%rand(me%randptr, iteration)
                 select type(val)
                     type is (random_real_type)
-                        val%val = me%scaleptr%val * me%scale_base_value
+                        val%val = me%scale_value * me%scale_base_value
                     class default
                         call me%errorcall('DO_RAND',6)
                     end select
-        elseif (me%field_type == me%fld_types(idx_label)) then
-            call me%genptr%rand(me%idxptr, iteration)
+        elseif (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
+            call me%genptr%rand(me%randptr, iteration)
         else
             call me%errorcall('DO_RAND',7)
         end if 

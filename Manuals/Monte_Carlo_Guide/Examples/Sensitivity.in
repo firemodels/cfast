@@ -9,6 +9,8 @@
       CONDUCTIVITY = 0.16 DENSITY = 480 SPECIFIC_HEAT = 1, THICKNESS = 0.025 EMISSIVITY = 0.9 /
 &MATL ID = 'Concrete' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
+&MATL ID = 'Human' MATERIAL = 'Human skin (properties of water at 20 C)', 
+      CONDUCTIVITY = 0.58 DENSITY = 998.3 SPECIFIC_HEAT = 4.183, THICKNESS = 0.2032 EMISSIVITY = 0.9 /
  
 !! Compartments 
 &COMP ID = 'Office #1'
@@ -127,31 +129,46 @@
       AREAS = 0.3, 0.3 HEIGHTS = 3.65, 3.6 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.0734 CUTOFFS = 200, 300 OFFSETS = 6, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 !! Fires 
-&FIRE ID = 'New Fire 1'  COMP_ID = 'Laboratory', FIRE_ID = 'New Fire 1'  LOCATION = 2.806598, 3.0099 / 
-&CHEM ID = 'New Fire 1' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
-&TABL ID = 'New Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'New Fire 1', DATA = 0, 0, 0, 0.001, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 30, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 60, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 90, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 120, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 150, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 180, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 210, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 240, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 270, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 300, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 600, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 630, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 660, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 690, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 720, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 750, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 780, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 810, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 840, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 870, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 900, 0, 0, 0, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 'New Fire 1', DATA = 910, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
+&FIRE ID = 'Fire'  COMP_ID = 'Laboratory', FIRE_ID = 't-squared fire'  LOCATION = 2.806598, 3.0099 / 
+&CHEM ID = 't-squared fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 't-squared fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 't-squared fire', DATA = 0, 0, 0, 0.001, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 30, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 60, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 90, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 120, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 150, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 180, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 210, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 240, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 270, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 300, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 600, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 630, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 660, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 690, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 720, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 750, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 780, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 810, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 840, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 870, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 900, 0, 0, 0, 0.01, 0.01, 0, 0, 0 /
+&TABL ID = 't-squared fire', DATA = 910, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Office #1' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 2' COMP_ID = 'Office #2' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 7' COMP_ID = 'Laboratory' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 8' COMP_ID = 'Foyer' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 5' COMP_ID = 'Even Hallway' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 6' COMP_ID = 'Odd Hallway' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
+     THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Smoke Alarm' COMP_ID = 'Laboratory' LOCATION = 1, 1, 3.01752 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
  
 &TAIL /

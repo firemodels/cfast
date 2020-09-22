@@ -24,7 +24,7 @@
                                                                 'VALUE                              '/)
     
     integer, parameter :: idx_real = 1, idx_char = 2, idx_int = 3, idx_logic = 4
-    character(len=9), parameter :: val_types(mxvaltypes) = (/'REAL(eb) ', &
+    character(len=9), parameter :: val_types(mxvaltypes) = (/'REAL    ', &
                                                             'CHARACTER', &
                                                             'INTEGER  ', &
                                                             'LOGICAL  '/)

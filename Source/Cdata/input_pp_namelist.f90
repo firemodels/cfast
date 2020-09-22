@@ -41,12 +41,12 @@
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
-        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const
+        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires
         
-    use preprocessor_types, only: random_generator_type, field_pointer
+    use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo, workpath, parameterfile
+        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo
     use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
@@ -70,7 +70,7 @@
     call read_mhdr(iofili)
     call read_mrnd(iofili)
     call read_mfld(iofili)
-    call read_mfir(iofili)
+    !call read_mfir(iofili)
 
     close (iofili)
     
@@ -282,6 +282,11 @@
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
                 genptr%type_dist = distribution_type
+                if (value_type == val_types(idx_real)) then
+                    genptr%value_type = val_types(idx_real)
+                else
+                    call cfastexit('READ_MRND',4)
+                end if 
                 if (trim(minimum_field_id) /= 'NULL') then
                     call genptr%set_min_to_use_field(minimum_field_id)
                 else
@@ -447,9 +452,6 @@
             test: do jj = 1, n_generators
                 if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
                     fldptr%genptr => generatorinfo(jj)
-                    if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%realval%value_type)) then
-                        call cfastexit('read_mfld',6)
-                    end if
                 end if
             end do test
             if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
@@ -457,11 +459,25 @@
                 call find_object(object_id, fldptr, found)
                 if (found) then
                     call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
+                        call cfastexit('read_mfld',6)
+                    end if
                 else
                     call cfastexit('read_mfld',5)
                 end if
-            elseif (field_type == fldptr%fld_types(fldptr%idx_index)) then
+            elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_index))) then
+                call find_object(object_id, fldptr, found)
+                if (found) then
+                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    if (trim(type_of_index) /= trim(fldptr%value_type)) then
+                        call cfastexit('read_mfld',8)
+                    end if
+                else
+                    call cfastexit('read_mfld',7)
+                end if
                 fldptr%field_type = trim(field_type)
+                fldptr%intval%val => fldptr%index
+                fldptr%randptr => fldptr%intval
                 if (trim(type_of_index) == val_types(idx_real)) then
                     fldptr%nidx = number_in_index
                     do jj = 1, number_in_index
@@ -483,25 +499,33 @@
                         fldptr%logic_array(jj) = logical_array_values(jj)
                     end do
                 else
-                    call cfastexit('read_mfld',6)
+                    call cfastexit('read_mfld',9)
                 end if
-            elseif (field_type == fldptr%fld_types(fldptr%idx_scale)) then
-                fldptr%field_type = trim(field_type)
+            elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_scale))) then
                 call find_object(object_id, fldptr, found)
                 if (found) then
                     call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    if (trim(val_types(idx_real)) /= trim(fldptr%value_type)) then
+                        call cfastexit('read_mfld',11)
+                    end if
                 else
-                    call cfastexit('read_mfld',5)
+                    call cfastexit('read_mfld',10)
                 end if
-                fldptr%scale_base_value = base_scaling_value
-            elseif (field_type == fldptr%fld_types(fldptr%idx_label)) then
                 fldptr%field_type = trim(field_type)
+                fldptr%scaleval%val => fldptr%scale_value
+                fldptr%scaleval%value_type = val_types(idx_real)
+                fldptr%randptr => fldptr%scaleval
+                fldptr%scale_base_value = base_scaling_value
+            elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_label))) then
+                fldptr%field_type = trim(field_type)
+                fldptr%indexval%val => fldptr%index
+                fldptr%randptr => fldptr%indexval
                 scenaro_loop: do jj = 1, mxpntsarray
                     if (trim(scenario_title_array(jj)) == 'NULL') then
                         fldptr%nlabel = jj - 1
                         exit scenaro_loop
                     else
-                        fldptr%label_array(jj) = scenario_title_array(jj)
+                        fldptr%char_array(jj) = scenario_title_array(jj)
                     end if    
                     fldptr%nlabel = jj
                 end do scenaro_loop
@@ -682,25 +706,19 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii
+    integer :: ios, ii, jj
     logical :: mfirflag
-    character(len=128) :: id, fire_id, fire_gen_id
+    character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
+        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
+        smolder_time_random_generator_id, parameter_header
+    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters
+    type(fire_generator_type), pointer :: fire
     
-    logical :: first_section_smoldering
-    character(len=35) :: fire_generator_type
-    character(len=128) :: input_file_list(mxfires), fire_id_list(mxfires), random_generator_id(mxfiresections)
-    integer :: number_of_fires 
-    integer, dimension(mxfiresections) :: number_of_points_for_section, final_hrr_for_section
-    real(eb), dimension(mxfiresections) :: exponent_for_section, final_time_for_section
-    logical :: include_hrr_parameters, include_time_parameters, include_flaming_ignition_time
-    real(eb), dimension(mxfiresections) :: fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
-        hcn_yield, hcl_yield, trace_yield
 
-    namelist /MFIR/ id, fire_id, first_section_smoldering, number_of_points_for_section, exponent_for_section, &
-        final_time_for_section, final_hrr_for_section, include_hrr_parameters, include_time_parameters, &
-        include_flaming_ignition_time, fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
-        hcn_yield, hcl_yield, trace_yield, fire_generator_type, input_file_list, fire_id_list, &
-        random_generator_id
+    namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
+        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
+        smolder_time_random_generator_id, first_time_point_smoldering, &
+        modify_fire_area_to_match_hrr, add_to_parameters, parameter_header
     
     ios = 1
 
@@ -742,7 +760,52 @@
 
         ! Assign value to CFAST variables for further calculations
         read_mfir_loop: do ii=1,n_rndfires
-            
+            fire => randfireinfo(ii)
+            fire%id = id
+            fire%fyi = fyi
+            fire%fireid = fire_id
+            fire%basefireid = base_fire_id
+            do jj = 1, n_fires
+                if (trim(fireinfo(jj)%id) == trim(fire%fireid)) then
+                    fire%fire => fireinfo(jj)
+                elseif (trim(fireinfo(jj)%id) == trim(fire%basefireid)) then
+                    fire%base => fireinfo(jj)
+                end if
+            end do
+            if (trim(scaling_fire_hrr_random_generator_id) /= 'NULL') then
+                do jj = 1, n_generators
+                    if (trim(scaling_fire_hrr_random_generator_id)== trim(generatorinfo(jj)%id)) then
+                        fire%hrrscale => generatorinfo(jj)
+                        fire%scalehrr = .true.
+                    end if
+                end do
+                if (fire%scalehrr) then
+                    fire%hrrscaleval%val => fire%hrrscalevalue
+                else
+                    call cfastexit('MFIR', 4)
+                end if 
+            end if
+            if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
+                do jj = 1, n_generators
+                    if (trim(scaling_fire_time_random_generator_id)== trim(generatorinfo(jj)%id)) then
+                        fire%timescale => generatorinfo(jj)
+                        fire%scaletime = .true.
+                    end if
+                end do
+                if (fire%scaletime) then
+                    fire%timescaleval%val => fire%timescalevalue
+                else
+                    call cfastexit('MFIR', 5)
+                end if 
+            end if
+            if (add_to_parameters) then
+                fire%add_to_parameters = add_to_parameters
+                if (trim(parameter_header) == 'NULL') then
+                    fire%parameter_header = trim(fire_id) // '_' // 'scaling'
+                else
+                    fire%parameter_header = parameter_header
+                end if
+            end if
         end do read_mfir_loop
     end if mfir_flag
     
@@ -752,25 +815,15 @@
     
     id = 'NULL'
     fire_id = 'NULL' 
-    first_section_smoldering = .false.
-    number_of_points_for_section = 0
-    exponent_for_section = 1._eb
-    final_time_for_section = -1001._eb
-    final_hrr_for_section = -1001._eb
-    include_hrr_parameters = .false.
-    include_time_parameters = .false.
-    include_flaming_ignition_time = .false. 
-    fire_area = -1001._eb
-    calculated_fire_area = 1._eb
-    co_yield = 0._eb
-    soot_yield = 0._eb
-    hcn_yield = 0._eb
-    hcl_yield = 0._eb
-    trace_yield = 0._eb
-    fire_generator_type = 'NULL'
-    random_generator_id(1:mxfiresections) = 'NULL'
-    input_file_list(1:mxfires) = 'NULL'
-    fire_id_list(1:mxfires) = 'NULL'
+    base_fire_id = 'NULL'
+    scaling_fire_hrr_random_generator_id = 'NULL'
+    smolder_random_generator_id = 'NULL'
+    scaling_fire_time_random_generator_id = 'NULL'
+    smolder_time_random_generator_id = 'NULL'
+    first_time_point_smoldering = .false.
+    modify_fire_area_to_match_hrr = .false. 
+    add_to_parameters = .false. 
+    parameter_header = 'NULL'
     
     
     end subroutine set_defaults
@@ -781,7 +834,7 @@
     
     subroutine find_object(id, field, flag)
     character(len=*), intent(in) :: id
-    type(field_pointer), intent(out) :: field
+    type(field_pointer), intent(inout) :: field
     logical, intent(out) :: flag
     
     integer :: i

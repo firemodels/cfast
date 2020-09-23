@@ -757,7 +757,7 @@
                 if (convert_negative_distances) then
                     if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
                     if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
-                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
                 end if
                 targptr%center = location
                 targptr%normal = normal
@@ -882,7 +882,7 @@
                 if (convert_negative_distances) then
                     if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
                     if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
-                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
                 end if
                 dtectptr%center = location
                 

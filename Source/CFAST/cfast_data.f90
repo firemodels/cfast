@@ -174,7 +174,7 @@ module material_data
                                                     ! to distance from compartment origin
     logical :: nmlflag = .true.                     ! true if input file is in namelist format
     integer :: input_file_line_number               ! current line read in a namelist-format input file
-    logical :: compflag = .false.                     ! true if each namelist type has been read in
+    logical :: compflag = .false.                   ! true if each namelist type has been read in
     logical :: connflag = .false.
     logical :: devcflag = .false.
     logical :: tablflag = .false.

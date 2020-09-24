@@ -558,13 +558,35 @@ Public Class Vent
         Height = Me.Height
         Bottom = Me.Bottom
     End Sub
-    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Double, ByVal Height As Double, ByVal Bottom As Double)
+    Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Double, ByVal Height As Double, ByVal Bottom As Double, Top As Double)
         ' Wall vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
         aOffset = 0.0
         aSecondCompartment = SecondCompartment
         aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Width)
+        ' you can specify any two of bottom, top, and height but not all three. If all three, we ignore one
+        If Height > 0 Then
+            If Bottom < 0 Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                Bottom = aCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Bottom))
+            ElseIf Bottom = 0 And Top < 0 Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                Bottom = aCompartment.RoomHeight - Height - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Top))
+            ElseIf Bottom = 0 And Top > 0 Then
+                Bottom = Top - Height
+            End If
+        ElseIf Height = 0 Then
+            If Bottom < 0 Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                Bottom = aCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Bottom))
+            End If
+            If Top < 0 Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                Top = aCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Top))
+            End If
+            Height = Top - Bottom
+        End If
         aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Height)
         aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Bottom)
         aFace = 1

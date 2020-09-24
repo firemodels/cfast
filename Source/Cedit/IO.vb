@@ -1027,9 +1027,9 @@ Module IO
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "VENT") Then
                 area = -1
-                bot = -1
-                top = -1
-                height = -1
+                bot = 0
+                top = 0
+                height = 0
                 crit = "TIME"
                 devcid = ""
                 setp = 0.0
@@ -1210,11 +1210,10 @@ Module IO
                         Else
                             comp1dx = myCompartments.GetCompIndex(compids(1))
                         End If
-                        If height <= 0 And top <= 0 Then
-                            myErrors.Add("In &VENT namelist " + NMList.ForNMListGetVar(i, j) + " Both TOP and HEIGHT are specified. HEIGHT was used.", ErrorMessages.TypeFatal)
+                        If height < 0 Then
+                            myErrors.Add("In &VENT namelist " + NMList.ForNMListGetVar(i, j) + "  HEIGHT must be greater than zero.", ErrorMessages.TypeFatal)
                         End If
-                        If height <= 0 And top > 0 Then height = top - bot
-                        aVent.SetVent(comp0dx, comp1dx, width, height, bot)
+                        aVent.SetVent(comp0dx, comp1dx, width, height, bot, top)
                         ' This is the new format that includes trigger by flux or temperature
                         If face = "FRONT" Then
                             aVent.Face = 1

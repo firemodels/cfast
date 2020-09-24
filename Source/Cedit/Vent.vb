@@ -21,6 +21,8 @@ Public Class Vent
     Private Const maxValueOpenType As Integer = 2
 
     Public Const MaxPressure As Double = 8000.0
+    Public Const default_min_cutoff_relp As Double = 200.0
+    Public Const default_max_cutoff_relp As Double = 300.0
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
@@ -445,8 +447,13 @@ Public Class Vent
         End Get
         Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aBeginFlowDropoff Then
-                aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
-                aChanged = True
+                If Value >= 0 Then
+                    aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
+                    aChanged = True
+                Else
+                    aBeginFlowDropoff = default_min_cutoff_relp
+                    aChanged = True
+                End If
             End If
         End Set
     End Property
@@ -456,8 +463,13 @@ Public Class Vent
         End Get
         Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aZeroFlow Then
-                aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
-                aChanged = True
+                If Value >= 0 Then
+                    aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
+                    aChanged = True
+                Else
+                    aZeroFlow = default_max_cutoff_relp
+                    aChanged = True
+                End If
             End If
         End Set
     End Property

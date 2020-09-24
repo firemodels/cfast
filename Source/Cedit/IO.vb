@@ -2623,7 +2623,10 @@ Module IO
                         ln += " ORIENTATIONS = 'HORIZONTAL', 'VERTICAL' "
                     End If
                 End If
-                ln += " FLOW = " + aVent.FlowRate.ToString + " CUTOFFS = " + aVent.BeginFlowDropoff.ToString + ", " + aVent.ZeroFlow.ToString
+                ln += " FLOW = " + aVent.FlowRate.ToString
+                If aVent.BeginFlowDropoff <> Vent.default_min_cutoff_relp Or aVent.ZeroFlow <> Vent.default_max_cutoff_relp Then
+                    ln += " CUTOFFS = " + aVent.BeginFlowDropoff.ToString + ", " + aVent.ZeroFlow.ToString
+                End If
                 ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
                 If aVent.OpenType = Vent.OpenbyTime Then
                     Dim ff(2), xx(2), numpoints As Double

@@ -58,7 +58,7 @@ Public Class Vent
     Private aZeroFlow As Double                 ' Backward pressure for zero flow in mechanical vents
     Private aFilterEfficiency As Double         ' EVENT Fraction of smoke and user-specified species that gets through filter
     Private aFilterTime As Double               ' EVENT begin filter operation time
-    Private aChanged As Boolean = False         ' True once compartment information has changed
+    Private aChanged As Boolean = False         ' True when vent information has changed
     Private HasErrors As Integer = 0            ' Temporary variable to indicate whether there are errors in the specification
     Private aName As String                     ' User supplied vent name 
     Private aFYI As String                      ' Descriptor for additional user supplied information
@@ -90,6 +90,42 @@ Public Class Vent
             End If
         End Set
     End Property
+    Public Sub SetDefaultLocation()
+        If aVentType = TypeHVent Then
+            If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                If aFace = 1 Or aFace = 3 Then
+                    aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2 - aWidth / 2
+                Else
+                    aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2 - aWidth / 2
+                End If
+            End If
+        ElseIf aVentType = TypeVVent Then
+            If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2
+                aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
+                aChanged = True
+            ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 And aSecondCompartment <= myCompartments.Count Then
+                Dim aCompartment As Compartment = myCompartments.Item(aSecondCompartment)
+                aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2
+                aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
+                aChanged = True
+            End If
+        ElseIf aVentType = TypeMVent Then
+            If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                Dim aCompartment As Compartment = myCompartments.Item(aFirstCompartment)
+                aOffsetX = 0
+                aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
+                aChanged = True
+            ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 And aSecondCompartment <= myCompartments.Count Then
+                Dim aCompartment As Compartment = myCompartments.Item(aSecondCompartment)
+                aOffsetX = 0
+                aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
+                aChanged = True
+            End If
+        End If
+    End Sub
     Public Property FirstCompartment() As Integer
         Get
             Return aFirstCompartment
@@ -97,15 +133,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFirstCompartment Then
                 aFirstCompartment = Value
-                If aVentType = TypeHVent Then
-                    Offset = -1
-                ElseIf aVentType = TypeVVent Then
-                    OffsetX = -1
-                    OffsetY = -1
-                ElseIf aVentType = TypeMVent Then
-                    OffsetX = 0
-                    OffsetY = -1
-                End If
+                SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -116,14 +144,7 @@ Public Class Vent
         End Get
         Set(ByVal Value As Integer)
             If Value <> aSecondCompartment Then
-                aSecondCompartment = Value
-                If aVentType = TypeVVent Then
-                    OffsetX = -1
-                    OffsetY = -1
-                ElseIf aVentType = TypeMVent Then
-                    OffsetX = 0
-                    OffsetY = -1
-                End If
+                SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -133,18 +154,7 @@ Public Class Vent
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffset)
         End Get
         Set(ByVal Value As Double)
-            If Value = -1 Then
-                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments.Item(aFirstCompartment)
-                    If aFace = 1 Or aFace = 3 Then
-                        aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2 - aWidth / 2
-                    Else
-                        aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2 - aWidth / 2
-                    End If
-                End If
-
-            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffset Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffset Then
                 aOffset = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
@@ -155,19 +165,7 @@ Public Class Vent
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetX)
         End Get
         Set(ByVal Value As Double)
-            If Value < 0 Then
-                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments.Item(aFirstCompartment)
-                    aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2
-                    aChanged = True
-                ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 And aSecondCompartment <= myCompartments.Count Then
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments.Item(aSecondCompartment)
-                    aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2
-                    aChanged = True
-                End If
-            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetX Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetX Then
                 aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
@@ -178,19 +176,7 @@ Public Class Vent
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetY)
         End Get
         Set(ByVal Value As Double)
-            If Value < 0 Then
-                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments.Item(aFirstCompartment)
-                    aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
-                    aChanged = True
-                ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 And aSecondCompartment <= myCompartments.Count Then
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments.Item(aSecondCompartment)
-                    aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2
-                    aChanged = True
-                End If
-            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetY Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetY Then
                 aOffsetY = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
@@ -203,7 +189,7 @@ Public Class Vent
         Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aWidth Then
                 aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                Offset = -1
+                SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -230,7 +216,7 @@ Public Class Vent
             End If
         End Set
     End Property
-    Property OpenType() As Integer
+    Public Property OpenType() As Integer
         Get
             Return aOpenType
         End Get
@@ -243,7 +229,7 @@ Public Class Vent
             End If
         End Set
     End Property
-    Property OpenValue() As Double
+    Public Property OpenValue() As Double
         Get
             If aOpenType = OpenbyTime Then
                 Return myUnits.Convert(UnitsNum.Time).FromSI(aOpenValue)
@@ -337,7 +323,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFace Then
                 aFace = Value
-                Offset = -1
+                SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -562,7 +548,6 @@ Public Class Vent
         ' Wall vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
-        aOffset = 0.0
         aSecondCompartment = SecondCompartment
         aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Width)
         ' you can specify any two of bottom, top, and height but not all three. If all three, we ignore one
@@ -590,6 +575,7 @@ Public Class Vent
         aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Height)
         aBottom = myUnits.Convert(UnitsNum.Length).ToSI(Bottom)
         aFace = 1
+        SetDefaultLocation()
     End Sub
     Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Double, ByVal Shape As Integer)
         ' Ceiling/Floor vent connection
@@ -605,6 +591,7 @@ Public Class Vent
         SecondCompartment = BottomCompartment
         Me.Area = Area
         Me.Shape = Shape
+        SetDefaultLocation()
     End Sub
     Public Sub GetVent(ByRef FromCompartment As Integer, ByRef FromArea As Double, ByRef FromCenterHeight As Double, ByRef FromOrientation As String, ByRef ToCompartment As Integer, ByRef ToArea As Double, ByRef ToCenterHeight As Double, ByRef ToOrientation As String, ByRef FlowRate As Double, ByRef BeginFlowDropoff As Double, ByRef ZeroFlow As Double)
         ' Mechanical vent connection
@@ -651,6 +638,7 @@ Public Class Vent
         aFlowRate = FlowRate
         aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(BeginFlowDropoff)
         aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(ZeroFlow)
+        SetDefaultLocation()
     End Sub
     Public Sub GetRamp(ByRef TimePoints() As Double, ByRef FractionPoints() As Double, ByRef NumPoints As Integer)
         Dim i As Integer
@@ -663,17 +651,6 @@ Public Class Vent
             Next
             NumPoints = aRampTimePoints.GetUpperBound(0)
         End If
-        'If aRampID <> "" Then
-        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-        'ReDim FractionPoints(myRamps.Item(iramp).DimF + 1), TimePoints(myRamps.Item(iramp).DimX + 1)
-        'For i = 0 To myRamps.Item(iramp).DimF
-        'FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-        'TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
-        'Next
-        'NumPoints = myRamps.Item(iramp).MaxNumRamp + 1
-        'Else
-        'NumPoints = 0
-        'End If
     End Sub
     Public Sub SetRamp(ByVal TimePoints() As Double, ByVal FractionPoints() As Double)
         Dim i As Integer

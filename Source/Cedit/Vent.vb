@@ -133,7 +133,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFirstCompartment Then
                 aFirstCompartment = Value
-                SetDefaultLocation()
+                If Value > -1 Then SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -144,7 +144,8 @@ Public Class Vent
         End Get
         Set(ByVal Value As Integer)
             If Value <> aSecondCompartment Then
-                SetDefaultLocation()
+                aSecondCompartment = Value
+                If Value > -1 Then SetDefaultLocation()
                 aChanged = True
             End If
         End Set

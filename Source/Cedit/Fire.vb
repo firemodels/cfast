@@ -243,94 +243,65 @@ Public Class Fire
         Set(ByVal Value As Integer)
             If aCompartment <> Value Then
                 aCompartment = Value
+                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                    Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                    XPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
+                    YPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth) / 2
+                End If
                 If myFireProperties.DoChange Then aChanged = True
             End If
         End Set
     End Property
     Property XPosition() As Double
         Get
-            If aXPosition = -1 Then
-                Return -1
-            Else
-                Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
-            End If
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+            If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            ElseIf Value = -1 Then
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    Dim tmpCompartment As New Compartment
-                    tmpCompartment = myCompartments.Item(aCompartment)
-                    aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
-                    aChanged = True
                 Else
-                    aXPosition = -1
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aXPosition = tmpCompartment.RoomWidth - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
-            Else
-                aXPosition = -1
                 aChanged = True
             End If
         End Set
     End Property
     Property YPosition() As Double
         Get
-            If aYPosition = -1 Then
-                Return -1
-            Else
-                Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
-            End If
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+            If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            ElseIf Value = -1 Then
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    Dim tmpCompartment As New Compartment
-                    tmpCompartment = myCompartments.Item(aCompartment)
-                    aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth / 2)
-                    aChanged = True
                 Else
-                    aYPosition = -1
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aYPosition = tmpCompartment.RoomDepth - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
-            Else
-                aYPosition = -1
                 aChanged = True
             End If
         End Set
     End Property
     Property Height() As Double
         Get
-            If aHeight = -1 Then
-                Return -1
-            Else
-                Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
-            End If
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If aHeight <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+            If aHeight <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            ElseIf Value = -1 Then
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    aHeight = 0.0
-                    aChanged = True
                 Else
-                    aHeight = -1
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aHeight = tmpCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
-            Else
-                aHeight = -1
                 aChanged = True
             End If
         End Set

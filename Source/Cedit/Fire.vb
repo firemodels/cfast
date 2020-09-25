@@ -26,7 +26,6 @@ Public Class Fire
     Private Const MaxTemperature As Double = 873.15
     Private Const MaxFlux As Double = 50000.0
     Private Const MaxMolarMass As Double = 292.0
-    Private Const MaxTotalMass As Double = 10000.0
     Private Const MinHeatofCombustion As Double = 10000000.0
     Private Const MaxHeatofCombustion As Double = 1000000000.0
     Private Const MaxHRR As Double = 10000000000.0
@@ -51,6 +50,7 @@ Public Class Fire
 
     ' Variables for current instance of a fire
     Private aCompartment As Integer                 ' Compartment where the fire is located
+    Private aDefaultLocationSet As Boolean          ' True once a compartment is chosen and default location has been set
     Private aXPosition As Double                    ' X (width) position of the fire in the Compartment
     Private aYPosition As Double                    ' Y (depth) position of the fire in the Compartment
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
@@ -93,8 +93,9 @@ Public Class Fire
         ' New definitions for a fire 
         aObjectType = TypeDefinition
         aCompartment = -2
-        aXPosition = -1.0
-        aYPosition = -1.0
+        aDefaultLocationSet = False
+        aXPosition = 0
+        aYPosition = 0
         aPlumeType = 0
         aIgnitionType = FireIgnitionbyTime
         aIgnitionValue = 0.0

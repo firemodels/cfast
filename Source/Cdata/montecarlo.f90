@@ -6,7 +6,7 @@
     
     use setup_data, only: datapath, project, extension
     
-    use montecarlo_data, only: mc_filename_pattern, mc_number_of_cases, mc_datapath
+    use montecarlo_data, only: mc_filename_pattern, mc_number_of_cases, mc_datapath, workpath
     use ppfilehandeling, only: pp_num, pp_digit, ppinfile_prefix, ppinfile_suffix, ppinfile_numfrm, ppinfile_extension
     
     implicit none  
@@ -31,7 +31,7 @@
     lname = len(filename)
     buf = ' '
     write(nbuf,ppinfile_numfrm) num
-    buf = trim(mc_datapath) // trim(ppinfile_prefix) // trim(adjustl(nbuf))
+    buf = trim(workpath) // trim(ppinfile_prefix) // trim(adjustl(nbuf))
     if (len_trim(ppinfile_suffix)>0) then
         buf = trim(buf) // trim(adjustl(ppinfile_suffix))
     end if 

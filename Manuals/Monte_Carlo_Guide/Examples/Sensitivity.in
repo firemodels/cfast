@@ -1,144 +1,8 @@
 &HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
-&TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 1 / 
+&TIME SIMULATION = 1000 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
- 
-&MHDR MONTE_CARLO_NUMBER_OF_CASES = 100 WRITE_SEEDS = .TRUE. WORK_DIRECTORY = 'Z:\' /
-&MRND ID = 'Scaling Office #1 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #2 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #3 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #4 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #5 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #6 width', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #1 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #2 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #3 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #4 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #5 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #6 depth', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #1 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #2 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #3 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #4 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #5 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Office #6 height', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling HRR', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Time', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MFLD ID = 'Office #1 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #1 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_width' /
-&MFLD ID = 'Office #2 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #2 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_width' /
-&MFLD ID = 'Office #3 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #3 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #4 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #4 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #5 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #5 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #6 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'WIDTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #6 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 4.012997
-    RAND_ID = 'Scaling Office #1 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_depth' /
-&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 4.063899
-    RAND_ID = 'Scaling Office #2 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_depth' /
-&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 3.073298
-    RAND_ID = 'Scaling Office #3 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_depth' /
-&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #4 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#4_depth' /
-&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #5 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#5_width' /
-&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'DEPTH' BASE_SCALING_VALUE = 3.911499
-    RAND_ID = 'Scaling Office #6 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#6_depth' /
-&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #1 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_depth' /
-&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #2 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_depth' /
-&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #3 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_depth' /
-&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #4 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#4_depth' /
-&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #5 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#5_width' /
-&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'HEIGHT' BASE_SCALING_VALUE = 3.048
-    RAND_ID = 'Scaling Office #6 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#6_depth' /
-&MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Back Fire' SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
-    SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' ADD_HRR_SCALE_TO_PARAMETERS = .TRUE. ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
-&DUMP ID = 'Office #1 Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Office #1' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Office #2 Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Office #2' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Lab Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Laboratory' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Foyer Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Foyer' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Odd Hallway Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Odd Hallway' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Even Hallway Upper Layer Max' TYPE = 'MAXIMUM' FILE_TYPE = 'COMPARTMENTS' FIRST_DEVICE = 'Even Hallway' FIRST_MEASUREMENT = 'Upper Layer Temperature' /
-&DUMP ID = 'Office #1 Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Office #1' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Office #2 Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Office #2' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'lAB Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Lab' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Foyer Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Foyer' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Office #1 Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Foyer' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Even Hallway Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Even Hallway' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Odd Hallway Alarm' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Smoke Alarm Odd Hallway' SECOND_MEASUREMENT = 'Sensor Activation' CRITERIA = 1 /
-&DUMP ID = 'Office #1 Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 1' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Office #2 Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 2' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Lab Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 7' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Foyer Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 8' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Even Hallway Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 5' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Odd Hallway Gas FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 6' SECOND_MEASUREMENT = 'Target Gas FED' CRITERIA = 1 /
-&DUMP ID = 'Office #1 Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 1' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Office #2 Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 2' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Lab Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 7' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Foyer Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 8' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Even Hallway Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 5' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Odd Hallway Heat FED' TYPE = 'TRIGGER_GREATER' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time' 
-    SECOND_DEVICE = 'Targ 6' SECOND_MEASUREMENT = 'Target Heat FED' CRITERIA = 1 /
-&DUMP ID = 'Office #1 Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 1' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Office #2 Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 2' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Lab Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 7' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Foyer Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 8' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Even Hallway Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 5' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Odd Hallway Max Gas FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 6' FIRST_MEASUREMENT = 'Target Gas FED' /
-&DUMP ID = 'Office #1 Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 1' FIRST_MEASUREMENT = 'Target Heat FED' /
-&DUMP ID = 'Office #2 Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 2' FIRST_MEASUREMENT = 'Target Heat FED' /
-&DUMP ID = 'Lab Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 7' FIRST_MEASUREMENT = 'Target Heat FED' /
-&DUMP ID = 'Foyer Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 8' FIRST_MEASUREMENT = 'Target Heat FED' /
-&DUMP ID = 'Even Hallway Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 5' FIRST_MEASUREMENT = 'Target Heat FED' /
-&DUMP ID = 'Odd Hallway Max Heat FED' TYPE = 'MAXIMUM' FILE_TYPE = 'DEVICES' FIRST_DEVICE = 'Targ 6' FIRST_MEASUREMENT = 'Target Heat FED' /
  
 !! Material Properties 
 &MATL ID = 'Gyp' MATERIAL = 'Gypsum Board', 
@@ -169,7 +33,7 @@
       DEPTH = 3.073298 HEIGHT = 3.048 WIDTH = 3.911499
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.015875 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.015875 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.1524
       ORIGIN = 7.822997, 8.920582, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0.0012, 0.00017 /
-&COMP ID = 'Office #6'
+&COMP ID = 'Office # 6'
       DEPTH = 3.073298 HEIGHT = 3.048 WIDTH = 3.911499
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.015875 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.015875 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.1524
       ORIGIN = 7.822997, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0.0012, 0.00017 /
@@ -227,7 +91,7 @@
   FACE = 'REAR' OFFSET = 1.498549 /
 &VENT TYPE = 'WALL' ID = 'Office #4 Door' COMP_IDS = 'Office #4', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'REAR' OFFSET = 1.498549 /
-&VENT TYPE = 'WALL' ID = 'Office #6 Door' COMP_IDS = 'Office #6', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'Office #6 Door' COMP_IDS = 'Office # 6', 'Even Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'REAR' OFFSET = 1.498549 /
 &VENT TYPE = 'WALL' ID = 'Bathroom Door' COMP_IDS = 'Bathroom Hall', 'Bathroom', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
   FACE = 'RIGHT' OFFSET = 0.2286 /
@@ -254,6 +118,7 @@
 &VENT TYPE = 'WALL' ID = 'Inventory Door' COMP_IDS = 'Inventory', 'Bathroom Hall', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.6096
   FACE = 'REAR' OFFSET = 2.501798 /
  
+!! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MV in #1' COMP_IDS = 'OUTSIDE', 'Even Hallway'
       AREAS = 0.3, 0.3 HEIGHTS = 3.6, 3.6 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.01 OFFSETS = 3, 0.762 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
 &VENT TYPE = 'MECHANICAL' ID = 'MV in #2' COMP_IDS = 'OUTSIDE', 'Odd Hallway'
@@ -290,33 +155,6 @@
 &TABL ID = 't-squared fire', DATA = 870, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
 &TABL ID = 't-squared fire', DATA = 900, 0, 0, 0, 0.01, 0.01, 0, 0, 0 /
 &TABL ID = 't-squared fire', DATA = 910, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
-
-&FIRE ID = 'Back Fire'  COMP_ID = 'Laboratory', FIRE_ID = 't-squared back fire'  LOCATION = 2.806598, 3.0099 / 
-&CHEM ID = 't-squared back fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
-&TABL ID = 't-squared back fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 't-squared back fire', DATA = 0, 0, 0, 0.001, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 30, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 60, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 90, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 120, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 150, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 180, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 210, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 240, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 270, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 300, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 600, 1054, 0, 0.7488722, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 630, 853.74, 0, 0.6326969, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 660, 674.56, 0, 0.5240247, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 690, 516.46, 0, 0.4232185, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 720, 379.44, 0, 0.3307118, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 750, 263.5, 0, 0.2470357, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 780, 168.64, 0, 0.1728637, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 810, 94.86, 0, 0.1090942, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 840, 42.16, 0, 0.05702374, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 870, 10.54, 0, 0.01881082, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 900, 0, 0, 0, 0.01, 0.01, 0, 0, 0 /
-&TABL ID = 't-squared back fire', DATA = 910, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
  
 !! Devices
 &DEVC ID = 'Targ 1' COMP_ID = 'Office #1' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
@@ -331,11 +169,6 @@
      THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
 &DEVC ID = 'Targ 6' COMP_ID = 'Odd Hallway' LOCATION = 1, 1, 1.524 TYPE = 'PLATE' MATL_ID = 'Human' SURFACE_ORIENTATION = 'CEILING'
      THICKNESS = 0.2 TEMPERATURE_DEPTH = 0.1 DEPTH_UNITS = 'M' /
-&DEVC ID = 'Smoke Alarm Lab' COMP_ID = 'Laboratory' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
-&DEVC ID = 'Smoke Alarm Office #1' COMP_ID = 'Office #1' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
-&DEVC ID = 'Smoke Alarm Office #2' COMP_ID = 'Office #2' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
-&DEVC ID = 'Smoke Alarm Foyer' COMP_ID = 'Foyer' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
-&DEVC ID = 'Smoke Alarm Even Hallway' COMP_ID = 'Even Hallway' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
-&DEVC ID = 'Smoke Alarm Odd Hallway' COMP_ID = 'Odd Hallway' LOCATION = 1, 1, -0.03048 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
+&DEVC ID = 'Smoke Alarm' COMP_ID = 'Laboratory' LOCATION = 1, 1, 3.01752 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
  
 &TAIL /

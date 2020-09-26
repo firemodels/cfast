@@ -166,7 +166,7 @@ module preprocessor_types
             smoldertimegenid
         character(len=128), dimension(mxrooms) :: compname 
         integer, dimension(mxrooms) :: compindex
-        logical :: first_time_point_smoldering, scalehrr, scaletime, dostime, copy_base_to_fire
+        logical :: first_time_point_smoldering, scalehrr, scaletime, dostime
         type(fire_type), pointer :: fire, base
         type(random_generator_type), pointer :: hrrscale, timescale, smoldergen, stimegen
         real(eb) :: hrrscalevalue, timescalevalue, stimevalue
@@ -174,9 +174,7 @@ module preprocessor_types
         logical :: smoldervalue, modifyfirearea
         type(random_logic_type) :: smolderval
     contains
-        procedure do_rand => fire_do_rand
-        procedure copybasetofire
-        procedure copytimebasedprop
+    
     end type
     
     !
@@ -252,35 +250,30 @@ module preprocessor_types
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        select type(val)
-                            type is (random_real_type)
-                                val%val = me%current_real_val
-                            class default
-                                call me%errorcall('RAND', 1)
-                        end select
+                        val%val = me%current_real_val
                     else 
-                        call me%errorcall('Rand', 1)
+                        call me%errorcall('Random_Generator_Type:Rand', 1)
                     end if
                 type is (random_int_type)
                     if (me%value_type == val_types(idx_int)) then
                         val%val = me%current_int_val
                     else 
-                        call me%errorcall('Rand', 2)
+                        call me%errorcall('Random_Generator_Type:Rand', 2)
                     end if
                 type is (random_char_type)
                     if (me%value_type == val_types(idx_char)) then
                         val%val = me%current_char_val
                     else 
-                        call me%errorcall('Rand', 3)
+                        call me%errorcall('Random_Generator_Type:Rand', 3)
                     end if
                 type is (random_logic_type)
                     if (me%value_type == val_types(idx_logical)) then
                         val%val = me%current_logic_val
                     else 
-                        call me%errorcall('Rand', 4)
+                        call me%errorcall('Random_Generator_Type:Rand', 4)
                     end if
                 class default
-                    call me%errorcall('Rand',5)
+                    call me%errorcall('Random_Generator_Type:Rand',5)
             end select
             return
         end if
@@ -366,26 +359,13 @@ module preprocessor_types
     subroutine add_header(me, icol, array)
     
         class(value_wrapper_type), intent(inout) :: me
-        integer, intent(inout) :: icol
+        integer, intent(in) :: icol
         character(len=*), intent(out), target :: array(*)
         
         if (me%add_to_parameters) then
-            select type (me)
-            type is (fire_generator_type)
-                if (me%hrrscaleval%add_to_parameters) then
-                    icol = icol + 1
-                    me%hrrscaleval%paramptr => array(icol)
-                end if 
-                if (me%timescaleval%add_to_parameters) then
-                    icol = icol + 1
-                    me%timescaleval%paramptr => array(icol)
-                end if
-            class default
-                icol = icol + 1
-                me%paramptr => array(icol)
-                array(icol) = trim(me%parameter_header)
-                me%parameter_field_set = .true.
-            end select
+            me%paramptr => array(icol)
+            array(icol) = trim(me%parameter_header)
+            me%parameter_field_set = .true.
         end if 
         
     end subroutine add_header
@@ -526,7 +506,7 @@ module preprocessor_types
         if (me%mindependent) then
             call me%rand_mm_sub1(me%minptr, min)
         else
-            min = me%minval
+            min = me%maxval
         end if
         
     end function rand_min
@@ -804,86 +784,6 @@ module preprocessor_types
         end if
         
     end subroutine set_current_value
-    
-    subroutine fire_do_rand(me, iteration)
-    
-        class(fire_generator_type) :: me
-        integer, intent(in) :: iteration
-        
-        integer :: i
-        
-        if (me%copy_base_to_fire) then
-            call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
-        end if 
-        
-        if (me%scalehrr) then 
-            call me%hrrscale%rand(me%hrrscaleval,iteration)
-            do i = 1, mxpts
-                me%fire%qdot(i) = me%hrrscalevalue*me%base%qdot(i)
-            end do
-            do i = 1, mxpts
-                me%fire%mdot(i) = me%hrrscalevalue*me%base%mdot(i)
-            end do 
-        end if 
-        
-        if (me%scaletime) then
-            call me%timescale%rand(me%timescaleval,iteration)
-            do i = 1, mxpts
-                me%fire%t_qdot(i) = me%timescalevalue*me%base%t_qdot(i)
-            end do
-            do i = 1, mxpts
-                me%fire%t_mdot(i) = me%hrrscalevalue*me%base%t_mdot(i)
-            end do
-        end if 
-    
-    end subroutine fire_do_rand
-    
-    subroutine copybasetofire(me, fire, base, flag)
-    
-        class(fire_generator_type) :: me
-        type(fire_type), intent(inout) :: fire, base
-        logical, intent(inout) :: flag
-        
-        fire%chemistry_type = base%chemistry_type
-        fire%n_C = base%n_C
-        fire%n_H = base%n_H
-        fire%n_N = base%n_N
-        fire%n_O = base%n_O
-        fire%n_Cl = base%n_Cl
-        call me%copytimebasedprop(fire%n_mdot, fire%mdot, fire%t_mdot, base%n_mdot, base%mdot, base%t_mdot)
-        call me%copytimebasedprop(fire%n_qdot, fire%qdot, fire%t_qdot, base%n_qdot, base%qdot, base%t_qdot)
-        call me%copytimebasedprop(fire%n_area, fire%area, fire%t_area, base%n_area, base%area, base%t_area)
-        call me%copytimebasedprop(fire%n_height, fire%height, fire%t_height, base%n_height, base%height, &
-            base%t_height)
-        call me%copytimebasedprop(fire%n_soot, fire%y_soot, fire%t_soot, base%n_soot, base%y_soot, base%t_soot)
-        call me%copytimebasedprop(fire%n_co, fire%y_co, fire%t_co, base%n_co, base%y_co, base%t_co)
-        call me%copytimebasedprop(fire%n_hcn, fire%y_hcn, fire%t_hcn, base%n_hcn, base%y_hcn, base%t_hcn)
-        call me%copytimebasedprop(fire%n_trace, fire%y_trace, fire%t_trace, base%n_trace, base%y_trace, base%t_trace)
-        call me%copytimebasedprop(fire%n_hoc, fire%hoc, fire%t_hoc, base%n_hoc, base%hoc, base%t_hoc)
-        fire%z_offset = base%z_offset
-        fire%characteristic_length = base%characteristic_length
-        fire%molar_mass = base%molar_mass
-        fire%ignition_time = base%ignition_time
-        flag = .false.
-    
-    end subroutine copybasetofire
-    
-    subroutine copytimebasedprop(me, nx, x, xt, nb, b, bt)
-    
-        class(fire_generator_type) :: me
-        integer :: nx, nb
-        real(eb), dimension(mxpts) :: x, b, xt, bt
-        
-        integer :: i
-        
-        nx = nb
-        do i = 1, mxpts
-            x(i) = b(i)
-            xt(i) = bt(i)
-        end do
-        
-    end subroutine copytimebasedprop
-        
     
     end module preprocessor_types
     

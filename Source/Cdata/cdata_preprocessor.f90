@@ -11,9 +11,10 @@ module preprocessor_routines
         ss_out_interval, inputfile, datapath, project, extension, cfast_input_file_position, iofili
     
     !-----------------------CFAST routines-----------------------------------------
-    use exit_routines, only: cfastexit, delete_output_files, closeoutputfiles
+    use exit_routines, only: cfastexit
     use initialization_routines, only : initialize_memory
     use input_routines, only : open_files, read_input_file
+    use exit_routines, only: delete_output_files, closeoutputfiles
     use namelist_input_routines, only: cdata_preprocessor_rereadinputfile
     use utility_routines, only : read_command_options
     
@@ -67,7 +68,6 @@ module preprocessor_routines
     call initialize_output_files
     do i = 1, mc_number_of_cases
         call create_mc_filename(i, infilecase)
-        write(*,*)'creating ',trim(infilecase)
         call create_case(infilecase, i)
         call write_cfast_infile(infilecase)
         call flush_parameters_buffer
@@ -184,9 +184,6 @@ module preprocessor_routines
     do i = 1, n_fields
         call fieldinfo(i)%do_rand(fieldinfo(i)%valptr, iteration)
         call fieldinfo(i)%write_value
-    end do 
-    do i = 1, n_rndfires
-        call randfireinfo(i)%do_rand(iteration)
     end do 
     
     end subroutine create_case

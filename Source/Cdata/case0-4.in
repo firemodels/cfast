@@ -1,0 +1,211 @@
+&HEAD VERSION = 7500, TITLE = 'FD-Gen'/
+
+!! Scenario Configuration 
+&TIME SIMULATION = 8000 PRINT = 1 SMOKE = 20 SPREADSHEET = 0.25/                                                                
+&INIT PRESSURE = 101324.33 EXTERIOR_TEMPERATURE = 20.10 INTERIOR_TEMPERATURE = 20.10 RELATIVE_HUMIDITY = 50.2/                  
+
+!! Material Properties 
+&MATL ID = 'MCROperator' MATERIAL = 'MCR Operator (properties of water at 20 C)'                                                
+     CONDUCTIVITY = 0.580 DENSITY = 998.3 SPECIFIC_HEAT = 4.183 THICKNESS = 0.2032 EMISSIVITY = 0.9/                            
+&MATL ID = 'MCRConcrete' MATERIAL = 'MCR Concrete Floor (user's guide)'                                                         
+     CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75 THICKNESS = 0.5 EMISSIVITY = 0.9/                                   
+&MATL ID = 'MCRConcreteW' MATERIAL = 'MCR Concrete Wall (user's guide)'                                                         
+     CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75 THICKNESS = 0.9 EMISSIVITY = 0.9/                                   
+&MATL ID = 'MCRGypsum' MATERIAL = 'MCR Gypsum Walls (user's guide)'                                                             
+     CONDUCTIVITY = 0.17 DENSITY = 960 SPECIFIC_HEAT = 1.1 THICKNESS = 0.0159 EMISSIVITY = 0.9/                                 
+&MATL ID = 'GYSPUM' MATERIAL = 'Gyspum Sam'                                                                                     
+     CONDUCTIVITY = 0.276 DENSITY = 752 SPECIFIC_HEAT = 1.0170 THICKNESS = 0.0159 EMISSIVITY = 0.94/                            
+
+!! Compartments
+&COMP ID = 'Comp 1'                                                                                                             
+     DEPTH = 4.5 HEIGHT = 2.5 WIDTH = 4.9983 CEILING_MATL_ID = 'GYSPUM' CEILING_THICKNESS = 0 WALL_MATL_ID = 'GYSPUM'           
+     WALL_THICKNESS = 0 FLOOR_MATL_ID = 'GYSPUM' FLOOR_THICKNESS = 0 ORIGIN = 0 0 0 GRID = 50 50 50                             
+     LEAK_AREA = 0.170E-03 0.520E-04 SHAFT = .TRUE./                                                                            
+&COMP ID = 'Comp 2'                                                                                                             
+     DEPTH = 3.4637 HEIGHT = 2.5 WIDTH = 1 CEILING_MATL_ID = 'GYSPUM' CEILING_THICKNESS = 0 WALL_MATL_ID = 'GYSPUM'             
+     WALL_THICKNESS = 0 FLOOR_MATL_ID = 'GYSPUM' FLOOR_THICKNESS = 0 ORIGIN = 3.5 4.5 0 GRID = 50 50 50                         
+     LEAK_AREA = 0.170E-03 0.520E-04 HALL = .TRUE./                                                                             
+&COMP ID = 'Comp 3'                                                                                                             
+     DEPTH = 3.5 HEIGHT = 2.4611 WIDTH = 3.5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'GYSPUM' WALL_THICKNESS = 0                 
+     FLOOR_MATL_ID = 'GYSPUM' FLOOR_THICKNESS = 0 ORIGIN = 0 4.5 0 GRID = 50 50 50 LEAK_AREA = 0.170E-03 0.520E-04/             
+
+!! Vents
+
+!! Wall
+&VENT TYPE = 'WALL' ID = 'Window' COMP_IDS = 'Comp 3' 'OUTSIDE' TOP = 2 BOTTOM = 1.5 WIDTH = 0.510E-04 OFFSET = 1.65            
+     FACE = 'LEFT'/                                                                                                             
+&VENT TYPE = 'WALL' ID = 'WallVent2-3' COMP_IDS = 'Comp 2' 'Comp 3' TOP = 2 BOTTOM = 0 WIDTH = 0.75 OFFSET = 2.5 FACE = 'LEFT'/ 
+&VENT TYPE = 'WALL' ID = 'WallVent1-2' COMP_IDS = 'Comp 1' 'Comp 2' TOP = 2 BOTTOM = 0 WIDTH = 0.75 OFFSET = 3.625 FACE = 'REAR'
+/                                                                                                                               
+&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Comp 1' 'OUTSIDE' TOP = 2 BOTTOM = 0 WIDTH = 0.128E-03 OFFSET = 1.875 FACE = 'FRONT'
+/                                                                                                                               
+
+!! Devices
+
+!! Targets
+
+!! Detectors
+&DEVC ID = 'HD1_1_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 2.465 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 2.365 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 2.265 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 2.165 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 2.065 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 1.965 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_1_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 1.75 1.865 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 2.465 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 2.365 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 2.265 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 2.165 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 2.065 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 1.965 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_2_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 1.75 1.865 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_3_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 2.465 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 2.365 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 2.265 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 2.165 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 2.065 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 1.965 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_3_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 1.75 1.865 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_4_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 2.465 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 2.365 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 2.265 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 2.165 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 2.065 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 1.965 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_4_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 0.550 2.95 1.865 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 2.465 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 2.365 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 2.265 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 2.165 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 2.065 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 1.965 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_5_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.150 2.95 1.865 RTI = 35 SETPOINT = 65/              
+&DEVC ID = 'HD1_6_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 2.465 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_2' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 2.365 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_3' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 2.265 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_4' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 2.165 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_5' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 2.065 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_6' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 1.965 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_6_7' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 1.75 2.95 1.865 RTI = 35 SETPOINT = 65/               
+&DEVC ID = 'HD1_7_1' COMP_ID = 'Comp 3' TYPE = 'HEAT_DETECTOR' LOCATION = 3.45 3 1.95 RTI = 35 SETPOINT = 65/                   
+&DEVC ID = 'HD2_1_1' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 40 SETPOINT = 65/                
+&DEVC ID = 'HD2_1_2' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 35 SETPOINT = 65/                
+&DEVC ID = 'HD2_1_3' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 30 SETPOINT = 65/                
+&DEVC ID = 'HD2_1_4' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 25 SETPOINT = 65/                
+&DEVC ID = 'HD2_1_5' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 20 SETPOINT = 65/                
+&DEVC ID = 'HD2_1_6' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 1.75 2.465 RTI = 15 SETPOINT = 65/                
+&DEVC ID = 'HD2_2_1' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.05 3 1.95 RTI = 35 SETPOINT = 65/                   
+&DEVC ID = 'HD2_3_1' COMP_ID = 'Comp 2' TYPE = 'HEAT_DETECTOR' LOCATION = 0.5 0.05 1.95 RTI = 35 SETPOINT = 65/                 
+&DEVC ID = 'HD3_1_1' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 40 SETPOINT = 65/                     
+&DEVC ID = 'HD3_1_2' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 35 SETPOINT = 65/                     
+&DEVC ID = 'HD3_1_3' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 30 SETPOINT = 65/                     
+&DEVC ID = 'HD3_1_4' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 25 SETPOINT = 65/                     
+&DEVC ID = 'HD3_1_5' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 20 SETPOINT = 65/                     
+&DEVC ID = 'HD3_1_6' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 2 2 2.465 RTI = 15 SETPOINT = 65/                     
+&DEVC ID = 'HD3_2_1' COMP_ID = 'Comp 1' TYPE = 'HEAT_DETECTOR' LOCATION = 4 4.45 1.95 RTI = 35 SETPOINT = 65/                   
+
+!! Fire Instances
+&FIRE ID = 'Fire' FIRE_ID = 'Random_Fire' COMP_ID = 'Comp 3' LOCATION = 1.75 1.75/                                              
+
+!! Fires
+&CHEM ID = 'Random_Fire' CARBON = 3 HYDROGEN = 7 NITROGEN = 1 OXYGEN = 2 HEAT_OF_COMBUSTION = 26000 RADIATIVE_FRACTION = 0.35/  
+&TABL ID = 'Random_Fire' LABELS = 'TIME' 'HRR' 'HEIGHT' 'AREA' 'CO_YEILD' 'SOOT_YEILD' 'HCN_YEILD' 'TRACE_YEILD'/                                                                                                                                               
+&TABL ID = 'Random_Fire' DATA = 0 0 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                                    
+&TABL ID = 'Random_Fire' DATA = 44.98 18.11 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                            
+&TABL ID = 'Random_Fire' DATA = 89.96 72.43 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                            
+&TABL ID = 'Random_Fire' DATA = 134.94 162.97 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 179.92 289.73 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 224.90 452.70 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 269.88 651.88 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 314.86 887.29 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 359.85 1158.91 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 404.83 1466.74 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 449.81 1810.79 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 2449.81 1810.79 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                        
+&TABL ID = 'Random_Fire' DATA = 2599.81 1466.74 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                        
+&TABL ID = 'Random_Fire' DATA = 2749.81 1158.91 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                        
+&TABL ID = 'Random_Fire' DATA = 2899.81 887.29 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 3049.81 651.88 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 3199.81 452.70 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 3349.81 289.73 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 3499.81 162.97 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                         
+&TABL ID = 'Random_Fire' DATA = 3649.81 72.43 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 3799.81 18.11 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                          
+&TABL ID = 'Random_Fire' DATA = 3949.81 0 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                              
+&TABL ID = 'Random_Fire' DATA = 3959.81 0 0 0.0314 0.031 0.13 0 0/                                                                                                                                                                                              
+
+
+!! Dumps
+&DUMP ID = 'Max Time Runned' TYPE = 'MAX' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time' FIRST_MEASUREMENT = 'Simulation Time'/ 
+&DUMP ID = 'Comp 1 Time to 57 C (135 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 57
+/                                                                                                                               
+&DUMP ID = 'Comp 1 Time to 71 C (160 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 71
+/                                                                                                                               
+&DUMP ID = 'Comp 1 Time to 100 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 100/                                                                                                            
+&DUMP ID = 'Comp 1 Time to 200 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 200/                                                                                                            
+&DUMP ID = 'Comp 1 Time to 300 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 300/                                                                                                            
+&DUMP ID = 'Comp 1 Time to 400 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 400/                                                                                                            
+&DUMP ID = 'Comp 1 Time to 500 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 500/                                                                                                            
+&DUMP ID = 'Comp 1 Time to 600 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 1' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 600/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 57 C (135 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 57
+/                                                                                                                               
+&DUMP ID = 'Comp 2 Time to 71 C (160 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 71
+/                                                                                                                               
+&DUMP ID = 'Comp 2 Time to 100 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 100/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 200 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 200/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 300 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 300/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 400 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 400/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 500 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 500/                                                                                                            
+&DUMP ID = 'Comp 2 Time to 600 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 2' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 600/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 57 C (135 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 57
+/                                                                                                                               
+&DUMP ID = 'Comp 3 Time to 71 C (160 F)' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature' CRITERIA = 71
+/                                                                                                                               
+&DUMP ID = 'Comp 3 Time to 100 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 100/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 200 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 200/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 300 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 300/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 400 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 400/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 500 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 500/                                                                                                            
+&DUMP ID = 'Comp 3 Time to 600 C' TYPE = 'TRIGGER_GREATER' FILE_TYPE 'COMPARTMENTS' FIRST_DEVICE = 'Time'                       
+     FIRST_MEASUREMENT = 'Simulation Time' SECOND_DEVICE = 'Comp 3' SECOND_MEASUREMENT = 'Upper Layer Temperature'              
+     CRITERIA = 600/                                                                                                            

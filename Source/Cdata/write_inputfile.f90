@@ -35,6 +35,9 @@
     use smkview_data, only: n_visual, visualinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
+    use montecarlo_data, only: workpath
+    use preprocessor_output_routines, only: open_cfast_inputfile
+    use exit_routines, only: cfastexit
 
     implicit none 
     
@@ -50,9 +53,13 @@
     
     character, intent(in) :: inputfile*(*)
     integer :: ios
+    character(len=256) :: buf
 
     !open new input file 
-    open (newunit=iofilcalc, file=inputfile, action='write', iostat=ios)
+    call open_cfast_inputfile(iofilcalc, inputfile, ios)
+    if (ios /= 0)then 
+        call cfastexit('WRITE_CFAST_INFILE',1)
+    end if
     
     call write_head (iofilcalc)
     write(iofilcalc,'(a1)')
@@ -399,7 +406,7 @@
             if (trim(targptr%surface_orientation) == 'NULL') then
                 call add_token_rarray(iounit, buf, 'NORMAL = ', targptr%normal, 3)
             else
-                call add_token_str(iounit, buf, 'SURFACE_OREINTATION = ', targptr%surface_orientation)
+                call add_token_str(iounit, buf, 'SURFACE_ORIENTATION = ', targptr%surface_orientation)
             end if 
             if (targptr%adiabatic) call add_token_bool(iounit, buf, 'ADIABATIC_TARGET = ', targptr%adiabatic)
             if (targptr%h_conv(1) /= 0._eb .or. targptr%h_conv(2) /= 0._eb) then 
@@ -512,8 +519,8 @@
     character :: buf*(128), lbuf*(256) 
     character :: lbls(8)*(15) = &
         (/ 'TIME            ', 'HRR         ', 'HEIGHT         ', &
-           'AREA            ', 'CO_YEILD    ', 'SOOT_YEILD     ', &
-           'HCN_YEILD       ', 'TRACE_YEILD ' /)
+           'AREA            ', 'CO_YIELD    ', 'SOOT_YIELD     ', &
+           'HCN_YIELD       ', 'TRACE_YIELD ' /)
     logical :: dup
     real(eb) :: vals(8)
     
@@ -696,7 +703,6 @@
             end do
             call add_token_carray(iounit, buf, 'ORIENTATIONS = ', rms, 2)
             call add_token_rarray(iounit, buf, 'AREAS = ', ventptr%diffuser_area, 2)
-            call add_token_val(iounit, buf, 'FLOW = ', ventptr%maxflow)
             if (ventptr%min_cutoff_relp /= default_min_cutoff_relp .or. &
                ventptr%max_cutoff_relp /= default_max_cutoff_relp) then
                 val(1) = ventptr%min_cutoff_relp
@@ -745,7 +751,7 @@
             call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
             call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)
-            call add_token_str(iounit, buf, 'FILE_TYPE ', dumpptr%file_type)
+            call add_token_str(iounit, buf, 'FILE_TYPE = ', dumpptr%file_type)
             call add_token_str(iounit, buf, 'FIRST_DEVICE = ', dumpptr%first_device)
             call add_token_str(iounit, buf, 'FIRST_MEASUREMENT = ', dumpptr%first_measurement)
             call add_token_str(iounit, buf, 'SECOND_DEVICE = ', dumpptr%second_device)

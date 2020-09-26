@@ -11,12 +11,13 @@ module preprocessor_output_routines
     
     character(len=128), allocatable, dimension(:), target :: parameters_array
     character(len=128), allocatable, dimension(:,:), target :: seeds_array
+    character(len=256) :: work_dir
     integer :: mxparam, mxseeds, n_param, n_seeds, mxgen
-    integer :: ioparam, ioseeds, iobat
+    integer :: ioparam, ioseeds, iobat, iounix
     
     public initialize_preprocessor_output_routines, setup_col_parameters_output, open_preprocessor_outputfiles, &
         flush_parameters_buffer, add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer, &
-        close_preprocessor_outputfiles, finish_batch
+        close_preprocessor_outputfiles, finish_batch, open_cfast_inputfile
     
     contains
     
@@ -55,7 +56,6 @@ module preprocessor_output_routines
         class (value_wrapper_type), intent(inout) :: field
 
         if (field%add_to_parameters) then
-            n_param = n_param + 1
             call field%add_header(n_param, parameters_array)
         end if
     
@@ -77,6 +77,8 @@ module preprocessor_output_routines
             workpath = ' '
             workpath = trim(inpath)
         end if
+        work_dir = ' '
+        work_dir = workpath
         if (trim(parameterfile) == 'NULL') then
             parameterfile = ' '
             parameterfile = trim(project) // '_parameters.csv'
@@ -94,12 +96,16 @@ module preprocessor_output_routines
         buf = ' '
         buf = trim(workpath) // trim(project) // '.bat'
         open(newunit=iobat, file=buf, action='write', iostat=ios)
+        
+        buf = ' '
+        buf = trim(workpath) // trim(project) // '.sh'
+        open(newunit=iounix, file=buf, action='write', iostat=ios, recordtype = 'STREAM_LF')
         call start_batch
     
     end subroutine open_preprocessor_outputfiles
     
     !
-    !-----------flush_parameters_puffer
+    !-----------flush_parameters_buffer
     !
     
     subroutine flush_parameters_buffer
@@ -188,15 +194,23 @@ module preprocessor_output_routines
     
     subroutine start_batch
     
-        write (iobat,'(a)') 'echo off'
-        write (iobat,'(a)') 'rem change the path to background.exe and cfast.exe as appropriate. Here we just assume it is in the path'
-        write (iobat,'(a)') 'set bgexe=background.exe'
-        write (iobat,'(a)') 'set CFAST_EXE=cfast.exe'
-        write (iobat,'(a,i0)') 'set MAX_ITER=', mc_max_iterations
-        write (iobat,'(a)') ' '
-        write (iobat,'(a)') 'rem you should not need to change anything from here on'
-        write (iobat,'(a)') 'set bg=%bgexe% -u 85 -d 0.1'
-        write (iobat,'(a)') 'set CFAST=%bg% %CFAST_EXE%'
+        write(iobat,'(a)') 'echo off'
+        write(iobat,'(a)') 'rem change the path to background.exe and cfast.exe as appropriate. Here we just assume it is in the path'
+        write(iobat,'(a)') 'set bgexe=background.exe'
+        write(iobat,'(a)') 'set CFAST_EXE=cfast.exe'
+        write(iobat,'(a,i0)') 'set MAX_ITER=', mc_max_iterations
+        write(iobat,'(a)') ' '
+        write(iobat,'(a)') 'rem you should not need to change anything from here on'
+        write(iobat,'(a)') 'set bg=%bgexe% -u 85 -d 0.1'
+        write(iobat,'(a)') 'set CFAST=%bg% %CFAST_EXE%'
+        
+        write(iounix,'(a)')'#/bin/bash'
+        write(iounix,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64'
+        write(iounix,'(a)') 'DELAY=3'
+        write(iounix,'(a)') 'BATCH=batch3'
+        write(iounix,'(a)') ''
+        write(iounix,'(a)') 'export STOPFDSMAXITER=100000'
+        write(iounix,'(a)') ''
     
     end subroutine start_batch
     
@@ -210,7 +224,7 @@ module preprocessor_output_routines
         integer, intent(in) :: ibeg, iend
         
         character(len=256) :: outfilename
-        integer :: i, idot
+        integer :: i, idot, ib, ie
         
         do i = iend, ibeg, -1
             if (filename(i:i) == '.') then
@@ -218,10 +232,21 @@ module preprocessor_output_routines
                 exit
             end if
         end do
+    
+        ie = len_trim(filename)
+        ib = 1
+        search: do i = ie, 1, -1
+            if (filename(i:i) == '\' .or. filename(i:i) == '/') then
+                ib = i+1
+                exit search
+            end if
+        end do search
         
         outfilename = filename(ibeg:idot) // 'stop'
-        write (iobat, '(a18, a)') 'echo %MAX_ITER% > ', trim(outfilename)
-        write (iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
+        write(iobat, '(a18, a)') 'echo %MAX_ITER% > ', trim(outfilename)
+        write(iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
+        
+        write(iounix,'(a39,a)') 'qfds.sh -D $DELAY -e $CFAST -q $BATCH  ', filename(ib:iend)
         
     end subroutine add_filename_to_batch 
     
@@ -232,15 +257,19 @@ module preprocessor_output_routines
     subroutine finish_batch
     
     ! finish up Windows batch file'
-    write (iobat,'(a)') ' '
-    write (iobat,'(a)') ':loop1'
-    write (iobat,'(a)') 'tasklist | find /i /c "CFAST" > temp.out'
-    write (iobat,'(a)') 'set /p numexe=<temp.out'
-    write (iobat,'(a)') 'echo waiting for %numexe% jobs to finish'
-    write (iobat,'(a)') 'if %numexe% == 0 goto finished'
-    write (iobat,'(a)') 'Timeout /t 30 >nul' 
-    write (iobat,'(a)') 'goto loop1'
-    write (iobat,'(a)') ':finished'
+    write(iobat,'(a)') ' '
+    write(iobat,'(a)') ':loop1'
+    write(iobat,'(a)') 'tasklist | find /i /c "CFAST" > temp.out'
+    write(iobat,'(a)') 'set /p numexe=<temp.out'
+    write(iobat,'(a)') 'echo waiting for %numexe% jobs to finish'
+    write(iobat,'(a)') 'if %numexe% == 0 goto finished'
+    write(iobat,'(a)') 'Timeout /t 30 >nul' 
+    write(iobat,'(a)') 'goto loop1'
+    write(iobat,'(a)') ':finished'
+    close(unit = iobat)
+
+    write(iounix,'(a)') 
+    close(unit = iounix)
     
     end subroutine finish_batch
     
@@ -256,6 +285,19 @@ module preprocessor_output_routines
         
     end subroutine close_preprocessor_outputfiles
     
-    end module preprocessor_output_routines
+    !
+    !--------open_cfast_inputfile------
     
+    subroutine open_cfast_inputfile(io, filename, ios)
+        
+        character(len=*), intent(in) :: filename
+        integer, intent(out) :: io
+        integer, intent(out) :: ios
+        
+        open (newunit=io, file=filename, action='write', iostat=ios)
+        
+    end subroutine open_cfast_inputfile
+    
+    end module preprocessor_output_routines
+        
     

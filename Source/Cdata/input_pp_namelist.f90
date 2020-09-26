@@ -70,7 +70,6 @@
     call read_mhdr(iofili)
     call read_mrnd(iofili)
     call read_mfld(iofili)
-    call read_mfir(iofili)
     !call read_mfir(iofili)
 
     close (iofili)
@@ -711,17 +710,15 @@
     logical :: mfirflag
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, hrr_scale_parameter_header, time_scale_parameter_header
-    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters
+        smolder_time_random_generator_id, parameter_header
+    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters
     type(fire_generator_type), pointer :: fire
     
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
         smolder_time_random_generator_id, first_time_point_smoldering, &
-        modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, hrr_scale_parameter_header, &
-        add_time_scale_to_parameters, time_scale_parameter_header
+        modify_fire_area_to_match_hrr, add_to_parameters, parameter_header
     
     ios = 1
 
@@ -768,23 +765,13 @@
             fire%fyi = fyi
             fire%fireid = fire_id
             fire%basefireid = base_fire_id
-            fire%copy_base_to_fire = .false.
-            fire%fire => null()
-            fire%base => null()
             do jj = 1, n_fires
                 if (trim(fireinfo(jj)%id) == trim(fire%fireid)) then
                     fire%fire => fireinfo(jj)
-                    fire%copy_base_to_fire = .true.
                 elseif (trim(fireinfo(jj)%id) == trim(fire%basefireid)) then
                     fire%base => fireinfo(jj)
-                    fire%copy_base_to_fire = .true.
                 end if
             end do
-            if (associated(fire%fire) .and. associated(fire%base)) then
-                fire%copy_base_to_fire = .true.
-            else if (associated(fire%fire) .or. associated(fire%base)) then
-                call cfastexit('MFIR',4)
-            end if
             if (trim(scaling_fire_hrr_random_generator_id) /= 'NULL') then
                 do jj = 1, n_generators
                     if (trim(scaling_fire_hrr_random_generator_id)== trim(generatorinfo(jj)%id)) then
@@ -792,14 +779,10 @@
                         fire%scalehrr = .true.
                     end if
                 end do
-                if (fire%scalehrr.and.fire%copy_base_to_fire) then
+                if (fire%scalehrr) then
                     fire%hrrscaleval%val => fire%hrrscalevalue
-                    fire%hrrscaleval%id = ' '
-                    fire%hrrscaleval%id = trim(fire%id) // ':' // 'hrrscaleval'
-                elseif (fire%scalehrr.and..not. fire%copy_base_to_fire) then
-                    call cfastexit('MFIR', 5)
                 else
-                    call cfastexit('MFIR', 6)
+                    call cfastexit('MFIR', 4)
                 end if 
             end if
             if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
@@ -809,32 +792,18 @@
                         fire%scaletime = .true.
                     end if
                 end do
-                if (fire%scaletime.and.fire%copy_base_to_fire) then
+                if (fire%scaletime) then
                     fire%timescaleval%val => fire%timescalevalue
-                    fire%timescaleval%id = ' '
-                    fire%timescaleval%id = trim(fire%id) // ':' // 'timescaleval'
-                elseif (fire%scaletime.and..not. fire%copy_base_to_fire) then
-                    call cfastexit('MFIR', 7)
                 else
-                    call cfastexit('MFIR', 8)
+                    call cfastexit('MFIR', 5)
                 end if 
             end if
-            if (add_hrr_scale_to_parameters) then
-                fire%add_to_parameters = .true.
-                fire%hrrscaleval%add_to_parameters = .true.
-                if (trim(hrr_scale_parameter_header) == 'NULL') then
-                    fire%hrrscaleval%parameter_header = trim(fire_id) // '_' // 'hrr_scaling'
+            if (add_to_parameters) then
+                fire%add_to_parameters = add_to_parameters
+                if (trim(parameter_header) == 'NULL') then
+                    fire%parameter_header = trim(fire_id) // '_' // 'scaling'
                 else
-                    fire%hrrscaleval%parameter_header = hrr_scale_parameter_header
-                end if
-            end if
-            if (add_time_scale_to_parameters) then
-                fire%add_to_parameters = .true.
-                fire%timescaleval%add_to_parameters = .true.
-                if (trim(time_scale_parameter_header) == 'NULL') then
-                    fire%timescaleval%parameter_header = trim(fire_id) // '_' // 'time_scaling'
-                else
-                    fire%timescaleval%parameter_header = time_scale_parameter_header
+                    fire%parameter_header = parameter_header
                 end if
             end if
         end do read_mfir_loop
@@ -853,10 +822,8 @@
     smolder_time_random_generator_id = 'NULL'
     first_time_point_smoldering = .false.
     modify_fire_area_to_match_hrr = .false. 
-    add_hrr_scale_to_parameters = .false. 
-    hrr_scale_parameter_header = 'NULL' 
-    add_time_scale_to_parameters = .false. 
-    time_scale_parameter_header = 'NULL'
+    add_to_parameters = .false. 
+    parameter_header = 'NULL'
     
     
     end subroutine set_defaults

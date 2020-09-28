@@ -107,14 +107,12 @@
             write (*,5022) exterior_ambient_temperature
             write (iofill,5022) exterior_ambient_temperature
             call cfastexit('readinputfile',3)
-            stop
         end if
         if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
             write (*,5022) interior_ambient_temperature
             write (iofill,5022) interior_ambient_temperature
             if (.not.radi_verification_flag) then
                 call cfastexit('readinputfile',4)
-                stop
             end if
         end if
     end if

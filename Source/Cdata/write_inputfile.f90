@@ -399,7 +399,7 @@
             if (trim(targptr%surface_orientation) == 'NULL') then
                 call add_token_rarray(iounit, buf, 'NORMAL = ', targptr%normal, 3)
             else
-                call add_token_str(iounit, buf, 'SURFACE_OREINTATION = ', targptr%surface_orientation)
+                call add_token_str(iounit, buf, 'SURFACE_ORIENTATION = ', targptr%surface_orientation)
             end if 
             if (targptr%adiabatic) call add_token_bool(iounit, buf, 'ADIABATIC_TARGET = ', targptr%adiabatic)
             if (targptr%h_conv(1) /= 0._eb .or. targptr%h_conv(2) /= 0._eb) then 
@@ -748,7 +748,7 @@
             call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
             call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)
-            call add_token_str(iounit, buf, 'FILE_TYPE ', dumpptr%file_type)
+            call add_token_str(iounit, buf, 'FILE_TYPE = ', dumpptr%file_type)
             call add_token_str(iounit, buf, 'FIRST_DEVICE = ', dumpptr%first_device)
             call add_token_str(iounit, buf, 'FIRST_MEASUREMENT = ', dumpptr%first_measurement)
             call add_token_str(iounit, buf, 'SECOND_DEVICE = ', dumpptr%second_device)

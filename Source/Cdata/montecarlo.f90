@@ -6,7 +6,7 @@
     
     use setup_data, only: datapath, project, extension
     
-    use montecarlo_data, only: mc_filename_pattern, mc_number_of_cases, mc_datapath
+    use montecarlo_data, only: mc_filename_pattern, mc_number_of_cases, mc_datapath, workpath
     use ppfilehandeling, only: pp_num, pp_digit, ppinfile_prefix, ppinfile_suffix, ppinfile_numfrm, ppinfile_extension
     
     implicit none  
@@ -68,7 +68,7 @@
     ppinfile_prefix = ' '
     ppinfile_suffix = ' '
     ppinfile_numfrm = ' '
-    mc_datapath = trim(datapath)
+    mc_datapath = trim(workpath)
     
     ppinfile_prefix = trim(project) // '-'
     ppinfile_extension = trim(extension)

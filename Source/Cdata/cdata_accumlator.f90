@@ -272,10 +272,13 @@ module accumulator_routines
     ierr = 0
     fn = trim(filename)
     lc = len_trim(fn)
+    fc = 1
     do i = lc-1, 1, -1
         if (fn(i:i)=='/'.or.fn(i:i)=='\') then
             fc = i + 1
             exit
+        else if (fn(i:i) == '.') then 
+            lc = i-1
         end if
     end do
     

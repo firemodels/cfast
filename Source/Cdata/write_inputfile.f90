@@ -666,7 +666,7 @@
             else if (ventptr%shape == 2) then
                 call add_token_str(iounit, buf, 'SHAPE = ', 'SQUARE') 
             end if
-            call add_token_rarray(iounit, buf, 'OFFSETS = ', ventptr%offset, 2)
+            call add_token_val(iounit, buf, 'OFFSET = ', ventptr%offset(1))
             call end_namelist(iounit, buf)
         end do
     end if   
@@ -718,6 +718,9 @@
             if (ventptr%filter_final_fraction > 0._eb) then
                 call add_token_val(iounit, buf, 'FILTER_EFFICIENCY = ', ventptr%filter_final_fraction*100._eb)
             end if
+            val(1) = ventptr%xoffset
+            val(2) = ventptr%yoffset
+            call add_token_rarray(iounit, buf, 'OFFSETS = ', val, 2)
             call end_namelist(iounit, buf)
         end do
     end if   

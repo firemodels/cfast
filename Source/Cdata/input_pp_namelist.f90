@@ -381,13 +381,14 @@
     integer, intent(in) :: lu
     
     integer :: ios, ii, jj
-    logical :: mfldflag, found, add_to_parameters
+    logical :: mfldflag, found, found_rand
     type(field_pointer), pointer :: fldptr
     
     
     character(len=128) :: id, object_id, rand_id, field_name, parameter_header, fyi, field_type, type_of_index 
     real(eb) ::base_scaling_value
     integer ::number_in_index
+    logical :: add_to_parameters
     real(eb), dimension(mxpntsarray) :: real_array_values
     integer, dimension(mxpntsarray) :: integer_array_values
     logical, dimension(mxpntsarray) :: logical_array_values
@@ -395,7 +396,7 @@
 
     namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
         real_array_values, integer_array_values, character_array_values, logical_array_values, &
-        scenario_title_array, type_of_index, number_in_index, base_scaling_value
+        scenario_title_array, type_of_index, number_in_index, base_scaling_value, add_to_parameters
                     
     
     ios = 1
@@ -451,30 +452,36 @@
             end if
             fldptr%id = id
             test: do jj = 1, n_generators
+                found_rand = .false.
                 if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
                     fldptr%genptr => generatorinfo(jj)
+                    found_rand = .true.
+                    exit test
                 end if
             end do test
+            if (.not.found_rand) then 
+                call cfastexit('read_mfld',5)
+            end if
             if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
                 fldptr%field_type = trim(field_type)
                 call find_object(object_id, fldptr, found)
                 if (found) then
                     call find_field(field_name, fldptr%itemptr, fldptr, found)
                     if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
-                        call cfastexit('read_mfld',6)
+                        call cfastexit('read_mfld',7)
                     end if
                 else
-                    call cfastexit('read_mfld',5)
+                    call cfastexit('read_mfld',6)
                 end if
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_index))) then
                 call find_object(object_id, fldptr, found)
                 if (found) then
                     call find_field(field_name, fldptr%itemptr, fldptr, found)
                     if (trim(type_of_index) /= trim(fldptr%value_type)) then
-                        call cfastexit('read_mfld',8)
+                        call cfastexit('read_mfld',9)
                     end if
                 else
-                    call cfastexit('read_mfld',7)
+                    call cfastexit('read_mfld',8)
                 end if
                 fldptr%field_type = trim(field_type)
                 fldptr%intval%val => fldptr%index
@@ -500,23 +507,27 @@
                         fldptr%logic_array(jj) = logical_array_values(jj)
                     end do
                 else
-                    call cfastexit('read_mfld',9)
+                    call cfastexit('read_mfld',10)
                 end if
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_scale))) then
                 call find_object(object_id, fldptr, found)
                 if (found) then
                     call find_field(field_name, fldptr%itemptr, fldptr, found)
                     if (trim(val_types(idx_real)) /= trim(fldptr%value_type)) then
-                        call cfastexit('read_mfld',11)
+                        call cfastexit('read_mfld',12)
                     end if
                 else
-                    call cfastexit('read_mfld',10)
+                    call cfastexit('read_mfld',11)
                 end if
                 fldptr%field_type = trim(field_type)
                 fldptr%scaleval%val => fldptr%scale_value
                 fldptr%scaleval%value_type = val_types(idx_real)
                 fldptr%randptr => fldptr%scaleval
-                fldptr%scale_base_value = base_scaling_value
+                if (base_scaling_value > 1.0_eb) then
+                    fldptr%scale_base_value = base_scaling_value
+                else
+                    fldptr%scale_base_value = fldptr%realval%val
+                end if 
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_label))) then
                 fldptr%field_type = trim(field_type)
                 fldptr%indexval%val => fldptr%index
@@ -531,7 +542,7 @@
                     fldptr%nlabel = jj
                 end do scenaro_loop
             else
-                call cfastexit('read_mfld',7)
+                call cfastexit('read_mfld',13)
             end if
             if (add_to_parameters) then
                 fldptr%add_to_parameters = add_to_parameters
@@ -557,6 +568,7 @@
     rand_id = 'NULL'
     add_to_parameters = .false.
     parameter_header = 'NULL'
+    base_scaling_value = -1
     
 
     end subroutine set_defaults
@@ -1018,6 +1030,13 @@
             else
                 call cfastexit('find_field',3)
             end if 
+        else if (item%maxflow > 0.0_eb) then
+            if (trim(fieldid) == 'FLOW') then 
+                found = .true.
+                fldptr%realval%val => item%maxflow
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            end if
         else
             call cfastexit('find_field', 4)
         end if

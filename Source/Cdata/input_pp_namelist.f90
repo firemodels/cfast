@@ -32,7 +32,7 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, datapath
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -174,7 +174,11 @@
             call RANDOM_SEED(PUT=seeds)
         end if
         mc_write_seeds = write_seeds
-        workpath = work_directory
+        if (trim(work_directory) == 'NULL') then
+            workpath = datapath
+        else
+            workpath = work_directory
+        end if 
         outpath = output_directory
         parameterfile = parameter_filename
 

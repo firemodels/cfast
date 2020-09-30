@@ -83,6 +83,7 @@ module preprocessor_types
         logical, dimension(mxpntsarray) :: logic_array
         character(len=128), dimension(mxpntsarray) :: char_array
         logical :: conditional_min, conditional_max
+        integer :: position
     contains
         procedure :: do_rand
         procedure :: dependencies => field_dependencies

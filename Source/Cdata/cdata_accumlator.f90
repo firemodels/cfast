@@ -42,7 +42,7 @@ module accumulator_routines
     
     integer :: iunit, maxrowio, maxcolio, maxrowcmd, maxcolcmd, nstart, iunit2, maxrowtmp, maxcoltmp
     integer :: nend, maxcolout
-    logical :: lend, tmplend
+    logical :: lend, tmplend, header
     
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
     character, allocatable :: iossc(:, :)*(128), tmpc(:,:)*(128)
@@ -90,18 +90,19 @@ module accumulator_routines
     nstart = 1
     nend = 1
     lend = .false.
+    header = .true.
     i = 1
     call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 2, maxrowio, maxcolio, lend, iofill)
     if (.not.lend) then
         call fndOpenMCFile(iossc(2,1), workpath, iunit2, ierr)
         if (ierr == 0) then
-            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, lend, iofill)
+            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, tmplend, iofill)
             close(iunit2)
-            if (.not. lend) then
+            if (.not. tmplend) then
                 do  j = 2, maxcoltmp
                     iossc(1,maxcolio + j - 1) = tmpc(1,j)
                     iossx(2,maxcolio + j - 1) = tmpx(2,j)
-                    write(iossc(2,maxcolio + j - 1),*) iossx(2,maxcolio + j - 1)
+                    header = .false.
                 end do
             else
                 maxcoltmp = 0
@@ -129,9 +130,18 @@ module accumulator_routines
         else
             maxcoltmp = 0
         end if 
+        if (.not. tmplend .and. header) then
+            do  j = 2, maxcoltmp
+                iossc(1,maxcolio + j - 1) = tmpc(1,j)
+                iossx(2,maxcolio + j - 1) = tmpx(2,j)
+                 header = .false.
+                maxcolout = maxcolio + maxcoltmp - 1
+            end do
+        else if (tmplend) then
+            maxcoltmp = 0
+        end if
         do j = 2, maxcoltmp
             iossx(1,maxcolio + j - 1) = tmpx(2,j)
-            write(iossc(1,maxcolio + j - 1),*) iossx(1,maxcolio + j - 1)
         end do 
         open(newunit=iunit2,file = obuf, position = 'append')
         call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 1, maxcolout, iofill)
@@ -224,7 +234,6 @@ module accumulator_routines
             buf(ic:ic) = ','
             ic = ic+1
         end do
-        write(*,*) buf(ic-5:ic)
         write(iunit,'(A)') buf(1:ic)
     end do
     

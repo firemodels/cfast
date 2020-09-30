@@ -512,8 +512,8 @@
     character :: buf*(128), lbuf*(256) 
     character :: lbls(8)*(15) = &
         (/ 'TIME            ', 'HRR         ', 'HEIGHT         ', &
-           'AREA            ', 'CO_YEILD    ', 'SOOT_YEILD     ', &
-           'HCN_YEILD       ', 'TRACE_YEILD ' /)
+           'AREA            ', 'CO_YIELD    ', 'SOOT_YIELD     ', &
+           'HCN_YEILD       ', 'TRACE_YIELD ' /)
     logical :: dup
     real(eb) :: vals(8)
     

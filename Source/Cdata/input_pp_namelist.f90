@@ -70,7 +70,7 @@
     call read_mhdr(iofili)
     call read_mrnd(iofili)
     call read_mfld(iofili)
-    !call read_mfir(iofili)
+    call read_mfir(iofili)
 
     close (iofili)
     
@@ -726,15 +726,17 @@
     logical :: mfirflag
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, parameter_header
-    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters
+        smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header
+    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters, &
+        add_hrr_scale_to_parameters, add_time_scale_to_parameters
     type(fire_generator_type), pointer :: fire
     
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
         smolder_time_random_generator_id, first_time_point_smoldering, &
-        modify_fire_area_to_match_hrr, add_to_parameters, parameter_header
+        modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, add_hrr_scale_to_parameters, &
+        add_time_scale_to_parameters, hrr_scale_header, time_scale_header
     
     ios = 1
 
@@ -777,6 +779,11 @@
         ! Assign value to CFAST variables for further calculations
         read_mfir_loop: do ii=1,n_rndfires
             fire => randfireinfo(ii)
+
+            call checkread('MFIR',lu,ios)
+            call set_defaults
+            read(lu,MFIR)
+            
             fire%id = id
             fire%fyi = fyi
             fire%fireid = fire_id
@@ -800,6 +807,16 @@
                 else
                     call cfastexit('MFIR', 4)
                 end if 
+                if (add_hrr_scale_to_parameters) then
+                    fire%hrrscaleval%add_to_parameters = add_hrr_scale_to_parameters
+                    if (trim(hrr_scale_header) == 'NULL') then
+                        fire%hrrscaleval%parameter_header = ' '
+                        fire%hrrscaleval%parameter_header = trim(fire_id) // '_HRR_scaling_factor'
+                    else 
+                        fire%hrrscaleval%parameter_header =  hrr_scale_header
+                    end if
+                    fire%add_to_parameters = .true. 
+                end if
             end if
             if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
                 do jj = 1, n_generators
@@ -813,13 +830,15 @@
                 else
                     call cfastexit('MFIR', 5)
                 end if 
-            end if
-            if (add_to_parameters) then
-                fire%add_to_parameters = add_to_parameters
-                if (trim(parameter_header) == 'NULL') then
-                    fire%parameter_header = trim(fire_id) // '_' // 'scaling'
-                else
-                    fire%parameter_header = parameter_header
+                if (add_time_scale_to_parameters) then
+                    fire%timescaleval%add_to_parameters = add_time_scale_to_parameters
+                    if (trim(time_scale_header) == 'NULL') then
+                        fire%timescaleval%parameter_header = ' '
+                        fire%timescaleval%parameter_header = trim(fire_id) // '_time_scaling_factor'
+                    else 
+                        fire%timescaleval%parameter_header =  time_scale_header
+                    end if
+                    fire%add_to_parameters = .true. 
                 end if
             end if
         end do read_mfir_loop
@@ -840,6 +859,10 @@
     modify_fire_area_to_match_hrr = .false. 
     add_to_parameters = .false. 
     parameter_header = 'NULL'
+    hrr_scale_header = 'NULL'
+    time_scale_header = 'NULL'
+    add_hrr_scale_to_parameters = .false.
+    add_time_scale_to_parameters = .false.
     
     
     end subroutine set_defaults

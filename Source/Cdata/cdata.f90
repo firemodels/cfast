@@ -37,10 +37,13 @@
         call get_command_argument(loop, buf, ilen, status)
         if (ilen > 0) then
             if (trim(buf) =='preprocessor') then
+                write(*,*) 'PreProcessor'
                 call preprocessor 
             elseif (trim(buf) == 'accumulator') then
+                write(*,*) 'Accumulator'
                 call accumulator
             elseif (trim(buf) == 'statistics') then
+                write(*,*) 'Statistics'
                 call statistics  
             else 
                 call cfastexit('CData Main', 2)

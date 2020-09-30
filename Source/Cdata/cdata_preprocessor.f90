@@ -187,6 +187,7 @@ module preprocessor_routines
     end do 
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)
+        call randfireinfo(i)%write_value
     end do 
     
     end subroutine create_case
@@ -206,6 +207,9 @@ module preprocessor_routines
     end if
     do i = 1, n_fields
         call setup_col_parameters_output(fieldinfo(i))
+    end do
+    do i = 1, n_rndfires
+        call setup_col_parameters_output(randfireinfo(i))
     end do
     call flush_parameters_buffer
     return

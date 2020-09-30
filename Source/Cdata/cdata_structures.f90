@@ -375,10 +375,16 @@ module preprocessor_types
                 if (me%hrrscaleval%add_to_parameters) then
                     icol = icol + 1
                     me%hrrscaleval%paramptr => array(icol)
+                    array(icol) = trim(me%hrrscaleval%parameter_header)
+                    me%hrrscaleval%parameter_field_set = .true.
+                    me%parameter_field_set = .true.
                 end if 
                 if (me%timescaleval%add_to_parameters) then
                     icol = icol + 1
                     me%timescaleval%paramptr => array(icol)
+                    array(icol) = trim(me%timescaleval%parameter_header)
+                    me%timescaleval%parameter_field_set = .true.
+                    me%parameter_field_set = .true.
                 end if
             class default
                 icol = icol + 1
@@ -439,7 +445,12 @@ module preprocessor_types
                     end select
                 end if
             type is (fire_generator_type)
-                write(me%paramptr,'(e13.6)') me%hrrscalevalue
+                if (me%hrrscaleval%add_to_parameters) then
+                    write(me%hrrscaleval%paramptr,'(e13.6)') me%hrrscaleval%val
+                end if
+                if (me%timescaleval%add_to_parameters) then
+                    write(me%timescaleval%paramptr,'(e13.6)') me%timescaleval%val
+                end if
             class default
                 call me%errorcall('write_value',3)
             end select
@@ -884,6 +895,9 @@ module preprocessor_types
         
     end subroutine copytimebasedprop
         
+    subroutine fire_write_value()
+    
+    end subroutine fire_write_value
     
     end module preprocessor_types
     

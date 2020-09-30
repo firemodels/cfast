@@ -569,7 +569,7 @@ Module IO
         Dim tempdepthunits As String = "FRACTION"
         Dim thickness, fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Double
         Dim loc(3), norm(3), coeffs(2) As Double
-        Dim valid, lvalid, adiabatic As Boolean
+        Dim valid, adiabatic As Boolean
         Dim aTempOffset As Double = 273.15
 
         For i = 1 To NMList.TotNMList
@@ -648,7 +648,7 @@ Module IO
                                 loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In DEVC namelist for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DEVC namelist for LOCATION input must be 3 numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "FRONT_SURFACE_ORIENTATION" Then
                         targetfacing = NMList.ForNMListVarGetStr(i, j, 1)
@@ -702,15 +702,6 @@ Module IO
                 ElseIf myCompartments.GetCompIndex(compid) < 0 Then
                     valid = False
                     myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because COMP_ID " + compid + " does not refernce a valid compartment", ErrorMessages.TypeFatal)
-                End If
-                lvalid = True
-                For k = 0 To 2
-                    If loc(k) < 0 Then
-                        lvalid = False
-                    End If
-                Next
-                If Not lvalid Then
-                    myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because at least one of the components of the location has not been set", ErrorMessages.TypeFatal)
                 End If
                 If valid Then
                     Dim aDetect As New Target

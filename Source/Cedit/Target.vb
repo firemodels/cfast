@@ -99,6 +99,18 @@ Public Class Target
             End If
         End Set
     End Property
+    Public Sub SetDefaultLocation()
+        If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+            Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+            XPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
+            YPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth) / 2
+            If aType = TypeTarget Then
+                ZPosition = 0
+            Else
+                ZPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomHeight) * 0.99
+            End If
+        End If
+    End Sub
     Public Property Compartment() As Integer
         Get
             Return aCompartment
@@ -106,6 +118,7 @@ Public Class Target
         Set(ByVal Value As Integer)
             If Value <> aCompartment Then
                 aCompartment = Value
+                If Value > -1 Then SetDefaultLocation()
                 aChanged = True
             End If
         End Set
@@ -115,21 +128,16 @@ Public Class Target
             Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+            If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            Else
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    Dim tmpCompartment As New Compartment
-                    tmpCompartment = myCompartments.Item(aCompartment)
-                    aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth / 2)
-                    aChanged = True
                 Else
-                    aXPosition = Value
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aXPosition = tmpCompartment.RoomWidth - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
+                aChanged = True
             End If
         End Set
     End Property
@@ -138,21 +146,16 @@ Public Class Target
             Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+            If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            Else
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    Dim tmpCompartment As New Compartment
-                    tmpCompartment = myCompartments.Item(aCompartment)
-                    aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth / 2)
-                    aChanged = True
                 Else
-                    aYPosition = Value
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aYPosition = tmpCompartment.RoomDepth - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
+                aChanged = True
             End If
         End Set
     End Property
@@ -161,26 +164,16 @@ Public Class Target
             Return myUnits.Convert(UnitsNum.Length).FromSI(aZPosition)
         End Get
         Set(ByVal Value As Double)
-            If Value >= 0 Then
-                If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aZPosition Then
+            If aZPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                If Value >= 0 Then
                     aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                    aChanged = True
-                End If
-            Else
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    aZPosition = 0.0
-                    If aType = TypeDetector Then
-                        Dim tmpCompartment As New Compartment
-                        tmpCompartment = myCompartments.Item(aCompartment)
-                        aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomHeight) * 0.99
-                    Else
-                        aZPosition = 0.0
-                    End If
-                    aChanged = True
                 Else
-                    aZPosition = Value
-                    aChanged = True
+                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+                        aZPosition = tmpCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
+                    End If
                 End If
+                aChanged = True
             End If
         End Set
     End Property
@@ -480,9 +473,7 @@ Public Class Target
             Else
                 Me.SolutionType = ThermallyThick
             End If
-            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
-            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
-            If ZPosition = -1 Then ZPosition = 0.0
+            SetDefaultLocation()
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer)
@@ -494,9 +485,7 @@ Public Class Target
             DetectorType = TypeSmokeDetector
             ActivationTemperature = SmokeDetectorActivationTemperature
             RTI = SmokeDetectorRTI
-            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
-            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
-            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
+            SetDefaultLocation()
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer, ByVal ActivationTemperature As Double)
@@ -507,9 +496,7 @@ Public Class Target
             Compartment = index
             DetectorType = TypeHeatDetector
             Me.ActivationTemperature = ActivationTemperature
-            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
-            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
-            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
+            SetDefaultLocation()
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer, ByVal DetectorType As Integer, ByVal ActivationTemperature As Double, ByVal RTI As Double, ByVal SprayDensity As Double)
@@ -522,9 +509,7 @@ Public Class Target
             Me.ActivationTemperature = ActivationTemperature
             Me.RTI = RTI
             Me.SprayDensity = SprayDensity
-            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
-            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
-            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
+            SetDefaultLocation()
         End If
     End Sub
     Public Sub SetConvectionCoefficients(ByVal isAdiabatic As Boolean, ByVal Coeff1 As Double, ByVal Coeff2 As Double)

@@ -236,6 +236,13 @@ Public Class Fire
             MaxHCNYield = aPeak
         End Get
     End Property
+    Public Sub SetDefaultLocation()
+        If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
+            Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
+            XPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
+            YPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth) / 2
+        End If
+    End Sub
     Property Compartment() As Integer
         Get
             Return aCompartment
@@ -243,11 +250,7 @@ Public Class Fire
         Set(ByVal Value As Integer)
             If aCompartment <> Value Then
                 aCompartment = Value
-                If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
-                    XPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
-                    YPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth) / 2
-                End If
+                If aCompartment > -1 Then SetDefaultLocation()
                 If myFireProperties.DoChange Then aChanged = True
             End If
         End Set
@@ -282,24 +285,6 @@ Public Class Fire
                     If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                         Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
                         aYPosition = tmpCompartment.RoomDepth - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
-                    End If
-                End If
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property Height() As Double
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
-        End Get
-        Set(ByVal Value As Double)
-            If aHeight <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
-                If Value >= 0 Then
-                    aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                Else
-                    If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                        Dim tmpCompartment As Compartment = myCompartments.Item(aCompartment)
-                        aHeight = tmpCompartment.RoomHeight - Math.Abs(myUnits.Convert(UnitsNum.Length).ToSI(Value))
                     End If
                 End If
                 aChanged = True
@@ -430,17 +415,6 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property HRR() As Double
-        Get
-            Return myUnits.Convert(UnitsNum.HRR).FromSI(aHRR)
-        End Get
-        Set(ByVal Value As Double)
-            If aHRR <> myUnits.Convert(UnitsNum.HRR).ToSI(Value) And Value > 0.0 Then
-                aHRR = myUnits.Convert(UnitsNum.HRR).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
     Property HeatofCombustion() As Double
         Get
             Return myUnits.Convert(UnitsNum.HoC).FromSI(aHeatofCombustion)
@@ -459,72 +433,6 @@ Public Class Fire
         Set(ByVal Value As Double)
             If aRadiativeFraction <> Value And Value >= 0.0 Then
                 aRadiativeFraction = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property Area() As Double
-        Get
-            Return myUnits.Convert(UnitsNum.Area).FromSI(aArea)
-        End Get
-        Set(ByVal Value As Double)
-            If aArea <> myUnits.Convert(UnitsNum.Area).ToSI(Value) And Value > 0.0 Then
-                aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property COYield() As Double
-        Get
-            Return aCOYield
-        End Get
-        Set(ByVal Value As Double)
-            If aCOYield <> Value And Value >= 0.0 Then
-                aCOYield = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property HClYield() As Double
-        Get
-            Return aHClYield
-        End Get
-        Set(ByVal Value As Double)
-            If aHClYield <> Value And Value >= 0.0 Then
-                aHClYield = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property HCNYield() As Double
-        Get
-            Return aHCNYield
-        End Get
-        Set(ByVal Value As Double)
-            If aHCNYield <> Value And Value >= 0.0 Then
-                aHCNYield = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property SootYield() As Double
-        Get
-            Return aSootYield
-        End Get
-        Set(ByVal Value As Double)
-            If aSootYield <> Value And Value >= 0.0 Then
-                aSootYield = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property TSYield() As Double
-        Get
-            Return aTSYield
-        End Get
-        Set(ByVal Value As Double)
-            If aTSYield <> Value And Value >= 0.0 Then
-                aTSYield = Value
                 aChanged = True
             End If
         End Set
@@ -607,21 +515,6 @@ Public Class Fire
             End If
         End Set
     End Property
-    Public Sub SetPosition(ByVal index As Integer)
-        Dim tmpCompartment As New Compartment
-        If index <= myCompartments.Count - 1 Then
-            tmpCompartment = myCompartments.Item(index)
-            aCompartment = index
-        End If
-    End Sub
-    Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Double, ByVal YPosition As Double, ByVal ZPosition As Double)
-        If index <= myCompartments.Count - 1 Then
-            Compartment = index
-            Me.XPosition = XPosition
-            Me.YPosition = YPosition
-            Me.Height = ZPosition
-        End If
-    End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Double, ByRef NumDataPoints As Integer)
         Dim i As Integer, j As Integer
         If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
@@ -699,122 +592,10 @@ Public Class Fire
             Next
         End Set
     End Property
-    Private Property BaseFireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Double
-        Get
-            If i < 0 Or i > Me.NumFireTimeSeries Or j < 0 Or j > Me.DimFireTimeSeries Then
-                Return -1
-            ElseIf i = 0 Then
-                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(2))).X(j)
-            ElseIf i <= 12 Then
-                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j)
-            End If
-        End Get
-        Set(value As Double)
-            Dim k As Integer
-            If i >= 0 And i <= Me.NumFireTimeSeries And j >= 0 And j <= Me.DimFireTimeSeries Then
-                If i = 0 Then
-                    For k = 1 To Me.NumFireTimeSeries
-                        myRamps.Item(myRamps.GetRampIndex(aRampIDs(k))).X(j) = value
-                    Next
-                Else
-                    myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j) = value
-                End If
-            End If
-
-        End Set
-    End Property
     Private ReadOnly Property NumFireTimeSeries() As Integer
         Get
             Return 12
         End Get
-    End Property
-    Public Property AreaRampID() As String
-        Get
-            Return aRampIDs(FireArea)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireArea) Then
-                aRampIDs(FireArea) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property HeightRampID() As String
-        Get
-            Return aRampIDs(FireHeight)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireHeight) Then
-                aRampIDs(FireHeight) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property CORampID() As String
-        Get
-            Return aRampIDs(FireCO)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireCO) Then
-                aRampIDs(FireCO) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property HClRampID() As String
-        Get
-            Return aRampIDs(FireHCl)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireHCl) Then
-                aRampIDs(FireHCl) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property HCNRampID() As String
-        Get
-            Return aRampIDs(FireHCN)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireHCN) Then
-                aRampIDs(FireHCN) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property HRRRampID() As String
-        Get
-            Return aRampIDs(FireHRR)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireHRR) Then
-                aRampIDs(FireHRR) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property SootRampID() As String
-        Get
-            Return aRampIDs(FireSoot)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireSoot) Then
-                aRampIDs(FireSoot) = value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property TraceRampID() As String
-        Get
-            Return aRampIDs(FireTS)
-        End Get
-        Set(value As String)
-            If value <> aRampIDs(FireTS) Then
-                aRampIDs(FireTS) = value
-                aChanged = True
-            End If
-        End Set
     End Property
     Public ReadOnly Property IsValid(ByVal FireNumber As Integer) As Integer
         Get

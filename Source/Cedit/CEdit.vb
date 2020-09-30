@@ -2368,7 +2368,7 @@ Public Class CeditMain
         Me.CompShaft.AutoSize = True
         Me.CompShaft.Location = New System.Drawing.Point(37, 63)
         Me.CompShaft.Name = "CompShaft"
-        Me.CompShaft.Size = New System.Drawing.Size(145, 17)
+        Me.CompShaft.Size = New System.Drawing.Size(150, 17)
         Me.CompShaft.TabIndex = 315
         Me.CompShaft.Text = "Shaft (Double-zone model)"
         Me.CompShaft.UseVisualStyleBackColor = True

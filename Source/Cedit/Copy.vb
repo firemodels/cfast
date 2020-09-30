@@ -20,19 +20,6 @@ Module Copy
         ToFire.HeatofCombustion = FromFire.HeatofCombustion
         ToFire.RadiativeFraction = FromFire.RadiativeFraction
         ToFire.FlamingTransitionTime = FromFire.FlamingTransitionTime
-        ToFire.Height = FromFire.Height
-        ToFire.COYield = FromFire.COYield
-        ToFire.HClYield = FromFire.HClYield
-        ToFire.HCNYield = FromFire.HCNYield
-        ToFire.SootYield = FromFire.SootYield
-        ToFire.TSYield = FromFire.TSYield
-        ToFire.AreaRampID = FromFire.AreaRampID
-        ToFire.HeightRampID = FromFire.HeightRampID
-        ToFire.CORampID = FromFire.CORampID
-        ToFire.HClRampID = FromFire.HClRampID
-        ToFire.HCNRampID = FromFire.HCNRampID
-        ToFire.SootRampID = FromFire.SootRampID
-        ToFire.TraceRampID = FromFire.TraceRampID
         Dim aFireData(12, 0) As Double
         FromFire.GetFireData(aFireData, NumDataPoints)
         ToFire.SetFireData(aFireData)

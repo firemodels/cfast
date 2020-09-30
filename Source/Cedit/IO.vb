@@ -1258,6 +1258,7 @@ Module IO
                         Else
                             aVent.SecondCompartment = myCompartments.GetCompIndex(compids(1))
                         End If
+                        aVent.SetDefaultLocation()
                         aVent.FirstArea = areas(0)
                         aVent.SecondArea = areas(1)
                         aVent.FirstCenterHeight = heights(0)
@@ -1970,99 +1971,6 @@ Module IO
 
         If TempFires.Count > 0 Then TempFires(TempFires.Count - 1).Changed = False
         myUnits.SI = False
-    End Sub
-    Private Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, ByRef aFire As Fire, ByRef aFireInstance As Fire)
-        Dim i, j, k, index As Integer
-        i = iStart
-        Do Until i > csv.MaxRow
-            If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
-                Select Case csv.str(i, CFASTlnNum.keyWord).Trim
-                    Case "FIRE"
-                        Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
-                        Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0
-                        Dim fireComplete As Integer = 0
-                        Do Until fireComplete >= NumFireCurves + 1
-                            If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
-                                Select Case csv.str(i, CFASTlnNum.keyWord).Trim
-                                    Case "FIRE"
-                                        iFire = i
-                                        fireComplete = 1
-                                    Case "CHEMI"
-                                        iChemie = i
-                                        fireComplete += 1
-                                    Case "TIME"
-                                        iTime = i
-                                        fireComplete += 1
-                                    Case "HRR", "SOOT", "CO", "TRACE", "AREA", "HEIGH"
-                                        fireComplete += 1
-                                End Select
-                            End If
-                            i += 1
-                        Loop
-                        Dim aFireObject As New Fire(), aFireIns As New Fire()
-                        Dim aThermalProperty As New ThermalProperty()
-                        aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
-                        aFireIns.Name = csv.str(iFire, fireNum.name)
-                        aFireIns.ReferencedFireDefinition = aFireObject.Name
-                        aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
-                        aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
-                        aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
-                        aFireObject.ChemicalFormula(formula.N) = csv.num(iChemie, chemieNum.N)
-                        aFireObject.ChemicalFormula(formula.Cl) = csv.num(iChemie, chemieNum.Cl)
-                        aFireObject.HeatofCombustion = csv.num(iChemie, chemieNum.HoC)
-                        index = myThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material))
-
-                        aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
-                        aFireIns.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition),
-                            csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
-                        Dim z_position As Double
-                        z_position = csv.num(iFire, fireNum.zposition)
-                        aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
-                        If InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) > 0 Then
-                            ' if it's the new format, ignition is just linked to an existing target
-                            aFireIns.IgnitionType = InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) / 4
-                            aFireIns.Target = csv.str(iFire, fireNum.ignTarget)
-                        Else
-                            ' if it's the old format, create a target just for the fire
-                            aFireIns.IgnitionType = csv.num(iFire, fireNum.ignType) - 1
-                            If aFireIns.IgnitionType <> Fire.FireIgnitionbyTime Then
-                                Dim aTarget As New Target
-                                aTarget.Type = Target.TypeTarget
-                                aTarget.Name = "Ign_" + aFireObject.Name
-                                aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.Height, csv.num(iFire, fireNum.xNormal), csv.num(iFire, fireNum.yNormal), csv.num(iFire, fireNum.zNormal))
-                                aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick)
-                                myTargets.Add(aTarget)
-                                aFireIns.Target = aTarget.Name
-                            End If
-                        End If
-                        aFireIns.IgnitionValue = csv.num(iFire, fireNum.ignCriterion)
-
-                        Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Double
-
-                        For j = 0 To csv.num(iTime, 0) - 2
-                            For k = 1 To NumFireCurves
-                                firedata(FireCurveColumns(k), j) = csv.num(iTime + k - 1, j + 2)
-                                If FireCurveColumns(k) = Fire.FireHeight Then firedata(FireCurveColumns(k), j) += z_position
-                            Next
-                            firedata(Fire.FireMdot, j) = firedata(Fire.FireHRR, j) / aFireObject.HeatofCombustion
-                            firedata(Fire.FireHC, j) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)
-                            If aFireObject.ChemicalFormula(formula.N) <> 0 Then firedata(Fire.FireHCN, j) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.N)
-                            If aFireObject.ChemicalFormula(formula.Cl) <> 0 Then firedata(Fire.FireHCl, j) = (1.00794 + 35.453) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.Cl)
-                        Next
-                        aFireObject.SetFireData(firedata)
-                        aFireObject.Changed = False
-                        aFire = aFireObject
-                        aFireIns.Changed = False
-                        aFireInstance = aFireIns
-                        Exit Do
-                    Case Else
-                        System.Windows.Forms.MessageBox.Show("Internal Error (User should Not see this). FIRE input line Not first line in fire specification.")
-                        Exit Do
-                End Select
-            End If
-            i += 1
-        Loop
-
     End Sub
 #End Region
 #Region "Write Routines"

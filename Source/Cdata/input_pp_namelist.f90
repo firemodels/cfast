@@ -390,7 +390,7 @@
     
     character(len=128) :: id, object_id, rand_id, field_name, parameter_header, fyi, field_type, type_of_index 
     real(eb) ::base_scaling_value
-    integer ::number_in_index
+    integer ::number_in_index, position
     logical :: add_to_parameters
     real(eb), dimension(mxpntsarray) :: real_array_values
     integer, dimension(mxpntsarray) :: integer_array_values
@@ -399,7 +399,7 @@
 
     namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
         real_array_values, integer_array_values, character_array_values, logical_array_values, &
-        scenario_title_array, type_of_index, number_in_index, base_scaling_value, add_to_parameters
+        scenario_title_array, type_of_index, number_in_index, base_scaling_value, add_to_parameters, position
                     
     
     ios = 1
@@ -572,6 +572,7 @@
     add_to_parameters = .false.
     parameter_header = 'NULL'
     base_scaling_value = -1
+    position = 1
     
 
     end subroutine set_defaults
@@ -970,6 +971,21 @@
         elseif (trim(fieldid) == 'HEIGHT') then
             found = .true.
             fldptr%realval%val => item%cheight
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'CEILING_THICKNESS') then
+            found = .true.
+            fldptr%realval%val => item%thick_w(fldptr%position,1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'FLOOR_THICKNESS') then
+            found = .true.
+            fldptr%realval%val => item%thick_w(fldptr%position,2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'WALL_THICKNESS') then
+            found = .true.
+            fldptr%realval%val => item%thick_w(fldptr%position,3)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else 

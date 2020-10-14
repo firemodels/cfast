@@ -24,10 +24,10 @@
                                                                 'VALUE                              '/)
     
     integer, parameter :: idx_real = 1, idx_char = 2, idx_int = 3, idx_logic = 4
-    character(len=9), parameter :: val_types(mxvaltypes) = (/'REAL    ', &
-                                                            'CHARACTER', &
-                                                            'INTEGER  ', &
-                                                            'LOGICAL  '/)
+    character(len=9), parameter :: val_types(mxvaltypes) = (/'REAL     ', &
+                                                             'CHARACTER', &
+                                                             'INTEGER  ', &
+                                                             'LOGICAL  '/)
     integer, parameter :: idx_firefiles = 1, idx_stagefires = 2
     character(len=35), parameter :: fire_generator_types(2) = (/'FIRES_FROM_FILES                  ', &
                                                                 'MULTI-STAGE_FIRES                 '/)

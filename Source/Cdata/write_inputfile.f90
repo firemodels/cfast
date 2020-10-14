@@ -160,7 +160,7 @@
     character :: buf*(128), tbuf*(12)
     logical :: doline
     integer :: i
-    real :: xxpmin
+    real(eb) :: xxpmin
     type(room_type), pointer :: roomptr
     
     roomptr => roominfo(1)
@@ -511,9 +511,9 @@
     integer :: i, j
     character :: buf*(128), lbuf*(256) 
     character :: lbls(8)*(15) = &
-        (/ 'TIME            ', 'HRR         ', 'HEIGHT         ', &
-           'AREA            ', 'CO_YIELD    ', 'SOOT_YIELD     ', &
-           'HCN_YEILD       ', 'TRACE_YIELD ' /)
+        (/ 'TIME           ', 'HRR            ', 'HEIGHT         ', &
+           'AREA           ', 'CO_YIELD       ', 'SOOT_YIELD     ', &
+           'HCN_YEILD      ', 'TRACE_YIELD    ' /)
     logical :: dup
     real(eb) :: vals(8)
     

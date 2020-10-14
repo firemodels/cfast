@@ -195,7 +195,8 @@ module preprocessor_output_routines
     subroutine start_batch
     
         write(iobat,'(a)') 'echo off'
-        write(iobat,'(a)') 'rem change the path to background.exe and cfast.exe as appropriate. Here we just assume it is in the path'
+        write(iobat,'(a)') 'rem change the path to background.exe and cfast.exe as appropriate.' 
+        write(iobat,'(a)') 'rem Here we just assume it is in the path'
         write(iobat,'(a)') 'set bgexe=background.exe'
         write(iobat,'(a)') 'set CFAST_EXE=cfast.exe'
         write(iobat,'(a,i0)') 'set MAX_ITER=', mc_max_iterations

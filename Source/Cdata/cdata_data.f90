@@ -23,7 +23,7 @@ module ppfilehandeling
     implicit none
     save
     
-    real(eb) :: mc_number_of_cases
+    integer :: mc_number_of_cases
     character(len=512) :: mc_datapath
     character(len=128) :: mc_filename_pattern
     logical :: mc_write_seeds

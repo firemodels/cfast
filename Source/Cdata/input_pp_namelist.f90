@@ -454,8 +454,8 @@
                 call cfastexit('read_mfld',4)
             end if
             fldptr%id = id
+            found_rand = .false.
             test: do jj = 1, n_generators
-                found_rand = .false.
                 if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
                     fldptr%genptr => generatorinfo(jj)
                     found_rand = .true.
@@ -723,13 +723,15 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj
-    logical :: mfirflag
+    integer :: ios, ii, jj, kk
+    logical :: mfirflag, found
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header
+        smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header, &
+        fire_compartment_random_generator_id, fire_compartment_id_header
+    character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters, &
-        add_hrr_scale_to_parameters, add_time_scale_to_parameters
+        add_hrr_scale_to_parameters, add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
     type(fire_generator_type), pointer :: fire
     
 
@@ -737,7 +739,8 @@
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
         smolder_time_random_generator_id, first_time_point_smoldering, &
         modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, hrr_scale_header, time_scale_header
+        add_time_scale_to_parameters, hrr_scale_header, time_scale_header, fire_compartment_random_generator_id, &
+        fire_compartment_ids, add_fire_compartment_id_to_parameters, fire_compartment_id_header
     
     ios = 1
 
@@ -763,12 +766,6 @@
         write (*,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
         write (iofill,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
         call cfastexit('read_mfir',2)
-    end if
-
-    if (.not.mfirflag) then
-        write (*, '(/, "***Error: &MFIR inputs are required.")')
-        write (iofill, '(/, "***Error: &MFIR inputs are required.")')
-        call cfastexit('read_mfir',3)
     end if
 
      ! we found one. read it (only the first one counts; others are ignored)
@@ -829,7 +826,7 @@
                 if (fire%scaletime) then
                     fire%timescaleval%val => fire%timescalevalue
                 else
-                    call cfastexit('MFIR', 5)
+                    call cfastexit('READ_MFIR', 5)
                 end if 
                 if (add_time_scale_to_parameters) then
                     fire%timescaleval%add_to_parameters = add_time_scale_to_parameters
@@ -841,6 +838,51 @@
                     end if
                     fire%add_to_parameters = .true. 
                 end if
+            end if
+            if (trim(fire_compartment_random_generator_id) /= 'NULL') then
+                compgen_search: do jj = 1, n_generators
+                    if (trim(fire_compartment_random_generator_id)== trim(generatorinfo(jj)%id)) then
+                        fire%fire_comp%genptr => generatorinfo(jj)
+                        fire%fire_label%genptr => generatorinfo(jj)
+                        fire%rand_comp = .true.
+                        exit compgen_search
+                    end if
+                end do compgen_search
+                if (.not.fire%rand_comp) then
+                    call cfastexit('READ_MFIR', 6)
+                end if
+                call find_object(fire_id, fire%fire_comp, found)
+                if (found) then
+                    call find_field('ROOM', fire%fire_comp%itemptr, fire%fire_comp, found)
+                else
+                    call cfastexit('READ_MFIR',7)
+                end if
+                fire%fire_comp%field_type = trim(fire%fire_comp%fld_types(fire%fire_comp%idx_index))
+                fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
+                fire%fire_comp%intval%val => fire%fire_comp%index
+                fire%fire_comp%randptr => fire%fire_comp%intval
+                fire%fire_comp%add_to_parameters = .false.
+                fire%fire_label%add_to_parameters = .true.
+                complist_search: do jj = 1, mxrooms
+                    if (trim(fire_compartment_ids(jj)) == 'NULL') then
+                        exit complist_search
+                    end if
+                    found = .false.
+                    room_search: do kk = 1, n_rooms
+                        if (trim(fire_compartment_ids(jj)) == trim(roominfo(kk)%id)) then
+                            
+                            found = .true.
+                        end if
+                    end do room_search
+                    if (.not.found) then
+                        call cfastexit('READ_MFIR', 8)
+                    end if
+                end do complist_search
+                 
+                !ire%fire_label%nidx = number_in_index
+                !do jj = 1, number_in_index
+                !    fire%fire_label%int_array(jj) = integer_array_values(jj)
+                !end do
             end if
         end do read_mfir_loop
     end if mfir_flag
@@ -864,6 +906,10 @@
     time_scale_header = 'NULL'
     add_hrr_scale_to_parameters = .false.
     add_time_scale_to_parameters = .false.
+    fire_compartment_random_generator_id = 'NULL'
+    add_fire_compartment_id_to_parameters = .false.
+    fire_compartment_id_header = 'NULL'
+    fire_compartment_ids = 'NULL'
     
     
     end subroutine set_defaults

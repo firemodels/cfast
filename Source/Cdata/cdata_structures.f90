@@ -103,10 +103,12 @@ module preprocessor_types
     !
     
     type, extends(preprocessor_type) :: random_generator_type
-        character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
-                                                        !                       USER_DEFINED_DISCRETE, USER_DEFINED_CONTINOUS_INTERVAL,
-                                                        !                       BETA, NORMAL, LOG_NORMAL, CONSTANT, VALUE
-        character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
+        character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, 
+                                                        !           TRIANGLE, USER_DEFINED_DISCRETE, 
+                                                        !           USER_DEFINED_CONTINOUS_INTERVAL, BETA, NORMAL, LOG_NORMAL, 
+                                                        !           CONSTANT, VALUE
+        character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL, INTEGER, 
+                                                        !           LOGICAL
         character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
         integer :: num_discrete_values                  ! number of values in arrays for discrere probablities 
         real(eb) :: real_array(mxpntsarray)             ! values for discrete distributions with real type
@@ -174,10 +176,13 @@ module preprocessor_types
         type(random_real_type) :: hrrscaleval, timescaleval, stimeval
         logical :: smoldervalue, modifyfirearea
         type(random_logic_type) :: smolderval
+        type(field_pointer) :: fire_comp
+        type(field_pointer) :: fire_label
+        logical :: rand_comp = .false. 
     contains
-        procedure do_rand => fire_do_rand
-        procedure copybasetofire
-        procedure copytimebasedprop
+        procedure :: do_rand => fire_do_rand
+        procedure :: copybasetofire
+        procedure :: copytimebasedprop
     end type
     
     !
@@ -705,7 +710,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = dependencies(me%genptr)
+        depentent = me%genptr%dependencies()
     
     end function field_dependencies
     
@@ -723,7 +728,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = min_dependent(me%genptr)
+        depentent = me%genptr%min_dependent()
     
     end function field_min_dependent
     
@@ -732,7 +737,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = max_dependent(me%genptr)
+        depentent = me%genptr%max_dependent()
     
     end function field_max_dependent
     

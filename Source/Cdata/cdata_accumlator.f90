@@ -263,7 +263,7 @@ module accumulator_routines
     return
     end subroutine clr_arrays
     
-    !---------------------------------------fndOpenMCFile(filename, path, iunit)---------------------------------------------------------------------------------------------
+    !---------------------------------------fndOpenMCFile(filename, path, iunit)----------------------------
     
     subroutine fndOpenMCFile(filename, path, iunit, ierr)
     

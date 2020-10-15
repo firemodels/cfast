@@ -53,6 +53,7 @@
     subroutine process_mc_filename_pattern()
     
     integer :: fieldw, idxnum, idxfirstdig, idxlastdig
+    real(eb) :: x
     
     if (mc_number_of_cases <= 0) then
         write(*,*)'Error in PROCESS_MC_FILENAME_PATTERN, MC_NUMBER_OF_CASES = ', mc_number_of_cases
@@ -64,7 +65,8 @@
         call cfastexit('PROCESS_MC_FILENAME_PATTERN',2)
     end if
     
-    fieldw = int(dlog10(mc_number_of_cases))+1
+    x = mc_number_of_cases
+    fieldw = int(dlog10(x))+1
     ppinfile_prefix = ' '
     ppinfile_suffix = ' '
     ppinfile_numfrm = ' '

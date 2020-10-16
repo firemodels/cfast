@@ -164,7 +164,7 @@
 
     optsep = '-'
 
-    do ic = 1, max0(nargs,26)
+    do ic = 1, max(nargs,26)
         if (ic<=nargs) then
             strs(ic) = ' '
             iarg(ic) = 0

@@ -1,7 +1,7 @@
-module numerics_routines
+    module numerics_routines
 
     use utility_routines, only: d1mach
-    
+
     use setup_data, only: iofill
 
     implicit none
@@ -11,35 +11,35 @@ module numerics_routines
     public ddassl, ddot, dnrm2, dgefa, dgesl, jac, setderv, snsqe, gjac, dscal
 
     contains
-! --------------------------- ddassl -------------------------------------------
-    
-!> \brief   solves a system of differential/algebraic equations of the form g(t,y,yprime) = 0.
-    
-!> \param   res (external): subroutine which you provide to define the differential/algebraic system.
-!> \param   neq (input): number of equations to be solved.
-!> \param   t (input/output): current value of the independent variable.
-!> \param   y (input/output): array containing the solution components at t.
-!> \param   yprime (input/output): array containing the derivatives of the solution components at t.
-!> \param   tout (input): point at which a solution is desired.
-!> \param   info (input): the basic task of the code is to solve the system from t to tout and return an answer at tout.
-!>                        info is an integer array which is used to communicate exactly how you want this task to be carried out.
-!> \param   rtol (input): quantities representing relative error tolerances which you provide to 
-!>                        indicate how you wish the solution to be computed.
-!>                        you may choose rtol and atol to be both scalars or both vectors.
-!> \param   atol (input): absolute error tolerances which you provide to indicate how you wish the solution to be computed.
-!>                        you may choose rtol and atol to be both scalars or both vectors.
-!> \param   idid (ouptut): indicator reporting what the code did.  
-!>                         you must monitor this integer variable to decide what action to take next.
-!> \param   rwork (work array): a real work array of length lrw which provides the code with needed storage space.
-!> \param   lrw (input): the length of rwork.
-!> \param   iwork (work array): an integer work array of length liw which probides the code with needed storage space.
-!> \param   liw (input): the length of iwork.
-!> \param   rpar (input/output): real parameter arrays which you can use for communication between your calling
-!>                               program and the res subroutine (and the jac subroutine)
-!> \param   ipar (input/output): integer parameter arrays which you can use for communication between your calling
-!>                               program and the res subroutine (and the jac subroutine)
-!> \param   jac (external): this is the name of a subroutine which you may choose to provide for defining a matrix of partial 
-!>                          derivatives.
+    ! --------------------------- ddassl -------------------------------------------
+
+    !> \brief   solves a system of differential/algebraic equations of the form g(t,y,yprime) = 0.
+
+    !> \param   res (external): subroutine which you provide to define the differential/algebraic system.
+    !> \param   neq (input): number of equations to be solved.
+    !> \param   t (input/output): current value of the independent variable.
+    !> \param   y (input/output): array containing the solution components at t.
+    !> \param   yprime (input/output): array containing the derivatives of the solution components at t.
+    !> \param   tout (input): point at which a solution is desired.
+    !> \param   info (input): the basic task of the code is to solve the system from t to tout and return an answer at tout.
+    !>                        info is an integer array which is used to communicate exactly how you want this task to be carried out.
+    !> \param   rtol (input): quantities representing relative error tolerances which you provide to
+    !>                        indicate how you wish the solution to be computed.
+    !>                        you may choose rtol and atol to be both scalars or both vectors.
+    !> \param   atol (input): absolute error tolerances which you provide to indicate how you wish the solution to be computed.
+    !>                        you may choose rtol and atol to be both scalars or both vectors.
+    !> \param   idid (ouptut): indicator reporting what the code did.
+    !>                         you must monitor this integer variable to decide what action to take next.
+    !> \param   rwork (work array): a real work array of length lrw which provides the code with needed storage space.
+    !> \param   lrw (input): the length of rwork.
+    !> \param   iwork (work array): an integer work array of length liw which probides the code with needed storage space.
+    !> \param   liw (input): the length of iwork.
+    !> \param   rpar (input/output): real parameter arrays which you can use for communication between your calling
+    !>                               program and the res subroutine (and the jac subroutine)
+    !> \param   ipar (input/output): integer parameter arrays which you can use for communication between your calling
+    !>                               program and the res subroutine (and the jac subroutine)
+    !> \param   jac (external): this is the name of a subroutine which you may choose to provide for defining a matrix of partial
+    !>                          derivatives.
 
     subroutine ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
     !
@@ -744,7 +744,7 @@ module numerics_routines
     integer :: info(15), iwork(*),ipar(*)
     character :: msg*80, mesg*128
 
-    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, tdist, ho, ypnorm, dsign, rh, abs, tstop, h, tnext, r
+    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, tdist, ho, ypnorm, rh, abs, tstop, h, tnext, r
     integer :: i, neq, mxord, lenpd, lenrw, jacdim, mband, msave, leniw, lrw, liw
     integer :: idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
@@ -884,13 +884,13 @@ module numerics_routines
     nzflg=0
     rtoli=rtol(1)
     atoli=atol(1)
-    do 210 i=1,neq
+    do i=1,neq
         if (info(2)==1)rtoli=rtol(i)
         if (info(2)==1)atoli=atol(i)
         if (rtoli>0.0d0.or.atoli>0.0d0)nzflg=1
         if (rtoli<0.0d0)go to 706
         if (atoli<0.0d0)go to 707
-210 continue
+    end do
     if (nzflg==0)go to 708
     !
     !     set up rwork storage.iwork storage is fixed
@@ -915,14 +915,14 @@ module numerics_routines
     !
     !     set error weight vector wt
     call ddawts(neq,info(2),rtol,atol,y,rwork(lwt))
-    do 305 i = 1,neq
+    do i = 1,neq
         if (rwork(lwt+i-1)<=0.0d0) go to 713
-305 continue
+    end do
     !
     !     compute unit roundoff and hmin
     uround = d1mach(4)
     rwork(lround) = uround
-    hmin = 4.0d0*uround*dmax1(abs(t),abs(tout))
+    hmin = 4.0d0*uround*max(abs(t),abs(tout))
     !
     !     check initial interval to see that it is long enough
     tdist = abs(tout - t)
@@ -941,7 +941,7 @@ module numerics_routines
     ho = 0.001d0*tdist
     ypnorm = ddanrm(neq,yprime,rwork(lwt),ipar)
     if (ypnorm > 0.5d0/ho) ho = 0.5d0/ypnorm
-    ho = dsign(ho,tout-t)
+    ho = sign(ho,tout-t)
     !     adjust ho if necessary to meet hmax bound
 320 if (info(7) == 0) go to 330
     rh = abs(ho)/rwork(lhmax)
@@ -956,7 +956,7 @@ module numerics_routines
     !     compute initial derivative, updating tn and y, if applicable
 340 if (info(11) == 0) go to 350
     call ddaini(tn,y,yprime,neq,res,jac,ho,rwork(lwt),idid,rpar,ipar,rwork(lphi),rwork(ldelta),rwork(le),&
-       rwork(lwm),iwork(liwm),hmin,rwork(lround),info(10),ntemp)
+        rwork(lwm),iwork(liwm),hmin,rwork(lround),info(10),ntemp)
     if (idid < 0) go to 390
     !
     !     load h with ho.  store h in rwork(lh)
@@ -1072,11 +1072,11 @@ module numerics_routines
     !
     !     update wt
 510 call ddawts(neq,info(2),rtol,atol,rwork(lphi),rwork(lwt))
-    do 520 i=1,neq
-        if (rwork(i+lwt-1)>0.0d0)go to 520
+    do i=1,neq
+        if (rwork(i+lwt-1)>0.0d0) cycle
         idid=-3
         go to 527
-520 continue
+    end do
     !
     !     test for too much accuracy requested.
     r=ddanrm(neq,rwork(lphi),rwork(lwt),ipar)*100.0d0*uround
@@ -1096,12 +1096,12 @@ module numerics_routines
 525 continue
     !
     !     compute minimum stepsize
-    hmin=4.0d0*uround*dmax1(abs(tn),abs(tout))
+    hmin=4.0d0*uround*max(abs(tn),abs(tout))
     !
     call ddastp(tn,y,yprime,neq,res,jac,h,rwork(lwt),info(1),idid,rpar,ipar,rwork(lphi),rwork(ldelta),&
-       rwork(le),rwork(lwm),iwork(liwm),rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),&
-       rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround),iwork(lphase),iwork(ljcalc),iwork(lk),&
-       iwork(lkold),iwork(lns),info(10),ntemp)
+        rwork(le),rwork(lwm),iwork(liwm),rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),&
+        rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround),iwork(lphase),iwork(ljcalc),iwork(lk),&
+        iwork(lkold),iwork(lns),info(10),ntemp)
 527 if (idid<0)go to 600
     !
     !--------------------------------------------------------
@@ -1165,34 +1165,34 @@ module numerics_routines
     !------------------------------------------------------------------------------
 
 600 continue
-    itemp= iabs(idid)
+    itemp= abs(idid)
     !go to (610,620,630,690,690,640,650,660,670,675,680,685), itemp
     if (itemp.eq.1) then
-       goto 610
+        goto 610
     else if (itemp.eq.2) then
-       goto 620
+        goto 620
     else if (itemp.eq.3) then
-       goto 630
+        goto 630
     else if (itemp.eq.4) then
-       goto 690
+        goto 690
     else if (itemp.eq.5) then
-       goto 690
+        goto 690
     else if (itemp.eq.6) then
-       goto 640
+        goto 640
     else if (itemp.eq.7) then
-       goto 650
+        goto 650
     else if (itemp.eq.8) then
-       goto 660
+        goto 660
     else if (itemp.eq.9) then
-       goto 670
+        goto 670
     else if (itemp.eq.10) then
-       goto 675
+        goto 675
     else if (itemp.eq.11) then
-       goto 680
+        goto 680
     else if (itemp.eq.12) then
-       goto 685
+        goto 685
     else
-      ! code should never reach here
+        ! code should never reach here
     end if
 
 
@@ -1328,7 +1328,7 @@ module numerics_routines
     !-----------end of subroutine ddassl------------------------------------
     end subroutine ddassl
 
-! --------------------------- ddawts -------------------------------------------
+    ! --------------------------- ddawts -------------------------------------------
 
     subroutine ddawts(neq,iwt,rtol,atol,y,wt)
 
@@ -1356,17 +1356,18 @@ module numerics_routines
     !
     rtoli=rtol(1)
     atoli=atol(1)
-    do 20 i=1,neq
-        if (iwt ==0) go to 10
-        rtoli=rtol(i)
-        atoli=atol(i)
-10      wt(i)=rtoli*abs(y(i))+atoli
-20  continue
+    do i=1,neq
+        if (iwt/=0) then
+            rtoli=rtol(i)
+            atoli=atol(i)
+        end if
+        wt(i)=rtoli*abs(y(i))+atoli
+    end do
     return
     !-----------end of subroutine ddawts------------------------------------
     end subroutine ddawts
 
-! --------------------------- ddanrm -------------------------------------------
+    ! --------------------------- ddanrm -------------------------------------------
 
     real(8) function ddanrm(neq,v,wt,ipar)
     !
@@ -1402,13 +1403,13 @@ module numerics_routines
     do  i = 1,neq
         sum = sum + ((v(i)/wt(i))/vmax)**2
     end do
-    ddanrm = vmax*sqrt(sum/float(neq))
+    ddanrm = vmax*sqrt(sum/neq)
 30  continue
     return
     !------end of function ddanrm------
     end function ddanrm
 
-! --------------------------- ddaini -------------------------------------------
+    ! --------------------------- ddaini -------------------------------------------
 
     subroutine ddaini(x,y,yprime,neq,res,jac,h,wt,idid,rpar,ipar,phi,delta,e,wm,iwm,hmin,uround,nonneg,ntemp)
     !
@@ -1461,7 +1462,7 @@ module numerics_routines
     logical :: convgd
     integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
     real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, cj, h, uround,&
-       s, delnrm, oldnrm, rate, err, hmin, r, dmin1
+        s, delnrm, oldnrm, rate, err, hmin, r
     external res,jac
     !
     integer, parameter :: lnre=12
@@ -1568,7 +1569,7 @@ module numerics_routines
     oldnrm=delnrm
     go to 350
     !
-340 rate=(delnrm/oldnrm)**(1.0d0/float(m))
+340 rate=(delnrm/oldnrm)**(1.0d0/m)
     if (rate>0.90d0) go to 430
     s=rate/(1.0d0-rate)
     !
@@ -1592,7 +1593,7 @@ module numerics_routines
     !     check nonnegativity constraints
 400 if (nonneg==0) go to 450
     do i=1,neq
-        delta(i)=dmin1(y(i),0.0d0)
+        delta(i)=min(y(i),0.0d0)
     end do
     !
     delnrm=ddanrm(neq,delta,wt,ipar)
@@ -1659,7 +1660,7 @@ module numerics_routines
     !
 640 nef=nef+1
     r=0.90d0/(2.0d0*err+0.0001d0)
-    r=dmax1(0.1d0,dmin1(0.5d0,r))
+    r=max(0.1d0,min(0.5d0,r))
     h=h*r
     if (abs(h)>=hmin.and.nef<10) go to 690
     idid=-12
@@ -1669,7 +1670,7 @@ module numerics_routines
     !-------------end of subroutine ddaini----------------------
     end subroutine ddaini
 
-! --------------------------- ddatrp -------------------------------------------
+    ! --------------------------- ddatrp -------------------------------------------
 
     subroutine ddatrp(x,xout,yout,ypout,neq,kold,phi,psi)
     !
@@ -1733,10 +1734,10 @@ module numerics_routines
     !------end of subroutine ddatrp------
     end subroutine ddatrp
 
-! --------------------------- ddastp -------------------------------------------
+    ! --------------------------- ddastp -------------------------------------------
 
     subroutine ddastp(x,y,yprime,neq,res,jac,h,wt,jstart,idid,rpar,ipar,phi,delta,e,wm,iwm,alpha,beta,gamma,&
-       psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
+        psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
     !
     !***begin prologue  ddastp
     !***refer to  ddassl
@@ -1825,10 +1826,10 @@ module numerics_routines
     implicit none
     logical convgd
     integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, &
-       k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
+        k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
     real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), &
-       rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, &
-       uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, hmin, hnew, r
+        rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, &
+        uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, hmin, hnew, r
     external res,jac
     !
     integer, parameter :: lmxord=3, lnst=11, lnre=12, lnje=13, letf=14, lctf=15
@@ -1893,7 +1894,7 @@ module numerics_routines
     km1=k-1
     xold=x
     if (h/=hold.or.k /= kold) ns = 0
-    ns=min0(ns+1,kold+2)
+    ns=min(ns+1,kold+2)
     nsp1=ns+1
     if (kp1 < ns)go to 230
     !
@@ -1908,7 +1909,7 @@ module numerics_routines
         beta(i)=beta(i-1)*psi(i-1)/temp2
         temp1=temp2+h
         alpha(i)=h/temp1
-        sigma(i)=float(i-1)*sigma(i-1)*alpha(i)
+        sigma(i)=(i-1)*sigma(i-1)*alpha(i)
         gamma(i)=gamma(i-1)+alpha(i-1)/h
     end do
     psi(kp1)=temp1
@@ -1918,7 +1919,7 @@ module numerics_routines
     alphas = 0.0d0
     alpha0 = 0.0d0
     do i = 1,k
-        alphas = alphas - 1.0d0/float(i)
+        alphas = alphas - 1.0d0/i
         alpha0 = alpha0 - alpha(i)
     end do
     !
@@ -1928,7 +1929,7 @@ module numerics_routines
     !
     !     compute variable stepsize error coefficient ck
     ck = abs(alpha(kp1) + alphas - alpha0)
-    ck = dmax1(ck,alpha(kp1))
+    ck = max(ck,alpha(kp1))
     !
     !     decide whether new jacobian is needed
     temp1 = (1.0d0 - xrate)/(1.0d0 + xrate)
@@ -1967,7 +1968,7 @@ module numerics_routines
     do j=2,kp1
         do i=1,neq
             y(i)=y(i)+phi(i,j)
-         yprime(i)=yprime(i)+gamma(j)*phi(i,j)
+            yprime(i)=yprime(i)+gamma(j)*phi(i,j)
         end do
     end do
     pnorm = ddanrm(neq,y,wt,ipar)
@@ -2040,7 +2041,7 @@ module numerics_routines
     if (m > 0) go to 365
     oldnrm = delnrm
     go to 367
-365 rate = (delnrm/oldnrm)**(1.0d0/float(m))
+365 rate = (delnrm/oldnrm)**(1.0d0/m)
     if (rate > 0.90d0) go to 370
     s = rate/(1.0d0 - rate)
 367 if (s*delnrm <= 0.33d0) go to 375
@@ -2077,7 +2078,7 @@ module numerics_routines
     !     consider the corrector iteration to have failed.
 375 if (nonneg == 0) go to 390
     do i = 1,neq
-        delta(i) = dmin1(y(i),0.0d0)
+        delta(i) = min1(y(i),0.0d0)
     end do
     delnrm = ddanrm(neq,delta,wt,ipar)
     if (delnrm > 0.33d0) go to 380
@@ -2109,7 +2110,7 @@ module numerics_routines
     !     estimate errors at orders k,k-1,k-2
     enorm = ddanrm(neq,e,wt,ipar)
     erk = sigma(k+1)*enorm
-    terk = float(k+1)*erk
+    terk = (k+1)*erk
     est = erk
     knew=k
     if (k == 1)go to 430
@@ -2117,7 +2118,7 @@ module numerics_routines
         delta(i) = phi(i,kp1) + e(i)
     end do
     erkm1=sigma(k)*ddanrm(neq,delta,wt,ipar)
-    terkm1 = float(k)*erkm1
+    terkm1 = k*erkm1
     if (k > 2)go to 410
     if (terkm1 <= 0.5d0*terk)go to 420
     go to 430
@@ -2126,8 +2127,8 @@ module numerics_routines
         delta(i) = phi(i,k) + delta(i)
     end do
     erkm2=sigma(k-1)*ddanrm(neq,delta,wt,ipar)
-    terkm2 = float(k-1)*erkm2
-    if (dmax1(terkm1,terkm2)>terk)go to 430
+    terkm2 = (k-1)*erkm2
+    if (max(terkm1,terkm2)>terk)go to 430
     !     lower the order
 420 continue
     knew=k-1
@@ -2171,12 +2172,12 @@ module numerics_routines
     do i=1,neq
         delta(i)=e(i)-phi(i,kp2)
     end do
-    erkp1 = (1.0d0/float(k+2))*ddanrm(neq,delta,wt,ipar)
-    terkp1 = float(k+2)*erkp1
+    erkp1 = (1.0d0/(k+2))*ddanrm(neq,delta,wt,ipar)
+    terkp1 = (k+2)*erkp1
     if (k>1)go to 520
     if (terkp1>=0.5d0*terk)go to 550
     go to 530
-520 if (terkm1<=dmin1(terk,terkp1))go to 540
+520 if (terkm1<=min(terk,terkp1))go to 540
     if (terkp1>=terk.or.k==iwm(lmxord))go to 550
     !
     !     raise order
@@ -2206,7 +2207,7 @@ module numerics_routines
     hnew = 2.0d0*h
     go to 560
 555 if (r > 1.0d0) go to 560
-    r = dmax1(0.5d0,dmin1(0.9d0,r))
+    r = max(0.5d0,min(0.9d0,r))
     hnew = h*r
 560 h=hnew
     !
@@ -2312,7 +2313,7 @@ module numerics_routines
     k = knew
     temp2 = k + 1
     r = 0.90d0*(2.0d0*est+0.0001d0)**(-1.0d0/temp2)
-    r = dmax1(0.25d0,dmin1(0.9d0,r))
+    r = max(0.25d0,min(0.9d0,r))
     h = h*r
     if (abs(h) >= hmin) go to 690
     idid = -6
@@ -2352,7 +2353,7 @@ module numerics_routines
     !------end of subroutine ddastp------
     end subroutine ddastp
 
-! --------------------------- ddajac -------------------------------------------
+    ! --------------------------- ddajac -------------------------------------------
 
     subroutine ddajac(neq,x,y,yprime,delta,cj,h,ier,wt,e,wm,iwm,res,ires,uround,jac,rpar,ipar,ntemp)
     !
@@ -2402,7 +2403,7 @@ module numerics_routines
     external res,jac
     real(8) :: y(*), yprime(*), delta(*), wt(*), e(*), wm(*), rpar(*), x, cj, squr, uround, del, h, ysave, ypsave, delinv
     integer :: iwm(*), ipar(*),  ier, npdm1, mtype, lenpd, neq, i, ires, nrow, l, meband, mband, mba, meb1, &
-       msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
+        msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
     !
     integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
     !
@@ -2419,19 +2420,19 @@ module numerics_routines
     !
     !go to (100,200,300,400,500,600),mtype
     if (mtype==1) then
-       go to 100
+        go to 100
     else if (mtype==2) then
-       go to 200
+        go to 200
     else if (mtype==3) then
-       go to 300
+        go to 300
     else if (mtype==4) then
-       go to 400
+        go to 400
     else if (mtype==5) then
-       go to 500
+        go to 500
     else if (mtype==6) then
-       go to 600
+        go to 600
     else
-       ! should never get here
+        ! should never get here
     end if
 
     !
@@ -2450,8 +2451,8 @@ module numerics_routines
     nrow=npdm1
     squr = sqrt(uround)
     do i=1,neq
-        del=squr*dmax1(abs(y(i)),abs(h*yprime(i)),abs(wt(i)))
-        del=dsign(del,h*yprime(i))
+        del=squr*max(abs(y(i)),abs(h*yprime(i)),abs(wt(i)))
+        del=sign(del,h*yprime(i))
         del=(y(i)+del)-y(i)
         ysave=y(i)
         ypsave=yprime(i)
@@ -2492,7 +2493,7 @@ module numerics_routines
     !
     !     banded finite-difference-generated matrix
 500 mband=iwm(lml)+iwm(lmu)+1
-    mba=min0(mband,neq)
+    mba=min(mband,neq)
     meband=mband+iwm(lml)
     meb1=meband-1
     msave=(neq/mband)+1
@@ -2505,8 +2506,8 @@ module numerics_routines
             k= (n-j)/mband + 1
             wm(isave+k)=y(n)
             wm(ipsave+k)=yprime(n)
-            del=squr*dmax1(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
-            del=dsign(del,h*yprime(n))
+            del=squr*max(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
+            del=sign(del,h*yprime(n))
             del=(y(n)+del)-y(n)
             y(n)=y(n)+del
             yprime(n)=yprime(n)+cj*del
@@ -2517,12 +2518,12 @@ module numerics_routines
             k= (n-j)/mband + 1
             y(n)=wm(isave+k)
             yprime(n)=wm(ipsave+k)
-            del=squr*dmax1(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
-            del=dsign(del,h*yprime(n))
+            del=squr*max(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
+            del=sign(del,h*yprime(n))
             del=(y(n)+del)-y(n)
             delinv=1.0d0/del
-            i1=max0(1,(n-iwm(lmu)))
-            i2=min0(neq,(n+iwm(lml)))
+            i1=max(1,(n-iwm(lmu)))
+            i2=min(neq,(n+iwm(lml)))
             ii=n*meb1-iwm(lml)+npdm1
             do i=i1,i2
                 wm(ii+i)=(e(i)-delta(i))*delinv
@@ -2544,7 +2545,7 @@ module numerics_routines
     !------end of subroutine ddajac------
     end subroutine ddajac
 
-! --------------------------- ddaslv -------------------------------------------
+    ! --------------------------- ddaslv -------------------------------------------
 
     subroutine ddaslv(neq,delta,wm,iwm)
     !
@@ -2584,19 +2585,19 @@ module numerics_routines
     !
     !go to(100,100,300,400,400,600),mtype
     if (mtype==1) then
-       go to 100
+        go to 100
     else if (mtype==2) then
-       go to 100
+        go to 100
     else if (mtype==3) then
-       go to 300
+        go to 300
     else if (mtype==4) then
-       go to 400
+        go to 400
     else if (mtype==5) then
-       go to 400
+        go to 400
     else if (mtype==6) then
-       go to 600
+        go to 600
     else
-       ! should never get here
+        ! should never get here
     end if
     !
     !     dense matrix
@@ -2618,7 +2619,7 @@ module numerics_routines
     !------end of subroutine ddaslv------
     end subroutine ddaslv
 
-! --------------------------- snsqe -------------------------------------------
+    ! --------------------------- snsqe -------------------------------------------
 
     subroutine snsqe(fcn,jac,iopt,n,x,fvec,tol,nprint,info,wa,lwa)
     !***begin prologue  snsqe
@@ -2978,7 +2979,7 @@ module numerics_routines
     lr = (n*(n + 1))/2
     index=6*n+lr
     call snsq(fcn,jac,iopt,n,x,fvec,wa(index+1),n,xtol,maxfev,ml,mu,epsfcn,wa(1),mode,factor,nprint,info,nfev,njev, &
-    wa(6*n+1),lr,wa(n+1),wa(2*n+1),wa(3*n+1),wa(4*n+1),wa(5*n+1))
+        wa(6*n+1),lr,wa(n+1),wa(2*n+1),wa(3*n+1),wa(4*n+1),wa(5*n+1))
     if (info == 5) info = 4
 20  continue
     if (info == 0) call xerror( 'snsqe  -- invalid input parameter.',34,2,1)
@@ -2988,7 +2989,7 @@ module numerics_routines
     !
     end subroutine snsqe
 
-! --------------------------- dogleg -------------------------------------------
+    ! --------------------------- dogleg -------------------------------------------
 
     subroutine dogleg(n,r,lr,diag,qtb,delta,x,wa1,wa2)
     !***begin prologue  dogleg
@@ -3055,7 +3056,7 @@ module numerics_routines
     implicit none
     integer :: n, lr, i, j, jj, jp1, k, l
     real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, sum, temp, qnorm, &
-       delta, gnorm, sgnorm, alpha, bnorm
+        delta, gnorm, sgnorm, alpha, bnorm
 
     data one,zero /1.0d0,0.0d0/
 
@@ -3167,7 +3168,7 @@ module numerics_routines
     !
     end subroutine dogleg
 
-! --------------------------- enorm -------------------------------------------
+    ! --------------------------- enorm -------------------------------------------
 
     real(8) function enorm(n,x)
     !***begin prologue  enorm
@@ -3280,7 +3281,7 @@ module numerics_routines
     !
     end function enorm
 
-! --------------------------- fdjac1 -------------------------------------------
+    ! --------------------------- fdjac1 -------------------------------------------
 
     subroutine fdjac1(fcn,n,x,fvec,fjac,ldfjac,iflag,ml,mu,epsfcn,wa1,wa2)
     !***begin prologue  fdjac1
@@ -3433,7 +3434,7 @@ module numerics_routines
     !
     end subroutine fdjac1
 
-! --------------------------- qform -------------------------------------------
+    ! --------------------------- qform -------------------------------------------
 
     subroutine qform(m,n,q,ldq,wa)
     !***begin prologue  qform
@@ -3484,7 +3485,7 @@ module numerics_routines
 
     data one,zero /1.0d0,0.0d0/
     !***first executable statement  qform
-    minmn = min0(m,n)
+    minmn = min(m,n)
     if (minmn < 2) go to 30
     do j = 2, minmn
         jm1 = j - 1
@@ -3534,7 +3535,7 @@ module numerics_routines
     !
     end subroutine qform
 
-! --------------------------- qrfac -------------------------------------------
+    ! --------------------------- qrfac -------------------------------------------
 
     subroutine qrfac(m,n,a,lda,pivot,ipvt,lipvt,sigma,acnorm,wa)
     !***begin prologue  qrfac
@@ -3636,7 +3637,7 @@ module numerics_routines
     !
     !     reduce a to r with householder transformations.
     !
-    minmn = min0(m,n)
+    minmn = min(m,n)
     do j = 1, minmn
         if (.not.pivot) go to 40
         !
@@ -3701,7 +3702,7 @@ module numerics_routines
     !
     end subroutine qrfac
 
-! --------------------------- r1mpyq -------------------------------------------
+    ! --------------------------- r1mpyq -------------------------------------------
 
     subroutine r1mpyq(m,n,a,lda,v,w)
     !***begin prologue  r1mpyq
@@ -3798,7 +3799,7 @@ module numerics_routines
     !
     end subroutine r1mpyq
 
-! --------------------------- r1updt -------------------------------------------
+    ! --------------------------- r1updt -------------------------------------------
 
     subroutine r1updt(m,n,s,ls,u,v,w,sing)
     !***begin prologue  r1updt
@@ -4007,10 +4008,10 @@ module numerics_routines
     !
     end subroutine r1updt
 
-! --------------------------- snsq -------------------------------------------
+    ! --------------------------- snsq -------------------------------------------
 
     subroutine snsq(fcn,jac,iopt,n,x,fvec,fjac,ldfjac,xtol,maxfev,ml,mu,epsfcn,diag,mode,factor,nprint,&
-       info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
+        info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
     !***begin prologue  snsq
     !***date written   800301   (yymmdd)
     !***revision date  840405   (yymmdd)
@@ -4425,7 +4426,7 @@ module numerics_routines
     implicit none
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
     real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, &
-       p001, p0001, zero, epsmch, xtol, factor, fnorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
+        p001, p0001, zero, epsmch, xtol, factor, fnorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
     external fcn, jac
     logical :: jeval,sing
     data one,p1,p5,p001,p0001,zero /1.0d0,1.0d-1,5.0d-1,1.0d-3,1.0d-4,0.0d0/
@@ -4441,7 +4442,7 @@ module numerics_routines
     !     check the input parameters for errors.
     !
     if (iopt < 1 .or. iopt > 2 .or. n <= 0 .or. xtol < zero .or. maxfev <= 0 .or. ml < 0 .or. mu < 0 .or. &
-       factor <= zero .or. ldfjac < n .or. lr < (n*(n + 1))/2) go to 300
+        factor <= zero .or. ldfjac < n .or. lr < (n*(n + 1))/2) go to 300
     if (mode /= 2) go to 20
     do j = 1, n
         if (diag(j) <= zero) go to 300
@@ -4484,7 +4485,7 @@ module numerics_routines
     !
 31  iflag = 2
     call fdjac1(fcn,n,x,fvec,fjac,ldfjac,iflag,ml,mu,epsfcn,wa1,wa2)
-    nfev = nfev + min0(ml+mu+1,n)
+    nfev = nfev + min(ml+mu+1,n)
     !
 32  if (iflag < 0) go to 300
     !
@@ -4555,9 +4556,9 @@ module numerics_routines
     !        rescale if necessary.
     !
     if (mode == 2) go to 170
-    do 160 j = 1, n
+    do j = 1, n
         diag(j) = max(diag(j),wa2(j))
-160 continue
+    end do
 170 continue
     !
     !        beginning of the inner loop.
@@ -4723,7 +4724,7 @@ module numerics_routines
     !
     end subroutine snsq
 
-! --------------------------- idamax -------------------------------------------
+    ! --------------------------- idamax -------------------------------------------
 
     integer function idamax(n,dx,incx)
 
@@ -4797,7 +4798,7 @@ module numerics_routines
     return
     end function idamax
 
-! --------------------------- dasum -------------------------------------------
+    ! --------------------------- dasum -------------------------------------------
 
     real(8) function dasum(n,dx,incx)
     !***begin prologue  dasum
@@ -4868,7 +4869,7 @@ module numerics_routines
     return
     end function dasum
 
-! --------------------------- daxpy -------------------------------------------
+    ! --------------------------- daxpy -------------------------------------------
 
     subroutine daxpy(n,da,dx,incx,dy,incy)
     !***begin prologue  daxpy
@@ -4915,14 +4916,14 @@ module numerics_routines
     !***first executable statement  daxpy
     if (n<=0.or.da==0.d0) return
     if (incx==incy) then
-       !if (incx-1) 5,20,60
-       if (incx-1.LT.0) then
-          goto 5
-       else if (incx.eq.0) then
-          goto 20
-       else
-          goto 60
-       end if
+        !if (incx-1) 5,20,60
+        if (incx-1.LT.0) then
+            goto 5
+        else if (incx.eq.0) then
+            goto 20
+        else
+            goto 60
+        end if
     end if
 5   continue
     !
@@ -4969,7 +4970,7 @@ module numerics_routines
     return
     end subroutine daxpy
 
-! --------------------------- ddot -------------------------------------------
+    ! --------------------------- ddot -------------------------------------------
 
     real(8) function ddot(n,dx,incx,dy,incy)
 
@@ -5018,14 +5019,14 @@ module numerics_routines
     ddot = 0.d0
     if (n<=0)return
     if (incx==incy) then
-      ! if (incx-1) 5,20,60
-       if (incx-1.lt.0) then
-          goto 5
-       else if (incx-1.eq.0) then
-          goto 20
-       else
-          go to 60
-       end if
+        ! if (incx-1) 5,20,60
+        if (incx-1.lt.0) then
+            goto 5
+        else if (incx-1.eq.0) then
+            goto 20
+        else
+            go to 60
+        end if
     end if
 5   continue
     !
@@ -5035,11 +5036,11 @@ module numerics_routines
     iy = 1
     if (incx<0)ix = (-n+1)*incx + 1
     if (incy<0)iy = (-n+1)*incy + 1
-    do 10 i = 1,n
+    do i = 1,n
         ddot = ddot + dx(ix)*dy(iy)
         ix = ix + incx
         iy = iy + incy
-10  continue
+    end do
     return
     !
     !        code for both increments equal to 1.
@@ -5049,9 +5050,9 @@ module numerics_routines
     !
 20  m = modulo(n,5)
     if ( m == 0 ) go to 40
-    do 30 i = 1,m
+    do i = 1,m
         ddot = ddot + dx(i)*dy(i)
-30  continue
+    end do
     if ( n < 5 ) return
 40  mp1 = m + 1
     do i = mp1,n,5
@@ -5069,76 +5070,76 @@ module numerics_routines
     return
     end function ddot
 
-! --------------------------- dnrm2 -------------------------------------------
+    ! --------------------------- dnrm2 -------------------------------------------
 
-      real(8) function dnrm2(n,x,incx)
-!     .. scalar arguments ..
-      integer incx,n
-!     ..
-!     .. array arguments ..
-      real(8) x(*)
-!     ..
-!
-!  purpose
-!  =======
-!
-!  dnrm2 returns the euclidean norm of a vector via the function
-!  name, so that
-!
-!     dnrm2 := sqrt( x'*x )
-!
-!  further details
-!  ===============
-!
-!  -- this version written on 25-october-1982.
-!     modified on 14-october-1993 to inline the call to dlassq.
-!     sven hammarling, nag ltd.
-!
-!  =====================================================================
-!
-!     .. parameters ..
-      real(8) one,zero
-      parameter (one=1.0d+0,zero=0.0d+0)
-!     ..
-!     .. local scalars ..
-      real(8) absxi,norm,scale,ssq
-      integer ix
-!     ..
-!     .. intrinsic functions ..
-      intrinsic abs,sqrt
-!     ..
-      if (n.lt.1 .or. incx.lt.1) then
-          norm = zero
-      else if (n.eq.1) then
-          norm = abs(x(1))
-      else
-          scale = zero
-          ssq = one
-!        the following loop is equivalent to this call to the lapack
-!        auxiliary routine:
-!        call dlassq( n, x, incx, scale, ssq )
-!
-          do 10 ix = 1,1 + (n-1)*incx,incx
-              if (x(ix).ne.zero) then
-                  absxi = abs(x(ix))
-                  if (scale.lt.absxi) then
-                      ssq = one + ssq* (scale/absxi)**2
-                      scale = absxi
-                  else
-                      ssq = ssq + (absxi/scale)**2
-                  end if
-              end if
-   10     continue
-          norm = scale*sqrt(ssq)
-      end if
-!
-      dnrm2 = norm
-      return
-!
-!     end of dnrm2.
-!
-      end function dnrm2
-! --------------------------- dscal -------------------------------------------
+    real(8) function dnrm2(n,x,incx)
+    !     .. scalar arguments ..
+    integer incx,n
+    !     ..
+    !     .. array arguments ..
+    real(8) x(*)
+    !     ..
+    !
+    !  purpose
+    !  =======
+    !
+    !  dnrm2 returns the euclidean norm of a vector via the function
+    !  name, so that
+    !
+    !     dnrm2 := sqrt( x'*x )
+    !
+    !  further details
+    !  ===============
+    !
+    !  -- this version written on 25-october-1982.
+    !     modified on 14-october-1993 to inline the call to dlassq.
+    !     sven hammarling, nag ltd.
+    !
+    !  =====================================================================
+    !
+    !     .. parameters ..
+    real(8) one,zero
+    parameter (one=1.0d+0,zero=0.0d+0)
+    !     ..
+    !     .. local scalars ..
+    real(8) absxi,norm,scale,ssq
+    integer ix
+    !     ..
+    !     .. intrinsic functions ..
+    intrinsic abs,sqrt
+    !     ..
+    if (n.lt.1 .or. incx.lt.1) then
+        norm = zero
+    else if (n.eq.1) then
+        norm = abs(x(1))
+    else
+        scale = zero
+        ssq = one
+        !        the following loop is equivalent to this call to the lapack
+        !        auxiliary routine:
+        !        call dlassq( n, x, incx, scale, ssq )
+        !
+        do ix = 1,1 + (n-1)*incx,incx
+            if (x(ix).ne.zero) then
+                absxi = abs(x(ix))
+                if (scale.lt.absxi) then
+                    ssq = one + ssq* (scale/absxi)**2
+                    scale = absxi
+                else
+                    ssq = ssq + (absxi/scale)**2
+                end if
+            end if
+        end do
+        norm = scale*sqrt(ssq)
+    end if
+    !
+    dnrm2 = norm
+    return
+    !
+    !     end of dnrm2.
+    !
+    end function dnrm2
+    ! --------------------------- dscal -------------------------------------------
 
     subroutine dscal(n,da,dx,incx)
     !***begin prologue  dscal
@@ -5213,7 +5214,7 @@ module numerics_routines
     return
     end subroutine dscal
 
-! --------------------------- dgefa -------------------------------------------
+    ! --------------------------- dgefa -------------------------------------------
 
     subroutine dgefa(a,lda,n,ipvt,info)
 
@@ -5320,7 +5321,7 @@ module numerics_routines
     return
     end subroutine dgefa
 
-! --------------------------- dgesl -------------------------------------------
+    ! --------------------------- dgesl -------------------------------------------
 
     subroutine dgesl(a,lda,n,ipvt,b,job)
 
@@ -5441,7 +5442,7 @@ module numerics_routines
     return
     end subroutine dgesl
 
-! --------------------------- dgbfa -------------------------------------------
+    ! --------------------------- dgbfa -------------------------------------------
 
     subroutine dgbfa(abd,lda,n,ml,mu,ipvt,info)
     implicit none
@@ -5540,7 +5541,7 @@ module numerics_routines
     !     zero initial fill-in columns
     !
     j0 = mu + 2
-    j1 = min0(n,m) - 1
+    j1 = min(n,m) - 1
     if (j1>=j0) then
         do jz = j0, j1
             i0 = m + 1 - jz
@@ -5572,7 +5573,7 @@ module numerics_routines
             !
             !        find l = pivot index
             !
-            lm = min0(ml,n-k)
+            lm = min(ml,n-k)
             l = idamax(lm+1,abd(m,k),1) + m - 1
             ipvt(k) = l + k - m
             !
@@ -5595,7 +5596,7 @@ module numerics_routines
                 !
                 !           row elimination with column indexing
                 !
-                ju = min0(max0(ju,mu+ipvt(k)),n)
+                ju = min(max(ju,mu+ipvt(k)),n)
                 mm = m
                 if (ju>=kp1) then
                     do j = kp1, ju
@@ -5619,7 +5620,7 @@ module numerics_routines
     return
     end subroutine dgbfa
 
-! --------------------------- dgbsl -------------------------------------------
+    ! --------------------------- dgbsl -------------------------------------------
 
     subroutine dgbsl(abd,lda,n,ml,mu,ipvt,b,job)
 
@@ -5703,7 +5704,7 @@ module numerics_routines
         if (ml/=0) then
             if (nm1>=1) then
                 do k = 1, nm1
-                    lm = min0(ml,n-k)
+                    lm = min(ml,n-k)
                     l = ipvt(k)
                     t = b(l)
                     if (l/=k) then
@@ -5720,7 +5721,7 @@ module numerics_routines
         do kb = 1, n
             k = n + 1 - kb
             b(k) = b(k) / abd(m,k)
-            lm = min0(k,m) - 1
+            lm = min(k,m) - 1
             la = m - lm
             lb = k - lm
             t = -b(k)
@@ -5732,7 +5733,7 @@ module numerics_routines
         !        first solve  trans(u)*y = b
         !
         do k = 1, n
-            lm = min0(k,m) - 1
+            lm = min(k,m) - 1
             la = m - lm
             lb = k - lm
             t = ddot(lm,abd(la,k),1,b(lb),1)
@@ -5745,7 +5746,7 @@ module numerics_routines
             if (nm1>=1) then
                 do kb = 1, nm1
                     k = n - kb
-                    lm = min0(ml,n-k)
+                    lm = min(ml,n-k)
                     b(k) = b(k) + ddot(lm,abd(m+1,k),1,b(k+1),1)
                     l = ipvt(k)
                     if (l/=k) then
@@ -5760,7 +5761,7 @@ module numerics_routines
     return
     end subroutine dgbsl
 
-! --------------------------- gjac -------------------------------------------
+    ! --------------------------- gjac -------------------------------------------
 
     subroutine gjac
 
@@ -5788,7 +5789,7 @@ module numerics_routines
     stop 'internal error in dassl - gjac not instantiated'
     end subroutine gjac
 
-! --------------------------- jac -------------------------------------------
+    ! --------------------------- jac -------------------------------------------
 
     subroutine jac
 
@@ -5817,7 +5818,7 @@ module numerics_routines
     stop 'internal error in dassl - jac not instantiated'
     end subroutine jac
 
-! --------------------------- jacd -------------------------------------------
+    ! --------------------------- jacd -------------------------------------------
 
     integer function jacd()
 
@@ -5847,7 +5848,7 @@ module numerics_routines
     return
     end function jacd
 
-! --------------------------- setderv -------------------------------------------
+    ! --------------------------- setderv -------------------------------------------
 
     subroutine setderv(j)
     !
@@ -6011,4 +6012,4 @@ module numerics_routines
 5002 format('ierror,r1,r2 =',i5,2d14.4)
     end subroutine xerrmod
 
-end module numerics_routines
+    end module numerics_routines

@@ -66,7 +66,7 @@
     end if
     
     x = mc_number_of_cases
-    fieldw = int(dlog10(x))+1
+    fieldw = int(log10(x))+1
     ppinfile_prefix = ' '
     ppinfile_suffix = ' '
     ppinfile_numfrm = ' '

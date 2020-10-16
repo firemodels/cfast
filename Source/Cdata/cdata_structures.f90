@@ -4,7 +4,7 @@ module preprocessor_types
     use exit_routines, only: cfastexit
     use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
-                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds
+                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const
     
     use cparams
     use cfast_types, only: cfast_type, fire_type
@@ -280,7 +280,7 @@ module preprocessor_types
                         call me%errorcall('Rand', 3)
                     end if
                 type is (random_logic_type)
-                    if (me%value_type == val_types(idx_logical)) then
+                    if (me%value_type == val_types(idx_logic)) then
                         val%val = me%current_logic_val
                     else 
                         call me%errorcall('Rand', 4)
@@ -409,7 +409,6 @@ module preprocessor_types
     subroutine write_value(me)
     
         class(value_wrapper_type), intent(inout) :: me
-        character(len=100) :: buf
     
         if (me%add_to_parameters .and. me%parameter_field_set) then
             select type (me)
@@ -523,7 +522,6 @@ module preprocessor_types
     function rand_max(me) result(max)
     
         class(random_generator_type) :: me
-        character(len=256) :: buf
         real(eb) :: max
         
         if (me%maxdependent) then
@@ -537,7 +535,6 @@ module preprocessor_types
     function rand_min(me) result(min)
     
         class(random_generator_type) :: me
-        character(len=256) :: buf
         real(eb) :: min
         
         if (me%mindependent) then
@@ -710,7 +707,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = me%genptr%dependencies()
+        dependtent = me%genptr%dependencies()
     
     end function field_dependencies
     
@@ -728,7 +725,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = me%genptr%min_dependent()
+        dependtent = me%genptr%min_dependent()
     
     end function field_min_dependent
     
@@ -737,7 +734,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        depentent = me%genptr%max_dependent()
+        dependtent = me%genptr%max_dependent()
     
     end function field_max_dependent
     
@@ -798,7 +795,6 @@ module preprocessor_types
     subroutine set_current_value(me)
         
         class(random_generator_type), target :: me
-        character(len=128) :: val_type
         
         if (trim(me%value_type) == trim(val_types(idx_real))) then
             me%current_val%realval%val => me%current_real_val

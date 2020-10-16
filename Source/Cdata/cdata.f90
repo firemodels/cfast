@@ -17,7 +17,6 @@
     use precision_parameters
     
     use exit_routines, only: cfastexit
-    use montecarlo_data, only: mc_number_of_cases
     use preprocessor_routines, only: preprocessor
     use accumulator_routines, only: accumulator
     use statistics_routines, only: statistics
@@ -26,7 +25,7 @@
 
     implicit none
     
-    integer :: i, loop, status, ilen
+    integer :: loop, status, ilen
     character(len = 255) :: buf
 
     program_name = 'CData'

@@ -35,10 +35,10 @@ module statistics_routines
     
     subroutine statistics 
     
-    character(len=256) :: buf, frm
+    character(len=256) :: buf
     character(len=256) :: exepath, datapath, project, extension
     integer(4) :: status
-    integer :: i, ioerr, ios
+    integer :: i, ioerr
     
     call init_stats
     !call test_stats

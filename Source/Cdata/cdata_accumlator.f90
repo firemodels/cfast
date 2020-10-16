@@ -40,15 +40,15 @@ module accumulator_routines
     integer, parameter :: numr = 2
     integer, parameter :: numc = 3000
     
-    integer :: iunit, maxrowio, maxcolio, maxrowcmd, maxcolcmd, nstart, iunit2, maxrowtmp, maxcoltmp
+    integer :: iunit, maxrowio, maxcolio, nstart, iunit2, maxrowtmp, maxcoltmp
     integer :: nend, maxcolout
     logical :: lend, tmplend, header
     
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
     character, allocatable :: iossc(:, :)*(128), tmpc(:,:)*(128)
     
-    integer :: i, j, maxrowend, ierr
-    character(len=256) :: infile, cmdfile, outfile, tmpext, inpath
+    integer :: i, j, ierr
+    character(len=256) :: outfile
     character(len=512) :: lbuf, obuf
 
     
@@ -217,9 +217,8 @@ module accumulator_routines
     real(eb), intent(in) :: x(numr,numc)
     character, intent(inout) :: c(numr,numc)*(128)
 
-    character :: buf*204800, token*128
-    integer :: i, j, nrcurrent, ic, icomma, ios, nc, ie
-    real(eb) :: tmp
+    character :: buf*204800
+    integer :: i, j, ic, ie
     
     do i = nstart, maxrow
         buf = '                    '
@@ -233,6 +232,10 @@ module accumulator_routines
             ic = ie+1
             buf(ic:ic) = ','
             ic = ic+1
+            if (ic > 204800) then
+                write(iofill,*) 'WRITECSVFORMAT:Line to long for CSV format'
+                call cfastexit('WRITECSVFORMAT', 1)
+            end if
         end do
         write(iunit,'(A)') buf(1:ic)
     end do
@@ -275,7 +278,7 @@ module accumulator_routines
     integer, intent(out) :: iunit, ierr
     
     character :: fn*(128)
-    integer :: i, j, lc, fc
+    integer :: i, lc, fc
     logical :: exists
     
     ierr = 0

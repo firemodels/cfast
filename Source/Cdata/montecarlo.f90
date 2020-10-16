@@ -52,7 +52,7 @@
     
     subroutine process_mc_filename_pattern()
     
-    integer :: fieldw, idxnum, idxfirstdig, idxlastdig
+    integer :: fieldw
     real(eb) :: x
     
     if (mc_number_of_cases <= 0) then

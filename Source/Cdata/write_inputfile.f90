@@ -14,6 +14,7 @@
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
         default_min_cutoff_relp, default_max_cutoff_relp
+    use exit_routines, only: cfastexit
     
     use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
@@ -109,7 +110,6 @@
     
     character :: buf*(128), tbuf*(11)
     logical :: doline
-    integer :: itmp
     
     doline = .false.
     buf = ' '
@@ -217,7 +217,6 @@
     
     character :: buf*(128)
     logical :: doline
-    real(eb) :: val(2)
     
     doline = .false.
     call start_namelist(buf, 'MISC')
@@ -257,7 +256,7 @@
     integer, intent(in) :: iounit
     
     type(material_type), pointer :: thrmpptr
-    character :: buf*(128), tbuf*(11)
+    character :: buf*(128)
     integer :: i
     
     if (n_matl>0) then
@@ -290,7 +289,7 @@
     integer, intent(in) :: iounit
     
     type(room_type), pointer :: roomptr
-    character :: buf*(128), tbuf*(11)
+    character :: buf*(128)
     character(len=64), dimension(3) :: mat
     real(eb), dimension(3) :: thick
     real(eb) :: tmp(3)
@@ -461,9 +460,7 @@
     implicit none
     integer, intent(in) :: iounit
     
-    type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
-    type(target_type), pointer :: targptr
     
     integer :: i
     character :: buf*(128)
@@ -583,10 +580,7 @@
     implicit none
     integer, intent(in) :: iounit
     
-    type(room_type), pointer :: roomptr
-    type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
-    type(ramp_type), pointer :: rampptr
     
     integer :: i, j
     character :: buf*(128), rms(2)*(128)
@@ -727,6 +721,9 @@
     
     implicit none
     integer, intent(in) :: iounit
+    
+    write(iounit,*) 'Should not see this write'
+    call cfastexit('WRITE_CONN',1)
     
     return
     end subroutine write_conn
@@ -927,7 +924,7 @@
     character, intent(in) :: token*(*)
     character, intent(inout) :: buf*(*)
     
-    character :: tbuf*(512), vbuf*(15)
+    character :: tbuf*(512)
     integer :: i
     
     tbuf = ' '

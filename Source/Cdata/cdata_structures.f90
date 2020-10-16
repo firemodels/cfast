@@ -707,7 +707,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependtent = me%genptr%dependencies()
+        dependent = me%genptr%dependencies()
     
     end function field_dependencies
     
@@ -725,7 +725,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependtent = me%genptr%min_dependent()
+        dependent = me%genptr%min_dependent()
     
     end function field_min_dependent
     
@@ -734,7 +734,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependtent = me%genptr%max_dependent()
+        dependent = me%genptr%max_dependent()
     
     end function field_max_dependent
     

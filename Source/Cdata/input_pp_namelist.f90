@@ -586,9 +586,9 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj, kk, iend, iex, iendname
+    integer :: ios, ii, jj, kk, iend
     integer :: ncnts(mxanalys), idx
-    logical :: msttflag, found
+    logical :: msttflag
     type(stat_type), pointer :: statptr
     character(len=5) :: extension
     

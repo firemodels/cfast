@@ -79,7 +79,6 @@
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '!! Fires'
     call write_chem_tabl(iofilcalc)
-    call write_conn (iofilcalc)
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '!! Dumps'
     call write_dump (iofilcalc)
@@ -114,7 +113,8 @@
     doline = .false.
     buf = ' '
     buf(1:6) = '&TIME '
-    if (time_end /= default_simulation_time) then
+    !if (time_end /= default_simulation_time) then
+    if (time_end /= -1001) then
         doline = .true.
         tbuf = ' '
         call format_number(time_end,tbuf)
@@ -130,7 +130,7 @@
         doline = .true.
         tbuf = ' '
         call format_number(smv_out_interval, tbuf)
-        buf = trim(buf) // ' SMOKE = ' // trim(adjustl(tbuf))
+        buf = trim(buf) // ' SMOKEVIEW = ' // trim(adjustl(tbuf))
     end if
     if (ss_out_interval /= default_ss_out_interval) then
         doline = .true.

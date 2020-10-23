@@ -4,7 +4,7 @@ module preprocessor_types
     use exit_routines, only: cfastexit
     use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
-                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const
+                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear
     
     use cparams
     use cfast_types, only: cfast_type, fire_type
@@ -58,7 +58,7 @@ module preprocessor_types
     end type random_logic_type
     
     type, extends(value_wrapper_type) :: field_pointer
-        character(len=7), dimension(4) :: fld_types = (/'VAULE  ', &
+        character(len=7), dimension(4) :: fld_types = (/'VALUE  ', &
                                                         'INDEX  ', &
                                                         'SCALING', &
                                                         'LABEL  '/)
@@ -125,6 +125,7 @@ module preprocessor_types
         integer :: seeds(mxseeds)                       ! seed values
         integer :: base_seeds(mxseeds)                  ! first seeds used 
         integer :: current_iteration
+        real(eb) :: linear_delta
         type(field_pointer) :: current_val
         real(eb) :: current_real_val
         integer :: current_int_val
@@ -358,8 +359,21 @@ module preprocessor_types
                 class default
                     call me%errorcall('RAND',13)
             end select
+        else if (me%type_dist == rand_dist(idx_linear)) then
+            select type(val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        me%constant = me%constant + me%linear_delta
+                        me%current_real_val = me%constant
+                        val%val = me%current_real_val
+                    else
+                        call me%errorcall('RAND', 14)
+                    end if
+                class default
+                    call me%errorcall('RAND', 15)
+            end select
         else
-            call me%errorcall('RAND', 14)
+            call me%errorcall('RAND', 16)
         end if
             
         return
@@ -845,8 +859,9 @@ module preprocessor_types
                 me%fire%t_qdot(i) = me%timescalevalue*me%base%t_qdot(i)
             end do
             do i = 1, mxpts
-                me%fire%t_mdot(i) = me%hrrscalevalue*me%base%t_mdot(i)
+                me%fire%t_mdot(i) = me%timescalevalue*me%base%t_mdot(i)
             end do
+            me%fire%flaming_transition_time = me%timescalevalue*me%base%flaming_transition_time
         end if 
     
     end subroutine fire_do_rand
@@ -877,6 +892,7 @@ module preprocessor_types
         fire%characteristic_length = base%characteristic_length
         fire%molar_mass = base%molar_mass
         fire%ignition_time = base%ignition_time
+        fire%flaming_transition_time = base%flaming_transition_time
         flag = .false.
     
     end subroutine copybasetofire

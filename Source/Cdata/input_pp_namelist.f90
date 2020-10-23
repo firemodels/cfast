@@ -41,7 +41,7 @@
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
-        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires
+        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear
         
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
@@ -221,12 +221,12 @@
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field_id,  maximum_field_id
+    character(len=128) :: minimum_field_name,  maximum_field_name, minimum_object_id, maximum_object_id
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, initial_seed_values, discrete_real_values, discrete_integer_values, discrete_string_values, &
         discrete_probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value, minimum_field_id, maximum_field_id
+        logical_constant_value, minimum_object_id, minimum_field_name, maximum_object_id, maximum_field_name
                     
     
     ios = 1
@@ -291,13 +291,13 @@
                 else
                     call cfastexit('READ_MRND',4)
                 end if 
-                if (trim(minimum_field_id) /= 'NULL') then
-                    call genptr%set_min_to_use_field(minimum_field_id)
+                if (trim(minimum_field_name) /= 'NULL') then
+                    call genptr%set_min_to_use_field(minimum_field_name)
                 else
                     call genptr%set_min_value(minimum)
                 end if
-                if (trim(maximum_field_id) /= 'NULL') then
-                    call genptr%set_max_to_use_field(minimum_field_id)
+                if (trim(maximum_field_name) /= 'NULL') then
+                    call genptr%set_max_to_use_field(maximum_field_name)
                 else
                     call genptr%set_max_value(maximum)
                 end if
@@ -338,6 +338,11 @@
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%constant = constant_value
+            else if (trim(distribution_type) == trim(rand_dist(idx_linear))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                genptr%linear_delta = (maximum - minimum)/(mc_number_of_cases - 1)
+                genptr%constant = minimum - genptr%linear_delta
             else
                 call cfastexit('read_mrnd',1000)
             end if
@@ -370,8 +375,10 @@
     integer_constant_value = -1001
     character_constant_value = 'NULL'
     logical_constant_value = .false.
-    minimum_field_id = 'NULL'
-    maximum_field_id = 'NULL'
+    minimum_field_name = 'NULL'
+    maximum_field_name = 'NULL'
+    minimum_object_id = 'NULL'
+    maximum_object_id = 'NULL'
 
     end subroutine set_defaults
 
@@ -399,7 +406,7 @@
 
     namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
         real_array_values, integer_array_values, character_array_values, logical_array_values, &
-        scenario_title_array, type_of_index, number_in_index, base_scaling_value, add_to_parameters, position
+        scenario_title_array, type_of_index, number_in_index, base_scaling_value, position
                     
     
     ios = 1
@@ -730,17 +737,17 @@
         smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_id_header
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
-    logical :: first_time_point_smoldering, modify_fire_area_to_match_hrr, add_to_parameters, &
-        add_hrr_scale_to_parameters, add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
+    logical :: modify_fire_area_to_match_hrr, add_to_parameters, add_hrr_scale_to_parameters, &
+        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters, first_time_point_smoldering
     type(fire_generator_type), pointer :: fire
     
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, first_time_point_smoldering, &
-        modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, hrr_scale_header, time_scale_header, fire_compartment_random_generator_id, &
-        fire_compartment_ids, add_fire_compartment_id_to_parameters, fire_compartment_id_header
+        smolder_time_random_generator_id, modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, &
+        add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_header, time_scale_header, &
+        fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
+        fire_compartment_id_header
     
     ios = 1
 
@@ -870,19 +877,15 @@
                     found = .false.
                     room_search: do kk = 1, n_rooms
                         if (trim(fire_compartment_ids(jj)) == trim(roominfo(kk)%id)) then
-                            
+                            fire%compindex(jj) = kk
                             found = .true.
+                            exit room_search
                         end if
                     end do room_search
                     if (.not.found) then
                         call cfastexit('READ_MFIR', 8)
                     end if
                 end do complist_search
-                 
-                !ire%fire_label%nidx = number_in_index
-                !do jj = 1, number_in_index
-                !    fire%fire_label%int_array(jj) = integer_array_values(jj)
-                !end do
             end if
         end do read_mfir_loop
     end if mfir_flag
@@ -1086,6 +1089,11 @@
             else
                 call cfastexit('find_field',3)
             end if 
+        elseif (trim(fieldid) == 'AREA') then
+            found = .true.
+            fldptr%realval%val => item%area
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else if (item%maxflow > 0.0_eb) then
             if (trim(fieldid) == 'FLOW') then 
                 found = .true.

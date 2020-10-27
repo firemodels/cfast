@@ -327,7 +327,7 @@ Public Class ThermalPropertiesCollection
     End Property
     Friend ReadOnly Property MaterialsList() As String
         Get
-            Dim list As String = ""
+            Dim list As String = "Off|"
             If Count > 0 Then
                 For i = 0 To Count - 1
                     list += Item(i).Name

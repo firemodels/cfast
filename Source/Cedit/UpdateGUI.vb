@@ -275,19 +275,35 @@ Public Class UpdateGUI
                 MainWin.GroupCompSurfaces.Enabled = True
                 MainWin.CompMaterials.Enabled = True
                 ClearGrid(MainWin.CompMaterials)
+                MainWin.CompMaterials.ComboList = myThermalProperties.MaterialsList
                 For i = 1 To 3
                     MainWin.CompMaterials(i, 0) = i
                     If aCompartment.CeilingMaterial(i) <> "" Then
-                        MainWin.CompMaterials(i, CompMaterialsColNum.CeilingMaterial) = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(i))
-                        MainWin.CompMaterials(i, CompMaterialsColNum.CeilingThickness) = aCompartment.CeilingThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        If aCompartment.CeilingMaterial(i) = "Off" Then
+                            MainWin.CompMaterials(i, CompMaterialsColNum.CeilingMaterial) = ""
+                            MainWin.CompMaterials(i, CompMaterialsColNum.CeilingThickness) = ""
+                        Else
+                            MainWin.CompMaterials(i, CompMaterialsColNum.CeilingMaterial) = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(i))
+                            MainWin.CompMaterials(i, CompMaterialsColNum.CeilingThickness) = aCompartment.CeilingThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        End If
                     End If
                     If aCompartment.WallMaterial(i) <> "" Then
-                        MainWin.CompMaterials(i, CompMaterialsColNum.WallMaterial) = myThermalProperties.GetLongName(aCompartment.WallMaterial(i))
-                        MainWin.CompMaterials(i, CompMaterialsColNum.WallThickness) = aCompartment.WallThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        If aCompartment.WallMaterial(i) = "Off" Then
+                            MainWin.CompMaterials(i, CompMaterialsColNum.WallMaterial) = ""
+                            MainWin.CompMaterials(i, CompMaterialsColNum.WallThickness) = ""
+                        Else
+                            MainWin.CompMaterials(i, CompMaterialsColNum.WallMaterial) = myThermalProperties.GetLongName(aCompartment.WallMaterial(i))
+                            MainWin.CompMaterials(i, CompMaterialsColNum.WallThickness) = aCompartment.WallThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        End If
                     End If
                     If aCompartment.FloorMaterial(i) <> "" Then
-                        MainWin.CompMaterials(i, CompMaterialsColNum.FloorMaterial) = myThermalProperties.GetLongName(aCompartment.FloorMaterial(i))
-                        MainWin.CompMaterials(i, CompMaterialsColNum.FloorThickness) = aCompartment.FloorThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        If aCompartment.FloorMaterial(i) = "Off" Then
+                            MainWin.CompMaterials(i, CompMaterialsColNum.FloorMaterial) = ""
+                            MainWin.CompMaterials(i, CompMaterialsColNum.FloorThickness) = ""
+                        Else
+                            MainWin.CompMaterials(i, CompMaterialsColNum.FloorMaterial) = myThermalProperties.GetLongName(aCompartment.FloorMaterial(i))
+                            MainWin.CompMaterials(i, CompMaterialsColNum.FloorThickness) = aCompartment.FloorThickness(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        End If
                     End If
                 Next
             End If

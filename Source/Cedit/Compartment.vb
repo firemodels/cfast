@@ -164,6 +164,15 @@ Public Class Compartment
                 If Value <> aCeilingMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aCeilingMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
+                    If Value = "Off" Then
+                        aCeilingMaterial(index) = ""
+                        If index = 1 Then
+                            CeilingMaterial(2) = ""
+                            CeilingMaterial(3) = ""
+                        ElseIf index = 2 Then
+                            CeilingMaterial(3) = ""
+                        End If
+                    End If
                 ElseIf Value = "" Then
                     aCeilingMaterial(index) = ""
                 End If
@@ -207,6 +216,15 @@ Public Class Compartment
                 If Value <> aWallMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aWallMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
+                    If Value = "Off" Then
+                        aWallMaterial(index) = ""
+                        If index = 1 Then
+                            WallMaterial(2) = ""
+                            WallMaterial(3) = ""
+                        ElseIf index = 2 Then
+                            WallMaterial(3) = ""
+                        End If
+                    End If
                 ElseIf Value = "" Then
                     aWallMaterial(index) = ""
                 End If
@@ -250,6 +268,15 @@ Public Class Compartment
                 If Value <> aFloorMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aFloorMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
+                    If Value = "Off" Then
+                        aFloorMaterial(index) = ""
+                        If index = 1 Then
+                            FloorMaterial(2) = ""
+                            FloorMaterial(3) = ""
+                        ElseIf index = 2 Then
+                            FloorMaterial(3) = ""
+                        End If
+                    End If
                 ElseIf Value = "" Then
                     aFloorMaterial(index) = ""
                 End If

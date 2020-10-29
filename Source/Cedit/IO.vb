@@ -707,6 +707,13 @@ Module IO
                     Dim aDetect As New Target
                     If type = "PLATE" Or type = "CYLINDER" Then
                         aDetect.Type = Target.TypeTarget
+                        Dim atype As Integer
+                        If type = "CYLINDER" Then
+                            atype = Target.Cylindrical
+                        Else ' PDE
+                            atype = Target.ThermallyThick
+                        End If
+                        aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
                         aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
                         If targetfacing.ToUpper = "CEILING" Then aDetect.TargetFacing = "Ceiling"
                         If targetfacing.ToUpper = "FLOOR" Then aDetect.TargetFacing = "Floor"
@@ -715,13 +722,6 @@ Module IO
                         If targetfacing.ToUpper = "LEFT WALL" Then aDetect.TargetFacing = "Left Wall"
                         If targetfacing.ToUpper = "RIGHT WALL" Then aDetect.TargetFacing = "Right Wall"
                         If InStr(targetfacing, "Fire", CompareMethod.Text) > 0 Then aDetect.TargetFacingNoCheck = targetfacing ' for now, assume it's a valid fire name.  Check comes later
-                        Dim atype As Integer
-                        If type = "CYLINDER" Then
-                            atype = Target.Cylindrical
-                        Else ' PDE
-                            atype = Target.ThermallyThick
-                        End If
-                        aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
                         If thickness < 0 Then
                             myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because thickness is less than zero", ErrorMessages.TypeFatal)
                         End If

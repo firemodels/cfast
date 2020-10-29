@@ -17,10 +17,10 @@
  
 !! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'Room_1', 'Room_2'
-      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 CUTOFFS = 200, 300 OFFSETS = 0, 5
+      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 OFFSETS = 0, 5
       CRITERION = 'TIME' T = 100, 101 F = 0, 1 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'Room_2', 'Room_1'
-      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 CUTOFFS = 200, 300 OFFSETS = 0, 5
+      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 OFFSETS = 0, 5
       CRITERION = 'TIME' T = 100, 101 F = 0, 1 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 !! Fires 

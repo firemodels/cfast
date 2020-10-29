@@ -13,7 +13,7 @@
  
 !! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
-      AREAS = 0.1, 0.1 HEIGHTS = 0.5, 0.5 FLOW = 0.01 CUTOFFS = 200, 300 OFFSETS = 0, 0.5
+      AREAS = 0.1, 0.1 HEIGHTS = 0.5, 0.5 FLOW = 0.01 OFFSETS = 0, 0.5
       CRITERION = 'TIME' T = 0, 1 F = 0, 1 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 &TAIL /

@@ -813,14 +813,14 @@
                     call cfastexit('MFIR', 4)
                 end if 
                 if (add_hrr_scale_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%hrrscaleval%add_to_parameters = add_hrr_scale_to_parameters
                     if (trim(hrr_scale_header) == 'NULL') then
                         fire%hrrscaleval%parameter_header = ' '
                         fire%hrrscaleval%parameter_header = trim(fire_id) // '_HRR_scaling_factor'
                     else 
                         fire%hrrscaleval%parameter_header =  hrr_scale_header
-                    end if
-                    fire%add_to_parameters = .true. 
+                    end if 
                 end if
             end if
             if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
@@ -836,6 +836,7 @@
                     call cfastexit('READ_MFIR', 5)
                 end if 
                 if (add_time_scale_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%timescaleval%add_to_parameters = add_time_scale_to_parameters
                     if (trim(time_scale_header) == 'NULL') then
                         fire%timescaleval%parameter_header = ' '
@@ -843,7 +844,6 @@
                     else 
                         fire%timescaleval%parameter_header =  time_scale_header
                     end if
-                    fire%add_to_parameters = .true. 
                 end if
             end if
             if (trim(fire_compartment_random_generator_id) /= 'NULL') then
@@ -851,25 +851,29 @@
                     if (trim(fire_compartment_random_generator_id)== trim(generatorinfo(jj)%id)) then
                         fire%fire_comp%genptr => generatorinfo(jj)
                         fire%fire_label%genptr => generatorinfo(jj)
-                        fire%rand_comp = .true.
+                        fire%do_fire_comp = .true.
                         exit compgen_search
                     end if
                 end do compgen_search
-                if (.not.fire%rand_comp) then
+                if (.not.fire%do_fire_comp) then
                     call cfastexit('READ_MFIR', 6)
                 end if
                 call find_object(fire_id, fire%fire_comp, found)
                 if (found) then
-                    call find_field('ROOM', fire%fire_comp%itemptr, fire%fire_comp, found)
+                    call find_field('COMPARTMENT', fire%fire_comp%itemptr, fire%fire_comp, found)
                 else
                     call cfastexit('READ_MFIR',7)
                 end if
+                if (.not.found) then
+                    call cfastexit('READ_MFIR',8)
+                end if
                 fire%fire_comp%field_type = trim(fire%fire_comp%fld_types(fire%fire_comp%idx_index))
-                fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
-                fire%fire_comp%intval%val => fire%fire_comp%index
-                fire%fire_comp%randptr => fire%fire_comp%intval
+                fire%fire_comp%indexval%val => fire%fire_comp%index
+                fire%fire_comp%randptr => fire%fire_comp%indexval
                 fire%fire_comp%add_to_parameters = .false.
-                fire%fire_label%add_to_parameters = .true.
+                fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
+                fire%fire_label%indexval%val => fire%fire_label%index
+                fire%fire_label%randptr => fire%fire_label%indexval
                 complist_search: do jj = 1, mxrooms
                     if (trim(fire_compartment_ids(jj)) == 'NULL') then
                         exit complist_search
@@ -877,15 +881,28 @@
                     found = .false.
                     room_search: do kk = 1, n_rooms
                         if (trim(fire_compartment_ids(jj)) == trim(roominfo(kk)%id)) then
-                            fire%compindex(jj) = kk
+                            fire%fire_comp%int_array(jj) = kk
+                            fire%fire_comp%nlabel = jj
+                            fire%fire_label%char_array(jj) = fire_compartment_ids(jj)
+                            fire%fire_label%nlabel = jj
                             found = .true.
                             exit room_search
                         end if
                     end do room_search
                     if (.not.found) then
-                        call cfastexit('READ_MFIR', 8)
+                        call cfastexit('READ_MFIR', 9)
                     end if
                 end do complist_search
+                fire%add_to_parameters = add_fire_compartment_id_to_parameters
+                if (add_fire_compartment_id_to_parameters) then
+                    fire%fire_label%add_to_parameters = .true. 
+                    fire%parameter_field_set = .true. 
+                    if (trim(parameter_header) == 'NULL') then
+                        fire%fire_label%parameter_header = trim(fire_id) // '_FIRE_COMPARTMENT'
+                    else
+                        fire%fire_label%parameter_header = parameter_header
+                    end if
+                end if
             end if
         end do read_mfir_loop
     end if mfir_flag
@@ -1119,12 +1136,12 @@
             call cfastexit('find_field',5)
         end if
     class is (fire_type)
-        if (trim(fieldid) == 'ROOM') then
+        if (trim(fieldid) == 'COMPARTMENT') then
             found = .true.
             fldptr%intval%val => item%room
             fldptr%value_type = val_types(idx_int)
             fldptr%valptr => fldptr%intval
-        end if
+        end if 
     class default
         call cfastexit('find_field',99)
     end select

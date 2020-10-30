@@ -177,9 +177,8 @@ module preprocessor_types
         type(random_real_type) :: hrrscaleval, timescaleval, stimeval
         logical :: smoldervalue, modifyfirearea
         type(random_logic_type) :: smolderval
-        type(field_pointer) :: fire_comp
-        type(field_pointer) :: fire_label
-        logical :: rand_comp = .false. 
+        type(field_pointer) :: fire_comp, fire_label
+        logical :: do_fire_comp = .false. 
     contains
         procedure :: do_rand => fire_do_rand
         procedure :: copybasetofire
@@ -392,20 +391,25 @@ module preprocessor_types
         if (me%add_to_parameters) then
             select type (me)
             type is (fire_generator_type)
-                if (me%hrrscaleval%add_to_parameters) then
-                    icol = icol + 1
-                    me%hrrscaleval%paramptr => array(icol)
-                    array(icol) = trim(me%hrrscaleval%parameter_header)
-                    me%hrrscaleval%parameter_field_set = .true.
-                    me%parameter_field_set = .true.
-                end if 
-                if (me%timescaleval%add_to_parameters) then
-                    icol = icol + 1
-                    me%timescaleval%paramptr => array(icol)
-                    array(icol) = trim(me%timescaleval%parameter_header)
-                    me%timescaleval%parameter_field_set = .true.
-                    me%parameter_field_set = .true.
-                end if
+                call me%hrrscaleval%add_header(icol, array)
+                call me%timescaleval%add_header(icol, array)
+                call me%fire_comp%add_header(icol, array)
+                call me%fire_label%add_header(icol, array)
+                me%parameter_field_set = .true. 
+                !if (me%hrrscaleval%add_to_parameters) then
+                !    icol = icol + 1
+                !    me%hrrscaleval%paramptr => array(icol)
+                !    array(icol) = trim(me%hrrscaleval%parameter_header)
+                !    me%hrrscaleval%parameter_field_set = .true.
+                !    me%parameter_field_set = .true.
+                !end if 
+                !if (me%timescaleval%add_to_parameters) then
+                !    icol = icol + 1
+                !    me%timescaleval%paramptr => array(icol)
+                !    array(icol) = trim(me%timescaleval%parameter_header)
+                !    me%timescaleval%parameter_field_set = .true.
+                !    me%parameter_field_set = .true.
+                !end if
             class default
                 icol = icol + 1
                 me%paramptr => array(icol)
@@ -470,6 +474,10 @@ module preprocessor_types
                 if (me%timescaleval%add_to_parameters) then
                     write(me%timescaleval%paramptr,'(e13.6)') me%timescaleval%val
                 end if
+                if (me%fire_label%add_to_parameters) then
+                    write(me%fire_label%paramptr,'(a)') trim(me%fire_label%char_array(me%fire_label%index))
+                end if
+                call me%fire_label%write_value
             class default
                 call me%errorcall('write_value',3)
             end select
@@ -863,6 +871,11 @@ module preprocessor_types
             end do
             me%fire%flaming_transition_time = me%timescalevalue*me%base%flaming_transition_time
         end if 
+        
+        if (me%do_fire_comp) then
+            call me%fire_comp%do_rand(me%fire_comp%valptr,iteration)
+            call me%fire_label%do_rand(me%fire_label%valptr,iteration)
+        end if 
     
     end subroutine fire_do_rand
     
@@ -912,10 +925,6 @@ module preprocessor_types
         end do
         
     end subroutine copytimebasedprop
-        
-    subroutine fire_write_value()
-    
-    end subroutine fire_write_value
     
     end module preprocessor_types
     

@@ -123,14 +123,14 @@
     subroutine read_mhdr(lu)
     
     integer :: ios
-    real(eb) :: monte_carlo_number_of_cases
-    integer :: seeds(2)
-    logical :: mhdrflag, write_seeds
+    integer :: number_of_cases
+    integer :: random_seeds(2)
+    logical :: mhdrflag, write_random_seeds
     character(len=256) :: work_directory, output_directory, parameter_filename
     
     integer, intent(in) :: lu
 
-    namelist /MHDR/ monte_carlo_number_of_cases, seeds, write_seeds, work_directory, &
+    namelist /MHDR/ number_of_cases, random_seeds, write_random_seeds, work_directory, &
         output_directory, parameter_filename
 
     ios = 1
@@ -168,12 +168,12 @@
         call set_defaults
         read(lu,MHDR)
         
-        mc_number_of_cases = monte_carlo_number_of_cases
-        rnd_seeds(1:2) = seeds(1:2)
-        if (seeds(1) > 0.0_eb .and. seeds(2) > 0.0_eb) then
-            call RANDOM_SEED(PUT=seeds)
+        mc_number_of_cases = number_of_cases
+        rnd_seeds(1:2) = random_seeds(1:2)
+        if (random_seeds(1) > 0.0_eb .and. random_seeds(2) > 0.0_eb) then
+            call RANDOM_SEED(PUT=random_seeds)
         end if
-        mc_write_seeds = write_seeds
+        mc_write_seeds = write_random_seeds
         if (trim(work_directory) == 'NULL') then
             workpath = datapath
         else
@@ -188,9 +188,9 @@
 
     subroutine set_defaults
 
-    monte_carlo_number_of_cases = -1001
-    seeds(1:mxseeds) = -1001
-    write_seeds = .false.
+    number_of_cases = 1
+    random_seeds(1:mxseeds) = -1001
+    write_random_seeds = .true.
     work_directory = 'NULL'
     output_directory = 'NULL'
     parameter_filename = 'NULL'
@@ -213,20 +213,21 @@
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, constant_value
-    integer ::initial_seed_values(mxseeds), ndx
-    real(eb) :: discrete_probabilities(mxpntsarray), discrete_real_values(mxpntsarray) 
-    integer :: discrete_integer_values(mxpntsarray)
-    character(len = 128) :: discrete_string_values(mxpntsarray)
+    integer ::random_seeds(mxseeds), ndx
+    real(eb) :: probabilities(mxpntsarray), real_values(mxpntsarray) 
+    integer :: integer_values(mxpntsarray)
+    logical :: logical_values(mxpntsarray)
+    character(len = 128) :: string_values(mxpntsarray)
     real(eb) :: real_constant_value
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field_name,  maximum_field_name, minimum_object_id, maximum_object_id
+    character(len=128) :: minimum_field,  maximum_field, minimum_id, maximum_id
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
-        peak, initial_seed_values, discrete_real_values, discrete_integer_values, discrete_string_values, &
-        discrete_probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value, minimum_object_id, minimum_field_name, maximum_object_id, maximum_field_name
+        peak, random_seeds, real_values, integer_values, string_values, logical_values, &
+        probabilities, real_constant_value, integer_constant_value, character_constant_value, &
+        logical_constant_value, minimum_id, minimum_field, maximum_id, maximum_field
                     
     
     ios = 1
@@ -279,8 +280,8 @@
             
             genptr%id = id
             genptr%fyi = fyi
-            if (initial_seed_values(1) /= -1001 .and. initial_seed_values(2) /= -1001) then
-                genptr%base_seeds = initial_seed_values
+            if (random_seeds(1) /= -1001 .and. random_seeds(2) /= -1001) then
+                genptr%base_seeds = random_seeds
                 genptr%use_seeds = .true. 
             end if 
         
@@ -291,13 +292,13 @@
                 else
                     call cfastexit('READ_MRND',4)
                 end if 
-                if (trim(minimum_field_name) /= 'NULL') then
-                    call genptr%set_min_to_use_field(minimum_field_name)
+                if (trim(minimum_field) /= 'NULL') then
+                    call genptr%set_min_to_use_field(minimum_field)
                 else
                     call genptr%set_min_value(minimum)
                 end if
-                if (trim(maximum_field_name) /= 'NULL') then
-                    call genptr%set_max_to_use_field(maximum_field_name)
+                if (trim(maximum_field) /= 'NULL') then
+                    call genptr%set_max_to_use_field(maximum_field)
                 else
                     call genptr%set_max_value(maximum)
                 end if
@@ -305,31 +306,31 @@
                 ndx = 1
                 genptr%type_dist = distribution_type
                 ndx_loop: do while(ndx <= mxpntsarray)
-                    if (discrete_probabilities(ndx) >= 0._eb) then
+                    if (probabilities(ndx) >= 0._eb) then
                         ndx = ndx + 1
                     else
                         exit ndx_loop
                     end if
                 end do ndx_loop
                 genptr%num_discrete_values = ndx
-                genptr%prob_array(1) = discrete_probabilities(1)
+                genptr%prob_array(1) = probabilities(1)
                 do jj = 2, ndx
-                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + discrete_probabilities(jj)
+                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj)
                 end do 
-                if (discrete_real_values(1) /= -1001._eb) then
+                if (real_values(1) /= -1001._eb) then
                     genptr%value_type = val_types(idx_real)
                     do jj = 1, ndx
-                        genptr%real_array(jj) = discrete_real_values(jj)
+                        genptr%real_array(jj) = real_values(jj)
                     end do
-                else if (discrete_integer_values(1) /= -1001) then
+                else if (integer_values(1) /= -1001) then
                     genptr%value_type = val_types(idx_int)
                     do jj = 1, ndx
-                        genptr%int_array(jj) = discrete_integer_values(jj)
+                        genptr%int_array(jj) = integer_values(jj)
                     end do
-                else if (trim(discrete_string_values(1)) /= 'NULL') then
+                else if (trim(string_values(1)) /= 'NULL') then
                     genptr%value_type = val_types(idx_char)
                     do jj = 1, ndx
-                        genptr%char_array(jj) = discrete_string_values(jj)
+                        genptr%char_array(jj) = string_values(jj)
                     end do 
                 else
                     call cfastexit('read_mrnd', 5)
@@ -366,19 +367,20 @@
     stdev = -1001._eb
     alpha = -1001._eb
     beta = -1001._eb
-    initial_seed_values(1:mxseeds) = -1001
-    discrete_real_values = -1001._eb
-    discrete_integer_values = -1001
-    discrete_string_values = 'NULL'
-    discrete_probabilities = -1001._eb
+    random_seeds(1:mxseeds) = -1001
+    real_values = -1001._eb
+    integer_values = -1001
+    string_values = 'NULL'
+    logical_values = .false.
+    probabilities = -1001._eb
     real_constant_value = -1001.0_eb
     integer_constant_value = -1001
     character_constant_value = 'NULL'
     logical_constant_value = .false.
-    minimum_field_name = 'NULL'
-    maximum_field_name = 'NULL'
-    minimum_object_id = 'NULL'
-    maximum_object_id = 'NULL'
+    minimum_field = 'NULL'
+    maximum_field = 'NULL'
+    minimum_id = 'NULL'
+    maximum_id = 'NULL'
 
     end subroutine set_defaults
 
@@ -735,11 +737,18 @@
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         smolder_random_generator_id, scaling_fire_time_random_generator_id, &
         smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header, &
-        fire_compartment_random_generator_id, fire_compartment_id_header
+        fire_compartment_random_generator_id, fire_compartment_id_header, &
+        flaming_and_smoldering_ignition_random_generator_id, flaming_ignition_delay_random_generator_id, &
+        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
+        peak_smoldering_ignition_random_generator_id, ignition_delay_header, peak_ignition_header
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_to_parameters, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters, first_time_point_smoldering
+        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters, first_time_point_smoldering, &
+        all_flaming_ignition, all_smoldering_ignition, add_ignition_delay_to_parameters, &
+        add_peak_ignition_to_parameters
     type(fire_generator_type), pointer :: fire
+    real(eb) :: constant_flaming_ignition_time, constant_peak_flaming_hrr, constant_smoldering_ignition_time, &
+        constant_smoldering_peak_hrr
     
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
@@ -747,7 +756,12 @@
         smolder_time_random_generator_id, modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
-        fire_compartment_id_header
+        fire_compartment_id_header, all_flaming_ignition, all_smoldering_ignition, &
+        flaming_and_smoldering_ignition_random_generator_id, flaming_ignition_delay_random_generator_id, &
+        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
+        peak_smoldering_ignition_random_generator_id, add_ignition_delay_to_parameters, &
+        add_peak_ignition_to_parameters, ignition_delay_header, peak_ignition_header, constant_flaming_ignition_time, &
+        constant_peak_flaming_hrr, constant_smoldering_ignition_time, constant_smoldering_peak_hrr
     
     ios = 1
 
@@ -904,6 +918,18 @@
                     end if
                 end if
             end if
+            if (trim(flaming_and_smoldering_ignition_random_generator_id) /= 'NULL') then
+                
+            else if (trim(flaming_ignition_delay_random_generator_id) /= 'NULL' .or. &
+                trim(peak_flaming_ignition_random_generator_id) /= 'NULL') then
+                
+            else if (trim(smoldering_ignition_delay_random_generator_id) /= 'NULL' .or. &
+                    trim(peak_smoldering_ignition_random_generator_id) /= 'NULL') then
+                
+            else
+                        
+            end if
+            
         end do read_mfir_loop
     end if mfir_flag
     
@@ -930,6 +956,21 @@
     add_fire_compartment_id_to_parameters = .false.
     fire_compartment_id_header = 'NULL'
     fire_compartment_ids = 'NULL'
+    all_flaming_ignition = .true.
+    all_smoldering_ignition = .false.
+    flaming_and_smoldering_ignition_random_generator_id = 'NULL'
+    flaming_ignition_delay_random_generator_id = 'NULL'
+    peak_flaming_ignition_random_generator_id = 'NULL'
+    smoldering_ignition_delay_random_generator_id = 'NULL'
+    peak_smoldering_ignition_random_generator_id = 'NULL'
+    add_ignition_delay_to_parameters = .false.
+    add_peak_ignition_to_parameters = .true. 
+    ignition_delay_header = 'NULL'
+    peak_ignition_header = 'NULL'
+    constant_flaming_ignition_time = -1001.0_eb 
+    constant_peak_flaming_hrr = -1001.0_eb
+    constant_smoldering_ignition_time = -1001.0_eb
+    constant_smoldering_peak_hrr = -1001.0_eb
     
     
     end subroutine set_defaults

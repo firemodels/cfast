@@ -449,12 +449,12 @@ The {\ct \&MHDR} inputs specify details of the scenarios to be generated includi
 
 \subsection{Namelist MRND}
 
-The {\ct \&MRND} defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a seperate random generator. However, suppose the desire is to have all the rooms have the same height ceiling, then all the fields will use the same random number generator. % This might be to early to say all this. What do you think?
+The {\ct \&MRND} defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, suppose the desire is to have all the rooms have the same height ceiling, then all the fields will use the same random number generator. % This might be to early to say all this. What do you think?
 
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
-  \item[DISTRIBUTION] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct USER\_DEFINED}, and {\ct LINEAR }.
+  \item[DISTRIBUTION] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
   \item[INTEGER\_VALUES] a set of integer values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
   \item[LOGICAL\_VALUES]a set of logical values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
@@ -483,12 +483,29 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \subsection{Namelist MFLD}
 
-
+\begin{description}
+  \item[ID] Input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FIELD\_TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field
+  \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each filed input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields.
+  \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}.
+  \item[SCENARIO\_TITLE\_ARRAY] no clue what this one does
+  \item[PARAMETER\_HEADER] specifies the column title for this input filed in the parameters file, {\ct <project>\_parameters.csv}.
+  \item[INTEGER\_VALUES] a set of integer values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[LOGICAL\_VALUES]a set of logical values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[REAL\_VALUES] a set of real values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[STRING\_VALUES] a set of string values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[INDEX\_TYPE] This seems superfluous ... Can't you just tell from which one does not have default values? 
+  \item[NUMBER\_IN\_INDEX] Again, can't you just tell by how many values are input?
+  \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
+  \item[OBJECT\_ID] specifies the name of the specific input (i.e., the name of a compartment or vent).
+  \item[FIELD\_NAME] specifies the specific field in the input {\ct OBJECT\_ID}.
+\end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&MFLD ID = 'Height_bedroom' OBJECT_ID = 'Bedroom' FIELD_NAME = hieght RAND_ID = 'uniform_generator' PARAMETER_HEADER = 'Bedroom height' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Height_bedroom' OBJECT_ID = 'Bedroom' FIELD_NAME = 'HEIGHT' RAND_ID = 'uniform_generator' PARAMETER_HEADER = 'Bedroom height' ADD_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
 \clearpage

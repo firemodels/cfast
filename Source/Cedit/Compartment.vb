@@ -610,30 +610,30 @@ Public Class Compartment
             HasErrors = 0
             ' Compartment size and position are limited to a minimum and maximum size
             If aRoomWidth <= MinSize Or aRoomWidth > MaxSize Then
-                myErrors.Add(aName + " has a width that is in error.  Width should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
+                myErrors.Add(aName + " has a width that is outside typical bounds.  Width should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
             If aRoomDepth <= MinSize Or aRoomDepth > MaxSize Then
-                myErrors.Add(aName + " has a depth that is in error.  Depth should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
+                myErrors.Add(aName + " has a depth that is outside typical bounds.  Depth should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
             If aRoomHeight <= MinSize Or aRoomHeight > MaxSize Then
-                myErrors.Add(aName + " has a height that is in error.  Height should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
+                myErrors.Add(aName + " has a height that is outside typical bounds.  Height should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
             If aRoomOriginX < MinPosition Or aRoomOriginX > MaxPosition Or aRoomOriginY < MinPosition Or aRoomOriginY > MaxPosition Or aRoomOriginZ < MinPosition Or aRoomOriginZ > MaxPosition Then
-                myErrors.Add(aName + " has a position that is in error.  Position should be greater than " + MinPosition.ToString + " m and less than " + MaxPosition.ToString + " m", ErrorMessages.TypeWarning)
+                myErrors.Add(aName + " has a position that is outside typical bounds.  Position should be greater than " + MinPosition.ToString + " m and less than " + MaxPosition.ToString + " m", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
             ' Compartment area is limited to the square of the minimum and maximum size. Height is limited to the compartment size
             If aAreaPoints.GetUpperBound(0) > 0 Then
                 For i = 0 To aAreaPoints.GetUpperBound(0)
                     If aAreaPoints(i) < 0.0 Or aAreaPoints(i) > MaxSize ^ 2 Then
-                        myErrors.Add(aName + " has an area point that is in error. Cross-sectional area should be greater than " + (MinSize ^ 2).ToString + " m and less than " + (MaxSize ^ 2).ToString + " m?", ErrorMessages.TypeWarning)
+                        myErrors.Add(aName + " has an area point that is outside typical bounds. Cross-sectional area should be greater than " + (MinSize ^ 2).ToString + " m and less than " + (MaxSize ^ 2).ToString + " m?", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aHeightPoints(i) < 0.0 Or aHeightPoints(i) > aRoomHeight Then
-                        myErrors.Add(aName + " has an area point that is in error. Height values should be greater than 0 m and less than the compartment height", ErrorMessages.TypeWarning)
+                        myErrors.Add(aName + " has an area point that is outside typical bounds. Height values should be greater than 0 m and less than the compartment height", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                 Next

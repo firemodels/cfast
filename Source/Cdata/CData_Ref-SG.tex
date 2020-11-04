@@ -1,0 +1,363 @@
+\documentclass[12pt,twoside]{book}
+
+\input{../Bibliography/commoncommands}
+
+\usepackage{todonotes}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 5: CFAST Fire Data Generator (CData) \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+}
+
+\vfill
+
+\headerD{1889v5}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 5: CFAST Fire Data Generator (CData) \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Thomas G. Cleary \\
+
+{\em Fire Research Division, Engineering Laboratory, Gaithersburg, Maryland} \\
+
+Stanley W. Gilbert\\
+
+{\em Office of Economics, Engeneering Laboratory, Gaithersburg, Maryland}\\
+}
+
+\headerD{1889v5}
+
+\headerC{
+\flushright{\mydate\today\\
+CFAST Version \cfastversion \\
+\emph{GIT Revision:}~\gitrevision}}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+%
+% -------------------  Preface ------------------------
+%
+
+\chapter{Preface}
+
+This document provides ...
+
+%
+% -------------------  Disclaimer ------------------------
+%
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by the National Institute of Standards and Technology, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+\coden{1889v5}
+
+%
+% -------------------  Acknowledgments ------------------------
+%
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+
+\mainmatter
+
+%
+% -------------------  Introduction ------------------------
+%
+
+\chapter{Introduction}
+
+The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results." with Stanislaw Ulam credited with inventing the modern version of the Markov Chain Monte Carlo method working on nuclear weapons projects in the 1940s. In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. Bruns \cite{bruns_tn_2016} formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular preformance based designs. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
+
+While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis. The result of this effort is the CFAST Fire Data Generator (CData).
+
+%
+% -------------------  Defining the Analysis ------------------------
+%
+
+\chapter{Defining the Question and the Analysis}
+
+As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis [1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
+
+\begin{enumerate}
+  \item Community / Building / Occupant characteristics
+  \item Fire scenarios
+  \item Analysis variables / Criteria for comparisons
+  \item Statistical analysis of calculation results
+\end{enumerate}
+
+Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between compartments and the outside, and the range of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to study tenability of egress paths, fire severity, or building structural integrity, for example). All of these may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
+
+\section{Building Characteristics}
+
+In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.  Example compartment definitions that include the size and placement of each compartment is shown below.
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Sample_Visualization.png}
+\caption{Sample CFAST visualization of a single structure subject to a fire.}
+\label{sample_visualization}
+\end{figure}
+
+\lstset{backgroundcolor=\color{light-gray}}
+\begin{lstlisting}[basicstyle=\small\ttfamily,stringstyle=\ttfamily,numberstyle=\ttfamily,language=,frame=single, framerule=0pt]
+!! Compartments
+&COMP ID = 'Living Room'
+      DEPTH = 4.672 HEIGHT = 2.4384 WIDTH = 3.3798
+      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
+      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
+      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
+      ORIGIN = 0, 0, 2.4384 GRID = 50, 50, 50 /
+&COMP ID = 'Kitchen'
+      DEPTH = 2.74 HEIGHT = 2.4384 WIDTH = 5.1514
+      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
+      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
+      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
+      ORIGIN = 0, 4.672, 2.4384 GRID = 50, 50, 50 /
+\end{lstlisting}
+
+Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
+
+The set of buildings for study can also be chosen from distributions of building and room characteristics. Figure \ref{sample_room_distribution} shows the distribution of the total floor area in a residence, the number of bedrooms in a residence depending on the total floor area, the total number of rooms given a certain number of bedrooms (here shown for residences from 1000~ft$^2$ to 1500~ft$^2$), all taken from the 2015 U.S. Housing Survey \cite{AHS2015}. Creating a compartment geometry from these data can be thought of as a six step process:
+
+\begin{enumerate}
+    \item randomly select the total floor area of the structure, Fig. \ref{sample_room_distribution}(a);
+    \item randomly select the total number of bedrooms for a structure of the size chosen in step 1, Fig. \ref{sample_room_distribution}(b);
+    \item randomly select the total number of rooms in the structure of the chosen size and number of bedrooms (Fig. \ref{sample_room_distribution}(c) shows a sample distribution for homes ranging from 1000~ft$^2$ to 1500~ft$^2$. Distributions for other home sizes are available in ref. \cite{AHS2015});
+    \item determine room sizes based on a distribution of bedroom sizes, allocating left over space to the other rooms;
+    \item connect compartments as desired (for example by randomly setting vents as open or closed between compartment pairs); and
+    \item ensure that the resulting structure is realizable (This random approach to generating connections has a probability of resulting in a floorplan that cannot be instantiated in a single story. More technically, if the floorplan is thought of as a graph with the rooms as vertices and the connections as edges, some of the randomly generated graphs will be nonplanar for cases with more than four rooms. A planar graph is one that can be drawn on a piece of paper and none of the edges cross. The probability of generating a nonplanar floorplan increases as the number of rooms increases. In order to eliminate such nonphysical cases from the analysis, any randomly generated floorplan can be checked for planarity and rejected if necessary and replaced by a new randomly generated floorplan).
+\end{enumerate}
+
+\begin{figure}[p]
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=2.5in]{FIGURES/Total_Floor_Area} \\
+(a) Total Floor Area in a Residence \\
+\includegraphics[height=2.5in]{FIGURES/Number_of_Bedrooms} \\
+(b) Number of Bedrooms in a Residence as a Function of Total Floor Area \\
+\includegraphics[height=2.5in]{FIGURES/Total_Rooms} \\
+(c) Total Number of Rooms as a Function of the Number of Bedrooms in a Residence with  \\
+1000 ft$^2$ - 1500 ft$^2$ of Total Floor Area  \\
+\end{tabular*}
+\caption[Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms]
+{Example Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms (excluding Bathrooms) taken from the 2015 U.S. Housing Survey \cite{AHS2015}}
+\label{sample_room_distribution}
+\end{figure}
+
+Other characteristics of the structure such as materials of construction, vent openings, and detection devices can be varied as desired for the problem being studied.
+
+\section{Fire Scenarios}
+
+\section{Defining Data for Analysis}
+
+\section{Examples}
+
+\subsection{Example 1: Impact of new detector standard}
+
+\subsection{Example 2: Impact of inner liners on residential upholstered furniture fires}
+
+\subsection{Example 3: Impact of periodically active wireless detectors}
+
+%
+%---------------------User's Guide----------------------------------
+%
+
+\chapter{CData User's Guide}
+The CData prograim has several functions. One of them is as a PrePorocessor to generate all the case that CFAST runs to generate the data for any analysis. In this chapter the how and why the PreProcessor works the way it works will be discussed with some very simple examples to demonstrate certain aspects of the system. The rest of the chapeter is as follows. The next section is the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor and the final section discusses the significant issue of storage, which can serve as the limiter on the size of the analysis that can be done.
+
+\section{Basic Philosophy}
+
+\section{PreProcessor}
+
+\subsection{Commands}
+\label{commands_section}
+Each subsection will discuss one namelist and what each of the parameters do. The tables presented in each subsection are combined in Appendix \ref{preprocessor_reference}  to serve as a refence for commands.
+
+\subsubsection{Namelist DUMP}
+
+\subsubsection{Namelist MHDR}
+
+\subsubsection{Namelist MRND}
+
+\subsubsection{Namelist MFLD}
+
+\subsubsection{Namelist MFIR}
+
+\section{Running CFAST}
+
+\subsection{Running on Different Operating Systems}
+
+\subsection{The Question of Storage}
+
+\section{Generating Statistics}
+
+\subsection{Accumulator}
+
+\subsection{Statistics}
+
+\subsubsection{Determining If Enough Runs Have Been Made}
+
+Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers. The Law of Large Numbers states that for a large-enough number of independent samples, the average converges to the expected value. For example, if we want to know what the probability of flashover is in the kitchen for a certain class of fires, the Law of Large Numbers assures us that the percentage of Monte Carlo runs where flashover occurs converges to the probability as the number of runs becomes large.
+
+The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be usable? Two strategies are used here. The first is graphing the evolution of the mean versus number of runs. The second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on how much accuracy is needed.
+
+\subsubsection{Histograms}
+
+In some cases what is of interest is the distribution of values. There are two approaches to evaluating that  included here. First is a histogram, where the data are sorted into a set of equal bins, and the number of elements in each bin is displayed on a chart. The number of bins used here is automatically selected using Sturges rule [Sturges, H. A. (1926). "The choice of a class interval". Journal of the American Statistical Association. 21 (153): 65–66. doi:10.1080/01621459.1926.10502161] which chooses the number of bins according to the rule: \[k = \lceil \log_2 n \rceil + 1\], where  \[ \lceil \rceil\] represents the ceiling function.
+
+\subsubsection{Empirical Probability Density Function}
+
+The post-processor is also capable of generating an empirical probability density function. It does so using the techniques of Kernal Density Estimation [Hastie, Trevor, Robert Tibshirani, and J. H. Friedman. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. 2nd ed. Springer Series in Statistics. New York, NY: Springer, 2009.]. To determine the probability density at a point \textit{x} it associates a weight with each point in the data set. The weight is a function of the distance between the point in the data set and \textit{x}. The probability density is then the sum of those weights.
+
+Typically the Gaussian function is used as the Kernal (i.e., the weighting function), although other Kernals are also commonly used. For the Gaussian Kernal (which is used here) the estimated probability density at a point \textit{x} is:
+
+\[f(x) = \frac{1}{Nb}\sum_{j=1}^{N} \phi\left(\frac{x - x_j}{b} \right) \]
+
+where \textit{N} is the number of data points, \[x_j\] is an individual data point, \[\phi\] is the standard normal density function, and \textit{b} is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
+
+\subsubsection{Decision Trees}
+
+Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees[Hastie, Trevor, Robert Tibshirani, and J. H. Friedman. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. 2nd ed. Springer Series in Statistics. New York, NY: Springer, 2009.]. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For classification trees, each leaf node is associated with the best-fit category. For regression trees, each leaf node is associated with the average of the data that arrives at that node.
+
+Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
+
+%
+%-------------------------Analysis of Data-------------------------------------------
+%
+
+\chapter{Analysis of Data}
+
+\section{General Analysis}
+
+\section{Examples}
+
+\subsection{Example 1}
+
+\subsection{Example 2}
+
+\subsection{Example 3}
+
+%
+% -------------------  Summary ------------------------
+%
+
+\chapter{Summary and Future Work}
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+%
+% -------------------  Nomenclature ------------------------
+%
+
+\chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
+
+\begin{center}
+\begin{longtable}{p{1in}  p{5.5 in}}
+
+$A$                 & area, m$^2$ \\
+\end{longtable}
+
+\end{center}
+
+\chapter{PreProcessor Reference}
+\label{preprocessor_reference}
+Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands. 
+
+\section{Namelist DUMP}
+
+\section{Namelist MHDR}
+
+\section{Namelist MRND}
+
+\section{Namelist MFLD}
+
+\section{Namelist MFIR}
+
+\section {Namelist MSTT}
+\chapter{Supplemental Material}
+
+\chapter{Change Log}
+
+\label{last_page}
+
+\end{document}

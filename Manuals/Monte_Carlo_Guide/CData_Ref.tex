@@ -440,8 +440,8 @@ The {\ct \&MHDR} inputs specify details of the scenarios to be generated includi
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&MHDR CASES = 10000 /
-&MHDR CASES = 20000 WRITE_SEEDS = .TRUE.
+&MHDR NUMBER_OF_CASES = 10000 /
+&MHDR NUMBER_OF_CASES = 20000 WRITE_SEEDS = .TRUE.
 	PARAMETER_FILE = 'Outputfile' WORK_FOLDER = 'Z:\'  OUTPUT_FOLDER = '..\project'/
 \end{lstlisting}
 
@@ -454,7 +454,7 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
-  \item[DISTRIBUTION] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
+  \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
   \item[INTEGER\_VALUES] a set of integer values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
   \item[LOGICAL\_VALUES]a set of logical values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
@@ -468,28 +468,28 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
   \item[BETA] beta value for the {\ct BETA} distribution type.
   \item[MEAN] mean value for the {\ct NORMAL}; geometric mean value for the {\ct LOG\_NORMAL} distribution type.
   \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
-  \item[MINIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input for the compartment height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low height of the compartment is set. 
+  \item[MINIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input for the compartment height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low height of the compartment is set.
   \item[MAXIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the maximum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the top of a vent, then you can set the upper limit the height in the associated compartment by including a {\ct MAXIMUM\_FIELD} input for the vent input such as {\ct MAXIMUM\_FIELD="Comp 1","HEIGHT"} to cap the vent top to the height of the compartment.
 \end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&MRND ID = 'Example rand generator', DISTRIBUTION = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
-&MRND ID ='Second rand generator', DISTRIBUTION = 'NORMAL', MEAN = 0, STDEV = 1 /
+&MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
+&MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
 \end{lstlisting}
 
 \subsection{Namelist MFLD}
 
 \begin{description}
-  \item[ID] Input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD="Comp 1","HEIGHT"} would vary the height of the compartment named {\ct Comp 1}.
-  \item[FIELD\_TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES}       input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
+  \item[TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES}       input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
   \item[FIELD\_LABELS] The purpose of this optional is simply to provide descriptions of the purpose of each index value for {\ct INDEX} inputs.
   \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each field input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields. The number of inputs in the {\ct \&MRND} input must match those for the field type.
   \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
-  \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label. 
+  \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label.
   \item[VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
 \end{description}
@@ -497,7 +497,7 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&MFLD ID = 'Height_bedroom' OBJECT_ID = 'Bedroom' FIELD_NAME = 'HEIGHT' RAND_ID = 'uniform_generator' PARAMETER_HEADER = 'Bedroom height' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Height_bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'uniform_generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
 \end{lstlisting}
 
 \clearpage
@@ -506,18 +506,26 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \subsection{Namelist DUMP}
 
-
+\begin{description}
+  \item[ID] Summary outputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FILE] specifies which of the CFAST output files are used for the summary output. Allowable inputs are {\ct COMPARTMENTS}, {\ct DEVICES}, {\ct FIRES}, {\ct MASSES}, or {\ct WALLS}.
+  \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
+  \item[FIRST\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the first input in a calculation. For example, {\ct FIELD="Time","Simulation Time"} would specify the simulation time.
+  \item[SECOND\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the second input in a calculation, if required. For example, {\ct FIELD="Comp 1","Upper Layer Temperature"} would specify the upper layer temperature in compartment named {\ct Comp 1}.
+  \item[CRITERION] Specifies the value to be evaluated in a {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER} calculation.
+\end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
 &DUMP ID = 'Total Time Completed'
      FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
+     FIRST_FIELD = 'Time', 'Simulation Time' /
 &DUMP ID = 'Fire Room Ion Detector'
-     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
-     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
+     FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FIRST_FIELD = 'Time', 'Simulation Time'
+     SECOND_FIELD = 'Ionization Detector Room 1', 'Sensor Activation' /
 \end{lstlisting}
 
 \clearpage

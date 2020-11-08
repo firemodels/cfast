@@ -162,7 +162,7 @@ module preprocessor_routines
     randfireinfo(1:mxrandfires)%scalehrr = .false.
     randfireinfo(1:mxrandfires)%scaletime = .false.
     randfireinfo(1:mxrandfires)%dostime = .false. 
-    randfireinfo(1:mxrandfires)%smoldervalue = .false. 
+    randfireinfo(1:mxrandfires)%smoldering_fire = .false. 
     randfireinfo(1:mxrandfires)%hrrscalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%timescalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%stimevalue = -1001.0_eb

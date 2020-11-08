@@ -9,6 +9,8 @@ module preprocessor_types
     use cparams
     use cfast_types, only: cfast_type, fire_type
     
+    use random, only: random_normal
+    
     intrinsic random_seed, random_number
     
     !
@@ -58,12 +60,13 @@ module preprocessor_types
     end type random_logic_type
     
     type, extends(value_wrapper_type) :: field_pointer
-        character(len=7), dimension(4) :: fld_types = (/'VALUE  ', &
+        character(len=7), dimension(5) :: fld_types = (/'VALUE  ', &
                                                         'INDEX  ', &
                                                         'SCALING', &
-                                                        'LABEL  '/)
+                                                        'LABEL  ', &
+                                                        'NULL   '/)
         character(len=7) :: field_type = 'NULL'
-        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4
+        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 5
         character(len=9) :: value_type = 'NULL'
         class(cfast_type), pointer :: itemptr
         type(random_generator_type), pointer :: genptr
@@ -175,10 +178,14 @@ module preprocessor_types
         type(random_generator_type), pointer :: hrrscale, timescale, smoldergen, stimegen
         real(eb) :: hrrscalevalue, timescalevalue, stimevalue
         type(random_real_type) :: hrrscaleval, timescaleval, stimeval
-        logical :: smoldervalue, modifyfirearea
-        type(random_logic_type) :: smolderval
+        logical :: modifyfirearea
         type(field_pointer) :: fire_comp, fire_label
         logical :: do_fire_comp = .false. 
+        logical :: smoldering_fire = .false., do_flamesmolder = .false.
+        type(field_pointer) :: fs_fire_ptr, smoldering_ptr
+        real(eb) :: flaming_ign, smolder_ign
+        type(field_pointer) :: flaming_ig_ptr, smolder_ig_ptr, flaming_peak_ptr, smolder_peak_ptr
+        
     contains
         procedure :: do_rand => fire_do_rand
         procedure :: copybasetofire
@@ -351,7 +358,11 @@ module preprocessor_types
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = me%current_real_val
+                        val%val = me%constant
+                    end if
+                type is (random_int_type) 
+                    if (me%value_type == val_types(idx_int)) then
+                        val%val = int(me%constant)
                     else
                         call me%errorcall('RAND', 12)
                     end if
@@ -370,9 +381,23 @@ module preprocessor_types
                     end if
                 class default
                     call me%errorcall('RAND', 15)
+                end select
+        else if (me%type_dist == rand_dist(idx_log_normal)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            x = random_normal()
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
+            select type(val)
+                type is (random_real_type)
+                    if (me%value_type == val_types(idx_real)) then
+                        val%val = exp(log(me%stdev)*x+log(me%mean))
+                    end if
+                class default
+                    call me%errorcall('RAND', 16)
             end select
         else
-            call me%errorcall('RAND', 16)
+            call me%errorcall('RAND', 17)
         end if
             
         return
@@ -490,7 +515,9 @@ module preprocessor_types
         class(value_wrapper_type), intent(inout) :: val
         integer, intent(in) :: iteration
     
-        if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
+            return
+        else if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
             call me%genptr%rand(me%valptr, iteration)
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_index))) then
             call me%genptr%rand(me%randptr, iteration)

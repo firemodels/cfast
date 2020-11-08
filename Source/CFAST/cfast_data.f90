@@ -34,7 +34,7 @@ module devc_data
     integer :: idset    ! compartment where detector just went off. more than one
                         ! sprinkler in a compartment is meaningless to CFAST
 
-    integer :: n_targets                                                        ! number of detectors in the simulation
+    integer :: n_targets                                                        ! number of targets in the simulation
     type (target_type), allocatable, dimension(:), target  :: targetinfo        ! structured target data
 
     integer :: n_detectors                                                      ! number of detectors in the simulation

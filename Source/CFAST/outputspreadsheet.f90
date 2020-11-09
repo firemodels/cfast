@@ -1901,11 +1901,11 @@ module spreadsheet_routines
                     else if (dumpptr%type(1:3) == 'MIN') then
                         dumparray(2,relcol) = min(dumparray(2,relcol),x(1, primecol(cols(i))))
                     else if (dumpptr%type(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(1,cols(i)))>=dumpptr%criteria.and.dumparray(2,relcol)== -1) then
+                        if (x(1, seccol(1,cols(i)))>=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
                             dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (dumpptr%type(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(1,i))<=dumpptr%criteria.and.dumparray(2,relcol)== -1) then
+                        if (x(1, seccol(1,i))<=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
                             dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (dumpptr%type(1:9) == 'INTEGRATE') then

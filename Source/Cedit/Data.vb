@@ -36,7 +36,7 @@ Friend Module Data
     Friend Const DetectorTypes As String = "Smoke    Heat     Sprinkler"
     Friend Const NormalPointsTo As String = "Ceiling    Floor      Front Wall Back Wall  Right Wall Left Wall  "
     Friend myFireProperties As New FireCollection                   ' fire properties (HRR, etc) defined for this test case
-    Friend myFires As New FireCollection                            ' fires defined for this test case (location, ignition criteria and link to fire properties for each
+    Friend myFires As New FireCollection                            ' fires defined for this test case (location, ignition criterion and link to fire properties for each
     Friend TempFires As New FireCollection
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
     Friend Const IgnitionTypes As String = "TIMETEMPFLUX"

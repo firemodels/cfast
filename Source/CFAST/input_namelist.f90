@@ -2964,13 +2964,13 @@ continue
     type(dump_type), pointer :: dumpptr
     logical :: found
     
-    real(eb) :: criteria
+    real(eb) :: criterion
     character(len=25) :: file_type, type
     character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
     character(len=128) :: fyi
 
     namelist /DUMP/ id, file_type, first_device, first_measurement, second_device, &
-                    second_measurement, criteria, type, fyi
+                    second_measurement, criterion, type, fyi
 
     ios = 1
 
@@ -3097,9 +3097,9 @@ continue
                     trim(type),' number ',counter
                 call cfastexit('read_dump',13)
             end if
-            if ((type(1:8)=='TRIGGER_').and.(criteria<=0)) then
-                write(*,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                write(iofill,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
+            if ((type(1:8)=='TRIGGER_').and.(criterion<=0)) then
+                write(*,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0',' number ',counter
+                write(iofill,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0',' number ',counter
                 call cfastexit('read_dump',14)
             end if
             
@@ -3119,7 +3119,7 @@ continue
                 dumpptr%first_measurement = 'Simulation Time'
                 dumpptr%second_device = first_device
                 dumpptr%second_measurement = first_measurement
-                dumpptr%criteria = 0 
+                dumpptr%criterion = 0 
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
             else
@@ -3129,7 +3129,7 @@ continue
                 dumpptr%first_measurement = first_measurement
                 dumpptr%second_device = second_device
                 dumpptr%second_measurement = second_measurement
-                dumpptr%criteria = criteria 
+                dumpptr%criterion = criterion
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
             end if 
@@ -3153,7 +3153,7 @@ continue
     second_device = ' '
     second_measurement = ' '
     type = ' '
-    criteria = -1
+    criterion = -1
     
     end subroutine set_defaults
 

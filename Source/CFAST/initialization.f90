@@ -559,7 +559,7 @@ module initialization_routines
         dumpinfo(1:mx_dumps)%second_device = ' '
         dumpinfo(1:mx_dumps)%second_measurement = ' '
         dumpinfo(1:mx_dumps)%relative_column = -1
-        dumpinfo(1:mx_dumps)%criteria = -1
+        dumpinfo(1:mx_dumps)%criterion = -1
     end if
 
     return

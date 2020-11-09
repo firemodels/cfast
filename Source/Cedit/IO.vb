@@ -1668,13 +1668,13 @@ Module IO
     Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As DumpCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
-        Dim criteria As Double
+        Dim criterion As Double
 
         For i = 1 To NMList.TotNMList
             id = ""
             filetype = ""
             type = ""
-            criteria = 0
+            criterion = 0
             firstmeasurement = ""
             firstdevice = ""
             secondmeasurement = ""
@@ -1684,12 +1684,12 @@ Module IO
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FILE_TYPE") Then
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FILE") Then
                         filetype = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE") Then
                         type = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "CRITERIA") Then
-                        criteria = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CRITERION") Then
+                        criterion = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_DEVICE") Then
                         firstdevice = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_MEASUREMENT") Then
@@ -1704,7 +1704,7 @@ Module IO
                         myErrors.Add("In DUMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someDumps.Add(New Dump(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
+                someDumps.Add(New Dump(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
             End If
         Next
     End Sub
@@ -2840,9 +2840,9 @@ Module IO
 
                 ln = "&DUMP ID = '" + aDump.ID + "'"
                 PrintLine(IO, ln)
-                ln = "     FILE_TYPE = '" + aDump.FileType + "'  TYPE = '" + aDump.Type + "'"
+                ln = "     TYPE = '" + adump.FileType + "'  TYPE = '" + adump.Type + "'"
                 If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  CRITERIA = " + aDump.Criteria.ToString
+                    ln += "  CRITERION = " + adump.Criterion.ToString
                 End If
                 PrintLine(IO, ln)
                 ln = "     FIRST_DEVICE = '" + aDump.FirstDevice + "'  FIRST_MEASUREMENT = '" + aDump.FirstMeasurement + "'"

@@ -751,7 +751,7 @@
             call add_token_str(iounit, buf, 'SECOND_DEVICE = ', dumpptr%second_device)
             call add_token_str(iounit, buf, 'SECOND_MEASUREMENT = ', dumpptr%second_measurement)
             if (dumpptr%type(1:3) == 'TRI') then
-                call add_token_val(iounit, buf, 'CRITERIA = ', dumpptr%criteria)
+                call add_token_val(iounit, buf, 'CRITERION = ', dumpptr%criterion)
             end if
             call end_namelist(iounit, buf)
         end do

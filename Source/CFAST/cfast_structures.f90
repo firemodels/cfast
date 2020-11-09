@@ -16,7 +16,7 @@ module cfast_types
         character(len=24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                     !      'check_total_hrr'
-        real(eb) :: criteria                        ! Value used in 'trigger_...' analysis
+        real(eb) :: criterion                       ! Value used in 'trigger_...' analysis
 
         character(len=128) :: first_device          ! Name of instrument, third row in spreadsheet        
         character(len=128) :: first_measurement     ! Name of measurement for first device, second row in spreadsheet
@@ -71,7 +71,7 @@ module cfast_types
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
                                                         ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: ignition_criterion                  ! ignition criteria for fire. Units depend on ignition type (user input)
+        real(eb) :: ignition_criterion                  ! ignition criterion for fire. Units depend on ignition type (user input)
         integer :: chemistry_type                       ! fire type. Currently, only constrained fire (user input)
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl            ! stociometry of the fuel (user input)
         real(eb) :: chirad                              ! fraction of fire HRR released as radiation (user input)
@@ -289,7 +289,7 @@ module cfast_types
         integer :: opening_target           ! target number associated with vent (user input)
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
+        real(eb) :: opening_criterion       ! open/close criterion for vent change based on temperature or flux
         logical :: opening_triggered        ! true if opening_criterion has been met
         real(eb) :: opening_temperature     ! current temeprature of target associate with vent
         real(eb) :: opening_flux            ! current incident flux of target associate with vent

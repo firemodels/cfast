@@ -4,7 +4,8 @@ module preprocessor_types
     use exit_routines, only: cfastexit
     use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
-                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear
+                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear, &
+                     idx_trun_normal
     
     use cparams
     use cfast_types, only: cfast_type, fire_type
@@ -119,6 +120,7 @@ module preprocessor_types
         logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
         real(eb) :: prob_array(mxpntsarray)             ! user defined probablities for both descreet and continous 
         real(eb) :: maxval, minval                      ! the ends of the interval used for the random generator
+        real(eb) :: minimum, maximum
         real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
         real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
         real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
@@ -171,6 +173,11 @@ module preprocessor_types
     type, extends(value_wrapper_type) :: fire_generator_type
         character(len=128) :: fireid, basefireid, hrrscalegenid, timescalegenid, smoldergenid, &
             smoldertimegenid
+        character(len=10), dimension(3) :: fir_typs = (/'UNMODIFIED', &
+                                                        'SCALED    ', &
+                                                        'NEW       ' /)
+        character(len=10) :: fire_type
+        integer :: idx_fire_unmod = 1, idx_fire_scale = 2, idx_fire_new = 3
         character(len=128), dimension(mxrooms) :: compname 
         integer, dimension(mxrooms) :: compindex
         logical :: first_time_point_smoldering, scalehrr, scaletime, dostime, copy_base_to_fire
@@ -181,10 +188,19 @@ module preprocessor_types
         logical :: modifyfirearea
         type(field_pointer) :: fire_comp, fire_label
         logical :: do_fire_comp = .false. 
-        logical :: smoldering_fire = .false., do_flamesmolder = .false.
-        type(field_pointer) :: fs_fire_ptr, smoldering_ptr
-        real(eb) :: flaming_ign, smolder_ign
-        type(field_pointer) :: flaming_ig_ptr, smolder_ig_ptr, flaming_peak_ptr, smolder_peak_ptr
+        character(len = 128) :: incipient_type, incipient_growth
+        character(len = 10), dimension(4) :: incip_typ = (/'NONE      ', &
+                                                           'FLAMING   ', &
+                                                           'SMOLDERING', &
+                                                           'RANDOM    ' /)
+        integer :: idx_none = 1, idx_flame = 2, idx_smolder = 3, idx_random = 4
+        type(field_pointer) :: fs_fire_ptr, smolder_hrr_ptr, flame_hrr_ptr, smolder_time_ptr, flame_time_ptr
+        logical :: smoldering_fire
+        character(len=10) :: incep_value
+        real(eb) :: growthexpo, decayexpo
+        integer :: growth_npts, decay_npts
+        type(field_pointer), dimension(2,mxpts) :: firepoints
+        real(eb), dimension(2, mxpts) :: firevals
         
     contains
         procedure :: do_rand => fire_do_rand
@@ -396,6 +412,23 @@ module preprocessor_types
                 class default
                     call me%errorcall('RAND', 16)
             end select
+        else if (me%type_dist == rand_dist(idx_trun_normal)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            select type(val)
+                type is (random_real_type)
+                    val%val = me%minimum - 100.0_eb
+                    if (me%value_type == val_types(idx_real)) then
+                        do while(val%val < me%minimum .or. val%val > me%maximum)
+                            x = random_normal()
+                            val%val = me%stdev*x + me%mean
+                        end do
+                    end if
+                class default
+                    call me%errorcall('RAND', 16)
+            end select
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
         else
             call me%errorcall('RAND', 17)
         end if
@@ -420,21 +453,12 @@ module preprocessor_types
                 call me%timescaleval%add_header(icol, array)
                 call me%fire_comp%add_header(icol, array)
                 call me%fire_label%add_header(icol, array)
+                call me%fs_fire_ptr%add_header(icol, array)
+                call me%flame_hrr_ptr%add_header(icol, array)
+                call me%flame_time_ptr%add_header(icol, array)
+                call me%smolder_hrr_ptr%add_header(icol, array)
+                call me%smolder_time_ptr%add_header(icol, array)
                 me%parameter_field_set = .true. 
-                !if (me%hrrscaleval%add_to_parameters) then
-                !    icol = icol + 1
-                !    me%hrrscaleval%paramptr => array(icol)
-                !    array(icol) = trim(me%hrrscaleval%parameter_header)
-                !    me%hrrscaleval%parameter_field_set = .true.
-                !    me%parameter_field_set = .true.
-                !end if 
-                !if (me%timescaleval%add_to_parameters) then
-                !    icol = icol + 1
-                !    me%timescaleval%paramptr => array(icol)
-                !    array(icol) = trim(me%timescaleval%parameter_header)
-                !    me%timescaleval%parameter_field_set = .true.
-                !    me%parameter_field_set = .true.
-                !end if
             class default
                 icol = icol + 1
                 me%paramptr => array(icol)
@@ -503,6 +527,11 @@ module preprocessor_types
                     write(me%fire_label%paramptr,'(a)') trim(me%fire_label%char_array(me%fire_label%index))
                 end if
                 call me%fire_label%write_value
+                call me%fs_fire_ptr%write_value
+                call me%flame_hrr_ptr%write_value
+                call me%flame_time_ptr%write_value
+                call me%smolder_hrr_ptr%write_value
+                call me%smolder_time_ptr%write_value
             class default
                 call me%errorcall('write_value',3)
             end select
@@ -872,7 +901,7 @@ module preprocessor_types
         class(fire_generator_type) :: me
         integer, intent(in) :: iteration
         
-        integer :: i
+        integer :: i, tmp
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
@@ -903,7 +932,38 @@ module preprocessor_types
             call me%fire_comp%do_rand(me%fire_comp%valptr,iteration)
             call me%fire_label%do_rand(me%fire_label%valptr,iteration)
         end if 
-    
+        
+        if (trim(me%incipient_type) == trim(me%incip_typ(me%idx_random))) then
+            call me%fs_fire_ptr%do_rand(me%fs_fire_ptr%valptr, iteration)
+        end if 
+        
+        if (trim(me%incipient_growth) == trim(me%incip_typ(me%idx_flame))) then
+            tmp = me%flame_time_ptr%realval%val
+            call me%flame_time_ptr%do_rand(me%flame_time_ptr%valptr, iteration)
+            tmp = me%flame_time_ptr%realval%val - tmp
+            call me%flame_hrr_ptr%do_rand(me%flame_hrr_ptr%valptr, iteration)
+            me%fire%flaming_transition_time = 0
+        else if (trim(me%incipient_growth) == trim(me%incip_typ(me%idx_smolder))) then
+            tmp = me%smolder_time_ptr%realval%val
+            call me%smolder_time_ptr%do_rand(me%smolder_time_ptr%valptr, iteration)
+            tmp = me%smolder_time_ptr%realval%val - tmp
+            call me%smolder_hrr_ptr%do_rand(me%smolder_hrr_ptr%valptr, iteration)
+            me%fire%flaming_transition_time = me%smolder_time_ptr%realval%val
+        end if
+        if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
+            do i = 3, me%fire%n_qdot
+                me%fire%t_qdot(i) = me%fire%t_qdot(i) + tmp
+                me%fire%t_mdot(i) = me%fire%t_qdot(i)
+                me%fire%t_area(i) = me%fire%t_qdot(i)
+                me%fire%t_height(i) = me%fire%t_qdot(i)
+                me%fire%t_soot(i) = me%fire%t_qdot(i)
+                me%fire%t_co(i) = me%fire%t_qdot(i)
+                me%fire%t_hcn(i) = me%fire%t_qdot(i)
+                me%fire%t_trace(i) = me%fire%t_qdot(i)
+                me%fire%t_hoc(i) = me%fire%t_qdot(i)
+            end do
+        end if
+        
     end subroutine fire_do_rand
     
     subroutine copybasetofire(me, fire, base, flag)

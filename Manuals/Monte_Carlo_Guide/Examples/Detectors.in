@@ -25,6 +25,40 @@
     INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
 &MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
     INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Dining Room Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Kitchen Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 1 Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 2 Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 3 Trigger Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Living Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Dining Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Kitchen Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 1 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 2 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'UL Alarm Bedroom 3 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN = 9.5 STDEV = 4.2 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 23000 STDEV = 7000 
+    MINIMUM = 0 MAXIMUM = 1000000/
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 207 STDEV = 46 
+    MINIMUM = 0 MAXIMUM = 1000000/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 11000 STDEV = 3000 
+    MINIMUM = 0 MAXIMUM = 1000000/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 6863 STDEV = 1812 
+    MINIMUM = 0 MAXIMUM = 1000000/
 
 &MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' TYPE_OF_INDEX = 'REAL' NUMBER_IN_INDEX = 5
     REAL_ARRAY_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 OBJECT_ID = 'DR LR 1' FIELD_NAME = 'TOP' ADD_TO_PARAMETERS = .TRUE. /
@@ -59,7 +93,36 @@
 &MFLD ID = 'Width Bedroom 3 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 3 Door' TYPE_OF_INDEX = 'REAL' NUMBER_IN_INDEX = 5
     REAL_ARRAY_VALUES = 0.7 0.525 0.35 0.175 0.7 OBJECT_ID = 'Bedroom 3 Door' FIELD_NAME = 'WIDTH' ADD_TO_PARAMETERS = .TRUE. /
 &MFIR ID = 'Compartment_generator' FIRE_ID = 'Random' FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms' 
-    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room' ADD_FIRE_COMPARTMENT_ID_TO_PARAMETERS = .TRUE. /
+    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room' ADD_FIRE_COMPARTMENT_ID_TO_PARAMETERS = .TRUE. 
+    FLAMING_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator' NUMBER_OF_INCIPIENT_FIRE_TYPES = 2
+    INCIPIENT_FIRE_TYPES = 'FLAMING' 'SMOLDERING' FLAMING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Flaming Peak Generator'
+    PEAK_FLAMING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Time Generator' TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'
+    SMOLDERING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
+    PEAK_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Smoldering Time Generator'/
+&MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Living Room Trigger Generator'
+    OBJECT_ID = 'UL Alarm Living Room' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Dining Room Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Dining Room Trigger Generator'
+    OBJECT_ID = 'UL Alarm Dining Room' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Kitchen Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Kitchen Trigger Generator'
+    OBJECT_ID = 'UL Alarm Kitchen' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Bedroom 1 Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 1 Trigger Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 1' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Bedroom 2 Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 2 Trigger Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 2' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Bedroom 3 Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 3 Trigger Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 3' FIELD_NAME = 'TRIGGER' /
+&MFLD ID = 'UL Alarm Living Room Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Living Room Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Living Room' FIELD_NAME = 'TRIGGER_SMOLDER' /
+&MFLD ID = 'UL Alarm Dining Room Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Dining Room Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Dining Room' FIELD_NAME = 'TRIGGER_SMOLDER' /
+&MFLD ID = 'UL Alarm Kitchen Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Kitchen Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Kitchen' FIELD_NAME = 'TRIGGER_SMOLDER' /
+&MFLD ID = 'UL Alarm Bedroom 1 Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 1 Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 1' FIELD_NAME = 'TRIGGER_SMOLDER' /
+&MFLD ID = 'UL Alarm Bedroom 2 Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 2 Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 2' FIELD_NAME = 'TRIGGER_SMOLDER' /
+&MFLD ID = 'UL Alarm Bedroom 3 Trigger_smolder' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Bedroom 3 Trigger_smolder Generator'
+    OBJECT_ID = 'UL Alarm Bedroom 3' FIELD_NAME = 'TRIGGER_SMOLDER' /
  
 !! Material Properties 
 &MATL ID = 'Gyp' MATERIAL = 'Gypsum Board', 
@@ -144,6 +207,7 @@
 &CHEM ID = 'Random_Fire' CARBON = 9 CHLORINE = 0 HYDROGEN = 6 NITROGEN = 0.2 OXYGEN = 2 HEAT_OF_COMBUSTION = 13000 RADIATIVE_FRACTION = 0.33 / 
 &TABL ID = 'Random_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Random_Fire', DATA = 0, 0, 0, 0.5, 0.01, 0.025, 0.03, 0, 0 /
+&TABL ID = 'Random_Fire', DATA = 1, 1, 0, 0.5, 0.01, 0.025, 0.03, 0, 0 /
 &TABL ID = 'Random_Fire', DATA = 300, 300, 0, 0.5, 0.01, 0.025, 0.03, 0, 0 /
 &TABL ID = 'Random_Fire', DATA = 600, 300, 0, 0.5, 0.01, 0.025, 0.03, 0, 0 /
 &TABL ID = 'Random_Fire', DATA = 750, 950, 0, 0.5, 0.01, 0.025, 0.03, 0, 0 /

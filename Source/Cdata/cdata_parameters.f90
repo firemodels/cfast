@@ -12,7 +12,7 @@
     integer, parameter :: mxstats = 10, mxfirepnts = 20
     integer, parameter :: idx_uniform = 1, idx_trangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6
-    integer, parameter :: idx_log_normal = 7, idx_const = 8, idx_value = 11, idx_linear = 9, mxfields = 100
+    integer, parameter :: idx_log_normal = 7, idx_const = 8, idx_value = 11, idx_linear = 9, mxfields = 300
     integer, parameter :: idx_trun_normal = 10
     character(len=35), parameter :: rand_dist(mxranddists) =  (/'UNIFORM                            ',  &
                                                                 'TRIANGLE                           ',  &

@@ -423,8 +423,8 @@
                 call add_token_str(iounit, buf, 'TYPE = ', 'SMOKE_DETECTOR')
                 call add_token_rarray(iounit, buf, 'LOCATION = ', dtectptr%center, 3)
                 if (dtectptr%dual_detector) then
-                    tmp(1) = dtectptr%trigger
-                    tmp(2) = dtectptr%trigger_smolder
+                    tmp(2) = dtectptr%trigger
+                    tmp(1) = dtectptr%trigger_smolder
                     call add_token_rarray(iounit, buf, 'SETPOINTS = ', tmp, 2)
                 else
                     if (dtectptr%trigger /= default_activation_obscuration) then

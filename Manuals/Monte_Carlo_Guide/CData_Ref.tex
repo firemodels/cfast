@@ -505,6 +505,50 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \subsection{Namelist MFIR}
 
+\begin{description}
+  \item[ID]
+  \item[FYI]
+  \item[FIRE\_ID] This is the fire in the data file that you are modifying. Everything in a single namelist will modify this fire. 
+  \item[BASE\_FIRE\_ID] If you are doing scaling a fire this is the fire that will be used. Basically, this is the place that the base values are stored. In the future there might even be a list of fires that could be copied into this fire.\ 
+  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] This hasn’t been implemented yet. It is going to be a real valued variable. If it is negative, then the fire areas are not modified. If it has a positive value, the fire area is modified using Kevin’s equation with the value in the variable. We should put some limits on the values they can put here. Probably fairly close to 1. 
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the HRR values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value A scaling value that is applied to all the HRR values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire. 
+  \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[HRR\_SCALE\_HEADER] If left blank will be filled in by the code.
+  \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[TIME\_SCALE\_HEADER]
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick which compartment the fire is in. Usually uses USER\_DEFINED\_DISCRETE\_DISTRIBUITION
+  \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them.
+  \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[FIRE\_COMPARTMENT\_ID\_HEADER] 
+  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the next two sets of two entries work together. This one determines if you have a Smoldering or Flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexability
+  \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipeint begining of the fire with other inputs in the scenario.
+  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Probably can go away but was easier to include in the begining. Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
+  \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators. Both must be defined. If you don’t want the value to change you can set it up to a {\ct CONSTANT} random generator. This one determines how long the incipient flaming fire burns.
+  \item[PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID] God these names are awful. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
+  \item[SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
+  \item[PEAK\_SMOLDERING\_IGNITION\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
+  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.} Displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens. 
+  \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened becasue adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
+  \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
+  \item[FLAMING\_HRR\_PEAK\_HEADER]  
+  \item[FLAMING\_TIME\_HEADER]
+  \item[SMOLDERING\_HRR\_PEAK\_HEADER]
+  \item[SMOLDERING\_TIME\_HEADER]
+  \item[FIRE\_TIME\_GENERATORS] The following group probably should best be explained in a call. It isn't that complicate but I don't think I would get it correct in text. 
+  \item[FIRE\_HRR\_GENERATORS]
+  \item[NUMBER\_OF\_GROWTH\_POINTS]
+  \item[NUMBER\_OF\_DECAY\_POINTS]
+  \item[GROWTH\_EXPONENT]
+  \item[DECAY\_EXPONENT]
+  \item[ADD\_HRR\_TO\_PARAMETERS]
+  \item[ADD\_TIME\_TO\_PARAMETERS]
+  \item[HRR\_LABELS]
+  \item[TIME\_LABELS]
+\end{description}
+
 \subsection{Namelist DUMP}
 
 \begin{description}

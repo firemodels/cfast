@@ -199,7 +199,8 @@ module preprocessor_types
         character(len=10) :: incep_value
         real(eb) :: growthexpo, decayexpo
         integer :: growth_npts, decay_npts
-        type(field_pointer), dimension(2,mxpts) :: firepoints
+        integer :: n_firepoints, n_firegenerators
+        type(field_pointer), dimension(2,mxpts) :: firegenerators
         real(eb), dimension(2, mxpts) :: firevals
         
     contains
@@ -374,11 +375,13 @@ module preprocessor_types
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = me%constant
+                        me%current_real_val = me%constant
+                        val%val = me%current_real_val
                     end if
                 type is (random_int_type) 
                     if (me%value_type == val_types(idx_int)) then
-                        val%val = int(me%constant)
+                        me%current_int_val = int(me%constant)
+                        val%val = me%current_int_val
                     else
                         call me%errorcall('RAND', 12)
                     end if
@@ -407,7 +410,8 @@ module preprocessor_types
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        val%val = exp(log(me%stdev)*x+log(me%mean))
+                        me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
+                        val%val = me%current_real_val
                     end if
                 class default
                     call me%errorcall('RAND', 16)
@@ -421,7 +425,8 @@ module preprocessor_types
                     if (me%value_type == val_types(idx_real)) then
                         do while(val%val < me%minimum .or. val%val > me%maximum)
                             x = random_normal()
-                            val%val = me%stdev*x + me%mean
+                            me%current_real_val = me%stdev*x + me%mean
+                            val%val = me%current_real_val
                         end do
                     end if
                 class default
@@ -446,6 +451,8 @@ module preprocessor_types
         integer, intent(inout) :: icol
         character(len=*), intent(out), target :: array(*)
         
+        integer :: i
+        
         if (me%add_to_parameters) then
             select type (me)
             type is (fire_generator_type)
@@ -453,6 +460,10 @@ module preprocessor_types
                 call me%timescaleval%add_header(icol, array)
                 call me%fire_comp%add_header(icol, array)
                 call me%fire_label%add_header(icol, array)
+                do i = 1, me%n_firegenerators
+                    call me%firegenerators(1,i)%add_header(icol, array)
+                    call me%firegenerators(2,i)%add_header(icol, array)
+                end do 
                 call me%fs_fire_ptr%add_header(icol, array)
                 call me%flame_hrr_ptr%add_header(icol, array)
                 call me%flame_time_ptr%add_header(icol, array)
@@ -476,6 +487,8 @@ module preprocessor_types
     subroutine write_value(me)
     
         class(value_wrapper_type), intent(inout) :: me
+        
+        integer :: i
     
         if (me%add_to_parameters .and. me%parameter_field_set) then
             select type (me)
@@ -523,10 +536,11 @@ module preprocessor_types
                 if (me%timescaleval%add_to_parameters) then
                     write(me%timescaleval%paramptr,'(e13.6)') me%timescaleval%val
                 end if
-                if (me%fire_label%add_to_parameters) then
-                    write(me%fire_label%paramptr,'(a)') trim(me%fire_label%char_array(me%fire_label%index))
-                end if
                 call me%fire_label%write_value
+                do i = 1, me%n_firegenerators
+                    call me%firegenerators(1,i)%write_value
+                    call me%firegenerators(2,i)%write_value
+                end do
                 call me%fs_fire_ptr%write_value
                 call me%flame_hrr_ptr%write_value
                 call me%flame_time_ptr%write_value
@@ -901,7 +915,8 @@ module preprocessor_types
         class(fire_generator_type) :: me
         integer, intent(in) :: iteration
         
-        integer :: i, tmp
+        integer :: i, tmp, tmp1
+        real(eb) :: deltat, a
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
@@ -933,10 +948,38 @@ module preprocessor_types
             call me%fire_label%do_rand(me%fire_label%valptr,iteration)
         end if 
         
+        if (me%n_firegenerators > 0) then
+            do i = 1, me%n_firegenerators
+                call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
+                call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
+            end do
+            if (me%growth_npts > 0) then
+                if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
+                    tmp1 = 1
+                else 
+                    tmp1 = 0
+                end if
+                deltat = me%firegenerators(2,1)%realval%val/(me%growth_npts - tmp1)
+                a = me%firegenerators(1,1)%realval%val/me%firegenerators(2,1)%realval%val**me%growthexpo
+                do i = 2 + tmp1, me%growth_npts
+                    me%fire%t_qdot(i) = deltat
+                    me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo
+                end do
+            end if
+            me%fire%n_qdot = me%n_firepoints
+            do i = 2 + tmp1, me%n_firepoints
+                me%fire%t_qdot(i) = me%fire%t_qdot(i-1) + me%fire%t_qdot(i)
+            end do
+        end if
+        
+        tmp = 0
+        
+        ! Doing the incipient growth model
+        ! determing if it is flaming or smoldering if that is set up
         if (trim(me%incipient_type) == trim(me%incip_typ(me%idx_random))) then
             call me%fs_fire_ptr%do_rand(me%fs_fire_ptr%valptr, iteration)
         end if 
-        
+        ! Determing the actual values for peak HRR and length of time
         if (trim(me%incipient_growth) == trim(me%incip_typ(me%idx_flame))) then
             tmp = me%flame_time_ptr%realval%val
             call me%flame_time_ptr%do_rand(me%flame_time_ptr%valptr, iteration)
@@ -950,7 +993,33 @@ module preprocessor_types
             call me%smolder_hrr_ptr%do_rand(me%smolder_hrr_ptr%valptr, iteration)
             me%fire%flaming_transition_time = me%smolder_time_ptr%realval%val
         end if
-        if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
+        
+        ! Updating other times after having calculated the new t_qdot. tmp is the change in time due to incipient model
+        ! it is set to zero before the incipient stuff in case the incipient model is not being used
+        
+        if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none)) .or. &
+            me%n_firegenerators > 0) then
+            if (me%fire%n_qdot /= me%fire%n_mdot) then
+                if (me%fire%n_qdot > me%fire%n_mdot) then
+                    do i = me%fire%n_mdot + 1, me%fire%n_qdot
+                        me%fire%mdot(i) = me%fire%mdot(me%fire%n_mdot)
+                        me%fire%area(i) = me%fire%area(me%fire%n_area)
+                        me%fire%height(i) = me%fire%height(me%fire%n_height)
+                        me%fire%y_soot(i) = me%fire%y_soot(me%fire%n_soot)
+                        me%fire%y_co(i) = me%fire%y_co(me%fire%n_co)
+                        me%fire%y_trace(i) = me%fire%y_trace(me%fire%n_trace)
+                        me%fire%hoc(i) = me%fire%hoc(me%fire%n_hoc)
+                    end do
+                end if
+                me%fire%n_mdot = me%fire%n_qdot
+                me%fire%n_area = me%fire%n_qdot
+                me%fire%n_height = me%fire%n_qdot
+                me%fire%n_soot = me%fire%n_qdot
+                me%fire%n_co = me%fire%n_qdot
+                me%fire%n_soot = me%fire%n_qdot
+                me%fire%n_trace = me%fire%n_qdot
+                me%fire%n_hoc = me%fire%n_qdot
+            end if 
             do i = 3, me%fire%n_qdot
                 me%fire%t_qdot(i) = me%fire%t_qdot(i) + tmp
                 me%fire%t_mdot(i) = me%fire%t_qdot(i)

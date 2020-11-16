@@ -42,7 +42,7 @@
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
         mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear, &
-        idx_normal, idx_log_normal, idx_trun_normal
+        idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal
         
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
@@ -351,6 +351,13 @@
                 genptr%mean = mean
                 genptr%stdev = stdev
             else if (trim(distribution_type) == trim(rand_dist(idx_trun_normal))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                genptr%mean = mean
+                genptr%stdev = stdev
+                genptr%minimum = minimum
+                genptr%maximum = maximum
+            else if (trim(distribution_type) == trim(rand_dist(idx_trun_log_normal))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
@@ -763,12 +770,11 @@
     integer :: ios, ii, jj, kk
     logical :: mfirflag, found, found2, flameset, smolderset
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
-        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header, &
+        scaling_fire_time_random_generator_id, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_id_header, &
         flaming_smoldering_ignition_random_generator_id, flaming_ignition_delay_random_generator_id, &
         peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
-        peak_smoldering_ignition_random_generator_id
+        peak_smoldering_ignition_random_generator_id, fire_label_parameter_header
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_to_parameters, add_hrr_scale_to_parameters, &
         add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
@@ -790,12 +796,12 @@
     
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
-        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, &
+        scaling_fire_time_random_generator_id, &
+        modify_fire_area_to_match_hrr, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
         fire_compartment_id_header, flaming_smoldering_ignition_random_generator_id, &
-        flaming_ignition_delay_random_generator_id, &
+        flaming_ignition_delay_random_generator_id, fire_label_parameter_header, &
         peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
         peak_smoldering_ignition_random_generator_id, &
         fire_hrr_generators, fire_time_generators, type_of_incipient_growth, number_of_incipient_fire_types, &
@@ -968,10 +974,10 @@
                 if (add_fire_compartment_id_to_parameters) then
                     fire%fire_label%add_to_parameters = .true. 
                     fire%parameter_field_set = .true. 
-                    if (trim(parameter_header) == 'NULL') then
+                    if (trim(fire_label_parameter_header) == 'NULL') then
                         fire%fire_label%parameter_header = trim(fire_id) // '_FIRE_COMPARTMENT'
                     else
-                        fire%fire_label%parameter_header = parameter_header
+                        fire%fire_label%parameter_header = fire_label_parameter_header
                     end if
                 end if
             end if
@@ -1225,12 +1231,9 @@
     fire_id = 'NULL' 
     base_fire_id = 'NULL'
     scaling_fire_hrr_random_generator_id = 'NULL'
-    smolder_random_generator_id = 'NULL'
     scaling_fire_time_random_generator_id = 'NULL'
-    smolder_time_random_generator_id = 'NULL'
     modify_fire_area_to_match_hrr = .false. 
     add_to_parameters = .false. 
-    parameter_header = 'NULL'
     hrr_scale_header = 'NULL'
     time_scale_header = 'NULL'
     add_hrr_scale_to_parameters = .true.

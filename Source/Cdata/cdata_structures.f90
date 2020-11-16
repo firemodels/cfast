@@ -5,7 +5,7 @@ module preprocessor_types
     use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
                      val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear, &
-                     idx_trun_normal
+                     idx_trun_normal, idx_trun_log_normal
     
     use cparams
     use cfast_types, only: cfast_type, fire_type
@@ -434,6 +434,24 @@ module preprocessor_types
             end select
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
+        else if (me%type_dist == rand_dist(idx_trun_log_normal)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            select type(val)
+                type is (random_real_type)
+                    val%val = me%minimum - 100.0_eb
+                    if (me%value_type == val_types(idx_real)) then
+                        do while(val%val < me%minimum .or. val%val > me%maximum)
+                            x = random_normal()
+                            me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
+                            val%val = me%current_real_val
+                        end do
+                    end if
+                class default
+                    call me%errorcall('RAND', 16)
+            end select
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
         else
             call me%errorcall('RAND', 17)
         end if
@@ -754,7 +772,7 @@ module preprocessor_types
         class(random_generator_type) :: me
         logical :: set
         
-        set = me%min_set .or. me%max_set
+        set = me%min_set .and. me%max_set
     
     end function dependencies_set
     

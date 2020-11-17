@@ -83,7 +83,7 @@
     write(iofilcalc, '(a)') '!! Dumps'
     call write_dump (iofilcalc)
 
-    close (iofili)
+    close (iofilcalc)
     
     return
     

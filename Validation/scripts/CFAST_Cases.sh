@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 $RUNCFAST -d 1RFURN 1RFURN1.in
 $RUNCFAST -d 1RFURN 1RFURN6.in

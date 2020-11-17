@@ -1,4 +1,5 @@
-@echo off
+#!/bin/bash
+
 rm *_compartments.csv /s/q >nul 2>&1
 rm *_devices.csv /s/q >nul 2>&1
 rm *_masses.csv /s/q >nul 2>&1

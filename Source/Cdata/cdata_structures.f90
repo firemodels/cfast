@@ -2,7 +2,7 @@ module preprocessor_types
 
     use precision_parameters
     use exit_routines, only: cfastexit
-    use pp_params, only: mxpntsarray, idx_uniform, idx_trangle, idx_user_defined_discrete, &
+    use pp_params, only: mxpntsarray, idx_uniform, idx_triangle, idx_user_defined_discrete, &
                      idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
                      val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear, &
                      idx_trun_normal, idx_trun_log_normal
@@ -66,8 +66,8 @@ module preprocessor_types
                                                         'SCALING', &
                                                         'LABEL  ', &
                                                         'NULL   '/)
-        character(len=7) :: field_type = 'NULL'
         integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 5
+        character(len=7) :: field_type = 'NULL'
         character(len=9) :: value_type = 'NULL'
         class(cfast_type), pointer :: itemptr
         type(random_generator_type), pointer :: genptr
@@ -198,8 +198,9 @@ module preprocessor_types
         logical :: smoldering_fire
         character(len=10) :: incep_value
         real(eb) :: growthexpo, decayexpo
-        integer :: growth_npts, decay_npts
+        integer :: growth_npts, decay_npts, last_growth_pt, first_decay_pt
         integer :: n_firepoints, n_firegenerators
+        logical :: generate_fire = .false. 
         type(field_pointer), dimension(2,mxpts) :: firegenerators
         real(eb), dimension(2, mxpts) :: firevals
         
@@ -452,8 +453,24 @@ module preprocessor_types
             end select
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
+        else if (me%type_dist == rand_dist(idx_triangle)) then
+            call RANDOM_SEED(GET=tmpseeds)
+            call RANDOM_SEED(PUT=me%seeds)
+            call RANDOM_NUMBER(x)
+            call RANDOM_SEED(GET=me%seeds)
+            call RANDOM_SEED(PUT = tmpseeds)
+            select type(val)
+                type is (random_real_type)
+                    if (x <= (me%peak - me%minimum)/(me%maximum - me%minimum)) then
+                        val%val = sqrt(x*(me%maximum - me%minimum)*(me%peak - me%minimum)) + me%minimum
+                    else
+                        val%val = me%maximum - sqrt((1 - x)*(me%maximum - me%minimum)*(me%maximum - me%peak))
+                    end if
+                class default
+                    call me%errorcall('RAND', 17)
+            end select
         else
-            call me%errorcall('RAND', 17)
+            call me%errorcall('RAND', 18)
         end if
             
         return
@@ -478,15 +495,15 @@ module preprocessor_types
                 call me%timescaleval%add_header(icol, array)
                 call me%fire_comp%add_header(icol, array)
                 call me%fire_label%add_header(icol, array)
-                do i = 1, me%n_firegenerators
+                call me%fs_fire_ptr%add_header(icol, array)
+                !call me%flame_hrr_ptr%add_header(icol, array)
+                !call me%flame_time_ptr%add_header(icol, array)
+                !call me%smolder_hrr_ptr%add_header(icol, array)
+                !call me%smolder_time_ptr%add_header(icol, array)
+                do i = 1, me%n_firepoints
                     call me%firegenerators(1,i)%add_header(icol, array)
                     call me%firegenerators(2,i)%add_header(icol, array)
                 end do 
-                call me%fs_fire_ptr%add_header(icol, array)
-                call me%flame_hrr_ptr%add_header(icol, array)
-                call me%flame_time_ptr%add_header(icol, array)
-                call me%smolder_hrr_ptr%add_header(icol, array)
-                call me%smolder_time_ptr%add_header(icol, array)
                 me%parameter_field_set = .true. 
             class default
                 icol = icol + 1
@@ -555,15 +572,11 @@ module preprocessor_types
                     write(me%timescaleval%paramptr,'(e13.6)') me%timescaleval%val
                 end if
                 call me%fire_label%write_value
-                do i = 1, me%n_firegenerators
+                call me%fs_fire_ptr%write_value
+                do i = 1, me%n_firepoints
                     call me%firegenerators(1,i)%write_value
                     call me%firegenerators(2,i)%write_value
                 end do
-                call me%fs_fire_ptr%write_value
-                call me%flame_hrr_ptr%write_value
-                call me%flame_time_ptr%write_value
-                call me%smolder_hrr_ptr%write_value
-                call me%smolder_time_ptr%write_value
             class default
                 call me%errorcall('write_value',3)
             end select
@@ -966,8 +979,8 @@ module preprocessor_types
             call me%fire_label%do_rand(me%fire_label%valptr,iteration)
         end if 
         
-        if (me%n_firegenerators > 0) then
-            do i = 1, me%n_firegenerators
+        if (me%generate_fire) then
+            do i = 1, me%n_firepoints
                 call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
                 call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
             end do
@@ -977,9 +990,10 @@ module preprocessor_types
                 else 
                     tmp1 = 0
                 end if
-                deltat = me%firegenerators(2,1)%realval%val/(me%growth_npts - tmp1)
-                a = me%firegenerators(1,1)%realval%val/me%firegenerators(2,1)%realval%val**me%growthexpo
-                do i = 2 + tmp1, me%growth_npts
+                deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
+                a = me%firegenerators(1,me%last_growth_pt+1)%realval%val/ &
+                    me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
+                do i = 2 + tmp1, me%last_growth_pt
                     me%fire%t_qdot(i) = deltat
                     me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo
                 end do
@@ -1049,7 +1063,13 @@ module preprocessor_types
                 me%fire%t_trace(i) = me%fire%t_qdot(i)
                 me%fire%t_hoc(i) = me%fire%t_qdot(i)
             end do
-        end if
+            end if
+            if (me%modifyfirearea) then
+                do i = 1, me%fire%n_qdot
+                    me%fire%area(i) = (me%fire%qdot(i)/(352.981915_eb*1012._eb*sqrt(9.80665_eb)))**(4./5.)/4._eb
+                    if (me%fire%area(i) < 0.001_eb) me%fire%area(i) = 0.001_eb
+                end do
+            end if
         
     end subroutine fire_do_rand
     

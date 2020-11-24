@@ -213,7 +213,7 @@
     character(len=128) :: id, fyi, value_type
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
-    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, constant_value
+    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak
     integer ::random_seeds(mxseeds), ndx
     real(eb) :: probabilities(mxpntsarray), real_values(mxpntsarray) 
     integer :: integer_values(mxpntsarray)
@@ -767,7 +767,7 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj, kk
+    integer :: ios, ii, jj, kk, idx_firepts
     logical :: mfirflag, found, found2, flameset, smolderset
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, hrr_scale_header, time_scale_header, &
@@ -789,11 +789,9 @@
         flaming_time_header, flaming_hrr_peak_header
     logical :: add_ignition_type_to_parameters, add_smoldering_ignition_time_to_parameters, &
         add_smolder_ignition_peak_hrr_to_parameters, add_flaming_ignition_time_to_parameters, &
-        add_flaming_ignition_peak_hrr_to_parameters 
+        add_flaming_ignition_peak_hrr_to_parameters
+    logical, dimension(100) :: add_fire_to_parameters
     type(fire_generator_type), pointer :: fire
-    
-    character(len=11) :: tmpbuf
-    
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, &
@@ -810,7 +808,7 @@
         add_smoldering_ignition_time_to_parameters, add_smolder_ignition_peak_hrr_to_parameters, &
         add_flaming_ignition_time_to_parameters, add_flaming_ignition_peak_hrr_to_parameters, number_of_growth_points,&
         number_of_decay_points, growth_exponent, decay_exponent, add_hrr_to_parameters, add_time_to_parameters, &
-        hrr_labels, time_labels
+        hrr_labels, time_labels, add_fire_to_parameters
     
     ios = 1
 
@@ -856,6 +854,7 @@
             fire%fyi = fyi
             fire%fireid = fire_id
             fire%basefireid = base_fire_id
+            fire%modifyfirearea = modify_fire_area_to_match_hrr
             found = .false.
             do jj = 1, n_fires
                 if (trim(fireinfo(jj)%id) == trim(fire%fireid)) then
@@ -1145,6 +1144,15 @@
             ! Setting up the fire where all points are determined by generators
             
             If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(2)) /= 'NULL') then
+                fire%generate_fire =   .true. 
+                if (flameset .or. smolderset) then
+                    idx_firepts = 2
+                else 
+                    idx_firepts = 1
+                end if 
+                if (number_of_growth_points > 0) then
+                    idx_firepts = idx_firepts + number_of_growth_points
+                end if 
                 outfireloop: do jj = 1, 100
                     if (trim(fire_hrr_generators(jj)) /= 'NULL' .and. trim(fire_time_generators(jj)) /= 'NULL') then
                         fire%n_firegenerators = jj 
@@ -1156,14 +1164,14 @@
                     infireloop: do kk = 1, n_generators
                         if (trim(fire_hrr_generators(jj)) == trim(generatorinfo(kk)%id)) then
                             found = .true.
-                            fire%firegenerators(1, jj)%genptr => generatorinfo(kk)
-                            fire%firegenerators(1,jj)%field_type =  &
-                                trim(fire%firegenerators(1, jj)%fld_types(fire%firegenerators(1, jj)%idx_value))
+                            fire%firegenerators(1, idx_firepts + jj)%genptr => generatorinfo(kk)
+                            fire%firegenerators(1,idx_firepts + jj)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
                         else if (trim(fire_time_generators(jj)) == trim(generatorinfo(kk)%id)) then
                             found2 = .true.
-                            fire%firegenerators(2, jj)%genptr => generatorinfo(kk)
-                            fire%firegenerators(2,jj)%field_type =  &
-                                trim(fire%firegenerators(1, jj)%fld_types(fire%firegenerators(2, jj)%idx_value))
+                            fire%firegenerators(2, idx_firepts + jj)%genptr => generatorinfo(kk)
+                            fire%firegenerators(2, idx_firepts + jj)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
                         end if 
                         if (found .and. found2) then 
                             exit infireloop
@@ -1173,48 +1181,27 @@
                         call cfastexit('READ_MFIR', 22)
                     end if
                 end do outfireloop
-                if (flameset .or. smolderset) then 
-                    fire%n_firepoints = 2 + number_of_growth_points + number_of_decay_points + fire%n_firegenerators
-                    fire%growth_npts = 2 + number_of_growth_points
-                    fire%decay_npts = 2 + number_of_growth_points + fire%n_firegenerators - 1
-                else
-                    fire%n_firepoints = 1 + number_of_growth_points + number_of_decay_points + fire%n_firegenerators
-                    fire%growth_npts = 1 + number_of_growth_points
-                    fire%decay_npts = 1 + number_of_growth_points + fire%n_firegenerators - 1
+                fire%last_growth_pt = idx_firepts
+                idx_firepts = idx_firepts + fire%n_firegenerators
+                fire%growth_npts = number_of_growth_points
+                fire%decay_npts = number_of_decay_points
+                fire%n_firepoints = idx_firepts + number_of_decay_points
+                fire%first_decay_pt = idx_firepts
+                if (fire%decay_npts > 0) then
+                    fire%firegenerators(1, fire%n_firepoints)%genptr => fire%firegenerators(1, idx_firepts)%genptr
+                    fire%firegenerators(1,fire%n_firepoints)%field_type =  &
+                        trim(fire%firegenerators(1, idx_firepts)%field_type)
+                    fire%firegenerators(1,idx_firepts)%field_type = &
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
+                    fire%firegenerators(2, fire%n_firepoints)%genptr => fire%firegenerators(2, idx_firepts)%genptr
+                    fire%firegenerators(2,fire%n_firepoints)%field_type =  &
+                        trim(fire%firegenerators(1, idx_firepts)%field_type)
+                    fire%firegenerators(1,idx_firepts)%field_type = &
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
                 end if
-                do jj = 1, fire%n_firegenerators
-                    tmpbuf = ' '
-                    write(tmpbuf,'(''HRR_PT'', I3)') fire%growth_npts + jj
-                    call find_field(tmpbuf, fire%fire, fire%firegenerators(1,jj), found)
-                    if (.not. found) then
-                        write(*,*) 'READ_MFIR: Error on HRR firegenerator ', jj
-                        call cfastexit('READMFIR', 23)
-                    end if
-                    if (add_hrr_to_parameters(jj)) then
-                        fire%firegenerators(1,jj)%add_to_parameters = .true.
-                        if (trim(hrr_labels(jj)) == 'NULL') then
-                            fire%firegenerators(1,jj)%parameter_header = ' '
-                            fire%firegenerators(1,jj)%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
-                        else
-                            fire%firegenerators(1,jj)%parameter_header = hrr_labels(jj)
-                        end if
-                    end if
-                    tmpbuf = ' '
-                    write(tmpbuf,'(''T_HRR_PT'', I3)') fire%growth_npts + jj
-                    call find_field(tmpbuf, fire%fire, fire%firegenerators(2,jj), found)
-                    if (.not. found) then
-                        write(*,*) 'READ_MFIR: Error on Time firegenerator ', jj
-                        call cfastexit('READMFIR', 24)
-                    end if
-                    if (add_time_to_parameters(jj)) then
-                        fire%firegenerators(2,jj)%add_to_parameters = .true.
-                        if (trim(time_labels(jj)) == 'NULL') then
-                            fire%firegenerators(2,jj)%parameter_header = ' '
-                            fire%firegenerators(2,jj)%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
-                        else
-                            fire%firegenerators(2,jj)%parameter_header = hrr_labels(jj)
-                        end if
-                    end if
+                do jj = 1, fire%n_firepoints
+                    call connect_to_fire(jj, fire_id, fire%fire, fire%firegenerators(1,jj), &
+                        fire%firegenerators(2,jj), hrr_labels(jj), time_labels(jj), add_fire_to_parameters(jj))
                 end do
                 fire%growthexpo = growth_exponent
                 fire%decayexpo = decay_exponent
@@ -1225,6 +1212,50 @@
     
     contains
     
+    subroutine connect_to_fire(idx, fire_id, fire, hrrfield, timefield, hrr_label, time_label, add_to_parameters)
+    
+        type(fire_type), pointer :: fire
+        type(field_pointer) :: hrrfield, timefield
+        character(len=128) :: hrr_label, time_label, fire_id
+        logical :: add_to_parameters
+        integer :: idx
+        
+        character(len=128) :: tmpbuf
+    
+        tmpbuf = ' '
+        write(tmpbuf,'(''T_HRR_PT'', I3)') idx
+        call find_field(tmpbuf, fire, timefield, found)
+        if (.not. found) then
+            write(*,*) 'READ_MFIR: Error on Time firegenerator '
+            call cfastexit('READMFIR:CONNECT_TO_FIRE', 1)
+        end if
+        if (add_to_parameters) then
+            timefield%add_to_parameters = .true.
+            if (trim(time_label) == 'NULL') then
+                timefield%parameter_header = ' '
+                timefield%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
+            else
+                timefield%parameter_header = time_label
+            end if
+        end if
+        tmpbuf = ' '
+        write(tmpbuf,'(''HRR_PT'', I3)') idx
+        call find_field(tmpbuf, fire, hrrfield, found)
+        if (.not. found) then
+            write(*,*) 'READ_MFIR: Error on HRR firegenerator '
+            call cfastexit('READMFIR:CONNECT_TO_FIRE', 2)
+        end if
+        if (add_to_parameters) then
+            hrrfield%add_to_parameters = .true.
+            if (trim(hrr_label) == 'NULL') then
+                hrrfield%parameter_header = ' '
+                hrrfield%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
+            else
+                hrrfield%parameter_header = time_label
+            end if
+        end if
+    end subroutine connect_to_fire
+    
     subroutine set_defaults
     
     id = 'NULL'
@@ -1232,8 +1263,8 @@
     base_fire_id = 'NULL'
     scaling_fire_hrr_random_generator_id = 'NULL'
     scaling_fire_time_random_generator_id = 'NULL'
-    modify_fire_area_to_match_hrr = .false. 
-    add_to_parameters = .false. 
+    modify_fire_area_to_match_hrr = .true. 
+    !add_to_parameters = .false. 
     hrr_scale_header = 'NULL'
     time_scale_header = 'NULL'
     add_hrr_scale_to_parameters = .true.
@@ -1272,6 +1303,7 @@
     add_time_to_parameters = .true. 
     hrr_labels = 'NULL'
     time_labels = 'NULL'
+    add_fire_to_parameters = .true.
     
     end subroutine set_defaults
     

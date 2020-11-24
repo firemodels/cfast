@@ -82,6 +82,8 @@
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '!! Dumps'
     call write_dump (iofilcalc)
+    write(iofilcalc,'(a1)')
+    write(iofilcalc, '(a)') '&TAIL /'
 
     close (iofilcalc)
     

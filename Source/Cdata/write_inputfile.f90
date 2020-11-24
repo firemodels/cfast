@@ -747,11 +747,9 @@
             call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
             call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)
-            call add_token_str(iounit, buf, 'FILE_TYPE = ', dumpptr%file_type)
-            call add_token_str(iounit, buf, 'FIRST_DEVICE = ', dumpptr%first_device)
-            call add_token_str(iounit, buf, 'FIRST_MEASUREMENT = ', dumpptr%first_measurement)
-            call add_token_str(iounit, buf, 'SECOND_DEVICE = ', dumpptr%second_device)
-            call add_token_str(iounit, buf, 'SECOND_MEASUREMENT = ', dumpptr%second_measurement)
+            call add_token_str(iounit, buf, 'FILE = ', dumpptr%file)
+            call add_token_carray(iounit, buf, 'FIRST_FIELD = ', dumpptr%first_field, 2)
+            call add_token_carray(iounit, buf, 'SECOND_FIELD = ', dumpptr%second_field, 2)
             if (dumpptr%type(1:3) == 'TRI') then
                 call add_token_val(iounit, buf, 'CRITERION = ', dumpptr%criterion)
             end if

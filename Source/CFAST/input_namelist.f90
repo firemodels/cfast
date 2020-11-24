@@ -2965,12 +2965,13 @@ continue
     logical :: found
     
     real(eb) :: criterion
-    character(len=25) :: file_type, type
+    character(len=25) :: file, type
     character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
+    character(len=64), dimension(2) :: first_field, second_field
     character(len=128) :: fyi
 
-    namelist /DUMP/ id, file_type, first_device, first_measurement, second_device, &
-                    second_measurement, criterion, type, fyi
+    namelist /DUMP/ id, file, first_device, first_measurement, second_device, &
+                    second_measurement, first_field, second_field, criterion, type, fyi
 
     ios = 1
 
@@ -3006,6 +3007,15 @@ continue
             call set_defaults
             read(lu,DUMP)
             
+            if (first_field(1)==' ' .and. first_field(2)==' ' .and. first_device/=' ' .and. first_measurement/=' ') then
+                first_field(1) = first_device
+                first_field(2) = first_measurement
+            end if
+            if (second_field(1)==' ' .and. second_field(2)==' ' .and. second_device/=' ' .and. second_measurement/=' ') then
+                second_field(1) = second_device
+                second_field(2) = second_measurement
+            end if
+    
             if (id == ' ') then
                 write(*,*) 'Error in &DUMP: ID must be defined number ', counter
                 write(iofill,*) 'Error in &DUMP: ID must be defined number ', counter
@@ -3019,81 +3029,64 @@ continue
             end if
             found = .false.
             do i = 1, num_csvfiles
-                if (trim(file_type)==trim(csvnames(i))) then
+                if (trim(file)==trim(csvnames(i))) then
                     found = .true.
                 end if
             end do
             if (.not.found) then
-                write(*,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
+                write(*,*) 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
                     ' number ',counter
-                write(iofill,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
+                write(iofill,*) 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
                     ' number ',counter
                 call cfastexit('read_dump',4)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
                     (type(1:15)=='CHECK_TOTAL_HRR'))) then
-                write(*,*) 'Error in &DUMP: Invalid specification for type ',trim(type), &
-                    ' number ',counter
-                write(iofill,*) 'Error in &DUMP: Invalid specification for type ',trim(type), &
-                    ' number ',counter
+                write(*,*) 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
+                write(iofill,*) 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
                 call cfastexit('read_dump',5)
             end if
-            if (first_device==' ') then
-                write(*,*) 'Error in &DUMP: FIRST_DEVICE must be defined', &
-                    ' number ',counter
-                write(iofill,*) 'Error in &DUMP: first_device must be defined', &
-                    ' number ',counter
+            if (first_field(1)==' ') then
+                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',6)
             end if 
-            if (first_measurement==' ') then
-                write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
-                    ' number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
-                    ' number ',counter
+            if (first_field(2)==' ') then
+                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',7)
             end if 
-            if ((type(1:8)=='TRIGGER_').and.(second_device==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_DEVICE must be defined for type ', &
-                    trim(type), &
-                    ' number ',counter
-                write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
-                    trim(type), &
-                    ' number ',counter
+            if ((type(1:8)=='TRIGGER_').and.(second_field(1)==' ')) then
+                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), ', number ',counter
+                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), ', number ',counter
                 call cfastexit('read_dump',8)
             end if
-            if ((type(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
-                    trim(type),' number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
-                    trim(type),' number ',counter
+            if ((type(1:8)=='TRIGGER_').and.(second_field(2)==' ')) then
+                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
                 call cfastexit('read_dump',9)
             end if
-            if ((type(1:9)=='INTEGRATE').and.(second_device==' ')) then
-                write(*,*) 'Error in &DUMP: second_device must be defined for type ', &
-                    trim(type)
-                write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
-                    trim(type)
+            if ((type(1:9)=='INTEGRATE').and.(second_field(2)==' ')) then
+                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
                 call cfastexit('read_dump',10)
             end if
-            if ((trim(type)=='INTEGRATE').and.(second_measurement==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
-                    trim(type),' number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
-                    trim(type),' number ',counter
+            if ((trim(type)=='INTEGRATE').and.(second_field(2)==' ')) then
+                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
                 call cfastexit('read_dump',11)
             end if
-            if ((type(1:9)=='INTEGRATE').and.(first_device(1:4)/='Time')) then
-                write(*,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
-                    trim(type),' number ',counter
-                write(iofill,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
-                    trim(type),' number ',counter
+            if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:4)/='Time')) then
+                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ', trim(type),', number ',counter
+                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ',trim(type),&
+                    ', number ',counter
                 call cfastexit('read_dump',12)
             end if
-            if ((type(1:9)=='INTEGRATE').and.(first_measurement(1:15)/='Simulation Time')) then
-                write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
+            if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:15)/='Simulation Time')) then
+                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
+                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
                     trim(type),' number ',counter
                 call cfastexit('read_dump',13)
             end if
@@ -3113,22 +3106,21 @@ continue
             dumpptr%id = id
             dumpptr%fyi = fyi
             if (type(1:15) == 'CHECK_TOTAL_HRR') then
-                dumpptr%file_type = 'NORMAL'
+                dumpptr%file = 'NORMAL'
                 dumpptr%type = type
-                dumpptr%first_device = 'Time'
-                dumpptr%first_measurement = 'Simulation Time'
-                dumpptr%second_device = first_device
-                dumpptr%second_measurement = first_measurement
+                dumpptr%first_field(1) = 'Time'
+                dumpptr%first_field(2) = 'Simulation Time'
+                dumpptr%second_field = first_field
                 dumpptr%criterion = 0 
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
             else
-                dumpptr%file_type = file_type
+                dumpptr%file = file
                 dumpptr%type = type
-                dumpptr%first_device = first_device
-                dumpptr%first_measurement = first_measurement
-                dumpptr%second_device = second_device
-                dumpptr%second_measurement = second_measurement
+                dumpptr%first_field(1) = first_field(1)
+                dumpptr%first_field(2) = first_field(2)
+                dumpptr%second_field(1) = second_field(1)
+                dumpptr%second_field(2) = second_field(2)
                 dumpptr%criterion = criterion
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
@@ -3147,7 +3139,9 @@ continue
 
     id = ' '
     fyi = ' '
-    file_type = ' '
+    file = ' '
+    first_field = ' '
+    second_field = (/' ', ' '/)
     first_device = ' '
     first_measurement = ' '
     second_device = ' '

@@ -552,12 +552,12 @@ module initialization_routines
     if (init_dump) then
         init_dump = .false.
         n_dumps = 0
-        dumpinfo(1:mx_dumps)%file_type = ' '
+        dumpinfo(1:mx_dumps)%file = ' '
         dumpinfo(1:mx_dumps)%type = ' '
-        dumpinfo(1:mx_dumps)%first_device = ' '
-        dumpinfo(1:mx_dumps)%first_measurement = ''
-        dumpinfo(1:mx_dumps)%second_device = ' '
-        dumpinfo(1:mx_dumps)%second_measurement = ' '
+        dumpinfo(1:mx_dumps)%first_field(1) = ' '
+        dumpinfo(1:mx_dumps)%first_field(2) = ' '
+        dumpinfo(1:mx_dumps)%second_field(1) = ' '
+        dumpinfo(1:mx_dumps)%second_field(2) = ' '
         dumpinfo(1:mx_dumps)%relative_column = -1
         dumpinfo(1:mx_dumps)%criterion = -1
     end if

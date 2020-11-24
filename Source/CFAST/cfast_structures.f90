@@ -13,17 +13,16 @@ module cfast_types
     ! user-customized data and calculation output data structure
     type, extends(cfast_type) :: dump_type
         ! these are for user-specified calculations on data. output goes to _calculations.csv
-        character(len=24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
+        character(len=24) :: file                   ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                     !      'check_total_hrr'
         real(eb) :: criterion                       ! Value used in 'trigger_...' analysis
 
-        character(len=128) :: first_device          ! Name of instrument, third row in spreadsheet        
-        character(len=128) :: first_measurement     ! Name of measurement for first device, second row in spreadsheet
-        character(len=128) :: second_device         ! Name of second instrument, needed for 'trigger' and 'integrate',
-                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        character(len=128) :: second_measurement    ! Name of measurement for second device, needed for 'trigger' and 'integrate'
-                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        character(len=128) :: first_field(2)        ! Name of instrument, third row in spreadsheet and 
+                                                    !   name of measurement for first device, second row in spreadsheet
+        character(len=128) :: second_field(2)       ! Name of second instrument and second measurement, 
+                                                    !   needed for 'trigger' and 'integrate',
+                                                    !   ignored for 'maximum', 'minimum', and 'check_total_hrr'
         integer :: relative_column                  ! Order of columns. This is just the order in the input file
         
         logical :: found                            ! The input channels are found in the requested csv files

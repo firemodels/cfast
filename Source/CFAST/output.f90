@@ -49,21 +49,23 @@ module output_routines
     
 !> \param   iunit (input): logical unit number to write output
 
-    subroutine output_version (iunit)
+    subroutine output_version (iunit, program_name, program_version)
 
-    integer, intent(in) :: iunit
+    integer, intent(in) :: iunit, program_version
+    character(len=5) :: program_name
+    
     integer imajor, iminor, iminorrev
     character(len=256) :: revision, revision_date, compile_date
 
     call get_info(revision, revision_date, compile_date)
 
-    call splitversion(cfast_version,imajor,iminor,iminorrev)
+    call splitversion(program_version,imajor,iminor,iminorrev)
 
-    write (iunit,'(/A/)')                    'CFAST'
+    write (iunit,'(/a/)') program_name
 #ifndef VERSION_PP
 #define VERSION_PP "Test Version     :"
 #endif
-    write (iunit,'(a,a,i0,".",i0,".",i0)')     TRIM(VERSION_PP),' CFAST ',imajor, iminor, iminorrev
+    write (iunit,'(a,1x,a,1x,i0,".",i0,".",i0)')     TRIM(VERSION_PP),program_name,imajor, iminor, iminorrev
     write (iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
     write (iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
     write (iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
@@ -104,7 +106,7 @@ module output_routines
 
     subroutine output_initial_conditions
 
-    call output_version (iofilo)
+    call output_version (iofilo,'CFAST',cfast_version)
 
     write (iofilo,5000) trim(inputfile), trim(title)
     if (outputformat>1) then

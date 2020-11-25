@@ -329,21 +329,23 @@ module setup_data
     integer :: i_time_end, i_time_step
     real(eb) :: ss_out_interval = 0, print_out_interval = 0, smv_out_interval = 0, time_end
     real(eb) :: stime, deltat
-
     character(len=128) :: title
+    
+    integer :: cfast_version = 7600     ! current cfast version
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
-    integer :: cfast_version, outputformat = 0
+    logical :: cdata_accumulator = .false., cdata_preprocessor = .false., cdata_statistics = .true.
+    integer :: outputformat = 0
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile = " ", datafile
-    integer :: cfast_input_file_position = 2
     logical :: init_scalars = .true.  
     character(len=5) :: program_name
     integer, dimension(26) :: ssoutoptions = (/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26/)
     
-    !File descriptors for cfast
-    integer :: iofili, iofill, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    ! File descriptors for cfast
+    integer :: iofill = 3
+    integer :: iofili, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(len=6), parameter :: heading = "VERSN"
     character(len=64) :: project, extension

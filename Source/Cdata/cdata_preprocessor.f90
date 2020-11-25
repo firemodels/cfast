@@ -65,7 +65,7 @@ module preprocessor_routines
         call create_mc_filename(i, infilecase)
         write(*,*)'creating ',trim(infilecase)
         call create_case(infilecase, i)
-        !if (.not.initializeonly) call write_cfast_infile(infilecase)
+        if (.not.initializeonly) call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
     call finish_batch

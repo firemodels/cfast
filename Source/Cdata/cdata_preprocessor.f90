@@ -8,7 +8,7 @@ module preprocessor_routines
     use namelist_data, only: convert_negative_distances
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, inputfile, datapath, project, extension, cfast_input_file_position, iofili
+        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly
     
     !-----------------------CFAST routines-----------------------------------------
     use exit_routines, only: cfastexit, delete_output_files, closeoutputfiles
@@ -47,18 +47,14 @@ module preprocessor_routines
 
     integer :: i
     character(len=256) :: infilecase
-
-    cfast_version = 7500        ! Current CFAST version number
     
      ! initialize the basic memory configuration
 
-    cfast_input_file_position = 3
     call initialize_memory
     call read_command_options
     call open_files
 
     call read_input_file
-    cfast_input_file_position = 2
     
     call preprocessor_initialize
     call cdata_preprocessor_rereadinputfile
@@ -69,7 +65,7 @@ module preprocessor_routines
         call create_mc_filename(i, infilecase)
         write(*,*)'creating ',trim(infilecase)
         call create_case(infilecase, i)
-        call write_cfast_infile(infilecase)
+        !if (.not.initializeonly) call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
     call finish_batch

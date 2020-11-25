@@ -1,8 +1,8 @@
 module accumulator_routines
     
     use precision_parameters
-    use setup_data, only: datapath, project, extension, iofill, cfast_input_file_position 
-        
+    use setup_data, only: datapath, project, extension, iofill
+    
     use exit_routines, only: cfastexit
     use input_routines, only: exehandle
     use initialization_routines, only : initialize_memory
@@ -56,13 +56,10 @@ module accumulator_routines
     allocate(iossc(numr, numc), tmpc(numr, numc))
     
 ! Body of GetData
-    
-    !call do_cmd_line(infile, inpath, outfile, outpath)
-    cfast_input_file_position = 3
+
     call initialize_memory
     call read_command_options
     call open_files
-    cfast_input_file_position = 2
     
     call namelist_acc_input
     
@@ -150,45 +147,6 @@ module accumulator_routines
     close(iunit)
 
     end subroutine accumulator
-    
-    !----------------------------do_cmd_line-------------------------------------------------
-    
-    subroutine do_cmd_line(infile, inpath, outfile, outpath)
-    
-    character(len=256), intent(out) :: infile,  outfile, inpath, outpath
-    
-    character(len=256) :: exepath, ext1, ext2, lbuf
-    integer :: narg, iarg, status
-    integer(kind=4) :: ilen
-    
-    narg = command_argument_count() + 1
-    cfast_input_file_position = 3
-    
-    if (narg >= 3) then
-        call exehandle(exepath, inpath, infile, ext1)
-    end if
-    
-    iarg = 3
-    do while(iarg <= narg)
-        call get_command_argument(iarg, lbuf, ilen, status)
-        if (ilen>0) then
-            if (lbuf(1:1) /= '-') then
-                cfast_input_file_position = iarg
-                call exehandle(exepath, outpath, outfile, ext2)
-                infile = trim(infile) // '.in'
-                outfile = trim(outfile) // '.csv'
-                return
-            end if
-        end if 
-        iarg = iarg + 1
-    end do
-    
-    outpath = inpath
-    outfile = trim(infile) // '_out.csv'
-    infile = trim(infile) // '.in'
-    
-    return
-    end subroutine do_cmd_line
     
     ! --------------------------- writecsvformat -------------------------------------------
 

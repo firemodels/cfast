@@ -44,11 +44,12 @@
     real(eb) :: xdelt, tstop, tbeg, tend 
 
     program_name = 'CFAST'
-    cfast_version = 7600        ! Current CFAST version number
+    ! Current CFAST version number is defined in setup_data
 
     if (command_argument_count().eq.0) then
-        call output_version(0)
+        call output_version(0,program_name,cfast_version)
         call cfastexit('CFAST',0)
+        stop
     end if
 
     ! initialize the basic memory configuration
@@ -58,7 +59,7 @@
     call read_command_options
     call open_files
 
-    call output_version (iofill)
+    call output_version (iofill,'CFAST',cfast_version)
 
     call read_input_file
 

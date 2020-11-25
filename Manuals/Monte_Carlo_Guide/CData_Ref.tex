@@ -456,12 +456,9 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
-  \item[INTEGER\_VALUES] a set of integer values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[LOGICAL\_VALUES]a set of logical values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[VALUES] a set of values for the {\ct USER\_DEFINED} distribution type. Inputs are input as string constants and interpreted to match the type required by the associated {\ct &MRND} input(s). Values for an individual scenario are chosen randomly from the list of values provided.
   \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type. These are not cumulative probabilities and the total of all values must add to 1.0
-  \item[REAL\_VALUES] a set of real values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[STRING\_VALUES] a set of string values for the {\ct USER\_DEFINED} distribution type. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[CONSTANT] is a constant value. For the {\ct CONSTANT} distribution it is the value that is returned by the generator. 
+  \item[CONSTANT] is a constant value. For the {\ct CONSTANT} distribution it is the value that is returned by the generator.
   \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
   \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
   \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
@@ -491,7 +488,7 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
   \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each field input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields. The number of inputs in the {\ct \&MRND} input must match those for the field type.
   \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label.
-  \item[VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
 \end{description}
 
@@ -508,36 +505,36 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \begin{description}
   \item[ID]
   \item[FYI]
-  \item[FIRE\_ID] This is the fire in the data file that you are modifying. Everything in a single namelist will modify this fire. 
-  \item[BASE\_FIRE\_ID] If you are doing scaling a fire this is the fire that will be used. Basically, this is the place that the base values are stored. In the future there might even be a list of fires that could be copied into this fire.\ 
-  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] This hasn’t been implemented yet. It is going to be a real valued variable. If it is negative, then the fire areas are not modified. If it has a positive value, the fire area is modified using Kevin’s equation with the value in the variable. We should put some limits on the values they can put here. Probably fairly close to 1. 
-  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the HRR values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
-  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value A scaling value that is applied to all the HRR values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire. 
+  \item[FIRE\_ID] Specifies the fire in the data file that is being modified. All inputs in in the {ct &MFIR} namelist will modify this fire.
+  \item[BASE\_FIRE\_ID] \textbf{This seems to duplicate the previous entry.} If you are scaling a fire this is the fire that will be used. Basically, this is the place that the base values are stored. In the future there might even be a list of fires that could be copied into this fire.\
+  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
   \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
   \item[HRR\_SCALE\_HEADER] If left blank will be filled in by the code.
   \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[TIME\_SCALE\_HEADER]
-  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick which compartment the fire is in. Usually uses USER\_DEFINED\_DISCRETE\_DISTRIBUITION
+  \item[TIME\_SCALE\_HEADER] If left blank will be filled in by the code.
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}
   \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them.
   \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[FIRE\_COMPARTMENT\_ID\_HEADER] 
-  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the next two sets of two entries work together. This one determines if you have a Smoldering or Flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexability
-  \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipeint begining of the fire with other inputs in the scenario.
-  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Probably can go away but was easier to include in the begining. Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
+  \item[FIRE\_COMPARTMENT\_ID\_HEADER] If left blank will be filled in by the code.
+  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] \textbf{All this seems overly complicated. Isn't there really just an incipient phase defined by an end time and ending HRR? WHy do we care what kind it is for the input?}This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexability
+  \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
+  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Probably can go away but was easier to include in the beginning. Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
   \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators. Both must be defined. If you don’t want the value to change you can set it up to a {\ct CONSTANT} random generator. This one determines how long the incipient flaming fire burns.
   \item[PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID] God these names are awful. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
   \item[SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
   \item[PEAK\_SMOLDERING\_IGNITION\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
-  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.} Displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens. 
+  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.} Displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
   \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
   \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened becasue adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
   \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
   \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[FLAMING\_HRR\_PEAK\_HEADER]  
+  \item[FLAMING\_HRR\_PEAK\_HEADER]
   \item[FLAMING\_TIME\_HEADER]
   \item[SMOLDERING\_HRR\_PEAK\_HEADER]
   \item[SMOLDERING\_TIME\_HEADER]
-  \item[FIRE\_TIME\_GENERATORS] The following group probably should best be explained in a call. It isn't that complicate but I don't think I would get it correct in text. 
+  \item[FIRE\_TIME\_GENERATORS] The following group probably should best be explained in a call. It isn't that complicate but I don't think I would get it correct in text.
   \item[FIRE\_HRR\_GENERATORS]
   \item[NUMBER\_OF\_GROWTH\_POINTS]
   \item[NUMBER\_OF\_DECAY\_POINTS]

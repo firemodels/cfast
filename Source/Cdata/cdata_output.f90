@@ -202,13 +202,13 @@ module preprocessor_output_routines
         write(iobat,'(a,i0)') 'set MAX_ITER=', mc_max_iterations
         write(iobat,'(a)') ' '
         write(iobat,'(a)') 'rem you should not need to change anything from here on'
-        write(iobat,'(a)') 'set bg=%bgexe% -u 85 -d 0.1'
+        write(iobat,'(a)') 'set bg=%bgexe% -U 6'
         write(iobat,'(a)') 'set CFAST=%bg% %CFAST_EXE%'
         
         write(iounix,'(a)')'#/bin/bash'
         write(iounix,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64'
-        write(iounix,'(a)') 'DELAY=3'
-        write(iounix,'(a)') 'BATCH=batch3'
+        write(iounix,'(a)') 'MAX_PROCESSORS=30'
+        write(iounix,'(a)') 'BATCH=batch'
         write(iounix,'(a)') ''
         write(iounix,'(a)') 'export STOPFDSMAXITER=100000'
         write(iounix,'(a)') ''
@@ -247,7 +247,7 @@ module preprocessor_output_routines
         write(iobat, '(a18, a)') 'echo %MAX_ITER% > ', trim(outfilename)
         write(iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
         
-        write(iounix,'(a39,a)') 'qfds.sh -D $DELAY -e $CFAST -q $BATCH  ', filename(ib:iend)
+        write(iounix,'(a39,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH  ', filename(ib:iend)
         
     end subroutine add_filename_to_batch 
     

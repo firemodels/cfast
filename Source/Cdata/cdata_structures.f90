@@ -997,6 +997,7 @@ module preprocessor_types
                     me%fire%t_qdot(i) = deltat
                     me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo
                 end do
+                me%fire%t_qdot(me%last_growth_pt + 1) = deltat
             end if
             me%fire%n_qdot = me%n_firepoints
             do i = 2 + tmp1, me%n_firepoints

@@ -43,15 +43,15 @@
 
     if (cdata_preprocessor) then
         call output_version(0,program_name,program_version)
-        write(*,*) 'PreProcessor'
+        write(*,'(a)') 'PreProcessor'
         call preprocessor
     elseif (cdata_accumulator) then
         call output_version(0,program_name,program_version)
-        write(*,*) 'Accumulator'
+        write(*,'(a)') 'Accumulator'
         call accumulator
     elseif (cdata_statistics) then
         call output_version(0,program_name,program_version)
-        write(*,*) 'Statistics'
+        write(*,'(a)') 'Statistics'
         call statistics
     else
         call cfastexit('CData Main', 2)

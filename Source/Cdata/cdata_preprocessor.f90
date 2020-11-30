@@ -8,7 +8,7 @@ module preprocessor_routines
     use namelist_data, only: convert_negative_distances
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly
+        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly, debugging
     
     !-----------------------CFAST routines-----------------------------------------
     use exit_routines, only: cfastexit, delete_output_files, closeoutputfiles
@@ -63,13 +63,20 @@ module preprocessor_routines
     call initialize_output_files
     do i = 1, mc_number_of_cases
         call create_mc_filename(i, infilecase)
-        write(*,*)'creating ',trim(infilecase)
+        if (debugging) write(*,*)'creating ',trim(infilecase)
         call create_case(infilecase, i)
         if (.not.initializeonly) call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
     call finish_batch
     call write_seeds_outputfile
+    if (initializeonly) then
+        write (*,'(a,i0,a)') 'Created parameters files for ', mc_number_of_cases, ' CFAST cases'
+    else
+        write (*,'(a,i0,a)') 'Created ', mc_number_of_cases, ' CFAST input files'
+    end if
+    
+    return
     
     end subroutine preprocessor 
     

@@ -1,7 +1,7 @@
 module accumulator_routines
     
     use precision_parameters
-    use setup_data, only: datapath, project, extension, iofill
+    use setup_data, only: datapath, project, extension, iofill, debugging
     
     use exit_routines, only: cfastexit
     use input_routines, only: exehandle
@@ -42,6 +42,7 @@ module accumulator_routines
     
     integer :: iunit, maxrowio, maxcolio, nstart, iunit2, maxrowtmp, maxcoltmp
     integer :: nend, maxcolout
+    integer nfiles
     logical :: lend, tmplend, header
     
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
@@ -117,9 +118,10 @@ module accumulator_routines
         call cfastexit('acumulator', 2)
     end if
     
+    nfiles = 0
     do while (.not. lend)
         call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend, iofill)
-        write(*,*)'file = ',trim(iossc(1,1))
+        if (debugging) write(*,*)'file = ',trim(iossc(1,1))
         call fndOpenMCFile(iossc(1,1), workpath, iunit2, ierr)
         if (ierr == 0) then
             call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend, iofill)
@@ -143,8 +145,13 @@ module accumulator_routines
         open(newunit=iunit2,file = obuf, position = 'append')
         call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 1, maxcolout, iofill)
         close(iunit2)
+        nfiles = nfiles + 1
     end do 
     close(iunit)
+    
+    write (*,'(a,i0,a)') 'Created summary file from ', nfiles, ' CFAST input files'
+    
+    return
 
     end subroutine accumulator
     

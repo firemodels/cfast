@@ -42,12 +42,15 @@
     call read_command_options
 
     if (cdata_preprocessor) then
+        call output_version(0,program_name,program_version)
         write(*,*) 'PreProcessor'
         call preprocessor
     elseif (cdata_accumulator) then
+        call output_version(0,program_name,program_version)
         write(*,*) 'Accumulator'
         call accumulator
     elseif (cdata_statistics) then
+        call output_version(0,program_name,program_version)
         write(*,*) 'Statistics'
         call statistics
     else

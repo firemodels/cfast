@@ -21,7 +21,7 @@ module preprocessor_routines
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
         mxiterations
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
-        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile
+        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile, fieldptr
     use preprocessor_types, only: random_generator_type
     
     !------------------------CData routines-------------------------------------
@@ -146,6 +146,9 @@ module preprocessor_routines
         fieldinfo(i)%logic_array(1:mxpntsarray) = .false.
         fieldinfo(i)%char_array(1:mxpntsarray) = 'NULL'
     end do
+    allocate(fieldptr(mxfields))
+    fieldptr(1:mxfields) = -1001
+    
     
     n_rndfires = 0
     allocate(randfireinfo(mxrandfires))

@@ -33,7 +33,8 @@ module ppfilehandeling
     type (random_generator_type), allocatable, dimension(:), target ::  generatorinfo
     
     integer :: n_fields
-    type (field_pointer), allocatable, dimension(:), target :: fieldinfo
+    type(field_pointer), allocatable, dimension(:), target :: fieldinfo
+    integer, allocatable, dimension(:) :: fieldptr
     
     integer :: n_rndfires
     type (fire_generator_type), allocatable, dimension(:), target :: randfireinfo

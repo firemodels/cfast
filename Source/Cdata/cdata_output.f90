@@ -247,7 +247,7 @@ module preprocessor_output_routines
         write(iobat, '(a18, a)') 'echo %MAX_ITER% > ', trim(outfilename)
         write(iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
         
-        write(iounix,'(a39,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH  ', filename(ib:iend)
+        write(iounix,'(a,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH ', filename(ib:iend)
         
     end subroutine add_filename_to_batch 
     

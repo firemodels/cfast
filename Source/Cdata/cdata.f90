@@ -42,13 +42,16 @@
     call read_command_options
 
     if (cdata_preprocessor) then
-        write(*,*) 'PreProcessor'
+        call output_version(0,program_name,program_version)
+        write(*,'(a)') 'PreProcessor'
         call preprocessor
     elseif (cdata_accumulator) then
-        write(*,*) 'Accumulator'
+        call output_version(0,program_name,program_version)
+        write(*,'(a)') 'Accumulator'
         call accumulator
     elseif (cdata_statistics) then
-        write(*,*) 'Statistics'
+        call output_version(0,program_name,program_version)
+        write(*,'(a)') 'Statistics'
         call statistics
     else
         call cfastexit('CData Main', 2)

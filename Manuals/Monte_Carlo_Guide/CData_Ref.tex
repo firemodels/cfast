@@ -502,6 +502,8 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \subsection{Namelist MFIR}
 
+The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dot{Q_0}$, $\dot{Q_1}$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the begining and ending time points and $\dot{Q_0}$ and $\dot{Q_1}$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dot{Q}(\hat{t}) = ((\dot{Q_1} - \dot{Q_0})/(t_1-t_0)^r)\hat{t} + \dot{Q_0}$ and for decay is $\dot{Q}(\hat{t}) = ((\dot{Q_0} - \dot{Q_1})/(t_1-t_0)^r)\hat{t} + \dot{Q_1}$. It can be done based on which, $\dot{Q_0}$ or $\dot{Q_1}$, are larger. The important point and the reason I ended up doing it the other way is that we can't do this between any two points becasuse this makes assumptions about the derivative at each point, which won't be valid for inbetween points. These assumptions are only valid at the beginiing and end of a fire. For $r>1$, which is the easiest to see, the assumption is that the derivative of the function is $0$ at the lower value of the HRR and $>0$ at the other point. There are similar assumptions for the other values of $r$. 
+
 \begin{description}
   \item[ID]
   \item[FYI]

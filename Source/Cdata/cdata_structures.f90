@@ -947,7 +947,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         integer :: i, tmp, tmp1
-        real(eb) :: deltat, a
+        real(eb) :: deltat, a, c
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
@@ -979,32 +979,6 @@ module preprocessor_types
             call me%fire_label%do_rand(me%fire_label%valptr,iteration)
         end if 
         
-        if (me%generate_fire) then
-            do i = 1, me%n_firepoints
-                call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
-                call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
-            end do
-            if (me%growth_npts > 0) then
-                if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
-                    tmp1 = 1
-                else 
-                    tmp1 = 0
-                end if
-                deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
-                a = me%firegenerators(1,me%last_growth_pt+1)%realval%val/ &
-                    me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
-                do i = 2 + tmp1, me%last_growth_pt
-                    me%fire%t_qdot(i) = deltat
-                    me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo
-                end do
-                me%fire%t_qdot(me%last_growth_pt + 1) = deltat
-            end if
-            me%fire%n_qdot = me%n_firepoints
-            do i = 2 + tmp1, me%n_firepoints
-                me%fire%t_qdot(i) = me%fire%t_qdot(i-1) + me%fire%t_qdot(i)
-            end do
-        end if
-        
         tmp = 0
         
         ! Doing the incipient growth model
@@ -1025,6 +999,34 @@ module preprocessor_types
             tmp = me%smolder_time_ptr%realval%val - tmp
             call me%smolder_hrr_ptr%do_rand(me%smolder_hrr_ptr%valptr, iteration)
             me%fire%flaming_transition_time = me%smolder_time_ptr%realval%val
+        end if
+        
+        if (me%generate_fire) then
+            do i = 1, me%n_firepoints
+                call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
+                call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
+            end do
+            if (me%growth_npts > 0) then
+                if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
+                    tmp1 = 1
+                else 
+                    tmp1 = 0
+                end if
+                deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
+                a = (me%firegenerators(1,me%last_growth_pt+1)%realval%val - &
+                     me%firegenerators(1,1 + tmp1)%realval%val)/ &
+                    me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
+                c = me%firegenerators(1,1 + tmp1)%realval%val
+                do i = 2 + tmp1, me%last_growth_pt
+                    me%fire%t_qdot(i) = deltat
+                    me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo + c
+                end do
+                me%fire%t_qdot(me%last_growth_pt + 1) = deltat
+            end if
+            me%fire%n_qdot = me%n_firepoints
+            do i = 2 + tmp1, me%n_firepoints
+                me%fire%t_qdot(i) = me%fire%t_qdot(i-1) + me%fire%t_qdot(i)
+            end do
         end if
         
         ! Updating other times after having calculated the new t_qdot. tmp is the change in time due to incipient model

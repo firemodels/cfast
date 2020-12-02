@@ -512,7 +512,7 @@
     character :: lbls(8)*(15) = &
         (/ 'TIME           ', 'HRR            ', 'HEIGHT         ', &
            'AREA           ', 'CO_YIELD       ', 'SOOT_YIELD     ', &
-           'HCN_YEILD      ', 'TRACE_YIELD    ' /)
+           'HCN_YIELD      ', 'TRACE_YIELD    ' /)
     logical :: dup
     real(eb) :: vals(8)
     

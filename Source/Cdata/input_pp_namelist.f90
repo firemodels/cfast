@@ -1044,6 +1044,7 @@
             
             ! Setting up the smoldering growth model    
                 
+            fire%incipient_type = fire%incip_typ(fire%idx_none)
             if (trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_smolder)) .or. &
                 trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_random))) then
                 if (trim(smoldering_ignition_delay_random_generator_id) /= 'NULL' .and. &

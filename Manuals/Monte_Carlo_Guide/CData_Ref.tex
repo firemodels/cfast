@@ -502,51 +502,102 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \subsection{Namelist MFIR}
 
-The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dot{Q_0}$, $\dot{Q_1}$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the begining and ending time points and $\dot{Q_0}$ and $\dot{Q_1}$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dot{Q}(\hat{t}) = ((\dot{Q_1} - \dot{Q_0})/(t_1-t_0)^r)\hat{t} + \dot{Q_0}$ and for decay is $\dot{Q}(\hat{t}) = ((\dot{Q_0} - \dot{Q_1})/(t_1-t_0)^r)\hat{t} + \dot{Q_1}$. It can be done based on which, $\dot{Q_0}$ or $\dot{Q_1}$, are larger. The important point and the reason I ended up doing it the other way is that we can't do this between any two points becasuse this makes assumptions about the derivative at each point, which won't be valid for inbetween points. These assumptions are only valid at the beginiing and end of a fire. For $r>1$, which is the easiest to see, the assumption is that the derivative of the function is $0$ at the lower value of the HRR and $>0$ at the other point. There are similar assumptions for the other values of $r$. 
+Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution) or by defining a power law fire based on several inputs.
 
 \begin{description}
-  \item[ID]
-  \item[FYI]
-  \item[FIRE\_ID] Specifies the fire in the data file that is being modified. All inputs in in the {ct \&MFIR} namelist will modify this fire.
-  \item[BASE\_FIRE\_ID] \textbf{This seems to duplicate the previous entry.} If you are scaling a fire this is the fire that will be used. Basically, this is the place that the base values are stored. In the future there might even be a list of fires that could be copied into this fire.\
+  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
   \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
-  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
-  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] A scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the initial fire.
-  \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[HRR\_SCALE\_HEADER] If left blank will be filled in by the code.
-  \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[TIME\_SCALE\_HEADER] If left blank will be filled in by the code.
-  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}
-  \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them.
-  \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[FIRE\_COMPARTMENT\_ID\_HEADER] If left blank will be filled in by the code.
-  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] \textbf{All this seems overly complicated. Isn't there really just an incipient phase defined by an end time and ending HRR? WHy do we care what kind it is for the input?}This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexability
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
+  \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them. This matches the index chosen by {\ct FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID} to actual compartment names in the input file.
+  \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[FIRE\_COMPARTMENT\_ID\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
+
+ \begin{description}
+  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexibility
   \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
-  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Probably can go away but was easier to include in the beginning. Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
-  \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators. Both must be defined. If you don’t want the value to change you can set it up to a {\ct CONSTANT} random generator. This one determines how long the incipient flaming fire burns.
-  \item[PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID] God these names are awful. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
+  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
+  \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
+  \item[PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID] This is the second of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the final HRR for the incipient flaming fire ramp. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
   \item[SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
   \item[PEAK\_SMOLDERING\_IGNITION\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
-  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] Defaults to {\ct .TRUE.} Displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
-  \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened becasue adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
-  \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] Defaults to {\ct .TRUE.}
-  \item[FLAMING\_HRR\_PEAK\_HEADER]
-  \item[FLAMING\_TIME\_HEADER]
-  \item[SMOLDERING\_HRR\_PEAK\_HEADER]
-  \item[SMOLDERING\_TIME\_HEADER]
-  \item[FIRE\_TIME\_GENERATORS] The following group probably should best be explained in a call. It isn't that complicate but I don't think I would get it correct in text.
-  \item[FIRE\_HRR\_GENERATORS]
-  \item[NUMBER\_OF\_GROWTH\_POINTS]
-  \item[NUMBER\_OF\_DECAY\_POINTS]
-  \item[GROWTH\_EXPONENT]
-  \item[DECAY\_EXPONENT]
-  \item[ADD\_HRR\_TO\_PARAMETERS]
-  \item[ADD\_TIME\_TO\_PARAMETERS]
-  \item[HRR\_LABELS]
-  \item[TIME\_LABELS]
+  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
+  \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened because adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
+  \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[FLAMING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[FLAMING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[SMOLDERING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[SMOLDERING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+ \end{description} 
+Secondly, inputs for the scaling fire are described.
+
+\begin{description}
+  \item[BASE\_FIRE\_ID] For scaling fires only. This provides internal temporary storage for all the base values for a fire to be scaled. Typically, it will just be a copy of the corresponding {\ct FIRE\_ID} input.
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the scaling factor that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient fire portion of the fire curve.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the  scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient portion of the fire curve.
+  \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[HRR\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+  Finally, the inputs for a power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dot{Q_0}$, $\dot{Q_1}$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dot{Q_0}$ and $\dot{Q_1}$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dot{Q}(\hat{t}) = ((\dot{Q_1} - \dot{Q_0})/(t_1-t_0)^r)\hat{t} + \dot{Q_0}$ and for decay is $\dot{Q}(\hat{t}) = ((\dot{Q_0} - \dot{Q_1})/(t_1-t_0)^r)\hat{t} + \dot{Q_1}$. It can be done based on which, $\dot{Q_0}$ or $\dot{Q_1}$, are larger. 
+  
+\begin{description}
+  \item[FIRE\_TIME\_GENERATORS] a set of three associated {\ct \&MRND} that define the time interval for fire growth from the end of the incipient growth phase to the peak HRR of the fire, the time interval of peak HRR, and the time period for fire decay to a final HRR value. If you do not want the values to change you can set any of the {\ct \&MRND} inputs up to a {\ct CONSTANT} random generator.
+  \item[FIRE\_HRR\_GENERATORS] a set of three associated {\ct \&MRND} that define the ending HRR values for the peak HRR of the fire, the HRR at the end of the peak burning period, and final HRR at the end of the decay period. If you do not want the values to change you can set any of the {\ct \&MRND} inputs up to a {\ct CONSTANT} random generator.
+  \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
+  \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
+  \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire.
+  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire.
+  
+  \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[HRR\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
 \end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 207 STDEV = 46
+    MINIMUM = 10 MAXIMUM = 1000000/
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 23000 STDEV = 7000
+    MINIMUM = 100 MAXIMUM = 1000000/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 6863 STDEV = 1812
+    MINIMUM = 60 MAXIMUM = 14490/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 11000 STDEV = 3000
+    MINIMUM = 100 MAXIMUM = 1000000/
+&MRND ID = 'Growth Time  Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 205, STDEV = 65
+    MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 1054000 /
+&MRND ID = 'Peak Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+
+&MFIR ID = 'Fire Generator' FIRE_ID = 'Random'
+    FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
+    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room'
+    FLAMING_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator' TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'
+    NUMBER_OF_INCIPIENT_FIRE_TYPES = 2 INCIPIENT_FIRE_TYPES = 'FLAMING' 'SMOLDERING'
+    PEAK_FLAMING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Time Generator'
+    FLAMING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Flaming Peak Generator'
+    PEAK_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Smoldering Time Generator'
+    SMOLDERING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
+    FIRE_TIME_GENERATORS = 'Growth Time Generator' 'Peak Plateau End Time' 'Fire End Time'
+    FIRE_HRR_GENERATORS =  'Peak HRR Generator'    'Peak HRR Generator'    'Fire End HRR'
+    NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+
 
 \subsection{Namelist DUMP}
 

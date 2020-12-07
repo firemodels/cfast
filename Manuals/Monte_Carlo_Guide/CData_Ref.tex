@@ -508,7 +508,7 @@ Automatically-generated fires are created for an individual test case by modifyi
   \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
-  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
+  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dQ^*$, is defined as $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
   \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
   \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them. This matches the index chosen by {\ct FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID} to actual compartment names in the input file.
   \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
@@ -533,7 +533,7 @@ Fires can be defined by either scaling time and/or HRR values from a base fire o
   \item[FLAMING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[SMOLDERING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[SMOLDERING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
- \end{description} 
+ \end{description}
 Secondly, inputs for the scaling fire are described.
 
 \begin{description}
@@ -545,16 +545,16 @@ Secondly, inputs for the scaling fire are described.
   \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \end{description}
-  Finally, the inputs for a power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dot{Q_0}$, $\dot{Q_1}$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dot{Q_0}$ and $\dot{Q_1}$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dot{Q}(\hat{t}) = ((\dot{Q_1} - \dot{Q_0})/(t_1-t_0)^r)\hat{t} + \dot{Q_0}$ and for decay is $\dot{Q}(\hat{t}) = ((\dot{Q_0} - \dot{Q_1})/(t_1-t_0)^r)\hat{t} + \dot{Q_1}$. It can be done based on which, $\dot{Q_0}$ or $\dot{Q_1}$, are larger. 
-  
+  Finally, the inputs for a general power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dQ_0$, $\dQ_1$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dQ_0$ and $\dQ_1$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dQ(\hat{t}) = ((\dQ_1 - \dQ_0)/(t_1-t_0)^r)\hat{t} + \dQ_0$ and for decay is $\dQ(\hat{t}) = ((\dQ_0 - \dQ_1)/(t_1-t_0)^r)\hat{t} + \dQ_1$. It can be done based on which, $\dQ_0$ or $\dQ_1$, are larger.
+
 \begin{description}
-  \item[FIRE\_TIME\_GENERATORS] a set of three associated {\ct \&MRND} that define the time interval for fire growth from the end of the incipient growth phase to the peak HRR of the fire, the time interval of peak HRR, and the time period for fire decay to a final HRR value. If you do not want the values to change you can set any of the {\ct \&MRND} inputs up to a {\ct CONSTANT} random generator.
-  \item[FIRE\_HRR\_GENERATORS] a set of three associated {\ct \&MRND} that define the ending HRR values for the peak HRR of the fire, the HRR at the end of the peak burning period, and final HRR at the end of the decay period. If you do not want the values to change you can set any of the {\ct \&MRND} inputs up to a {\ct CONSTANT} random generator.
+  \item[FIRE\_TIME\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the time intervals for fire growth If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator. The first point is always at $t=0$ and $\dQ = 0$. If there is an incipient fire defined, that is point two. If there is a power law growth defined (by {\ct GROWTH\_EXPONENT} and {\ct GROWTH\_EXPONENT}, these follow the first or second time point (depending on whether there is an incipient fire defined). If a power law decay is defined (by {\ct DECAY\_EXPONENT} and {\ct DECAY\_EXPONENT}, these are defined by the next to last and last generators defined.
+  \item[FIRE\_HRR\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
   \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire.
   \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire.
-  
+
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.

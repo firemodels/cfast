@@ -80,8 +80,7 @@ module preprocessor_types
         type(random_int_type) :: indexval
         type(random_real_type) :: scaleval
         integer :: index, nidx, nlabel
-        real(eb) :: scale_value
-        real(eb) :: scale_base_value
+        real(eb) :: scale_value, scale_base_value
         real(eb), dimension(mxpntsarray) :: real_array
         integer, dimension(mxpntsarray) :: int_array
         logical, dimension(mxpntsarray) :: logic_array
@@ -100,6 +99,8 @@ module preprocessor_types
         procedure :: set_max_value => field_set_max_value
         procedure :: set_min_field => field_set_min_field
         procedure :: set_max_field => field_set_max_field
+        procedure :: max_dependency_set => field_max_dependency_set
+        procedure :: min_dependency_set => field_min_dependency_set
     end type
     
     !
@@ -119,8 +120,10 @@ module preprocessor_types
         integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
         logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
         real(eb) :: prob_array(mxpntsarray)             ! user defined probablities for both descreet and continous 
-        real(eb) :: maxval, minval                      ! the ends of the interval used for the random generator
-        real(eb) :: minimum, maximum
+        real(eb) :: maxvalue, minvalue   
+        real(eb) :: max_offset = 0.0_eb, min_offset = 0.0_eb
+        type(random_real_type) :: maxval, minval
+        class(value_wrapper_type), pointer :: minptr, maxptr
         real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
         real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
         real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
@@ -137,14 +140,13 @@ module preprocessor_types
         character(len=128) :: current_char_val
         logical :: current_logic_val
         real(eb) :: range
-        type(field_pointer), pointer :: maxptr, minptr
         character(len=128) :: maxfieldid = 'NULL', minfieldid = 'NULL'
         logical :: mindependent = .false., maxdependent = .false. 
         logical :: min_set = .true., max_set = .true.
     contains
         procedure :: rand
-        procedure :: max => rand_max
-        procedure :: min => rand_min
+        procedure :: maximum => rand_max
+        procedure :: minimum => rand_min
         procedure :: set_current_value
         procedure :: set_min_value 
         procedure :: set_max_value
@@ -327,7 +329,8 @@ module preprocessor_types
             select type (val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%min()+ x*(me%max() - me%min())
+                        me%current_real_val = me%minimum() + me%min_offset + & 
+                            x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
                         val%val = me%current_real_val
                     else 
                         call me%errorcall('RAND', 6)
@@ -422,9 +425,9 @@ module preprocessor_types
             call RANDOM_SEED(PUT=me%seeds)
             select type(val)
                 type is (random_real_type)
-                    val%val = me%minimum - 100.0_eb
+                    val%val = me%minimum() + me%min_offset - 100.0_eb
                     if (me%value_type == val_types(idx_real)) then
-                        do while(val%val < me%minimum .or. val%val > me%maximum)
+                        do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
                             x = random_normal()
                             me%current_real_val = me%stdev*x + me%mean
                             val%val = me%current_real_val
@@ -440,9 +443,9 @@ module preprocessor_types
             call RANDOM_SEED(PUT=me%seeds)
             select type(val)
                 type is (random_real_type)
-                    val%val = me%minimum - 100.0_eb
+                    val%val = me%minimum() - 100.0_eb
                     if (me%value_type == val_types(idx_real)) then
-                        do while(val%val < me%minimum .or. val%val > me%maximum)
+                        do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
                             x = random_normal()
                             me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
                             val%val = me%current_real_val
@@ -461,10 +464,14 @@ module preprocessor_types
             call RANDOM_SEED(PUT = tmpseeds)
             select type(val)
                 type is (random_real_type)
-                    if (x <= (me%peak - me%minimum)/(me%maximum - me%minimum)) then
-                        val%val = sqrt(x*(me%maximum - me%minimum)*(me%peak - me%minimum)) + me%minimum
+                    if (x <= (me%peak - me%minimum() - me%min_offset)/ &
+                        (me%maximum() + me%max_offset - me%minimum() - me%min_offset)) then
+                        val%val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
+                            (me%peak - me%minimum() - me%min_offset)) + me%minimum() + me%min_offset
                     else
-                        val%val = me%maximum - sqrt((1 - x)*(me%maximum - me%minimum)*(me%maximum - me%peak))
+                        val%val = me%maximum() +  me%max_offset - &
+                            sqrt((1 - x)*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
+                            (me%maximum() + me%max_offset - me%peak))
                     end if
                 class default
                     call me%errorcall('RAND', 17)
@@ -646,11 +653,11 @@ module preprocessor_types
     
         class(random_generator_type) :: me
         real(eb) :: max
+        integer :: iflag
         
-        if (me%maxdependent) then
-            call me%rand_mm_sub1(me%maxptr, max)
-        else
-            max = me%maxval
+        call rand_sub(me%maxptr, max, iflag)
+        if (iflag /= 0) then
+            call me%errorcall('RAND_MAX',1)
         end if
         
     end function rand_max
@@ -659,14 +666,28 @@ module preprocessor_types
     
         class(random_generator_type) :: me
         real(eb) :: min
+        integer :: iflag
         
-        if (me%mindependent) then
-            call me%rand_mm_sub1(me%minptr, min)
-        else
-            min = me%minval
+        call rand_sub(me%minptr, min, iflag)
+        if (iflag /= 0) then
+            call me%errorcall('RAND_MIN',1)
         end if
         
     end function rand_min
+    
+    subroutine rand_sub(ptr, val, iflag)
+        class(value_wrapper_type), intent(in) :: ptr
+        real(eb), intent(out) :: val
+        integer, intent(out) :: iflag
+    
+        select type(ptr)
+            type is (random_real_type)
+                val = ptr%val
+                iflag = 0
+            class default
+                iflag = -1
+            end select
+    end subroutine rand_sub
     
     subroutine rand_mm_sub1(me, ptr, val)
     
@@ -695,21 +716,23 @@ module preprocessor_types
     
     subroutine set_min_to_use_field(me, field_id)
     
-        class(random_generator_type) :: me
+        class(random_generator_type), target :: me
         character(len=128) :: field_id
         
         me%minfieldid = field_id
-        me%mindependent = .true. 
+        me%mindependent = .true.
+        me%min_set = .false. 
         
     end subroutine set_min_to_use_field
     
     subroutine set_max_to_use_field(me, field_id)
     
-        class(random_generator_type) :: me
+        class(random_generator_type), target :: me
         character(len=128) :: field_id
         
-        me%maxfieldid = field_id
-        me%maxdependent = .true. 
+        me%maxfieldid =  field_id
+        me%maxdependent = .true.
+        me%max_set = .false. 
         
     end subroutine set_max_to_use_field
     
@@ -718,7 +741,10 @@ module preprocessor_types
         class(random_generator_type), target :: me
         real(eb) :: minimum
         
-        me%minval = minimum
+        me%minvalue = minimum
+        me%minval%val => me%minvalue
+        me%minptr => me%minval
+        me%mindependent = .false.
         me%min_set = .true. 
     
     end subroutine set_min_value
@@ -728,17 +754,20 @@ module preprocessor_types
         class(random_generator_type), target :: me
         real(eb) :: maximum
         
-        me%maxval = maximum
+        me%maxvalue = maximum
+        me%maxval%val => me%maxvalue
+        me%maxptr => me%maxval
+        me%maxdependent = .false.
         me%max_set = .true.
     
     end subroutine set_max_value
     
     subroutine set_min_field(me, field)
     
-        class(random_generator_type), target :: me
-        type(field_pointer), target :: field
+        class(random_generator_type) :: me
+        class(field_pointer) :: field
         
-        me%minptr => field
+        me%minptr => field%valptr
         me%min_set = .true. 
         
     end subroutine set_min_field
@@ -748,7 +777,7 @@ module preprocessor_types
         class(random_generator_type), target :: me
         class(field_pointer), target :: field
         
-        me%maxptr => field
+        me%maxptr => field%valptr
         me%max_set = .true.
         
     end subroutine set_max_field
@@ -839,7 +868,7 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: set
         
-        set = dependencies_set(me%genptr)
+        set = me%genptr%dependencies_set()
     
     end function field_dependencies_set
     
@@ -866,7 +895,7 @@ module preprocessor_types
         class(field_pointer) :: me
         character(len=28) :: field_id
         
-        field_id = min_dependency(me%genptr)
+        field_id = me%genptr%min_dependency()
     
     end function field_min_dependency
     
@@ -875,9 +904,27 @@ module preprocessor_types
         class(field_pointer) :: me
         character(len=28) :: field_id
         
-        field_id = max_dependency(me%genptr)
+        field_id = me%genptr%max_dependency()
     
     end function field_max_dependency
+    
+    function field_max_dependency_set(me) result(set)
+    
+        class(field_pointer) :: me
+        logical :: set
+        
+        set = me%genptr%max_dependency_set()
+    
+    end function field_max_dependency_set
+    
+    function field_min_dependency_set(me) result(set)
+    
+        class(field_pointer) :: me
+        logical :: set
+        
+        set = me%genptr%min_dependency_set()
+    
+    end function field_min_dependency_set
     
     subroutine field_set_min_value(me, minimum)
     
@@ -893,7 +940,7 @@ module preprocessor_types
         class(field_pointer) :: me
         real(eb) :: maximum
         
-        call set_max_value(me%genptr, maximum)
+        call me%genptr%set_max_value(maximum)
         
     end subroutine field_set_max_value
     
@@ -902,7 +949,7 @@ module preprocessor_types
         class(field_pointer) :: me
         type(field_pointer) :: field
         
-        call set_min_field(me%genptr, field)
+        call me%genptr%set_min_field(field)
         
     end subroutine field_set_min_field
     
@@ -911,7 +958,7 @@ module preprocessor_types
         class(field_pointer) :: me
         type(field_pointer) :: field
         
-        call set_max_field(me%genptr, field)
+        call me%genptr%set_max_field(field)
         
     end subroutine field_set_max_field
     

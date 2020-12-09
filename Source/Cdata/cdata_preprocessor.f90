@@ -123,8 +123,8 @@ module preprocessor_routines
         generatorinfo(i)%prob_array(1:mxpntsarray) = -1001._eb 
         generatorinfo(i)%seeds(1:mxseeds) = -1001
     end do
-    generatorinfo(1:mxgenerators)%maxval = 0._eb
-    generatorinfo(1:mxgenerators)%minval = 0._eb
+    generatorinfo(1:mxgenerators)%maxvalue = 0._eb
+    generatorinfo(1:mxgenerators)%minvalue = 0._eb
     generatorinfo(1:mxgenerators)%mean = 0._eb
     generatorinfo(1:mxgenerators)%stdev = 0._eb
     generatorinfo(1:mxgenerators)%alpha = 0._eb
@@ -189,8 +189,8 @@ module preprocessor_routines
     
     call add_filename_to_parameters(filename)
     do i = 1, n_fields
-        call fieldinfo(i)%do_rand(fieldinfo(i)%valptr, iteration)
-        call fieldinfo(i)%write_value
+        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(i)%valptr, iteration)
+        call fieldinfo(fieldptr(i))%write_value
     end do 
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)

@@ -47,7 +47,7 @@
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo
+        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr
     use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
@@ -213,7 +213,7 @@
     character(len=128) :: id, fyi, value_type
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
-    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak
+    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, minimum_offset, maximum_offset
     integer ::random_seeds(mxseeds), ndx
     real(eb) :: probabilities(mxpntsarray), real_values(mxpntsarray) 
     integer :: integer_values(mxpntsarray)
@@ -223,12 +223,12 @@
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field,  maximum_field, minimum_id, maximum_id
+    character(len=128) :: minimum_field,  maximum_field
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, random_seeds, real_values, integer_values, string_values, logical_values, &
         probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value, minimum_id, minimum_field, maximum_id, maximum_field
+        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset
                     
     
     ios = 1
@@ -285,6 +285,18 @@
                 genptr%base_seeds = random_seeds
                 genptr%use_seeds = .true. 
             end if 
+            genptr%min_offset = minimum_offset
+            genptr%max_offset = maximum_offset
+            if (trim(minimum_field) /= 'NULL') then
+                call genptr%set_min_to_use_field(minimum_field)
+            else
+                call genptr%set_min_value(minimum)
+            end if
+            if (trim(maximum_field) /= 'NULL') then
+                call genptr%set_max_to_use_field(maximum_field)
+            else
+                call genptr%set_max_value(maximum)
+            end if
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
                 genptr%type_dist = distribution_type
@@ -293,16 +305,6 @@
                 else
                     call cfastexit('READ_MRND',4)
                 end if 
-                if (trim(minimum_field) /= 'NULL') then
-                    call genptr%set_min_to_use_field(minimum_field)
-                else
-                    call genptr%set_min_value(minimum)
-                end if
-                if (trim(maximum_field) /= 'NULL') then
-                    call genptr%set_max_to_use_field(maximum_field)
-                else
-                    call genptr%set_max_value(maximum)
-                end if
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
@@ -355,15 +357,11 @@
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
-                genptr%minimum = minimum
-                genptr%maximum = maximum
             else if (trim(distribution_type) == trim(rand_dist(idx_trun_log_normal))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
-                genptr%minimum = minimum
-                genptr%maximum = maximum
             else
                 call cfastexit('read_mrnd',1000)
             end if
@@ -399,8 +397,8 @@
     logical_constant_value = .false.
     minimum_field = 'NULL'
     maximum_field = 'NULL'
-    minimum_id = 'NULL'
-    maximum_id = 'NULL'
+    minimum_offset = 0.0_eb
+    maximum_offset = 0.0_eb
 
     end subroutine set_defaults
 
@@ -412,12 +410,14 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj
+    integer :: ios, ii, jj, idx, idx1, idx2
     logical :: mfldflag, found, found_rand
     type(field_pointer), pointer :: fldptr
+    integer, dimension(mxfields) :: tmpptr
     
     
-    character(len=128) :: id, object_id, rand_id, field_name, parameter_header, fyi, field_type, type_of_index 
+    character(len=128) :: id, rand_id, parameter_header, fyi, field_type, type_of_index 
+    character(len=128), dimension(2) :: field
     real(eb) ::base_scaling_value
     integer ::number_in_index, position
     logical :: add_to_parameters
@@ -426,7 +426,7 @@
     logical, dimension(mxpntsarray) :: logical_array_values
     character(len=128), dimension(mxpntsarray) :: character_array_values, scenario_title_array
 
-    namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
+    namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_header, add_to_parameters, &
         real_array_values, integer_array_values, character_array_values, logical_array_values, &
         scenario_title_array, type_of_index, number_in_index, base_scaling_value, position
                     
@@ -499,9 +499,9 @@
             
             if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
                 fldptr%field_type = trim(field_type)
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',7)
                     end if
@@ -512,9 +512,9 @@
             ! Index Type
                 
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_index))) then
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(type_of_index) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',9)
                     end if
@@ -551,9 +551,9 @@
             ! Scale Type
                 
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_scale))) then
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(val_types(idx_real)) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',12)
                     end if
@@ -594,13 +594,68 @@
             if (add_to_parameters) then
                 fldptr%add_to_parameters = add_to_parameters
                 if (trim(parameter_header) == 'NULL') then
-                    fldptr%parameter_header = trim(object_id) // '_' // trim(field_name)
+                    fldptr%parameter_header = trim(field(1)) // '_' // trim(field(2))
                 else
                     fldptr%parameter_header = parameter_header
                 end if
             end if
             
         end do read_mfld_loop
+        
+        idx = 0
+        do ii = 1, n_fields
+            fldptr => fieldinfo(ii)
+            if (.not. fldptr%dependencies()) then
+                tmpptr(ii) = -1001
+                idx = idx + 1
+                fieldptr(idx) = ii
+            else 
+                tmpptr(ii) = ii
+            end if 
+        end do
+        if (idx == 0) then
+            call cfastexit('READ_MFLXD', 1000000)
+        end if
+        idx1 = 1
+        idx2 = idx
+        do while(idx < n_fields)
+            found = .false.
+            do ii = 1, n_fields
+                if (tmpptr(ii) == ii) then
+                    fldptr => fieldinfo(ii)
+                    if (.not. fldptr%dependencies_set()) then
+                        if (.not. fldptr%max_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%max_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_max_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                        if (.not. fldptr%min_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%min_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_min_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                    end if 
+                    if (fldptr%dependencies_set()) then
+                        idx = idx + 1
+                        fieldptr(idx) = ii
+                    end if
+                end if
+            end do
+            if (.not. found) then
+                call cfastexit('READ_MFLD',1000001)
+            else
+                idx1 = idx2 + 1
+                idx2 = idx
+            end if
+        end do 
 
     end if mfld_flag
         
@@ -610,8 +665,8 @@
     subroutine set_defaults
 
     id = 'NULL'
-    object_id = 'NULL'
-    field_name = 'NULL'
+    field(1) = 'NULL'
+    field(2) = 'NULL'
     rand_id = 'NULL'
     add_to_parameters = .true.
     parameter_header = 'NULL'

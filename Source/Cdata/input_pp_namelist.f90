@@ -1026,6 +1026,7 @@
                 end do complist_search
                 fire%add_to_parameters = add_fire_compartment_id_to_parameters
                 if (add_fire_compartment_id_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%fire_label%add_to_parameters = .true. 
                     fire%parameter_field_set = .true. 
                     if (trim(fire_label_parameter_header) == 'NULL') then
@@ -1075,6 +1076,7 @@
                     fire%incipient_growth = fire%incip_typ(fire%idx_flame)
                     fire%incipient_type = fire%incip_typ(fire%idx_flame)
                     if (add_flaming_ignition_peak_hrr_to_parameters) then
+                        fire%add_to_parameters = .true. 
                         fire%flame_hrr_ptr%add_to_parameters = .true. 
                         if (trim(flaming_hrr_peak_header) == 'NULL') then
                             fire%flame_hrr_ptr%parameter_header = ' '
@@ -1084,6 +1086,7 @@
                         end if
                     end if
                     if (add_flaming_ignition_time_to_parameters) then
+                        fire%add_to_parameters = .true. 
                         fire%flame_time_ptr%add_to_parameters = .true. 
                         if (trim(flaming_time_header) == 'NULL') then
                             fire%flame_time_ptr%parameter_header = ' '
@@ -1132,6 +1135,7 @@
                     fire%incipient_growth = fire%incip_typ(fire%idx_smolder)
                     fire%incipient_type = fire%incip_typ(fire%idx_smolder)
                     if (add_smolder_ignition_peak_hrr_to_parameters) then
+                        fire%add_to_parameters = .true. 
                         fire%smolder_hrr_ptr%add_to_parameters = .true. 
                         if (trim(smoldering_hrr_peak_header) == 'NULL') then
                             fire%smolder_hrr_ptr%parameter_header = ' '
@@ -1141,6 +1145,7 @@
                         end if
                     end if
                     if (add_smoldering_ignition_time_to_parameters) then
+                        fire%add_to_parameters = .true. 
                         fire%smolder_time_ptr%add_to_parameters = .true. 
                         if (trim(smoldering_time_header) == 'NULL') then
                             fire%smolder_time_ptr%parameter_header = ' '
@@ -1185,6 +1190,7 @@
                     end if
                 end do
                 if (add_ignition_type_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%fs_fire_ptr%add_to_parameters = .true. 
                     if (trim(ignition_type_header) == 'NULL') then
                         fire%fs_fire_ptr%parameter_header = ' '
@@ -1201,6 +1207,7 @@
             
             If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(2)) /= 'NULL') then
                 fire%generate_fire =   .true. 
+                fire%add_to_parameters = .true.
                 if (flameset .or. smolderset) then
                     idx_firepts = 2
                 else 
@@ -1256,6 +1263,7 @@
                         trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
                 end if
                 do jj = 1, fire%n_firepoints
+                    if (add_fire_to_parameters(jj)) fire%add_to_parameters = .true.
                     call connect_to_fire(jj, fire_id, fire%fire, fire%firegenerators(1,jj), &
                         fire%firegenerators(2,jj), hrr_labels(jj), time_labels(jj), add_fire_to_parameters(jj))
                 end do

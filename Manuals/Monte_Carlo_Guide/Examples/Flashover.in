@@ -96,6 +96,8 @@
     FIRST_FIELD = 'New Fire 1' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
 &DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
+    FIRST_FIELD = 'New Fire 1' 'HRR Actual' /
 
  
 &TAIL /

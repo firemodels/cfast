@@ -15,7 +15,7 @@ module preprocessor_routines
     use initialization_routines, only : initialize_memory
     use input_routines, only : open_files, read_input_file
     use namelist_input_routines, only: cdata_preprocessor_rereadinputfile
-    use utility_routines, only : read_command_options
+    use utility_routines, only : read_command_options, d1mach
     
     !------------------------CData data-----------------------------------------------
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
@@ -122,9 +122,12 @@ module preprocessor_routines
         generatorinfo(i)%logic_array(1:mxpntsarray) = .false.
         generatorinfo(i)%prob_array(1:mxpntsarray) = -1001._eb 
         generatorinfo(i)%seeds(1:mxseeds) = -1001
+        call generatorinfo(i)%set_max_value(d1mach(2))
+        call generatorinfo(i)%set_min_value(-d1mach(2))
+        call generatorinfo(i)%set_stack_value(0.0_eb)
+        generatorinfo(i)%max_offset = 0.0_eb
+        generatorinfo(i)%min_offset = 0.0_eb
     end do
-    generatorinfo(1:mxgenerators)%maxvalue = 0._eb
-    generatorinfo(1:mxgenerators)%minvalue = 0._eb
     generatorinfo(1:mxgenerators)%mean = 0._eb
     generatorinfo(1:mxgenerators)%stdev = 0._eb
     generatorinfo(1:mxgenerators)%alpha = 0._eb

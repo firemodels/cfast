@@ -110,7 +110,7 @@ module preprocessor_output_routines
     
     subroutine flush_parameters_buffer
     
-        character(len=2000) :: buf
+        character(len=20000) :: buf
         integer :: i
         
         buf = ' '

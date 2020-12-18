@@ -223,12 +223,12 @@
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field,  maximum_field
+    character(len=128) :: minimum_field,  maximum_field, stack_field
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, random_seeds, real_values, integer_values, string_values, logical_values, &
         probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset
+        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, stack_field
                     
     
     ios = 1
@@ -296,6 +296,11 @@
                 call genptr%set_max_to_use_field(maximum_field)
             else
                 call genptr%set_max_value(maximum)
+            end if
+            if (trim(stack_field) /= 'NULL') then
+                call genptr%set_stack_to_use_field(stack_field)
+            else
+                call genptr%set_stack_value(0.0_eb)
             end if
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
@@ -379,9 +384,9 @@
     fyi = 'NULL'
     distribution_type = 'NULL'
     value_type = 'NULL'
-    minimum = d1mach(2)
-    maximum = -d1mach(2)
-    mean = d1mach(2)
+    minimum = -d1mach(2)
+    maximum = d1mach(2)
+    mean = 0.0_eb
     stdev = -1001._eb
     alpha = -1001._eb
     beta = -1001._eb
@@ -397,6 +402,7 @@
     logical_constant_value = .false.
     minimum_field = 'NULL'
     maximum_field = 'NULL'
+    stack_field = 'NULL'
     minimum_offset = 0.0_eb
     maximum_offset = 0.0_eb
 
@@ -497,7 +503,7 @@
             
             ! Value Type
             
-            if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
+            if (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_value))) then
                 fldptr%field_type = trim(field_type)
                 call find_object(field(1), fldptr, found)
                 if (found) then
@@ -638,6 +644,15 @@
                                 if (trim(fldptr%min_dependency()) == &
                                     trim(fieldinfo(fieldptr(jj))%id)) then
                                     call fldptr%set_min_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                        if (.not. fldptr%stack_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%stack_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_stack_field(fieldinfo(fieldptr(jj)))
                                     found = .true.
                                 end if
                             end do
@@ -833,7 +848,7 @@
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_to_parameters, add_hrr_scale_to_parameters, &
         add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
-    character(len=128), dimension(100) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
+    character(len=128), dimension(mxpts) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
     logical, dimension(100) :: add_hrr_to_parameters, add_time_to_parameters 
     integer :: number_of_growth_points, number_of_decay_points
     real(eb) :: growth_exponent, decay_exponent 
@@ -845,12 +860,11 @@
     logical :: add_ignition_type_to_parameters, add_smoldering_ignition_time_to_parameters, &
         add_smolder_ignition_peak_hrr_to_parameters, add_flaming_ignition_time_to_parameters, &
         add_flaming_ignition_peak_hrr_to_parameters
-    logical, dimension(100) :: add_fire_to_parameters
+    logical, dimension(mxpts) :: add_fire_to_parameters
     type(fire_generator_type), pointer :: fire
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
-        scaling_fire_time_random_generator_id, &
-        modify_fire_area_to_match_hrr, &
+        scaling_fire_time_random_generator_id, modify_fire_area_to_match_hrr, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
         fire_compartment_id_header, flaming_smoldering_ignition_random_generator_id, &
@@ -1327,6 +1341,7 @@
     base_fire_id = 'NULL'
     scaling_fire_hrr_random_generator_id = 'NULL'
     scaling_fire_time_random_generator_id = 'NULL'
+    fire_label_parameter_header = 'NULL'
     modify_fire_area_to_match_hrr = .true. 
     !add_to_parameters = .false. 
     hrr_scale_header = 'NULL'
@@ -1542,6 +1557,16 @@
                 fldptr%realval%val => item%sill
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'T_1') then
+                found = .true.
+                fldptr%realval%val => item%opening_initial_time
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'T_2') then
+                found = .true.
+                fldptr%realval%val => item%opening_final_time
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
             else
                 call cfastexit('find_field',3)
             end if 
@@ -1580,6 +1605,16 @@
             fldptr%intval%val => item%room
             fldptr%value_type = val_types(idx_int)
             fldptr%valptr => fldptr%intval
+        else if (trim(fieldid) == 'X_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%x_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%y_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else if (trim(fieldid) == 'FLAMING_TRANSITION_TIME') then
             found = .true. 
             fldptr%realval%val => item%flaming_transition_time
@@ -1597,6 +1632,8 @@
             fldptr%realval%val => item%t_qdot(i)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
+        else
+            call cfastexit('find_field',6)
         end if 
     class default
         call cfastexit('find_field',99)

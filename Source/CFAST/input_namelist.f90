@@ -2320,6 +2320,7 @@ continue
     top                   = 0._eb
     type                  = 'NULL'
     width                 = 0._eb
+    height                = 0._eb
 
     end subroutine set_defaults
 

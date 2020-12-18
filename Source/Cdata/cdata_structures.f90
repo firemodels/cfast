@@ -93,14 +93,19 @@ module preprocessor_types
         procedure :: dependencies_set => field_dependencies_set
         procedure :: min_dependent => field_min_dependent
         procedure :: max_dependent => field_max_dependent
+        procedure :: stack_dependent => field_stack_dependent
         procedure :: min_dependency => field_min_dependency
         procedure :: max_dependency => field_max_dependency 
+        procedure :: stack_dependency => field_stack_dependency 
         procedure :: set_min_value => field_set_min_value
         procedure :: set_max_value => field_set_max_value
+        procedure :: set_stack_value => field_set_stack_value
         procedure :: set_min_field => field_set_min_field
         procedure :: set_max_field => field_set_max_field
+        procedure :: set_stack_field => field_set_stack_field
         procedure :: max_dependency_set => field_max_dependency_set
         procedure :: min_dependency_set => field_min_dependency_set
+        procedure :: stack_dependency_set => field_stack_dependency_set
     end type
     
     !
@@ -120,10 +125,10 @@ module preprocessor_types
         integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
         logical :: logic_array(mxpntsarray)             ! values for discrete distributions with logical type
         real(eb) :: prob_array(mxpntsarray)             ! user defined probablities for both descreet and continous 
-        real(eb) :: maxvalue, minvalue   
+        real(eb) :: maxvalue, minvalue, stackvalue   
         real(eb) :: max_offset = 0.0_eb, min_offset = 0.0_eb
-        type(random_real_type) :: maxval, minval
-        class(value_wrapper_type), pointer :: minptr, maxptr
+        type(random_real_type) :: maxval, minval, stackval
+        class(value_wrapper_type), pointer :: minptr, maxptr, stackptr
         real(eb) :: mean, stdev                         ! mean and standard deviation for normal distributions. 
         real(eb) :: alpha, beta                         ! for distributions like beta that use those parameters
         real(eb) :: peak                                ! for the triangle distribution where the peak of the triangle occurs
@@ -140,28 +145,35 @@ module preprocessor_types
         character(len=128) :: current_char_val
         logical :: current_logic_val
         real(eb) :: range
-        character(len=128) :: maxfieldid = 'NULL', minfieldid = 'NULL'
-        logical :: mindependent = .false., maxdependent = .false. 
-        logical :: min_set = .true., max_set = .true.
+        character(len=128) :: maxfieldid = 'NULL', minfieldid = 'NULL', stackfieldid = 'NULL'
+        logical :: mindependent = .false., maxdependent = .false., stackdependent = .false.
+        logical :: min_set = .true., max_set = .true., stack_set = .true.
     contains
         procedure :: rand
         procedure :: maximum => rand_max
         procedure :: minimum => rand_min
+        procedure :: stack => rand_stack
         procedure :: set_current_value
         procedure :: set_min_value 
         procedure :: set_max_value
+        procedure :: set_stack_value
         procedure :: set_min_field
         procedure :: set_max_field
+        procedure :: set_stack_field
         procedure :: dependencies
         procedure :: dependencies_set
         procedure :: max_dependent
         procedure :: min_dependent
+        procedure :: stack_dependent
         procedure :: min_dependency_set
         procedure :: max_dependency_set
+        procedure :: stack_dependency_set
         procedure :: min_dependency
         procedure :: max_dependency
+        procedure :: stack_dependency
         procedure :: set_min_to_use_field
         procedure :: set_max_to_use_field
+        procedure :: set_stack_to_use_field
         procedure, private :: rand_mm_sub1
         procedure, private :: rand_mm_sub2
     end type random_generator_type
@@ -331,6 +343,7 @@ module preprocessor_types
                     if (me%value_type == val_types(idx_real)) then
                         me%current_real_val = me%minimum() + me%min_offset + & 
                             x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
+                        me%current_real_val = me%current_real_val + me%stack()
                         val%val = me%current_real_val
                     else 
                         call me%errorcall('RAND', 6)
@@ -353,14 +366,14 @@ module preprocessor_types
             select type (val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%real_array(idx)
+                        me%current_real_val = me%real_array(idx) + me%stack()
                         val%val = me%current_real_val
                     else 
                         call me%errorcall('RAND', 8)
                     end if
                 type is (random_int_type)
                     if (me%value_type == val_types(idx_int)) then
-                        me%current_int_val = me%int_array(idx)
+                        me%current_int_val = me%int_array(idx) + int(me%stack())
                         val%val = me%current_int_val
                     else 
                         call me%errorcall('RAND', 9)
@@ -379,12 +392,12 @@ module preprocessor_types
             select type(val)
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%constant
+                        me%current_real_val = me%constant + me%stack()
                         val%val = me%current_real_val
                     end if
                 type is (random_int_type) 
                     if (me%value_type == val_types(idx_int)) then
-                        me%current_int_val = int(me%constant)
+                        me%current_int_val = int(me%constant) + int(me%stack())
                         val%val = me%current_int_val
                     else
                         call me%errorcall('RAND', 12)
@@ -397,7 +410,7 @@ module preprocessor_types
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
                         me%constant = me%constant + me%linear_delta
-                        me%current_real_val = me%constant
+                        me%current_real_val = me%constant + me%stack()
                         val%val = me%current_real_val
                     else
                         call me%errorcall('RAND', 14)
@@ -415,6 +428,7 @@ module preprocessor_types
                 type is (random_real_type)
                     if (me%value_type == val_types(idx_real)) then
                         me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
+                        me%current_real_val = me%current_real_val + me%stack()
                         val%val = me%current_real_val
                     end if
                 class default
@@ -429,7 +443,7 @@ module preprocessor_types
                     if (me%value_type == val_types(idx_real)) then
                         do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
                             x = random_normal()
-                            me%current_real_val = me%stdev*x + me%mean
+                            me%current_real_val = me%stdev*x + me%mean + me%stack()
                             val%val = me%current_real_val
                         end do
                     end if
@@ -447,7 +461,7 @@ module preprocessor_types
                     if (me%value_type == val_types(idx_real)) then
                         do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
                             x = random_normal()
-                            me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
+                            me%current_real_val = exp(log(me%stdev)*x+log(me%mean)) + me%stack()
                             val%val = me%current_real_val
                         end do
                     end if
@@ -466,13 +480,14 @@ module preprocessor_types
                 type is (random_real_type)
                     if (x <= (me%peak - me%minimum() - me%min_offset)/ &
                         (me%maximum() + me%max_offset - me%minimum() - me%min_offset)) then
-                        val%val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
-                            (me%peak - me%minimum() - me%min_offset)) + me%minimum() + me%min_offset
+                        me%current_real_val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
+                            (me%peak - me%minimum() - me%min_offset)) + me%minimum() + me%min_offset + me%stack()
                     else
-                        val%val = me%maximum() +  me%max_offset - &
+                        me%current_real_val = me%maximum() +  me%max_offset - &
                             sqrt((1 - x)*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
-                            (me%maximum() + me%max_offset - me%peak))
+                            (me%maximum() + me%max_offset - me%peak)) + me%stack()
                     end if
+                    val%val = me%current_real_val
                 class default
                     call me%errorcall('RAND', 17)
             end select
@@ -675,6 +690,19 @@ module preprocessor_types
         
     end function rand_min
     
+    function rand_stack(me) result(stack)
+    
+        class(random_generator_type) :: me
+        real(eb) :: stack
+        integer :: iflag
+        
+        call rand_sub(me%stackptr, stack, iflag)
+        if (iflag /= 0) then
+            call me%errorcall('RAND_STACK',1)
+        end if
+        
+    end function rand_stack
+    
     subroutine rand_sub(ptr, val, iflag)
         class(value_wrapper_type), intent(in) :: ptr
         real(eb), intent(out) :: val
@@ -736,6 +764,17 @@ module preprocessor_types
         
     end subroutine set_max_to_use_field
     
+    subroutine set_stack_to_use_field(me, field_id)
+    
+        class(random_generator_type), target :: me
+        character(len=128) :: field_id
+        
+        me%stackfieldid =  field_id
+        me%stackdependent = .true.
+        me%stack_set = .false. 
+        
+    end subroutine set_stack_to_use_field
+    
     subroutine set_min_value(me, minimum)
         
         class(random_generator_type), target :: me
@@ -746,6 +785,7 @@ module preprocessor_types
         me%minptr => me%minval
         me%mindependent = .false.
         me%min_set = .true. 
+        me%minfieldid = 'NULL'
     
     end subroutine set_min_value
     
@@ -759,8 +799,23 @@ module preprocessor_types
         me%maxptr => me%maxval
         me%maxdependent = .false.
         me%max_set = .true.
+        me%maxfieldid = 'NULL'
     
     end subroutine set_max_value
+    
+    subroutine set_stack_value(me, stack)
+        
+        class(random_generator_type), target :: me
+        real(eb) :: stack
+        
+        me%stackvalue = stack
+        me%stackval%val => me%stackvalue
+        me%stackptr => me%stackval
+        me%stackdependent = .false.
+        me%stack_set = .true.
+        me%stackfieldid = 'NULL'
+    
+    end subroutine set_stack_value
     
     subroutine set_min_field(me, field)
     
@@ -782,6 +837,16 @@ module preprocessor_types
         
     end subroutine set_max_field
     
+    subroutine set_stack_field(me, field)
+    
+        class(random_generator_type), target :: me
+        class(field_pointer), target :: field
+        
+        me%stackptr => field%valptr
+        me%stack_set = .true.
+        
+    end subroutine set_stack_field
+    
     function min_dependent(me) result(dependent)
         
         class(random_generator_type) :: me
@@ -800,12 +865,21 @@ module preprocessor_types
             
     end function max_dependent
     
+    function stack_dependent(me) result(dependent)
+        
+        class(random_generator_type) :: me
+        logical :: dependent
+            
+        dependent = me%stackdependent
+            
+    end function stack_dependent
+    
     function dependencies(me) result(dependent)
     
         class(random_generator_type) :: me
         logical :: dependent
         
-        dependent = me%mindependent .or. me%maxdependent
+        dependent = me%mindependent .or. me%maxdependent .or. me%stackdependent
     
     end function dependencies
     
@@ -814,7 +888,7 @@ module preprocessor_types
         class(random_generator_type) :: me
         logical :: set
         
-        set = me%min_set .and. me%max_set
+        set = me%min_set .and. me%max_set .and. me%stack_set
     
     end function dependencies_set
     
@@ -836,6 +910,15 @@ module preprocessor_types
         
     end function max_dependency
     
+    function stack_dependency(me) result(field_id)
+    
+        class(random_generator_type) :: me
+        character(len=128) :: field_id
+        
+        field_id = me%stackfieldid
+        
+    end function stack_dependency
+    
     function min_dependency_set(me) result(set)
     
         class(random_generator_type) :: me
@@ -853,6 +936,15 @@ module preprocessor_types
         set = me%max_set
     
     end function max_dependency_set
+    
+    function stack_dependency_set(me) result(set)
+    
+        class(random_generator_type) :: me
+        logical :: set
+        
+        set = me%stack_set
+    
+    end function stack_dependency_set
     
     function field_dependencies(me) result(dependent)
         
@@ -890,6 +982,15 @@ module preprocessor_types
     
     end function field_max_dependent
     
+    function field_stack_dependent(me) result(dependent)
+        
+        class(field_pointer) :: me
+        logical :: dependent
+        
+        dependent = me%genptr%stack_dependent()
+    
+    end function field_stack_dependent
+    
     function field_min_dependency(me) result(field_id)
         
         class(field_pointer) :: me
@@ -907,6 +1008,15 @@ module preprocessor_types
         field_id = me%genptr%max_dependency()
     
     end function field_max_dependency
+    
+    function field_stack_dependency(me) result(field_id)
+        
+        class(field_pointer) :: me
+        character(len=28) :: field_id
+        
+        field_id = me%genptr%stack_dependency()
+    
+    end function field_stack_dependency
     
     function field_max_dependency_set(me) result(set)
     
@@ -926,6 +1036,15 @@ module preprocessor_types
     
     end function field_min_dependency_set
     
+    function field_stack_dependency_set(me) result(set)
+    
+        class(field_pointer) :: me
+        logical :: set
+        
+        set = me%genptr%stack_dependency_set()
+    
+    end function field_stack_dependency_set
+    
     subroutine field_set_min_value(me, minimum)
     
         class(field_pointer) :: me
@@ -944,6 +1063,15 @@ module preprocessor_types
         
     end subroutine field_set_max_value
     
+    subroutine field_set_stack_value(me, stack)
+    
+        class(field_pointer) :: me
+        real(eb) :: stack
+        
+        call me%genptr%set_stack_value(stack)
+        
+    end subroutine field_set_stack_value
+    
     subroutine field_set_min_field(me, field)
     
         class(field_pointer) :: me
@@ -961,6 +1089,15 @@ module preprocessor_types
         call me%genptr%set_max_field(field)
         
     end subroutine field_set_max_field
+    
+    subroutine field_set_stack_field(me, field)
+    
+        class(field_pointer) :: me
+        type(field_pointer) :: field
+        
+        call me%genptr%set_stack_field(field)
+        
+    end subroutine field_set_stack_field
     
     subroutine set_current_value(me)
         

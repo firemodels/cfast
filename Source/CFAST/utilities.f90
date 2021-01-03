@@ -7,7 +7,7 @@
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
-        netheatflux, ssoutoptions
+        netheatflux, ssoutoptions, cdata_accumulator, cdata_preprocessor, cdata_statistics
 
     implicit none
 
@@ -484,24 +484,18 @@
     ! retrieve and process command line options and date
 
     ! unit numbers defined in read_command_options, open_output_files, read_input_file
-    !
-    !      1 is for the solver.ini and data files (data file, tpp and objects) (iofili)
-    !      3 is for the log file  (iofill)
-    !      6 is output (iofilo)
-    !     11 is the history file
-    !     12 is used to write the status file (project.status)
-    !     13 smokeview output
-    !     14 spreadsheet output
 
     ! options
-    !     k = do not access keyboard
-    !     f/c = output options
-    !     s = output "solver.ini" options into the file solve.ini
-    !	  i = do initialization only
+    !     a = run cdata accumulator on the specified input file
     !     d to turn on debugging writes
-    !     t to output trace species mass
-    !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
-    !     n to output just target fluxes relative to ambient (smoke still in od)
+    !     f/c = printed output options, full/compact. default is full
+    !	  i = do initialization only
+    !     k = do not access keyboard
+    !     n = output just target fluxes relative to ambient (like -v but smoke still in od)
+    !     o = output "solver.ini" options into the file solve.ini
+    !     p = run cdata preprocessor on the specified input file
+    !     s = run cdata statistics on the specified input file
+    !     v = output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8), i
     character(len=60) :: strs(8)
@@ -521,14 +515,15 @@
     nargs = 8
     call cmdline(nargs,strs,iarg,iopt)
 
+    if (cmdflag('A',iopt)/=0) cdata_accumulator = .true.
     if (cmdflag('K',iopt)/=0) nokbd = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
     if (cmdflag('D',iopt)/=0) debugging = .true.
     if (cmdflag('V',iopt)/=0) validation_flag = .true.
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
-    if (cmdflag('S',iopt)/=0) then
+    if (cmdflag('O',iopt)/=0) then
         ssoutoptions = 0
-        ssselected = strs(cmdflag('S',iopt))
+        ssselected = strs(cmdflag('O',iopt))
         do i = 1,len(trim(ssselected))
             if (ssselected(i:i)>='A'.and.ssselected(i:i)<='Z') then
                 ssoutoptions(ichar(ssselected(i:i))-ichar('A')+1) = i
@@ -537,7 +532,8 @@
             end if
         end do
     end if
-    iofill = 3
+    if (cmdflag('P',iopt)/=0) cdata_preprocessor = .true.
+    if (cmdflag('S',iopt)/=0) cdata_statistics = .true.
 
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
         write (*,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'

@@ -95,6 +95,7 @@ REAL, PRIVATE      :: zero = 0.0, half = 0.5, one = 1.0, two = 2.0,   &
 PRIVATE            :: integral
 INTEGER, PARAMETER :: dp = SELECTED_REAL_KIND(12, 60)
 
+public :: random_normal
 
 CONTAINS
 

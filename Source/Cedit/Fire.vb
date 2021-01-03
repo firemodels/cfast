@@ -1,7 +1,7 @@
 Public Class Fire
     ' All units within the class are assumed to be consistent and typically SI
 
-    Friend Const FireIgnitionbyTime As Integer = 0           ' Ignition Criteria for additional fires, 0 for time, 1 for temperature, 2 for heat flux
+    Friend Const FireIgnitionbyTime As Integer = 0           ' Ignition criterion for additional fires, 0 for time, 1 for temperature, 2 for heat flux
     Friend Const FireIgnitionbyTemperature As Integer = 1
     Friend Const FireIgnitionbyFlux As Integer = 2
     Friend Const TypeDefinition As Integer = 0               ' Differentiate between object definitions and instances for fires

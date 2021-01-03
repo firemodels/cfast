@@ -5307,7 +5307,7 @@ Public Class CeditMain
                 aCompartment.FloorThickness(r) = Val(CompMaterials(r, c))
             End If
         End If
-
+        UpdateGUI.Compartment(CurrentCompartment)
     End Sub
     Private Sub CompVariableArea_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles CompVariableArea.BeforeRowColChange
         Dim aCompartment As New Compartment

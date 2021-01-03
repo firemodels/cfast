@@ -41,12 +41,13 @@
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
-        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear
+        mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear, &
+        idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal
         
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo
+        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr
     use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
@@ -123,14 +124,14 @@
     subroutine read_mhdr(lu)
     
     integer :: ios
-    real(eb) :: monte_carlo_number_of_cases
-    integer :: seeds(2)
-    logical :: mhdrflag, write_seeds
+    integer :: number_of_cases
+    integer :: random_seeds(2)
+    logical :: mhdrflag, write_random_seeds
     character(len=256) :: work_directory, output_directory, parameter_filename
     
     integer, intent(in) :: lu
 
-    namelist /MHDR/ monte_carlo_number_of_cases, seeds, write_seeds, work_directory, &
+    namelist /MHDR/ number_of_cases, random_seeds, write_random_seeds, work_directory, &
         output_directory, parameter_filename
 
     ios = 1
@@ -168,12 +169,12 @@
         call set_defaults
         read(lu,MHDR)
         
-        mc_number_of_cases = monte_carlo_number_of_cases
-        rnd_seeds(1:2) = seeds(1:2)
-        if (seeds(1) > 0.0_eb .and. seeds(2) > 0.0_eb) then
-            call RANDOM_SEED(PUT=seeds)
+        mc_number_of_cases = number_of_cases
+        rnd_seeds(1:2) = random_seeds(1:2)
+        if (random_seeds(1) > 0.0_eb .and. random_seeds(2) > 0.0_eb) then
+            call RANDOM_SEED(PUT=random_seeds)
         end if
-        mc_write_seeds = write_seeds
+        mc_write_seeds = write_random_seeds
         if (trim(work_directory) == 'NULL') then
             workpath = datapath
         else
@@ -188,9 +189,9 @@
 
     subroutine set_defaults
 
-    monte_carlo_number_of_cases = -1001
-    seeds(1:mxseeds) = -1001
-    write_seeds = .false.
+    number_of_cases = 1
+    random_seeds(1:mxseeds) = -1001
+    write_random_seeds = .true.
     work_directory = 'NULL'
     output_directory = 'NULL'
     parameter_filename = 'NULL'
@@ -212,21 +213,22 @@
     character(len=128) :: id, fyi, value_type
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
-    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, constant_value
-    integer ::initial_seed_values(mxseeds), ndx
-    real(eb) :: discrete_probabilities(mxpntsarray), discrete_real_values(mxpntsarray) 
-    integer :: discrete_integer_values(mxpntsarray)
-    character(len = 128) :: discrete_string_values(mxpntsarray)
+    real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, minimum_offset, maximum_offset
+    integer ::random_seeds(mxseeds), ndx
+    real(eb) :: probabilities(mxpntsarray), real_values(mxpntsarray) 
+    integer :: integer_values(mxpntsarray)
+    logical :: logical_values(mxpntsarray)
+    character(len = 128) :: string_values(mxpntsarray)
     real(eb) :: real_constant_value
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field_name,  maximum_field_name, minimum_object_id, maximum_object_id
+    character(len=128) :: minimum_field,  maximum_field, stack_field
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
-        peak, initial_seed_values, discrete_real_values, discrete_integer_values, discrete_string_values, &
-        discrete_probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value, minimum_object_id, minimum_field_name, maximum_object_id, maximum_field_name
+        peak, random_seeds, real_values, integer_values, string_values, logical_values, &
+        probabilities, real_constant_value, integer_constant_value, character_constant_value, &
+        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, stack_field
                     
     
     ios = 1
@@ -279,10 +281,27 @@
             
             genptr%id = id
             genptr%fyi = fyi
-            if (initial_seed_values(1) /= -1001 .and. initial_seed_values(2) /= -1001) then
-                genptr%base_seeds = initial_seed_values
+            if (random_seeds(1) /= -1001 .and. random_seeds(2) /= -1001) then
+                genptr%base_seeds = random_seeds
                 genptr%use_seeds = .true. 
             end if 
+            genptr%min_offset = minimum_offset
+            genptr%max_offset = maximum_offset
+            if (trim(minimum_field) /= 'NULL') then
+                call genptr%set_min_to_use_field(minimum_field)
+            else
+                call genptr%set_min_value(minimum)
+            end if
+            if (trim(maximum_field) /= 'NULL') then
+                call genptr%set_max_to_use_field(maximum_field)
+            else
+                call genptr%set_max_value(maximum)
+            end if
+            if (trim(stack_field) /= 'NULL') then
+                call genptr%set_stack_to_use_field(stack_field)
+            else
+                call genptr%set_stack_value(0.0_eb)
+            end if
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
                 genptr%type_dist = distribution_type
@@ -291,45 +310,35 @@
                 else
                     call cfastexit('READ_MRND',4)
                 end if 
-                if (trim(minimum_field_name) /= 'NULL') then
-                    call genptr%set_min_to_use_field(minimum_field_name)
-                else
-                    call genptr%set_min_value(minimum)
-                end if
-                if (trim(maximum_field_name) /= 'NULL') then
-                    call genptr%set_max_to_use_field(maximum_field_name)
-                else
-                    call genptr%set_max_value(maximum)
-                end if
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
                 ndx_loop: do while(ndx <= mxpntsarray)
-                    if (discrete_probabilities(ndx) >= 0._eb) then
+                    if (probabilities(ndx) >= 0._eb) then
                         ndx = ndx + 1
                     else
                         exit ndx_loop
                     end if
                 end do ndx_loop
                 genptr%num_discrete_values = ndx
-                genptr%prob_array(1) = discrete_probabilities(1)
+                genptr%prob_array(1) = probabilities(1)
                 do jj = 2, ndx
-                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + discrete_probabilities(jj)
+                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj)
                 end do 
-                if (discrete_real_values(1) /= -1001._eb) then
+                if (real_values(1) /= -1001._eb) then
                     genptr%value_type = val_types(idx_real)
                     do jj = 1, ndx
-                        genptr%real_array(jj) = discrete_real_values(jj)
+                        genptr%real_array(jj) = real_values(jj)
                     end do
-                else if (discrete_integer_values(1) /= -1001) then
+                else if (integer_values(1) /= -1001) then
                     genptr%value_type = val_types(idx_int)
                     do jj = 1, ndx
-                        genptr%int_array(jj) = discrete_integer_values(jj)
+                        genptr%int_array(jj) = integer_values(jj)
                     end do
-                else if (trim(discrete_string_values(1)) /= 'NULL') then
+                else if (trim(string_values(1)) /= 'NULL') then
                     genptr%value_type = val_types(idx_char)
                     do jj = 1, ndx
-                        genptr%char_array(jj) = discrete_string_values(jj)
+                        genptr%char_array(jj) = string_values(jj)
                     end do 
                 else
                     call cfastexit('read_mrnd', 5)
@@ -337,12 +346,27 @@
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
-                genptr%constant = constant_value
+                genptr%constant = real_constant_value
             else if (trim(distribution_type) == trim(rand_dist(idx_linear))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%linear_delta = (maximum - minimum)/(mc_number_of_cases - 1)
                 genptr%constant = minimum - genptr%linear_delta
+            else if (trim(distribution_type) == trim(rand_dist(idx_log_normal))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                genptr%mean = mean
+                genptr%stdev = stdev
+            else if (trim(distribution_type) == trim(rand_dist(idx_trun_normal))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                genptr%mean = mean
+                genptr%stdev = stdev
+            else if (trim(distribution_type) == trim(rand_dist(idx_trun_log_normal))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                genptr%mean = mean
+                genptr%stdev = stdev
             else
                 call cfastexit('read_mrnd',1000)
             end if
@@ -360,25 +384,27 @@
     fyi = 'NULL'
     distribution_type = 'NULL'
     value_type = 'NULL'
-    minimum = d1mach(2)
-    maximum = -d1mach(2)
-    mean = d1mach(2)
+    minimum = -d1mach(2)
+    maximum = d1mach(2)
+    mean = 0.0_eb
     stdev = -1001._eb
     alpha = -1001._eb
     beta = -1001._eb
-    initial_seed_values(1:mxseeds) = -1001
-    discrete_real_values = -1001._eb
-    discrete_integer_values = -1001
-    discrete_string_values = 'NULL'
-    discrete_probabilities = -1001._eb
+    random_seeds(1:mxseeds) = -1001
+    real_values = -1001._eb
+    integer_values = -1001
+    string_values = 'NULL'
+    logical_values = .false.
+    probabilities = -1001._eb
     real_constant_value = -1001.0_eb
     integer_constant_value = -1001
     character_constant_value = 'NULL'
     logical_constant_value = .false.
-    minimum_field_name = 'NULL'
-    maximum_field_name = 'NULL'
-    minimum_object_id = 'NULL'
-    maximum_object_id = 'NULL'
+    minimum_field = 'NULL'
+    maximum_field = 'NULL'
+    stack_field = 'NULL'
+    minimum_offset = 0.0_eb
+    maximum_offset = 0.0_eb
 
     end subroutine set_defaults
 
@@ -390,12 +416,14 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj
+    integer :: ios, ii, jj, idx, idx1, idx2
     logical :: mfldflag, found, found_rand
     type(field_pointer), pointer :: fldptr
+    integer, dimension(mxfields) :: tmpptr
     
     
-    character(len=128) :: id, object_id, rand_id, field_name, parameter_header, fyi, field_type, type_of_index 
+    character(len=128) :: id, rand_id, parameter_header, fyi, field_type, type_of_index 
+    character(len=128), dimension(2) :: field
     real(eb) ::base_scaling_value
     integer ::number_in_index, position
     logical :: add_to_parameters
@@ -404,7 +432,7 @@
     logical, dimension(mxpntsarray) :: logical_array_values
     character(len=128), dimension(mxpntsarray) :: character_array_values, scenario_title_array
 
-    namelist /MFLD/ id, fyi, field_type, object_id, field_name, rand_id, parameter_header, add_to_parameters, &
+    namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_header, add_to_parameters, &
         real_array_values, integer_array_values, character_array_values, logical_array_values, &
         scenario_title_array, type_of_index, number_in_index, base_scaling_value, position
                     
@@ -472,21 +500,27 @@
             if (.not.found_rand) then 
                 call cfastexit('read_mfld',5)
             end if
-            if (trim(field_type) == fldptr%fld_types(fldptr%idx_value)) then
+            
+            ! Value Type
+            
+            if (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_value))) then
                 fldptr%field_type = trim(field_type)
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',7)
                     end if
                 else
                     call cfastexit('read_mfld',6)
                 end if
+            
+            ! Index Type
+                
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_index))) then
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(type_of_index) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',9)
                     end if
@@ -519,10 +553,13 @@
                 else
                     call cfastexit('read_mfld',10)
                 end if
+                
+            ! Scale Type
+                
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_scale))) then
-                call find_object(object_id, fldptr, found)
+                call find_object(field(1), fldptr, found)
                 if (found) then
-                    call find_field(field_name, fldptr%itemptr, fldptr, found)
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(val_types(idx_real)) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',12)
                     end if
@@ -538,6 +575,9 @@
                 else
                     fldptr%scale_base_value = fldptr%realval%val
                 end if 
+            
+            ! Label Type
+                
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_label))) then
                 fldptr%field_type = trim(field_type)
                 fldptr%indexval%val => fldptr%index
@@ -554,16 +594,83 @@
             else
                 call cfastexit('read_mfld',13)
             end if
+            
+            ! Add Parameters
+            
             if (add_to_parameters) then
                 fldptr%add_to_parameters = add_to_parameters
                 if (trim(parameter_header) == 'NULL') then
-                    fldptr%parameter_header = trim(object_id) // '_' // trim(field_name)
+                    fldptr%parameter_header = trim(field(1)) // '_' // trim(field(2))
                 else
                     fldptr%parameter_header = parameter_header
                 end if
             end if
             
         end do read_mfld_loop
+        
+        idx = 0
+        do ii = 1, n_fields
+            fldptr => fieldinfo(ii)
+            if (.not. fldptr%dependencies()) then
+                tmpptr(ii) = -1001
+                idx = idx + 1
+                fieldptr(idx) = ii
+            else 
+                tmpptr(ii) = ii
+            end if 
+        end do
+        if (idx == 0) then
+            call cfastexit('READ_MFLXD', 1000000)
+        end if
+        idx1 = 1
+        idx2 = idx
+        do while(idx < n_fields)
+            found = .false.
+            do ii = 1, n_fields
+                if (tmpptr(ii) == ii) then
+                    fldptr => fieldinfo(ii)
+                    if (.not. fldptr%dependencies_set()) then
+                        if (.not. fldptr%max_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%max_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_max_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                        if (.not. fldptr%min_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%min_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_min_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                        if (.not. fldptr%stack_dependency_set()) then
+                            do jj = idx1, idx2
+                                if (trim(fldptr%stack_dependency()) == &
+                                    trim(fieldinfo(fieldptr(jj))%id)) then
+                                    call fldptr%set_stack_field(fieldinfo(fieldptr(jj)))
+                                    found = .true.
+                                end if
+                            end do
+                        end if 
+                    end if 
+                    if (fldptr%dependencies_set()) then
+                        idx = idx + 1
+                        fieldptr(idx) = ii
+                    end if
+                end if
+            end do
+            if (.not. found) then
+                call cfastexit('READ_MFLD',1000001)
+            else
+                idx1 = idx2 + 1
+                idx2 = idx
+            end if
+        end do 
 
     end if mfld_flag
         
@@ -573,10 +680,10 @@
     subroutine set_defaults
 
     id = 'NULL'
-    object_id = 'NULL'
-    field_name = 'NULL'
+    field(1) = 'NULL'
+    field(2) = 'NULL'
     rand_id = 'NULL'
-    add_to_parameters = .false.
+    add_to_parameters = .true.
     parameter_header = 'NULL'
     base_scaling_value = -1
     position = 1
@@ -730,24 +837,47 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, ii, jj, kk
-    logical :: mfirflag, found
+    integer :: ios, ii, jj, kk, idx_firepts
+    logical :: mfirflag, found, found2, flameset, smolderset
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
-        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, parameter_header, hrr_scale_header, time_scale_header, &
-        fire_compartment_random_generator_id, fire_compartment_id_header
+        scaling_fire_time_random_generator_id, hrr_scale_header, time_scale_header, &
+        fire_compartment_random_generator_id, fire_compartment_id_header, &
+        flaming_smoldering_ignition_random_generator_id, flaming_ignition_delay_random_generator_id, &
+        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
+        peak_smoldering_ignition_random_generator_id, fire_label_parameter_header
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_to_parameters, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters, first_time_point_smoldering
+        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
+    character(len=128), dimension(mxpts) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
+    logical, dimension(100) :: add_hrr_to_parameters, add_time_to_parameters 
+    integer :: number_of_growth_points, number_of_decay_points
+    real(eb) :: growth_exponent, decay_exponent 
+    character(len=10) :: type_of_incipient_growth
+    integer :: number_of_incipient_fire_types
+    character(len=128), dimension(20) :: incipient_fire_types
+    character(len=128) :: ignition_type_header, smoldering_time_header, smoldering_hrr_peak_header, &
+        flaming_time_header, flaming_hrr_peak_header
+    logical :: add_ignition_type_to_parameters, add_smoldering_ignition_time_to_parameters, &
+        add_smolder_ignition_peak_hrr_to_parameters, add_flaming_ignition_time_to_parameters, &
+        add_flaming_ignition_peak_hrr_to_parameters
+    logical, dimension(mxpts) :: add_fire_to_parameters
     type(fire_generator_type), pointer :: fire
-    
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
-        smolder_random_generator_id, scaling_fire_time_random_generator_id, &
-        smolder_time_random_generator_id, modify_fire_area_to_match_hrr, add_to_parameters, parameter_header, &
+        scaling_fire_time_random_generator_id, modify_fire_area_to_match_hrr, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
-        fire_compartment_id_header
+        fire_compartment_id_header, flaming_smoldering_ignition_random_generator_id, &
+        flaming_ignition_delay_random_generator_id, fire_label_parameter_header, &
+        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
+        peak_smoldering_ignition_random_generator_id, &
+        fire_hrr_generators, fire_time_generators, type_of_incipient_growth, number_of_incipient_fire_types, &
+        incipient_fire_types, ignition_type_header, smoldering_time_header, smoldering_hrr_peak_header, &
+        flaming_time_header, flaming_hrr_peak_header, add_ignition_type_to_parameters, &
+        add_smoldering_ignition_time_to_parameters, add_smolder_ignition_peak_hrr_to_parameters, &
+        add_flaming_ignition_time_to_parameters, add_flaming_ignition_peak_hrr_to_parameters, number_of_growth_points,&
+        number_of_decay_points, growth_exponent, decay_exponent, add_hrr_to_parameters, add_time_to_parameters, &
+        hrr_labels, time_labels, add_fire_to_parameters
     
     ios = 1
 
@@ -793,13 +923,22 @@
             fire%fyi = fyi
             fire%fireid = fire_id
             fire%basefireid = base_fire_id
+            fire%modifyfirearea = modify_fire_area_to_match_hrr
+            found = .false.
             do jj = 1, n_fires
                 if (trim(fireinfo(jj)%id) == trim(fire%fireid)) then
                     fire%fire => fireinfo(jj)
+                    found = .true.
                 elseif (trim(fireinfo(jj)%id) == trim(fire%basefireid)) then
                     fire%base => fireinfo(jj)
                 end if
             end do
+            if (.not.found) then
+                call cfastexit('MFIR', 4)
+            end if
+            
+            ! Scaling Fire HRR
+            
             if (trim(scaling_fire_hrr_random_generator_id) /= 'NULL') then
                 do jj = 1, n_generators
                     if (trim(scaling_fire_hrr_random_generator_id)== trim(generatorinfo(jj)%id)) then
@@ -810,19 +949,22 @@
                 if (fire%scalehrr) then
                     fire%hrrscaleval%val => fire%hrrscalevalue
                 else
-                    call cfastexit('MFIR', 4)
+                    call cfastexit('MFIR', 5)
                 end if 
                 if (add_hrr_scale_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%hrrscaleval%add_to_parameters = add_hrr_scale_to_parameters
                     if (trim(hrr_scale_header) == 'NULL') then
                         fire%hrrscaleval%parameter_header = ' '
                         fire%hrrscaleval%parameter_header = trim(fire_id) // '_HRR_scaling_factor'
                     else 
                         fire%hrrscaleval%parameter_header =  hrr_scale_header
-                    end if
-                    fire%add_to_parameters = .true. 
+                    end if 
                 end if
             end if
+            
+            ! Scaling Fire Time
+            
             if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
                 do jj = 1, n_generators
                     if (trim(scaling_fire_time_random_generator_id)== trim(generatorinfo(jj)%id)) then
@@ -833,9 +975,10 @@
                 if (fire%scaletime) then
                     fire%timescaleval%val => fire%timescalevalue
                 else
-                    call cfastexit('READ_MFIR', 5)
+                    call cfastexit('READ_MFIR', 6)
                 end if 
                 if (add_time_scale_to_parameters) then
+                    fire%add_to_parameters = .true. 
                     fire%timescaleval%add_to_parameters = add_time_scale_to_parameters
                     if (trim(time_scale_header) == 'NULL') then
                         fire%timescaleval%parameter_header = ' '
@@ -843,33 +986,39 @@
                     else 
                         fire%timescaleval%parameter_header =  time_scale_header
                     end if
-                    fire%add_to_parameters = .true. 
                 end if
             end if
+            
+            ! Randomizing Fire Comp[artment 
+            
             if (trim(fire_compartment_random_generator_id) /= 'NULL') then
                 compgen_search: do jj = 1, n_generators
                     if (trim(fire_compartment_random_generator_id)== trim(generatorinfo(jj)%id)) then
                         fire%fire_comp%genptr => generatorinfo(jj)
                         fire%fire_label%genptr => generatorinfo(jj)
-                        fire%rand_comp = .true.
+                        fire%do_fire_comp = .true.
                         exit compgen_search
                     end if
                 end do compgen_search
-                if (.not.fire%rand_comp) then
-                    call cfastexit('READ_MFIR', 6)
+                if (.not.fire%do_fire_comp) then
+                    call cfastexit('READ_MFIR', 7)
                 end if
                 call find_object(fire_id, fire%fire_comp, found)
                 if (found) then
-                    call find_field('ROOM', fire%fire_comp%itemptr, fire%fire_comp, found)
+                    call find_field('COMPARTMENT', fire%fire_comp%itemptr, fire%fire_comp, found)
                 else
-                    call cfastexit('READ_MFIR',7)
+                    call cfastexit('READ_MFIR',8)
+                end if
+                if (.not.found) then
+                    call cfastexit('READ_MFIR',9)
                 end if
                 fire%fire_comp%field_type = trim(fire%fire_comp%fld_types(fire%fire_comp%idx_index))
-                fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
-                fire%fire_comp%intval%val => fire%fire_comp%index
-                fire%fire_comp%randptr => fire%fire_comp%intval
+                fire%fire_comp%indexval%val => fire%fire_comp%index
+                fire%fire_comp%randptr => fire%fire_comp%indexval
                 fire%fire_comp%add_to_parameters = .false.
-                fire%fire_label%add_to_parameters = .true.
+                fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
+                fire%fire_label%indexval%val => fire%fire_label%index
+                fire%fire_label%randptr => fire%fire_label%indexval
                 complist_search: do jj = 1, mxrooms
                     if (trim(fire_compartment_ids(jj)) == 'NULL') then
                         exit complist_search
@@ -877,20 +1026,313 @@
                     found = .false.
                     room_search: do kk = 1, n_rooms
                         if (trim(fire_compartment_ids(jj)) == trim(roominfo(kk)%id)) then
-                            fire%compindex(jj) = kk
+                            fire%fire_comp%int_array(jj) = kk
+                            fire%fire_comp%nlabel = jj
+                            fire%fire_label%char_array(jj) = fire_compartment_ids(jj)
+                            fire%fire_label%nlabel = jj
                             found = .true.
                             exit room_search
                         end if
                     end do room_search
                     if (.not.found) then
-                        call cfastexit('READ_MFIR', 8)
+                        call cfastexit('READ_MFIR', 10)
                     end if
                 end do complist_search
+                fire%add_to_parameters = add_fire_compartment_id_to_parameters
+                if (add_fire_compartment_id_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%fire_label%add_to_parameters = .true. 
+                    fire%parameter_field_set = .true. 
+                    if (trim(fire_label_parameter_header) == 'NULL') then
+                        fire%fire_label%parameter_header = trim(fire_id) // '_FIRE_COMPARTMENT'
+                    else
+                        fire%fire_label%parameter_header = fire_label_parameter_header
+                    end if
+                end if
             end if
+            
+            ! Incipient Fire Model
+            
+            flameset = .false.
+            smolderset = .false.
+            
+            ! Setting up the flaming growth model
+            
+            if (trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_flame)) .or. &
+                trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_random))) then
+                if (trim(flaming_ignition_delay_random_generator_id) /= 'NULL' .and. &
+                    trim(peak_flaming_ignition_random_generator_id) /= 'NULL') then
+                    found = .false.
+                    found2 = .false. 
+                    do jj = 1, n_generators
+                        if (trim(flaming_ignition_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                            fire%flame_hrr_ptr%genptr => generatorinfo(jj)
+                            found = .true.
+                        else if (trim(peak_flaming_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                            fire%flame_time_ptr%genptr => generatorinfo(jj)
+                            found2 = .true.
+                        end if        
+                    end do
+                    if (.not.(found.and.found2)) then
+                        call cfastexit('MFIR', 11)
+                    end if
+                    call find_field('HRR_PT2   ', fire%fire, fire%flame_hrr_ptr, found)
+                    if (.not.found) then
+                        call cfastexit('MFIR', 12)
+                    end if 
+                    fire%flame_hrr_ptr%field_type = trim(fire%flame_hrr_ptr%fld_types(fire%fire_comp%idx_value))
+                    call find_field('T_HRR_PT2   ', fire%fire, fire%flame_time_ptr, found)
+                    if (.not.found) then
+                        call cfastexit('MFIR', 13)
+                    end if 
+                    fire%flame_time_ptr%field_type = trim(fire%flame_time_ptr%fld_types(fire%fire_comp%idx_value))
+                    flameset = .true. 
+                    fire%incipient_growth = fire%incip_typ(fire%idx_flame)
+                    fire%incipient_type = fire%incip_typ(fire%idx_flame)
+                    if (add_flaming_ignition_peak_hrr_to_parameters) then
+                        fire%add_to_parameters = .true. 
+                        fire%flame_hrr_ptr%add_to_parameters = .true. 
+                        if (trim(flaming_hrr_peak_header) == 'NULL') then
+                            fire%flame_hrr_ptr%parameter_header = ' '
+                            fire%flame_hrr_ptr%parameter_header = trim(fire_id) // '_flaming_peak_hrr_ignition'
+                        else 
+                            fire%flame_hrr_ptr%parameter_header =  flaming_hrr_peak_header
+                        end if
+                    end if
+                    if (add_flaming_ignition_time_to_parameters) then
+                        fire%add_to_parameters = .true. 
+                        fire%flame_time_ptr%add_to_parameters = .true. 
+                        if (trim(flaming_time_header) == 'NULL') then
+                            fire%flame_time_ptr%parameter_header = ' '
+                            fire%flame_time_ptr%parameter_header = trim(fire_id) // '_flaming_time_ignition'
+                        else 
+                            fire%flame_time_ptr%parameter_header =  flaming_time_header
+                        end if
+                    end if
+                else
+                    call cfastexit('READ_MFIR', 14)
+                end if
+            end if
+            
+            ! Setting up the smoldering growth model    
+                
+            fire%incipient_type = fire%incip_typ(fire%idx_none)
+            if (trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_smolder)) .or. &
+                trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_random))) then
+                if (trim(smoldering_ignition_delay_random_generator_id) /= 'NULL' .and. &
+                    trim(peak_smoldering_ignition_random_generator_id) /= 'NULL') then
+                    found = .false.
+                    found2 = .false. 
+                    do jj = 1, n_generators
+                        if (trim(smoldering_ignition_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                            fire%smolder_hrr_ptr%genptr => generatorinfo(jj)
+                            found = .true.
+                        else if (trim(peak_smoldering_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                            fire%smolder_time_ptr%genptr => generatorinfo(jj)
+                            found2 = .true.
+                        end if        
+                    end do
+                    if (.not.(found.and.found2)) then
+                        call cfastexit('MFIR', 15)
+                    end if
+                    call find_field('HRR_PT2  ', fire%fire, fire%smolder_hrr_ptr, found)
+                    if (.not.found) then
+                        call cfastexit('MFIR', 16)
+                    end if 
+                    fire%smolder_hrr_ptr%field_type = trim(fire%smolder_hrr_ptr%fld_types(fire%fire_comp%idx_value))
+                    call find_field('T_HRR_PT2  ', fire%fire, fire%smolder_time_ptr, found)
+                    if (.not.found) then
+                        call cfastexit('MFIR', 17)
+                    end if 
+                    fire%smolder_time_ptr%field_type = trim(fire%smolder_time_ptr%fld_types(fire%fire_comp%idx_value))
+                    smolderset = .true.
+                    fire%incipient_growth = fire%incip_typ(fire%idx_smolder)
+                    fire%incipient_type = fire%incip_typ(fire%idx_smolder)
+                    if (add_smolder_ignition_peak_hrr_to_parameters) then
+                        fire%add_to_parameters = .true. 
+                        fire%smolder_hrr_ptr%add_to_parameters = .true. 
+                        if (trim(smoldering_hrr_peak_header) == 'NULL') then
+                            fire%smolder_hrr_ptr%parameter_header = ' '
+                            fire%smolder_hrr_ptr%parameter_header = trim(fire_id)//'_smolderinging_peak_hrr_ignition'
+                        else 
+                            fire%smolder_hrr_ptr%parameter_header =  smoldering_hrr_peak_header
+                        end if
+                    end if
+                    if (add_smoldering_ignition_time_to_parameters) then
+                        fire%add_to_parameters = .true. 
+                        fire%smolder_time_ptr%add_to_parameters = .true. 
+                        if (trim(smoldering_time_header) == 'NULL') then
+                            fire%smolder_time_ptr%parameter_header = ' '
+                            fire%smolder_time_ptr%parameter_header = trim(fire_id) // '_smoldering_time_ignition'
+                        else 
+                            fire%smolder_time_ptr%parameter_header =  smoldering_time_header
+                        end if
+                    end if
+                else
+                    call cfastexit('READ_MFIR', 18)
+                end if
+            end if
+                
+            ! Setting up the generator that switches between the two models 
+                
+            if (flameset .and. smolderset .and. & 
+                trim(flaming_smoldering_ignition_random_generator_id) /= 'NULL' ) then
+                found = .false.
+                do jj = 1, n_generators
+                    if (trim(flaming_smoldering_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                        fire%fs_fire_ptr%genptr => generatorinfo(jj)
+                        found = .true.
+                    end if
+                end do
+                if (.not.found) then
+                    call cfastexit('MFIR', 19)
+                end if
+                fire%incipient_type = fire%incip_typ(fire%idx_random)
+                fire%fs_fire_ptr%field_type = trim(fire%fs_fire_ptr%fld_types(fire%fs_fire_ptr%idx_index))
+                fire%fs_fire_ptr%value_type = val_types(idx_char)
+                fire%fs_fire_ptr%charval%val => fire%incipient_growth
+                fire%fs_fire_ptr%valptr => fire%fs_fire_ptr%charval
+                fire%fs_fire_ptr%intval%val => fire%fs_fire_ptr%index
+                fire%fs_fire_ptr%randptr => fire%fs_fire_ptr%intval
+                fire%fs_fire_ptr%nidx = number_of_incipient_fire_types
+                do jj = 1, number_of_incipient_fire_types
+                    if (trim(incipient_fire_types(jj)) == 'FLAMING' .or. & 
+                        trim(incipient_fire_types(jj)) == 'SMOLDERING') then
+                        fire%fs_fire_ptr%char_array(jj) = incipient_fire_types(jj)
+                    else
+                        call cfastexit('MFIR', 20)
+                    end if
+                end do
+                if (add_ignition_type_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%fs_fire_ptr%add_to_parameters = .true. 
+                    if (trim(ignition_type_header) == 'NULL') then
+                        fire%fs_fire_ptr%parameter_header = ' '
+                        fire%fs_fire_ptr%parameter_header = trim(fire_id) // '_ignition_type'
+                    else 
+                        fire%fs_fire_ptr%parameter_header =  ignition_type_header
+                    end if
+                end if
+            else if (flameset .and. smolderset) then
+                call cfastexit('READ_MFIR', 21)
+            end if   
+            
+            ! Setting up the fire where all points are determined by generators
+            
+            If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(2)) /= 'NULL') then
+                fire%generate_fire =   .true. 
+                fire%add_to_parameters = .true.
+                if (flameset .or. smolderset) then
+                    idx_firepts = 2
+                else 
+                    idx_firepts = 1
+                end if 
+                if (number_of_growth_points > 0) then
+                    idx_firepts = idx_firepts + number_of_growth_points
+                end if 
+                outfireloop: do jj = 1, 100
+                    if (trim(fire_hrr_generators(jj)) /= 'NULL' .and. trim(fire_time_generators(jj)) /= 'NULL') then
+                        fire%n_firegenerators = jj 
+                    else if (trim(fire_hrr_generators(jj)) == 'NULL' .and. trim(fire_time_generators(jj)) == 'NULL') then
+                        exit outfireloop
+                    end if 
+                    found = .false.
+                    found2 = .false.
+                    infireloop: do kk = 1, n_generators
+                        if (trim(fire_hrr_generators(jj)) == trim(generatorinfo(kk)%id)) then
+                            found = .true.
+                            fire%firegenerators(1, idx_firepts + jj)%genptr => generatorinfo(kk)
+                            fire%firegenerators(1,idx_firepts + jj)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
+                        else if (trim(fire_time_generators(jj)) == trim(generatorinfo(kk)%id)) then
+                            found2 = .true.
+                            fire%firegenerators(2, idx_firepts + jj)%genptr => generatorinfo(kk)
+                            fire%firegenerators(2, idx_firepts + jj)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
+                        end if 
+                        if (found .and. found2) then 
+                            exit infireloop
+                        end if
+                    end do infireloop 
+                    if (.not. found .or. .not. found2) then
+                        call cfastexit('READ_MFIR', 22)
+                    end if
+                end do outfireloop
+                fire%last_growth_pt = idx_firepts
+                idx_firepts = idx_firepts + fire%n_firegenerators
+                fire%growth_npts = number_of_growth_points
+                fire%decay_npts = number_of_decay_points
+                fire%n_firepoints = idx_firepts + number_of_decay_points
+                fire%first_decay_pt = idx_firepts
+                if (fire%decay_npts > 0) then
+                    fire%firegenerators(1, fire%n_firepoints)%genptr => fire%firegenerators(1, idx_firepts)%genptr
+                    fire%firegenerators(1,fire%n_firepoints)%field_type =  &
+                        trim(fire%firegenerators(1, idx_firepts)%field_type)
+                    fire%firegenerators(1,idx_firepts)%field_type = &
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
+                    fire%firegenerators(2, fire%n_firepoints)%genptr => fire%firegenerators(2, idx_firepts)%genptr
+                    fire%firegenerators(2,fire%n_firepoints)%field_type =  &
+                        trim(fire%firegenerators(1, idx_firepts)%field_type)
+                    fire%firegenerators(1,idx_firepts)%field_type = &
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
+                end if
+                do jj = 1, fire%n_firepoints
+                    if (add_fire_to_parameters(jj)) fire%add_to_parameters = .true.
+                    call connect_to_fire(jj, fire_id, fire%fire, fire%firegenerators(1,jj), &
+                        fire%firegenerators(2,jj), hrr_labels(jj), time_labels(jj), add_fire_to_parameters(jj))
+                end do
+                fire%growthexpo = growth_exponent
+                fire%decayexpo = decay_exponent
+            end if
+            
         end do read_mfir_loop
     end if mfir_flag
     
     contains
+    
+    subroutine connect_to_fire(idx, fire_id, fire, hrrfield, timefield, hrr_label, time_label, add_to_parameters)
+    
+        type(fire_type), pointer :: fire
+        type(field_pointer) :: hrrfield, timefield
+        character(len=128) :: hrr_label, time_label, fire_id
+        logical :: add_to_parameters
+        integer :: idx
+        
+        character(len=128) :: tmpbuf
+    
+        tmpbuf = ' '
+        write(tmpbuf,'(''T_HRR_PT'', I3)') idx
+        call find_field(tmpbuf, fire, timefield, found)
+        if (.not. found) then
+            write(*,*) 'READ_MFIR: Error on Time firegenerator '
+            call cfastexit('READMFIR:CONNECT_TO_FIRE', 1)
+        end if
+        if (add_to_parameters) then
+            timefield%add_to_parameters = .true.
+            if (trim(time_label) == 'NULL') then
+                timefield%parameter_header = ' '
+                timefield%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
+            else
+                timefield%parameter_header = time_label
+            end if
+        end if
+        tmpbuf = ' '
+        write(tmpbuf,'(''HRR_PT'', I3)') idx
+        call find_field(tmpbuf, fire, hrrfield, found)
+        if (.not. found) then
+            write(*,*) 'READ_MFIR: Error on HRR firegenerator '
+            call cfastexit('READMFIR:CONNECT_TO_FIRE', 2)
+        end if
+        if (add_to_parameters) then
+            hrrfield%add_to_parameters = .true.
+            if (trim(hrr_label) == 'NULL') then
+                hrrfield%parameter_header = ' '
+                hrrfield%parameter_header = trim(fire_id) // '_' // trim(tmpbuf)
+            else
+                hrrfield%parameter_header = time_label
+            end if
+        end if
+    end subroutine connect_to_fire
     
     subroutine set_defaults
     
@@ -898,22 +1340,49 @@
     fire_id = 'NULL' 
     base_fire_id = 'NULL'
     scaling_fire_hrr_random_generator_id = 'NULL'
-    smolder_random_generator_id = 'NULL'
     scaling_fire_time_random_generator_id = 'NULL'
-    smolder_time_random_generator_id = 'NULL'
-    first_time_point_smoldering = .false.
-    modify_fire_area_to_match_hrr = .false. 
-    add_to_parameters = .false. 
-    parameter_header = 'NULL'
+    fire_label_parameter_header = 'NULL'
+    modify_fire_area_to_match_hrr = .true. 
+    !add_to_parameters = .false. 
     hrr_scale_header = 'NULL'
     time_scale_header = 'NULL'
-    add_hrr_scale_to_parameters = .false.
-    add_time_scale_to_parameters = .false.
+    add_hrr_scale_to_parameters = .true.
+    add_time_scale_to_parameters = .true.
     fire_compartment_random_generator_id = 'NULL'
-    add_fire_compartment_id_to_parameters = .false.
+    add_fire_compartment_id_to_parameters = .true.
     fire_compartment_id_header = 'NULL'
     fire_compartment_ids = 'NULL'
-    
+    flaming_smoldering_ignition_random_generator_id = 'NULL'
+    flaming_ignition_delay_random_generator_id = 'NULL'
+    peak_flaming_ignition_random_generator_id = 'NULL'
+    smoldering_ignition_delay_random_generator_id = 'NULL'
+    peak_smoldering_ignition_random_generator_id = 'NULL'
+    fire_hrr_generators = 'NULL'
+    fire_time_generators = 'NULL'
+    type_of_incipient_growth = 'NONE'
+    number_of_incipient_fire_types = -1001
+    incipient_fire_types = 'NULL'
+    ignition_type_header = 'NULL'
+    smoldering_time_header = 'NULL'
+    smoldering_hrr_peak_header = 'NULL'
+    flaming_time_header = 'NULL'
+    flaming_hrr_peak_header = 'NULL'
+    add_ignition_type_to_parameters = .true.
+    add_smoldering_ignition_time_to_parameters = .true.
+    add_smolder_ignition_peak_hrr_to_parameters = .true.
+    add_flaming_ignition_time_to_parameters = .true.
+    add_flaming_ignition_peak_hrr_to_parameters = .true.
+    fire_hrr_generators = 'NULL'
+    fire_time_generators = 'NULL'
+    number_of_growth_points = 0
+    number_of_decay_points = 0
+    growth_exponent = 1
+    decay_exponent = 1
+    add_hrr_to_parameters = .true. 
+    add_time_to_parameters = .true. 
+    hrr_labels = 'NULL'
+    time_labels = 'NULL'
+    add_fire_to_parameters = .true.
     
     end subroutine set_defaults
     
@@ -1004,6 +1473,8 @@
     type(field_pointer), target, intent(inout) :: fldptr
     logical, intent(out) :: found
     
+    integer :: i
+    
     found = .false.
     select type (item)
     type is (room_type)
@@ -1086,6 +1557,16 @@
                 fldptr%realval%val => item%sill
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'T_1') then
+                found = .true.
+                fldptr%realval%val => item%opening_initial_time
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'T_2') then
+                found = .true.
+                fldptr%realval%val => item%opening_final_time
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
             else
                 call cfastexit('find_field',3)
             end if 
@@ -1110,7 +1591,7 @@
             fldptr%realval%val => item%trigger
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
-        elseif (trim(fieldid)  == 'TRIGGER_SMOLDER') then
+        else if (trim(fieldid)  == 'TRIGGER_SMOLDER') then
             found = .true.
             fldptr%realval%val => item%trigger_smolder
             fldptr%value_type = val_types(idx_real)
@@ -1119,12 +1600,41 @@
             call cfastexit('find_field',5)
         end if
     class is (fire_type)
-        if (trim(fieldid) == 'ROOM') then
+        if (trim(fieldid) == 'COMPARTMENT') then
             found = .true.
             fldptr%intval%val => item%room
             fldptr%value_type = val_types(idx_int)
             fldptr%valptr => fldptr%intval
-        end if
+        else if (trim(fieldid) == 'X_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%x_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%y_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'FLAMING_TRANSITION_TIME') then
+            found = .true. 
+            fldptr%realval%val => item%flaming_transition_time
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:6)) == 'HRR_PT') then 
+            found = .true.
+            read(fieldid(7:9),'(i3)') i
+            fldptr%realval%val => item%qdot(i)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:8)) == 'T_HRR_PT') then 
+            found = .true.
+            read(fieldid(9:11),'(i3)') i
+            fldptr%realval%val => item%t_qdot(i)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else
+            call cfastexit('find_field',6)
+        end if 
     class default
         call cfastexit('find_field',99)
     end select

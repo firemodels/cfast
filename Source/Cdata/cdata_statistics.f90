@@ -9,7 +9,7 @@ module statistics_routines
     
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, &
         mxstats
-    use setup_data, only: cfast_input_file_position, iofili, inputfile
+    use setup_data, only: iofili, inputfile
     
     use input_routines, only: exehandle
     use namelist_input_pp_routines, only: namelist_stt_input
@@ -41,8 +41,8 @@ module statistics_routines
     integer :: i, ioerr
     
     call init_stats
+    
     !call test_stats
-    cfast_input_file_position = 3
     call exehandle(exepath, datapath, project, extension)
     buf = trim(datapath) // trim(project) // trim(extension)
     inputfile = trim(buf)

@@ -1814,7 +1814,7 @@ module spreadsheet_routines
         if (icount>0)  then
             dumpptr => dumpinfo(i)
             dumpptr%found = .false.
-            if (dumpptr%file_type==csvnames(idx)) then
+            if (dumpptr%file==csvnames(idx)) then
                 num_entries = num_entries + 1
                 relcol = dumpptr%relative_column + 1
                 icount = icount - 1
@@ -1830,27 +1830,27 @@ module spreadsheet_routines
                         return
                     end if
                 end if 
-                call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%first_device, dumpptr%first_measurement)
+                call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%first_field(1), dumpptr%first_field(2))
                 primecol(cols(icol)) = ic
                 if (ic>0) then
                     dumpptr%found = .true.
                 end if
                 if ((dumpptr%type(1:8) == 'TRIGGER_' .or. &
                         dumpptr%type(1:9) == 'INTEGRATE').and.dumpptr%found) then 
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_device, &
-                                    dumpptr%second_measurement)
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
+                                    dumpptr%second_field(2))
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
                         dumpptr%found = .false.
                     end if
                 else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.dumpptr%found) then
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_device, &
-                                    dumpptr%second_measurement)
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
+                                    dumpptr%second_field(2))
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
                         dumpptr%found = .false.
                     end if
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_device, &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
                                     'HRR Expected')
                     seccol(2,cols(icol)) = ic
                     if (ic<1) then
@@ -1901,11 +1901,11 @@ module spreadsheet_routines
                     else if (dumpptr%type(1:3) == 'MIN') then
                         dumparray(2,relcol) = min(dumparray(2,relcol),x(1, primecol(cols(i))))
                     else if (dumpptr%type(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(1,cols(i)))>=dumpptr%criteria.and.dumparray(2,relcol)== -1) then
+                        if (x(1, seccol(1,cols(i)))>=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
                             dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (dumpptr%type(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(1,i))<=dumpptr%criteria.and.dumparray(2,relcol)== -1) then
+                        if (x(1, seccol(1,i))<=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
                             dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (dumpptr%type(1:9) == 'INTEGRATE') then

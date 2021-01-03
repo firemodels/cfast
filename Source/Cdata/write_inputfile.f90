@@ -82,8 +82,10 @@
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '!! Dumps'
     call write_dump (iofilcalc)
+    write(iofilcalc,'(a1)')
+    write(iofilcalc, '(a)') '&TAIL /'
 
-    close (iofili)
+    close (iofilcalc)
     
     return
     
@@ -423,8 +425,8 @@
                 call add_token_str(iounit, buf, 'TYPE = ', 'SMOKE_DETECTOR')
                 call add_token_rarray(iounit, buf, 'LOCATION = ', dtectptr%center, 3)
                 if (dtectptr%dual_detector) then
-                    tmp(1) = dtectptr%trigger
-                    tmp(2) = dtectptr%trigger_smolder
+                    tmp(2) = dtectptr%trigger
+                    tmp(1) = dtectptr%trigger_smolder
                     call add_token_rarray(iounit, buf, 'SETPOINTS = ', tmp, 2)
                 else
                     if (dtectptr%trigger /= default_activation_obscuration) then
@@ -510,7 +512,7 @@
     character :: lbls(8)*(15) = &
         (/ 'TIME           ', 'HRR            ', 'HEIGHT         ', &
            'AREA           ', 'CO_YIELD       ', 'SOOT_YIELD     ', &
-           'HCN_YEILD      ', 'TRACE_YIELD    ' /)
+           'HCN_YIELD      ', 'TRACE_YIELD    ' /)
     logical :: dup
     real(eb) :: vals(8)
     
@@ -612,6 +614,17 @@
             call add_token_val(iounit, buf, 'BOTTOM = ', ventptr%sill)
             call add_token_val(iounit, buf, 'WIDTH = ', ventptr%width)
             call add_token_val(iounit, buf, 'OFFSET = ',ventptr%offset(1))
+            if (ventptr%opening_type == 1) then
+                if (ventptr%opening_initial_time /= 0._eb .or. ventptr%opening_final_time /= 0._eb) then
+                    call add_token_str(iounit,buf,'CRITERION = ','TIME')
+                    val(1) = ventptr%opening_initial_time
+                    val(2) = ventptr%opening_final_time
+                    call add_token_rarray(iounit,buf,'T = ',val,2)
+                    val(1) = ventptr%opening_initial_fraction
+                    val(2) = ventptr%opening_final_fraction
+                    call add_token_rarray(iounit,buf,'F = ',val,2)
+                end if
+            end if
             if (ventptr%face == 1) then
                 call add_token_str(iounit, buf, 'FACE = ', 'FRONT')
             elseif (ventptr%face == 2) then
@@ -745,13 +758,11 @@
             call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
             call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)
-            call add_token_str(iounit, buf, 'FILE_TYPE = ', dumpptr%file_type)
-            call add_token_str(iounit, buf, 'FIRST_DEVICE = ', dumpptr%first_device)
-            call add_token_str(iounit, buf, 'FIRST_MEASUREMENT = ', dumpptr%first_measurement)
-            call add_token_str(iounit, buf, 'SECOND_DEVICE = ', dumpptr%second_device)
-            call add_token_str(iounit, buf, 'SECOND_MEASUREMENT = ', dumpptr%second_measurement)
+            call add_token_str(iounit, buf, 'FILE = ', dumpptr%file)
+            call add_token_carray(iounit, buf, 'FIRST_FIELD = ', dumpptr%first_field, 2)
+            call add_token_carray(iounit, buf, 'SECOND_FIELD = ', dumpptr%second_field, 2)
             if (dumpptr%type(1:3) == 'TRI') then
-                call add_token_val(iounit, buf, 'CRITERIA = ', dumpptr%criteria)
+                call add_token_val(iounit, buf, 'CRITERION = ', dumpptr%criterion)
             end if
             call end_namelist(iounit, buf)
         end do

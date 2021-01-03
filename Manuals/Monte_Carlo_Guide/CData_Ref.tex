@@ -379,7 +379,7 @@ For this example, the fire location, fire growth, fire peak heat release rate, v
 \item[Fire location:] Fire is placed in a fixed location in a randomly chosen compartment in the structure and is equally split between flaming and smoldering fires.
 \item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution.
 \item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation.
-\item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a log-normal distribution with a geometric mean of 3.0~\%/ft $\pm$ 1.3 \%/ft for flaming fires and 5.0~\%/ft $\pm$ 1.3 \%/ft for smoldering fires.
+\item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a log-normal distribution with a geometric mean of 9.5 \%/m $\pm$ 4.2 \%/m (3.0~\%/ft $\pm$ 1.3 \%/ft) for flaming fires and 15.5 \%/m $\pm$ 4.2 \%/m (5.0~\%/ft $\pm$ 1.3 \%/ft) for smoldering fires.
 \end{description}
 
 In the analysis, we will look at the impact of delays in triggering of secondary, interconnected smoke detectors on the overall tenability for a range of fires.
@@ -414,188 +414,216 @@ In the analysis, we will look at typically-used outputs to determine those which
 %---------------------User's Guide----------------------------------
 %
 
-\chapter{CData User's Guide}
-The CData program has several functions. One of them is as a PreProcessor used to create a set of data files that CFAST runs to generate data for an analysis. This chapter discusses how the PreProcessor works with some simple examples to demonstrate certain aspects of the system. First is an overview of the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
+\chapter{Creating Multiple CFAST Runs}
+The CData program has several functions. One of them is as a PreProcessor used to create a set of CFAST data files for an analysis. This chapter discusses how the PreProcessor works with some simple examples to demonstrate certain aspects of the system. First is an overview of the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
 
 \section{Basic Philosophy}
 
 \section{PreProcessor}
 
-\subsection{Commands}
 \label{commands_section}
-Each subsection will discuss one namelist and what each of the parameters do. The tables presented in each subsection are combined in Appendix \ref{preprocessor_reference}  to serve as a refence for commands.
+Each subsection will discuss one set of namelist inputs and what each of the parameters do. All the inputs are combined in Appendix \ref{preprocessor_reference}  to serve as a reference for commands.
 
-\subsubsection{Namelist DUMP}
+\subsection{Namelist MHDR}
 
-\noindent
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
-\caption[Output and Post-Run Calculation parameters ({\ct DUMP} namelist group)]{}
-\label{tbl:DUMP} \\
-\hline
-\multicolumn{4}{|c|}{{\ct DUMP} (Output and Post-Run Calculation Parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{4}{|c|}{{\ct DUMP} (CALCULATION Parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endhead
-{\ct ID}                    & Character        &          &        \\ \hline
-{\ct FILE\_TYPE} \footnote{{\ct FILE\_TYPE} must be one of the CFAST spreadsheet outputs: {\ct NORMAL}, {\ct FLOW}, {\ct MASS}, {\ct SPECIES}, or {\ct WALL}.}
+The {\ct \&MHDR} inputs specify details of the scenarios to be generated including the number of cases to be generated, seeds for the random number generator, and locations for input and output files.
 
-                            & Selection List   &          &         \\ \hline
-{\ct TYPE} \footnote{{\ct TYPE} must be {\ct TRIGGER\_GREATER}, {\ct TRIGGER\_LESSER}, {\ct MINIMUM}, {\ct MAXIMUM}, {\ct INTEGRATE}, or {\ct CHECK\_TOTAL\_HRR}}
-                            & Selection List   &          &         \\ \hline
-{\ct CRITERIA}              & Real             &          &         \\ \hline
-{\ct FIRST\_DEVICE}         & Character        &          &        \\ \hline
-{\ct FIRST\_MEASUREMENT}    & Character        &          &        \\ \hline
-{\ct SECOND\_DEVICE}        & Character        &          &        \\ \hline
-{\ct SECOND\_MEASUREMENT}   & Character        &          &       \\ \hline
-\end{longtable}
-\end{minipage}
+\begin{description}
+  \item[NUMBER\_OF\_CASES] (default value 1): specifies the number of cases that the preprocessor will generate.
+  \item[RANDOM\_SEEDS] (default value, software chosen random integer pair): defines an integer pair used to determine random number seeds for distributions. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files.  All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
+  \item[WRITE\_RANDOM\_SEEDS] (default value, .TRUE.): if .TRUE., all random number seeds are saved in the file {\ct <project>\_seeds.csv}.
+  \item[PARAMETER\_FILE] (default value, {\ct <project>\_parameters.csv} where {\ct <project>} is the base filename of the CDATA/CFAST input file): Summary output file from the preprocessor that list the CFAST file names and parameter values for inputs varied for each CFAST scenario in the set of generated CFAST cases. This file is combined with the summary statistics generated by the accumulator module.
+  \item[WORK\_FOLDER] (default value, current folder): folder where the preprocessor creates its set of CFAST inputs file and where the accumulator looks for CFAST output files to be processed.
+  \item[OUTPUT\_FOLDER] (default value, current folder): folder where the accumulator or statistics modules put their output files of analysis results.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MHDR NUMBER_OF_CASES = 10000 /
+&MHDR NUMBER_OF_CASES = 20000 WRITE_SEEDS = .TRUE.
+	PARAMETER_FILE = 'Outputfile' WORK_FOLDER = 'Z:\'  OUTPUT_FOLDER = '..\project'/
+\end{lstlisting}
+
+
+
+\subsection{Namelist MRND}
+
+The {\ct \&MRND} defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, suppose the desire is to have all the rooms have the same height ceiling, then all the fields will use the same random number generator. % This might be to early to say all this. What do you think?
+
+\begin{description}
+  \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
+  \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
+  \item[VALUES] a set of values for the {\ct USER\_DEFINED} distribution type. Inputs are input as string constants and interpreted to match the type required by the associated {\ct \&MRND} input(s). Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type. These are not cumulative probabilities and the total of all values must add to 1.0
+  \item[CONSTANT] is a constant value. For the {\ct CONSTANT} distribution it is the value that is returned by the generator.
+  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
+  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
+  \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
+  \item[ALPHA] alpha value for the {\ct BETA} distribution type.
+  \item[BETA] beta value for the {\ct BETA} distribution type.
+  \item[MEAN] mean value for the {\ct NORMAL}; geometric mean value for the {\ct LOG\_NORMAL} distribution type.
+  \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
+  \item[MINIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input for the compartment height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low height of the compartment is set.
+  \item[MAXIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the maximum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the top of a vent, then you can set the upper limit the height in the associated compartment by including a {\ct MAXIMUM\_FIELD} input for the vent input such as {\ct MAXIMUM\_FIELD="Comp 1","HEIGHT"} to cap the vent top to the height of the compartment.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
+&MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
+\end{lstlisting}
+
+\subsection{Namelist MFLD}
+
+\begin{description}
+  \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD="Comp 1","HEIGHT"} would vary the height of the compartment named {\ct Comp 1}.
+  \item[TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES}       input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
+  \item[FIELD\_LABELS] The purpose of this optional is simply to provide descriptions of the purpose of each index value for {\ct INDEX} inputs.
+  \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each field input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields. The number of inputs in the {\ct \&MRND} input must match those for the field type.
+  \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label.
+  \item[VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MFLD ID = 'Height_bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'uniform_generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
+\end{lstlisting}
+
+\clearpage
+
+\subsection{Namelist MFIR}
+
+Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution) or by defining a power law fire based on several inputs.
+
+\begin{description}
+  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
+  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dQ^*$, is defined as $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
+  \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them. This matches the index chosen by {\ct FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID} to actual compartment names in the input file.
+  \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[FIRE\_COMPARTMENT\_ID\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
+
+ \begin{description}
+  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexibility
+  \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
+  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
+  \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
+  \item[PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID] This is the second of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the final HRR for the incipient flaming fire ramp. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
+  \item[SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
+  \item[PEAK\_SMOLDERING\_IGNITION\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
+  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
+  \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened because adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
+  \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[FLAMING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[FLAMING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[SMOLDERING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[SMOLDERING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+ \end{description}
+Secondly, inputs for the scaling fire are described.
+
+\begin{description}
+  \item[BASE\_FIRE\_ID] For scaling fires only. This provides internal temporary storage for all the base values for a fire to be scaled. Typically, it will just be a copy of the corresponding {\ct FIRE\_ID} input.
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the scaling factor that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient fire portion of the fire curve.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the  scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient portion of the fire curve.
+  \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[HRR\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+  Finally, the inputs for a general power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dQ_0$, $\dQ_1$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dQ_0$ and $\dQ_1$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dQ(\hat{t}) = ((\dQ_1 - \dQ_0)/(t_1-t_0)^r)\hat{t} + \dQ_0$ and for decay is $\dQ(\hat{t}) = ((\dQ_0 - \dQ_1)/(t_1-t_0)^r)\hat{t} + \dQ_1$. It can be done based on which, $\dQ_0$ or $\dQ_1$, are larger.
+
+\begin{description}
+  \item[FIRE\_TIME\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the time intervals for fire growth If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator. The first point is always at $t=0$ and $\dQ = 0$. If there is an incipient fire defined, that is point two. If there is a power law growth defined (by {\ct GROWTH\_EXPONENT} and {\ct GROWTH\_EXPONENT}, these follow the first or second time point (depending on whether there is an incipient fire defined). If a power law decay is defined (by {\ct DECAY\_EXPONENT} and {\ct DECAY\_EXPONENT}, these are defined by the next to last and last generators defined.
+  \item[FIRE\_HRR\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
+  \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
+  \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
+  \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire.
+  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire.
+
+  \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[HRR\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 207 STDEV = 46
+    MINIMUM = 10 MAXIMUM = 1000000/
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 23000 STDEV = 7000
+    MINIMUM = 100 MAXIMUM = 1000000/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 6863 STDEV = 1812
+    MINIMUM = 60 MAXIMUM = 14490/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 11000 STDEV = 3000
+    MINIMUM = 100 MAXIMUM = 1000000/
+&MRND ID = 'Growth Time  Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 205, STDEV = 65
+    MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 1054000 /
+&MRND ID = 'Peak Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+
+&MFIR ID = 'Fire Generator' FIRE_ID = 'Random'
+    FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
+    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room'
+    FLAMING_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator' TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'
+    NUMBER_OF_INCIPIENT_FIRE_TYPES = 2 INCIPIENT_FIRE_TYPES = 'FLAMING' 'SMOLDERING'
+    PEAK_FLAMING_IGNITION_RANDOM_GENERATOR_ID = 'Flaming Time Generator'
+    FLAMING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Flaming Peak Generator'
+    PEAK_SMOLDERING_IGNITION_RANDOM_GENERATOR_ID = 'Smoldering Time Generator'
+    SMOLDERING_IGNITION_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
+    FIRE_TIME_GENERATORS = 'Growth Time Generator' 'Peak Plateau End Time' 'Fire End Time'
+    FIRE_HRR_GENERATORS =  'Peak HRR Generator'    'Peak HRR Generator'    'Fire End HRR'
+    NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+
+
+\subsection{Namelist DUMP}
+
+\begin{description}
+  \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FILE] specifies which of the CFAST output files are used for the summary output. Allowable inputs are {\ct COMPARTMENTS}, {\ct DEVICES}, {\ct FIRES}, {\ct MASSES}, or {\ct WALLS}.
+  \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
+  \item[FIRST\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the first input in a calculation. For example, {\ct FIELD="Time","Simulation Time"} would specify the simulation time.
+  \item[SECOND\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the second input in a calculation, if required. For example, {\ct FIELD="Comp 1","Upper Layer Temperature"} would specify the upper layer temperature in compartment named {\ct Comp 1}.
+  \item[CRITERION] Specifies the value to be evaluated in a {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER} calculation.
+\end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
 &DUMP ID = 'Total Time Completed'
      FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
+     FIRST_FIELD = 'Time', 'Simulation Time' /
 &DUMP ID = 'Fire Room Ion Detector'
-     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
-     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
+     FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FIRST_FIELD = 'Time', 'Simulation Time'
+     SECOND_FIELD = 'Ionization Detector Room 1', 'Sensor Activation' /
 \end{lstlisting}
 
 \clearpage
-
-\subsubsection{Namelist MHDR}
-
-\noindent
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
-\caption[Main Monte Carlo parameters ({\ct MHDR} namelist group)]{}
-\label{tbl:MHDR} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MHDR} (Main Monte Carlo parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MHDR} (CALCULATION Parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endhead
-{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}                    & Integer        &          &        \\ \hline
-{\ct OUTPUT\_DIRECTORY} & Character  &         &  Local directory      \\ \hline
-{\ct PARAMETER\_FILENAME} & Character   &         &  'filename'\_parameters      \\ \hline
-{\ct SEEDS}              & 2 Integers             &         &        \\ \hline
-{\ct WORK\_DIRECTORY}         & Character        &         &  Local directory      \\ \hline
-{\ct WRITE\_SEEDS}    & Logical        &         &{\ct  .FALSE.}       \\ \hline
-\end{longtable}
-\end{minipage}
-
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&MHDR MONTE_CARLO_NUMBER_OF_FILES = 10000 /
-&MHDR MONTE_CARLO_NUMBER_OF_FILES = 20000 WRITE_SEEDS = .TRUE.
-	PARAMETER_FILE = 'Outputfile' WORK_DIRECTORY = 'Z:\'
-	OUTPUT_DIRECTORY = '..\project'/
-\end{lstlisting}
-
-\clearpage
-
-\subsubsection{Namelist MRND}
-
-\noindent
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
-\caption[Random generator parameters ({\ct MRND} namelist group)]{}
-\label{tbl:MRND} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MRND} (Random generator parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MRND} (CALCULATION Parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endhead
-{\ct ID}   & Character        &          &        \\ \hline
-{\ct FYI} & Character  &         &        \\ \hline
-{\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE},
-			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, or {\ct CONSTANT}} & Selection List   &         &      \\ \hline
-{\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &       \\ \hline
-{\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &        \\ \hline
-{\ct MAXIMUM}         & Real        &         &       \\ \hline
-{\ct MEAN}    & Real        &         &       \\ \hline
-{\ct STDEV}    & Real        &         &       \\ \hline
-{\ct ALPHA}    & Real        &         &       \\ \hline
-{\ct PEAK}    & Real        &         &       \\ \hline
-{\ct BETA}    & Real        &         &       \\ \hline
-{\ct DESCRETE\_PROBABILITIES} \footnote{ Sum of probabilites must equal one}  & Real array  &      &     \\ \hline
-{\ct DESCRETE\_REAL\_VALUES}    & Real array        &         &       \\ \hline
-{\ct DESCRETE\_INTEGER\_VALUES}    & Integer array        &         &       \\ \hline
-{\ct DESCRETE\_CHARACTER\_VALUES}    & Character array        &         &       \\ \hline
-\end{longtable}
-\end{minipage}
-
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&MRND ID = 'Example rand generator', TYPE_DIST = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
-&MRND ID ='Second rand generator', TYPE_DIST = 'NORMAL', MEAN = 0, STDEV = 1 /
-\end{lstlisting}
-
-\clearpage
-
-\subsubsection{Namelist MFLD}
-
-\noindent
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
-\caption[Feild to be varied parameters ({\ct MFLD} namelist group)]{}
-\label{tbl:MFLD} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MFLD} (Field to vary parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{4}{|c|}{{\ct MFLD} (CALCULATION Parameters)} \\
-\hline \hline
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-\endhead
-{\ct ID}   & Character        &          &        \\ \hline
-{\ct FYI} & Character  &         &        \\ \hline
-{\ct OBJECT\_ID} \footnote{{\ct OBJECT\_ID} must be the {\ct ID} of a namelist defined in the input file} & Character   &         &      \\ \hline
-{\ct FIELD\_NAME} \footnote{{\ct FIELD\_NAME} must be a defined field of the namelist object identified by {\ct OBJECT\_ID}}& Character  &       &       \\ \hline
-{\ct RAND\_ID} \footnote{{\ct RAND\_ID} must be the {\ct ID} of a {\ct MRND} defined in input file}              & Character           &         &        \\ \hline
-{\ct PARAMETER\_HEADER}         & Character        &         &       \\ \hline
-{\ct ADD\_TO\_PARAMETERS}    & Logical        &         & {\ct .FALSE.}      \\ \hline
-\end{longtable}
-\end{minipage}
-
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&MFLD ID = 'Height_bedroom' OBJECT_ID = 'Bedroom' FIELD_NAME = hieght RAND_ID = 'uniform_generator' PARAMETER_HEADER = 'Bedroom height' ADD_TO_PARAMETERS = .TRUE. /
-\end{lstlisting}
-
-\clearpage
-
-\subsubsection{Namelist MFIR}
 
 \section{Running CFAST}
 

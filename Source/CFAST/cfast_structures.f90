@@ -13,17 +13,16 @@ module cfast_types
     ! user-customized data and calculation output data structure
     type, extends(cfast_type) :: dump_type
         ! these are for user-specified calculations on data. output goes to _calculations.csv
-        character(len=24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
+        character(len=24) :: file                   ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                     !      'check_total_hrr'
-        real(eb) :: criteria                        ! Value used in 'trigger_...' analysis
+        real(eb) :: criterion                       ! Value used in 'trigger_...' analysis
 
-        character(len=128) :: first_device          ! Name of instrument, third row in spreadsheet        
-        character(len=128) :: first_measurement     ! Name of measurement for first device, second row in spreadsheet
-        character(len=128) :: second_device         ! Name of second instrument, needed for 'trigger' and 'integrate',
-                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        character(len=128) :: second_measurement    ! Name of measurement for second device, needed for 'trigger' and 'integrate'
-                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        character(len=128) :: first_field(2)        ! Name of instrument, third row in spreadsheet and 
+                                                    !   name of measurement for first device, second row in spreadsheet
+        character(len=128) :: second_field(2)       ! Name of second instrument and second measurement, 
+                                                    !   needed for 'trigger' and 'integrate',
+                                                    !   ignored for 'maximum', 'minimum', and 'check_total_hrr'
         integer :: relative_column                  ! Order of columns. This is just the order in the input file
         
         logical :: found                            ! The input channels are found in the requested csv files
@@ -71,7 +70,7 @@ module cfast_types
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
                                                         ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: ignition_criterion                  ! ignition criteria for fire. Units depend on ignition type (user input)
+        real(eb) :: ignition_criterion                  ! ignition criterion for fire. Units depend on ignition type (user input)
         integer :: chemistry_type                       ! fire type. Currently, only constrained fire (user input)
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl            ! stociometry of the fuel (user input)
         real(eb) :: chirad                              ! fraction of fire HRR released as radiation (user input)
@@ -289,7 +288,7 @@ module cfast_types
         integer :: opening_target           ! target number associated with vent (user input)
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
+        real(eb) :: opening_criterion       ! open/close criterion for vent change based on temperature or flux
         logical :: opening_triggered        ! true if opening_criterion has been met
         real(eb) :: opening_temperature     ! current temeprature of target associate with vent
         real(eb) :: opening_flux            ! current incident flux of target associate with vent

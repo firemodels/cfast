@@ -205,9 +205,10 @@ module target_routines
                 else
                     zfire = (fireptr%z_position + fireptr%z_offset) + f_height/3.0_eb
                 end if
-                svect(3) = targptr%center(3) - zfire
+                svect(3) = sign(1._eb,(targptr%center(3) - zfire))*max(abs(targptr%center(3) - zfire),mx_hsep)
                 cosang = 0.0_eb
-                s = max(dnrm2(3,svect,1),mx_hsep)
+                s = dnrm2(3,svect,1)
+                s = sign(1._eb,s)*max(abs(s),mx_hsep)
                 if (s/=0.0_eb) then
                     cosang = -ddot(3,svect,1,targptr%normal,1)/s
                 end if

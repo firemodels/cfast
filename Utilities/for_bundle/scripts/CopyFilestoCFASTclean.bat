@@ -26,6 +26,12 @@ cd %cfast_root%\Build\CFAST\intel_win_64
 call make_cfast.bat bot release
 copy cfast7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cfast.exe /Y
 
+@echo ***     Create CData
+call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
+cd %cfast_root%\Build\Cdata\intel_win_64
+call make_cdata.bat bot release
+copy cdata7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cdata.exe /Y
+
 @echo ***     Create VandVCalcs
 cd %cfast_root%\Build\VandV_Calcs\intel_win_64
 call make_vv.bat bot release

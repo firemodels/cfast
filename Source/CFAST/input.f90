@@ -22,7 +22,7 @@
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssdiag, sscalculation, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
-        overwrite_testcase, cfast_input_file_position
+        overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
@@ -610,15 +610,9 @@
 
     nargs = command_argument_count() + 1
 
-    if (nargs<cfast_input_file_position) then
-        if (cfast_input_file_position == 2) then
-            write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
-            call cfastexit('exehandle',1)
-        else
-            write(*,*) 'CData was called with insufficent arguments on the command line.', &
-                'Input file should be in position ', cfast_input_file_position
-            call cfastexit('exehandle', 2)
-        end if 
+    if (nargs<2) then
+        write (*,*) 'The program was called with insufficient arguments on the command line.  At least an input file is required.'
+        call cfastexit('exehandle',1)
     end if
 
     ! get the calling program and arguments
@@ -627,10 +621,10 @@
     datapath = ' '
     project = ' '
     extension = ' '
-    idx(1) = 1
-    idx(2) = cfast_input_file_position
-
+    
     ! only look at the first two arguments (1 = executable name, 2 =cfast input file name)
+    idx(1) = 1
+    idx(2) = 2
     do i = 1, 2
         loop = idx(i) - 1
         call get_command_argument(loop, buf, ilen, status)

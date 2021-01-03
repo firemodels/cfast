@@ -8,20 +8,20 @@ module preprocessor_routines
     use namelist_data, only: convert_negative_distances
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, inputfile, datapath, project, extension, cfast_input_file_position, iofili
+        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly, debugging
     
     !-----------------------CFAST routines-----------------------------------------
     use exit_routines, only: cfastexit, delete_output_files, closeoutputfiles
     use initialization_routines, only : initialize_memory
     use input_routines, only : open_files, read_input_file
     use namelist_input_routines, only: cdata_preprocessor_rereadinputfile
-    use utility_routines, only : read_command_options
+    use utility_routines, only : read_command_options, d1mach
     
     !------------------------CData data-----------------------------------------------
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
         mxiterations
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
-        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile
+        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile, fieldptr
     use preprocessor_types, only: random_generator_type
     
     !------------------------CData routines-------------------------------------
@@ -47,18 +47,14 @@ module preprocessor_routines
 
     integer :: i
     character(len=256) :: infilecase
-
-    cfast_version = 7500        ! Current CFAST version number
     
      ! initialize the basic memory configuration
 
-    cfast_input_file_position = 3
     call initialize_memory
     call read_command_options
     call open_files
 
     call read_input_file
-    cfast_input_file_position = 2
     
     call preprocessor_initialize
     call cdata_preprocessor_rereadinputfile
@@ -67,13 +63,20 @@ module preprocessor_routines
     call initialize_output_files
     do i = 1, mc_number_of_cases
         call create_mc_filename(i, infilecase)
-        write(*,*)'creating ',trim(infilecase)
+        if (debugging) write(*,*)'creating ',trim(infilecase)
         call create_case(infilecase, i)
-        call write_cfast_infile(infilecase)
+        if (.not.initializeonly) call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
     call finish_batch
     call write_seeds_outputfile
+    if (initializeonly) then
+        write (*,'(a,i0,a)') 'Created parameters files for ', mc_number_of_cases, ' CFAST cases'
+    else
+        write (*,'(a,i0,a)') 'Created ', mc_number_of_cases, ' CFAST input files'
+    end if
+    
+    return
     
     end subroutine preprocessor 
     
@@ -119,9 +122,12 @@ module preprocessor_routines
         generatorinfo(i)%logic_array(1:mxpntsarray) = .false.
         generatorinfo(i)%prob_array(1:mxpntsarray) = -1001._eb 
         generatorinfo(i)%seeds(1:mxseeds) = -1001
+        call generatorinfo(i)%set_max_value(d1mach(2))
+        call generatorinfo(i)%set_min_value(-d1mach(2))
+        call generatorinfo(i)%set_stack_value(0.0_eb)
+        generatorinfo(i)%max_offset = 0.0_eb
+        generatorinfo(i)%min_offset = 0.0_eb
     end do
-    generatorinfo(1:mxgenerators)%maxval = 0._eb
-    generatorinfo(1:mxgenerators)%minval = 0._eb
     generatorinfo(1:mxgenerators)%mean = 0._eb
     generatorinfo(1:mxgenerators)%stdev = 0._eb
     generatorinfo(1:mxgenerators)%alpha = 0._eb
@@ -143,6 +149,9 @@ module preprocessor_routines
         fieldinfo(i)%logic_array(1:mxpntsarray) = .false.
         fieldinfo(i)%char_array(1:mxpntsarray) = 'NULL'
     end do
+    allocate(fieldptr(mxfields))
+    fieldptr(1:mxfields) = -1001
+    
     
     n_rndfires = 0
     allocate(randfireinfo(mxrandfires))
@@ -162,7 +171,7 @@ module preprocessor_routines
     randfireinfo(1:mxrandfires)%scalehrr = .false.
     randfireinfo(1:mxrandfires)%scaletime = .false.
     randfireinfo(1:mxrandfires)%dostime = .false. 
-    randfireinfo(1:mxrandfires)%smoldervalue = .false. 
+    randfireinfo(1:mxrandfires)%smoldering_fire = .false. 
     randfireinfo(1:mxrandfires)%hrrscalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%timescalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%stimevalue = -1001.0_eb
@@ -183,8 +192,8 @@ module preprocessor_routines
     
     call add_filename_to_parameters(filename)
     do i = 1, n_fields
-        call fieldinfo(i)%do_rand(fieldinfo(i)%valptr, iteration)
-        call fieldinfo(i)%write_value
+        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(i)%valptr, iteration)
+        call fieldinfo(fieldptr(i))%write_value
     end do 
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)

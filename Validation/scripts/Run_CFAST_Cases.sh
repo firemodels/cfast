@@ -18,6 +18,7 @@ echo "     other options: 32"
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
 echo "-s - stop CFAST runs"
+echo "-t - output run times to a history file"
 echo "-u - use installed versions of utilities background and wind2fds"
 exit
 }
@@ -32,8 +33,9 @@ cd ..
 export SVNROOT=`pwd`/..
 smvrepo=
 compiler=intel
+TIME=
 
-while getopts 'dhI:j:m:p:q:sS:u' OPTION
+while getopts 'dhI:j:m:p:q:sS:tu' OPTION
 do
 case $OPTION in
   d)
@@ -64,6 +66,9 @@ case $OPTION in
   S)
   smvrepo="$OPTARG"
   ;;
+  t)
+  TIME=1
+  ;;
   u)
    use_installed="1"
    ;;
@@ -92,7 +97,12 @@ export CFAST="$SVNROOT/Build/CFAST/${compiler}_${PLATFORM}/cfast7_$PLATFORM"
 if [ "$queue" != "" ]; then
    queue="-q $queue"
 fi
-export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+
+if [ "$TIME" == "" ]; then
+  export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+else
+  export RUNCFAST="$SVNROOT/Validation/scripts/gettime.sh"
+fi
 
 export BASEDIR=`pwd`
 

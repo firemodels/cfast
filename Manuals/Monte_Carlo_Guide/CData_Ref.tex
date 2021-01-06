@@ -353,12 +353,55 @@ The occurrence of flashover within a room is of considerable interest since it i
 A single compartment with gypsum ceiling and walls and a concrete floor includes a single vent. For this example, the room dimensions, vent dimensions, and fire growth rate are varied as follows:
 
 \begin{description}
-\item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 10 m x 10 m x 10 m.
-\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 2 m to 9 m limited by compartment height, and a uniform distribution scaling vent width from 0.25 m to 9 m limited by compartment width.
+\item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 20 m x 20 m x 20 m.
+\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 1.65 m to 19.85 m limited by compartment height, and a uniform distribution scaling vent width from 0.25 m to 19 m limited by compartment width.
 \item[Fire growth rate:] Fire size varied with a uniform distribution ranging from 75 s to 1 MW to 600 s to 1 MW. Peak heat release rate set to 10 MW to ensure flashover in the compartment when there is sufficient oxygen.
 \end{description}
 
-For the analysis, we will look at the minimum heat release rate necessary to achieve flashover in the compartment defined by the typically-used metrics of 600 \degc upper layer temperature and 20~kW/m$^2$ heat flux at floor level \cite{Valid:Peacock_Flashover_1} \cite{Valid:Peacock_Flashover_2}.
+For the analysis, we will look at the minimum heat release rate necessary to achieve flashover in the compartment defined by a typically-used metrics of 600 \degc upper layer temperature \cite{Valid:Peacock_Flashover_1} \cite{Valid:Peacock_Flashover_2}.
+
+The compartment size is defined randomly over a range of 2 m to 20 m. The example below varies the room width. Other dimensions are handled in a similar fashion.
+
+\vspace{\baselineskip}
+\begin{lstlisting}
+&MRND ID = 'Comp 1 Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 2.0 MAXIMUM = 20.0/
+&MFLD ID = 'Comp 1 Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Width Generator' FIELD = 'Comp 1' 'WIDTH'
+    ADD_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the vent top is defined as 0.15 m below the compartment ceiling and the vent width maximum is defined as 1 m less than the vent width.
+
+\vspace{\baselineskip}
+\begin{lstlisting}
+&MRND ID = 'Wall Vent Bottom Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 0.0 MAXIMUM = 1.5/
+&MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Bottom Generator' FIELD = 'Wall Vent' 'BOTTOM'
+    ADD_TO_PARAMETERS = .TRUE. /
+    
+&MRND ID = 'Wall Vent Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1 Height' MAXIMUM_OFFSET = -0.15/
+&MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Top Generator' FIELD = 'Wall Vent' 'TOP'
+    ADD_TO_PARAMETERS = .TRUE. /
+    
+&MRND ID = 'Wall Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1 Width' MAXIMUM_OFFSET = -1.0/
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH'
+    ADD_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+The fire specification is naturally the most complex. For this example, we use a t-squared growth rate fire that grows to a peak value in a time period from 75 s to 1000 s, followed by a 10 s plateau and 10 s decay back to 0~kW.
+\vspace{\baselineskip}
+\begin{lstlisting}
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 1500000 MAXIMUM = 160000000/
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1' FIRE_TIME_GENERATORS = 'End of Time Growth Generator'
+    'Plateau End Time' 'Fire End Time' FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator'
+    'End of Fire HRR' NUMBER_OF_GROWTH_POINTS = 20 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
 
 \subsection{Example 2: Impact of smoke detector interconnection}
 
@@ -776,7 +819,7 @@ The information on doors is not really in a usable form, so for this analysis th
 \hypertarget{number-of-cases}{%
 \subsubsection{Number of Cases}\label{number-of-cases}}
 
-As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}. 
+As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}.
 
 \begin{figure}[h!]
 \centering

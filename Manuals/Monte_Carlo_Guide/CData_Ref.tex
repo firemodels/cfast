@@ -776,7 +776,7 @@ The information on doors is not really in a usable form, so for this analysis th
 \hypertarget{number-of-cases}{%
 \subsubsection{Number of Cases}\label{number-of-cases}}
 
-As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}. To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
+As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}. 
 
 \begin{figure}[h!]
 \centering
@@ -784,15 +784,16 @@ As a first step, we do a preliminary check to see if we have enough cases, Figs.
 \caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-convergence_of_mean}
 \end{figure}
-
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
-\caption{Standard devation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
+\caption{Standard deviation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-standard_error}
 \end{figure}
 
-The prelinary results suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
+To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
+
+The preliminary results suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
 
 \hypertarget{analysis}{%
 \subsubsection{Analysis}\label{analysis}}
@@ -834,7 +835,6 @@ Interconnected alarms do not monitor continuously. Rather they check periodicall
 \caption{Classification tree separating cases where the bedroom alarm sounded from those where it did not.}
 \label{Ex_3-classification_tree}
 \end{figure}
-
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/kde-1.pdf}

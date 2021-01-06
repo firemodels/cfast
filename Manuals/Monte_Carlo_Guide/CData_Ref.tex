@@ -438,7 +438,7 @@ The {\ct \&MHDR} inputs specify details of the scenarios to be generated includi
 \end{description}
 
 \vspace{\baselineskip}
-\noindent Example:
+\noindent Examples:
 \begin{lstlisting}
 &MHDR NUMBER_OF_CASES = 10000 /
 &MHDR NUMBER_OF_CASES = 20000 WRITE_SEEDS = .TRUE.
@@ -494,9 +494,21 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 
 \vspace{\baselineskip}
 \noindent Example:
+
+The following example shows the height of the bedroom varying uniformly from 2.44 m to 3.66 m.
 \begin{lstlisting}
-&MFLD ID = 'Height_bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'uniform_generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
+&MRND ID = 'Room height generator', TYPE = 'UNIFORM',  MINIMUM = 2.44, MAXIMUM = 3.66 /
+&MFLD ID = 'Height bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'Room height generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
 \end{lstlisting}
+
+The following example shows the height of a door to the bedroom in the above example varying from a minimum of 2 m to a maximum 0.15 m below the ceiling of the varying height of the bedroom ceiling.
+
+\begin{lstlisting}
+&MRND ID = 'Door Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 2.0 MAXIMUM_FIELD = 'Height Bedroom' MAXIMUM_OFFSET = -0.15 /
+&MFLD ID = 'Door Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Door Top Generator' FIELD = 'Wall Vent' 'TOP' /
+\end{lstlisting}
+
 
 \clearpage
 
@@ -808,7 +820,7 @@ NA &  & 0 & 0 & 24 \\ \hline
 
 The Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
 
-For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not. 
+For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
 
 % This is the text that I have moved around. I don't understand what tex is doing with the layout.
 To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated, Fig \ref{Ex_3-classification_tree}, on whether the bedroom alarm sounded. It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.

@@ -378,12 +378,12 @@ The vent height and width also vary randomly, but must be limited to the compart
     MINIMUM = 0.0 MAXIMUM = 1.5/
 &MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Bottom Generator' FIELD = 'Wall Vent' 'BOTTOM'
     ADD_TO_PARAMETERS = .TRUE. /
-    
+
 &MRND ID = 'Wall Vent Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1 Height' MAXIMUM_OFFSET = -0.15/
 &MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Top Generator' FIELD = 'Wall Vent' 'TOP'
     ADD_TO_PARAMETERS = .TRUE. /
-    
+
 &MRND ID = 'Wall Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1 Width' MAXIMUM_OFFSET = -1.0/
 &MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH'
@@ -393,9 +393,12 @@ The vent height and width also vary randomly, but must be limited to the compart
 The fire specification is naturally the most complex. For this example, we use a t-squared growth rate fire that grows to a peak value in a time period from 75 s to 1000 s, followed by a 10 s plateau and 10 s decay back to 0~kW.
 \vspace{\baselineskip}
 \begin{lstlisting}
-&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 1500000 MAXIMUM = 160000000/
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+    MINIMUM = 75 MAXIMUM = 1000 /
 &MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
 &MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 1500000 MAXIMUM = 160000000/
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
 
 &MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1' FIRE_TIME_GENERATORS = 'End of Time Growth Generator'

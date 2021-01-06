@@ -704,12 +704,12 @@ In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly a
 \hypertarget{number-of-cases}{%
 \subsubsection{Number of Cases}\label{number-of-cases}}
 
-An initial run of 1000 cases was evaluated. The chart below shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down, as can be seen in Fig \ref{Ex_2-convergence_of_mean}. So these results are based on 10~000 cases.
+An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled downn. So these results are based on 10~000 cases.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
-\caption{Convergence of the mean}
+\caption{Convergence by the number of runs.}
 \label{Ex_2-convergence_of_mean}
 \end{figure}
 
@@ -720,7 +720,7 @@ First we look at the sensitivity of maximum temperature FED in the Foyer. Select
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
-\caption[Variables for which a 1~\% change causes a change of greater than 0.2~\% ]{Variables for which a 1~\% change causes a change of greater than 0.2~\% }
+\caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
 \label{tbl:Ex_2-1} \\ \hline
 \parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
 \endfirsthead
@@ -745,7 +745,7 @@ In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-perc
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
-\caption[Example 2 Table 2]{Example 2 Table 2}
+\caption[Selected results for senstivity of time to nonviability for Foyer Heat FED.]{Selected results for senstivity of time to nonviability for Foyer Heat FED.}
 \label{tbl:Ex_2-2} \\ \hline
 \parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
 \endfirsthead
@@ -776,23 +776,23 @@ The information on doors is not really in a usable form, so for this analysis th
 \hypertarget{number-of-cases}{%
 \subsubsection{Number of Cases}\label{number-of-cases}}
 
-As a first step, we do a preliminary check to see if we have enough cases. To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
+As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}. To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-1.pdf}
-\caption{Convergence of the mean for Example 3}
+\caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-convergence_of_mean}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
-\caption{Standard error of Example 3}
+\caption{Standard devation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-standard_error}
 \end{figure}
 
-The prelinary results, as seen in Fig \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}, suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
+The prelinary results suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
 
 \hypertarget{analysis}{%
 \subsubsection{Analysis}\label{analysis}}
@@ -805,7 +805,7 @@ Exploratory analysis of the data is an important part of any analysis. Here, ini
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Example 3 Table 1]{Example 3 Table 1}
+\caption[Number of cases by alarm activation status.]{Number of cases by alarm activation status.}
 \label{tbl:Ex_3-1} \\ \hline
 \parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
 \endfirsthead
@@ -818,12 +818,12 @@ Yes &  & 3309 & 5929 & 0 \\
 NA &  & 0 & 0 & 24 \\ \hline
 \end{longtable}
 
-The Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
+Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
 
 For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
 
 % This is the text that I have moved around. I don't understand what tex is doing with the layout.
-To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated, Fig \ref{Ex_3-classification_tree}, on whether the bedroom alarm sounded. It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
+To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated on whether the bedroom alarm sounded (Fig \ref{Ex_3-classification_tree}). It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
 
 Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 seconds. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
 %End of text - PAR
@@ -831,22 +831,22 @@ Interconnected alarms do not monitor continuously. Rather they check periodicall
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/cart-1.pdf}
-\caption{Classification tree}
+\caption{Classification tree separating cases where the bedroom alarm sounded from those where it did not.}
 \label{Ex_3-classification_tree}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/kde-1.pdf}
-\caption{Kernal Density estimate of the distribution}
+\caption{Kernel Density estimate of the time savings for interconnected alarms by fire type.}
 \label{Ex_3-distributions}
 \end{figure}
 
-With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this.
+With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this (see Table \ref{tbl:Ex_3-2}.
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
-\caption[Example 3 Table 2]{Example 3 Table 2}
+\caption[Quantiles of delay time for bedroom alarm activation]{Quantiles of delay time for bedroom alarm activation}
 \label{tbl:Ex_3-2} \\ \hline
 \parbox{1.5in}{\bf Result}    & \parbox{0.75in}{\bf Flaming}  & \parbox{1in}{\bf Smoldering}  \\ \hline
 \endfirsthead
@@ -866,9 +866,14 @@ This looks only at cases where the Bedroom 1 alarm sounded. If this were a serio
 \hypertarget{number-of-cases---revisited}{%
 \subsubsection{Number of Cases - Revisited}\label{number-of-cases---revisited}}
 
-The preliminary analysis above suggested that we appeared to have enough cases. However, the values of interest here are complex manipulations of the data. Even though the average of the Bedroom activation time has converged, it is possible that the results of interest to us have not. To finally determine if we have enough cases we look at how the outcomes we analyze change with the number of cases.
+The preliminary analysis above suggested that we appeared to have enough cases. However, the values of interest here are complex manipulations of the data. Even though the average of the Bedroom activation time has converged, it is possible that the results of interest to us have not. To finally determine if we have enough cases we look at how the outcomes we analyze change with the number of cases (Fig \ref{Ex_3-quintiles}).
 
-\includegraphics{FIGURES/cvg_plot-1.pdf}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/cvg_plot-1.pdf}
+\caption{Quantiles of the time savings as a function of the number of cases.}
+\label{Ex_3-quintiles}
+\end{figure}
 
 While the preliminary look settled down within a couple of thousand cases, these results take longer. In particular the extreme quantiles take somewhat longer to settle down. In particular, the 5 \% quantile value doesn't really settle down until we have 7500 cases or so. However, looking at the results it looks like our results have settled down sufficiently by the 10~000 cases we actually use to have reasonable confidence in our results.
 

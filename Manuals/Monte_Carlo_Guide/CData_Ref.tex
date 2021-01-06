@@ -680,64 +680,31 @@ Decision trees have the advantage of being very easy to interpret. Their interpr
 \hypertarget{approach}{%
 \subsubsection{Approach}\label{approach}}
 
-For this example it is assumed that the output variables of interest are
-`Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that
-we are interested in the amount of time people have to escape (represented
-by the time during which they foyer--through which they must
-evacuate--remains viable) and the worst temperature they might have to
-face in the Foyer during that evacuation.
+For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (representedby the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the Foyer during that evacuation.
 
-Sensitivity analysis is interested in the sensitivity the output has to
-each input. This is typically expressed in terms of the percent
-variation in output produced by a one percent variation in each input.
-As it turns out, simple linear regression of the \emph{log} of the
-inputs against the \emph{log} of the output will give exactly that
-value.
+Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the
+inputs against the \emph{log} of the output will give exactly that value.
 
-The second target variable--Foyer Heat FED--was selected to illustrate
-an additional complication in the analysis. This variable expresses the
-time till the FED reaches the value of 1--assumed to represent the
-condition where the space is no longer viable. The complication is that
-in a number of cases nonviability does not occur within the time of the
-simulation: here some 89.7~\% of cases do not result in non-viability.
-That presents a problem because analyzing the data without taking that
-into account will result in incorrect estimates of the sensitivity.
+The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1--assumed to represent the condition where the space is no longer viable. The complication is that in a number of cases nonviability does not occur within the time of the simulation: here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
 
-In this case what is run is a `Tobit' analysis\footnote{Tobin, James
-  (1958). ``Estimation of Relationships for Limited Dependent
-  Variables.'' Econometrica. 26 (1): 24--36. \url{doi:10.2307/1907382}.}
-which properly accounts for the effect of the cases where non-viability
-did not occur. The `Tobit' analysis is also performed on a log-log
-transformation of the data.
+In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
 
 \hypertarget{number-of-cases}{%
 \subsubsection{Number of Cases}\label{number-of-cases}}
 
-An initial run of 1000 cases was evaluated. The chart below shows the
-coefficient for \texttt{Lab\_depth} for the first model as a function of
-the number of cases. Examination of the chart shows that the value for
-the coefficient is still changing substantially at the end of 1000
-cases. When the number of cases were increased to 2500 the results still
-did not seem very stable. When the cases increased again to 5000 there
-was a noticeable trend over the last thousand or so cases. When the
-cases were increased to 10~000, the estimated value over the last couple
-of thousand cases seems to have settled down. So these results are based
-on 10~000 cases.
+An initial run of 1000 cases was evaluated. The chart below shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down, as can be seen in Fig \ref{Ex_2-convergence_of_mean}. So these results are based on 10~000 cases.
 
-\includegraphics{FIGURES/ex2_cvg_plot-1.pdf}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
+\caption{Convergence of the mean}
+\label{Ex_2-convergence_of_mean}
+\end{figure}
 
 \hypertarget{discussion}{%
 \subsubsection{Discussion}\label{discussion}}
 
-First we look at the sensitivity of maximum temperature FED in the
-Foyer. Selected results are displayed in Table 1. The single most
-significant factor is the depth of the lab space--where the fire
-occurred. A one-percent change in the lab depth will produce a 0.53~\%
-decrease in the maximum heat FED for the Foyer. Similarly a one percent
-change in the height of the Foyer and halls produces a 0.47~\% decrease
-in the heat FED for the Foyer. At the other end of the scale changes in
-the Foyer width or the depth of office 1 produce minimal changes to the
-heat FED for the Foyer
+First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_2-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
@@ -762,21 +729,12 @@ log(Fire\_HRR\_scaling\_factor) & 0.0398 & 0.16 & 0.25 & 0.8051 & \\
 log(Fire\_time\_scaling\_factor) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ \hline
 \end{longtable}
 
-In Table 2, we look at just those variables for which a one-percent
-change produces a change of greater than 0.2~\% in the time to
-non-viability for the Foyer, plus the scaling factors for the fire.
-Those variables include variables related to the room of fire origin
-(Lab\_depth), factors related to the space itself (Foyer\_width,
-Front\_Door\_Width), factors related to the spaces through which the
-fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width,
-Front\_Hall\_depth) and some additional miscellaneous factors
-(Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1
-Gyp\_Density.1).
+In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
 \caption[Example 2 Table 2]{Example 2 Table 2}
-\label{tbl:Ex_2-1} \\ \hline
+\label{tbl:Ex_2-2} \\ \hline
 \parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline
@@ -808,13 +766,24 @@ The information on doors is not really in a usable form, so for this analysis th
 
 As a first step, we do a preliminary check to see if we have enough cases. To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
 
-\includegraphics{FIGURES/converg-1.pdf}
-\includegraphics{FIGURES/converg-2.pdf}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/converg-1.pdf}
+\caption{Convergence of the mean for Example 3}
+\label{Ex_3-convergence_of_mean}
+\end{figure}
 
-The prelinary results, charted above, suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
+\caption{Standard error of Example 3}
+\label{Ex_3-standard_error}
+\end{figure}
+
+The prelinary results, as seen in Fig \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}, suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
 
 \hypertarget{analysis}{%
-\subsection{Analysis}\label{analysis}}
+\subsubsection{Analysis}\label{analysis}}
 
 The question explored here is the benefit gained by connecting alarms. The effect of interconnecting alarms is to reduce the amount of time before people in the house are notified of a fire even though they may be far away from the location of the fire. In this example, there are fires in the dining room, kitchen, or living room, and we will assume that people are in the bedrooms. Further assume the people in the bedrooms will not hear an alarm unless it is the one in the bedroom. So the effect of interconnecting alarms is to notify people to a fire when the alarm in one of the front rooms goes off rather than waiting until one of the bedroom alarms sounds.
 
@@ -825,7 +794,7 @@ Exploratory analysis of the data is an important part of any analysis. Here, ini
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Example 3 Table 1]{Example 3 Table 1}
-\label{tbl:Ex_2-1} \\ \hline
+\label{tbl:Ex_3-1} \\ \hline
 \parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline
@@ -837,24 +806,36 @@ Yes &  & 3309 & 5929 & 0 \\
 NA &  & 0 & 0 & 24 \\ \hline
 \end{longtable}
 
-The table above displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
+The Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
 
-For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
+For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not. 
 
-\includegraphics{FIGURES/cart-1.pdf}
+% This is the text that I have moved around. I don't understand what tex is doing with the layout.
+To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated, Fig \ref{Ex_3-classification_tree}, on whether the bedroom alarm sounded. It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
 
-To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated on whether the bedroom alarm sounded (above). It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
+Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 seconds. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
+%End of text - PAR
 
-Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 seconds. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between zero and 60 seconds. A Kernal Density estimate of the distribution of time savings is plotted below, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/cart-1.pdf}
+\caption{Classification tree}
+\label{Ex_3-classification_tree}
+\end{figure}
 
-\includegraphics{FIGURES/kde-1.pdf}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/kde-1.pdf}
+\caption{Kernal Density estimate of the distribution}
+\label{Ex_3-distributions}
+\end{figure}
 
 With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this.
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
 \caption[Example 3 Table 2]{Example 3 Table 2}
-\label{tbl:Ex_2-1} \\ \hline
+\label{tbl:Ex_3-2} \\ \hline
 \parbox{1.5in}{\bf Result}    & \parbox{0.75in}{\bf Flaming}  & \parbox{1in}{\bf Smoldering}  \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline

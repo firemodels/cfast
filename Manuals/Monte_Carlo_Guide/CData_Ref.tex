@@ -689,6 +689,16 @@ The fire specification is naturally the most complex. For this example, we use a
 
 \subsection{Analysis}
 
+Flashover is a term describing the transition of a relatively localized interior fire to one engulfing the entire compartment. It is of interest to the fire service because of the danger to fire fighters and to building designers because of life safety and the attendant impact on occupants. Several papers have looked at the capability of CFAST to predict the conditions under which flashover can occur \cite{Valid:Chow_Flashover, Valid:Luo_Flashover, Valid:Collier, Valid:White}. In addition, a comparison of CFAST with a number of simple correlations was used by Peacock and Babrauskas \cite{Valid:Peacock_Flashover_1,Valid:Peacock_Flashover_2} to simulate a range of geometries and fire conditions to predict the development of the fire up to the point of flashover. The important test of  these prediction methods is in the comparison of the predictions with actual fire observations. Figure \ref{figValidFlashover} (reference \cite{Valid:Peacock_Flashover_2}) presents estimates of the energy required to achieve flashover for a range of room and vent sizes from the CFAST runs above. This figure is an extension of the earlier work of Babrauskas  \cite{Valid:Babrauskas_Flashover} and includes additional experimental measurements from a variety of sources, most notably the work of Deal and Beyler \cite{Valid:DealandBeyler}. For a number of the experimental observations, values are included that were not explicitly identified as being a minimum value at flashover.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.0000in]{../Validation_Guide/FIGURES/flashover.pdf}\\
+\end{center}
+\caption{Comparison of correlations, CFAST predictions, and experimental data for the prediction of flashover in a compartment fire.}
+ \label{figValidFlashover}
+\end{figure}
+
 %%%%%%%%%
 %
 %  Example 2
@@ -758,19 +768,23 @@ Assume for this example that there is one alarm in the Living Room and one alarm
 Exploratory analysis of the data is an important part of any analysis. Here, initial exploration indicated that in a substantial number of cases one or more of the alarms never activated.
 
 \noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{table}[ht]
+\begin{center}
 \caption[Number of cases by alarm activation status.]{Number of cases by alarm activation status.}
-\label{tbl:Ex_3-1} \\ \hline
+\label{tbl:Ex_3-1} 
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\hline
 \parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
-\endhead
 Living Room &  &   &   &   \\
 No &  & 738 & 0 & 0 \\
 Yes &  & 3309 & 5929 & 0 \\
 NA &  & 0 & 0 & 24 \\ \hline
-\end{longtable}
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
 
 Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
 
@@ -796,21 +810,25 @@ Interconnected alarms do not monitor continuously. Rather they check periodicall
 With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this (see Table \ref{tbl:Ex_3-2}.
 
 \noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\begin{table}[ht]
+\begin{center}
 \caption[Quantiles of delay time for bedroom alarm activation]{Quantiles of delay time for bedroom alarm activation}
-\label{tbl:Ex_3-2} \\ \hline
+\label{tbl:Ex_3-2}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|}
+\hline
 \parbox{1.5in}{\bf Result}    & \parbox{0.75in}{\bf Flaming}  & \parbox{1in}{\bf Smoldering}  \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{\bf Result}    & \parbox{0.75in}{\bf Flaming}  & \parbox{1in}{\bf Smoldering}  \\ \hline
-\endhead
 Mean & 101.7 & 1821.8 \\
 Median & 96.0 & 1597.7 \\
 25 \% Quantile & 136.3 & 2936.7 \\
 10 \% Quantile & 176.4 & 4139.8 \\
 5 \% Quantile & 199.5 & 4792.5 \\
 1 \% Quantile & 238.3 & 6109.8 \\ \hline
-\end{longtable}
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
 
 This looks only at cases where the Bedroom 1 alarm sounded. If this were a serious attempt to identify the effect of interconnected alarms then the percent of non-activations would need to be taken into account. If non-activations were included all the quantiles larger than the median would fall into the non-activation range.
 
@@ -898,14 +916,15 @@ An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean
 First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_2-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
 
 \noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\begin{table}[ht]
+\begin{center}
 \caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
-\label{tbl:Ex_2-1} \\ \hline
+\label{tbl:Ex_2-1}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\hline
 \parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endhead
 log(Lab\_depth) & -0.5328 & 0.16 & -3.33 & 0.0009 & *** \\
 log(Front\_Hall\_depth) & 0.1206 & 0.16 & 0.75 & 0.4551 & \\
 log(Foyer\_width) & 0.0053 & 0.16 & 0.03 & 0.9735 & \\
@@ -918,19 +937,23 @@ log(\texttt{Ofice\_\#4\_\_Door\_Height}) & -0.0029 & 0.16 & -0.02 & 0.9856 & \\
 log(\texttt{Ofice\_\#6\_\_Door\_Height}) & 0.1209 & 0.16 & 0.75 & 0.4512 & \\
 log(Fire\_HRR\_scaling\_factor) & 0.0398 & 0.16 & 0.25 & 0.8051 & \\
 log(Fire\_time\_scaling\_factor) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ \hline
-\end{longtable}
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
 
 In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
 
 \noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
-\caption[Selected results for senstivity of time to nonviability for Foyer Heat FED.]{Selected results for senstivity of time to nonviability for Foyer Heat FED.}
-\label{tbl:Ex_2-2} \\ \hline
+\begin{table}[ht]
+\begin{center}
+\caption[Selected results for sensitivity of time to nonviability for Foyer Heat FED.]{Selected results for sensitivity of time to nonviability for Foyer Heat FED.}
+\label{tbl:Ex_2-2}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\hline
 \parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endhead
 log(Lab\_depth) & 0.3460 & 0.14 & 2.40 & 0.0162 & * \\
 log(Even\_Hallway\_depth) & 0.3043 & 0.14 & 2.12 & 0.0341 & * \\
 log(Odd\_Hallway\_width) & 0.2359 & 0.14 & 1.64 & 0.1011 & \\
@@ -943,7 +966,10 @@ log(Gyp\_Density.1) & 0.2217 & 0.14 & 1.54 & 0.1233 & \\
 log(Front\_Door\_Width) & 0.3057 & 0.14 & 2.13 & 0.0333 & * \\
 log(Fire\_HRR\_scaling\_factor) & -0.0462 & 0.15 & -0.32 & 0.7510 & \\
 log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
-\end{longtable}
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
 
 %
 % -------------------  Summary ------------------------

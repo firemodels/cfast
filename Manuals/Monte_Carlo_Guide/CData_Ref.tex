@@ -553,6 +553,11 @@ Secondly, inputs for the scaling fire are described.
 
 \clearpage
 
+%%%%%%%%%%
+%
+% chapter creating multiple CFAST runs
+%
+%%%%%%%%%%
 
 
 \chapter{Creating Multiple CFAST Runs}
@@ -600,8 +605,19 @@ Sometimes what is of interest is the relationship one variable has to other vari
 
 Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
 
+%%%%%%%%
+%
+% chapter Examples
+%
+%%%%%%%%%
 
 \chapter{Examples}
+
+%%%%%%%%%
+%
+% Example 1
+%
+%%%%%%%%
 
 \section{Example 1: Flashover in a compartment}
 
@@ -673,6 +689,12 @@ The fire specification is naturally the most complex. For this example, we use a
 
 \subsection{Analysis}
 
+%%%%%%%%%
+%
+%  Example 2
+%
+%%%%%%%%%%
+
 \section{Example 2: Impact of smoke detector interconnection}
 
 Battery-powered smoke alarms with wireless interconnect signal transmission allow for retrofitting of homes with interconnected smoke alarms up to the current code-required installation locations without hardwiring. However, wireless communication draws additional current beyond basic smoke alarm operation and will affect battery life. To receive an interconnect signal, wireless smoke alarms must periodically power up the transceiver and listen for a transmitted signal from another alarm that initially responds to smoke. Naturally a question arises: what is an acceptable maximum delay time for wireless interconnected smoke alarms given the desire to extend battery life?
@@ -697,111 +719,6 @@ For this example, the fire location, fire growth, fire peak heat release rate, v
 \end{description}
 
 In the analysis, we will look at the impact of delays in triggering of secondary, interconnected smoke detectors on the overall tenability for a range of fires.
-
-
-\hypertarget{approach}{%
-\subsection{Approach}\label{approach}}
-
-For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (representedby the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the Foyer during that evacuation.
-
-Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the
-inputs against the \emph{log} of the output will give exactly that value.
-
-The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1--assumed to represent the condition where the space is no longer viable. The complication is that in a number of cases nonviability does not occur within the time of the simulation: here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
-
-In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
-
-\hypertarget{number-of-cases}{%
-\subsection{Number of Cases}\label{number-of-cases}}
-
-An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled downn. So these results are based on 10~000 cases.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
-\caption{Convergence by the number of runs.}
-\label{Ex_2-convergence_of_mean}
-\end{figure}
-
-\hypertarget{discussion}{%
-\subsection{Discussion}\label{discussion}}
-
-First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_2-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
-
-\noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
-\caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
-\label{tbl:Ex_2-1} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endhead
-log(Lab\_depth) & -0.5328 & 0.16 & -3.33 & 0.0009 & *** \\
-log(Front\_Hall\_depth) & 0.1206 & 0.16 & 0.75 & 0.4551 & \\
-log(Foyer\_width) & 0.0053 & 0.16 & 0.03 & 0.9735 & \\
-log(\texttt{Office\_\#1\_depth}) & -0.0042 & 0.16 & -0.03 & 0.9791 & \\
-log(\texttt{Office\_\#2\_height}) & 0.4525 & 0.16 & 2.84 & 0.0045 & ** \\
-log(Foyer\_and\_Halls\_height) & -0.4661 & 0.16 & -2.94 & 0.0033 & ** \\
-log(FrontHall2EvenHall\_WIDTH) & -0.0054 & 0.16 & -0.03 & 0.9727 & \\
-log(Gyp\_Emissivity.1) & 0.1223 & 0.16 & 0.76 & 0.4458 & \\
-log(\texttt{Ofice\_\#4\_\_Door\_Height}) & -0.0029 & 0.16 & -0.02 & 0.9856 & \\
-log(\texttt{Ofice\_\#6\_\_Door\_Height}) & 0.1209 & 0.16 & 0.75 & 0.4512 & \\
-log(Fire\_HRR\_scaling\_factor) & 0.0398 & 0.16 & 0.25 & 0.8051 & \\
-log(Fire\_time\_scaling\_factor) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ \hline
-\end{longtable}
-
-In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
-
-\noindent
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
-\caption[Selected results for senstivity of time to nonviability for Foyer Heat FED.]{Selected results for senstivity of time to nonviability for Foyer Heat FED.}
-\label{tbl:Ex_2-2} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endfirsthead
-\caption[]{Continued} \\ \hline
-\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
-\endhead
-log(Lab\_depth) & 0.3460 & 0.14 & 2.40 & 0.0162 & * \\
-log(Even\_Hallway\_depth) & 0.3043 & 0.14 & 2.12 & 0.0341 & * \\
-log(Odd\_Hallway\_width) & 0.2359 & 0.14 & 1.64 & 0.1011 & \\
-log(Front\_Hall\_depth) & -0.2318 & 0.15 & -1.59 & 0.1116 & \\
-log(Foyer\_width) & -0.2778 & 0.15 & -1.91 & 0.0555 & . \\
-log(\texttt{Office\_\#2\_height}) & -0.2103 & 0.14 & -1.46 & 0.1431 & \\
-log(\texttt{Office\_\#5\_height}) & 0.2564 & 0.14 & 1.78 & 0.0753 & . \\
-log(Gyp\_Conductivity.1) & 0.2454 & 0.14 & 1.70 & 0.0889 & . \\
-log(Gyp\_Density.1) & 0.2217 & 0.14 & 1.54 & 0.1233 & \\
-log(Front\_Door\_Width) & 0.3057 & 0.14 & 2.13 & 0.0333 & * \\
-log(Fire\_HRR\_scaling\_factor) & -0.0462 & 0.15 & -0.32 & 0.7510 & \\
-log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
-\end{longtable}
-
-\subsection{Example 3: Model Sensitivity}
-
-In this example, we look at a simple fire model sensitivity analysis, which ASTM E 1355 defines as a study of how changes in model parameters affect the results \cite{CFAST:ASTM:E1355}. In other words, sensitivity refers to the rate of change of the model output with respect to input variations. The standard also indicates that model predictions may be sensitive to (1) uncertainties in input data, (2) the level of rigor employed in modeling the relevant physics and chemistry, and (3) the accuracy of numerical treatments. Thus, the purpose of a sensitivity analysis is to assess the extent to which uncertainty in the model inputs is manifested as uncertainty in the model results of interest. For this simple example, we will use a single office building and look at the impact of changing important model inputs by $\pm 10$ \%. Figure \ref{sensitivity_geometry} shows the compartment geometry for the simulations.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=6.5in]{FIGURES/Sensitivity.png}
-\caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
-\label{sensitivity_geometry}
-\end{figure}
-
-A sensitivity analysis involves defining a base case scenario, and varying selected input parameters. The resultant variations in the model output are then measured with respect to the base case scenario, in order to consider the extent to which uncertainty in model inputs influences model output. Therefore, a sensitivity analysis of CFAST should account for variations in the extensive number of input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires.
-
-\subsection{CData Inputs}
-For this example, we will independently vary the following inputs by $\pm$~10~\%, recognizing that these are not an exhaustive list of input variables, but which should represent the major model inputs to a simulation:
-
-\begin{description}
-\item[Compartment geometry:] Compartment size will be scaled to $\pm$ 10~\% of base size in all dimensions.
-\item[Compartment materials:] Thermal properties for all materials will be varied by $\pm$ 10~\% of base values for thermal conductivity, density, and specific heat. Thickness will be  varied by $\pm$ 10~\% of base values.
-\item[Compartment doors:] The size of compartment doors, both interior and exterior, will be  varied by $\pm$ 10~\% of base values for height and width. All interior vents will be open for this example.
-\item[Mechanical ventilation:] For mechanical ventilation, the height of each vent, area of each vent, and fan flowrate will each be varied by $\pm$ 10~\% of base values.
-\item[Fire:] Fire is in one of the rooms. Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value. Position of the fire is varied by $\pm$ 10~\% of base values in width and depth, and height.
-\item[Detectors:] Sensitivity of heat detectors will be varied by $\pm$ 10~\% of base values for activation temperature and RTI. Smoke detector activation obscuration will be varied by $\pm$ 10~\% of base values.
-\end{description}
-
-In the analysis, we will look at typically-used outputs to determine those which are more sensitive (a 10 ~\% change in an input value leads to more than a 10~\% change in an output) and less sensitive (a 10 ~\% change in an input value leads to less than a 10~\% change in an output) to a change in selected model inputs to identify the relative importance of selected model inputs to the results of a simulation.
 
 
 \hypertarget{data}{%
@@ -915,6 +832,118 @@ While the preliminary look settled down within a couple of thousand cases, these
 \subsection{Discussion}\label{discussion}}
 
 For a study like this it is really important to get the distribution of fire parameters correct. For example, if the proportion of fires starting in the Kitchen were low compared to the real world then all of the time-delay values would be underestimated. If the likelihood of closed doors were overestimated, then there would be far fewer cases of alarm failure for the bedroom alarms, and the benefit of interconnection would be lower.
+
+%%%%%%%%%%
+%
+% Example 3
+%
+%%%%%%%%%%
+
+\section{Example 3: Model Sensitivity}
+
+In this example, we look at a simple fire model sensitivity analysis, which ASTM E 1355 defines as a study of how changes in model parameters affect the results \cite{CFAST:ASTM:E1355}. In other words, sensitivity refers to the rate of change of the model output with respect to input variations. The standard also indicates that model predictions may be sensitive to (1) uncertainties in input data, (2) the level of rigor employed in modeling the relevant physics and chemistry, and (3) the accuracy of numerical treatments. Thus, the purpose of a sensitivity analysis is to assess the extent to which uncertainty in the model inputs is manifested as uncertainty in the model results of interest. For this simple example, we will use a single office building and look at the impact of changing important model inputs by $\pm 10$ \%. Figure \ref{sensitivity_geometry} shows the compartment geometry for the simulations.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=6.5in]{FIGURES/Sensitivity.png}
+\caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
+\label{sensitivity_geometry}
+\end{figure}
+
+A sensitivity analysis involves defining a base case scenario, and varying selected input parameters. The resultant variations in the model output are then measured with respect to the base case scenario, in order to consider the extent to which uncertainty in model inputs influences model output. Therefore, a sensitivity analysis of CFAST should account for variations in the extensive number of input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires.
+
+\subsection{CData Inputs}
+For this example, we will independently vary the following inputs by $\pm$~10~\%, recognizing that these are not an exhaustive list of input variables, but which should represent the major model inputs to a simulation:
+
+\begin{description}
+\item[Compartment geometry:] Compartment size will be scaled to $\pm$ 10~\% of base size in all dimensions.
+\item[Compartment materials:] Thermal properties for all materials will be varied by $\pm$ 10~\% of base values for thermal conductivity, density, and specific heat. Thickness will be  varied by $\pm$ 10~\% of base values.
+\item[Compartment doors:] The size of compartment doors, both interior and exterior, will be  varied by $\pm$ 10~\% of base values for height and width. All interior vents will be open for this example.
+\item[Mechanical ventilation:] For mechanical ventilation, the height of each vent, area of each vent, and fan flowrate will each be varied by $\pm$ 10~\% of base values.
+\item[Fire:] Fire is in one of the rooms. Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value. Position of the fire is varied by $\pm$ 10~\% of base values in width and depth, and height.
+\item[Detectors:] Sensitivity of heat detectors will be varied by $\pm$ 10~\% of base values for activation temperature and RTI. Smoke detector activation obscuration will be varied by $\pm$ 10~\% of base values.
+\end{description}
+
+In the analysis, we will look at typically-used outputs to determine those which are more sensitive (a 10 ~\% change in an input value leads to more than a 10~\% change in an output) and less sensitive (a 10 ~\% change in an input value leads to less than a 10~\% change in an output) to a change in selected model inputs to identify the relative importance of selected model inputs to the results of a simulation.
+
+
+
+\hypertarget{approach}{%
+\subsection{Approach}\label{approach}}
+
+For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (representedby the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the Foyer during that evacuation.
+
+Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the
+inputs against the \emph{log} of the output will give exactly that value.
+
+The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1--assumed to represent the condition where the space is no longer viable. The complication is that in a number of cases nonviability does not occur within the time of the simulation: here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
+
+In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
+
+\hypertarget{number-of-cases}{%
+\subsection{Number of Cases}\label{number-of-cases}}
+
+An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled downn. So these results are based on 10~000 cases.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
+\caption{Convergence by the number of runs.}
+\label{Ex_2-convergence_of_mean}
+\end{figure}
+
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
+
+First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_2-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
+\label{tbl:Ex_2-1} \\ \hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+\endhead
+log(Lab\_depth) & -0.5328 & 0.16 & -3.33 & 0.0009 & *** \\
+log(Front\_Hall\_depth) & 0.1206 & 0.16 & 0.75 & 0.4551 & \\
+log(Foyer\_width) & 0.0053 & 0.16 & 0.03 & 0.9735 & \\
+log(\texttt{Office\_\#1\_depth}) & -0.0042 & 0.16 & -0.03 & 0.9791 & \\
+log(\texttt{Office\_\#2\_height}) & 0.4525 & 0.16 & 2.84 & 0.0045 & ** \\
+log(Foyer\_and\_Halls\_height) & -0.4661 & 0.16 & -2.94 & 0.0033 & ** \\
+log(FrontHall2EvenHall\_WIDTH) & -0.0054 & 0.16 & -0.03 & 0.9727 & \\
+log(Gyp\_Emissivity.1) & 0.1223 & 0.16 & 0.76 & 0.4458 & \\
+log(\texttt{Ofice\_\#4\_\_Door\_Height}) & -0.0029 & 0.16 & -0.02 & 0.9856 & \\
+log(\texttt{Ofice\_\#6\_\_Door\_Height}) & 0.1209 & 0.16 & 0.75 & 0.4512 & \\
+log(Fire\_HRR\_scaling\_factor) & 0.0398 & 0.16 & 0.25 & 0.8051 & \\
+log(Fire\_time\_scaling\_factor) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ \hline
+\end{longtable}
+
+In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\caption[Selected results for senstivity of time to nonviability for Foyer Heat FED.]{Selected results for senstivity of time to nonviability for Foyer Heat FED.}
+\label{tbl:Ex_2-2} \\ \hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+\endhead
+log(Lab\_depth) & 0.3460 & 0.14 & 2.40 & 0.0162 & * \\
+log(Even\_Hallway\_depth) & 0.3043 & 0.14 & 2.12 & 0.0341 & * \\
+log(Odd\_Hallway\_width) & 0.2359 & 0.14 & 1.64 & 0.1011 & \\
+log(Front\_Hall\_depth) & -0.2318 & 0.15 & -1.59 & 0.1116 & \\
+log(Foyer\_width) & -0.2778 & 0.15 & -1.91 & 0.0555 & . \\
+log(\texttt{Office\_\#2\_height}) & -0.2103 & 0.14 & -1.46 & 0.1431 & \\
+log(\texttt{Office\_\#5\_height}) & 0.2564 & 0.14 & 1.78 & 0.0753 & . \\
+log(Gyp\_Conductivity.1) & 0.2454 & 0.14 & 1.70 & 0.0889 & . \\
+log(Gyp\_Density.1) & 0.2217 & 0.14 & 1.54 & 0.1233 & \\
+log(Front\_Door\_Width) & 0.3057 & 0.14 & 2.13 & 0.0333 & * \\
+log(Fire\_HRR\_scaling\_factor) & -0.0462 & 0.15 & -0.32 & 0.7510 & \\
+log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
+\end{longtable}
 
 %
 % -------------------  Summary ------------------------

@@ -561,7 +561,7 @@ Secondly, inputs for the scaling fire are described.
 
 
 \chapter{Creating Multiple CFAST Runs}
-The CData program has several functions. One of them is as a PreProcessor used to create a set of CFAST data files for an analysis. This chapter discusses how the PreProcessor works with some simple examples to demonstrate certain aspects of the system. First is an overview of the basic philosophy behind the PreProcessor. Section \ref{commands_section} discusses all the namelist commands that work in the PreProcessor. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
+The CData program has several functions, 1) a preprocessor function that generates individual CFAST input files from a user-specified distribution and range for one or more inputs, 2) an accumulator function that collects  data for user-specified variables and creates a spreadsheet of summary data for all the individual runs, and 3) a statistical function that creates several different statistical outputs of the summary data to facilitate further analysis.  Section \ref{commands_section} discusses all the namelist commands for CData. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
 
 \section{Basic Philosophy}
 
@@ -771,7 +771,7 @@ Exploratory analysis of the data is an important part of any analysis. Here, ini
 \begin{table}[ht]
 \begin{center}
 \caption[Number of cases by alarm activation status.]{Number of cases by alarm activation status.}
-\label{tbl:Ex_3-1} 
+\label{tbl:Ex_3-1}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -886,14 +886,14 @@ In the analysis, we will look at typically-used outputs to determine those which
 
 Since this case is looking at varying almost everything that can be varied it is the largest file of the three examples. It is possible to actually vary the generators over the range that the variable can take but that means a lot of data entry that could easilly lead to errors that would be difficult to find. One FIELD\_TYPE is the SCALING type. Using this greatly increases the speed of creating the input file.
 
-As part of the inputs one of the things to keep in mind is that the foyer and halls should be the same hieght becasue they are all essentially the same space even though in CFAST they are modeled with a number of compartments and connections. The result is that there is a single random generator that is used by all the rooms and connections making up the halls of the structure as can be seen in the following input snippet. 
+As part of the inputs one of the things to keep in mind is that the foyer and halls should be the same hieght becasue they are all essentially the same space even though in CFAST they are modeled with a number of compartments and connections. The result is that there is a single random generator that is used by all the rooms and connections making up the halls of the structure as can be seen in the following input snippet.
 
 
 \vspace{\baselineskip}
 \begin{lstlisting}
 &MRND ID = 'Scaling height', FYI = 'Scaling for everything that has the same max height', DISTRIBUTION_TYPE = 'UNIFORM',
     VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT' 
+&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
     RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Foyer_and_Halls_height' /
 &MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
 &MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
@@ -909,7 +909,7 @@ As part of the inputs one of the things to keep in mind is that the foyer and ha
 &MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'TOP' RAND_ID = 'Scaling height' /
 \end{lstlisting}
 
-After all the fields that are to be varied are set up there is also the fire to vary. Instead of varying the fire we will scale the HRR and time with single indepent scaling factors. This requires only two random generators and is implemented as follows. 
+After all the fields that are to be varied are set up there is also the fire to vary. Instead of varying the fire we will scale the HRR and time with single indepent scaling factors. This requires only two random generators and is implemented as follows.
 
 \vspace{\baselineskip}
 \begin{lstlisting}
@@ -921,7 +921,7 @@ After all the fields that are to be varied are set up there is also the fire to 
     SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' ADD_HRR_SCALE_TO_PARAMETERS = .TRUE. ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
-The other advantage, besides ease of implementation, is that it eliminates the possibility of variatiion of individual time points reducing the impact of the variability. For example if one point has the HRR increaseing by some amount but the next HHR value decreses it won't completely average out but it could reduce the impact on the overall scenareo. 
+The other advantage, besides ease of implementation, is that it eliminates the possibility of variatiion of individual time points reducing the impact of the variability. For example if one point has the HRR increaseing by some amount but the next HHR value decreses it won't completely average out but it could reduce the impact on the overall scenareo.
 
 \hypertarget{approach}{%
 \subsection{Approach}\label{approach}}

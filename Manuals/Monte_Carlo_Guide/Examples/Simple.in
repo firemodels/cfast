@@ -20,6 +20,10 @@
   MINIMUM = 0.25 MAXIMUM = 2.0/
 &MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH' /
 
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' 
+  MINIMUM = 1.5 MAXIMUM = 2.5/
+&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' FIELD = 'Wall Vent' 'HEIGHT' /
+
 &VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 1
   FACE = 'FRONT' OFFSET = 1 /
  
@@ -27,9 +31,10 @@
 
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
-&MRND ID = Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
 &MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
-&MFIR ID = 'Fire_generator' FIRE_ID = 'Constant Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
     'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
 
 &FIRE ID = 'Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Constant Fire'  LOCATION = 1.5, 1.5 / 

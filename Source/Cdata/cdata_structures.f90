@@ -1190,7 +1190,7 @@ module preprocessor_types
                 call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
                 call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
             end do
-            if (me%growth_npts > 0) then
+            if (me%growth_npts >= 0) then
                 if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
                     tmp1 = 1
                 else 

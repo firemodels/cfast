@@ -109,153 +109,153 @@
 &MRND ID = 'Scaling BackHall2OddHall width', DISTRIBUTION_TYPE = 'UNIFORM',VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 
 
-&MFLD ID = 'MV in #1 flow' FIELD_TYPE = 'SCALING' OBJECT_ID = 'MV in #1' FIELD_NAME = 'FLOW' 
+&MFLD ID = 'MV in #1 flow' FIELD_TYPE = 'SCALING' FIELD = 'MV in #1'  'FLOW' 
     RAND_ID = 'Scaling MV in #1' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'MV_in_#1_flow' /
-&MFLD ID = 'MV in #2 flow' FIELD_TYPE = 'SCALING' OBJECT_ID = 'MV in #2' FIELD_NAME = 'FLOW' 
+&MFLD ID = 'MV in #2 flow' FIELD_TYPE = 'SCALING' FIELD = 'MV in #2'  'FLOW' 
     RAND_ID = 'Scaling MV in #2' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'MV_in_#2_flow' /
-&MFLD ID = 'MV out #1 flow' FIELD_TYPE = 'SCALING' OBJECT_ID = 'MV out #1' FIELD_NAME = 'FLOW' 
+&MFLD ID = 'MV out #1 flow' FIELD_TYPE = 'SCALING' FIELD = 'MV out #1'  'FLOW' 
     RAND_ID = 'Scaling MV out #1' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'MV_out_#1_flow' /
-&MFLD ID = 'MV out #2 flow' FIELD_TYPE = 'SCALING' OBJECT_ID = 'MV out #2' FIELD_NAME = 'FLOW' 
+&MFLD ID = 'MV out #2 flow' FIELD_TYPE = 'SCALING' FIELD = 'MV out #2'  'FLOW' 
     RAND_ID = 'Scaling MV out #2' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'MV_out_#2_flow' /
-&MFLD ID = 'Lab width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Lab width' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'WIDTH' 
     RAND_ID = 'Scaling Lab width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_width' /
-&MFLD ID = 'Lab depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Lab depth' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'DEPTH' 
     RAND_ID = 'Scaling Lab depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_depth' /
-&MFLD ID = 'Lab height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Lab height' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'HEIGHT' 
     RAND_ID = 'Scaling Lab height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_height' /
-&MFLD ID = 'Even Hallway width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Even Hallway' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Even Hallway width' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'WIDTH' 
     RAND_ID = 'Scaling Even Hallway width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Even_Hallway_width' /
-&MFLD ID = 'Even Hallway depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Even Hallway' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Even Hallway depth' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'DEPTH' 
     RAND_ID = 'Scaling Even Hallway depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Even_Hallway_depth' /
-&MFLD ID = 'Odd Hallway width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Odd Hallway' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Odd Hallway width' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'WIDTH' 
     RAND_ID = 'Scaling Odd Hallway width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Odd_Hallway_width' /
-&MFLD ID = 'Odd Hallway depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Odd Hallway' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Odd Hallway depth' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'DEPTH' 
     RAND_ID = 'Scaling Odd Hallway depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Odd_Hallway_depth' /
-&MFLD ID = 'Front Hall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Front Hall' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Front Hall width' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'WIDTH' 
     RAND_ID = 'Scaling Front Hall width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Front_Hall_width' /
-&MFLD ID = 'Front Hall depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Front Hall' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Front Hall depth' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'DEPTH' 
     RAND_ID = 'Scaling Front Hall depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Front_Hall_depth' /
-&MFLD ID = 'Back Hall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Back Hall' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Back Hall width' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'WIDTH' 
     RAND_ID = 'Scaling Back Hall width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Back_Hall_width' /
-&MFLD ID = 'Back Hall depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Back Hall' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Back Hall depth' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'DEPTH' 
     RAND_ID = 'Scaling Back Hall depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Back_Hall_depth' /
-&MFLD ID = 'Foyer width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Foyer width' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'WIDTH' 
     RAND_ID = 'Scaling Foyer width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Foyer_width' /
-&MFLD ID = 'Foyer depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Foyer depth' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'DEPTH' 
     RAND_ID = 'Scaling Foyer depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Foyer_depth' /
-&MFLD ID = 'Office #1 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #1 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #1'  'WIDTH' 
     RAND_ID = 'Scaling Office #1 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_width' /
-&MFLD ID = 'Office #2 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'WIDTH'
+&MFLD ID = 'Office #2 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #2'  'WIDTH'
     RAND_ID = 'Scaling Office #2 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_width' /
-&MFLD ID = 'Office #3 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #3 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #3'  'WIDTH' 
     RAND_ID = 'Scaling Office #3 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #4 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'WIDTH'
+&MFLD ID = 'Office #4 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #4'  'WIDTH'
     RAND_ID = 'Scaling Office #4 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #5 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #5 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #5'  'WIDTH' 
     RAND_ID = 'Scaling Office #5 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #6 width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #6 width' FIELD_TYPE = 'SCALING' FIELD = 'Office #6'  'WIDTH' 
     RAND_ID = 'Scaling Office #6 width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_width' /
-&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #1'  'DEPTH' 
     RAND_ID = 'Scaling Office #1 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_depth' /
-&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #2'  'DEPTH' 
     RAND_ID = 'Scaling Office #2 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_depth' /
-&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #3'  'DEPTH' 
     RAND_ID = 'Scaling Office #3 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_depth' /
-&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #4'  'DEPTH' 
     RAND_ID = 'Scaling Office #4 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#4_depth' /
-&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #5'  'DEPTH' 
     RAND_ID = 'Scaling Office #5 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#5_depth' /
-&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'DEPTH' 
+&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #6'  'DEPTH' 
     RAND_ID = 'Scaling Office #6 depth' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#6_depth' /
-&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1' FIELD_NAME = 'HEIGHT'
+&MFLD ID = 'Office #1 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #1'  'HEIGHT'
     RAND_ID = 'Scaling Office #1 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#1_height' /
-&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Office #2 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #2'  'HEIGHT' 
     RAND_ID = 'Scaling Office #2 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#2_height' /
-&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3' FIELD_NAME = 'HEIGHT'
+&MFLD ID = 'Office #3 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #3'  'HEIGHT'
     RAND_ID = 'Scaling Office #3 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#3_height' /
-&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Office #4 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #4'  'HEIGHT' 
     RAND_ID = 'Scaling Office #4 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#4_height' /
-&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Office #5 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #5'  'HEIGHT' 
     RAND_ID = 'Scaling Office #5 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#5_height' /
-&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Office #6 depth' FIELD_TYPE = 'SCALING' FIELD = 'Office #6'  'HEIGHT' 
     RAND_ID = 'Scaling Office #6 height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Office_#6_height' /
-&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer' FIELD_NAME = 'HEIGHT' 
+&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT' 
     RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Foyer_and_Halls_height' /
-&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Even Hallway' FIELD_NAME = 'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Odd Hallway' FIELD_NAME = 'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Front Hall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Front Hall' FIELD_NAME = 'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Back Hall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Back Hall' FIELD_NAME = 'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Bathroom Hallway height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Bathroom Hall' FIELD_NAME = 'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2FrontHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2FrontHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2EvenHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2EvenHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2OddHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2OddHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'FrontHall2EvenHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'FrontHall2EvenHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'FrontHall2OddHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'FrontHall2OddHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'BackHall2EvenHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'BackHall2EvenHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'BackHall2OddHall' FIELD_NAME = 'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2FrontHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2FrontHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling Foyer2FrontHall width' 
+&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Front Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Back Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Bathroom Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Bathroom Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2FrontHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2FrontHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2OddHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2OddHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'TOP' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2FrontHall width' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2FrontHall'  'WIDTH' RAND_ID = 'Scaling Foyer2FrontHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Foyer2EvenHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2EvenHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling Foyer2EvenHall width' 
+&MFLD ID = 'Foyer2EvenHall width' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2EvenHall'  'WIDTH' RAND_ID = 'Scaling Foyer2EvenHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Foyer2OddHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Foyer2OddHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling Foyer2OddHall width' 
+&MFLD ID = 'Foyer2OddHall width' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2OddHall'  'WIDTH' RAND_ID = 'Scaling Foyer2OddHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'FrontHall2EvenHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'FrontHall2EvenHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling FrontHall2EvenHall width' 
+&MFLD ID = 'FrontHall2EvenHall width' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2EvenHall'  'WIDTH' RAND_ID = 'Scaling FrontHall2EvenHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'FrontHall2OddHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'FrontHall2OddHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling FrontHall2OddHall width' 
+&MFLD ID = 'FrontHall2OddHall width' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2OddHall'  'WIDTH' RAND_ID = 'Scaling FrontHall2OddHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'BackHall2EvenHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'BackHall2EvenHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling BackHall2EvenHall width' 
+&MFLD ID = 'BackHall2EvenHall width' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2EvenHall'  'WIDTH' RAND_ID = 'Scaling BackHall2EvenHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'BackHall2OddHall width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'BackHall2OddHall' FIELD_NAME = 'WIDTH' RAND_ID = 'Scaling BackHall2OddHall width' 
+&MFLD ID = 'BackHall2OddHall width' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'WIDTH' RAND_ID = 'Scaling BackHall2OddHall width' 
     ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Lab ceiling thickness' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'CEILING_THICKNESS' 
+&MFLD ID = 'Lab ceiling thickness' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'CEILING_THICKNESS' 
     RAND_ID = 'Scaling Lab ceiling thick' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_ceiling_thickness' /
-&MFLD ID = 'Lab floor thickness' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'FLOOR_THICKNESS' 
+&MFLD ID = 'Lab floor thickness' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'FLOOR_THICKNESS' 
     RAND_ID = 'Scaling Lab floor thick' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_floor_thickness' /
-&MFLD ID = 'Lab wall thickness' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Laboratory' FIELD_NAME = 'WALL_THICKNESS' 
+&MFLD ID = 'Lab wall thickness' FIELD_TYPE = 'SCALING' FIELD = 'Laboratory'  'WALL_THICKNESS' 
     RAND_ID = 'Scaling Lab wall thick' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Lab_wall_thickness' /
-&MFLD ID = 'Gyp Conductivity' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Gyp' FIELD_NAME = 'CONDUCTIVITY' 
+&MFLD ID = 'Gyp Conductivity' FIELD_TYPE = 'SCALING' FIELD = 'Gyp'  'CONDUCTIVITY' 
     RAND_ID = 'Scaling Gyp conductivity' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Conductivity' /
-&MFLD ID = 'Gyp Density' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Gyp' FIELD_NAME = 'DENSITY' 
+&MFLD ID = 'Gyp Density' FIELD_TYPE = 'SCALING' FIELD = 'Gyp'  'DENSITY' 
     RAND_ID = 'Scaling Gyp density' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Density' /
-&MFLD ID = 'Gyp Specific Heat' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Gyp' FIELD_NAME = 'SPECIFIC_HEAT' 
+&MFLD ID = 'Gyp Specific Heat' FIELD_TYPE = 'SCALING' FIELD = 'Gyp'  'SPECIFIC_HEAT' 
     RAND_ID = 'Scaling Gyp specific heat' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Specific_Heat' /
-&MFLD ID = 'Gyp Emissivity' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Gyp' FIELD_NAME = 'EMISSIVITY' 
+&MFLD ID = 'Gyp Emissivity' FIELD_TYPE = 'SCALING' FIELD = 'Gyp'  'EMISSIVITY' 
     RAND_ID = 'Scaling Gyp emissivity' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Emissivity' /
-&MFLD ID = 'Concrete Conductivity' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Concrete' FIELD_NAME = 'CONDUCTIVITY' 
+&MFLD ID = 'Concrete Conductivity' FIELD_TYPE = 'SCALING' FIELD = 'Concrete'  'CONDUCTIVITY' 
     RAND_ID = 'Scaling Concrete conductivity' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Conductivity' /
-&MFLD ID = 'Concrete Density' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Concrete' FIELD_NAME = 'DENSITY' 
+&MFLD ID = 'Concrete Density' FIELD_TYPE = 'SCALING' FIELD = 'Concrete'  'DENSITY' 
     RAND_ID = 'Scaling Concrete density' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Density' /
-&MFLD ID = 'Concrete Specific Heat' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Concrete' FIELD_NAME = 'SPECIFIC_HEAT' 
+&MFLD ID = 'Concrete Specific Heat' FIELD_TYPE = 'SCALING' FIELD = 'Concrete'  'SPECIFIC_HEAT' 
     RAND_ID = 'Scaling Concrete specific heat' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Specific_Heat' /
-&MFLD ID = 'Concrete Emissivity' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Concrete' FIELD_NAME = 'EMISSIVITY' 
+&MFLD ID = 'Concrete Emissivity' FIELD_TYPE = 'SCALING' FIELD = 'Concrete'  'EMISSIVITY' 
     RAND_ID = 'Scaling Concrete emissivity' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Gyp_Emissivity' /
-&MFLD ID = 'Front Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Front Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Front Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Front Door'  'TOP' 
     RAND_ID = 'Scaling Front Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Front_Door_Height' /
-&MFLD ID = 'Front Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Front Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Front Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Front Door'  'WIDTH' 
     RAND_ID = 'Scaling Front Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Front_Door_Width' /
-&MFLD ID = 'Office #1 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #1 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #1 Door'  'TOP' 
     RAND_ID = 'Scaling Office #1 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#1__Door_Height' /
-&MFLD ID = 'Office #2 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #2 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #2 Door'  'TOP' 
     RAND_ID = 'Scaling Office #2 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#2__Door_Height' /
-&MFLD ID = 'Office #3 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #3 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #3 Door'  'TOP' 
     RAND_ID = 'Scaling Office #3 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#3__Door_Height' /
-&MFLD ID = 'Office #4 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #4 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #4 Door'  'TOP' 
     RAND_ID = 'Scaling Office #4 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#4__Door_Height' /
-&MFLD ID = 'Office #5 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #5 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #5 Door'  'TOP' 
     RAND_ID = 'Scaling Office #5 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#5__Door_Height' /
-&MFLD ID = 'Office #6 Door Height' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6 Door' FIELD_NAME = 'TOP' 
+&MFLD ID = 'Office #6 Door Height' FIELD_TYPE = 'SCALING' FIELD = 'Office #6 Door'  'TOP' 
     RAND_ID = 'Scaling Office #6 Door Height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#6__Door_Height' /
-&MFLD ID = 'Office #1 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #1 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #1 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #1 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #1 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#1__Door_Width' /
-&MFLD ID = 'Office #2 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #2 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #2 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #2 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #2 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#2__Door_Width' /
-&MFLD ID = 'Office #3 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #3 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #3 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #3 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #3 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#3__Door_Width' /
-&MFLD ID = 'Office #4 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #4 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #4 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #4 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #4 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#4__Door_Width' /
-&MFLD ID = 'Office #5 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #5 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #5 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #5 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #5 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#5__Door_Width' /
-&MFLD ID = 'Office #6 Door Width' FIELD_TYPE = 'SCALING' OBJECT_ID = 'Office #6 Door' FIELD_NAME = 'WIDTH' 
+&MFLD ID = 'Office #6 Door Width' FIELD_TYPE = 'SCALING' FIELD = 'Office #6 Door'  'WIDTH' 
     RAND_ID = 'Scaling Office #6 Door Width' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Ofice_#6__Door_Width' /
 
 &MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Back Fire' SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'

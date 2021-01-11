@@ -1,5 +1,5 @@
 &HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
-&MHDR NUMBER_OF_CASES = 100 WRITE_RANDOM_SEEDS = .TRUE. /
+&MHDR NUMBER_OF_CASES = 10 WRITE_RANDOM_SEEDS = .TRUE. /
 
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -24,7 +24,7 @@
   MINIMUM = 1.5 MAXIMUM = 2.5/
 &MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' FIELD = 'Wall Vent' 'TOP' /
 
-&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2, WIDTH = 1
   FACE = 'FRONT' OFFSET = 1 /
  
 !! Fires 
@@ -45,5 +45,16 @@
 &TABL ID = 'Constant Fire', DATA = 10, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
 &TABL ID = 'Constant Fire', DATA = 990, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
 &TABL ID = 'Constant Fire', DATA = 1000, 0, 0, 0, 0, 0, 0, 0, 0 /
+
+!! Special Outputs
+
+&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
+    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
+    FIRST_FIELD = 'Fire' 'HRR Actual' /
  
 &TAIL /

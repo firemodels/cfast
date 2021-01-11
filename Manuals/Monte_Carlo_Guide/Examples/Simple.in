@@ -1,5 +1,5 @@
 &HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
-&MHDR NUMBER_OF_CASES = 10 WRITE_RANDOM_SEEDS = .TRUE. /
+&MHDR NUMBER_OF_CASES = 3000 WRITE_RANDOM_SEEDS = .TRUE. /
 
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -52,8 +52,12 @@
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
 &DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
     FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER' 
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
 &DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+	&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM' 
+    FIRST_FIELD = 'Comp 1' 'Layer Height' /
 &DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Fire' 'HRR Actual' /
  

@@ -56,7 +56,7 @@
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
 &DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
-	&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM' 
+&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM' 
     FIRST_FIELD = 'Comp 1' 'Layer Height' /
 &DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Fire' 'HRR Actual' /

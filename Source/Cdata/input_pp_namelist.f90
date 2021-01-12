@@ -776,7 +776,7 @@
             statptr%id = id
             statptr%fyi = fyi
             if (trim(input_filename) == 'NULL') then
-                statptr%infile = trim(project) // '_parameters.csv'
+                statptr%infile = trim(project) // '_accumulate.csv'
             else
                 statptr%infile = input_filename
             end if 

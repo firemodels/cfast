@@ -57,11 +57,11 @@ module statistics_routines
         if (trim(statinfo(i)%analysis_type) == 'CORRELATION_TREE') then 
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.R outname="'
         else if (trim(statinfo(i)%analysis_type) == 'CONVERGENCE_OF_MEAN') then
-            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" converg.R outname='''
+            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" converg.R outname="'
         else if (trim(statinfo(i)%analysis_type) == 'HISTOGRAM') then
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" hist.R outname="'
         else if (trim(statinfo(i)%analysis_type) == 'PDF_ESTIMATE') then
-            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" dens.R outname='''
+            buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" dens.R outname="'
         else 
             call cfastexit('statistics',1)
         end if 
@@ -74,7 +74,7 @@ module statistics_routines
         buf = trim(buf) // '" >' // trim(statinfo(i)%logfile)
         write(*,*) buf
         write(ioerr,'(a)') buf
-        status = system(buf)
+        call execute_command_line(buf)
     end do 
     close(ioerr)
     

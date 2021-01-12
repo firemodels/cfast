@@ -202,7 +202,7 @@ module preprocessor_output_routines
         write(iobat,'(a,i0)') 'set MAX_ITER=', mc_max_iterations
         write(iobat,'(a)') ' '
         write(iobat,'(a)') 'rem you should not need to change anything from here on'
-        write(iobat,'(a)') 'set bg=%bgexe% -U 6'
+        write(iobat,'(a)') 'set bg=%bgexe% -u 6'
         write(iobat,'(a)') 'set CFAST=%bg% %CFAST_EXE%'
         
         write(iounix,'(a)')'#/bin/bash'

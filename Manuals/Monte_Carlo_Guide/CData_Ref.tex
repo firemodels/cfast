@@ -563,9 +563,51 @@ Secondly, inputs for the scaling fire are described.
 \chapter{Creating Multiple CFAST Runs}
 The CData program has several functions, 1) a preprocessor function that generates individual CFAST input files from a user-specified distribution and range for one or more inputs, 2) an accumulator function that collects  data for user-specified variables and creates a spreadsheet of summary data for all the individual runs, and 3) a statistical function that creates several different statistical outputs of the summary data to facilitate further analysis.  Section \ref{commands_section} discusses all the namelist commands for CData. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
 
-\section{Basic Philosophy}
+All inputs for generating a set of multiple CFAST runs are contained within a single CFAST input file with inputs that define the base case for analysis, and Monte Carlo-related inputs that define how those inputs will be varied to create multiple individual CFAST input files. In addition, the file may contain a series of specific inputs to generate summary outputs for statistical analysis of the results and a series of inputs that define simple statistical analyses on the summary data.  This chapter presents a simple example from start to finish.
+
+The base case defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m concrete. For the example, the width and height of the door will be varied along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. Fo the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
 
 \section{PreProcessor}
+
+To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two inputs, one that defines the distribution of values for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+!! Wall Vents
+&MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+  MINIMUM = 0.25 MAXIMUM = 2.0/
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' 
+  FIELD = 'Wall Vent' 'WIDTH' /
+
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+  MINIMUM = 1.5 MAXIMUM = 2.5/
+&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator' 
+  FIELD = 'Wall Vent' 'TOP' /
+
+&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2, 
+  WIDTH = 1 FACE = 'FRONT' OFFSET = 1 /
+\end{lstlisting}
+
+The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct TOP} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
+
+To define the fire, with use the {\ct \&MRND} input to define the peak heat release rate and the time intervals for the fire curve.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
+&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
+    'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
+\end{lstlisting}
+
+Here, we define the peak heat release rate as a uniform distribution from 500~kW to 3000~kW, with a 10~s ramp from zero HRR (by default, the first time point is defined at zero time and zero HRR), a 900 s constant fire at the peak heat release rate, and a 10 s decay back to zero.
+
+With the rest of the input file defining the base input file, creating a set of CFAST input files requires running CData with the {\ct -P} option as
+
+{\ct cdata Simple.in -P}
+
+This creates all the individual input files, batch scripts to run the file on either Windows or Linux (with minor editing to define the locations of the required executables), and a summary spreadsheet of all in varied input values.
 
 \section{Running CFAST}
 
@@ -651,7 +693,7 @@ The compartment size is defined randomly over a range of 2 m to 20 m. The exampl
     ADD_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
-The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the vent top is defined as 0.15 m below the compartment ceiling (specified by the {\ct MAXIMUM\_OFFSET} of -0.15 m, with the negative number indicating an offset relative to the top of the compartment) and the vent width maximum is defined as 1 m less than the vent width (specified by the {\ct MAXIMUM\_OFFSET} of -1.0 m).
+The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the top of the vent is defined as 0.15 m below the compartment ceiling (specified by the {\ct MAXIMUM\_OFFSET} of -0.15 m, with the negative number indicating an offset relative to the top of the compartment) and the vent width maximum is defined as 1 m less than the vent width (specified by the {\ct MAXIMUM\_OFFSET} of -1.0 m).
 
 \vspace{\baselineskip}
 \begin{lstlisting}

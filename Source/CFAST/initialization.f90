@@ -1008,7 +1008,8 @@ module initialization_routines
     errfc05 = 1.30_eb
     xkrhoc = wk(1)/(wspec(1)*wrho(1))
     alpha = sqrt(xkrhoc)
-    xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wall_thickness
+    !xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wall_thickness
+    xb = 0.5_eb*wall_thickness
     if (xb>0.50_eb*wall_thickness) xb = 0.5_eb*wall_thickness
     if (nslab==1) then
 

@@ -647,8 +647,8 @@ Public Class Vent
         If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
             ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
             For i = 0 To aRampTimePoints.GetUpperBound(0)
-                TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
-                FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
+                TimePoints(i) = myUnits.Convert(UnitsNum.Time).FromSI(aRampTimePoints(i))
+                FractionPoints(i) = aRampFractionPoints(i)
             Next
             NumPoints = aRampTimePoints.GetUpperBound(0)
         End If
@@ -658,8 +658,8 @@ Public Class Vent
         If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
             ReDim aRampTimePoints(TimePoints.GetUpperBound(0)), aRampFractionPoints(FractionPoints.GetUpperBound(0))
             For i = 0 To TimePoints.GetUpperBound(0)
-                aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
-                aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(FractionPoints(i))
+                aRampTimePoints(i) = myUnits.Convert(UnitsNum.Time).ToSI(TimePoints(i))
+                aRampFractionPoints(i) = FractionPoints(i)
             Next
             aChanged = True
         End If
@@ -668,21 +668,21 @@ Public Class Vent
         Dim i As Integer
         ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
-            FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
+            FractionPoints(i) = aRampFractionPoints(i)
         Next
     End Sub
     Public Sub GetRampTimes(ByRef TimePoints() As Double)
         Dim i As Integer
         ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)
-            TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+            TimePoints(i) = myUnits.Convert(UnitsNum.Time).FromSI(aRampTimePoints(i))
         Next
     End Sub
     Public Sub SetRampFractions(ByVal FractionPoints() As Double)
         Dim i As Integer
         ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
-            aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i))
+            aRampFractionPoints(i) = FractionPoints(i)
         Next
         aChanged = True
     End Sub
@@ -690,7 +690,7 @@ Public Class Vent
         Dim i As Integer
         ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)
-            aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
+            aRampTimePoints(i) = myUnits.Convert(UnitsNum.Time).ToSI(TimePoints(i))
         Next
         aChanged = True
     End Sub

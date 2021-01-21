@@ -575,21 +575,21 @@ To create the varying door size inputs, the vent is defined in the input file an
 !! Wall Vents
 &MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
   MINIMUM = 0.25 MAXIMUM = 2.0/
-&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' 
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator'
   FIELD = 'Wall Vent' 'WIDTH' /
 
 &MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
   MINIMUM = 1.5 MAXIMUM = 2.5/
-&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator' 
+&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator'
   FIELD = 'Wall Vent' 'TOP' /
 
-&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2, 
+&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2,
   WIDTH = 1 FACE = 'FRONT' OFFSET = 1 /
 \end{lstlisting}
 
 The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct TOP} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
 
-To define the fire, with use the {\ct \&MRND} input to define the peak heat release rate and the time intervals for the fire curve.
+To define the fire, the {\ct \&MRND} input is used to define the peak heat release rate and the time intervals for the fire curve. THe {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
@@ -599,6 +599,16 @@ To define the fire, with use the {\ct \&MRND} input to define the peak heat rele
 
 &MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
     'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
+    
+&FIRE ID = 'Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Constant Fire'  LOCATION = 1.5, 1.5 /
+&CHEM ID = 'Constant Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0
+  HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 /
+&TABL ID = 'Constant Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 
+  'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Constant Fire', DATA = 0, 0, 0, 0, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 10, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 990, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 1000, 0, 0, 0, 0, 0, 0, 0, 0 /
 \end{lstlisting}
 
 Here, we define the peak heat release rate as a uniform distribution from 500~kW to 3000~kW, with a 10~s ramp from zero HRR (by default, the first time point is defined at zero time and zero HRR), a 900 s constant fire at the peak heat release rate, and a 10 s decay back to zero.
@@ -611,15 +621,112 @@ This creates all the individual input files, batch scripts to run the file on ei
 
 \section{Running CFAST}
 
-\subsection{Running on Different Operating Systems}
+As part of the process of creating the individual CFAST inputs files, CData creates batch scripts for both windows and Linux operating systems. Each batch script depends on external software to support running multiple CFAST jobs in parallel. For Windows, a program, {\ct background.exe} is used and is included in the CFAST software distribution. For Linux, the batch script depends on a script developed for running multiple FDS runs, {\ct qfds.sh}. Both of these scripts include information on the locations of these external files (plus the location of the CFAST executable which may need to be modified to suit a particular computer hardware. Default examples are shown below. Once configured, running the set of CFAST simulations is accomplished by running the appropriate script for Windows or Linux.
 
-\subsection{The Question of Storage}
+\vspace{\baselineskip}
+\noindent \textbf{Default Windows Batch Script for Simple.in:}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+echo off
+rem change the path to background.exe and cfast.exe as appropriate.
+rem Here we just assume it is in the path
+set bgexe=background.exe
+set CFAST_EXE=cfast.exe
+set MAX_ITER=100000
+
+rem you should not need to change anything from here on
+set bg=%bgexe% -u 6
+set CFAST=%bg% %CFAST_EXE%
+echo %MAX_ITER% > Simple-1.stop
+%CFAST% Simple-1.in -v
+echo %MAX_ITER% > Simple-2.stop
+%CFAST% Simple-2.in -v
+echo %MAX_ITER% > Simple-3.stop
+%CFAST% Simple-3.in -v
+
+:loop1
+tasklist | find /i /c "CFAST" > temp.out
+set /p numexe=<temp.out
+echo waiting for %numexe% jobs to finish
+if %numexe% == 0 goto finished
+Timeout /t 30 >nul
+goto loop1
+:finished
+\end{lstlisting}
+
+\vspace{\baselineskip}
+\noindent \textbf{Default Linux Batch Script for Simple.in:}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+#/bin/bash
+CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
+MAX_PROCESSORS=30
+BATCH=batch
+
+export STOPFDSMAXITER=100000
+
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-1.in
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-2.in
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-3.in
+\end{lstlisting}
 
 \section{Generating Statistics}
 
+As part of the base input file used to generate the set of individual CFAST inputs files to be run, one or more {\ct \&DUMP} inputs can be included to specify summary outputs for each CFAST simulation. This can include maximum/minimum values, time to chosen trigger values (for example, time to peak heat release rate or time to a chosen upper layer temperature), or trigger values based on other inputs (for example, heat release rate when upper layer temperature reaches a chosen value). From these summary values, selected statistical analyses are available in CData. This section describes how to create a spreadsheet of summary values (the Accumulate function in CData), and how to generate several statistical analyses from those data.
+
 \subsection{Accumulator}
 
+For the simple example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600 \degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Fire' 'HRR Actual' /
+&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
+    FIRST_FIELD = 'Comp 1' 'Layer Height' /
+    
+&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
+&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+    
+&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+\end{lstlisting}
+
+To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -A} option,
+
+\vspace{\baselineskip}
+{\ct cdata Simple.in -A}
+
 \subsection{Statistics}
+
+The bases input file used to generate the set of individual CFAST input files also may contain specifications to generate summary statistics of the collected data. This can include histograms of input or output data (oftern used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+
+\begin{lstlisting}[basicstyle=\tiny]
+&MSTT ID = 'Width of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' COLUMN_TITLE = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' COLUMN_TITLE = 'Wall Vent_TOP' /
+&MSTT ID = 'Peak HRR' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' COLUMN_TITLE = 'Fire_HRR_PT  2' /
+&MSTT ID = 'Time to FO' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' COLUMN_TITLE = 'Time to Upper Layer 600 C' /
+&MSTT ID = 'Max Upper Temp' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
+    COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
+&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
+    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg' ANALYSIS_TYPE = 'CORRELATION_TREES'
+    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+\end{lstlisting}
+
+To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -S} option,
+
+\vspace{\baselineskip}
+{\ct cdata Simple.in -S}
 
 \subsubsection{Determining If Enough Runs Have Been Made}
 

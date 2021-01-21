@@ -704,39 +704,47 @@ To create the spreadsheet file of summary values after all of the CFAST cases ha
 
 The bases input file used to generate the set of individual CFAST input files also may contain specifications to generate summary statistics of the collected data. This can include histograms of input or output data (oftern used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
-\begin{lstlisting}[basicstyle=\tiny]
-&MSTT ID = 'Width of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
-    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' COLUMN_TITLE = 'Wall Vent_WIDTH' /
-&MSTT ID = 'Top of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
-    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' COLUMN_TITLE = 'Wall Vent_TOP' /
-&MSTT ID = 'Peak HRR' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
-    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' COLUMN_TITLE = 'Fire_HRR_PT  2' /
-&MSTT ID = 'Time to FO' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
-    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' COLUMN_TITLE = 'Time to Upper Layer 600 C' /
-&MSTT ID = 'Max Upper Temp' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
-    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
-&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
-    COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
-&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
-    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
-&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg' ANALYSIS_TYPE = 'CORRELATION_TREES'
-    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+\begin{lstlisting}[basicstyle=\scriptsize]
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' 
+	COLUMN_TITLE = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' 
+	COLUMN_TITLE = 'Wall Vent_TOP' /
+&MSTT ID = 'Peak HRR' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' 
+	COLUMN_TITLE = 'Fire_HRR_PT  2' /
+&MSTT ID = 'Time to FO' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' 
+	COLUMN_TITLE = 'Time to Upper Layer 600 C' /
+&MSTT ID = 'Max Upper Temp' ANALYSIS_TYPE = 'HISTOGRAM' 
+	OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' 
+	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
+&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg' 
+	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg' 
+	ANALYSIS_TYPE = 'CORRELATION_TREES' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 \end{lstlisting}
 
 To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -S} option,
 
 \vspace{\baselineskip}
 {\ct cdata Simple.in -S}
+\vspace{\baselineskip}
 
-\subsubsection{Determining If Enough Runs Have Been Made}
-
-Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers. The Law of Large Numbers states that for a large-enough number of independent samples, the average converges to the expected value. For example, if we want to know what the probability of flashover is in the kitchen for a certain class of fires, the Law of Large Numbers assures us that the percentage of Monte Carlo runs where flashover occurs converges to the probability as the number of runs becomes large.
-
-The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be usable? Two strategies are used here. The first is graphing the evolution of the mean versus number of runs. The second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on how much accuracy is needed.
+When a {\ct \&MSTT} namelist is analized it generates a number of files. There is a *.err file if there is an error in the analysis. There is a *.log file that documents the steps that are taken in the analysis. There is the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is a final *.csv file. This allows users to use their preffered graphics packages to create the graphics. There is no extra output for the {\ct 'CORRELATION\_TREES'} because there is not a standard simple method of documenting a tree graph. 
 
 \subsubsection{Histograms}
 
-In some cases what is of interest is the distribution of values. There are two approaches to evaluating that  included here. First is a histogram, where the data are sorted into a set of equal bins, and the number of elements in each bin is displayed on a chart. The number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: \[k = \lceil \log_2 n \rceil + 1\], where  \[ \lceil \rceil\] represents the ceiling function.
+The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.  
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_width.jpeg}
+\caption{Sample of Histogram generated for the 'Width of Vent' column}
+\label{simple_width_hist}
+\end{figure}
+
+There is clearly some noise in the data and all the columns are not the same hieght as would be expected in theoretical uniform distribution. However, there really is only one column, the fisrt one, that is significantly out of line with the others. One way of trying to understand why that colum is so much smaller is to go into the {\ct simple\_width.csv} file. In that file the first bar is for the range 0.2 m to 0.3 m but the random generator had a lower bounds of 0.25 m. Doubling the 134 count  puts it right in the middle of the values for the other bars. With that question answered the chart seems to be a reasonable repersentation of a uniform distribution.
+
+In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: \[k = \lceil \log_2 n \rceil + 1\], where  \[ \lceil \rceil\] represents the ceiling function. While the Sturges rule works well it isn't perfect so be careful of drawing a conclusion to quicly looking at the output of any of the {\ct \&MSTT} tools CData provides. 
 
 \subsubsection{Empirical Probability Density Function}
 
@@ -748,11 +756,44 @@ Typically the Gaussian function is used as the Kernal (i.e., the weighting funct
 
 where \textit{N} is the number of data points, \[x_j\] is an individual data point, \[\phi\] is the standard normal density function, and \textit{b} is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
 
+\subsubsection{Determining If Enough Runs Have Been Made}
+
+Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers. The Law of Large Numbers states that for a large-enough number of independent samples, the average converges to the expected value. For example, if we want to know what the probability of flashover is in the kitchen for a certain class of fires, the Law of Large Numbers assures us that the percentage of Monte Carlo runs where flashover occurs converges to the probability as the number of runs becomes large.
+
+The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be usable? Two strategies are used here. The first is graphing the evolution of the mean versus number of runs. The second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on how much accuracy is needed.
+
+In this simple example the mean of two outputs {\ct 'Time to Layer Height 1.5 m'} and {\ct 'Maximum Upper Layer Temp'}. Figure \ref{simple_max_temp_mean} shows the convergence of the mean. From this graph it seems clear that the mean has converged and that fewer cases could have been used. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_max_temp_mean.jpeg}
+\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\label{simple_max_temp_mean}
+\end{figure}
+
+Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is tending toward zero. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_max_temp_sd.jpeg}
+\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\label{simple_max_temp_sd}
+\end{figure}
+
 \subsubsection{Decision Trees}
 
 Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For classification trees, each leaf node is associated with the best-fit category. For regression trees, each leaf node is associated with the average of the data that arrives at that node.
 
 Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
+
+One of the {\ct \&MSTT} namelists creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=6.5in]{FIGURES/simple_tree_temp.jpeg}
+\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\label{simple_tree_temp}
+\end{figure}
 
 %%%%%%%%
 %

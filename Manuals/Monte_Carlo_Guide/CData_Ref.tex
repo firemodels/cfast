@@ -525,6 +525,28 @@ Secondly, inputs for the scaling fire are described.
     NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
 \end{lstlisting}
 
+\subsection{Namelist MSTT}
+
+\begin{description}
+ \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+ \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct CORRELATION\_TREES}.
+ \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct input filename\_accumulate.csv}.
+ \item[OUTPUT\_FILENAME] The file that the finish grafic should be named. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
+ \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
+ \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
+ \item[COLUMN\_TITLE] The name in the first row for the column to use for the analysis. 
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' 
+	COLUMN_TITLE = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' 
+	COLUMN_TITLE = 'Wall Vent_TOP' /
+\end{lstlisting}
+
 
 
 \subsection{Namelist DUMP}

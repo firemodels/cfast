@@ -97,7 +97,7 @@ CFAST Version \cfastversion \\
 
 \chapter{Preface}
 
-This document provides ...
+This document provides documentation for creating and running Monte Carlo simulations using the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
 
 %
 % -------------------  Disclaimer ------------------------
@@ -768,9 +768,9 @@ The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.
 
 There is clearly some noise in the data and all the columns are not the same height as would be expected in theoretical uniform distribution. However, there really is only one column, the first one, that is significantly out of line with the others. One way of trying to understand why that column is so much smaller is to go into the {\ct simple\_width.csv} file. In that file the first bar is for the range 0.2 m to 0.3 m but the random generator had a lower bounds of 0.25 m. Doubling the 134 count  puts it right in the middle of the values for the other bars. With that question answered the chart seems to be a reasonable representation of a uniform distribution.
 
-In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: 
+In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule:
 
-\be 
+\be
 k = \lceil \log_2 n \rceil + 1,
 \ee
 

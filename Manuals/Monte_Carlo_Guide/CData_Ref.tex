@@ -535,15 +535,15 @@ Secondly, inputs for the scaling fire are described.
  \item[OUTPUT\_FILENAME] The file that the finish grafic should be named. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
  \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
- \item[COLUMN\_TITLE] The name in the first row for the column to use for the analysis. 
+ \item[COLUMN\_TITLE] The name in the first row for the column to use for the analysis.
 \end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' 
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
 	COLUMN_TITLE = 'Wall Vent_WIDTH' /
-&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' 
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
 	COLUMN_TITLE = 'Wall Vent_TOP' /
 \end{lstlisting}
 
@@ -611,7 +611,7 @@ To create the varying door size inputs, the vent is defined in the input file an
 
 The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct TOP} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
 
-To define the fire, the {\ct \&MRND} input is used to define the peak heat release rate and the time intervals for the fire curve. THe {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
+To define the fire, the {\ct \&MRND} input is used to define the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
@@ -621,11 +621,11 @@ To define the fire, the {\ct \&MRND} input is used to define the peak heat relea
 
 &MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
     'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
-    
+
 &FIRE ID = 'Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Constant Fire'  LOCATION = 1.5, 1.5 /
 &CHEM ID = 'Constant Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0
   HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 /
-&TABL ID = 'Constant Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 
+&TABL ID = 'Constant Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' ,
   'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Constant Fire', DATA = 0, 0, 0, 0, 0, 0, 0, 0, 0 /
 &TABL ID = 'Constant Fire', DATA = 10, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
@@ -707,12 +707,12 @@ For the simple example in this chapter, inputs are included to determine the pea
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
 &DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
     FIRST_FIELD = 'Comp 1' 'Layer Height' /
-    
+
 &DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
 &DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-    
+
 &DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
     FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
 \end{lstlisting}
@@ -724,24 +724,26 @@ To create the spreadsheet file of summary values after all of the CFAST cases ha
 
 \subsection{Statistics}
 
-The bases input file used to generate the set of individual CFAST input files also may contain specifications to generate summary statistics of the collected data. This can include histograms of input or output data (oftern used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. This can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
-&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' 
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
 	COLUMN_TITLE = 'Wall Vent_WIDTH' /
-&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' 
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
 	COLUMN_TITLE = 'Wall Vent_TOP' /
-&MSTT ID = 'Peak HRR' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' 
+&MSTT ID = 'Peak HRR' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg'
 	COLUMN_TITLE = 'Fire_HRR_PT  2' /
-&MSTT ID = 'Time to FO' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' 
+&MSTT ID = 'Time to FO' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg'
 	COLUMN_TITLE = 'Time to Upper Layer 600 C' /
-&MSTT ID = 'Max Upper Temp' ANALYSIS_TYPE = 'HISTOGRAM' 
+&MSTT ID = 'Max Upper Temp' ANALYSIS_TYPE = 'HISTOGRAM'
 	OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
-&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' 
+
+&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg'
 	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
-&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg' 
+&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg'
 	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
-&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg' 
+
+&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg'
 	ANALYSIS_TYPE = 'CORRELATION_TREES' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 \end{lstlisting}
 
@@ -751,11 +753,11 @@ To create the spreadsheet file of summary values after all of the CFAST cases ha
 {\ct cdata Simple.in -S}
 \vspace{\baselineskip}
 
-When a {\ct \&MSTT} namelist is analized it generates a number of files. There is a *.err file if there is an error in the analysis. There is a *.log file that documents the steps that are taken in the analysis. There is the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is a final *.csv file. This allows users to use their preffered graphics packages to create the graphics. There is no extra output for the {\ct 'CORRELATION\_TREES'} because there is not a standard simple method of documenting a tree graph. 
+When a {\ct \&MSTT} namelist is processed, it generates a number of files. These include an error file (*.err if there is an error in the analysis, a log file (*.log) that documents the steps that are taken in the analysis and the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is also a final *.csv file. This allows users to use their preferred graphics packages to create the graphics. There is no extra output for the {\ct 'CORRELATION\_TREES'} because there is not a standard simple method of documenting a tree graph.
 
 \subsubsection{Histograms}
 
-The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.  
+The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.
 
 \begin{figure}[h!]
 \centering
@@ -764,19 +766,27 @@ The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.
 \label{simple_width_hist}
 \end{figure}
 
-There is clearly some noise in the data and all the columns are not the same hieght as would be expected in theoretical uniform distribution. However, there really is only one column, the fisrt one, that is significantly out of line with the others. One way of trying to understand why that colum is so much smaller is to go into the {\ct simple\_width.csv} file. In that file the first bar is for the range 0.2 m to 0.3 m but the random generator had a lower bounds of 0.25 m. Doubling the 134 count  puts it right in the middle of the values for the other bars. With that question answered the chart seems to be a reasonable repersentation of a uniform distribution.
+There is clearly some noise in the data and all the columns are not the same height as would be expected in theoretical uniform distribution. However, there really is only one column, the first one, that is significantly out of line with the others. One way of trying to understand why that column is so much smaller is to go into the {\ct simple\_width.csv} file. In that file the first bar is for the range 0.2 m to 0.3 m but the random generator had a lower bounds of 0.25 m. Doubling the 134 count  puts it right in the middle of the values for the other bars. With that question answered the chart seems to be a reasonable representation of a uniform distribution.
 
-In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: \[k = \lceil \log_2 n \rceil + 1\], where  \[ \lceil \rceil\] represents the ceiling function. While the Sturges rule works well it isn't perfect so be careful of drawing a conclusion to quicly looking at the output of any of the {\ct \&MSTT} tools CData provides. 
+In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule: 
+
+\be 
+k = \lceil \log_2 n \rceil + 1,
+\ee
+
+where  $\lceil f(x) \rceil$ represents the ceiling function for $f(x)$.
 
 \subsubsection{Empirical Probability Density Function}
 
-The post-processor is also capable of generating an empirical probability density function. It does so using the techniques of Kernal Density Estimation \cite{Haste_2009}. To determine the probability density at a point \textit{x} it associates a weight with each point in the data set. The weight is a function of the distance between the point in the data set and \textit{x}. The probability density is then the sum of those weights.
+The post-processor is also capable of generating an empirical probability density function. It does so using the techniques of Kernel Density Estimation \cite{Haste_2009}. To determine the probability density at a point $x$ it associates a weight with each point in the data set. The weight is a function of the distance between the point in the data set and $x$. The probability density is then the sum of those weights.
 
-Typically the Gaussian function is used as the Kernal (i.e., the weighting function), although other Kernals are also commonly used. For the Gaussian Kernal (which is used here) the estimated probability density at a point \textit{x} is:
+Typically the Gaussian function is used as the Kernel (i.e., the weighting function), although other Kernels are also commonly used. For the Gaussian Kernel (which is used here) the estimated probability density at a point $x$ is:
 
-\[f(x) = \frac{1}{Nb}\sum_{j=1}^{N} \phi\left(\frac{x - x_j}{b} \right) \]
+\be
+(x) = \frac{1}{Nb}\sum_{j=1}^{N} \phi\left(\frac{x - x_j}{b} \right)
+\ee
 
-where \textit{N} is the number of data points, \[x_j\] is an individual data point, \[\phi\] is the standard normal density function, and \textit{b} is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
+where $N$ is the number of data points, $x_j$ is an individual data point, $\phi$ is the standard normal density function, and $b$ is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
 
 \subsubsection{Determining If Enough Runs Have Been Made}
 
@@ -784,7 +794,7 @@ Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers. The 
 
 The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be usable? Two strategies are used here. The first is graphing the evolution of the mean versus number of runs. The second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on how much accuracy is needed.
 
-In this simple example the mean of two outputs {\ct 'Time to Layer Height 1.5 m'} and {\ct 'Maximum Upper Layer Temp'}. Figure \ref{simple_max_temp_mean} shows the convergence of the mean. From this graph it seems clear that the mean has converged and that fewer cases could have been used. 
+In this simple example the mean of two outputs {\ct 'Time to Layer Height 1.5 m'} and {\ct 'Maximum Upper Layer Temp'}. Figure \ref{simple_max_temp_mean} shows the convergence of the mean. From this graph it seems clear that the mean has converged and that fewer cases could have been used.
 
 \begin{figure}[h!]
 \centering
@@ -793,7 +803,7 @@ In this simple example the mean of two outputs {\ct 'Time to Layer Height 1.5 m'
 \label{simple_max_temp_mean}
 \end{figure}
 
-Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is tending toward zero. 
+Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is tending toward zero.
 
 \begin{figure}[h!]
 \centering
@@ -806,9 +816,9 @@ Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is t
 
 Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For classification trees, each leaf node is associated with the best-fit category. For regression trees, each leaf node is associated with the average of the data that arrives at that node.
 
-Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
+Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticeable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases the same data can be represented by very different trees.
 
-One of the {\ct \&MSTT} namelists creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. 
+One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree.
 
 \begin{figure}[h!]
 \centering

@@ -124,7 +124,7 @@ The general structure of an input file is shown below, with many lines of the or
 \end{lstlisting}
 It is recommended that when looking at a new scenario, first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
 
-Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters and where you can find the reference to where it is introduced in the document and the table containing all of the keywords for each group.
+Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters used by CData and where you can find the reference to where it is introduced in the document and the table containing all of the keywords for each group.
 
 
 \begin{table}[ht]
@@ -133,28 +133,12 @@ Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist pa
 \label{tbl:namelistgroups}
 \begin{tabular}{|c|l|c|c|}
 \hline
-Group Name   & Namelist Group Description     & Reference Section & Parameter Table  \\ \hline
-{\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
-{\ct CHEM}   & Fire Chemistry                 & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
-{\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
-{\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct DIAG}   & Diagnostics                    &                   & \ref{tbl:DIAG}   \\ \hline
-{\ct FIRE}   & Fires Placement                & \ref{info:FIRE2}  & \ref{tbl:FIRE2}  \\ \hline
-{\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
-{\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
-{\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
-{\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
-{\ct MFIR}   & Monte Carlo fires              &                   &                  \\ \hline
-{\ct MFLD}   & Monte Carlo field              &                   &                  \\ \hline
-{\ct MHDR}   & Monte Carlo Header             &                   &                  \\ \hline
-{\ct MRND}   & Monte Carlo random distributions &                   &                  \\ \hline
-{\ct MSTT}   & Monte Carlo Header             &                   &                  \\ \hline
-{\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
-{\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
-{\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
-{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:FIRE3}  & \ref{tbl:FIRE3}  \\ \hline
-{\ct TIME}   & Simulation Time                & \ref{info:TIME}   & \ref{tbl:TIME}   \\ \hline
-{\ct VENT}   & Vents                          & \ref{info:VENT}   & \ref{tbl:WVENT}  \\ \hline
+Group Name   & Namelist Group Description       & Reference Section & Parameter Table  \\ \hline
+{\ct MFIR}   & Monte Carlo fire definitions     & \ref{info:MFIR}   & \ref{tbl:MFIR}   \\ \hline
+{\ct MFLD}   & Monte Carlo field definitions    & \ref{info:MFLD}   & \ref{tbl:MFLD}   \\ \hline
+{\ct MHDR}   & Monte Carlo header               & \ref{info:MHDR}   & \ref{tbl:MHDR}   \\ \hline
+{\ct MRND}   & Monte Carlo random distributions & \ref{info:MRND}   & \ref{tbl:MRND}   \\ \hline
+{\ct MSTT}   & Monte Carlo statistical outputs  & \ref{info:MSTT}   & \ref{tbl:MSTT}   \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -166,7 +150,7 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
 \item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct .TRUE.} triggers the code to treat all compartment surfaces to be perfectly insulated.
 \item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, {\ct TEMPERATURES}, within the namelist group, {\ct INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
-\item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the {\ct LOWER\_OXYGEN\_LIMIT} has a default value of {\ct 0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
+\item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. Users should review the applicability of any default values for their simulation.
 \end{itemize}
 
 
@@ -177,8 +161,8 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \noindent
 \renewcommand{\tabcolsep}{.1in}
 \begin{longtable}{|l|l|l|l|l|}
-\caption[Monte Carlo Header Parameters ({\ct MHDR} namelist group)]{For more information see Section~\ref{info:HEAD}.}
-\label{tbl:HEAD} \\
+\caption[Monte Carlo Header Parameters ({\ct MHDR} namelist group)]{For more information see Section~\ref{info:MHDR}.}
+\label{tbl:MHDR} \\
 \hline
 \multicolumn{5}{|c|}{{\ct MHDR} (Monte Carlo Header Parameters)} \\
 \hline \hline
@@ -189,19 +173,64 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct VERSION}         & Integer                 & Section \ref{info:HEAD}      &         	     &                   \\ \hline
-{\ct TITLE}           & Character               & Section \ref{info:HEAD}      &       		     &                 	 \\ \hline
+{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}   & Integer        & Section \ref{info:MHDR}         &                          \\ \hline
+{\ct OUTPUT\_DIRECTORY}                 & Character      &                                 & Local directory          \\ \hline
+{\ct PARAMETER\_FILENAME}               & Character      &                                 & 'filename'\_parameters   \\ \hline
+{\ct SEEDS}                             & Integer Pair   &                                 &                          \\ \hline
+{\ct WORK\_DIRECTORY}                   & Character      &                                 & Local directory          \\ \hline
+{\ct WRITE\_SEEDS}                      & Logical        &                                 & {\ct .FALSE.}            \\ \hline
 \end{longtable}
-
-
-
 
 \noindent Examples:
 \begin{lstlisting}
-&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
-&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
-&INIT  INTERIOR_TEMPERATURE = 20., EXTERIOR_TEMPERATURE = 20. /
-&MISC  LOWER_OXYGEN_LIMIT = 0.10 /
+&MHDR NUMBER_OF_CASES = 3 WRITE_RANDOM_SEEDS = .TRUE. /
+\end{lstlisting}
+
+
+\clearpage
+
+\section{Monte Carlo Random Input Generators, Namelist Group \texorpdfstring{{\tt MRND}}{MRND}}
+
+\noindent
+\renewcommand{\tabcolsep}{.1in}
+\begin{longtable}{|l|l|l|l|l|}
+\caption[Monte Carlo Random Generators ({\ct MRND} namelist group)]{For more information see Section~\ref{info:MRND}.}
+\label{tbl:MRND} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MRND} (Monte Carlo Random Generators)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MRND} (Monte Carlo Random Generators)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}   & Integer        & Section \ref{info:MHDR}         &                          \\ \hline
+
+
+{\ct ID}   & Character        &          &        \\ \hline
+{\ct FYI} & Character  &         &        \\ \hline
+{\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE},
+			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, or {\ct CONSTANT}} & Selection List   &         &      \\ \hline
+{\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &       \\ \hline
+{\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &        \\ \hline
+{\ct MAXIMUM}         & Real        &         &       \\ \hline
+{\ct MEAN}    & Real        &         &       \\ \hline
+{\ct STDEV}    & Real        &         &       \\ \hline
+{\ct ALPHA}    & Real        &         &       \\ \hline
+{\ct PEAK}    & Real        &         &       \\ \hline
+{\ct BETA}    & Real        &         &       \\ \hline
+{\ct DISCRETE\_PROBABILITIES} \footnote{ Sum of probabilities must equal one}  & Real array  &      &     \\ \hline
+{\ct DISCRETE\_REAL\_VALUES}    & Real array        &         &       \\ \hline
+{\ct DISCRETE\_INTEGER\_VALUES}    & Integer array        &         &       \\ \hline
+{\ct DISCRETE\_CHARACTER\_VALUES}    & Character array        &         &       \\ \hline
+
+\end{longtable}
+
+\noindent Examples:
+\begin{lstlisting}
+&MHDR NUMBER_OF_CASES = 3 WRITE_RANDOM_SEEDS = .TRUE. /
 \end{lstlisting}
 
 

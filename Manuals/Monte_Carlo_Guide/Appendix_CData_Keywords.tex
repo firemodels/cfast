@@ -9,7 +9,7 @@ The input file is saved with a name such as {\ct job\_name.in}, where {\ct job\_
 
 There should be no blank spaces in the job name. Instead use the underscore character to represent a space.
 
-Be aware that CFAST will simply over-write the output files of a given case if its assigned name is the same. This is convenient when developing an input file because you save on disk space. Just be careful not to overwrite a calculation that you want to keep.
+Be aware that CData and CFAST will simply over-write the output files of a given case if its assigned name is the same. This is convenient when developing an input file because you save on disk space. Just be careful not to overwrite a calculation that you want to keep.
 
 \section{Namelist Formatting}
 
@@ -40,35 +40,87 @@ The general structure of an input file is shown below, with many lines of the or
 
 %\clearpage
 \begin{lstlisting}[basicstyle=\tiny]
-&HEAD VERSION = 7300, TITLE = 'Users Guide Example Case' /
-!! Scenario Configuration
-&TIME SIMULATION = 3600 PRINT = 50 SMOKEVIEW = 50 SPREADSHEET = 50 /
-&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.1 /
-!! Material Properties
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)',
-      CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
-!! Comparments
-&COMP ID = 'Comp 1'
-      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'CONCRETE' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
-!! Devices
-&DEVC ID = 'HeatDetector_3' COMP_ID = 'Comp 1' LOCATION = 2, 2, 2.97 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1
-      FACE = 'FRONT' OFFSET = 2 /
-!! Fires
-&FIRE ID = 'Wood_Wall' COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'  LOCATION = 2.5, 5 /
-&CHEM ID = 'Wood_Wall_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 18100 RADIATIVE_FRACTION = 0.33 /
-&TABL ID = 'Wood_Wall_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
-&TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.006171682, 0.015, 0, 0, 0 /
-&TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.006171682, 0.015, 0, 0, 0 /
-!! Surface Connections
-&CONN TYPE = 'FLOOR' COMP_ID = 'Comp 3' COMP_IDS = 'Comp 2' /
-!! Visualizations
-&SLCF DOMAIN = '2-D'  POSITION = 2.5, PLANE = 'X' /
-&TAIL /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+&MHDR NUMBER_OF_CASES = 3 WRITE_RANDOM_SEEDS = .TRUE. /
 
+!! Scenario Configuration
+&TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 /
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+
+!! Material Properties
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)',
+  CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
+
+!! Compartments
+&COMP ID = 'Comp 1'
+  DEPTH = 3 HEIGHT = 3 WIDTH = 3
+  CEILING_MATL_ID = 'CONCRETE' CEILING_THICKNESS = 0.15 WALL_MATL_ID = 'CONCRETE' WALL_THICKNESS = 0.15
+  ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+
+!! Wall Vents
+&MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+  MINIMUM = 0.25 MAXIMUM = 2.0/
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH' /
+
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+  MINIMUM = 1.5 MAXIMUM = 2.5/
+&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator' FIELD = 'Wall Vent' 'TOP' /
+
+&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2, WIDTH = 1
+  FACE = 'FRONT' OFFSET = 1 /
+
+!! Fires
+
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
+&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
+    'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
+
+&FIRE ID = 'Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Constant Fire'  LOCATION = 1.5, 1.5 /
+&CHEM ID = 'Constant Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0
+   HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 /
+&TABL ID = 'Constant Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Constant Fire', DATA = 0, 0, 0, 0, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 10, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 990, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 1000, 0, 0, 0, 0, 0, 0, 0, 0 /
+
+!! Special Outputs
+
+&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
+&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
+    FIRST_FIELD = 'Comp 1' 'Layer Height' /
+&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Fire' 'HRR Actual' /
+
+&MSTT ID = 'Width of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' COLUMN_TITLE = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' COLUMN_TITLE = 'Wall Vent_TOP' /
+&MSTT ID = 'Peak HRR' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' COLUMN_TITLE = 'Fire_HRR_PT  2' /
+&MSTT ID = 'Time to FO' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' COLUMN_TITLE = 'Time to Upper Layer 600 C' /
+&MSTT ID = 'Max Upper Temp' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+    ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
+    COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
+&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
+    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg' ANALYSIS_TYPE = 'CORRELATION_TREES'
+    COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+
+&TAIL /
 \end{lstlisting}
 It is recommended that when looking at a new scenario, first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
 
@@ -92,6 +144,11 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
 {\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
+{\ct MFIR}   & Monte Carlo fires              &                   &                  \\ \hline
+{\ct MFLD}   & Monte Carlo field              &                   &                  \\ \hline
+{\ct MHDR}   & Monte Carlo Header             &                   &                  \\ \hline
+{\ct MRND}   & Monte Carlo random distributions &                   &                  \\ \hline
+{\ct MSTT}   & Monte Carlo Header             &                   &                  \\ \hline
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
 {\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
 {\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
@@ -102,7 +159,7 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 \end{center}
 \end{table}
 
-Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.in} included with the CFAST distribution. Following are some general rules about the CFAST input file:
+Examples of each of the Monte Carlo inputs are included in the sections that follow. A complete list of all CFAST inputs are included in the CFAST User's Guide.  All examples are taken from the sample input file {\ct Simple.in} listed above. Following are some general rules about the CFAST input file:
 
 \begin{itemize}
 \item The {\ct HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use {\ct \&TAIL} as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
@@ -115,20 +172,20 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \clearpage
 
-\section{Simulation Environment, Namelist Groups \texorpdfstring{{\tt HEAD}}{HEAD}, \texorpdfstring{{\tt TIME}}{TIME}, \texorpdfstring{{\tt INIT}}{INIT}, and  \texorpdfstring{{\tt MISC}}{MISC}}
+\section{Monte Carlo Header, Namelist Group \texorpdfstring{{\tt MHDR}}{MHDR}}
 
 \noindent
 \renewcommand{\tabcolsep}{.1in}
 \begin{longtable}{|l|l|l|l|l|}
-\caption[Header Parameters ({\ct HEAD} namelist group)]{For more information see Section~\ref{info:HEAD}.}
+\caption[Monte Carlo Header Parameters ({\ct MHDR} namelist group)]{For more information see Section~\ref{info:HEAD}.}
 \label{tbl:HEAD} \\
 \hline
-\multicolumn{5}{|c|}{{\ct HEAD} (Header Parameters)} \\
+\multicolumn{5}{|c|}{{\ct MHDR} (Monte Carlo Header Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct HEAD} (Header Parameters)} \\
+\multicolumn{5}{|c|}{{\ct MHDR} (Monte Carlo Header Parameters)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline

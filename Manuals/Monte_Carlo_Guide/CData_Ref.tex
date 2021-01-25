@@ -341,6 +341,7 @@ Choosing modeling results for analysis depends on the goals of the hazard analys
 Each subsection will discuss one set of namelist inputs and what each of the parameters do. All the inputs are combined in Appendix \ref{preprocessor_reference}  to serve as a reference for commands.
 
 \subsection{Namelist MHDR}
+\label{info:MHDR}
 
 The {\ct \&MHDR} inputs specify details of the scenarios to be generated including the number of cases to be generated, seeds for the random number generator, and locations for input and output files.
 
@@ -364,6 +365,7 @@ The {\ct \&MHDR} inputs specify details of the scenarios to be generated includi
 
 
 \subsection{Namelist MRND}
+\label{info:MRND}
 
 The {\ct \&MRND} defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, suppose the desire is to have all the rooms have the same height ceiling, then all the fields will use the same random number generator. % This might be to early to say all this. What do you think?
 
@@ -429,6 +431,7 @@ The following example shows the height of a door to the bedroom in the above exa
 \clearpage
 
 \subsection{Namelist MFIR}
+\label{info:MFIR}
 
 Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution) or by defining a power law fire based on several inputs.
 
@@ -1143,17 +1146,16 @@ After all the fields that are to be varied are set up there is also the fire to 
     SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' ADD_HRR_SCALE_TO_PARAMETERS = .TRUE. ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
-The other advantage, besides ease of implementation, is that it eliminates the possibility of variatiion of individual time points reducing the impact of the variability. For example if one point has the HRR increaseing by some amount but the next HHR value decreses it won't completely average out but it could reduce the impact on the overall scenareo.
+The other advantage, besides ease of implementation, is that it eliminates the possibility of variation of individual time points reducing the impact of the variability. For example if one point has the HRR increasing by some amount but the next HHR value decreases it won't completely average out but it could reduce the impact on the overall scenario.
 
 \hypertarget{approach}{%
 \subsection{Approach}\label{approach}}
 
-For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (representedby the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the Foyer during that evacuation.
+For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (represented by the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the foyer during the evacuation.
 
-Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the
-inputs against the \emph{log} of the output will give exactly that value.
+Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the inputs against the \emph{log} of the output will give exactly that value.
 
-The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1--assumed to represent the condition where the space is no longer viable. The complication is that in a number of cases nonviability does not occur within the time of the simulation: here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
+The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1--assumed to represent the condition where the space is no longer viable. The complication is that in a number of cases non-viability does not occur within the time of the simulation; here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
 
 In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
 

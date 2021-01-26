@@ -818,7 +818,7 @@ module initialization_routines
 !> \param   tstop (input): total simulation time. used to estimate a characteristic thermal penetration time 
 !>                         and ensure the explicit calculation will converge
 
-    subroutine initialize_walls (tstop)
+    subroutine initialize_walls
 
     ! kw = thermal conductivity
     ! cw = specific heat (j/kg)
@@ -829,7 +829,6 @@ module initialization_routines
     ! matl contains the name of the thermal data set in the tpp data structure
     ! n_matl is a count of the number of tpp data sets in the tpp data structure
 
-    real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, n_nodes(mxslb+1)
@@ -881,7 +880,7 @@ module initialization_routines
                 n_nodes = roomptr%nodes_w(1:mxslb+1,j)
                 wtemps = roomptr%t_profile(1:nnodes,j)
                 walldx = roomptr%walldx(1:nnodes,j)
-                call initialize_wall_nodes(n_nodes,nslab,tstop,walldx,slab_splits,k_w,c_w,rho_w,thick_w, &
+                call initialize_wall_nodes(n_nodes,nslab,walldx,slab_splits,k_w,c_w,rho_w,thick_w, &
                    thick,wtemps,interior_ambient_temperature,exterior_ambient_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = n_nodes
                 roomptr%t_profile(1:nnodes,j) = wtemps
@@ -975,11 +974,11 @@ module initialization_routines
 !> \param   wtemp (output): wall temperature profile
 !> \param   walldx (output): wall node positions
 
-    subroutine initialize_wall_nodes (n_nodes, nslab, tstop, walldx, slab_splits, wk, wspec, wrho, slab_thickness, &
+    subroutine initialize_wall_nodes (n_nodes, nslab, walldx, slab_splits, wk, wspec, wrho, slab_thickness, &
         wall_thickness, wtemp, tamb, text)
 
     integer, intent(in) :: nslab
-    real(eb), intent(in) :: tstop, slab_splits(*), wk(*), wspec(*), wrho(*), slab_thickness(*), tamb, text
+    real(eb), intent(in) :: slab_splits(*), wk(*), wspec(*), wrho(*), slab_thickness(*), tamb, text
     integer, intent(inout) :: n_nodes(*)
     real(eb), intent(out) :: wall_thickness, walldx(*)
 

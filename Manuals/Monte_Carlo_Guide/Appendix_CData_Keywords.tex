@@ -173,12 +173,12 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}   & Integer        & Section \ref{info:MHDR}         &                          \\ \hline
-{\ct OUTPUT\_DIRECTORY}                 & Character      &                                 & Local directory          \\ \hline
-{\ct PARAMETER\_FILENAME}               & Character      &                                 & 'filename'\_parameters   \\ \hline
-{\ct SEEDS}                             & Integer Pair   &                                 &                          \\ \hline
-{\ct WORK\_DIRECTORY}                   & Character      &                                 & Local directory          \\ \hline
-{\ct WRITE\_SEEDS}                      & Logical        &                                 & {\ct .FALSE.}            \\ \hline
+{\ct NUMBER\_OF\_CASES}   & Integer        & Section \ref{info:MHDR}   &      &                          \\ \hline
+{\ct OUTPUT\_DIRECTORY}                 & Character      &                       &          & Local directory          \\ \hline
+{\ct PARAMETER\_FILENAME}               & Character      &                      &           & 'filename'\_parameters   \\ \hline
+{\ct SEEDS}                             & Integer Pair   &                                 &       &                          \\ \hline
+{\ct WORK\_DIRECTORY}                   & Character      &                        &         & Local directory          \\ \hline
+{\ct WRITE\_SEEDS}                      & Logical        &                          &       & {\ct .TRUE.}            \\ \hline
 \end{longtable}
 
 \noindent Examples:
@@ -206,25 +206,23 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct MONTE\_CARLO\_NUMBER\_OF\_CASES}   & Integer        & Section \ref{info:MHDR}         &                          \\ \hline
-
-
-{\ct ID}   & Character        &          &        \\ \hline
-{\ct FYI} & Character  &         &        \\ \hline
+{\ct ID}   & Character        &          &      &     \\ \hline
+{\ct FYI} & Character  &         &     &     \\ \hline
 {\ct TYPE\_DIST} \footnote{{\ct TYPE\_DIST} must be one of the following distributions: {\ct UNIFORM}, {\ct DESCRETE\_UNIFORM}, {\ct TRIANGLE}, {\ct USER\_DEFINED\_DESCRETE},
-			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, or {\ct CONSTANT}} & Selection List   &         &      \\ \hline
-{\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &       \\ \hline
-{\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &        \\ \hline
-{\ct MAXIMUM}         & Real        &         &       \\ \hline
-{\ct MEAN}    & Real        &         &       \\ \hline
-{\ct STDEV}    & Real        &         &       \\ \hline
-{\ct ALPHA}    & Real        &         &       \\ \hline
-{\ct PEAK}    & Real        &         &       \\ \hline
-{\ct BETA}    & Real        &         &       \\ \hline
-{\ct DISCRETE\_PROBABILITIES} \footnote{ Sum of probabilities must equal one}  & Real array  &      &     \\ \hline
-{\ct DISCRETE\_REAL\_VALUES}    & Real array        &         &       \\ \hline
-{\ct DISCRETE\_INTEGER\_VALUES}    & Integer array        &         &       \\ \hline
-{\ct DISCRETE\_CHARACTER\_VALUES}    & Character array        &         &       \\ \hline
+			{\ct USER\_DEFINED\_CONTINOUS\_INTERVAL}, {\ct BETA}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct TRUNCATED\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL}
+			{\ct LINEAR}, or {\ct CONSTANT}} & Selection List   &         &     &     \\ \hline
+{\ct INITIAL\_SEED\_VALUES} & 2 Integer values &       &      &  \\ \hline
+{\ct MINIMUM} \footnote{ Parameter values are only used if defined for a particular distribution and ignored otherwise}              & Real            &         &     &     \\ \hline
+{\ct MAXIMUM}         & Real        &         &      &   \\ \hline
+{\ct MEAN}    & Real        &         &     &   \\ \hline
+{\ct STDEV}    & Real        &         &     &    \\ \hline
+{\ct ALPHA}    & Real        &         &     &     \\ \hline
+{\ct PEAK}    & Real        &         &     &    \\ \hline
+{\ct BETA}    & Real        &         &     &     \\ \hline
+{\ct DISCRETE\_PROBABILITIES} \footnote{ Sum of probabilities must equal one}  & Real array  &      &    &     \\ \hline
+{\ct DISCRETE\_REAL\_VALUES}    & Real array        &         &     &    \\ \hline
+{\ct DISCRETE\_INTEGER\_VALUES}    & Integer array        &         &    &     \\ \hline
+{\ct DISCRETE\_CHARACTER\_VALUES}    & Character array        &         &     &     \\ \hline
 
 \end{longtable}
 

@@ -396,6 +396,7 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \end{lstlisting}
 
 \subsection{Namelist MFLD}
+\label{info:MFLD}
 
 \begin{description}
   \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
@@ -1208,7 +1209,7 @@ In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-perc
 \noindent
 \begin{table}[ht]
 \begin{center}
-\caption[Selected results for sensitivity of time to nonviability for Foyer Heat FED.]{Selected results for sensitivity of time to nonviability for Foyer Heat FED.}
+\caption[Selected results for sensitivity of time to non-viability for Foyer Heat FED.]{Selected results for sensitivity of time to non-viability for Foyer Heat FED.}
 \label{tbl:Ex_2-2}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
@@ -1238,7 +1239,7 @@ log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
 
 \chapter{Summary}
 
-This publication introduces the CFAST Fire Data Generator or CData that has been developed by NIST as a tool to help users do Monte Carlo analysis. The various parts of CData are described and then a very simple analysis is first presented to demonstrate the different parts of the analysis that CData can assist in preforming. This is followed by three slightly more complex analsyses to further demonstrate the uses of CData. 
+This publication introduces the CFAST Fire Data Generator or CData that has been developed by NIST as a tool to help users do Monte Carlo analysis. The various parts of CData are described and then a very simple analysis is first presented to demonstrate the different parts of the analysis that CData can assist in preforming. This is followed by three slightly more complex analsyses to further demonstrate the uses of CData.
 
 Included in CData is the statisical software R. It is included so that CData can provide a number of built in tools to analize the data. Two of the tools are useful in determining that enough cases have been run to draw justifable conclusions from the analysis. The first, convergence of the mean,
 
@@ -1261,7 +1262,18 @@ Note that the units associated with a given symbol are sometimes changed upon in
 \begin{center}
 \begin{longtable}{p{1in}  p{5.5 in}}
 
-$A$                 & area, m$^2$ \\
+$A$                 & area, vent area, m$^2$ \\
+$A_T$               & total surface area of a compartment, m$^2$ \\
+$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$D$                 & fire diameter, m \\
+$g$                 & gravitational constant, 9.8 m/s$^2$ \\
+$h$                 & vent height, m \\
+$\dQ$               & total heat release rate of the fire, kW \\
+$\dQ^*$             & Fire Froude Number,  $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$ \\
+$T$                 & temperature, K \\
+$T_\infty$          & ambient gas temperature, K \\
+$\rho$              & density, kg/m$^3$ \\
+$\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
 \end{longtable}
 
 \end{center}
@@ -1269,24 +1281,6 @@ $A$                 & area, m$^2$ \\
 
 \include{Appendix_CData_Keywords}
 
-
-%\chapter{PreProcessor Reference}
-%\label{preprocessor_reference}
-%Each subsection will discuss one namelist and what each of the parameters does. The tables presented in each subsection are combined in Appendix XXX  to serve as a refence for commands.
-
-%\section{Namelist DUMP}
-
-%\section{Namelist MHDR}
-
-%\section{Namelist MRND}
-
-%\section{Namelist MFLD}
-
-%\section{Namelist MFIR}
-
-%\section {Namelist MSTT}
-
-%\include{../Users_Guide/Appendix_CFAST_Keywords}
 
 \label{last_page}
 

@@ -70,7 +70,7 @@
     i_time_end = xdelt + 1
     tstop = i_time_end - 1
 
-    call initialize_walls (tstop)
+    call initialize_walls
 
     call output_initial_conditions
 

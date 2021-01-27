@@ -449,7 +449,7 @@ Automatically-generated fires are created for an individual test case by modifyi
 Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
 
  \begin{description}
-  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire. Ignition is not delayed, that is badly worded. If this one is not defined then only one of the two sets of two can be defined and the other two must not be left blank. This is a I{\ct INDEX} type of field because this gives the most flexibility
+  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire for a specific generated scenario. If  not defined, then only one of the other two sets of two can be defined and the other two must not be left blank. This is an {\ct INDEX} field type.
   \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
   \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
   \item[FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
@@ -1263,15 +1263,15 @@ Note that the units associated with a given symbol are sometimes changed upon in
 \begin{longtable}{p{1in}  p{5.5 in}}
 
 $A$                 & area, vent area, m$^2$ \\
-$A_T$               & total surface area of a compartment, m$^2$ \\
-$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
-$D$                 & fire diameter, m \\
-$g$                 & gravitational constant, 9.8 m/s$^2$ \\
-$h$                 & vent height, m \\
+$A_T$               & total surface area of a compartment, m$^2$ \\ \\
+$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\ \\
+$D$                 & fire diameter, m \\ \\
+$g$                 & gravitational constant, 9.8 m/s$^2$ \\ \\
+$h$                 & vent height, m \\ \\
 $\dQ$               & total heat release rate of the fire, kW \\
-$\dQ^*$             & Fire Froude Number,  $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$ \\
+$\dQ^*$             & Fire Froude Number,  $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$ \\ \\
 $T$                 & temperature, K \\
-$T_\infty$          & ambient gas temperature, K \\
+$T_\infty$          & ambient gas temperature, K \\ \\
 $\rho$              & density, kg/m$^3$ \\
 $\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
 \end{longtable}

@@ -1,0 +1,717 @@
+%%%%%%%%%%%%%%%%%%%%%
+%
+% Appendix with R Scripts
+%
+%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{R Scripts for Example Cases}
+\label{rscripts}
+
+The scripts listed below are in R\footnote{R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL \url{https://www.R-project.org/}.} and are in the form of R Markdown\footnote{Yihui Xie and J.J. Allaire and Garrett Grolemund (2018). R Markdown: The Definitive Guide. Chapman and Hall/CRC. ISBN 9781138359338. URL \url{https://bookdown.org/yihui/rmarkdown}} files.
+
+\section{R Script for Interconnected Alarms}
+\label{rscript-interconnect}
+\vspace{\baselineskip}
+\begin{lstlisting}[basicstyle=\scriptsize]
+title: "Interconnected Alarms"
+author: ""
+date: "`r format(Sys.Date(), '%e %B %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+params:
+  save_file: "example3"
+  seed: 737826061
+  detail: FALSE
+  max_t: 1000
+---
+
+```{r setup, include=FALSE}
+library(rpart)
+# The package above is part of base R. The packages below are not.
+# The script can easily be rewritten to work without them.
+# I use them here because they work well for the purpose.
+library(magrittr)
+library(foreach)
+library(ggplot2)
+library(rpart.plot)
+
+set.seed(as.integer(params$seed))
+knitr::opts_chunk$set(echo=params$detail, results="hold", warning=FALSE, message=FALSE)
+
+# These lines allow me to run the script multiple times without having to
+# repeat some of the more time-intensive portions.
+keep <- union(ls(),  c("ex3", "reserved", "vars", "cvg"))
+do.ex3     <- ! exists("ex3")
+do.find    <- do.ex3  | ! exists("vars")
+do.cvg     <- do.ex3  | ! exists("cvg")
+```
+
+## Data
+
+The information on doors is not really in a usable form, so for this analysis
+the door information is recoded into a door state for each door. The state
+can be one of "closed" "one-fourth", "one-half", "three-fourth", and "open."
+The recoding for doors is what is used throughout this analysis.
+
+```{r data, eval=do.ex3}
+ex3 <- read.csv("Detectors_accumulate3.csv",
+# Note that the column names as supplied are not R-compliant names.
+#  It is more complicated to work with the names as supplied, but
+#  it makes reporting easier. So I use `check.names=FALSE` to import
+#  the names as supplied, and deal with the complications.
+#
+                check.names=FALSE,
+                stringsAsFactors = FALSE)
+#######################################################################
+# There are a few columns that are empty, so they are removed.
+tmp <- sapply(ex3, function(x) all(is.na(x)))
+ex3 <- ex3[,!tmp]
+
+# In addition, there may be rows that are empty as well, and they are removed.
+tmp <- apply(ex3, 1, function(x) all(is.na(x) | trimws(x) == ""))
+ex3 <- ex3[!tmp,]
+
+# The "File.Names" Column does me no good and can cause problems with some of
+# the analyses. For this work I just delete it from the data.
+# The column is saved in the 'reserved' data frame.
+tmp <- grep("File[. ]Names", names(ex3))
+reserved <- NULL
+if(length(tmp) > 0){
+  if(length(tmp) == 1){
+    reserved <- data.frame(ex3[,tmp])
+    names(reserved) <- names(ex3)[tmp]
+  } else {
+    reserved <- cbind(reserved, ex3[,tmp])
+  }
+  ex3 <- ex3[,-tmp]
+}
+
+# Take any text columns and convert them to factors
+tmp <- sapply(ex3, function(x) class(x) == "character")
+if(length(tmp[tmp]) > 0){
+  for(i in names(ex3[tmp]))  ex3[[i]] <- factor(trimws(ex3[[i]]))
+}
+
+#######################################################################
+## This section is unique to this data set.
+#  Each of the doors has two variables, but they represent only five
+#  states for each door. The problem is that those two variables
+#  are effectively perfectly correlated, which causes problems
+#  for the analysis.
+#  The simplest approach--and probably the best--is to convert those
+#  values to a factor. This does that.
+#  The approach is to identify Door columns (which have either
+#  "WIDTH" or "TOP" in the name).
+x <- grep("WIDTH", names(ex3), value=TRUE) %>% sub("WIDTH", "[:LETTERS:]*", .)
+doors <- foreach(i=x, .combine="cbind") %do% {
+  u <- ex3[,grep(i, names(ex3))]
+  width <- u[[grep("WIDTH", names(u))]]
+  top   <- u[[grep("TOP",   names(u))]]
+  z <- c(3, 5, 7) * max(width) / 8
+  y <- rep(NA, nrow(u)) %>% factor(levels=c("closed", "one-fourth", "one-half", "three-fourth", "open"))
+  y[width < z[1]] <- "one-fourth"
+  y[width < z[2] & width > z[1]] <- "one-half"
+  y[width < z[3] & width > z[2]] <- "three-fourth"
+  y[width > z[3] & top == max(top)] <- "open"
+  y[width > z[3] & top == min(top)] <- "closed"
+  data.frame(y)
+}
+names(doors) <- sub("[_]*[[]:LETTERS:][*]","", x)
+x <- names(doors) %>% grep("DR|DOOR", ., ignore.case=TRUE, invert=TRUE)
+names(doors)[x] <- paste0(names(doors)[x], "_DOOR")
+
+doors2 <- ex3[,grep("WIDTH|TOP", names(ex3))]
+ex3 <- cbind(ex3[,-grep("WIDTH|TOP", names(ex3))], doors)
+reserved <- cbind(reserved, doors, doors2)
+rm(doors, doors2, u, i, x, y, z, width, top)
+```
+
+```{r data_setup, eval=do.find}
+# Note that independent variables are not necessarily pre-stated.
+# So I pick out the independent variables as those with no NAs.
+# NAs result from run failures, which happen about 10% of the time.
+# Any column with an NA is a dependent variable.
+#
+# I also identify any columns that are obviously singular. Any column
+# with only one value is separated out from the others.
+
+a <- sapply(ex3, function(x) any(is.na(x)))
+b <- sapply(ex3, function(x) length(unique(x)) < 2)
+vars <- list(IV=(1:length(a))[!a & !b],
+             DV=(1:length(a))[ a & !b],
+             N0=(1:length(a))[ b])
+
+# Generate a random "column" name. If it is in the table, try again until you
+# find a name that is not in the table.
+# This seems more complicated than necessary, but it GUARANTEES that my index
+# name is not already in the table.
+idx <- names(a)[1]
+while(idx %in% names(ex3)){
+  idx <- c(sample(letters, 1), sample(c(letters, 0:9), 9, replace=TRUE)) %>% paste0(collapse="")
+}
+```
+
+## Number of Cases
+
+As a first step, we do a preliminary check to see if we have enough cases. To
+be meaningful we have to look at one of the output columns; here we look at
+the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent
+that the results for Flaming type fires and Smoldering type fires are very
+different. Also, nearly half the cases have no activation within the simulation
+time. So the evaluation of convergence is evaluated separately for flaming type
+fires and smoldering type fires. Then the time to activation for cases where
+activation occurs is evaluated separately from the percent of cases where
+activation occurs. If any of these do not converge, then we do not have enough
+cases.
+
+```{r converg}
+# This does the convergence tests and graphs.
+# The algorithm used here is the same as that used as part if the CDATA
+# package. The only difference is that the output is printed using
+# ggplot rather than R's native graphics engine.
+#
+# This section builds the tables containing the means versus number of runs.
+# It creates a column for each of the dependent variables so a plot can be
+# generated for any of them as desired.
+#
+converg <- foreach(i=levels(ex3$Random_ignition_type), .combine="rbind") %do% {
+  foreach(j=c("times", "alerts"), .combine="rbind") %do% {
+    t2 <- foreach(k=vars$DV, .combine="data.frame") %do% {
+      t3 <- ex3[[k]][ex3$Random_ignition_type == i]
+      if(j == "times"){
+        t3[t3 < 0] <- NA
+      } else {
+        t3 <- ifelse(t3 > 0, 1, 0)
+      }
+      t3[! is.na(t3)] <- cumsum(t3[! is.na(t3)]) / 1:length(t3[! is.na(t3)])
+      t3
+    }
+    names(t2) <- names(ex3)[vars$DV]
+    cbind(g2=j, n=1:nrow(t2), t2)
+  } %>% cbind(g1=i, .)
+}
+
+# This section builds the tables containing the standard deviation versus
+# number of runs. Again, this is the same algorithm as the one used in
+# CDATA, just using ggplot instead of the native R graphics engine.
+#
+# Also as above, it creates a column for each of the dependent
+# variables so a plot can be generated for any of them as desired.
+#
+converg <- list(mean=converg,
+                sd=tmp <- foreach(i=levels(ex3$Random_ignition_type), .combine="rbind") %do% {
+  t0 <- ex3[ex3$Random_ignition_type == i, vars$DV]
+  t4a <- data.frame(n=c(nrow(t0),
+                       floor(exp(seq(from=log(nrow(t0)), to=log(10), length.out=10)[2:9])),
+                       10),
+                   len=NA) %>% cbind(foreach(j=names(t0), .combine="cbind") %do% rep(NA, 10))
+  t4a$len <- nrow(t0) / t4a$n
+  names(t4a)[-(1:2)] <- names(t0)
+  t4b <- t4a
+  t4a[1,3:ncol(t4a)] <- sapply(t0, sd, na.rm=TRUE)
+  t4b[1,3:ncol(t4b)] <- sapply(t0, function(x) sd(ifelse(x > 0, 1, 0), na.rm=TRUE))
+  for(j in 2:10){
+    for(k in names(t0)){
+      t4a[[k]][j] <- sd(sapply(split(t0[[k]],
+                                     cut(runif(nrow(t0)), t4a$n[j]),
+                                     drop=TRUE),
+                               mean, na.rm=TRUE), na.rm=TRUE)
+      t4b[[k]][j] <- sd(sapply(split(ifelse(t0[[k]] > 0, 1, 0),
+                                     cut(runif(nrow(t0)), t4b$n[j]),
+                                     drop=TRUE),
+                               mean, na.rm=TRUE), na.rm=TRUE)
+    }
+  }
+  rbind(cbind(g2="times", t4a),
+        cbind(g2="alert", t4b)) %>% cbind(g1=i, .)
+})
+
+
+# These are example plots.
+print(converg$mean %>% ggplot() + aes(x=n, y=`Bedroom 3 Alarm`) +
+  geom_line() + geom_point() + theme_bw() +
+  facet_wrap(~ g2 + g1, scales="free_y") + expand_limits(y=0))
+
+print(converg$sd %>% ggplot() + aes(x=len, y=`Bedroom 3 Alarm`) +
+  geom_line() + geom_point() + theme_bw() +
+  facet_wrap(~ g2 + g1, scales="free_y") + expand_limits(y=0))
+
+
+```
+
+The preliminary results, charted above, suggest that we have enough cases.
+The averages all appear to have converged, and the standard errors are
+small.
+
+## Analysis
+
+The question explored here is the benefit gained by connecting alarms. The
+effect of interconnecting alarms is to reduce the amount of time before people
+in the house are notified of a fire even though they may be far away from the
+location of the fire. In this example, there are fires in the dining room,
+kitchen, or living room, and we will assume that people are in the bedrooms.
+Further assume the people in the bedrooms will not hear an alarm unless it is
+the one in the bedroom. So the effect of interconnecting alarms is to notify
+people to a fire when the alarm in one of the front rooms goes off rather than
+waiting until one of the bedroom alarms sounds.
+
+Assume for this example that there is one alarm in the Living Room and one
+alarm in Bedroom 1 (which will proxy for all the bedroom alarms). This
+example, then, examines the difference in activation times between the
+Living Room Alarm and the Bedroom 1 Alarm.
+
+Exploratory analysis of the data is an important part of any analysis. Here,
+initial exploration indicated that in a substantial number of cases one or
+more of the alarms never activated.
+
+```{r exploratory}
+data.frame(`Living Room`=ifelse(ex3$`Living Room Alarm` > 0, "Yes", "No"),
+           `Bedroom 1`  =ifelse(ex3$`Bedroom 1 Alarm`   > 0, "Yes", "No")) %>%
+  table(useNA="ifany") %>% ftable() %>% pander::pander()
+```
+
+The table above displays the number of cases where each of the alarms
+activated. Cases marked NA, are cases where the model itself did not
+converge. That was a very small number of cases for this example.
+
+For more than half the cases, both alarms activated. For most of the
+remaining cases the Living Room alarm activated but the Bedroom alarm
+did not. For less than 10&nbsp;% of the cases neither alarm activated.
+There were no cases where the bedroom alarm activated but the Living
+Room alarm did not.
+
+```{r cart}
+# Again, this is the same algorithm as the one built into CDATA.
+# I use the package `rpart.plot` to plot the resulting decision
+# tree rather than the R graphics engine, mostly because it produces
+# a plot that is easier to read and interpret.
+bed1 <- rpart(I(`Bedroom 1 Alarm` > 0) ~ `UL Alarm Living Room_TRIGGER` + `UL Alarm Dining Room_TRIGGER` +
+  `UL Alarm Kitchen_TRIGGER` + `UL Alarm Bedroom 1_TRIGGER` + `UL Alarm Bedroom 2_TRIGGER`   +
+  `UL Alarm Bedroom 3_TRIGGER` + `UL Alarm Living Room_TRIGGER_SMOLDER` +
+  `UL Alarm Dining Room_TRIGGER_SMOLDER` + `UL Alarm Kitchen_TRIGGER_SMOLDER` +
+  `UL Alarm Bedroom 1_TRIGGER_SMOLDER` + `UL Alarm Bedroom 2_TRIGGER_SMOLDER` +
+  `UL Alarm Bedroom 3_TRIGGER_SMOLDER` + `Random_HRR_PT  2` + `Random_T_HRR_PT  2` +
+  I(`Random_T_HRR_PT 15` - `Random_T_HRR_PT  3`) + `DR LR 1` + `DR LR 2` + `DR Kit` + `Kit LR_DOOR` +
+  `LR to BR Hall_DOOR` + `Bedroom 1 Door` + `Bedroom 2 Door` + `Bedroom 3 Door` + `Fire Room` +
+  Random_ignition_type,
+             ex3)
+rpart.plot::rpart.plot(bed1)
+```
+
+To better understand the cases where the bedroom alarm fails to sound, a
+classification tree was generated on whether the bedroom alarm sounded
+(above). It is unusual for a tree to produce results as stark as this one.
+What becomes clear on looking at the tree is that the state of the intervening
+doors determines whether the bedroom alarm sounds. If the fire is isolated
+from the bedroom by closed doors then the alarm will not sound. Otherwise
+it will.
+
+Interconnected alarms do not monitor continuously. Rather they check
+periodically to see if some other alarm has sounded. For this example, we
+will assume they check every 60 seconds. The effect is that there is a
+random delay, with the delay drawn from a uniform random distribution of
+between zero and 60 seconds. A Kernal Density estimate of the distribution
+of time savings is plotted below, with fire type on separate charts. Any
+negative "time delay" means that the bedroom alarm sounds on its own before
+it gets notification from the Living Room alarm.
+
+```{r kde}
+# In the generated data frame below:
+# type is either Flaming or Smoldering
+# Diff is the difference in activation times between the bedroom alarm
+# and the living room alarm. sig.delay is a random value between 0
+# and 60 seconds representing the interconnection delay delay is the
+# total difference in activation times taking into account the random
+# interconnection delay.
+#
+# Note that I have use Inf (an infinite value) to represent non-activation
+# for any alarm.
+delay <- data.frame(type=ex3$Random_ignition_type,
+                    diff=ifelse(ex3$`Bedroom 1 Alarm`   < 0, Inf, ex3$`Bedroom 1 Alarm`) -
+                         ifelse(ex3$`Living Room Alarm` < 0, Inf, ex3$`Living Room Alarm`),
+                    sig.delay=60 * runif(length(ex3$Random_ignition_typ)),
+                    delay=NA)
+delay$delay <- with(delay, diff - sig.delay)
+
+# This plots a KDE estimate of the delay, EXCLUDING the cases where one or
+# both of the alarms did not activate.
+# This is equivalent to the Density option contained in CDatas, just using a
+# different graphics engine.
+delay %>% ggplot() + aes(x=ifelse(is.infinite(delay), NA, delay)) +
+  geom_density() + theme_bw() + facet_wrap(~ type, scales="free")
+```
+
+```{r dist, eval=do.cvg}
+# Again we are doing the mean v. number of cases data. While the base
+# algorithm is the same as that contained in CData, this applies the
+# approach to quantiles of the `delay` data created in the section above.
+# The quantiles are not a part of CData.
+cvg <- foreach(i=1:nrow(delay),.combine="rbind")%do% {
+  if(i < 100){
+     c(i, rep(NA, 12))
+  } else {
+    tmp <- by(delay[1:i,],
+               delay$type[1:i],
+               function(x){
+                 with(subset(x,is.finite(delay)),
+                      c(mean(pmax(delay, 0), na.rm=TRUE),
+                        quantile(delay, c(0.5, 0.75, 0.9, 0.95, 0.99), na.rm=TRUE)))
+                 })
+     c(i, tmp[[1]], tmp[[2]])
+  }
+} %>% as.data.frame()
+names(cvg) <- c("n", "f.mean", "f.50", "f.25", "f.10", "f.05", "f.01",
+                     "s.mean", "s.50", "s.25", "s.10", "s.05", "s.01")
+```
+
+With 10&nbsp;000 data points we can empirically estimate the average time
+savings that interconnected alarms would provide, as well as median time
+savings and various quantiles.We are interested in the quantiles because
+adverse outcomes, like death or injury, are tail events. So we also look at
+the tails of the distribution. Here the "1&nbsp;% Quantile" means that
+1&nbsp;% of alarms saved more time than this.
+
+```{r table4}
+tmp <- cvg[nrow(cvg), 2:13] %>% matrix(ncol=2) %>% as.data.frame()
+names(tmp) <- c("Flaming", "Smoldering")
+tmp <-cbind(result=c("Mean", "Median", paste0(c(25, 10, 5, 1), " % Quantile")), tmp)
+knitr::kable(tmp)
+```
+
+This looks only at cases where the Bedroom 1 alarm sounded. If this were a
+serious attempt to identify the effect of interconnected alarms then the
+percent of non-activations would need to be taken into account. If
+non-activations were included all the quantiles larger than the median would
+fall into the non-activation range.
+
+## Number of Cases - Revisited
+
+The preliminary analysis above suggested that we appeared to have enough
+cases. However, the values of interest here are complex manipulations of the
+data. Even though the average of the Bedroom activation time has converged,
+it is possible that the results of interest to us have not. To finally determine if
+we have enough cases we look at how the outcomes we analyze change with
+the number of cases.
+
+```{r cvg_plot}
+tmp <- cvg[,c(1,2,6, 8, 12)] %>% tidyr::pivot_longer(2:5, names_to=c("Type", "Quantile"), names_sep="[.]")
+tmp$Type <- factor(tmp$Type, levels=c("f", "s"), labels=c("Flaming", "Smoldering"))
+tmp$Quantile <- factor(tmp$Quantile, levels=c("mean", "05"), labels=c("Mean", "5 % Quantile"))
+
+# Again I use ggplot for plotting instead of the base R graphics engine.
+tmp %>% ggplot()+ aes(x=n, y=value) + geom_line() + geom_point() +
+  facet_wrap(~ Type + Quantile, scales="free_y") + theme_bw()
+```
+
+While the preliminary look settled down within a couple of thousand cases,
+these results take longer. In particular the extreme quantiles take somewhat
+longer to settle down. In particular, the 5 % quantile value doesn't really
+settle down until we have 7500 cases or so. However, looking at the results
+it looks like our results have settled down sufficiently by the 10&nbsp;000
+cases we actually use to have reasonable confidence in our results.
+
+## Discussion
+
+For a study like this it is really important to get the distribution of fire
+parameters correct. For example, if the proportion of fires starting in the
+Kitchen were low compared to the real world then all of the time-delay
+values would be underestimated. If the likelihood of closed doors were
+overestimated, then there would be far fewer cases of alarm failure for the
+bedroom alarms, and the benefit of interconnection would be lower.
+
+```{r cleanup}
+# Does some final cleanup
+rm(list=setdiff(ls(), keep))
+save.image(file=paste0(params$save_file, ".RData"))
+```
+\end{lstlisting}
+
+\section{R Script for Sensitivity}
+\label{rscript-sensitivity}
+\vspace{\baselineskip}
+\begin{lstlisting}[basicstyle=\scriptsize]
+title: "Sensitivity Analysis"
+author: ""
+date: "`r format(Sys.Date(), '%e %B %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+params:
+  save_file: "example2"
+  seed: 244213930
+  detail: FALSE
+  max_t: 1000
+---
+
+```{r setup, include=FALSE}
+# The `survival` library is part of core R.
+# The remaining libraries are not.
+# The libraries `magrittr` and `foreach` are just easier and more intuitive
+# ways of doing some tasks. The library `ggplot2` is a graphics engine
+# that is used in lieu of core R's graphics engine. It is possible to rewrite
+# this script file to work without those libraries.
+library(magrittr)
+library(foreach)
+library(ggplot2)
+library(survival)
+# set.seed(as.integer(params$seed))
+keep <- union(ls(), c("ex2", "out", "use.vars", "converg"))
+
+knitr::opts_chunk$set(echo=params$detail, results="hold", warning=FALSE, message=FALSE)
+
+do.ex2     <- ! exists("ex2")
+do.find    <- do.ex2  | ! exists("use.vars")
+do.mdl     <- do.find | ! exists("out")
+do.cvg     <- do.find | ! exists("converg")
+```
+
+```{r data, eval=do.ex2}
+ex2 <- read.csv("Sensitivity_accumulate.csv",
+# Note that the column names as supplied are not R-compliant names.
+# It is more complicated to work with the names as supplied, but
+# it makes reporting easier. So I use `check.names=FALSE` to import
+# the names as supplied, and deal with the complications.
+                check.names=FALSE,
+                stringsAsFactors = FALSE)
+# There are a few columns that are empty, so they are removed.
+tmp <- sapply(ex2, function(x) all(is.na(x)))
+ex2 <- ex2[,!tmp]
+
+# In addition, there are rows that are empty as well, and they are removed.
+tmp <- apply(ex2, 1, function(x) all(is.na(x) | trimws(x) == ""))
+ex2 <- ex2[!tmp,]
+
+# The "File.Names" Column does me no good and can cause problems with some of
+# the analyses. For this work, I just delete it from the data.
+#!!!Saving it in case it is needed might be a good idea for future reference.
+fn <- grep("File[. ]Names", names(ex2))
+if(length(fn) > 0){
+  ex2 <- ex2[,-fn]
+}
+```
+
+```{r data_setup, eval=do.find | do.mdl | do.cvg}
+# Note that independent variables are not necessarily pre-stated.
+# So I pick out the independent variables as those with no NAs.
+# NAs result from run failures, which happen about 10% of the time.
+# Any column with an NA is a dependent variable.
+
+a <- sapply(ex2, function(x) any(is.na(x)))
+vars <- list(IV=(1:length(a))[!a],
+             DV=(1:length(a))[ a])
+
+# For sensitivity, no variable is particularly important to the discussion,
+# so pick one with high sensitivity to something.
+
+a <- sapply(ex2[,vars$DV], function(x) length(x[! is.na(x) & x > 0]))
+n <- max(a)
+
+# Generate a random "column" name. If it is in the table, try again until you
+# find a name that is not in the table.
+# This seems more complicated than necessary, but it GUARANTEES that my index
+# name is not already in the table.
+idx <- names(a)[1]
+while(idx %in% names(ex2)){
+  idx <- c(sample(letters, 1), sample(c(letters, 0:9), 9, replace=TRUE)) %>% paste0(collapse="")
+}
+
+# The first is simply a log-log analysis.
+# Since some of these variables are times till an event, where the event may
+# not occur within the time of the run, those need to be analyzed using a
+# Tobit model. The second sets that up. This is still a log-log analysis, just
+# with the tools of Tobit analysis set up.
+fmla1 <- paste0("log(`", idx, "`) ~ log(`",
+                paste0(names(ex2)[vars$IV], collapse="`) + log(`"),
+                "`)")
+fmla2 <- paste0("Surv(log(ifelse(`", idx, "` < 0, ", params$max_t, ", `", idx, "`)), `",
+                idx, "` > 0, type=\"right\") ~ log(`",
+                paste0(names(ex2)[vars$IV], collapse="`) + log(`"), "`)")
+```
+
+```{r select, eval=do.find}
+# I can use pretty much any of the dependent variables that I want
+# for this. So I select the ones with the largest effect to use in the
+# actual analysis.
+summ <- list(lm=foreach(i=names(a)[a == n], .combine="rbind") %do% {
+                        do.call("lm", list(formula=sub(idx, i, fmla1) %>% formula(),
+                                           data=quote(ex2))) %>%
+                        coef()
+               },
+             sr=foreach(i=names(a)[a > 10 & a < n], .combine="rbind") %do% {
+                        do.call("survreg", list(formula=gsub(idx, i, fmla2) %>% formula(),
+                                                data=quote(ex2),
+                                                dist="gaussian")) %>%
+                        coef()
+               })
+row.names(summ$lm) <- names(a)[a == n]
+row.names(summ$sr) <- names(a)[a > 10 & a < n]
+
+use.vars <- foreach(i=names(summ), .combine="c") %do% {
+  y <- apply(summ[[i]][,-1], 1, function(x) max(x) == max(summ[[i]][,-1]))
+  row.names(summ[[i]])[y][1]
+}
+```
+
+## Approach
+
+For this example it is assumed that the output variables of interest are
+'`r use.vars[1]`' and '`r use.vars[2]`'. Notionally, we might say that we are
+interested in the amount of time they have to escape (represented by the time
+during which they foyer--through which they must evacuate--remains viable)
+and the worst temperature they might have to face in the Foyer during that
+evacuation.
+
+Sensitivity analysis is interested in the sensitivity the output has to each
+input. This is typically expressed in terms of the percent variation in
+output produced by a one percent variation in each input. As it turns out,
+simple linear regression of the *log* of the inputs against the *log* of the
+output will give exactly that value.
+
+```{r test}
+# Percent cases where FED > 1 does not occur.
+u <- ex2[[use.vars[2]]]
+u <- u[! is.na(u)]
+u <- length(u[u < 0]) / length(u)
+```
+
+The second target variable--`r use.vars[2]`--was selected to illustrate an
+additional complication in the analysis. This variable expresses the time
+till the FED reaches the value of 1--assumed to represent the condition
+where the space is no longer viable. The complication is that in a number
+of cases nonviability does not occur within the time of the simulation:
+here some `r formatC(u * 100, digits=3)`&nbsp;% of cases do not result
+in non-viability. That presents a problem because analyzing the data
+without taking that into account will result in incorrect estimates of the
+sensitivity.
+
+In this case what is run is a 'Tobit' analysis (Tobin, James (1958).
+"Estimation of Relationships for Limited Dependent Variables."
+Econometrica.See Bibliography) which properly accounts for the effect
+of the cases where non-viability did not occur. The 'Tobit'  analysis is
+also performed on a log-log transformation of the data.
+
+```{r analyze, eval=do.mdl}
+# This section does the analyses
+out <- list(lm=do.call("lm", list(formula=sub(idx, use.vars[1], fmla1) %>% formula(),
+                                           data=quote(ex2))),
+            sr=do.call("survreg", list(formula=gsub(idx, use.vars[2], fmla2) %>% formula(),
+                                                data=quote(ex2),
+                                                dist="gaussian")))
+```
+
+```{r converg, eval=do.cvg}
+# This section does the convergence analysis that is built into CData.
+# The code has been modified slightly to fit this analysis, but is otherwise
+# identical to what is built into CData.
+converg <- foreach(i=1:10000, .combine="rbind") %do% {
+  if(i == 1) {
+    X <- model.matrix(sub(idx, use.vars[1], fmla1) %>% formula(), ex2)
+    y <- model.response(model.frame(sub(idx, use.vars[1], fmla1) %>% formula(), ex2))
+    omit <- na.omit(ex2) %>% attr("na.action")
+    j <- 99 - length(omit[omit <= 99])
+    XX <- t(X[1:j,]) %*% X[1:j,]
+    Xy <- t(X[1:j,]) %*% y[1:j]
+  } else if(i < 100 ){
+  } else {
+    j <- i - length(omit[omit <= i])
+    XX <- XX + X[j,] %*% t(X[j,])
+    Xy <- Xy + X[j,] * y[j]
+  }
+  if(i < 100 | i %in% omit){
+    rep(NA, ncol(X))
+  } else {
+    (solve(XX) %*% Xy) %>% as.numeric()
+  }
+} %>% as.data.frame()
+names(converg) <- colnames(X)
+converg <- cbind(n=1:nrow(converg), converg)
+```
+
+```{r results}
+# Select the variables to include in the table. For the log-log analysis
+# I select variables with high, medium and low levels of sensitivity as
+# well as the fire scaling factors.
+# For the Tobit analysis I select the most sensitive variables as well
+# as the fire scaling factors.
+vars <- list(lm=coef(out$lm) %>% extract(-1) %>% abs() %>%
+                   sort(decreasing=TRUE) %>%
+                   extract(c(1:3, 30:32, 67:70)) %>% names() %>%
+                union(grep("scal", names(coef(out$lm)), value=TRUE)),
+             sr=coef(out$sr) %>% extract(-1) %>% abs() %>%
+               extract(. > .2) %>% sort(decreasing = TRUE) %>% names() %>%
+                union(grep("scal", names(coef(out$lm)), value=TRUE)))
+```
+
+# Number of Cases
+
+An initial run of 1000 cases was evaluated. The chart below shows the
+coefficient for `Lab_depth` for the first model as a function of the number
+of cases. Examination of the chart shows that the value for the coefficient
+is still changing substantially at the end of 1000 cases. When the number
+of cases were increased to 2500 the results still did not seem very stable.
+When the cases increased again to 5000 there was a noticeable trend over
+the last thousand or so cases. When the cases were increased to 10000,
+the estimated value over the last couple of thousand cases seems to have
+settled down. So these results are based on 10000 cases.
+
+```{r cvg_plot}
+tmp <- rbind(cbind(test=1000, converg[1:1000, c("n", "log(Lab_depth)")]),
+             cbind(test=2500, converg[1:2500, c("n", "log(Lab_depth)")]),
+             cbind(test=5000, converg[1:5000, c("n", "log(Lab_depth)")]),
+             cbind(test=10000, converg[1:10000, c("n", "log(Lab_depth)")]))
+# This uses the ggplot graphics engine to plot this data instead of the base
+# R graphics engine. Otherwise this is the same as what is in CDATA.
+print(tmp %>% ggplot() + aes(x=n, y=`log(Lab_depth)`) +
+        geom_line() + geom_point() + facet_wrap(~ test, scales="free_x") +
+        theme_bw() + coord_cartesian(ylim=c(-1,1)))
+```
+
+# Discussion
+
+First we look at the sensitivity of maximum temperature FED in the Foyer.
+Selected results are displayed in Table 1. The single most significant factor
+is the depth of the lab space--where the fire occurred.. A one-percent change
+in the lab depth will produce a 0.53&nbsp;% decrease in the maximum heat
+FED for the Foyer. Similarly a one percent change in the height of the Foyer
+and halls produces a 0.47&nbsp;% decrease in the heat FED for the Foyer.
+At the other end of the scale changes in the Foyer width or the depth of
+office 1 produce minimal changes to the heat FED for the Foyer.
+
+```{r tbl1}
+tbl1 <- summary(out$lm)$coefficients %>% as.data.frame()
+tbl1$` ` <- cut(tbl1[[4]],
+                breaks=c(-Inf, .001, .01, .05, .1, Inf),
+                labels=c("***", "**", "*", ".", " "))
+tbl1[row.names(tbl1) %in% vars$lm,] %>%
+        knitr::kable(align="rrrrc",
+                     col.names=c("Value", "Std. Error", "t value", "Pr(>|t|)", ""),
+                     digits=c(4,2,2,4,0))
+```
+
+In Table 2, we look at just those variables for which a one-percent change
+produces a change of greater than 0.2&nbsp;% in the time to non-viability
+for the Foyer, plus the scaling factors for the fire. Those variables include
+variables related to the room of fire origin (Lab_depth), factors related to
+the space itself (Foyer_width, Front_Door_Width), factors related to the
+spaces through which the fire must travel (Even_Hallway_depth,
+Odd_Hallway_width, Front_Hall_depth) and some additional miscellaneous
+factors (Office_.2_height Office_.5_height Gyp_Conductivity.1 Gyp_Density.1).
+
+```{r tbl2}
+tbl2 <- summary(out$sr)$table %>% as.data.frame()
+tbl2$` ` <- cut(tbl2[[4]],
+                breaks=c(-Inf, .001, .01, .05, .1, Inf),
+                labels=c("***", "**", "*", ".", " "))
+tbl2[row.names(tbl2) %in% vars$sr,] %>%
+        knitr::kable(align="rrrrc",
+                     col.names=c("Value", "Std. Error", "t value", "Pr(>|t|)", ""),
+                     digits=c(4,2,2,4,0))
+```
+
+
+```{r cleanup}
+rm(list=setdiff(ls(), keep))
+save.image(file=paste0(params$save_file, ".RData"))
+```
+\end{lstlisting}

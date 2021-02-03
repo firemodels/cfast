@@ -1243,9 +1243,14 @@ log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
 
 \chapter{Summary}
 
-This publication introduces the CFAST Fire Data Generator or CData that has been developed by NIST as a tool to help users do Monte Carlo analysis. The various parts of CData are described and then a very simple analysis is first presented to demonstrate the different parts of the analysis that CData can assist in preforming. This is followed by three slightly more complex analsyses to further demonstrate the uses of CData.
+This publication introduces the CFAST Fire Data Generator or CData that has been developed by NIST as a tool to help users do Monte Carlo analysis. The various parts of CData are described and then a very simple analysis is first presented to demonstrate the different parts of the analysis that CData can assist in preforming. This is followed by three slightly more complex analyses to further demonstrate the uses of CData.
 
-Included in CData is the statisical software R. It is included so that CData can provide a number of built in tools to analize the data. Two of the tools are useful in determining that enough cases have been run to draw justifable conclusions from the analysis. The first, convergence of the mean,
+Included in CData distribution is the statistical software R. It is included so that CData can provide several built-in tools to analyze the data. Three of the tools are useful in determining that enough cases have been run to draw justifiable conclusions from the analysis. The first, convergence of the mean, allows the user to make a determination if enough cases have been run. Two other tools, the histogram generator and the empirical probability density function, allow users to look at the distributions of input variables to determine that distributions are as expected. Both can also be used to look at the distributions of output variables. Finally, the decision trees model can be used to look for the most important variables in determining the value of a particular output variable. These tools as well as the R software distributed with CData wil allow users to do a significant amount of analysis of data that is generated.
+
+Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results. However, it is not very useful to run many times the number of runs needed to draw statistically justifiable conclusions. For one thing the computational time and storage space, especially the storage space, can overwhelm any system if the number of cases is large enough. 
+
+The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have a plan for a next version of the tool will be made. 
+
 
 %\backmatter
 

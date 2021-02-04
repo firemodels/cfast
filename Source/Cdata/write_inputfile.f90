@@ -614,7 +614,7 @@
             call add_token_val(iounit, buf, 'BOTTOM = ', ventptr%sill)
             call add_token_val(iounit, buf, 'WIDTH = ', ventptr%width)
             call add_token_val(iounit, buf, 'OFFSET = ',ventptr%offset(1))
-            if (ventptr%opening_type == 1) then
+            if (ventptr%opening_type == trigger_by_time) then
                 if (ventptr%opening_initial_time /= 0._eb .or. ventptr%opening_final_time /= 0._eb) then
                     call add_token_str(iounit,buf,'CRITERION = ','TIME')
                     val(1) = ventptr%opening_initial_time
@@ -624,6 +624,8 @@
                     val(2) = ventptr%opening_final_fraction
                     call add_token_rarray(iounit,buf,'F = ',val,2)
                 end if
+            else if (ventptr%opening_type == trigger_by_temp) then 
+                
             end if
             if (ventptr%face == 1) then
                 call add_token_str(iounit, buf, 'FACE = ', 'FRONT')

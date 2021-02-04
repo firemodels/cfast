@@ -43,7 +43,7 @@
     character(len = 20), parameter :: analysis_list(mxanalys) = (/'CORRELATION_TREES  ', &
                                                                   'CONVERGENCE_OF_MEAN', &
                                                                   'HISTOGRAM          ', &
-                                                                  'ESTIMATION_OF_PDF  '/)
+                                                                  'EMPERICAL_PDF      '/)
     
     integer, parameter :: mximgformats = 5, default_img = 5
     character(len=3), parameter :: imgformatext_list(mximgformats) = (/'jpg', 'svg', 'tif', 'pdf', 'png'/)

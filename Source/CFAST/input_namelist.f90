@@ -1717,15 +1717,13 @@ continue
 
     integer, intent(in) :: lu
 
-    integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, iramp
+    integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts
     integer :: ios
     character(len=64) :: compartment_id
-    real(eb) :: initialtime, initialfraction, finaltime, finalfraction
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
-    type(ramp_type), pointer :: rampptr
 
     real(eb) :: area, bottom, flow, height, offset, setpoint, top, width, pre_fraction, post_fraction, &
         filter_time, filter_efficiency
@@ -1803,36 +1801,8 @@ continue
             ! Wall vent
             if (trim(type) == 'WALL') then
                 counter1=counter1+1
-
-                i=0
-                j=0
-
-                do mm = 1, 2
-                    iroom=-101
-                    compartment_id=' '
-                    compartment_id=trim(comp_ids(mm))
-
-                    searching: do jj=1,n_rooms
-                        roomptr => roominfo(jj)
-                        if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = n_rooms+1
-                            exit searching
-                        end if
-                        if (trim(compartment_id) == trim(roomptr%id)) then
-                            iroom = roomptr%compartment
-                            exit searching
-                        end if
-                    end do searching
-
-                    if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('read_vent',5)
-                    end if
-
-                    if (mm == 1) i = iroom
-                    if (mm == 2) j = iroom
-                end do
+                
+                call find_comp_idxes
 
                 imin = min(i,j)
                 jmax = max(i,j)
@@ -1840,15 +1810,17 @@ continue
                 if (imin>mxrooms-1.or.jmax>mxrooms.or.imin==jmax) then
                     write (*,5070) i, j
                     write (iofill,5070) i, j
-                    call cfastexit('read_vent',6)
+                    call cfastexit('read_vent',5)
                 end if
 
                 ventptr => hventinfo(counter1)
 
                 if (.not.newid(id)) then
                     write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check wall v ',counter1
+                    write (*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
                     write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check wall v ',counter1
-                    call cfastexit('read_vent', 7)
+                    write (iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
@@ -1859,7 +1831,7 @@ continue
                 if (n_hvents>mxhvents) then
                     write (*,5081) i,j,k
                     write (iofill,5081) i,j,k
-                    call cfastexit('read_vent',8)
+                    call cfastexit('read_vent',7)
                 end if
                 
                 ! position
@@ -1873,86 +1845,15 @@ continue
                 ventptr%soffit = top
                 if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
 
-                if  (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
-                    ventptr%offset(1) = offset
-                    ventptr%offset(2) = 0._eb
-
-                    if (trim(face) == 'FRONT') ventptr%face=1
-                    if (trim(face) == 'RIGHT') ventptr%face=2
-                    if (trim(face) == 'REAR') ventptr%face=3
-                    if (trim(face) == 'LEFT') ventptr%face=4
-
-                    initialtime = 0._eb
-                    initialfraction = pre_fraction
-                    finaltime = 0._eb
-                    finalfraction = post_fraction
-
-                    if (t(1)/=-1001._eb) then
-                        if (n_ramps<=mxramps) then
-                            n_ramps = n_ramps + 1
-                            rampptr=>rampinfo(n_ramps)
-                            rampptr%type = 'H'
-                            rampptr%id = ventptr%id
-                            rampptr%room1 = ventptr%room1
-                            rampptr%room2 = ventptr%room2
-                            rampptr%counter = ventptr%counter
-                            rampptr%npoints = 0
-                            do iramp = 1,mxpts
-                                if (t(iramp)/=-1001._eb) then
-                                    rampptr%x(iramp) = t(iramp)
-                                    rampptr%f_of_x(iramp) = f(iramp)
-                                    rampptr%npoints = rampptr%npoints + 1
-                                end if
-                            end do
-                        else
-                            write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                            write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                            call cfastexit('read_vent',9)
-                        end if
-                    end if
-
-                    if (trim(criterion)=='TIME') then
-                        ventptr%opening_type = trigger_by_time
-                        ventptr%opening_initial_time = initialtime
-                        ventptr%opening_initial_fraction = initialfraction
-                        ventptr%opening_final_time = finaltime
-                        ventptr%opening_final_fraction = finalfraction
-                    else
-                        if (trim(criterion)=='TEMPERATURE') then
-                            ventptr%opening_type = trigger_by_temp
-                            ventptr%opening_criterion = setpoint + kelvin_c_offset
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                        if (criterion=='FLUX') then
-                            ventptr%opening_type = trigger_by_flux
-                            ventptr%opening_criterion = setpoint * 1000._eb
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                        ventptr%opening_target = 0
-                        do i = 1,n_targets
-                            targptr => targetinfo(i)
-                            if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
-                        end do
-                        if (ventptr%opening_target==0) then
-                            write (*,*) '***Error: Vent opening specification requires an associated target.'
-                            write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                            call cfastexit('read_vent',10)
-                        end if
-                        ventptr%opening_initial_fraction = initialfraction
-                        ventptr%opening_final_fraction = finalfraction
-                        if (stpmax>0) then
-                            stpmax = min(stpmax,1.0_eb)
-                        else
-                            stpmax = 1.0_eb
-                        end if
-                    end if
-                else
-                    write (*,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                    write (iofill,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                    call cfastexit('read_vent',11)
-                end if
+                if (trim(face) == 'FRONT') ventptr%face=1
+                if (trim(face) == 'RIGHT') ventptr%face=2
+                if (trim(face) == 'REAR') ventptr%face=3
+                if (trim(face) == 'LEFT') ventptr%face=4
+                
+                ventptr%offset(1) = offset
+                ventptr%offset(2) = 0._eb
+                
+                call set_criterion
 
                 ! absolute positions are always relative to the floor of the "inside" room
                 if (i == n_rooms+1) then
@@ -1967,49 +1868,23 @@ continue
             else if (trim(type) == 'MECHANICAL') then
                 counter2=counter2+1
 
-                i=0
-                j=0
-
-                do mm = 1, 2
-                    iroom=-101
-                    compartment_id=' '
-                    compartment_id=trim(comp_ids(mm))
-
-                    searching_2: do jj=1,n_rooms
-                        roomptr => roominfo(jj)
-                        if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = n_rooms+1
-                            exit searching_2
-                        end if
-                        if (trim(compartment_id) == trim(roomptr%id)) then
-                            iroom = roomptr%compartment
-                            exit searching_2
-                        end if
-                    end do searching_2
-
-                    if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('read_vent',12)
-                    end if
-
-                    if (mm == 1) i=iroom
-                    if (mm == 2) j=iroom
-                end do
+                call find_comp_idxes
 
                 k = counter2
                 if (i>n_rooms+1.or.j>n_rooms+1) then
                     write (*,5191) i, j
                     write (iofill,5191) i, j
-                    call cfastexit('read_vent',13)
+                    call cfastexit('read_vent',8)
                 end if
 
                 ventptr => mventinfo(counter2)
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter1
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter1
-                    call cfastexit('read_vent', 14)
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter2
+                    write (*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter2
+                    write (iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
@@ -2051,117 +1926,18 @@ continue
                 ventptr%min_cutoff_relp = cutoffs(1)
                 ventptr%max_cutoff_relp = cutoffs(2)
 
+                ventptr%xoffset = offsets(1)
+                ventptr%yoffset = offsets(2)
+                
                 if (trim(criterion) /= 'NULL') then
-                    if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
-
-                        initialtime = 0._eb       ! in namelist input, these are just placeholders for the older event data
-                        initialfraction = pre_fraction
-                        finaltime = 0._eb
-                        finalfraction = post_fraction
-
-                        if (t(1)/=-1001._eb) then
-                            if (n_ramps<=mxramps) then
-                                n_ramps = n_ramps + 1
-                                rampptr=>rampinfo(n_ramps)
-                                rampptr%type = 'M'
-                                rampptr%id = ventptr%id
-                                rampptr%room1 = ventptr%room1
-                                rampptr%room2 = ventptr%room2
-                                rampptr%counter = ventptr%counter
-                                rampptr%npoints = 0
-                                do iramp = 1,mxpts
-                                    if (t(iramp)/=-1001._eb) then
-                                        rampptr%x(iramp) = t(iramp)
-                                        rampptr%f_of_x(iramp) = f(iramp)
-                                        rampptr%npoints = rampptr%npoints + 1
-                                    end if
-                                end do
-                            else
-                                write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                call cfastexit('read_vent',15)
-                            end if
-                        end if
-
-                        if (trim(criterion)=='TIME') then
-                            ventptr%opening_type = trigger_by_time
-                            ventptr%opening_initial_time = initialtime
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_time = finaltime
-                            ventptr%opening_final_fraction = finalfraction
-                        else
-                            if (trim(criterion)=='TEMPERATURE') then
-                            ventptr%opening_type = trigger_by_temp
-                            ventptr%opening_criterion = setpoint + kelvin_c_offset
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                        if (criterion=='FLUX') then
-                            ventptr%opening_type = trigger_by_flux
-                            ventptr%opening_criterion = setpoint * 1000._eb
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                            ventptr%opening_target = 0
-                            do i = 1,n_targets
-                                targptr => targetinfo(i)
-                                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
-                            end do
-                            if (ventptr%opening_target==0) then
-                                write (*,*) '***Error: Vent opening specification requires an associated target.'
-                                write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                                call cfastexit('read_vent',16)
-                            end if
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                        ventptr%xoffset = offsets(1)
-                        ventptr%yoffset = offsets(2)
-                        if (stpmax>0) then
-                            stpmax = min(stpmax,1.0_eb)
-                        else
-                            stpmax = 1.0_eb
-                        end if
-                    else
-                        write (*,*) 'Inputs for mechanical vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        write (iofill,*) 'Inputs for mechanical vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        call cfastexit('read_vent',17)
-                    end if
+                    call set_criterion
                 end if
 
                 ! Ceiling/Floor vents
             else if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') then
                 counter3=counter3+1
 
-                i=0
-                j=0
-
-                do mm = 1, 2
-                    iroom = -101
-                    compartment_id = ' '
-                    compartment_id = trim(comp_ids(mm))
-
-                    searching_3: do jj=1,n_rooms
-                        roomptr => roominfo(jj)
-                        if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = n_rooms+1
-                            exit searching_3
-                        end if
-                        if (trim(compartment_id) == trim(roomptr%id)) then
-                            iroom = roomptr%compartment
-                            exit searching_3
-                        end if
-                    end do searching_3
-
-                    if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS do specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('read_vent',18)
-                    end if
-
-                    if (mm == 1) i = iroom
-                    if (mm == 2) j = iroom
-                end do
+                call find_comp_idxes
 
                 k = counter3
 
@@ -2169,15 +1945,17 @@ continue
                 if (i>mxrooms.or.j>mxrooms) then
                     write (*,5070) i, j
                     write (iofill,5070) i, j
-                    call cfastexit('read_vent',19)
+                    call cfastexit('read_vent',10)
                 end if
 
                 ventptr => vventinfo(counter3)
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check wall v ',counter3
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check wall v ',counter3
-                    call cfastexit('read_vent', 20)
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check ceil v ',counter3
+                    write(*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check ceil v ',counter3
+                    write(iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
@@ -2195,87 +1973,17 @@ continue
                     ventptr%shape = 2
                 else
                     write (*,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
+                    write(*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
                     write (iofill,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
-                    call cfastexit('read_vent',21)
+                    write(iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    call cfastexit('read_vent',12)
                 end if
 
+                ventptr%xoffset = offsets(1)
+                ventptr%yoffset = offsets(2)
+                
                 if (trim(criterion) /='NULL') then
-                    if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
-
-                        initialtime = 0._eb       ! in namelist input, these are just placeholders for the older event data
-                        initialfraction = pre_fraction
-                        finaltime = 0._eb
-                        finalfraction = post_fraction
-
-                        if (t(1)/=-1001._eb) then
-                            if (n_ramps<=mxramps) then
-                                n_ramps = n_ramps + 1
-                                rampptr=>rampinfo(n_ramps)
-                                rampptr%type = 'V'
-                                rampptr%id = ventptr%id
-                                rampptr%room1 = ventptr%room1
-                                rampptr%room2 = ventptr%room2
-                                rampptr%counter = ventptr%counter
-                                rampptr%npoints = 0
-                                do iramp = 1,mxpts
-                                    if (t(iramp)/=-1001._eb) then
-                                        rampptr%x(iramp) = t(iramp)
-                                        rampptr%f_of_x(iramp) = f(iramp)
-                                        rampptr%npoints = rampptr%npoints + 1
-                                    end if
-                                end do
-                            else
-                                write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                call cfastexit('read_vent',22)
-                            end if
-                        end if
-
-                        if (trim(criterion)=='TIME') then
-                            ventptr%opening_type = trigger_by_time
-                            ventptr%opening_initial_time = initialtime
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_time = finaltime
-                            ventptr%opening_final_fraction = finalfraction
-                        else
-                            if (trim(criterion)=='TEMPERATURE') then
-                            ventptr%opening_type = trigger_by_temp
-                            ventptr%opening_criterion = setpoint + kelvin_c_offset
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                        if (criterion=='FLUX') then
-                            ventptr%opening_type = trigger_by_flux
-                            ventptr%opening_criterion = setpoint * 1000._eb
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                        end if
-                            ventptr%opening_target = 0
-                            do i = 1,n_targets
-                                targptr => targetinfo(i)
-                                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
-                            end do
-                            if (ventptr%opening_target==0) then
-                                write (*,*) '***Error: Vent opening specification requires an associated target.'
-                                write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                                call cfastexit('read_vent',23)
-                            end if
-                            ventptr%opening_initial_fraction = initialfraction
-                            ventptr%opening_final_fraction = finalfraction
-                            if (stpmax>0) then
-                                stpmax = min(stpmax,1.0_eb)
-                            else
-                                stpmax = 1.0_eb
-                            end if
-                        end if
-                        ventptr%xoffset = offsets(1)
-                        ventptr%yoffset = offsets(2)
-                    else
-                        write (*,*) 'Inputs for ceiling/floor vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        write (iofill,*) 'Inputs for ceiling/floor vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                        call cfastexit('read_vent',24)
-                    end if
-
+                    call set_criterion 
                 end if
             end if
 
@@ -2323,6 +2031,99 @@ continue
     height                = 0._eb
 
     end subroutine set_defaults
+    
+    subroutine set_criterion
+    
+    if  (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
+        if (trim(criterion)=='TIME') then
+            ventptr%opening_type = trigger_by_time
+            if (t(1)/=-1001._eb) then
+                do ipts = 1,mxpts
+                    if (t(ipts)/=-1001._eb) then
+                        ventptr%t(ipts) = t(ipts)
+                        ventptr%f(ipts) = f(ipts)
+                        ventptr%tnpts = ventptr%tnpts + 1
+                    end if
+                end do
+            end if
+        else
+            if (trim(criterion)=='TEMPERATURE') then
+                ventptr%opening_type = trigger_by_temp
+                ventptr%opening_criterion = setpoint + kelvin_c_offset
+            else if (criterion=='FLUX') then
+                ventptr%opening_type = trigger_by_flux
+                ventptr%opening_criterion = setpoint * 1000._eb
+            end if
+            ventptr%f(1) = pre_fraction
+            ventptr%f(2) = post_fraction
+            ventptr%tnpts = 2
+            ventptr%opening_target = 0
+            do i = 1,n_targets
+                targptr => targetinfo(i)
+                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
+            end do
+            if (ventptr%opening_target==0) then
+                write (*,*) '***Error: Vent opening specification requires an associated target.'
+                write (*,*) '          For vent ',trim(id), ' &VENT number ', &
+                                counter1 + counter2 + counter3
+                write (iofill,*) '***Error: Vent opening specification requires an associated target.'
+                write (iofill,*) '          For vent ',trim(id), ' &VENT number ', &
+                                counter1 + counter2 + counter3
+                call cfastexit('read_vent_set_criterion',1)
+            end if
+            if (stpmax>0) then
+                stpmax = min(stpmax,1.0_eb)
+            else
+                stpmax = 1.0_eb
+            end if
+        end if
+    else
+        write (*,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
+        write (*,*) '          For vent ',trim(id), ' &VENT number ', &
+                                counter1 + counter2 + counter3
+        write (iofill,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
+        write (iofill,*) '          For vent ',trim(id), ' &VENT number ',&
+                                counter1 + counter2 + counter3
+        call cfastexit('read_vent_set_criterion',2)
+    end if
+    
+    end subroutine set_criterion
+    
+    subroutine find_comp_idxes
+
+    i=0
+    j=0
+
+    do mm = 1, 2
+        iroom=-101
+        compartment_id=' '
+        compartment_id=trim(comp_ids(mm))
+
+        searching: do jj=1,n_rooms
+            roomptr => roominfo(jj)
+            if (trim(compartment_id) == 'OUTSIDE') then
+                iroom = n_rooms+1
+                exit searching
+            end if
+            if (trim(compartment_id) == trim(roomptr%id)) then
+                iroom = roomptr%compartment
+                exit searching
+            end if
+        end do searching
+
+        if (iroom == -101) then
+            write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
+            write (*,*)       '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+            write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
+            write (iofill,*)       '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+            call cfastexit('read_vent_find_comp_idxes',1)
+        end if
+
+        if (mm == 1) i = iroom
+        if (mm == 2) j = iroom
+    end do
+    
+    end  subroutine find_comp_idxes
 
     end subroutine read_vent
 

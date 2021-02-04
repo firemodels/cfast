@@ -125,13 +125,13 @@
     
     integer :: ios
     integer :: number_of_cases
-    integer :: random_seeds(2)
-    logical :: mhdrflag, write_random_seeds
+    integer :: seeds(2)
+    logical :: mhdrflag, write_seeds
     character(len=256) :: work_directory, output_directory, parameter_filename
     
     integer, intent(in) :: lu
 
-    namelist /MHDR/ number_of_cases, random_seeds, write_random_seeds, work_directory, &
+    namelist /MHDR/ number_of_cases, seeds, write_seeds, work_directory, &
         output_directory, parameter_filename
 
     ios = 1
@@ -170,11 +170,11 @@
         read(lu,MHDR)
         
         mc_number_of_cases = number_of_cases
-        rnd_seeds(1:2) = random_seeds(1:2)
-        if (random_seeds(1) > 0.0_eb .and. random_seeds(2) > 0.0_eb) then
-            call RANDOM_SEED(PUT=random_seeds)
+        rnd_seeds(1:2) = seeds(1:2)
+        if (seeds(1) /= -1001 .and. seeds(2) /= -1001) then
+            call RANDOM_SEED(PUT=seeds)
         end if
-        mc_write_seeds = write_random_seeds
+        mc_write_seeds = write_seeds
         if (trim(work_directory) == 'NULL') then
             workpath = datapath
         else
@@ -190,8 +190,8 @@
     subroutine set_defaults
 
     number_of_cases = 1
-    random_seeds(1:mxseeds) = -1001
-    write_random_seeds = .true.
+    seeds(1:mxseeds) = -1001
+    write_seeds = .true.
     work_directory = 'NULL'
     output_directory = 'NULL'
     parameter_filename = 'NULL'

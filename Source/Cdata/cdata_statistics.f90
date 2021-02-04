@@ -54,7 +54,7 @@ module statistics_routines
     
     do  i = 1, n_stats
         buf = ' '
-        if (trim(statinfo(i)%analysis_type) == 'CORRELATION_TREE') then 
+        if (trim(statinfo(i)%analysis_type) == 'CORRELATION_TREES') then 
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.R outname="'
         else if (trim(statinfo(i)%analysis_type) == 'CONVERGENCE_OF_MEAN') then
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" converg.R outname="'
@@ -69,7 +69,7 @@ module statistics_routines
         buf = trim(buf) // '" i_fmt="' // trim(statinfo(i)%img_format) // '" yvar="' // trim(statinfo(i)%col_title)
         if (trim(statinfo(i)%logfile) == 'NULL') then
             statinfo(i)%logfile = ' '
-            statinfo(i)%logfile = trim(statinfo(i)%outfile) // '.err'
+            statinfo(i)%logfile = trim(statinfo(i)%outfile) // '.log'
         endif 
         buf = trim(buf) // '" >' // trim(statinfo(i)%logfile)
         write(*,*) buf

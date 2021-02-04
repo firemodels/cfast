@@ -297,6 +297,8 @@ module cfast_types
         real(eb) :: opening_final_time      ! ending time for vent opening fraction change
         real(eb) :: opening_final_fraction  ! final fraction for vent opening (vent fraction after final time)
                                             ! between initial and final, open fraction changes linearly
+        real(eb), dimension(mxpts) :: t, f  ! times in t and fraction open of vent in f. For opening on TEMP and FLUX
+                                            ! f(1) and f(2) are used for opening_initial_fraction and opening_final_fraction
         real(eb) :: area                    ! cross-sectional area of vent
         real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
         real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction

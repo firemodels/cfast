@@ -94,6 +94,9 @@ int main(int argc, char **argv){
       comm_end=strchr(buffer,' ');
       data = comm_end+1;
       *comm_end=0;
+      for(i=0;i< strlen(data);i++){
+        if(data[i]=='/')data[i] = '\\';
+      }
 
       trim_back(data);
       fprintf(streamout,"%s%s%s %s\n","%",comm_beg,"%",data);

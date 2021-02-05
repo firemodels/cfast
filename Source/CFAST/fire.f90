@@ -613,16 +613,14 @@ module fire_routines
 
 !> \brief   integrate the pyrolysis rate of species to get total mass
 
-!> \param   tsec (input): current simulation time (s)
 !> \param   deltt (input): current time step
     
-    subroutine integrate_mass (tsec, deltt)
+    subroutine integrate_mass (deltt)
 
-    real(eb), intent(in) :: tsec, deltt
+    real(eb), intent(in) :: deltt
 
     integer ::i
     real(eb) :: fraction
-    character(len=128) :: rampid
     type(fire_type), pointer :: fireptr
     type(vent_type), pointer :: ventptr
 
@@ -643,9 +641,7 @@ module fire_routines
     ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped.
     do i = 1, n_mvents
         ventptr => mventinfo(i)
-        rampid = ventptr%ramp_id
-        !!!!!!!call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
-        fraction = (1.0_eb-fraction)
+        fraction = (1.0_eb-ventptr%filter_fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mflow(1,u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mflow(1,l)*deltt
         ventptr%total_trace_flow(u) = ventptr%total_trace_flow(u) + ventptr%mflow(1,u)*ventptr%species_fraction(u,ts)*fraction*deltt

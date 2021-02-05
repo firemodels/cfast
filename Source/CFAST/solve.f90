@@ -340,7 +340,7 @@ module solve_routines
     ! Calculate the mass of objects that have been pyrolized
     ! at the moment we do only the total and the radiological species
     ! make sure that the INTEGRATE routine is called before update_species
-    call integrate_mass (t, dt)
+    call integrate_mass (dt)
     call update_species (0.0_eb)
 
     ! If we are running only an initialization test then we do not need to solve anything
@@ -638,7 +638,7 @@ module solve_routines
         ! calculate the mass of objects that have been pyrolized
         ! at the moment we do only the total and the radiological species
         ! It is important to call the routine to integrate the mass before call the toxicology calculation
-        call integrate_mass (t, dt)
+        call integrate_mass (dt)
 
         ! calculate gas dosage
         call update_species (dt)

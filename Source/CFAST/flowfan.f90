@@ -37,8 +37,8 @@ module mflow_routines
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2)
 
     real(eb) :: filter, vheight, layer_height, hvfan, fraction, fu, fl, uflw_totals(2+ns)
+    real(eb) :: dt, dy, dydt, deltat, mintime = 1.0e-6_eb
     integer :: i, j, k, iroom
-    character(len=128) :: rampid, filterid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -54,7 +54,6 @@ module mflow_routines
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
         uflw_totals = 0.0_eb
-        filterid = ventptr%filter_id
 
         ! calculate volume flow through fan
         call get_vent_opening (ventptr,tsec,fraction)
@@ -77,7 +76,21 @@ module mflow_routines
             uflw_totals(2+k) = -(roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
                 roomptr%species_fraction(l,k)*ventptr%mflow(1,l))
         end do
-        !!!!!!!call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
+        
+        ! calculate fraction of trace species and soot filtered out for this vent
+        if (tsec<ventptr%filter_initial_time) then
+            filter = ventptr%filter_initial_fraction
+        else if (tsec>ventptr%filter_final_time) then
+            filter = ventptr%filter_final_fraction
+        else
+            dt = max(ventptr%filter_final_time - ventptr%filter_initial_time, mintime)
+            deltat = max(tsec - ventptr%filter_initial_time, mintime)
+            dy = ventptr%filter_final_fraction - ventptr%filter_initial_fraction
+            dydt = dy/dt
+            filter = ventptr%filter_initial_fraction + dydt*deltat
+        end if
+        
+        ! calculate species mass and enthalpy flows
         if (iroom<=n_rooms) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)
             uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + ventptr%mflow(1,l)

@@ -347,6 +347,7 @@ module cfast_types
         ! These are calculated results for the current time step
 
         real(eb) :: opening_fraction        ! fraction vent is open at current time step (0 --> 1)
+        real(eb) :: filter_fraction         ! fraction of trace and soot that get filtered out at the current time step (0 --> 1)
         real(eb) :: current_area            ! vent area at current time step accounting for opening fraction
         real(eb) :: mflow(2,2)              ! vent mass flow (room1/top,room2/bottom, u,l)
     end type vent_type

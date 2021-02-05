@@ -100,7 +100,7 @@ module hflow_routines
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
         rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'H',im,ix,ik,i,tsec,fraction)
+        call get_vent_opening (ventptr,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width*fraction
         avent = height*width

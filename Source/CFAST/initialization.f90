@@ -415,6 +415,7 @@ module initialization_routines
         
         ! horizontal vents
         n_hvents = 0
+        hventinfo(1:mxhvents)%vtype = 'H'
         hventinfo(1:mxhvents)%id = ' '
         hventinfo(1:mxhvents)%width = 0.0_eb
         hventinfo(1:mxhvents)%soffit = 0.0_eb
@@ -429,9 +430,11 @@ module initialization_routines
         hventinfo(1:mxhvents)%opening_initial_fraction = 1.0_eb
         hventinfo(1:mxhvents)%opening_final_time = 0.0_eb
         hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
+        hventinfo(1:mxhvents)%npoints = 0
 
         ! leakage vents
         n_leaks = 0
+        leakinfo(1:mxhvents)%vtype = 'H'
         leakinfo(1:mxleaks)%id = ' '
         leakinfo(1:mxleaks)%width = 0.0_eb
         leakinfo(1:mxleaks)%soffit = 0.0_eb
@@ -446,9 +449,11 @@ module initialization_routines
         leakinfo(1:mxleaks)%opening_initial_fraction = 1.0_eb
         leakinfo(1:mxleaks)%opening_final_time = 0.0_eb
         leakinfo(1:mxleaks)%opening_final_fraction = 1.0_eb
+        leakinfo(1:mxhvents)%npoints = 0
 
         ! vertical vents
         n_vvents = 0
+        vventinfo(1:mxhvents)%vtype = 'V'
         vventinfo(1:mxvvents)%id = ' '
         vventinfo(1:mxvvents)%shape = 1
         vventinfo(1:mxvvents)%area = 0.0_eb
@@ -459,10 +464,12 @@ module initialization_routines
         vventinfo(1:mxvvents)%opening_initial_fraction = 1.0_eb
         vventinfo(1:mxvvents)%opening_final_time = 0.0_eb
         vventinfo(1:mxvvents)%opening_final_fraction = 1.0_eb
+        vventinfo(1:mxvvents)%npoints = 0
 
         ! mechanical vents
 
         n_mvents = 0
+        vventinfo(1:mxhvents)%vtype = 'M'
         mventinfo(1:mxmvents)%id = ' '
         mventinfo(1:mxmvents)%total_flow(u) = 0.0_eb
         mventinfo(1:mxmvents)%total_flow(l) = 0.0_eb
@@ -481,6 +488,7 @@ module initialization_routines
         mventinfo(1:mxmvents)%filter_initial_fraction = 0.0_eb
         mventinfo(1:mxmvents)%filter_final_time = 0.0_eb
         mventinfo(1:mxmvents)%filter_final_fraction = 0.0_eb
+        mventinfo(1:mxmvents)%npoints = 0
     end if 
 
     ! allocate devices

@@ -2042,7 +2042,7 @@ continue
                     if (t(ipts)/=-1001._eb) then
                         ventptr%t(ipts) = t(ipts)
                         ventptr%f(ipts) = f(ipts)
-                        ventptr%tnpts = ventptr%tnpts + 1
+                        ventptr%npoints = ventptr%npoints + 1
                     end if
                 end do
             end if
@@ -2056,7 +2056,7 @@ continue
             end if
             ventptr%f(1) = pre_fraction
             ventptr%f(2) = post_fraction
-            ventptr%tnpts = 2
+            ventptr%npoints = 2
             ventptr%opening_target = 0
             do i = 1,n_targets
                 targptr => targetinfo(i)

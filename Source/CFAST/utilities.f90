@@ -856,62 +856,106 @@
 
     ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (rampid,venttype,room1,room2,counter,vent_index,time,fraction)
+    subroutine get_vent_opening (ventptr,time,fraction)
 
-    character(len=64), intent(in) :: rampid
-    character(len=1), intent(in) :: venttype
-    integer, intent(in) :: room1, room2, counter, vent_index
+    type(vent_type), pointer, intent(in) :: ventptr
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
 
-    integer :: iramp, i
+    integer :: i
     real(eb), parameter :: mintime = 1.0e-6_eb
     real(eb) :: dt, dtfull, dy, dydt
-    type(ramp_type), pointer :: rampptr
-    type(vent_type), pointer :: ventptr
+    character(len=128) room1c, room2c, vtypec
+    
+    type(target_type), pointer :: targptr
 
     fraction = 1.0_eb
-
-    if (n_ramps>0) then
-        iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
-        if (iramp>0) then
-            rampptr=>rampinfo(iramp)
-            if (time<=rampptr%x(1)) then
-                fraction = rampptr%f_of_x(1)
+    ! check vent triggering by time
+    if (ventptr%opening_type==trigger_by_time) then
+        if (ventptr%npoints>0) then
+            if (time<=ventptr%t(1)) then
+                fraction = ventptr%f(1)
                 return
-            else if (time>rampptr%x(rampptr%npoints)) then
-                fraction = rampptr%f_of_x(rampptr%npoints)
+            else if (time>ventptr%t(ventptr%npoints)) then
+                fraction = ventptr%f(ventptr%npoints)
                 return
             else
-                do i=2,rampptr%npoints
-                    if (time>rampptr%x(i-1).and.time<=rampptr%x(i)) then
-                        dt = max(rampptr%x(i)-rampptr%x(i-1),mintime)
-                        dtfull = max(time-rampptr%x(i-1),mintime)
-                        dy = rampptr%f_of_x(i)-rampptr%f_of_x(i-1)
+                do i=2,ventptr%npoints
+                    if (time>ventptr%t(i-1).and.time<=ventptr%t(i)) then
+                        dt = max(ventptr%t(i)-ventptr%t(i-1),mintime)
+                        dtfull = max(time-ventptr%t(i-1),mintime)
+                        dy = ventptr%f(i)-ventptr%f(i-1)
                         dydt = dy / dt
-                        fraction = rampptr%f_of_x(i-1)+dydt * dtfull
+                        fraction = ventptr%f(i-1) + dydt*dtfull
                         return
                     end if
                 end do
             end if
         end if
+        ! check vent triggering by temperature. if tripped, turn it into a time-based change
+    else if (ventptr%opening_type==trigger_by_temp.and..not.ventptr%opening_triggered) then
+        targptr => targetinfo(ventptr%opening_target)
+        if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
+            ventptr%t(1) = time
+            ventptr%t(2) = time + 1.0_eb
+            ventptr%opening_type = trigger_by_time
+            ventptr%opening_triggered = .true.
+            room1c = roominfo(ventptr%room1)%id
+            if (ventptr%room1>n_rooms) room1c = 'Outside'
+            room2c = roominfo(ventptr%room2)%id
+            if (ventptr%room2>n_rooms) room2c = 'Outside'
+            vtypec = 'Unknown '
+            if (ventptr%vtype=='H') vtypec = 'Wall'
+            if (ventptr%vtype=='V') vtypec = 'Ceiling/Floor'
+            if (ventptr%vtype=='M') vtypec = 'Mechanical'
+            write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                '), opening change triggered by temperature at ',time,' s'
+            write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                '), opening change triggered by temperature at ',time,' s'
+        end if
+        ! check vent triggering by flux. if tripped, turn it into a time-based change
+    else if (ventptr%opening_type==trigger_by_flux.and..not.ventptr%opening_triggered) then
+        targptr => targetinfo(ventptr%opening_target)
+        if (targptr%flux_incident_front>ventptr%opening_criterion) then
+            ventptr%t(1) = time
+            ventptr%t(2) = time + 1.0_eb
+            ventptr%opening_type = trigger_by_time
+            ventptr%opening_triggered = .true.
+            room1c = roominfo(ventptr%room1)%id
+            if (ventptr%room1>n_rooms) room1c = 'Outside'
+            room2c = roominfo(ventptr%room2)%id
+            if (ventptr%room2>n_rooms) room2c = 'Outside'
+            vtypec = 'Unknown '
+            if (ventptr%vtype=='H') vtypec = 'Wall'
+            if (ventptr%vtype=='V') vtypec = 'Ceiling/Floor'
+            if (ventptr%vtype=='M') vtypec = 'Mechanical'
+            write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                '), opening change triggered by heat flux at ',time,' s'
+            write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                '), opening change triggered by heat flux at ',time,' s'
+        end if
+    else
     end if
 
-    ! This is for backwards compatibility with the older EVENT format for single vent changes
-    fraction = 1.0_eb
-    if (venttype=="H") then
-        ventptr => hventinfo(vent_index)
-        fraction = vfraction(venttype,ventptr, time)
-    else if (venttype=="V") then
-        ventptr => vventinfo(vent_index)
-        fraction = vfraction(venttype,ventptr, time)
-    else if (venttype=="M") then
-        ventptr => mventinfo(vent_index)
-        fraction = vfraction(venttype,ventptr, time)
-    else if (venttype=="F") then
-        ventptr => mventinfo(vent_index)
-        fraction = vfraction(venttype,ventptr, time)
-    end if
+    ! This is for backwards compatibility with the older EVENT format for single vent changes!
+!    fraction = 1.0_eb
+!    if (venttype=="H") then
+!        ventptr => hventinfo(vent_index)
+!        fraction = vfraction(venttype,ventptr, time)
+!    else if (venttype=="V") then
+!        ventptr => vventinfo(vent_index)
+!        fraction = vfraction(venttype,ventptr, time)
+!    else if (venttype=="M") then
+!        ventptr => mventinfo(vent_index)
+!        fraction = vfraction(venttype,ventptr, time)
+!    else if (venttype=="F") then
+!        ventptr => mventinfo(vent_index)
+!        fraction = vfraction(venttype,ventptr, time)
+!    end if
     return
 
     end subroutine get_vent_opening
@@ -971,9 +1015,9 @@
                 room2c = roominfo(ventptr%room2)%id
                 if (ventptr%room2>n_rooms) room2c = 'Outside'
                 vtypec = 'Unknown '
-                if (vtype=='H') vtypec = 'Wall'
-                if (vtype=='V') vtypec = 'Ceiling/Floor'
-                if (vtype=='M') vtypec = 'Mechanical'
+                if (ventptr%vtype=='H') vtypec = 'Wall'
+                if (ventptr%vtype=='V') vtypec = 'Ceiling/Floor'
+                if (ventptr%vtype=='M') vtypec = 'Mechanical'
                 write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
                     ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by temperature at ',time,' s'

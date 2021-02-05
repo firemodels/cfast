@@ -198,7 +198,7 @@
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
         rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'H',im,ix,ik,i,tsec,fraction)
+        call get_vent_opening (ventptr,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width
@@ -215,7 +215,7 @@
         iroom2 = ventptr%room2
         ik = ventptr%counter
         rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'V',iroom1,iroom2,ik,i,tsec,fraction)
+        call get_vent_opening (ventptr,tsec,fraction)
         avent = ventptr%area*fraction
         if (ventptr%current_area/=0.0_eb) then
             roomc(iroom1,iroom2) = 1
@@ -306,7 +306,7 @@
             ventptr=>hventinfo(j)
             if (ventptr%room1 == i .or. ventptr%room2 == i) then
                 fraction = 0._eb
-                call get_vent_opening (ventptr%ramp_id,'H',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                call get_vent_opening (ventptr,tsec,fraction)
 
                 ! identify surface number
                 if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then
@@ -358,7 +358,7 @@
             ! For horizontal (ceiling/floor) mechanical vents
             if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 2) then
                 fraction = 0._eb
-                call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                call get_vent_opening (ventptr,tsec,fraction)
 
                 from = ventptr%room1
                 to = ventptr%room2
@@ -401,7 +401,7 @@
             else if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 1) then 
                 fraction = 0._eb
                 length = sqrt(ventptr%diffuser_area(1))
-                call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                call get_vent_opening (ventptr,tsec,fraction)
 
                 ! There is a possibility that the mechanical vent is not attached to any surfaces.
                 ! If this is the case, the assocated vent area will be counted as opening area for any surfaces.
@@ -461,7 +461,7 @@
             ventptr=>vventinfo(j)
             if (ventptr%room1 == i .or. ventptr%room2 == i) then
                 fraction = 0._eb
-                call get_vent_opening (ventptr%ramp_id,'V',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                call get_vent_opening (ventptr,tsec,fraction)
 
                 top = ventptr%room1
                 bottom = ventptr%room2

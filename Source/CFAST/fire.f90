@@ -644,7 +644,7 @@ module fire_routines
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        !!!!!!!call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
         fraction = (1.0_eb-fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mflow(1,u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mflow(1,l)*deltt

@@ -54,11 +54,10 @@ module mflow_routines
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
         uflw_totals = 0.0_eb
-        rampid = ventptr%ramp_id
         filterid = ventptr%filter_id
 
         ! calculate volume flow through fan
-        call get_vent_opening (rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        call get_vent_opening (ventptr,tsec,fraction)
         ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(ventptr%room1,ventptr%height(1))
         ventptr%opening_fraction = fraction
         ventptr%current_area = ventptr%diffuser_area(1)*fraction
@@ -78,7 +77,7 @@ module mflow_routines
             uflw_totals(2+k) = -(roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
                 roomptr%species_fraction(l,k)*ventptr%mflow(1,l))
         end do
-        call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
+        !!!!!!!call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
         if (iroom<=n_rooms) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)
             uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + ventptr%mflow(1,l)

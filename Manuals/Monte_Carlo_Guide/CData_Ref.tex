@@ -97,7 +97,7 @@ CFAST Version \cfastversion \\
 
 \chapter{Preface}
 
-This document provides documentation for creating and running Monte Carlo simulations using the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+This document provides documentation for creating and running Monte Carlo simulations with the Consolidated Fire And Smoke Transport (CFAST) model using the CFAST Fire Data Generator (CData). The method follows the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
 
 %
 % -------------------  Disclaimer ------------------------
@@ -125,6 +125,8 @@ CFAST was originally developed by Walter Jones, formerly of NIST.
 
 Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
 
+We also thank Dr. Wai Cheong "Andy" Tam, (outside reader), and Nelson Bryner for their reviews and corrections. Any remaning errors are ours. 
+
 \cleardoublepage
 \tableofcontents
 
@@ -144,7 +146,7 @@ Continuing support for CFAST is via internal funding at NIST. In addition, suppo
 
 The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results." with Stanislaw Ulam credited with inventing the modern version of the Markov Chain Monte Carlo method working on nuclear weapons projects in the 1940s. In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. Bruns \cite{bruns_tn_2016} formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance based designs. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
 
-While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis. The result of this effort is the CFAST Fire Data Generator (CData).
+While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis using the Consolidated Fire And Smoke Transport (CFAST) model. The result of this effort is the CFAST Fire Data Generator (CData).
 
 %
 % -------------------  Defining the Analysis ------------------------
@@ -161,7 +163,7 @@ As briefly discussed in the introduction a significant amount of work has gone i
   \item Statistical analysis of calculation results
 \end{enumerate}
 
-Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between compartments and the outside, and the range of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to study tenability of egress paths, fire severity, or building structural integrity, for example). For the most part, community and occupant characteristics are outside the scope of this report which focuses on developing the range of CFAST model inputs needed to run the desired set of simulations. These may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining ranges of compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
+Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between different compartments and compartments to the outside, and the range and position of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to study tenability of egress paths, fire severity, or building structural integrity, for example). For the most part, community and occupant characteristics are outside the scope of this report which focuses on developing the range of CFAST model inputs needed to run the desired set of simulations. These may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining ranges of compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
 
 \section{Building Characteristics}
 
@@ -224,9 +226,6 @@ Thermal Properties      & Thermal Conductivity          & kW/(m~\degc)          
 Compartments            & Width                         & m                         \\
                         & Depth                         & m                         \\
                         & Height                        & m                         \\
-                        & Width Position                & m                         \\
-                        & Depth Position                & m                         \\
-                        & Height Position               & m                         \\
                         & Wall Leak Area Ratio          & m$^2$/m$^2$               \\
                         & Floor Leak Area Ratio         & m$^2$/m$^2$               \\ \hline
  Wall Vents             & Sill                          & m                         \\
@@ -243,7 +242,8 @@ Compartments            & Width                         & m                     
                         & Open/Close Time               & s                         \\
                         & Final Opening Fraction        & 0-1                       \\
                         & Setpoint                      & s, \degc, or kW/m$^2$     \\
-                        & Pre-Activation Fraction       & 0-1                       \\ \hline
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\ \hline
  Mechanical Vents       & From Compartment Area         & m$^2$                     \\
                         & From Compartment Height       & m                         \\
                         & To Compartment Area           & m$^2$                     \\
@@ -340,6 +340,12 @@ Choosing modeling results for analysis depends on the goals of the hazard analys
 
 Each subsection will discuss one set of namelist inputs and what each of the parameters do. All the inputs are combined in Appendix \ref{preprocessor_reference}  to serve as a reference for commands.
 
+Section \ref{preprocessor} will have more discussion about how to run CData. One example of running CData from the command line is the following
+
+{\ct cdata Simple.in -P}
+
+In this case the base fiilename of the CData/CFAST input file, {\ct Simple}, is reffered to as the {\ct <project>} and that name is used as part of the name of a number of different files. 
+
 \subsection{Namelist MHDR}
 \label{info:MHDR}
 
@@ -349,7 +355,7 @@ The {\ct \&MHDR} inputs specify details of the scenarios to be generated includi
   \item[NUMBER\_OF\_CASES] (default value 1): specifies the number of cases that the preprocessor will generate.
   \item[RANDOM\_SEEDS] (default value, software chosen random integer pair): defines an integer pair used to determine random number seeds for distributions. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files.  All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
   \item[WRITE\_RANDOM\_SEEDS] (default value, .TRUE.): if .TRUE., all random number seeds are saved in the file {\ct <project>\_seeds.csv}.
-  \item[PARAMETER\_FILE] (default value, {\ct <project>\_parameters.csv} where {\ct <project>} is the base filename of the CDATA/CFAST input file): Summary output file from the preprocessor that list the CFAST file names and parameter values for inputs varied for each CFAST scenario in the set of generated CFAST cases. This file is combined with the summary statistics generated by the accumulator module.
+  \item[PARAMETER\_FILE] (default value, {\ct <project>\_parameters.csv}: Summary output file from the preprocessor that list the CFAST file names and parameter values for inputs varied for each CFAST scenario in the set of generated CFAST cases. This file is combined with the summary statistics generated by the accumulator module.
   \item[WORK\_FOLDER] (default value, current folder): folder where the preprocessor creates its set of CFAST inputs file and where the accumulator looks for CFAST output files to be processed.
   \item[OUTPUT\_FOLDER] (default value, current folder): folder where the accumulator or statistics modules put their output files of analysis results.
 \end{description}
@@ -372,20 +378,21 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
-  \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct LOG\_NORMAL}, {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
+  \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct TRUNCATE\_NORMAL}, {\ct LOG\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL} {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
+  \item[VALUE\_TYPE] defines the input type in VALUES. Must be {\ct INTEGER}, {\ct REAL}, or {\ct CHARACTER}. 
   \item[VALUES] a set of values for the {\ct USER\_DEFINED} distribution type. Inputs are input as string constants and interpreted to match the type required by the associated {\ct \&MRND} input(s). Values for an individual scenario are chosen randomly from the list of values provided.
   \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type. These are not cumulative probabilities and the total of all values must add to 1.0
   \item[CONSTANT] is a constant value. For the {\ct CONSTANT} distribution it is the value that is returned by the generator.
-  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
-  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, and {\ct LINEAR} distribution types.
+  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
+  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
   \item[ALPHA] alpha value for the {\ct BETA} distribution type.
   \item[BETA] beta value for the {\ct BETA} distribution type.
   \item[MEAN] mean value for the {\ct NORMAL}; geometric mean value for the {\ct LOG\_NORMAL} distribution type.
   \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
-  \item[MINIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input for the compartment height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low height of the compartment is set.
-  \item[MAXIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the maximum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the top of a vent, then you can set the upper limit the height in the associated compartment by including a {\ct MAXIMUM\_FIELD} input for the vent input such as {\ct MAXIMUM\_FIELD="Comp 1","HEIGHT"} to cap the vent top to the height of the compartment.
+  \item[MINIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the vent height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low the height of the compartment is set.
+  \item[MAXIMUM\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MAXIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the ceiling height input such as {\ct MINIMUM\_FIELD="Comp 1", "HEIGHT"} to limit how high the top of the vent is set.
 \end{description}
 
 \vspace{\baselineskip}
@@ -484,13 +491,13 @@ Secondly, inputs for the scaling fire are described.
   \item[FIRE\_HRR\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
-  \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire.
-  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire.
+  \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire. Must be positive.
+  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be positive. 
 
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
-  \item[TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
-  \item[HRR\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.
+  \item[HRR\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}.If it is not included or set to {\ct NULL}, it will be filled in by the code.
 \end{description}
 
 \vspace{\baselineskip}
@@ -536,7 +543,7 @@ Secondly, inputs for the scaling fire are described.
   \item[FYI] A user defined comment that can provide additional information about the input.
  \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct CORRELATION\_TREES}.
  \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct input filename\_accumulate.csv}.
- \item[OUTPUT\_FILENAME] The file that the finish grafic should be named. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
+ \item[OUTPUT\_FILENAME] The filename for the finish grafic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
  \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
  \item[COLUMN\_TITLE] The name in the first row for the column to use for the analysis.
@@ -591,9 +598,10 @@ The CData program has several functions, 1) a preprocessor function that generat
 
 All inputs for generating a set of multiple CFAST runs are contained within a single CFAST input file with inputs that define the base case for analysis, and Monte Carlo-related inputs that define how those inputs will be varied to create multiple individual CFAST input files. In addition, the file may contain a series of specific inputs to generate summary outputs for statistical analysis of the results and a series of inputs that define simple statistical analyses on the summary data.  This chapter presents a simple example from start to finish.
 
-The base case defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m concrete. For the example, the width and height of the door will be varied along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. Fo the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
+The base case defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m concrete. For the example, the width and height of the door will be varied along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
 
 \section{PreProcessor}
+\label{preprocessor}
 
 To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two inputs, one that defines the distribution of values for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
 
@@ -615,7 +623,7 @@ To create the varying door size inputs, the vent is defined in the input file an
 
 The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct TOP} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
 
-To define the fire, the {\ct \&MRND} input is used to define the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
+To define the fire, the {\ct \&MRND} input is uses the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
@@ -639,6 +647,27 @@ To define the fire, the {\ct \&MRND} input is used to define the peak heat relea
 
 Here, we define the peak heat release rate as a uniform distribution from 500~kW to 3000~kW, with a 10~s ramp from zero HRR (by default, the first time point is defined at zero time and zero HRR), a 900 s constant fire at the peak heat release rate, and a 10 s decay back to zero.
 
+As part of the base input file used to generate the set of individual CFAST inputs files to be run, one or more {\ct \&DUMP} inputs can be included to specify summary outputs for each CFAST simulation. This can include maximum/minimum values, time to chosen trigger values (for example, time to peak heat release rate or time to a chosen upper layer temperature), or trigger values based on other inputs (for example, heat release rate when upper layer temperature reaches a chosen value).
+
+For the simple example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600 \degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Fire' 'HRR Actual' /
+&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
+    FIRST_FIELD = 'Comp 1' 'Layer Height' /
+
+&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
+&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+
+&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+\end{lstlisting}
+
 With the rest of the input file defining the base input file, creating a set of CFAST input files requires running CData with the {\ct -P} option as
 
 {\ct cdata Simple.in -P}
@@ -646,6 +675,7 @@ With the rest of the input file defining the base input file, creating a set of 
 This creates all the individual input files, batch scripts to run the file on either Windows or Linux (with minor editing to define the locations of the required executables), and a summary spreadsheet of all in varied input values.
 
 \section{Running CFAST}
+
 
 As part of the process of creating the individual CFAST inputs files, CData creates batch scripts for both windows and Linux operating systems. Each batch script depends on external software to support running multiple CFAST jobs in parallel. For Windows, a program, {\ct background.exe} is used and is included in the CFAST software distribution. For Linux, the batch script depends on a script developed for running multiple FDS runs, {\ct qfds.sh}. Both of these scripts include information on the locations of these external files (plus the location of the CFAST executable which may need to be modified to suit a particular computer hardware. Default examples are shown below. Once configured, running the set of CFAST simulations is accomplished by running the appropriate script for Windows or Linux.
 
@@ -698,37 +728,18 @@ qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-3.in
 
 \section{Generating Statistics}
 
-As part of the base input file used to generate the set of individual CFAST inputs files to be run, one or more {\ct \&DUMP} inputs can be included to specify summary outputs for each CFAST simulation. This can include maximum/minimum values, time to chosen trigger values (for example, time to peak heat release rate or time to a chosen upper layer temperature), or trigger values based on other inputs (for example, heat release rate when upper layer temperature reaches a chosen value). From these summary values, selected statistical analyses are available in CData. This section describes how to create a spreadsheet of summary values (the Accumulate function in CData), and how to generate several statistical analyses from those data.
+From these summary values defined in the last section with the {\ct \&DUMP} inputs, selected statistical analyses are available in CData. This section describes how to create a spreadsheet of summary values (the Accumulate function in CData), and how to generate several statistical analyses from those data (the Statistics function in CData).
 
 \subsection{Accumulator}
 
-For the simple example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600 \degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
-
-\begin{lstlisting}[basicstyle=\scriptsize]
-&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
-    FIRST_FIELD = 'Fire' 'HRR Actual' /
-&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
-    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
-&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
-    FIRST_FIELD = 'Comp 1' 'Layer Height' /
-
-&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
-    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
-&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
-    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-
-&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
-    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-\end{lstlisting}
-
-To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -A} option,
+In order to allow CFAST cases to be run in parallel on systems with that capability, each case independently creates a file, the {\ct <project>\_nn\_calculations.csv} file where {\ct nn} is the number of the file. This file has the summary values specified in the {\ct \&DUMP} inputs for that case. To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -A} option,
 
 \vspace{\baselineskip}
 {\ct cdata Simple.in -A}
 
 \subsection{Statistics}
 
-The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. This can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&DUMP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it in important to include {\ct \&DUMP} inputs for everything that might be of interest to aviod having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
@@ -847,7 +858,7 @@ One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maxi
 
 \section{Example 1: Flashover in a compartment}
 
-The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton and Thomas \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations.
+The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton, Thomas, and Ohmiya \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations.
 
 \begin{figure}[h!]
 \centering
@@ -861,13 +872,14 @@ A single compartment with gypsum ceiling and walls and a concrete floor includes
 
 \begin{description}
 \item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 20 m x 20 m x 20 m.
-\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 1.65 m to 19.85 m limited by compartment height, and a uniform distribution scaling vent width from 0.25 m to 19 m limited by compartment width.
-\item[Fire growth rate:] Fire size varied with a uniform distribution ranging from 75 s to 1000 s to 1 the peak heat release rate. Peak heat release rate set to 160 MW to ensure flashover in the largest compartments when there is sufficient oxygen.
+\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 1.65 m to 19.85 m limited to 0.15 m below the compartment height, and a uniform distribution scaling vent width from 0.25 m to 19 m limited to 1.0 m less than the compartment width.
+\item[Fire growth rate:] Fire growth is varied with a uniform distribution ranging from 75 s to 1000 s to
+ the peak heat release rate. Peak heat release rate set to 160 MW to ensure flashover in the largest compartments when there is sufficient oxygen.
 \end{description}
 
 For the analysis, we will look at the minimum heat release rate necessary to achieve flashover in the compartment defined by a typically-used metrics of 600 \degc upper layer temperature \cite{Valid:Peacock_Flashover_1} \cite{Valid:Peacock_Flashover_2}.
 
-The compartment size is defined randomly over a range of 2 m to 20 m. The example below varies the room width. Other dimensions are handled in a similar fashion.
+The example below shows how to vary the width uniformly over the range of 2.0 m to 20.0 m. Other dimensions are handled in a similar fashion.
 
 \vspace{\baselineskip}
 \begin{lstlisting}
@@ -887,12 +899,12 @@ The vent height and width also vary randomly, but must be limited to the compart
     ADD_TO_PARAMETERS = .TRUE. /
 
 &MRND ID = 'Wall Vent Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
-    MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1 Height' MAXIMUM_OFFSET = -0.15/
+    MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1' 'Height' MAXIMUM_OFFSET = -0.15/
 &MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Top Generator' FIELD = 'Wall Vent' 'TOP'
     ADD_TO_PARAMETERS = .TRUE. /
 
 &MRND ID = 'Wall Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
-    MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1 Width' MAXIMUM_OFFSET = -1.0/
+    MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1' 'Width' MAXIMUM_OFFSET = -1.0/
 &MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH'
     ADD_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}

@@ -946,7 +946,7 @@ module output_routines
      ! horizontal flow vents
      if (n_hvents>2) then
          do i = 1, n_hvents
-             ventptr = hventinfo(i)
+             ventptr => hventinfo(i)
              if (ventptr%npoints>2) then
                  iramp = iramp + 1
                  roomptr => roominfo(ventptr%room2)
@@ -962,7 +962,7 @@ module output_routines
     ! vertical flow vents
     if (n_vvents>2) then
          do i = 1, n_vvents
-             ventptr = vventinfo(i)
+             ventptr => vventinfo(i)
              if (ventptr%npoints>2) then
                  iramp = iramp + 1
                  roomptr => roominfo(ventptr%room2)
@@ -978,7 +978,7 @@ module output_routines
     ! mecahnical flow vents
     if (n_mvents>2) then
          do i = 1, n_mvents
-             ventptr = mventinfo(i)
+             ventptr => mventinfo(i)
              if (ventptr%npoints>2) then
                  iramp = iramp + 1
                  roomptr => roominfo(ventptr%room2)

@@ -282,7 +282,6 @@ module cfast_types
     type, extends(cfast_type) :: vent_type
         character(len=1) :: vtype           ! 'H', 'V'. or 'M', set in initialization
         character(len=128) :: ramp_id       ! ramp id assocated with vent
-        character(len=128) :: filter_id     ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...

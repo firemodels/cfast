@@ -170,14 +170,11 @@
     
 !> \param   tsec (input): current simulation time
 
-    subroutine room_connections (tsec)
-    
-    real(eb), intent(in) :: tsec
+    subroutine room_connections
 
     real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
-    character(len=128) :: rampid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -197,8 +194,7 @@
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        rampid = ventptr%ramp_id
-        call get_vent_opening (ventptr,tsec,fraction)
+        fraction = ventptr%opening_fraction
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width
@@ -214,8 +210,7 @@
         iroom1 = ventptr%room1
         iroom2 = ventptr%room2
         ik = ventptr%counter
-        rampid = ventptr%ramp_id
-        call get_vent_opening (ventptr,tsec,fraction)
+        fraction = ventptr%opening_fraction
         avent = ventptr%area*fraction
         if (ventptr%current_area/=0.0_eb) then
             roomc(iroom1,iroom2) = 1

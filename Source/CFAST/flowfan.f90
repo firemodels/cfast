@@ -78,6 +78,7 @@ module mflow_routines
         end do
         
         ! calculate fraction of trace species and soot filtered out for this vent
+        filter = 0._eb
         if (tsec<ventptr%filter_initial_time) then
             filter = ventptr%filter_initial_fraction
         else if (tsec>ventptr%filter_final_time) then

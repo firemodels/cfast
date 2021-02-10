@@ -77,7 +77,7 @@ module solve_routines
     ires = 0
 1   continue
 
-    call room_connections (t)
+    call room_connections
 
     rpar2(1) = rpar(1)
     ipar2(1) = ipar(1)

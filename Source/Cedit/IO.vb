@@ -1697,7 +1697,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_DEVICE") Then
                         seconddevice = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_MEASUREMENT") Then
-                        firstmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
+                        secondmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_FIELD") Then
                         firstdevice = NMList.ForNMListVarGetStr(i, j, 1)
                         firstmeasurement = NMList.ForNMListVarGetStr(i, j, 2)
@@ -2851,9 +2851,9 @@ Module IO
                     ln += "  CRITERION = " + adump.Criterion.ToString
                 End If
                 PrintLine(IO, ln)
-                ln = "     FIRST_FIELD = '" + adump.FirstDevice + ", " + adump.FirstMeasurement + "'"
+                ln = "     FIRST_FIELD = '" + adump.FirstDevice + "', '" + adump.FirstMeasurement + "'"
                 If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  SECOND_FIELD = '" + adump.SecondDevice + ", " + adump.SecondMeasurement + "'"
+                    ln += "  SECOND_FIELD = '" + adump.SecondDevice + "', '" + adump.SecondMeasurement + "'"
                 End If
                 If aDump.FYI <> "" Then
                     ln += " FYI = '" + aDump.FYI + "'"

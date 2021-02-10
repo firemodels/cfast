@@ -431,10 +431,14 @@ module initialization_routines
         hventinfo(1:mxhvents)%opening_final_time = 0.0_eb
         hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
         hventinfo(1:mxhvents)%npoints = 0
+        do i = 1, mxhvents
+            hventinfo(i)%t(1:mxpts) = 0._eb
+            hventinfo(i)%f(1:mxpts) = 0.0_eb
+        end do
 
         ! leakage vents
         n_leaks = 0
-        leakinfo(1:mxhvents)%vtype = 'H'
+        leakinfo(1:mxleaks)%vtype = 'H'
         leakinfo(1:mxleaks)%id = ' '
         leakinfo(1:mxleaks)%width = 0.0_eb
         leakinfo(1:mxleaks)%soffit = 0.0_eb
@@ -450,6 +454,10 @@ module initialization_routines
         leakinfo(1:mxleaks)%opening_final_time = 0.0_eb
         leakinfo(1:mxleaks)%opening_final_fraction = 1.0_eb
         leakinfo(1:mxhvents)%npoints = 0
+        do i = 1, mxleaks
+            leakinfo(i)%t(1:mxpts) = 0._eb
+            leakinfo(i)%f(1:mxpts) = 0.0_eb
+        end do
 
         ! vertical vents
         n_vvents = 0
@@ -465,6 +473,10 @@ module initialization_routines
         vventinfo(1:mxvvents)%opening_final_time = 0.0_eb
         vventinfo(1:mxvvents)%opening_final_fraction = 1.0_eb
         vventinfo(1:mxvvents)%npoints = 0
+        do i = 1, mxvvents
+            vventinfo(i)%t(1:mxpts) = 0._eb
+            vventinfo(i)%f(1:mxpts) = 0.0_eb
+        end do
 
         ! mechanical vents
 
@@ -489,6 +501,10 @@ module initialization_routines
         mventinfo(1:mxmvents)%filter_final_time = 0.0_eb
         mventinfo(1:mxmvents)%filter_final_fraction = 0.0_eb
         mventinfo(1:mxmvents)%npoints = 0
+        do i = 1, mxmvents
+            mventinfo(i)%t(1:mxpts) = 0._eb
+            mventinfo(i)%f(1:mxpts) = 0.0_eb
+        end do
     end if 
 
     ! allocate devices

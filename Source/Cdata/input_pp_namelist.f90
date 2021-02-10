@@ -1559,12 +1559,27 @@
                 fldptr%valptr => fldptr%realval
             elseif (trim(fieldid) == 'T_1') then
                 found = .true.
-                fldptr%realval%val => item%opening_initial_time
+                fldptr%realval%val => item%t(1)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             elseif (trim(fieldid) == 'T_2') then
                 found = .true.
-                fldptr%realval%val => item%opening_final_time
+                fldptr%realval%val => item%t(2)
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'SETPOINT') then
+                found = .true.
+                fldptr%realval%val => item%opening_criterion
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'PRE_ACTIVATION_FRACTION') then
+                found = .true.
+                fldptr%realval%val => item%f(1)
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            elseif (trim(fieldid) == 'POST_ACTIVATION_FRACTION') then
+                found = .true.
+                fldptr%realval%val => item%f(2)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             else

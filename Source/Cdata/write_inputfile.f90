@@ -615,17 +615,21 @@
             call add_token_val(iounit, buf, 'WIDTH = ', ventptr%width)
             call add_token_val(iounit, buf, 'OFFSET = ',ventptr%offset(1))
             if (ventptr%opening_type == trigger_by_time) then
-                if (ventptr%opening_initial_time /= 0._eb .or. ventptr%opening_final_time /= 0._eb) then
+                if (ventptr%t(1) /= 0._eb .or. ventptr%t(2) /= 0._eb) then
                     call add_token_str(iounit,buf,'CRITERION = ','TIME')
-                    val(1) = ventptr%opening_initial_time
-                    val(2) = ventptr%opening_final_time
-                    call add_token_rarray(iounit,buf,'T = ',val,2)
-                    val(1) = ventptr%opening_initial_fraction
-                    val(2) = ventptr%opening_final_fraction
-                    call add_token_rarray(iounit,buf,'F = ',val,2)
+                    call add_token_rarray(iounit,buf,'T = ',ventptr%t,2)
+                    call add_token_rarray(iounit,buf,'F = ',ventptr%f,2)
                 end if
             else if (ventptr%opening_type == trigger_by_temp) then 
-                
+                call add_token_str(iounit,buf,'CRITERION = ','TEMPERATURE')
+                call add_token_val(iounit,buf,'SETPOINT = ',ventptr%opening_criterion - kelvin_c_offset)
+                call add_token_val(iounit,buf,'PRE_FRACTION = ', ventptr%f(1))
+                call add_token_val(iounit,buf,'POST_FRACTION = ',ventptr%f(2))
+            else if (ventptr%opening_type == trigger_by_flux) then 
+                call add_token_str(iounit,buf,'CRITERION = ','FLUX')
+                call add_token_val(iounit,buf,'SETPOINT = ',ventptr%opening_criterion/1000.0_eb)
+                call add_token_val(iounit,buf,'PRE_FRACTION = ', ventptr%f(1))
+                call add_token_val(iounit,buf,'POST_FRACTION = ',ventptr%f(2))
             end if
             if (ventptr%face == 1) then
                 call add_token_str(iounit, buf, 'FACE = ', 'FRONT')

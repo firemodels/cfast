@@ -1717,7 +1717,7 @@ continue
 
     integer, intent(in) :: lu
 
-    integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts
+    integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts, ic
     integer :: ios
     character(len=64) :: compartment_id
 
@@ -1806,7 +1806,7 @@ continue
 
                 imin = min(i,j)
                 jmax = max(i,j)
-
+                
                 if (imin>mxrooms-1.or.jmax>mxrooms.or.imin==jmax) then
                     write (*,5070) i, j
                     write (iofill,5070) i, j
@@ -1824,9 +1824,19 @@ continue
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
-                ventptr%room1 = i
-                ventptr%room2 = j
+                ventptr%room1 = imin
+                ventptr%room2 = jmax
                 ventptr%counter = counter1
+
+                ! absolute positions are always relative to the floor of the "inside" room
+                if (imin == n_rooms+1) then
+                    roomptr => roominfo(jmax)
+                else
+                    roomptr => roominfo(imin)
+                end if
+                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+                ventptr%absolute_sill = ventptr%sill + roomptr%z0
+
 
                 if (n_hvents>mxhvents) then
                     write (*,5081) i,j,k
@@ -1854,15 +1864,6 @@ continue
                 ventptr%offset(2) = 0._eb
                 
                 call set_criterion
-
-                ! absolute positions are always relative to the floor of the "inside" room
-                if (i == n_rooms+1) then
-                    roomptr => roominfo(j)
-                else
-                    roomptr => roominfo(i)
-                end if
-                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
-                ventptr%absolute_sill = ventptr%sill + roomptr%z0
 
                 ! Mechanical vent
             else if (trim(type) == 'MECHANICAL') then
@@ -2058,11 +2059,11 @@ continue
             ventptr%f(2) = post_fraction
             ventptr%npoints = 2
             ventptr%opening_target = 0
-            do i = 1,n_targets
-                targptr => targetinfo(i)
+            do ic = 1,n_targets
+                targptr => targetinfo(ic)
                 write(*,*) 'target ', i, '|',trim(targptr%id),'|'
                 write(*,*) 'id ','|',trim(devc_id),'|'
-                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
+                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = ic
             end do
             if (ventptr%opening_target==0) then
                 write (*,*) '***Error: Vent opening specification requires an associated target.'

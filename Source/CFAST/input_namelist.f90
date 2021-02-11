@@ -2048,7 +2048,7 @@ continue
             end if
         else
             if (trim(criterion)=='TEMPERATURE') then
-                ventptr%opening_type = trigger_by_temp
+                ventptr%opening_type = trigger_by_temp 
                 ventptr%opening_criterion = setpoint + kelvin_c_offset
             else if (criterion=='FLUX') then
                 ventptr%opening_type = trigger_by_flux
@@ -2060,6 +2060,8 @@ continue
             ventptr%opening_target = 0
             do i = 1,n_targets
                 targptr => targetinfo(i)
+                write(*,*) 'target ', i, '|',trim(targptr%id),'|'
+                write(*,*) 'id ','|',trim(devc_id),'|'
                 if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
             end do
             if (ventptr%opening_target==0) then

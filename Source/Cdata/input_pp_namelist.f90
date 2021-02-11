@@ -466,12 +466,6 @@
         call cfastexit('read_mfld',2)
     end if
 
-    if (.not.mfldflag) then
-        write (*, '(/, "***Error: &MFLD inputs are required.")')
-        write (iofill, '(/, "***Error: &MFLD inputs are required.")')
-        call cfastexit('read_mfld',3)
-    end if
-
     ! we found one. read it (only the first one counts; others are ignored)
     mfld_flag: if (mfldflag) then
 
@@ -937,7 +931,7 @@
                 end if
             end do
             if (.not.found) then
-                call cfastexit('MFIR', 4)
+                call cfastexit('read_mfir', 4)
             end if
             
             ! Scaling Fire HRR
@@ -952,7 +946,7 @@
                 if (fire%scalehrr) then
                     fire%hrrscaleval%val => fire%hrrscalevalue
                 else
-                    call cfastexit('MFIR', 5)
+                    call cfastexit('read_mfir', 5)
                 end if 
                 if (add_hrr_scale_to_parameters) then
                     fire%add_to_parameters = .true. 

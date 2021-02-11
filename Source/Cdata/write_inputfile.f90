@@ -625,11 +625,13 @@
                 call add_token_val(iounit,buf,'SETPOINT = ',ventptr%opening_criterion - kelvin_c_offset)
                 call add_token_val(iounit,buf,'PRE_FRACTION = ', ventptr%f(1))
                 call add_token_val(iounit,buf,'POST_FRACTION = ',ventptr%f(2))
+                call add_token_str(iounit,buf,'DEVC_ID = ',targetinfo(ventptr%opening_target)%id)
             else if (ventptr%opening_type == trigger_by_flux) then 
                 call add_token_str(iounit,buf,'CRITERION = ','FLUX')
                 call add_token_val(iounit,buf,'SETPOINT = ',ventptr%opening_criterion/1000.0_eb)
                 call add_token_val(iounit,buf,'PRE_FRACTION = ', ventptr%f(1))
                 call add_token_val(iounit,buf,'POST_FRACTION = ',ventptr%f(2))
+                call add_token_str(iounit,buf,'DEVC_ID = ',targetinfo(ventptr%opening_target)%id)
             end if
             if (ventptr%face == 1) then
                 call add_token_str(iounit, buf, 'FACE = ', 'FRONT')

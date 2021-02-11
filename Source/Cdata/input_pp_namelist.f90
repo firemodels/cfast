@@ -452,8 +452,11 @@
         read(lu,MFLD,iostat=ios)
         n_fields = n_fields + 1
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MFLD: Invalid specification for inputs.'
-            call cfastexit('read_mfld',1)
+            write(*, '(a,a,i3)') '***Error in &MFLD: Invalid specification for inputs.', &
+                'For &MFLD ', n_fields
+            write(iofill, '(a,a,i3)') '***Error in &MFLD: Invalid specification for inputs.', &
+                'For &MFLD ', n_fields
+            call cfastexit('read_mfld', 1)
         end if
     end do mfld_loop
 

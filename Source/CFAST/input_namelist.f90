@@ -2061,8 +2061,6 @@ continue
             ventptr%opening_target = 0
             do ic = 1,n_targets
                 targptr => targetinfo(ic)
-                write(*,*) 'target ', i, '|',trim(targptr%id),'|'
-                write(*,*) 'id ','|',trim(devc_id),'|'
                 if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = ic
             end do
             if (ventptr%opening_target==0) then
@@ -3091,10 +3089,10 @@ continue
     call initialize_memory
     
     convert_negative_distances = .false.
+    call read_devc(iofili)
     call read_tabl(iofili)
     call read_fire(iofili)
     call read_vent(iofili)
-    call read_devc(iofili)
     convert_negative_distances = .true. 
     
     close(iofili)

@@ -1554,14 +1554,16 @@
                 fldptr%realval%val => item%sill
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
-            elseif (trim(fieldid) == 'T_1') then
+            elseif (fieldid(1:2) == 'T_') then
                 found = .true.
-                fldptr%realval%val => item%t(1)
+                read(fieldid(3:5),'(i3)') i
+                fldptr%realval%val => item%t(i)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
-            elseif (trim(fieldid) == 'T_2') then
+            elseif (fieldid(1:2) == 'F_') then
                 found = .true.
-                fldptr%realval%val => item%t(2)
+                read(fieldid(3:5),'(i3)') i
+                fldptr%realval%val => item%f(i)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             elseif (trim(fieldid) == 'SETPOINT') then

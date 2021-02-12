@@ -177,7 +177,7 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct NUMBER\_OF\_CASES}          & Integer        & Section \ref{info:MHDR}   &     &                          \\ \hline
 {\ct OUTPUT\_DIRECTORY}          & Character      & Section \ref{info:MHDR}   &     & Local directory          \\ \hline
-{\ct PARAMETER\_FILENAME}        & Character      & Section \ref{info:MHDR}   &     & 'filename'\_parameters   \\ \hline
+{\ct PARAMETER\_FILENAME}        & Character      & Section \ref{info:MHDR}   &     & <project>\_parameters   \\ \hline
 {\ct SEEDS}                      & Integer Pair   & Section \ref{info:MHDR}   &     &                          \\ \hline
 {\ct WORK\_DIRECTORY}            & Character      & Section \ref{info:MHDR}   &     & Local directory          \\ \hline
 {\ct WRITE\_SEEDS}               & Logical        & Section \ref{info:MHDR}   &     & {\ct .TRUE.}             \\ \hline
@@ -345,7 +345,7 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 
 \clearpage
 
-\section{Monte Carlo Input Field Generators, Namelist Group \texorpdfstring{{\tt MFLD}}{MFLD}}
+\section{Monte Carlo Statistcal Plots, Namelist Group \texorpdfstring{{\tt MSTT}}{MSTT}}
 
 \noindent
 \renewcommand{\tabcolsep}{.1in}
@@ -366,18 +366,20 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 {\ct ID}                         & Character         & Section \ref{info:MSTT}   &      &     \\ \hline
 {\ct FYI}                        & Character         & Section \ref{info:MSTT}   &      &     \\ \hline
 {\ct ANALYSIS\_TYPE}                       & Selection List    & Section \ref{info:MSTT}   &      &     \\ \hline
-{\ct INPUT\_FILENAME}                      & Character Pair    & Section \ref{info:MSTT}   &      &     \\ \hline
+{\ct INPUT\_FILENAME}                      & Character Pair    & Section \ref{info:MSTT}   &    & <project>\_accumlate.csv  \\ \hline
 {\ct OUTPUT\_FILENAME}              & Character         & Section \ref{info:MSTT}   &      &     \\ \hline
-{\ct ERROR\_FILENAME}                   & Character         & Section \ref{info:MSTT}   &      &     \\ \hline
-{\ct LOG\_FILENAME}        & Logical           & Section \ref{info:MSTT}   &      &     \\ \hline
+{\ct ERROR\_FILENAME}                   & Character         & Section \ref{info:MSTT}   &    &  <project>.err  \\ \hline
+{\ct LOG\_FILENAME}        & Logical           & Section \ref{info:MSTT}   &      & <project>.log    \\ \hline
 {\ct COLUMN\_LABEL}   & Character         & Section \ref{info:MSTT}   &      &     \\ \hline
 
 \end{longtable}
 
 \noindent Examples:
 \begin{lstlisting}
-&MSTT ID = 'test 1' ANALYSIS_TYPE = 'HISTOGRAM' INPUT_FILENAME = 'Andy_1Story_parameters.csv' 
-      OUTPUT_FILENAME = 'Andy_1Story_bedroom_1_window.jpg'  COLUMN_TITLE = 'Bedroom 1 Front Window_SETPOINT' /
+&MSTT ID = 'test 1' ANALYSIS_TYPE = 'HISTOGRAM' 
+      INPUT_FILENAME = 'Andy_accumlate.csv' 
+      OUTPUT_FILENAME = 'Andy_bedroom_1_window.jpg'  
+      COLUMN_TITLE = 'Bedroom 1 Front Window_SETPOINT' /
 \end{lstlisting}
 
 

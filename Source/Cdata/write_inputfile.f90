@@ -617,8 +617,8 @@
             if (ventptr%opening_type == trigger_by_time) then
                 if (ventptr%t(1) /= 0._eb .or. ventptr%t(2) /= 0._eb) then
                     call add_token_str(iounit,buf,'CRITERION = ','TIME')
-                    call add_token_rarray(iounit,buf,'T = ',ventptr%t,2)
-                    call add_token_rarray(iounit,buf,'F = ',ventptr%f,2)
+                    call add_token_rarray(iounit,buf,'T = ',ventptr%t, ventptr%npoints)
+                    call add_token_rarray(iounit,buf,'F = ',ventptr%f, ventptr%npoints)
                 end if
             else if (ventptr%opening_type == trigger_by_temp) then 
                 call add_token_str(iounit,buf,'CRITERION = ','TEMPERATURE')

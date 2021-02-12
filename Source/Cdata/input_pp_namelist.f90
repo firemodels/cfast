@@ -247,12 +247,13 @@
         read(lu,MRND,iostat=ios)
         n_generators = n_generators + 1
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MRND: Invalid specification for inputs.'
+            write(*, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
+            write(iofill, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
             call cfastexit('read_mrnd',1)
         end if
     end do mrnd_loop
 
-    if (n_fields>mxfields) then
+    if (n_generators>mxgenerators) then
         write (*,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
         write (iofill,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
         call cfastexit('read_mrnd',2)
@@ -705,10 +706,10 @@
     
     
     character(len=128) :: id, fyi, analysis_type, input_filename, output_filename, error_filename, &
-        log_filename, column_title
+        log_filename, column_label
 
     namelist /MSTT/ id, fyi, analysis_type, input_filename, output_filename, error_filename, log_filename, &
-        column_title 
+        column_label 
                     
     
     ios = 1
@@ -803,7 +804,7 @@
                     call cfastexit('read_mstt', 5)
                 end if
             end if
-            statptr%col_title = column_title 
+            statptr%col_title = column_label 
                 
         end do read_mstt_loop
 
@@ -820,7 +821,7 @@
     output_filename = 'NULL'
     error_filename = 'NULL'
     log_filename = 'NULL'
-    column_title = 'NULL'
+    column_label = 'NULL'
 
     end subroutine set_defaults
     
@@ -1466,7 +1467,7 @@
     subroutine find_field(fieldid, item, fldptr, found)
     
     character(len=*), intent(in) :: fieldid
-    class(cfast_type), target, intent(in) :: item
+    class(cfast_type), target, intent(inout) :: item
     type(field_pointer), target, intent(inout) :: fldptr
     logical, intent(out) :: found
     
@@ -1557,6 +1558,7 @@
             elseif (fieldid(1:2) == 'T_') then
                 found = .true.
                 read(fieldid(3:5),'(i3)') i
+                item%npoints = max(item%npoints,i)
                 fldptr%realval%val => item%t(i)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
@@ -1564,6 +1566,7 @@
                 found = .true.
                 read(fieldid(3:5),'(i3)') i
                 fldptr%realval%val => item%f(i)
+                item%npoints = max(item%npoints,i)
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             elseif (trim(fieldid) == 'SETPOINT') then

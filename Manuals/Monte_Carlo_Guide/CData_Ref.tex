@@ -406,6 +406,8 @@ The {\ct \&MRND} defines a random number generator that uses a number of inputs 
 \subsection{Namelist MFLD}
 \label{info:MFLD}
 
+The basic structure in CData to change values of a CFAST input file is the { \ct \&MFLD} namelist. Its basic function is to marry a random generator given in a { \ct \&MRND} namelist to a particular value in a CFAST input file. Depending on how many fields are to be changed in a single Monte Carlo analysis there could be a very large number of { \ct \&MFLD} namelists and unlike { \ct \&MRND } namelists there is a one to one match between { \ct \&MFLD} namelists and entries to be changed. 
+
 \begin{description}
   \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
@@ -540,11 +542,18 @@ Secondly, inputs for the scaling fire are described.
 \subsection{Namelist MSTT}
 \label{info:MSTT}
 
+CData has a limited number of analysis tools built into it. These tools are activated when CData is called as 
+
+{\ct CData <project>.in -S}
+
+Control of what tools are used and what data it is run on is determined with the {\ct \&MSTT} namelist. The {\ct \&MSTT} namelist is the only namelist that can be added or changed and used on the Monte Carlo data without having to rerun the entire analysis. 
+
+
 \begin{description}
  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
  \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct CORRELATION\_TREES}.
- \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct input filename\_accumulate.csv}.
+ \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct i<project>\_accumulate.csv}.
  \item[OUTPUT\_FILENAME] The filename for the finish grafic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
  \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
@@ -563,6 +572,8 @@ Secondly, inputs for the scaling fire are described.
 
 
 \subsection{Namelist DUMP}
+
+When cases are run in CFAST a number of single values for the case such as maximum temperature in a compartment or the time to temperature reaching 600 C. These values are defined with the {\ct \&DUMP} namelist. 
 
 \begin{description}
   \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.

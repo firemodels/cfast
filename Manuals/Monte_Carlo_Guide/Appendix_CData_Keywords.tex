@@ -376,9 +376,9 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 
 \noindent Examples:
 \begin{lstlisting}
-&MSTT ID = 'test 1' ANALYSIS_TYPE = 'HISTOGRAM' 
-      INPUT_FILENAME = 'Andy_accumlate.csv' 
-      OUTPUT_FILENAME = 'Andy_bedroom_1_window.jpg'  
+&MSTT ID = 'test 1' ANALYSIS_TYPE = 'HISTOGRAM'
+      INPUT_FILENAME = 'Andy_accumlate.csv'
+      OUTPUT_FILENAME = 'Andy_bedroom_1_window.jpg'
       COLUMN_TITLE = 'Bedroom 1 Front Window_SETPOINT' /
 \end{lstlisting}
 
@@ -401,13 +401,9 @@ c:\firemodels\cfast7\cfast c:\data\testfire0   <<< note that the extension is op
 One or more command line options can follow the name of the file to be run as follows:
 
 \begin{itemize}
-\item -k - no interactive keyboard access
-\item -i - initialization only
-\item -c - compact output
-\item -f - full output (c and f are exclusive). Note the interaction of the f and c option. The default for the console output is -c. The default for the file output is /f. This default action can be overwritten by explicitly including the /f or /c option.
-\item -n - net heat flux option
-\item -s - limit spreadsheet output to the files specified: C for \_compartments.csv, D for \_devices.csv, M for \_masses.csv, V for \_vents.csv, and W for \_walls.csv. Default is -S:CDMVW for output of all spreadsheet files.
-\item -v - validation output (outputs a modified set of spreadsheet files with different column headers designed to facilitate automated analysis of the output)
+\item -A - {\it Accumulate} - combine individual summary files from all simulations in a data set into a single comma-separated spreadsheet file.
+\item -P - {\it Preprocessor} - Create a set of individual CFAST inputs files for Monte-Carlo analysis as specified in the base Monte-Carlo input file
+\item -S - {\it Statistics} - Create summary statistical outputs as specified in the base Monte-Carlo input file.
 \end{itemize}
 
 

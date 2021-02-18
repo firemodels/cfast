@@ -525,6 +525,7 @@ module solve_routines
             call write_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
             write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
+            call post_process
             stop
         end if
 
@@ -605,6 +606,7 @@ module solve_routines
                     write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    call post_process
                     call cfastexit ('solve_simulation', 3)
                     stop
                 end if

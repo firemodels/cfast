@@ -31,13 +31,11 @@
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
-    use spreadsheet_routines, only : output_spreadsheet_dump
     use utility_routines, only : cptime, read_command_options
 
-    use dump_data, only: n_dumps
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, program_name
+        program_name
 
     implicit none
 
@@ -84,10 +82,7 @@
     write (iofill,5010) total_steps
 
 
-    ! create the spreadsheet file of calculation results if necessary
-    if (n_dumps/=0.and.ss_out_interval/=0.) then
-        call output_spreadsheet_dump
-    end if
+    call post_process
 
     call cfastexit ('CFAST', 0)
 
@@ -95,3 +90,16 @@
 5010 format ('Total time steps = ',i10)
 
     end program cfast
+    
+    subroutine post_process
+    
+    use spreadsheet_routines, only : output_spreadsheet_dump
+    use dump_data, only: n_dumps
+    use setup_data, only: ss_out_interval
+    
+    ! create the spreadsheet file of calculation results if necessary
+    if (n_dumps/=0.and.ss_out_interval/=0.) then
+        call output_spreadsheet_dump
+    end if
+
+    end subroutine  post_process

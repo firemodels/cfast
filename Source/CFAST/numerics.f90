@@ -5965,6 +5965,7 @@
 
     ! abort the run if level = 2
     if (level/=2) return
+    call post_process
     stop
 
 5000 format (80a1)

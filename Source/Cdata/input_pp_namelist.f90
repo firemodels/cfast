@@ -836,7 +836,7 @@
     integer, intent(in) :: lu
     
     integer :: ios, ii, jj, kk, idx_firepts
-    logical :: mfirflag, found, found2, flameset, smolderset
+    logical :: mfirflag, found, found2, flameset, smolderset, time_to_1054_kW
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, hrr_scale_header, time_scale_header, &
         fire_compartment_random_generator_id, fire_compartment_id_header, &
@@ -875,7 +875,7 @@
         add_smoldering_ignition_time_to_parameters, add_smolder_ignition_peak_hrr_to_parameters, &
         add_flaming_ignition_time_to_parameters, add_flaming_ignition_peak_hrr_to_parameters, number_of_growth_points,&
         number_of_decay_points, growth_exponent, decay_exponent, add_hrr_to_parameters, add_time_to_parameters, &
-        hrr_labels, time_labels, add_fire_to_parameters
+        hrr_labels, time_labels, add_fire_to_parameters, time_to_1054_kW
     
     ios = 1
 
@@ -1220,6 +1220,7 @@
             If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(2)) /= 'NULL') then
                 fire%generate_fire =   .true. 
                 fire%add_to_parameters = .true.
+                fire%fire_time_to_1054_kw = time_to_1054_kW
                 if (flameset .or. smolderset) then
                     idx_firepts = 2
                 else 
@@ -1381,6 +1382,7 @@
     hrr_labels = 'NULL'
     time_labels = 'NULL'
     add_fire_to_parameters = .true.
+    time_to_1054_kW = .false.
     
     end subroutine set_defaults
     

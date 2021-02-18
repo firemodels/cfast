@@ -214,7 +214,8 @@ module preprocessor_types
         real(eb) :: growthexpo, decayexpo
         integer :: growth_npts, decay_npts, last_growth_pt, first_decay_pt
         integer :: n_firepoints, n_firegenerators
-        logical :: generate_fire = .false. 
+        logical :: generate_fire = .false.
+        logical :: fire_time_to_1054_kw
         type(field_pointer), dimension(2,mxpts) :: firegenerators
         real(eb), dimension(2, mxpts) :: firevals
         
@@ -523,8 +524,8 @@ module preprocessor_types
                 !call me%smolder_hrr_ptr%add_header(icol, array)
                 !call me%smolder_time_ptr%add_header(icol, array)
                 do i = 1, me%n_firepoints
-                    call me%firegenerators(1,i)%add_header(icol, array)
                     call me%firegenerators(2,i)%add_header(icol, array)
+                    call me%firegenerators(1,i)%add_header(icol, array)
                 end do 
                 me%parameter_field_set = .true. 
             class default
@@ -596,8 +597,8 @@ module preprocessor_types
                 call me%fire_label%write_value
                 call me%fs_fire_ptr%write_value
                 do i = 1, me%n_firepoints
-                    call me%firegenerators(1,i)%write_value
                     call me%firegenerators(2,i)%write_value
+                    call me%firegenerators(1,i)%write_value
                 end do
             class default
                 call me%errorcall('write_value',3)
@@ -1131,7 +1132,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         integer :: i, tmp, tmp1
-        real(eb) :: deltat, a, c
+        real(eb) :: deltat, a, c, a0, t1, t0
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
@@ -1196,14 +1197,25 @@ module preprocessor_types
                 else 
                     tmp1 = 0
                 end if
-                deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
-                a = (me%firegenerators(1,me%last_growth_pt+1)%realval%val - &
-                     me%firegenerators(1,1 + tmp1)%realval%val)/ &
-                    me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
-                c = me%firegenerators(1,1 + tmp1)%realval%val
+                if (.not. me%fire_time_to_1054_kw) then
+                    deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
+                    a = (me%firegenerators(1,me%last_growth_pt+1)%realval%val - &
+                        me%firegenerators(1,1 + tmp1)%realval%val)/ &
+                        me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
+                    c = me%firegenerators(1,1 + tmp1)%realval%val
+                    t0 = 0.0_eb
+                else 
+                    t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val
+                    c = me%firegenerators(1,me%last_growth_pt + 1)%realval%val
+                    a = 1054000.0_eb/t1**me%growthexpo
+                    t1 = (c/a)**(1/me%growthexpo)
+                    c = me%firegenerators(1,1 + tmp1)%realval%val
+                    t0 = (c/a)**(1/me%growthexpo)
+                    deltat = (t1 - t0)/(me%growth_npts + 1)
+                end if
                 do i = 2 + tmp1, me%last_growth_pt
                     me%fire%t_qdot(i) = deltat
-                    me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat)**me%growthexpo + c
+                    me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat + t0)**me%growthexpo + c
                 end do
                 me%fire%t_qdot(me%last_growth_pt + 1) = deltat
             end if

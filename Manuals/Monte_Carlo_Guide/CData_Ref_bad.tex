@@ -144,7 +144,7 @@ We also thank Dr. Wai Cheong Tam, (outside reader), and Nelson Bryner for their 
 
 \chapter{Introduction}
 
-The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results," \cite{wikipedia_montecarlo} with Stanislaw Ulam credited with inventing the modern version of the Markov Chain Monte Carlo method working on nuclear weapons projects in the 1940s. \cite{Metropolis:1987} In the 80’s and before research was ongoing to make use of Monte Carlo design as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. Bruns \cite{bruns_tn_2016} formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance based designs. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
+The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results," \cite{wikipedia_montecarlo} with Stanislaw Ulam credited with inventing the modern version of the Markov Chain Monte Carlo method working on nuclear weapons projects in the 1940s. \cite{Metropolis:1987} In the 80’s and before research was ongoing to make use of Monte Carlo design as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{NFPA_5000} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. Bruns \cite{NFPA_5000} formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance based designs. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
 
 While at one time the issue was one of both computational power and tools designed to do the analysis, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis using the Consolidated Fire And Smoke Transport (CFAST) model. The result of this effort is the CFAST Fire Data Generator (CData), documented in this report.
 
@@ -154,7 +154,7 @@ While at one time the issue was one of both computational power and tools design
 
 \chapter{Defining the Question and the Analysis}
 
-As briefly discussed in the introduction significant research has gone into understanding the basic requirements for a Monte Carlo analysis in a fire safety analysis \cite{Bukowski_1985,Clarke_1990,NFPA_5000,Hurley_2016,bruns_tn_2016}. Several key areas that need to be addressed in the analysis include definition of:
+As briefly discussed in the introduction significant research has gone into understanding the basic requirements for a Monte Carlo analysis in a fire safety analysis \cite{Bukowski_1985}, \cite{Clarke_1990}, \cite{NFPA_5000}, \cite{NFPA_5000}, \cite{NFPA_5000}. Several key areas that need to be addressed in the analysis include definition of:
 
 \begin{enumerate}
   \item Community / Building / Occupant characteristics
@@ -378,7 +378,7 @@ The {\ct \&MHDR} inputs specify general inputs the scenarios to be generated inc
 The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator. 
 
 \begin{description}
-  \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters. 
+  \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct TRUNCATE\_NORMAL}, {\ct LOG\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL} {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
@@ -395,7 +395,7 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
   \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
   \item[MINIMUM\_FIELD] specifies the ID of the specific \&MFLD within the input whose value is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the vent height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low the height of the compartment is set.
   \item[MAXIMUM\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MAXIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the ceiling height input such as {\ct MAXIMUM\_FIELD="Comp 1", "HEIGHT"} to limit how high the top of the vent is set.
-  \item[STACK\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be added to the value generated by the current random generator. Suppose that a vent is to be closed at a random time, then a second random generator can be set as a constant 1 s and have the first \&MFLD as the STACK\_FIELD  to have the time the vent finishes closing to be 1 s after the start.
+  \item[ADD\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be added to the value generated by the current random generator. Suppose that a vent is to be closed at a random time, then a second random generator can be set as a constant 1 s and have the first \&MFLD as the ADD\_FIELD  to have the time the vent finishes closing to be 1 s after the start.
 \end{description}
 
 \vspace{\baselineskip}
@@ -411,7 +411,7 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
 The basic structure in CData to change values of a CFAST input file is the { \ct \&MFLD} input. Its basic function is to marry a random generator given in a { \ct \&MRND} namelist to a particular value in a CFAST input file. Depending on how many fields are to be changed in a single Monte Carlo analysis there could be a very large number of { \ct \&MFLD} inputs and unlike { \ct \&MRND } inputs, there is a one to one match between { \ct \&MFLD} inputs and CFAST entries to be changed.
 
 \begin{description}
-  \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 128 characters. 
+  \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD="Comp 1","HEIGHT"} would vary the height of the compartment named {\ct Comp 1}.
   \item[TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES}       input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
@@ -449,7 +449,7 @@ The following example shows the height of a door to the bedroom in the above exa
 Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution) or to define a power law fire based on several inputs.
 
 \begin{description}
-  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters. 
+  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
   \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dQ^*$, is defined as $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
@@ -552,11 +552,11 @@ Control of what tools are used and what data it is run on is determined with the
 
 
 \begin{description}
- \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters. 
+ \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
  \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct DECISION\_TREES}.
  \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct i<project>\_accumulate.csv}.
- \item[OUTPUT\_FILENAME] The filename for the finish graphic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
+ \item[OUTPUT\_FILENAME] The filename for the finish grafic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
  \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
  \item[COLUMN\_LABEL] The name in the first row for the column to use for the analysis.
@@ -578,7 +578,7 @@ Control of what tools are used and what data it is run on is determined with the
 When cases are run in CFAST, a number of single values for the case such as maximum temperature in a compartment or the time to temperature reaching 600 C. These values are defined with the {\ct \&DUMP} namelist input.
 
 \begin{description}
-  \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 64 characters. 
+  \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FILE] specifies which of the CFAST output files are used for the summary output. Allowable inputs are {\ct COMPARTMENTS}, {\ct DEVICES}, {\ct FIRES}, {\ct MASSES}, or {\ct WALLS}.
   \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
@@ -754,7 +754,7 @@ In order to allow CFAST cases to be run efficiently in parallel on systems with 
 
 \subsection{Statistics}
 
-The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&DUMP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it in important to include {\ct \&DUMP} inputs for everything that might be of interest to avoid having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&DUMP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it in important to include {\ct \&DUMP} inputs for everything that might be of interest to aviod having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
@@ -999,13 +999,13 @@ As a first step, we do a preliminary check to see if we have enough cases, Figs.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-1.pdf}
-\caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
+\caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-convergence_of_mean}
 \end{figure}
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
-\caption{Standard deviation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
+\caption{Standard deviation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases.}
 \label{Ex_3-standard_error}
 \end{figure}
 
@@ -1194,7 +1194,7 @@ In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly a
 \hypertarget{number-of-cases}{%
 \subsection{Number of Cases}\label{number-of-cases}}
 
-An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down. So these results are based on 10~000 cases.
+An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled downn. So these results are based on 10~000 cases.
 
 \begin{figure}[h!]
 \centering

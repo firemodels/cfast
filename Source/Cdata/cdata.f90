@@ -64,17 +64,3 @@
 
     end program CData
     
-    subroutine post_process
-    
-    use spreadsheet_routines, only : output_spreadsheet_dump
-    use dump_data, only: n_dumps
-    use setup_data, only: ss_out_interval
-    
-    ! create the spreadsheet file of calculation results if necessary
-    if (n_dumps/=0.and.ss_out_interval/=0.) then
-        call output_spreadsheet_dump
-    end if
-
-    end subroutine  post_process
-    
-    

@@ -40,7 +40,7 @@
     integer :: restart_values(9)
     
     integer, parameter :: mxanalys = 4
-    character(len = 20), parameter :: analysis_list(mxanalys) = (/'CORRELATION_TREES  ', &
+    character(len = 20), parameter :: analysis_list(mxanalys) = (/'DECISION_TREE      ', &
                                                                   'CONVERGENCE_OF_MEAN', &
                                                                   'HISTOGRAM          ', &
                                                                   'EMPERICAL_PDF      '/)

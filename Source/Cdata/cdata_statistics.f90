@@ -54,7 +54,7 @@ module statistics_routines
     
     do  i = 1, n_stats
         buf = ' '
-        if (trim(statinfo(i)%analysis_type) == 'CORRELATION_TREES') then 
+        if (trim(statinfo(i)%analysis_type) == 'DECISION_TREE') then 
             !buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.R outname="'
             buf = '"C:\Program Files\R\R-4.0.2\bin\Rscript" rpart.3.0x24.R outname="'
         else if (trim(statinfo(i)%analysis_type) == 'CONVERGENCE_OF_MEAN') then

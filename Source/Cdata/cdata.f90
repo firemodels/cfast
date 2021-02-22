@@ -64,3 +64,10 @@
 
     end program CData
     
+    subroutine post_process
+    
+    ! We don't use this in CData, but need a dummy routine to resolve linker error
+    return
+
+    end subroutine  post_process
+    

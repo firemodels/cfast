@@ -81,7 +81,6 @@
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
 
-
     call post_process
 
     call cfastexit ('CFAST', 0)

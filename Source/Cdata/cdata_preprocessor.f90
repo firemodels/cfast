@@ -124,7 +124,7 @@ module preprocessor_routines
         generatorinfo(i)%seeds(1:mxseeds) = -1001
         call generatorinfo(i)%set_max_value(d1mach(2))
         call generatorinfo(i)%set_min_value(-d1mach(2))
-        call generatorinfo(i)%set_stack_value(0.0_eb)
+        call generatorinfo(i)%set_add_value(0.0_eb)
         generatorinfo(i)%max_offset = 0.0_eb
         generatorinfo(i)%min_offset = 0.0_eb
     end do

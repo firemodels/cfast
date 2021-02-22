@@ -554,7 +554,7 @@ Control of what tools are used and what data it is run on is determined with the
 \begin{description}
  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.
   \item[FYI] A user defined comment that can provide additional information about the input.
- \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct CORRELATION\_TREES}.
+ \item[ANALYSIS\_TYPE] Describes the type of analsysi to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct DECISION\_TREES}.
  \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct i<project>\_accumulate.csv}.
  \item[OUTPUT\_FILENAME] The filename for the finish grafic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
@@ -773,8 +773,8 @@ The base input file used to generate the set of individual CFAST input files may
 &MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg'
 	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 
-&MSTT ID = 'Correlation Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg'
-	ANALYSIS_TYPE = 'CORRELATION_TREES' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+&MSTT ID = 'Decision Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.jpg'
+	ANALYSIS_TYPE = 'DECISION_TREES' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 \end{lstlisting}
 
 To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -S} option,
@@ -783,7 +783,7 @@ To create the spreadsheet file of summary values after all of the CFAST cases ha
 {\ct cdata Simple.in -S}
 \vspace{\baselineskip}
 
-When a {\ct \&MSTT} namelist is processed, it generates a number of files. These include an error file (*.err) if there is an error in the analysis, a log file (*.log) that documents the steps that are taken in the analysis and the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is also a final *.csv file. This allows users to use their preferred graphics packages to create the graphics. There is no extra output for the {\ct 'CORRELATION\_TREES'} because there is not a standard simple method of documenting a tree graph.
+When a {\ct \&MSTT} namelist is processed, it generates a number of files. These include an error file (*.err) if there is an error in the analysis, a log file (*.log) that documents the steps that are taken in the analysis and the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is also a final *.csv file. This allows users to use their preferred graphics packages to create the graphics. There is no extra output for the {\ct 'DECISION\_TREES'} because there is not a standard simple method of documenting a tree graph.
 
 \subsubsection{Histograms}
 
@@ -853,7 +853,7 @@ One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maxi
 \begin{figure}[h!]
 \centering
 \includegraphics[width=6.5in]{FIGURES/simple_tree_temp.jpeg}
-\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\caption{Sample of Decision Tree for maximum upper layer temperature}
 \label{simple_tree_temp}
 \end{figure}
 
@@ -1045,15 +1045,15 @@ Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms act
 
 For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
 
-To better understand the cases where the bedroom alarm fails to sound, a classification tree was generated on whether the bedroom alarm sounded (Fig \ref{Ex_3-classification_tree}). It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
+To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated on whether the bedroom alarm sounded (Fig \ref{Ex_3-decision_tree}). It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
 
 Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 seconds. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/cart-1.pdf}
-\caption{Classification tree separating cases where the bedroom alarm sounded from those where it did not.}
-\label{Ex_3-classification_tree}
+\caption{Decision tree separating cases where the bedroom alarm sounded from those where it did not.}
+\label{Ex_3-decision_tree}
 \end{figure}
 \begin{figure}[h!]
 \centering

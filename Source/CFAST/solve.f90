@@ -215,6 +215,7 @@ module solve_routines
     !     is presently used by DASSL. The important point is that N_ODES is set to
     !     NOFPRD
 
+    external post_process
     real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5

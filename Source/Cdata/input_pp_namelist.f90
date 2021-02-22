@@ -223,12 +223,12 @@
     integer :: integer_constant_value
     character(len=128) :: character_constant_value
     logical :: logical_constant_value
-    character(len=128) :: minimum_field,  maximum_field, stack_field
+    character(len=128) :: minimum_field,  maximum_field, add_field
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, random_seeds, real_values, integer_values, string_values, logical_values, &
         probabilities, real_constant_value, integer_constant_value, character_constant_value, &
-        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, stack_field
+        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, add_field
                     
     
     ios = 1
@@ -298,10 +298,10 @@
             else
                 call genptr%set_max_value(maximum)
             end if
-            if (trim(stack_field) /= 'NULL') then
-                call genptr%set_stack_to_use_field(stack_field)
+            if (trim(add_field) /= 'NULL') then
+                call genptr%set_add_to_use_field(add_field)
             else
-                call genptr%set_stack_value(0.0_eb)
+                call genptr%set_add_value(0.0_eb)
             end if
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
@@ -403,7 +403,7 @@
     logical_constant_value = .false.
     minimum_field = 'NULL'
     maximum_field = 'NULL'
-    stack_field = 'NULL'
+    add_field = 'NULL'
     minimum_offset = 0.0_eb
     maximum_offset = 0.0_eb
 
@@ -646,11 +646,11 @@
                                 end if
                             end do
                         end if 
-                        if (.not. fldptr%stack_dependency_set()) then
+                        if (.not. fldptr%add_dependency_set()) then
                             do jj = idx1, idx2
-                                if (trim(fldptr%stack_dependency()) == &
+                                if (trim(fldptr%add_dependency()) == &
                                     trim(fieldinfo(fieldptr(jj))%id)) then
-                                    call fldptr%set_stack_field(fieldinfo(fieldptr(jj)))
+                                    call fldptr%set_add_field(fieldinfo(fieldptr(jj)))
                                     found = .true.
                                 end if
                             end do

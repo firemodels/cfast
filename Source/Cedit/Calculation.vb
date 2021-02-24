@@ -7,11 +7,11 @@ Public Class Dump
     Private aID As String                   ' id used a heading for output column
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
-    Private aCriterion As Double             ' Value used in 'trigger_...' analysis
+    Private aCriterion As Double            ' Value used in 'trigger_...' analysis
     Private aFirstMeasurement As String     ' Name of measurement, second row in spreadsheet
-    Private aFirstDevice As String            ' Name of instrument within the measurement, third row in spreadsheet
+    Private aFirstDevice As String          ' Name of instrument within the measurement, third row in spreadsheet
     Private aSecondMeasurement As String    ' Name of measure for second instrument, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
-    Private aSecondDevice As String           ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
+    Private aSecondDevice As String         ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
     Private aFYI As String                  ' Descriptor for additional user supplied information
 
     Public Sub New()

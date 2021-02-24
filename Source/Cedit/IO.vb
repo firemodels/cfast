@@ -2846,7 +2846,7 @@ Module IO
 
                 ln = "&DUMP ID = '" + aDump.ID + "'"
                 PrintLine(IO, ln)
-                ln = "     TYPE = '" + adump.FileType + "'  TYPE = '" + adump.Type + "'"
+                ln = "     FILE = '" + adump.FileType + "'  TYPE = '" + adump.Type + "'"
                 If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  CRITERION = " + adump.Criterion.ToString
                 End If

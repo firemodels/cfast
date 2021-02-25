@@ -6785,7 +6785,6 @@ Public Class CeditMain
         TempFires = New FireCollection
         myVisuals = New VisualCollection
         myErrors.Queue.Clear()
-        myRamps = New RampCollection
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop

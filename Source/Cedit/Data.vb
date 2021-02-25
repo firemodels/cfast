@@ -51,8 +51,6 @@ Friend Module Data
     Friend TempThermalProperties As New ThermalPropertiesCollection
     Friend Const MaximumThermalProperties As Integer = 150
 
-    Friend myRamps As New RampCollection
-
     Friend myDumps As New MonteCarloCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)

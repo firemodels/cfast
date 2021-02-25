@@ -115,7 +115,6 @@ Public Class Fire
         aSootYield = 0.0
         aTSYield = 0.0
         aCommentsIndex = -1
-        Me.InitilizeFireTimeSeries()
     End Sub
     Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Double, ByVal Hoc As Double, ByVal RadiativeFraction As Double)
         ' New to define a fire object with all the details
@@ -177,7 +176,6 @@ Public Class Fire
         FireTimeSeries(FireMdot, 22) = 0.0
         FireTimeSeries(FireHRR, 22) = 0
         FireTimeSeries(FireArea, 0) = 0.001 ' set to a small non-zero value because CFAST doesn't like zero fire area
-        Me.InitilizeFireTimeSeries()
         myUnits.SI = True
         SetFireData(FireTimeSeries)
         myUnits.SI = False
@@ -558,39 +556,10 @@ Public Class Fire
             aChanged = Value
         End Set
     End Property
-    Private Sub InitilizeFireTimeSeries()
-        Dim tmpRamp As Ramp
-        Dim i As Integer
-
-        For i = 1 To 12
-            aRampIDs(i) = RampNames(i) + "_" + (myRamps.Count + 1).ToString
-            tmpRamp = New Ramp
-            tmpRamp.Name = aRampIDs(i)
-            tmpRamp.DimF = 0
-            tmpRamp.X(0) = 0
-            tmpRamp.F(0) = 0
-            tmpRamp.IsT = True
-            If i = Fire.FireArea Then
-                tmpRamp.Type = Ramp.TypeArea
-            ElseIf i = Fire.FireHRR Then
-                tmpRamp.Type = Ramp.TypeHRR
-            Else
-                tmpRamp.Type = Ramp.TypeFrac
-            End If
-            myRamps.Add(tmpRamp)
-        Next
-
-    End Sub
-    Private Property DimFireTimeSeries() As Integer
+    Private ReadOnly Property DimFireTimeSeries() As Integer
         Get
-            Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(2))).DimF
+            Return aFireTimeSeries.GetUpperBound(1)
         End Get
-        Set(ByVal value As Integer)
-            Dim i As Integer
-            For i = 1 To 12
-                myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).DimF = value
-            Next
-        End Set
     End Property
     Private ReadOnly Property NumFireTimeSeries() As Integer
         Get

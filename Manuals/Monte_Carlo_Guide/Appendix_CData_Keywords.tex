@@ -279,6 +279,91 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 
 \clearpage
 
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
+\caption[{\ct \&MFLD} Inputs That Can be Varied Based on User-Defined Distributions]{{\ct \&MFLD} Inputs That Can be Varied Based on User-Defined Distributions}
+\label{tbl:distributable_variables} \\ \hline
+\parbox{1.5in}{\bf Category}    & \parbox{1.5in}{\bf Input}  & \parbox{1.5in}{\bf {\ct \&MFLD} Input}  & \parbox{1in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{1.5in}{\bf Category}    & \parbox{1.5in}{\bf Input}  & \parbox{1.5in}{\bf {\ct \&MFLD} Input}  & \parbox{1in}{\bf Units} \\ \hline
+\endhead
+Ambient Conditions      & Interior Temperature          && \degc                     \\
+                        & Exterior Temperature          && \degc                     \\
+                        & Relative Humidity             && \%                        \\ \hline
+Thermal Properties      & Thermal Conductivity          && kW/(m~\degc)              \\
+                        & Specific Heat                 && kJ/(kg~\degc)             \\
+                        & Density                       && kg/m$^3$                  \\
+                        & Default Thickness             && m                         \\
+                        & Emissivity                    &&                           \\ \hline
+Compartments            & Width                         && m                         \\
+                        & Depth                         && m                         \\
+                        & Height                        && m                         \\
+                        & Wall Leak Area Ratio          && m$^2$/m$^2$               \\
+                        & Floor Leak Area Ratio         && m$^2$/m$^2$               \\ \hline
+ Wall Vents             & Sill                          && m                         \\
+                        & Soffit                        && m                         \\
+                        & Width                         && m                         \\
+                        & Initial Opening Fraction      && 0-1                       \\
+                        & Open/Close Time               && s                         \\
+                        & Final Opening Fraction        && 0-1                       \\
+                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       && 0-1                       \\
+                        & Post-Activation Fraction      && 0-1                       \\ \hline
+ Ceiling / Floor Vents  & Cross-Sectional Area          && m$^2$                     \\
+                        & Initial Opening Fraction      && 0-1                       \\
+                        & Open/Close Time               && s                         \\
+                        & Final Opening Fraction        && 0-1                       \\
+                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       && 0-1                       \\
+                        & Post-Activation Fraction      && 0-1                       \\ \hline
+ Mechanical Vents       & From Compartment Area         && m$^2$                     \\
+                        & From Compartment Height       && m                         \\
+                        & To Compartment Area           && m$^2$                     \\
+                        & To Compartment Height         && m                         \\
+                        & Flow Rate                     && m$^3$/s                   \\
+                        & Begin Dropoff                 && Pa                        \\
+                        & End Dropoff                   && Pa                        \\
+                        & Initial Opening Fraction      && 0-1                       \\
+                        & Open/Close Time               && s                         \\
+                        & Final Opening Fraction        && 0-1                       \\
+                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       && 0-1                       \\
+                        & Post-Activation Fraction      && 0-1                       \\
+                        & Filter Efficiency             && \%                        \\
+                        & Begin Filtering Time          && s                         \\ \hline
+Fire Location           & Compartment                   && Selection List            \\
+                        & Width Position                && m                         \\
+                        & Depth Position                && m                         \\ \hline
+Fuel Composition        & Carbon Molecules              && $\geq$ 0                  \\
+                        & Hydrogen Molecules            && $\geq$ 0                  \\
+                        & Oxygen Molecules              && $\geq$ 0                  \\
+                        & Nitrogen Molecules            && $\geq$ 0                  \\
+                        & Chlorine Molecules            && $\geq$ 0                  \\
+                        & Heat of Combustion            && kJ/kg                     \\
+                        & Radiative Fraction            && 0 - 1                     \\ \hline
+Ignition Criteria       & Ignition Criterion            && Selection List            \\
+                        & Setpoint                      && s, \degc, or kW/m$^2$     \\ \hline
+Targets                 & Width Target Position         && m                         \\
+                        & Depth Target Position         && m                         \\
+                        & Height Target Position        && m                         \\
+                        & Width Normal Vector           && 0-1                       \\
+                        & Depth Normal Vector           && 0-1                       \\
+                        & Height Normal Vector          && 0-1                       \\
+                        & Target Points To              && Selection List            \\
+                        & Thickness                     && m                         \\
+                        & Internal Temperature Location && m                         \\ \hline
+Detection / Suppression & Width Position                && m                         \\
+                        & Depth Position                && m                         \\
+                        & Height Position               && m                         \\
+                        & Activation Temperature        && \degc                     \\
+                        & Activation Obscuration        && \%/m                      \\
+                        & RTI                           && (m~s)$^{1/2}$             \\
+                        & Spray Density                 && m/s                       \\ \hline
+\end{longtable}
+
+\clearpage
+
 \section{Monte Carlo Input Fire Generators, Namelist Group \texorpdfstring{{\tt MFIR}}{MFIR}}
 
 \begin{landscape}

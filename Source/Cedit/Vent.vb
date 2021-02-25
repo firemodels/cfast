@@ -42,9 +42,8 @@ Public Class Vent
     Private aInitialOpeningTime As Double       ' Last time vent is open at initial opening fraction
     Private aFinalOpening As Double             ' EVENT vent opening fraction or HHEAT connected fraction
     Private aFinalOpeningTime As Double         ' EVENT vent opening times
-    Private aRampTimePoints(0) As Double        ' Vent opening times from RAMP input
-    Private aRampFractionPoints(0) As Double    ' Vent open fractions from RAMP input
-    Private aRampID As String                   ' One word name of ramp for RAMP input
+    Private aRampTimePoints(0) As Double        ' Vent opening times
+    Private aRampFractionPoints(0) As Double    ' Vent open fractions
     Private aArea As Double                     ' Cross-sectional area of vent for Ceiling/Floor vents
     Private aShape As Integer                   ' Ceiling/Floor vent shape, 1 for circular and 2 for square
     Private aFirstArea As Double                ' Mechanical vent opening size in first compartment
@@ -498,17 +497,6 @@ Public Class Vent
             If Value <> aName Then
                 aChanged = True
                 aName = Value
-            End If
-        End Set
-    End Property
-    Public Property RampID() As String
-        Get
-            Return aRampID
-        End Get
-        Set(value As String)
-            If value <> aRampID Then
-                aRampID = value
-                aChanged = True
             End If
         End Set
     End Property

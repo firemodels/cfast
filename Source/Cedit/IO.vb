@@ -265,7 +265,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
-        Dim rampid, id, fyi As String
+        Dim id, fyi As String
         Dim depth, height, width As Double
         Dim shaft, hall, valid, leakasarea, leakasratio As Boolean
         Dim grid(3) As Integer
@@ -281,7 +281,6 @@ Module IO
                 width = -1
                 height = -1
                 id = ""
-                rampid = ""
                 fyi = ""
                 Dim ceilid As String() = {"", "", "", ""}
                 Dim floorid As String() = {"", "", "", ""}
@@ -924,7 +923,7 @@ Module IO
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Double
         Dim tt(0), ff(0) As Double
-        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
+        Dim compids(2), filtramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
         Dim valid As Boolean
         Dim comp0dx, comp1dx As Integer
 
@@ -956,7 +955,6 @@ Module IO
                     heights(k) = -1
                     offsets(k) = -1
                 Next
-                openramp = ""
                 shape = ""
                 type = ""
                 width = -1
@@ -973,8 +971,6 @@ Module IO
                         face = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTERING_RAMP_ID" Then
                         filtramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "OPENING_RAMP_ID" Then
-                        openramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "ORIENTATIONS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 2 And max <= 2 Then
@@ -1130,7 +1126,6 @@ Module IO
                         End If
                         aVent.Offset = offset
                         If crit = "TIME" Then
-                            aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
                             aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then
@@ -1185,7 +1180,6 @@ Module IO
                         aVent.FilterEfficiency = filteff
                         aVent.FlowRate = flow
                         If crit = "TIME" Then
-                            aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
                             aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then
@@ -1226,7 +1220,6 @@ Module IO
                         aVent.OffsetX = offsets(0)
                         aVent.OffsetY = offsets(1)
                         If crit = "TIME" Then
-                            aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
                             aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then

@@ -82,7 +82,6 @@ Public Class Fire
     Private aFireTimeSeries(12, 0) As Double        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
-    Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
                                              "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
     Private aColNames() As String = {"TIME", "MDOT", "HRR", "HEIGHT", "AREA", "CO_YIELD", "SOOT_YIELD", "HC_YIELD", "O2_YIELD",

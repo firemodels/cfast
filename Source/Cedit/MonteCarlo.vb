@@ -1,7 +1,7 @@
-Public Class Dump
+Public Class MonteCarlo
 
 
-    Friend Const MaximumDumps As Integer = 1000
+    Friend Const MaximumMonteCarlos As Integer = 1000
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aID As String                   ' id used a heading for output column
@@ -86,6 +86,16 @@ Public Class Dump
             End If
         End Set
     End Property
+    Public Sub SetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+        ID = aID
+        aFileType = FileType
+        aType = Type
+        aCriterion = Criterion
+        aFirstMeasurement = FirstMeasurement
+        aFirstDevice = FirstDevice
+        aSecondMeasurement = SecondMeasurement
+        aSecondDevice = SecondDevice
+    End Sub
     Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         aID = ID
         FileType = aFileType
@@ -97,25 +107,25 @@ Public Class Dump
         SecondDevice = aSecondDevice
     End Sub
 End Class
-Public Class DumpCollection
+Public Class MonteCarloCollection
     Inherits System.Collections.CollectionBase
-    Friend ReadOnly Maximum As Integer = Dump.MaximumDumps
+    Friend ReadOnly Maximum As Integer = MonteCarlo.MaximumMonteCarlos
 
-    Public Sub Add(ByVal aDump As Dump)
-        List.Add(aDump)
+    Public Sub Add(ByVal aMonteCarlo As MonteCarlo)
+        List.Add(aMonteCarlo)
     End Sub
-    Default Public Property Item(ByVal index As Integer) As Dump
+    Default Public Property Item(ByVal index As Integer) As MonteCarlo
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Dump number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). MonteCarlo number not found.")
                 ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
-                Dim aDump As New Dump
-                Return aDump
+                Dim aMonteCarlo As New MonteCarlo
+                Return aMonteCarlo
             Else
-                Return CType(List.Item(index), Dump)
+                Return CType(List.Item(index), MonteCarlo)
             End If
         End Get
-        Set(ByVal Value As Dump)
+        Set(ByVal Value As MonteCarlo)
             List.Item(index) = Value
         End Set
     End Property

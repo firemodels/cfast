@@ -24,10 +24,10 @@ Public Class Environment
     Private aExtAmbElevation As Double              ' Reference elevation for measurement of ambients outside the structure
     Private aExtWindSpeed As Double                 ' Ambient wind speed outside the structure
     Private aExtScaleHeight As Double               ' Height at which wind speed is measured
-    Private aExtPowerLawCoefficient As Double       ' Power law coefficient for Dump of wind speed at height, normally 0.16
+    Private aExtPowerLawCoefficient As Double       ' Power law coefficient for calculation of wind speed at height, normally 0.16
     Private aLowerOxygenLimit As Double             ' Oxygen concentration below which burning will not take place.  Default is 15 % by volume
     Private aIgnitionTemp As Double                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
-    Private aMaximumTimeStep As Double              ' Maximum time step for model Dumps
+    Private aMaximumTimeStep As Double              ' Maximum time step for model calculations
     Private aInputFileName As String                ' Current input data file name
     Private aInputFilePath As String                ' Path to current input data file
     Private aAdiabaticWalls As Boolean              ' True if all walls are adiabatic

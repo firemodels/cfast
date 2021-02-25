@@ -31,7 +31,6 @@ Public Class Compartment
     Private aAreaPoints(0) As Double        ' Vector of room areas as a function of height
     Private aHeightPoints(0) As Double      ' Vector of room heights corresponding to room areas
     Private aGridCells(3) As Integer        ' Number of grid cells for visualization in x, y, z directions
-    Private aAreaRampID As String           ' Name of Ramp for area as a function of height
     Private aWallLeak As Double             ' Wall leakage per unit area of wall
     Private aFloorLeak As Double            ' Floor leakage per unit area of floor
     Private aFYI As String                  ' Descriptor for additional user supplied information
@@ -62,7 +61,6 @@ Public Class Compartment
         aShaft = False
         aHall = False
         aGridCells = {50, 50, 50, 50}
-        aAreaRampID = ""
     End Sub
     Public Property Name() As String
         Get
@@ -351,17 +349,6 @@ Public Class Compartment
             If value <> aGridCells(3) Then
                 aChanged = True
                 aGridCells(3) = value
-            End If
-        End Set
-    End Property
-    Public Property AreaRampID() As String
-        Get
-            Return aAreaRampID
-        End Get
-        Set(value As String)
-            If value <> aAreaRampID Then
-                aChanged = True
-                aAreaRampID = value
             End If
         End Set
     End Property

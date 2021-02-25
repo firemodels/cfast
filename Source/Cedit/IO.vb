@@ -1665,7 +1665,7 @@ Module IO
         Next
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As DumpCollection)
+    Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As MonteCarloCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
         Dim criterion As Double
@@ -1710,7 +1710,7 @@ Module IO
                         myErrors.Add("In DUMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someDumps.Add(New Dump(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
+                someDumps.Add(New MonteCarlo(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
             End If
         Next
     End Sub
@@ -2832,8 +2832,8 @@ Module IO
         End If
     End Sub
 
-    Private Sub WriteOutputFileNMLDump(ByVal IO As Integer, MyDumps As DumpCollection)
-        Dim ln As String, i As Integer, adump As Dump
+    Private Sub WriteOutputFileNMLDump(ByVal IO As Integer, MyDumps As MonteCarloCollection)
+        Dim ln As String, i As Integer, adump As MonteCarlo
 
         ' Writing Dumps
         If MyDumps.Count > 0 Then
@@ -2842,21 +2842,21 @@ Module IO
             PrintLine(IO, ln)
 
             For i = 0 To MyDumps.Count - 1
-                aDump = MyDumps.Item(i)
+                adump = MyDumps.Item(i)
 
-                ln = "&DUMP ID = '" + aDump.ID + "'"
+                ln = "&DUMP ID = '" + adump.ID + "'"
                 PrintLine(IO, ln)
                 ln = "     FILE = '" + adump.FileType + "'  TYPE = '" + adump.Type + "'"
-                If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
+                If adump.Type <> "MINIMUM" And adump.Type <> "MAXIMUM" And adump.Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  CRITERION = " + adump.Criterion.ToString
                 End If
                 PrintLine(IO, ln)
                 ln = "     FIRST_FIELD = '" + adump.FirstDevice + "', '" + adump.FirstMeasurement + "'"
-                If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
+                If adump.Type <> "MINIMUM" And adump.Type <> "MAXIMUM" And adump.Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  SECOND_FIELD = '" + adump.SecondDevice + "', '" + adump.SecondMeasurement + "'"
                 End If
-                If aDump.FYI <> "" Then
-                    ln += " FYI = '" + aDump.FYI + "'"
+                If adump.FYI <> "" Then
+                    ln += " FYI = '" + adump.FYI + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

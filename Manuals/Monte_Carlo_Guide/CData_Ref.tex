@@ -324,7 +324,7 @@ Time Histories          & \multicolumn{2}{|c|}{See Section \ref{Fire_Time_Histor
 \subsubsection{Time Histories}
 \label{Fire_Time_Histories}
 
-Some examples of different definitions of time histories go here.
+The meat and potatoes of the fire definition are the time histories. There are three important variables that have the largest impact on the running of CFAST. The first two are obvious, the time and HRR entries. However, the third is often overlooked, the area. When the area has a significant impact on the entrainment of the fire. Typically fire areas that are much two small for the HRR can result in the model giving strange answers and even failing. 
 
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
@@ -335,7 +335,8 @@ Some examples of different definitions of time histories go here.
 \caption[]{Continued} \\ \hline
 \parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
 \endhead
-Time Histories          & HRR                           & kW                        \\
+Time Histories    & Time                         & s                           \\
+						& HRR                           & kW                        \\
                         & Fire Height                   & m                         \\
                         & Fire Area                     & m$^2$, >0                 \\
                         & CO Yield                      & kg CO/kg fuel             \\

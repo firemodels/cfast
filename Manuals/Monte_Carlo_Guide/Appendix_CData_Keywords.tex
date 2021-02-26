@@ -288,78 +288,82 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \caption[]{Continued} \\ \hline
 \parbox{1.5in}{\bf Category}    & \parbox{1.5in}{\bf Input}  & \parbox{1.5in}{\bf {\ct \&MFLD} Input}  & \parbox{1in}{\bf Units} \\ \hline
 \endhead
-Ambient Conditions      & Interior Temperature          && \degc                     \\
-                        & Exterior Temperature          && \degc                     \\
-                        & Relative Humidity             && \%                        \\ \hline
-Thermal Properties      & Thermal Conductivity          && kW/(m~\degc)              \\
-                        & Specific Heat                 && kJ/(kg~\degc)             \\
-                        & Density                       && kg/m$^3$                  \\
-                        & Default Thickness             && m                         \\
-                        & Emissivity                    &&                           \\ \hline
-Compartments            & Width                         && m                         \\
-                        & Depth                         && m                         \\
-                        & Height                        && m                         \\
-                        & Wall Leak Area Ratio          && m$^2$/m$^2$               \\
-                        & Floor Leak Area Ratio         && m$^2$/m$^2$               \\ \hline
+Ambient Conditions      & Interior Temperature          & INTERIOR\_TEMPERATURE & \degc                     \\
+                        & Exterior Temperature          & EXTERIOR\_TEMPERATURE & \degc                     \\
+						& Pressure 							& PRESSURE  		&  Pa.   \\
+                        & Relative Humidity             & REALATIVE\_HUMIDITY & \%                        \\ \hline
+Thermal Properties      & Thermal Conductivity          & CONDUCTIVITY  & kW/(m~\degc)              \\
+                        & Specific Heat                 & SPECIFIC\_HEAT  & kJ/(kg~\degc)             \\
+                        & Density                       & DENSITY     & kg/m$^3$                  \\
+                        & Default Thickness             & THICKNESS  & m                         \\
+                        & Emissivity                    & EMISSIVITY   &                           \\ \hline
+Compartments            & Width                         &WIDTH    & m                         \\
+                        & Depth                         &DEPTH     & m                         \\
+                        & Height                        &HEIGHT    & m                         \\
+						& Ceiling Material            &   CEILING\_MATERIAL\_ID      &  Selection List  \\
+						& Wall Material                &   WALL\_MATERIAL\_ID   &   Selection List  \\
+						& Floor Material               &   FLOOR\_MATERIAL\_ID  &  Selection List  \\
+						& Ceiling Material Thickness   & CEILING\_THICKNESS  &  m   \\
+						& Wall Material Thickness   & WALL\_THICKNESS  &  m   \\
+						& Floor Material Thickness   & FLOOR\_THICKNESS  &  m   \\
+                        & Wall Leak Area Ratio          & WALL\_LEAK\_AREA & m$^2$/m$^2$               \\
+                        & Floor Leak Area Ratio         & FLOOR\_LEAK\_AREA & m$^2$/m$^2$               \\ \hline
  Wall Vents             & Sill                          &TOP        & m                         \\
                         & Soffit                        &BOTTOM     & m                         \\
                         & Width                         &WIDTH     & m                         \\
-                        & Initial Opening Fraction      && 0-1                       \\
-                        & Open/Close Time               && s                         \\
-                        & Final Opening Fraction        && 0-1                       \\
-                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
-                        & Pre-Activation Fraction       && 0-1                       \\
-                        & Post-Activation Fraction      && 0-1                       \\ \hline
- Ceiling / Floor Vents  & Cross-Sectional Area          && m$^2$                     \\
-                        & Initial Opening Fraction      && 0-1                       \\
-                        & Open/Close Time               && s                         \\
-                        & Final Opening Fraction        && 0-1                       \\
-                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
-                        & Pre-Activation Fraction       && 0-1                       \\
-                        & Post-Activation Fraction      && 0-1                       \\ \hline
- Mechanical Vents       & From Compartment Area         && m$^2$                     \\
-                        & From Compartment Height       && m                         \\
-                        & To Compartment Area           && m$^2$                     \\
-                        & To Compartment Height         && m                         \\
-                        & Flow Rate                     && m$^3$/s                   \\
-                        & Begin Dropoff                 && Pa                        \\
-                        & End Dropoff                   && Pa                        \\
-                        & Initial Opening Fraction      && 0-1                       \\
-                        & Open/Close Time               && s                         \\
-                        & Final Opening Fraction        && 0-1                       \\
-                        & Setpoint                      && s, \degc, or kW/m$^2$     \\
-                        & Pre-Activation Fraction       && 0-1                       \\
-                        & Post-Activation Fraction      && 0-1                       \\
-                        & Filter Efficiency             && \%                        \\
-                        & Begin Filtering Time          && s                         \\ \hline
-Fire Location           & Compartment                   && Selection List            \\
-                        & Width Position                && m                         \\
-                        & Depth Position                && m                         \\ \hline
-Fuel Composition        & Carbon Molecules              && $\geq$ 0                  \\
-                        & Hydrogen Molecules            && $\geq$ 0                  \\
-                        & Oxygen Molecules              && $\geq$ 0                  \\
-                        & Nitrogen Molecules            && $\geq$ 0                  \\
-                        & Chlorine Molecules            && $\geq$ 0                  \\
-                        & Heat of Combustion            && kJ/kg                     \\
-                        & Radiative Fraction            && 0 - 1                     \\ \hline
-Ignition Criteria       & Ignition Criterion            && Selection List            \\
-                        & Setpoint                      && s, \degc, or kW/m$^2$     \\ \hline
-Targets                 & Width Target Position         && m                         \\
-                        & Depth Target Position         && m                         \\
-                        & Height Target Position        && m                         \\
-                        & Width Normal Vector           && 0-1                       \\
-                        & Depth Normal Vector           && 0-1                       \\
-                        & Height Normal Vector          && 0-1                       \\
-                        & Target Points To              && Selection List            \\
-                        & Thickness                     && m                         \\
-                        & Internal Temperature Location && m                         \\ \hline
-Detection / Suppression & Width Position                && m                         \\
-                        & Depth Position                && m                         \\
-                        & Height Position               && m                         \\
-                        & Activation Temperature        && \degc                     \\
-                        & Activation Obscuration        && \%/m                      \\
-                        & RTI                           && (m~s)$^{1/2}$             \\
-                        & Spray Density                 && m/s                       \\ \hline
+                        & Open/Close Fraction      & F\_nnn & 0-1                       \\
+                        & Open/Close Time               & T\_nnn & s                         \\
+                        & Setpoint                      & SETPOINT & \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & PRE\_ACTIVATION\_FRAC  & 0-1                       \\
+                        & Post-Activation Fraction      &POST\_ACTIVATION\_FRAC & 0-1                       \\ \hline
+ Ceiling / Floor Vents  & Cross-Sectional Area          & AREA  & m$^2$                     \\
+                        & Open/Close Fraction      & F\_nnn & 0-1                       \\
+                        & Open/Close Time               & T\_nnn & s                         \\
+                        & Setpoint                      & SETPOINT & \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & PRE\_ACTIVATION\_FRAC  & 0-1                       \\
+                        & Post-Activation Fraction      & POST\_ACTIVATION\_FRAC & 0-1                       \\ \hline
+ Mechanical Vents       & From Compartment Area         & FROM\_AREA & m$^2$                     \\
+                        & From Compartment Height       & FROM\_HEIGHT & m                         \\
+                        & To Compartment Area           & TO\_AREA & m$^2$                     \\
+                        & To Compartment Height         & TO\_ HEIGHT & m                         \\
+                        & Flow Rate                     & FLOW & m$^3$/s                   \\
+                        & Begin Dropoff                 & FIRST\_CUTOFF & Pa                        \\
+                        & End Dropoff                   & SECOND\_ CUTOFF & Pa                        \\
+                        & Open/Close Fraction      & F\_nnn & 0-1                       \\
+                        & Open/Close Time               & T\_nnn & s                         \\
+                        & Setpoint                      & SETPOINT & \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & PRE\_ACTIVATION\_FRAC & 0-1                       \\
+                        & Post-Activation Fraction      & POST\_ACTIVATION\_FRAC & 0-1                       \\
+                        & Filter Efficiency             & FILTER\_ EFFICIENCY & \%                        \\
+                        & Begin Filtering Time          & FILTER\_TIME & s                         \\ \hline
+Fire Location           & Compartment                   & COMPARTMENT & Selection List            \\
+                        & Width Position                & X\_POSTION & m                         \\
+                        & Depth Position                & Y\_ POSITION & m                         \\ \hline
+Fuel Composition        & Carbon Molecules              & CARBON & $\geq$ 0                  \\
+                        & Hydrogen Molecules            & HYDROGEN & $\geq$ 0                  \\
+                        & Oxygen Molecules              & OXYGEN & $\geq$ 0                  \\
+                        & Nitrogen Molecules            & NITROGEN & $\geq$ 0                  \\
+                        & Chlorine Molecules            & CLORINE & $\geq$ 0                  \\
+                        & Heat of Combustion            & HEAT\_OF\_COMBUSTION & kJ/kg                     \\
+                        & Radiative Fraction            & RADIATIVE\_FRACTION & 0 - 1                     \\ \hline
+Ignition Criteria       & Ignition Criterion            & IGNITION\_CRITERION & Selection List            \\
+                        & Setpoint                      & SETPOINT & s, \degc, or kW/m$^2$     \\ \hline
+Targets                 & Width Target Position         & X\_LOCATION & m                         \\
+                        & Depth Target Position         & Y\_LOCATION & m                         \\
+                        & Height Target Position        & Z\_LOCATION & m                         \\
+                        & Width Normal Vector           & X\_DIRECTION & 0-1                       \\
+                        & Depth Normal Vector           & Y\_DIRECTION & 0-1                       \\
+                        & Height Normal Vector          & Z\_DIRECTION & 0-1                       \\
+                        & Target Points To              & SURFACE\_ORIENTATION & Selection List            \\
+                        & Thickness                     & THICKNESS & m                         \\
+                        & Internal Temperature Loc & TEMPERATURE\_DEPTH &                          \\ \hline
+Detection / Suppression & Width Position                & X\_LOCATION & m                         \\
+                        & Depth Position                & Y\_LOCATION & m                         \\
+                        & Height Position               & Z\_LOCATION & m                         \\
+                        & Activation Temperature        & SETPOINT\_TEMPERATURE & \degc                     \\
+                        & Activation Obscuration        & SETPOINT\_OBSCURATION & \%/m                      \\
+                        & RTI                           & RTI & (m~s)$^{1/2}$             \\
+                        & Spray Density                 & SPRAY\_DENSITY & m/s                       \\ \hline
 \end{longtable}
 
 \clearpage

@@ -2176,6 +2176,7 @@ Module IO
     Private Sub WriteOutputFileNMLComp(ByVal IO As Integer, MyCompartments As CompartmentCollection)
         Dim ln As String, aComp As Compartment, i, j, k As Integer
         Dim x(0), f(0) As Double
+        Dim hasmaterials As Boolean
 
         ' Writing COMP namelist
         If MyCompartments.Count > 0 Then
@@ -2194,50 +2195,60 @@ Module IO
                     ln += " SHAFT = .TRUE."
                 End If
                 PrintLine(IO, ln)
+
+                hasmaterials = False
+                ln = "     "
                 If aComp.CeilingMaterial(1) <> "" Then
                     If aComp.CeilingMaterial(1) = "Off" Then
-                        ln = "      CEILING_MATL_ID = 'OFF'"
+
+                        ln += " CEILING_MATL_ID = 'OFF'"
+                        hasmaterials = True
                     Else
                         ln = "      CEILING_MATL_ID = '" + aComp.CeilingMaterial(1) + "'"
                         If aComp.CeilingMaterial(2) <> "" Then ln += ", '" + aComp.CeilingMaterial(2) + "'"
                         If aComp.CeilingMaterial(3) <> "" Then ln += ", '" + aComp.CeilingMaterial(3) + "'"
-                    End If
-                    If aComp.CeilingThickness(1) <> 0 Then
-                        ln += " CEILING_THICKNESS = " + aComp.CeilingThickness(1).ToString
-                        If aComp.CeilingMaterial(2) <> "" Then ln += ", " + aComp.CeilingThickness(2).ToString
-                        If aComp.CeilingMaterial(3) <> "" Then ln += ", " + aComp.CeilingThickness(3).ToString
+                        hasmaterials = True
+                        If aComp.CeilingThickness(1) <> 0 Then
+                            ln += " CEILING_THICKNESS = " + aComp.CeilingThickness(1).ToString
+                            If aComp.CeilingMaterial(2) <> "" Then ln += ", " + aComp.CeilingThickness(2).ToString
+                            If aComp.CeilingMaterial(3) <> "" Then ln += ", " + aComp.CeilingThickness(3).ToString
+                        End If
                     End If
                 End If
 
                 If aComp.WallMaterial(1) <> "" Then
                     If aComp.WallMaterial(1) = "Off" Then
                         ln += " WALL_MATL_ID = 'OFF'"
+                        hasmaterials = True
                     Else
                         ln += " WALL_MATL_ID = '" + aComp.WallMaterial(1) + "'"
                         If aComp.WallMaterial(2) <> "" Then ln += ", '" + aComp.WallMaterial(2) + "'"
                         If aComp.WallMaterial(3) <> "" Then ln += ", '" + aComp.WallMaterial(3) + "'"
-                    End If
-                    If aComp.WallThickness(1) <> 0 Then
-                        ln += " WALL_THICKNESS = " + aComp.WallThickness(1).ToString
-                        If aComp.WallMaterial(2) <> "" Then ln += ", " + aComp.WallThickness(2).ToString
-                        If aComp.WallMaterial(3) <> "" Then ln += ", " + aComp.WallThickness(3).ToString
+                        hasmaterials = True
+                        If aComp.WallThickness(1) <> 0 Then
+                            ln += " WALL_THICKNESS = " + aComp.WallThickness(1).ToString
+                            If aComp.WallMaterial(2) <> "" Then ln += ", " + aComp.WallThickness(2).ToString
+                            If aComp.WallMaterial(3) <> "" Then ln += ", " + aComp.WallThickness(3).ToString
+                        End If
                     End If
                 End If
                 If aComp.FloorMaterial(1) <> "" Then
                     If aComp.FloorMaterial(1) = "Off" Then
                         ln += " FLOOR_MATL_ID = 'OFF'"
+                        hasmaterials = True
                     Else
                         ln += " FLOOR_MATL_ID = '" + aComp.FloorMaterial(1) + "'"
                         If aComp.FloorMaterial(2) <> "" Then ln += ", '" + aComp.FloorMaterial(2) + "'"
                         If aComp.FloorMaterial(3) <> "" Then ln += ", '" + aComp.FloorMaterial(3) + "'"
-                    End If
-                    If aComp.FloorThickness(1) <> 0 Then
-                        ln += " FLOOR_THICKNESS = " + aComp.FloorThickness(1).ToString
-                        If aComp.FloorMaterial(2) <> "" Then ln += ", " + aComp.FloorThickness(2).ToString
-                        If aComp.FloorMaterial(3) <> "" Then ln += ", " + aComp.FloorThickness(3).ToString
+                        hasmaterials = True
+                        If aComp.FloorThickness(1) <> 0 Then
+                            ln += " FLOOR_THICKNESS = " + aComp.FloorThickness(1).ToString
+                            If aComp.FloorMaterial(2) <> "" Then ln += ", " + aComp.FloorThickness(2).ToString
+                            If aComp.FloorMaterial(3) <> "" Then ln += ", " + aComp.FloorThickness(3).ToString
+                        End If
                     End If
                 End If
-                PrintLine(IO, ln)
+                If hasmaterials Then PrintLine(IO, ln)
                 aComp.GetVariableArea(f, x, j)
                 If j > 1 Then
                     ln = "      CROSS_SECT_AREAS = " + f(1).ToString

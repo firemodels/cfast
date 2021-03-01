@@ -4,7 +4,12 @@ Public Class MonteCarlo
     Friend Const MaximumMonteCarlos As Integer = 1000
 
     ' All units within the class are assumed to be consistent and typically SI
+
+    ' Variables shared by different Montecarlo commands
     Private aID As String                   ' id used a heading for output column
+    Private aFYI As String                  ' Descriptor for additional user supplied information
+
+    ' Inputs for &DUMP
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
     Private aCriterion As Double            ' Value used in 'trigger_...' analysis
@@ -12,7 +17,36 @@ Public Class MonteCarlo
     Private aFirstDevice As String          ' Name of instrument within the measurement, third row in spreadsheet
     Private aSecondMeasurement As String    ' Name of measure for second instrument, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
     Private aSecondDevice As String         ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
-    Private aFYI As String                  ' Descriptor for additional user supplied information
+
+    ' Inputs for &MHDR
+    Private aNumberofCases As Integer       ' Number of CFAST files to generate
+    Private aSeeds(2) As Double             ' an integer pair used to determine random number seeds for distributions
+    Private aWriteSeeds As Boolean          ' If ture, all random number seeds are saved to a file
+    Private aParameterFile As String        ' file name for parameters files
+    Private aWorkFolder As String           ' folder name for work files. Defaults to current folder
+    Private aOutputFolder As String         ' folder name for output files. Defaults to current folder
+
+    ' Inputs for &MRND
+    Private aDistributionType As String
+    Private aValueType As String
+    Private aMinimum As Double
+    Private aMaximum As Double
+    Private aMean As Double
+    Private aStdev As Double
+    Private aAlpha As Double
+    Private aBeta As Double
+    Private aPeak As Double
+    Private aRandomSeeds(0) As Double
+    Private aRealValues(0), aRealConstantValue As Double
+    Private aIntegerValues(0), aIntegerConstantValue As Integer
+    Private aStringValues(0), aStringConstantValue As String
+    Private aLogicalValues, aLogicialConstantValue As Boolean
+    Private aProbabilities(0) As Double
+    Private aMinimumOffset As Double
+    Private aMaximumOffset As Double
+    Private aMinimumField As String
+    Private aMaximumField As String
+    Private aAddField As String
 
     Public Sub New()
         aID = ""

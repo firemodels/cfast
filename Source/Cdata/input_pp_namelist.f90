@@ -422,19 +422,19 @@
     integer, dimension(mxfields) :: tmpptr
     
     
-    character(len=128) :: id, rand_id, parameter_header, fyi, field_type, type_of_index 
+    character(len=128) :: id, rand_id, parameter_column_label, fyi, field_type, value_type 
     character(len=128), dimension(2) :: field
     real(eb) ::base_scaling_value
     integer ::number_in_index, position
     logical :: add_to_parameters
-    real(eb), dimension(mxpntsarray) :: real_array_values
-    integer, dimension(mxpntsarray) :: integer_array_values
-    logical, dimension(mxpntsarray) :: logical_array_values
-    character(len=128), dimension(mxpntsarray) :: character_array_values, scenario_title_array
+    real(eb), dimension(mxpntsarray) :: real_values
+    integer, dimension(mxpntsarray) :: integer_values
+    logical, dimension(mxpntsarray) :: logical_values
+    character(len=128), dimension(mxpntsarray) :: string_values, scenario_titles
 
-    namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_header, add_to_parameters, &
-        real_array_values, integer_array_values, character_array_values, logical_array_values, &
-        scenario_title_array, type_of_index, number_in_index, base_scaling_value, position
+    namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_column_label, add_to_parameters, &
+        real_values, integer_values, string_values, logical_values, &
+        scenario_titles, value_type, number_in_index, base_scaling_value, position
                     
     
     ios = 1
@@ -518,7 +518,7 @@
                 call find_object(field(1), fldptr, found)
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
-                    if (trim(type_of_index) /= trim(fldptr%value_type)) then
+                    if (trim(value_type) /= trim(fldptr%value_type)) then
                         call cfastexit('read_mfld',9)
                     end if
                 else
@@ -527,25 +527,25 @@
                 fldptr%field_type = trim(field_type)
                 fldptr%intval%val => fldptr%index
                 fldptr%randptr => fldptr%intval
-                if (trim(type_of_index) == val_types(idx_real)) then
+                if (trim(value_type) == val_types(idx_real)) then
                     fldptr%nidx = number_in_index
                     do jj = 1, number_in_index
-                        fldptr%real_array(jj) = real_array_values(jj)
+                        fldptr%real_array(jj) = real_values(jj)
                     end do
-                elseif (trim(type_of_index) == val_types(idx_int)) then
+                elseif (trim(value_type) == val_types(idx_int)) then
                     fldptr%nidx = number_in_index
                     do jj = 1, number_in_index
-                        fldptr%int_array(jj) = integer_array_values(jj)
+                        fldptr%int_array(jj) = integer_values(jj)
                     end do
-                elseif (trim(type_of_index) == val_types(idx_char)) then
+                elseif (trim(value_type) == val_types(idx_char)) then
                     fldptr%nidx = number_in_index
                     do jj = 1, number_in_index
-                        fldptr%char_array(jj) = character_array_values(jj)
+                        fldptr%char_array(jj) = string_values(jj)
                     end do
-                elseif (trim(type_of_index) == val_types(idx_logic)) then
+                elseif (trim(value_type) == val_types(idx_logic)) then
                     fldptr%nidx = number_in_index
                     do jj = 1, number_in_index
-                        fldptr%logic_array(jj) = logical_array_values(jj)
+                        fldptr%logic_array(jj) = logical_values(jj)
                     end do
                 else
                     call cfastexit('read_mfld',10)
@@ -580,11 +580,11 @@
                 fldptr%indexval%val => fldptr%index
                 fldptr%randptr => fldptr%indexval
                 scenaro_loop: do jj = 1, mxpntsarray
-                    if (trim(scenario_title_array(jj)) == 'NULL') then
+                    if (trim(scenario_titles(jj)) == 'NULL') then
                         fldptr%nlabel = jj - 1
                         exit scenaro_loop
                     else
-                        fldptr%char_array(jj) = scenario_title_array(jj)
+                        fldptr%char_array(jj) = scenario_titles(jj)
                     end if    
                     fldptr%nlabel = jj
                 end do scenaro_loop
@@ -596,10 +596,10 @@
             
             if (add_to_parameters) then
                 fldptr%add_to_parameters = add_to_parameters
-                if (trim(parameter_header) == 'NULL') then
+                if (trim(parameter_column_label) == 'NULL') then
                     fldptr%parameter_header = trim(field(1)) // '_' // trim(field(2))
                 else
-                    fldptr%parameter_header = parameter_header
+                    fldptr%parameter_header = parameter_column_label
                 end if
             end if
             
@@ -681,7 +681,7 @@
     field(2) = 'NULL'
     rand_id = 'NULL'
     add_to_parameters = .true.
-    parameter_header = 'NULL'
+    parameter_column_label = 'NULL'
     base_scaling_value = -1
     position = 1
     

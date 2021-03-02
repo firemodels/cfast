@@ -221,16 +221,15 @@
     character(len = 128) :: string_values(mxpntsarray)
     real(eb) :: real_constant_value
     integer :: integer_constant_value
-    character(len=128) :: character_constant_value
+    character(len=128) :: string_constant_value
     logical :: logical_constant_value
     character(len=128) :: minimum_field,  maximum_field, add_field
 
     namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, random_seeds, real_values, integer_values, string_values, logical_values, &
-        probabilities, real_constant_value, integer_constant_value, character_constant_value, &
+        probabilities, real_constant_value, integer_constant_value, string_constant_value, &
         logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, add_field
-                    
-    
+
     ios = 1
     n_generators = 0
 
@@ -399,7 +398,7 @@
     probabilities = -1001._eb
     real_constant_value = -1001.0_eb
     integer_constant_value = -1001
-    character_constant_value = 'NULL'
+    string_constant_value = 'NULL'
     logical_constant_value = .false.
     minimum_field = 'NULL'
     maximum_field = 'NULL'

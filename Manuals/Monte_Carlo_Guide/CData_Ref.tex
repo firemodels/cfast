@@ -237,10 +237,13 @@ Compartments            & Width                         & m                     
                         & Depth                         & m                         \\
                         & Height                        & m                         \\
                         & Wall Leak Area Ratio          & m$^2$/m$^2$               \\
-                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\ \hline
+                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\ 
+                        & Compartment Materials         &                           \\ \hline
  Wall Vents             & Sill                          & m                         \\
                         & Soffit                        & m                         \\
                         & Width                         & m                         \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
                         & Initial Opening Fraction      & 0-1                       \\
                         & Open/Close Time               & s                         \\
                         & Final Opening Fraction        & 0-1                       \\
@@ -248,6 +251,8 @@ Compartments            & Width                         & m                     
                         & Pre-Activation Fraction       & 0-1                       \\
                         & Post-Activation Fraction      & 0-1                       \\ \hline
  Ceiling / Floor Vents  & Cross-Sectional Area          & m$^2$                     \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
                         & Initial Opening Fraction      & 0-1                       \\
                         & Open/Close Time               & s                         \\
                         & Final Opening Fraction        & 0-1                       \\
@@ -261,6 +266,8 @@ Compartments            & Width                         & m                     
                         & Flow Rate                     & m$^3$/s                   \\
                         & Begin Dropoff                 & Pa                        \\
                         & End Dropoff                   & Pa                        \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
                         & Initial Opening Fraction      & 0-1                       \\
                         & Open/Close Time               & s                         \\
                         & Final Opening Fraction        & 0-1                       \\
@@ -439,7 +446,6 @@ The basic structure in CData to change values of a CFAST input file is the { \ct
   \item[INTEGER\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[STRING\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[LOGICAL\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
-  \item[POSITION] 
   \item[SCENARIO\_TITLES] an optional set of character strings that describe each of the different fields in an {\ct INDEX} set of values.
   \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
 \end{description}

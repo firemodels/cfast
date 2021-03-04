@@ -69,6 +69,7 @@ module preprocessor_types
         integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 5
         character(len=7) :: field_type = 'NULL'
         character(len=9) :: value_type = 'NULL'
+        logical :: temp_flag, kilo_flag
         class(cfast_type), pointer :: itemptr
         type(random_generator_type), pointer :: genptr
         class(value_wrapper_type), pointer :: valptr
@@ -615,7 +616,17 @@ module preprocessor_types
         if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
             return
         else if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
-            call me%genptr%rand(me%valptr, iteration)
+            call me%genptr%rand(val, iteration)
+            select type(val)
+                type is (random_real_type)
+                    if (me%temp_flag) then
+                        val%val = val%val + kelvin_c_offset
+                    else if (me%kilo_flag) then
+                        val%val = val%val*1000.0_eb
+                    end if
+                class default
+                    
+            end select
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_index))) then
             call me%genptr%rand(me%randptr, iteration)
             if (me%value_type == val_types(idx_real)) then

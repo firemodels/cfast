@@ -166,7 +166,7 @@ module cfast_types
         real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
         real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall
         integer, dimension(nwal) :: nslab_w             ! number of slabs for wall
-        character(64), dimension(mxslb,nwal) :: matl    ! surface materials for ceiling, floor, upper wall, lower wall
+        character(128), dimension(mxslb,nwal) :: matl   ! surface materials for ceiling, floor, upper wall, lower wall
         real(eb), dimension(mxslb,nwal) :: k_w          ! thermal conductivity of each slab
         real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
         real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab

@@ -37,7 +37,6 @@ module statistics_routines
     
     character(len=256) :: buf
     character(len=256) :: exepath, datapath, project, extension
-    integer(4) :: status
     integer :: i, ioerr
     
     call init_stats

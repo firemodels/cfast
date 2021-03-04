@@ -237,7 +237,7 @@ Compartments            & Width                         & m                     
                         & Depth                         & m                         \\
                         & Height                        & m                         \\
                         & Wall Leak Area Ratio          & m$^2$/m$^2$               \\
-                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\ 
+                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\
                         & Compartment Materials         &                           \\ \hline
  Wall Vents             & Sill                          & m                         \\
                         & Soffit                        & m                         \\
@@ -473,7 +473,7 @@ The following example shows the height of a door to the bedroom in the above exa
 \section{Namelist MFIR}
 \label{info:MFIR}
 
-Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution) or to define a power law fire based on several inputs.
+Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution), to define a power law fire based on several inputs, or to modify individual time points from a constant defined by a user-specified distribution.
 
 \begin{description}
   \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
@@ -497,9 +497,10 @@ Fires can be defined by either scaling time and/or HRR values from a base fire o
   \item[PEAK\_SMOLDERING\_IGNITION\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
   \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
   \item[ADD\_SMOLDERING\_IGNITION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
-  \item[ADD\_SMOLDER\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened because adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
+  \item[ADD\_SMOLDERING\_IGNTION\_PEAK\_TO\_PARAMETERS] Name shortened because adding the 'ING' made the variable name too long and it got truncated. Defaults to {\ct .TRUE.}
   \item[ADD\_FLAMING\_IGNTION\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_FLAMING\_IGNITION\_PEAK\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[IGNITION\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[FLAMING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[FLAMING\_TIME\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[SMOLDERING\_HRR\_PEAK\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
@@ -519,13 +520,14 @@ Secondly, inputs for the scaling fire are described.
   Finally, the inputs for a general power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dQ_0$, $\dQ_1$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dQ_0$ and $\dQ_1$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dQ(\hat{t}) = ((\dQ_1 - \dQ_0)/(t_1-t_0)^r)\hat{t} + \dQ_0$ and for decay is $\dQ(\hat{t}) = ((\dQ_0 - \dQ_1)/(t_1-t_0)^r)\hat{t} + \dQ_1$. It can be done based on which, $\dQ_0$ or $\dQ_1$, are larger.
 
 \begin{description}
-  \item[FIRE\_TIME\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the time intervals for fire growth If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator. The first point is always at $t=0$ and $\dQ = 0$. If there is an incipient fire defined, that is point two. If there is a power law growth defined (by {\ct GROWTH\_EXPONENT} and {\ct GROWTH\_EXPONENT}, these follow the first or second time point (depending on whether there is an incipient fire defined). If a power law decay is defined (by {\ct DECAY\_EXPONENT} and {\ct DECAY\_EXPONENT}, these are defined by the next to last and last generators defined.
-  \item[FIRE\_HRR\_GENERATORS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
+  \item[FIRE\_TIME\_GENERATOR\_IDS] a set of up to 100 associated {\ct \&MRND} inputs that define the time intervals for fire growth If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator. The first point is always at $t=0$ and $\dQ = 0$. If there is an incipient fire defined, that is point two. If there is a power law growth defined (by {\ct GROWTH\_EXPONENT} and {\ct GROWTH\_EXPONENT}, these follow the first or second time point (depending on whether there is an incipient fire defined). If a power law decay is defined (by {\ct DECAY\_EXPONENT} and {\ct DECAY\_EXPONENT}, these are defined by the next to last and last generators defined.
+  \item[FIRE\_HRR\_GENERATOR\_IDS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
-  \item[GROWTH\_EXPONENT]  specifies the exponent of the power law for the growth phase of the fire. Must be positive.
-  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be positive.
-
+  \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_1054\_KW] specifies the time for the growth phase of a power law fire to grow from 0~kW to 1054~kW. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
+  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_0\_KW] specifies the time for the growth phase of a power law fire to decay from its peak value to 0~kW. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.

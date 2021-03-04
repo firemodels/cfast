@@ -48,6 +48,54 @@ Public Class MonteCarlo
     Private aMaximumField As String
     Private aAddField As String
 
+    ' Inputs for &MFIR
+    Private aFireID As String
+    Private aBaseFireID As String
+    Private aModifyFireAreatoMatchHRR As Boolean
+    Private aFireCompartmentRandomGeneratorID As String
+    Private aFireCompartmentIDs(0) As String
+    Private aAddFireCompartmentIDtoParameters As Boolean
+    Private aFireCompartmentIDColumnLabel As String
+
+    Private aFlamingSmolderingIgnitionRandomGeneratorID As String
+    Private aIncipientFireTypes(0) As String
+    Private aTypeofIncipientFireGrowth As String
+    Private aFlamingIgnitionDelayRandomGeneratorID As String
+    Private aPeakFlamingIgnitionRandomGeneratorID As String
+    Private aSmolderingIgnitionDelayRandomGeneratorID As String
+    Private aPeakSmolderingIgnitionRandomGeneratorID As String
+    Private aAddIgnitionTypetoParameters As Boolean
+    Private aAddSmolderingIgnitionTimetoParameters As Boolean
+    Private aAddSmolderingIgnitionPeaktoParameters As Boolean
+    Private aAddFlamingIgnitionTimetoParameters As Boolean
+    Private aAddFlamingIgnitionPeaktoParameters As Boolean
+    Private aIngitionTypeColumnLabel As String
+    Private aFlamingIgnitionTimeColumnLabel As String
+    Private aFlamingIgnitionPeakColumnLabel As String
+    Private aSmolderingIgnitionTimeColumnLabel As String
+    Private aSmolderingIgnitionPeakColumnLabel As String
+
+    Private aScalingFireHRRRandomGeneratorID As String
+    Private aScalingFireTimeRandomGeneratorID As String
+    Private aAddHRRScaletoParameters As Boolean
+    Private aHRRScaleColumnLabel As String
+    Private aAddTimeScaletoParameters As Boolean
+    Private aTimeScaleColumnLabel As String
+
+    Private aFireHRRGeneratorIDs(0) As String
+    Private aFireTimeGeneratorIDs(0) As String
+    Private aNumberofGrowthPoints As Integer
+    Private aNumberofDecayPoints As Integer
+    Private aGrowthExponent As Double
+    Private aDecayExponent As Double
+    Private aTimeto1054kW As Double
+    Private aTimeto0kW As Double
+    Private aAddFiretoParameters As Boolean
+    Private aAddHRRtoParameters As Boolean
+    Private aAddTimetoParameters As Boolean
+    Private aHRRLabels(0) As String
+    Private aTimeLabeels As String
+
     Public Sub New()
         aID = ""
         aFileType = ""

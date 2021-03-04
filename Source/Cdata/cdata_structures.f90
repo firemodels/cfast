@@ -32,7 +32,7 @@ module preprocessor_types
     type, extends(preprocessor_type) :: value_wrapper_type
         logical :: add_to_parameters
         logical :: parameter_field_set = .false. 
-        character(len=128) :: parameter_header
+        character(len=128) :: parameter_column_label
         character(len=128), pointer :: paramptr
         logical :: pointer_set = .false.
     contains
@@ -531,7 +531,7 @@ module preprocessor_types
             class default
                 icol = icol + 1
                 me%paramptr => array(icol)
-                array(icol) = trim(me%parameter_header)
+                array(icol) = trim(me%parameter_column_label)
                 me%parameter_field_set = .true.
             end select
         end if 
@@ -1132,7 +1132,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         integer :: i, tmp, tmp1
-        real(eb) :: deltat, a, c, a0, t1, t0
+        real(eb) :: deltat, a, c, t1, t0
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)

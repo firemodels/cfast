@@ -143,6 +143,8 @@ module preprocessor_routines
     fieldinfo(1:mxfields)%add_to_parameters = .false.
     fieldinfo(1:mxfields)%parameter_column_label = 'NULL'
     fieldinfo(1:mxfields)%position = 1
+    fieldinfo(1:mxfields)%temp_flag = .false.
+    fieldinfo(1:mxfields)%kilo_flag = .false. 
     do i = 1, mxfields
         fieldinfo(i)%real_array(1:mxpntsarray) = -1001.0_eb
         fieldinfo(i)%int_array(1:mxpntsarray) = -1001

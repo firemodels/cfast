@@ -838,40 +838,37 @@
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, hrr_scale_column_label, time_scale_column_label, &
         fire_compartment_random_generator_id, fire_compartment_id_column_label, &
-        flaming_smoldering_ignition_random_generator_id, flaming_ignition_delay_random_generator_id, &
-        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
-        peak_smoldering_ignition_random_generator_id, fire_label_parameter_column_label
+        flaming_smoldering_incipient_random_generator_id, flaming_incipient_delay_random_generator_id, &
+        flaming_peak_incipient_random_generator_id, smoldering_incipient_delay_random_generator_id, &
+        smoldering_peak_incipient_random_generator_id, fire_label_parameter_column_label
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
-    character(len=128), dimension(mxpts) :: fire_hrr_generator_ids, fire_time_generator_ids, hrr_labels, time_labels
+        add_time_scale_to_parameters, add_fire_compartment_to_parameters
+    character(len=128), dimension(mxpts) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
     logical, dimension(100) :: add_hrr_to_parameters, add_time_to_parameters 
     integer :: number_of_growth_points, number_of_decay_points
     real(eb) :: growth_exponent, decay_exponent 
     character(len=10) :: type_of_incipient_growth
     integer :: number_of_incipient_fire_types
     character(len=128), dimension(20) :: incipient_fire_types
-    character(len=128) :: ignition_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
+    character(len=128) :: incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
         flaming_time_column_label, flaming_hrr_peak_column_label
-    logical :: add_ignition_type_to_parameters, add_smoldering_ignition_time_to_parameters, &
-        add_smoldering_ignition_peak_hrr_to_parameters, add_flaming_ignition_time_to_parameters, &
-        add_flaming_ignition_peak_hrr_to_parameters
+    logical :: add_incipient_type_to_parameters, add_incipient_time_to_parameters, add_incipient_peak_hrr_to_parameters
     logical, dimension(mxpts) :: add_fire_to_parameters
     type(fire_generator_type), pointer :: fire
 
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, modify_fire_area_to_match_hrr, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_column_label, time_scale_column_label, &
-        fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
-        fire_compartment_id_column_label, flaming_smoldering_ignition_random_generator_id, &
-        flaming_ignition_delay_random_generator_id, fire_label_parameter_column_label, &
-        peak_flaming_ignition_random_generator_id, smoldering_ignition_delay_random_generator_id, &
-        peak_smoldering_ignition_random_generator_id, &
-        fire_hrr_generator_ids, fire_time_generator_ids, type_of_incipient_growth, number_of_incipient_fire_types, &
-        incipient_fire_types, ignition_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
-        flaming_time_column_label, flaming_hrr_peak_column_label, add_ignition_type_to_parameters, &
-        add_smoldering_ignition_time_to_parameters, add_smoldering_ignition_peak_hrr_to_parameters, &
-        add_flaming_ignition_time_to_parameters, add_flaming_ignition_peak_hrr_to_parameters, number_of_growth_points,&
+        fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_to_parameters, &
+        fire_compartment_id_column_label, flaming_smoldering_incipient_random_generator_id, &
+        flaming_incipient_delay_random_generator_id, fire_label_parameter_column_label, &
+        flaming_peak_incipient_random_generator_id, smoldering_incipient_delay_random_generator_id, &
+        smoldering_peak_incipient_random_generator_id, &
+        fire_hrr_generators, fire_time_generators, type_of_incipient_growth, number_of_incipient_fire_types, &
+        incipient_fire_types, incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
+        flaming_time_column_label, flaming_hrr_peak_column_label, add_incipient_type_to_parameters, &
+        add_incipient_peak_hrr_to_parameters, add_incipient_time_to_parameters, number_of_growth_points,&
         number_of_decay_points, growth_exponent, decay_exponent, add_hrr_to_parameters, add_time_to_parameters, &
         hrr_labels, time_labels, add_fire_to_parameters, time_to_1054_kW
     
@@ -1034,8 +1031,8 @@
                         call cfastexit('READ_MFIR', 10)
                     end if
                 end do complist_search
-                fire%add_to_parameters = add_fire_compartment_id_to_parameters
-                if (add_fire_compartment_id_to_parameters) then
+                fire%add_to_parameters = add_fire_compartment_to_parameters
+                if (add_fire_compartment_to_parameters) then
                     fire%add_to_parameters = .true. 
                     fire%fire_label%add_to_parameters = .true. 
                     fire%parameter_field_set = .true. 
@@ -1054,128 +1051,122 @@
             
             ! Setting up the flaming growth model
             
-            if (trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_flame)) .or. &
-                trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_random))) then
-                if (trim(flaming_ignition_delay_random_generator_id) /= 'NULL' .and. &
-                    trim(peak_flaming_ignition_random_generator_id) /= 'NULL') then
-                    found = .false.
-                    found2 = .false. 
-                    do jj = 1, n_generators
-                        if (trim(flaming_ignition_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
-                            fire%flame_hrr_ptr%genptr => generatorinfo(jj)
-                            found = .true.
-                        else if (trim(peak_flaming_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
-                            fire%flame_time_ptr%genptr => generatorinfo(jj)
-                            found2 = .true.
-                        end if        
-                    end do
-                    if (.not.(found.and.found2)) then
-                        call cfastexit('MFIR', 11)
+            if (trim(flaming_incipient_delay_random_generator_id) /= 'NULL' .and. &
+                trim(flaming_peak_incipient_random_generator_id) /= 'NULL') then
+                found = .false.
+                found2 = .false. 
+                do jj = 1, n_generators
+                    if (trim(flaming_incipient_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                        fire%flame_hrr_ptr%genptr => generatorinfo(jj)
+                        found = .true.
+                    else if (trim(flaming_peak_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                        fire%flame_time_ptr%genptr => generatorinfo(jj)
+                        found2 = .true.
+                    end if        
+                end do
+                if (.not.(found.and.found2)) then
+                    call cfastexit('MFIR', 11)
+                end if
+                call find_field('HRR_PT2   ', fire%fire, fire%flame_hrr_ptr, found)
+                if (.not.found) then
+                    call cfastexit('MFIR', 12)
+                end if 
+                fire%flame_hrr_ptr%field_type = trim(fire%flame_hrr_ptr%fld_types(fire%fire_comp%idx_value))
+                call find_field('T_HRR_PT2   ', fire%fire, fire%flame_time_ptr, found)
+                if (.not.found) then
+                    call cfastexit('MFIR', 13)
+                end if 
+                fire%flame_time_ptr%field_type = trim(fire%flame_time_ptr%fld_types(fire%fire_comp%idx_value))
+                flameset = .true. 
+                fire%incipient_growth = fire%incip_typ(fire%idx_flame)
+                fire%incipient_type = fire%incip_typ(fire%idx_flame)
+                if (add_incipient_peak_hrr_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%flame_hrr_ptr%add_to_parameters = .true. 
+                    if (trim(flaming_hrr_peak_column_label) == 'NULL') then
+                        fire%flame_hrr_ptr%parameter_column_label = ' '
+                        fire%flame_hrr_ptr%parameter_column_label = trim(fire_id) // '_flaming_peak_hrr_ignition'
+                    else 
+                        fire%flame_hrr_ptr%parameter_column_label =  flaming_hrr_peak_column_label
                     end if
-                    call find_field('HRR_PT2   ', fire%fire, fire%flame_hrr_ptr, found)
-                    if (.not.found) then
-                        call cfastexit('MFIR', 12)
-                    end if 
-                    fire%flame_hrr_ptr%field_type = trim(fire%flame_hrr_ptr%fld_types(fire%fire_comp%idx_value))
-                    call find_field('T_HRR_PT2   ', fire%fire, fire%flame_time_ptr, found)
-                    if (.not.found) then
-                        call cfastexit('MFIR', 13)
-                    end if 
-                    fire%flame_time_ptr%field_type = trim(fire%flame_time_ptr%fld_types(fire%fire_comp%idx_value))
-                    flameset = .true. 
-                    fire%incipient_growth = fire%incip_typ(fire%idx_flame)
-                    fire%incipient_type = fire%incip_typ(fire%idx_flame)
-                    if (add_flaming_ignition_peak_hrr_to_parameters) then
-                        fire%add_to_parameters = .true. 
-                        fire%flame_hrr_ptr%add_to_parameters = .true. 
-                        if (trim(flaming_hrr_peak_column_label) == 'NULL') then
-                            fire%flame_hrr_ptr%parameter_column_label = ' '
-                            fire%flame_hrr_ptr%parameter_column_label = trim(fire_id) // '_flaming_peak_hrr_ignition'
-                        else 
-                            fire%flame_hrr_ptr%parameter_column_label =  flaming_hrr_peak_column_label
-                        end if
+                end if
+                if (add_incipient_time_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%flame_time_ptr%add_to_parameters = .true. 
+                    if (trim(flaming_time_column_label) == 'NULL') then
+                        fire%flame_time_ptr%parameter_column_label = ' '
+                        fire%flame_time_ptr%parameter_column_label = trim(fire_id) // '_flaming_time_ignition'
+                    else 
+                        fire%flame_time_ptr%parameter_column_label =  flaming_time_column_label
                     end if
-                    if (add_flaming_ignition_time_to_parameters) then
-                        fire%add_to_parameters = .true. 
-                        fire%flame_time_ptr%add_to_parameters = .true. 
-                        if (trim(flaming_time_column_label) == 'NULL') then
-                            fire%flame_time_ptr%parameter_column_label = ' '
-                            fire%flame_time_ptr%parameter_column_label = trim(fire_id) // '_flaming_time_ignition'
-                        else 
-                            fire%flame_time_ptr%parameter_column_label =  flaming_time_column_label
-                        end if
-                    end if
-                else
-                    call cfastexit('READ_MFIR', 14)
                 end if
             end if
             
             ! Setting up the smoldering growth model    
-                
-            fire%incipient_type = fire%incip_typ(fire%idx_none)
-            if (trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_smolder)) .or. &
-                trim(type_of_incipient_growth) == trim(fire%incip_typ(fire%idx_random))) then
-                if (trim(smoldering_ignition_delay_random_generator_id) /= 'NULL' .and. &
-                    trim(peak_smoldering_ignition_random_generator_id) /= 'NULL') then
-                    found = .false.
-                    found2 = .false. 
-                    do jj = 1, n_generators
-                        if (trim(smoldering_ignition_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
-                            fire%smolder_hrr_ptr%genptr => generatorinfo(jj)
-                            found = .true.
-                        else if (trim(peak_smoldering_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
-                            fire%smolder_time_ptr%genptr => generatorinfo(jj)
-                            found2 = .true.
-                        end if        
-                    end do
-                    if (.not.(found.and.found2)) then
-                        call cfastexit('MFIR', 15)
-                    end if
-                    call find_field('HRR_PT2  ', fire%fire, fire%smolder_hrr_ptr, found)
-                    if (.not.found) then
-                        call cfastexit('MFIR', 16)
-                    end if 
-                    fire%smolder_hrr_ptr%field_type = trim(fire%smolder_hrr_ptr%fld_types(fire%fire_comp%idx_value))
-                    call find_field('T_HRR_PT2  ', fire%fire, fire%smolder_time_ptr, found)
-                    if (.not.found) then
-                        call cfastexit('MFIR', 17)
-                    end if 
-                    fire%smolder_time_ptr%field_type = trim(fire%smolder_time_ptr%fld_types(fire%fire_comp%idx_value))
-                    smolderset = .true.
+            
+            if (trim(smoldering_incipient_delay_random_generator_id) /= 'NULL' .and. &
+                trim(smoldering_peak_incipient_random_generator_id) /= 'NULL') then
+                found = .false.
+                found2 = .false. 
+                do jj = 1, n_generators
+                    if (trim(smoldering_incipient_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                        fire%smolder_hrr_ptr%genptr => generatorinfo(jj)
+                        found = .true.
+                    else if (trim(smoldering_peak_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                        fire%smolder_time_ptr%genptr => generatorinfo(jj)
+                        found2 = .true.
+                    end if        
+                end do
+                if (.not.(found.and.found2)) then
+                    call cfastexit('MFIR', 15)
+                end if
+                call find_field('HRR_PT2  ', fire%fire, fire%smolder_hrr_ptr, found)
+                if (.not.found) then
+                    call cfastexit('MFIR', 16)
+                end if 
+                fire%smolder_hrr_ptr%field_type = trim(fire%smolder_hrr_ptr%fld_types(fire%fire_comp%idx_value))
+                call find_field('T_HRR_PT2  ', fire%fire, fire%smolder_time_ptr, found)
+                if (.not.found) then
+                    call cfastexit('MFIR', 17)
+                end if 
+                fire%smolder_time_ptr%field_type = trim(fire%smolder_time_ptr%fld_types(fire%fire_comp%idx_value))
+                smolderset = .true.
+                if (flameset) then
+                    fire%incipient_growth = fire%incip_typ(fire%idx_random)
+                    fire%incipient_type = fire%incip_typ(fire%idx_random)
+                else
                     fire%incipient_growth = fire%incip_typ(fire%idx_smolder)
                     fire%incipient_type = fire%incip_typ(fire%idx_smolder)
-                    if (add_smoldering_ignition_peak_hrr_to_parameters) then
-                        fire%add_to_parameters = .true. 
-                        fire%smolder_hrr_ptr%add_to_parameters = .true. 
-                        if (trim(smoldering_hrr_peak_column_label) == 'NULL') then
-                            fire%smolder_hrr_ptr%parameter_column_label = ' '
-                            fire%smolder_hrr_ptr%parameter_column_label = trim(fire_id)//'_smolderinging_peak_hrr_ignition'
-                        else 
-                            fire%smolder_hrr_ptr%parameter_column_label =  smoldering_hrr_peak_column_label
-                        end if
+                end if
+                if (add_incipient_peak_hrr_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%smolder_hrr_ptr%add_to_parameters = .true. 
+                    if (trim(smoldering_hrr_peak_column_label) == 'NULL') then
+                        fire%smolder_hrr_ptr%parameter_column_label = ' '
+                        fire%smolder_hrr_ptr%parameter_column_label = trim(fire_id)//'_smolderinging_peak_hrr_ignition'
+                    else 
+                        fire%smolder_hrr_ptr%parameter_column_label =  smoldering_hrr_peak_column_label
                     end if
-                    if (add_smoldering_ignition_time_to_parameters) then
-                        fire%add_to_parameters = .true. 
-                        fire%smolder_time_ptr%add_to_parameters = .true. 
-                        if (trim(smoldering_time_column_label) == 'NULL') then
-                            fire%smolder_time_ptr%parameter_column_label = ' '
-                            fire%smolder_time_ptr%parameter_column_label = trim(fire_id) // '_smoldering_time_ignition'
-                        else 
-                            fire%smolder_time_ptr%parameter_column_label =  smoldering_time_column_label
-                        end if
+                end if
+                if (add_incipient_time_to_parameters) then
+                    fire%add_to_parameters = .true. 
+                    fire%smolder_time_ptr%add_to_parameters = .true. 
+                    if (trim(smoldering_time_column_label) == 'NULL') then
+                        fire%smolder_time_ptr%parameter_column_label = ' '
+                        fire%smolder_time_ptr%parameter_column_label = trim(fire_id) // '_smoldering_time_ignition'
+                    else 
+                        fire%smolder_time_ptr%parameter_column_label =  smoldering_time_column_label
                     end if
-                else
-                    call cfastexit('READ_MFIR', 18)
                 end if
             end if
                 
             ! Setting up the generator that switches between the two models 
                 
             if (flameset .and. smolderset .and. & 
-                trim(flaming_smoldering_ignition_random_generator_id) /= 'NULL' ) then
+                trim(flaming_smoldering_incipient_random_generator_id) /= 'NULL' ) then
                 found = .false.
                 do jj = 1, n_generators
-                    if (trim(flaming_smoldering_ignition_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                    if (trim(flaming_smoldering_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
                         fire%fs_fire_ptr%genptr => generatorinfo(jj)
                         found = .true.
                     end if
@@ -1199,14 +1190,14 @@
                         call cfastexit('MFIR', 20)
                     end if
                 end do
-                if (add_ignition_type_to_parameters) then
+                if (add_incipient_type_to_parameters) then
                     fire%add_to_parameters = .true. 
                     fire%fs_fire_ptr%add_to_parameters = .true. 
-                    if (trim(ignition_type_column_label) == 'NULL') then
+                    if (trim(incipient_type_column_label) == 'NULL') then
                         fire%fs_fire_ptr%parameter_column_label = ' '
                         fire%fs_fire_ptr%parameter_column_label = trim(fire_id) // '_ignition_type'
                     else 
-                        fire%fs_fire_ptr%parameter_column_label =  ignition_type_column_label
+                        fire%fs_fire_ptr%parameter_column_label =  incipient_type_column_label
                     end if
                 end if
             else if (flameset .and. smolderset) then
@@ -1215,7 +1206,7 @@
             
             ! Setting up the fire where all points are determined by generators
             
-            If (trim(fire_hrr_generator_ids(1)) /= 'NULL' .and. trim(fire_time_generator_ids(2)) /= 'NULL') then
+            If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(1)) /= 'NULL') then
                 fire%generate_fire =   .true. 
                 fire%add_to_parameters = .true.
                 fire%fire_time_to_1054_kw = time_to_1054_kW
@@ -1228,20 +1219,20 @@
                     idx_firepts = idx_firepts + number_of_growth_points
                 end if 
                 outfireloop: do jj = 1, 100
-                    if (trim(fire_hrr_generator_ids(jj)) /= 'NULL' .and. trim(fire_time_generator_ids(jj)) /= 'NULL') then
+                    if (trim(fire_hrr_generators(jj)) /= 'NULL' .and. trim(fire_time_generators(jj)) /= 'NULL') then
                         fire%n_firegenerators = jj 
-                    else if (trim(fire_hrr_generator_ids(jj)) == 'NULL' .and. trim(fire_time_generator_ids(jj)) == 'NULL') then
+                    else if (trim(fire_hrr_generators(jj)) == 'NULL' .and. trim(fire_time_generators(jj)) == 'NULL') then
                         exit outfireloop
                     end if 
                     found = .false.
                     found2 = .false.
                     infireloop: do kk = 1, n_generators
-                        if (trim(fire_hrr_generator_ids(jj)) == trim(generatorinfo(kk)%id)) then
+                        if (trim(fire_hrr_generators(jj)) == trim(generatorinfo(kk)%id)) then
                             found = .true.
                             fire%firegenerators(1, idx_firepts + jj)%genptr => generatorinfo(kk)
                             fire%firegenerators(1,idx_firepts + jj)%field_type =  &
                                 trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
-                        else if (trim(fire_time_generator_ids(jj)) == trim(generatorinfo(kk)%id)) then
+                        else if (trim(fire_time_generators(jj)) == trim(generatorinfo(kk)%id)) then
                             found2 = .true.
                             fire%firegenerators(2, idx_firepts + jj)%genptr => generatorinfo(kk)
                             fire%firegenerators(2, idx_firepts + jj)%field_type =  &
@@ -1346,31 +1337,27 @@
     add_hrr_scale_to_parameters = .true.
     add_time_scale_to_parameters = .true.
     fire_compartment_random_generator_id = 'NULL'
-    add_fire_compartment_id_to_parameters = .true.
+    add_fire_compartment_to_parameters = .true.
     fire_compartment_id_column_label = 'NULL'
     fire_compartment_ids = 'NULL'
-    flaming_smoldering_ignition_random_generator_id = 'NULL'
-    flaming_ignition_delay_random_generator_id = 'NULL'
-    peak_flaming_ignition_random_generator_id = 'NULL'
-    smoldering_ignition_delay_random_generator_id = 'NULL'
-    peak_smoldering_ignition_random_generator_id = 'NULL'
-    fire_hrr_generator_ids = 'NULL'
-    fire_time_generator_ids = 'NULL'
+    flaming_smoldering_incipient_random_generator_id = 'NULL'
+    flaming_incipient_delay_random_generator_id = 'NULL'
+    flaming_peak_incipient_random_generator_id = 'NULL'
+    smoldering_incipient_delay_random_generator_id = 'NULL'
+    smoldering_peak_incipient_random_generator_id = 'NULL'
     type_of_incipient_growth = 'NONE'
     number_of_incipient_fire_types = -1001
     incipient_fire_types = 'NULL'
-    ignition_type_column_label = 'NULL'
+    incipient_type_column_label = 'NULL'
     smoldering_time_column_label = 'NULL'
     smoldering_hrr_peak_column_label = 'NULL'
     flaming_time_column_label = 'NULL'
     flaming_hrr_peak_column_label = 'NULL'
-    add_ignition_type_to_parameters = .true.
-    add_smoldering_ignition_time_to_parameters = .true.
-    add_smoldering_ignition_peak_hrr_to_parameters = .true.
-    add_flaming_ignition_time_to_parameters = .true.
-    add_flaming_ignition_peak_hrr_to_parameters = .true.
-    fire_hrr_generator_ids = 'NULL'
-    fire_time_generator_ids = 'NULL'
+    add_incipient_type_to_parameters = .true.
+    add_incipient_time_to_parameters = .true.
+    add_incipient_peak_hrr_to_parameters = .true.
+    fire_hrr_generators = 'NULL'
+    fire_time_generators = 'NULL'
     number_of_growth_points = 0
     number_of_decay_points = 0
     growth_exponent = 1
@@ -1570,7 +1557,7 @@
             call cfastexit('find_field',2)
         end if
     class is (vent_type)
-        if (item%width > 0.0_eb) then
+        if (item%vtype == 'H') then
             if (trim(fieldid) == 'WIDTH') then
                 found = .true.
                 fldptr%realval%val => item%width
@@ -1604,6 +1591,13 @@
                 found = .true.
                 fldptr%realval%val => item%opening_criterion
                 fldptr%value_type = val_types(idx_real)
+                if (item%opening_type == 2) then
+                    fldptr%temp_flag = .true.
+                else if (item%opening_type == 3) then
+                    fldptr%kilo_flag = .true.
+                else
+                    call cfastexit('FIND_FIELD', 3)
+                end if
                 fldptr%valptr => fldptr%realval
             elseif (trim(fieldid) == 'PRE_ACTIVATION_FRACTION') then
                 found = .true.
@@ -1616,7 +1610,7 @@
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             else
-                call cfastexit('find_field',3)
+                call cfastexit('find_field', 4)
             end if 
         elseif (trim(fieldid) == 'AREA') then
             found = .true.
@@ -1631,7 +1625,7 @@
                 fldptr%valptr => fldptr%realval
             end if
         else
-            call cfastexit('find_field', 4)
+            call cfastexit('find_field', 5)
         end if
     class is (detector_type)
         if (trim(fieldid) == 'TRIGGER') then
@@ -1645,7 +1639,7 @@
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else
-            call cfastexit('find_field',5)
+            call cfastexit('find_field',6)
         end if
     class is (fire_type)
         if (trim(fieldid) == 'COMPARTMENT') then
@@ -1672,6 +1666,7 @@
             found = .true.
             read(fieldid(7:9),'(i3)') i
             fldptr%realval%val => item%qdot(i)
+            fldptr%kilo_flag = .true.
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else if (trim(fieldid(1:8)) == 'T_HRR_PT') then 
@@ -1681,7 +1676,7 @@
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else
-            call cfastexit('find_field',6)
+            call cfastexit('find_field', 7)
         end if 
     class default
         call cfastexit('find_field',99)

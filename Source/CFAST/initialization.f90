@@ -69,8 +69,8 @@ module initialization_routines
         end if
     end do
     missingtpp = name
-    write (*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    write (iofill,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (*,'(''***Error, A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (iofill,'(''***Error, A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     call cfastexit('get_thermal_property',1)
     stop
 
@@ -752,8 +752,8 @@ module initialization_routines
         targptr => targetinfo(itarg)
         iroom = targptr%room
         if (iroom<1.or.iroom>n_rooms) then
-            write (*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
-            write (iofill,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
+            write (*,'(a,i0)') '***Error, Target assigned to non-existent compartment',iroom
+            write (iofill,'(a,i0)') '***Error, Target assigned to non-existent compartment',iroom
             call cfastexit('initialize_targets',1)
             stop
         end if
@@ -768,9 +768,9 @@ module initialization_routines
         if (targptr%center(1)<0.0_eb.or.targptr%center(1)>roomptr%cwidth.or. &
             targptr%center(2)<0.0_eb.or.targptr%center(2)>roomptr%cdepth.or. &
             targptr%center(3)<0.0_eb.or.targptr%center(3)>roomptr%cheight) then
-            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+            write (*,'(a,i0,1x,3f10.3)') '***Error, Target located outside of compartment', iroom, &
                 targptr%center(1), targptr%center(2), targptr%center(3)
-            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+            write (iofill,'(a,i0,1x,3f10.3)') '***Error, Target located outside of compartment', iroom, &
                 targptr%center(1), targptr%center(2), targptr%center(3)
             call cfastexit('initialize_targets',2)
             stop

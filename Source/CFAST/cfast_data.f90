@@ -172,8 +172,8 @@ module material_data
     
     logical :: convert_negative_distances = .true.  ! true to convert negative vent, fire, and target locations
                                                     ! to distance from compartment origin
-    logical :: nmlflag = .true.                     ! true if input file is in namelist format
-    integer :: input_file_line_number               ! current line read in a namelist-format input file
+    integer :: input_file_line_number               ! current line number read in a namelist-format input file
+    character(128) :: input_file_line               ! text of current line read in a namelist-format input file
     logical :: compflag = .false.                   ! true if each namelist type has been read in
     logical :: connflag = .false.
     logical :: devcflag = .false.
@@ -342,12 +342,11 @@ module setup_data
     logical :: init_scalars = .true.  
     character(len=5) :: program_name
     integer, dimension(26) :: ssoutoptions = (/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26/)
+    character(len=128) :: errormessage = ''
     
     ! File descriptors for cfast
-    integer :: iofill = 3
-    integer :: iofili, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    integer :: iofill, iofili, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
-    character(len=6), parameter :: heading = "VERSN"
     character(len=64) :: project, extension
     character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
         sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, sscalculation

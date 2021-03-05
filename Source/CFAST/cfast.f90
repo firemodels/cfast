@@ -35,7 +35,7 @@
 
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        program_name
+        program_name, errormessage
 
     implicit none
     
@@ -45,6 +45,7 @@
     program_name = 'CFAST'
     ! Current CFAST version number is defined in setup_data
 
+    errormessage = ' '
     if (command_argument_count().eq.0) then
         call output_version(0,program_name,cfast_version)
         call cfastexit('CFAST',0)

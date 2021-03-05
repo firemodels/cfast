@@ -273,8 +273,8 @@ module radiation_routines
 
     call dgefa(a,4,4,ipvt,info)
     if (info/=0) then
-        write (*,*) '***Error: RAD4 - singular matrix'
-        write (iofill,*) '***Error: RAD4 - singular matrix'
+        write (*,*) '***Error, RAD4 - singular matrix'
+        write (iofill,*) '***Error, RAD4 - singular matrix'
         do k = 1, 4
             rhs(k) = 0.0_eb
         end do

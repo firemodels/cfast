@@ -1482,7 +1482,7 @@ module isosurface
 
     if (izero==0) return
 
-    write (message,'(4a)') 'ERROR: Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
+    write (message,'(4a)') 'Error, Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
     write (*,*) message
     call cfastexit('chkmemerr',1)
 

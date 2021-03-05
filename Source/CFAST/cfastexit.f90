@@ -2,8 +2,9 @@ module exit_routines
 
     use precision_parameters
     
+    use namelist_data, only: input_file_line, input_file_line_number
     use setup_data, only: validation_flag, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name  
+        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, errormessage
     
     implicit none
 
@@ -31,9 +32,17 @@ module exit_routines
             if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'',a)') program_name
             exitcode = 0
         else
+            if (errormessage/='') write (*,'(a)') errormessage
+            if (input_file_line/='') write (*,'(a,i0,a,a)') 'Error on line ',input_file_line_number, &
+                ' of the input file: ', trim(input_file_line)
             write (*,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, exitcode, trim(name)
-            if (iofill/=0) write (iofill,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, &
+            if (iofill/=0) then
+                if (errormessage/='') write (*,'(a)') errormessage
+                if (input_file_line/='') write (iofill,'(a,i0,a,a)') 'Error on line ',input_file_line_number, &
+                    ' of the input file: ', trim(input_file_line)
+                write (iofill,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, &
                 exitcode, trim(name)
+            end if
         end if
     else
         if (.not.validation_flag) write (*, '(''Normal exit from '',a)') program_name

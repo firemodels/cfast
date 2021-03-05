@@ -729,7 +729,7 @@
                 end do searching
 
                 if (.not. idcheck) then
-                    write (errormessage,'(a,a,a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
+                    write (errormessage,'(3a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
                     call cfastexit('read_devc',4)
                 end if
 
@@ -824,7 +824,7 @@
                 end do searching_2
 
                 if (.not. idcheck) then
-                    write (errormessage,'(a,a,a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
+                    write (errormessage,'(3a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
                     call cfastexit('read_devc',9)
                 end if
 
@@ -835,7 +835,7 @@
                 end if
 
                 if (.not.newid(id)) then
-                    write(errormessage,'(a,a,a,i0)') '***Error, Not a unique identifier for &DEVC ',trim(id), 'Check detector ', &
+                    write(errormessage,'(3a,i0)') '***Error, Not a unique identifier for &DEVC ',trim(id), 'Check detector ', &
                         counter2
                     call cfastexit('read_devc', 11)
                 end if
@@ -1764,8 +1764,9 @@ continue
                 ventptr => hventinfo(counter1)
 
                 if (.not.newid(id)) then
-                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), 'Check wall v ', &
-                        counter1, ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(errormessage,'(3a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                        'Check wall v ', counter1, ' for vent ',trim(id), ' &VENT number ', &
+                        counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
@@ -1825,7 +1826,7 @@ continue
                 ventptr => mventinfo(counter2)
 
                 if (.not.newid(id)) then
-                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                    write(errormessage,'(3a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
                         ' Check mech vent ', counter2, ' for vent ',trim(id), ' &VENT number ', &
                         counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
@@ -1894,7 +1895,7 @@ continue
                 ventptr => vventinfo(counter3)
 
                 if (.not.newid(id)) then
-                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                    write(errormessage,'(3a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
                         'Check ceil vent ', counter3, ' for vent ',trim(id), ' &VENT number ', &
                         counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
@@ -1914,8 +1915,8 @@ continue
                 else if (trim(shape) == 'SQUARE') then
                     ventptr%shape = 2
                 else
-                    write (errormessage,'(a,a,a,i0)') '***Error, SHAPE must be SQUARE or ROUND. ', shape, ' for vent ',trim(id), &
-                        ' &VENT number ', counter1 + counter2 + counter3
+                    write (errormessage,'(3a,i0)') '***Error, SHAPE must be SQUARE or ROUND. ', shape, ' for vent ', &
+                        trim(id), ' &VENT number ', counter1 + counter2 + counter3
                     call cfastexit('read_vent',12)
                 end if
 

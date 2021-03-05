@@ -27,7 +27,7 @@ module initialization_routines
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
         pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, &
         slab_splits, alloc_room, init_room
-    use setup_data, only: iofill, debugging, deltat, init_scalars
+    use setup_data, only: iofill, debugging, deltat, init_scalars, errormessage
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
@@ -69,8 +69,7 @@ module initialization_routines
         end if
     end do
     missingtpp = name
-    write (*,'(''***Error, A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    write (iofill,'(''***Error, A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (errormessage,'(''***Error, A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     call cfastexit('get_thermal_property',1)
     stop
 
@@ -752,8 +751,7 @@ module initialization_routines
         targptr => targetinfo(itarg)
         iroom = targptr%room
         if (iroom<1.or.iroom>n_rooms) then
-            write (*,'(a,i0)') '***Error, Target assigned to non-existent compartment',iroom
-            write (iofill,'(a,i0)') '***Error, Target assigned to non-existent compartment',iroom
+            write (errormessage,'(a,i0)') '***Error, Target assigned to non-existent compartment',iroom
             call cfastexit('initialize_targets',1)
             stop
         end if
@@ -768,9 +766,7 @@ module initialization_routines
         if (targptr%center(1)<0.0_eb.or.targptr%center(1)>roomptr%cwidth.or. &
             targptr%center(2)<0.0_eb.or.targptr%center(2)>roomptr%cdepth.or. &
             targptr%center(3)<0.0_eb.or.targptr%center(3)>roomptr%cheight) then
-            write (*,'(a,i0,1x,3f10.3)') '***Error, Target located outside of compartment', iroom, &
-                targptr%center(1), targptr%center(2), targptr%center(3)
-            write (iofill,'(a,i0,1x,3f10.3)') '***Error, Target located outside of compartment', iroom, &
+            write (errormessage,'(a,i0,1x,3f10.3)') '***Error, Target located outside of compartment', iroom, &
                 targptr%center(1), targptr%center(2), targptr%center(3)
             call cfastexit('initialize_targets',2)
             stop
@@ -801,10 +797,8 @@ module initialization_routines
                         targptr%normal(2) = (fireptr%y_position - targptr%center(2)) / hypotenuse
                         targptr%normal(3) = (fireptr%height(1) - targptr%center(3)) / hypotenuse
                     else
-                        write(*, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ' , &
-                            itarg
-                        write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ',&
-                            itarg
+                        write(errormessage, '(a,i3)') &
+                            '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ' , itarg
                         call cfastexit('initialize_targets',3)
                         stop
                     end if

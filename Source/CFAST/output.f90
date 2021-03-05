@@ -22,7 +22,7 @@ module output_routines
         iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
-        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions
+        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
@@ -1514,15 +1514,13 @@ module output_routines
     ! error processing
 
     !	smokeview file
-11  write (*,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
-    write (iofill,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
+11  write (errormessage,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
     call cfastexit('open_output_files',1)
     !	this one comes from writing to the status file
-81  write (*,*) '***Fatal error opening the status file ',ios
-    write (iofill,*) '***Fatal error opening the status file ',ios
+81  write (errormessage,*) '***Error opening the status file ',ios
     call cfastexit('open_output_files',2)
 
-5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
+5040 FORMAT ('***Error ',i0,' while processing smokeview files -',i0,2x,a,2x,a)
 
     end subroutine open_output_files
 

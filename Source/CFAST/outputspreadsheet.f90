@@ -22,7 +22,7 @@ module spreadsheet_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo
     use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions
+        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions, errormessage
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
@@ -1542,8 +1542,7 @@ module spreadsheet_routines
         
         ! output not found. this is an internal error and cause for alarm
     case default
-        write(*, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
-        write(iofill, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
+        write(errormessage, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
         call cfastexit('ssaddvaluetooutput',1)
         stop
     end select
@@ -1824,7 +1823,7 @@ module spreadsheet_routines
                 dumpcarray(1,relcol) = dumpptr%id
                 if (first) then
                     rewind(iocsv(idx))
-                    call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend, iofill)
+                    call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend)
                     first = .false. 
                     if (lend) then 
                         return
@@ -1861,7 +1860,7 @@ module spreadsheet_routines
         end if
     end do
     
-    call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend, iofill) 
+    call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend) 
     if (.not.lend) then
         do i = 1, icol
             dumpptr => dumpinfo(cols(i))
@@ -1890,7 +1889,7 @@ module spreadsheet_routines
     end if
     
     do while (.not.lend)
-        call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend, iofill)
+        call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend)
         if (.not.lend) then
             do i = 1, icol
                 dumpptr => dumpinfo(cols(i))
@@ -1951,8 +1950,7 @@ module spreadsheet_routines
     end if 
     
     if (mxr < 2) then
-        write(*,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
-        write(iofill,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
+        write(errormessage,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
         call cfastexit('fnd_col',1)
     end if
     do i = 1, mxc

@@ -75,9 +75,7 @@ module exit_routines
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)
             if (ios/=0) then
-                write (iofill,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
-                    '. File may be in use by another application.'
-                write (*,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
+                write (errormessage,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'
                 call cfastexit('delete_output_files',1)
             end if

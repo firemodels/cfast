@@ -37,7 +37,7 @@ module solve_routines
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, n_vcons, vertical_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound
     use setup_data, only: iofilo, iofill, initializeonly, stime, i_time_step, time_end, deltat, print_out_interval, &
-        smv_out_interval, ss_out_interval, nokbd, stopfile, queryfile, cfast_version
+        smv_out_interval, ss_out_interval, nokbd, stopfile, queryfile, cfast_version, errormessage
     use smkview_data, only: smv_room, smv_xfire, smv_yfire, smv_zfire, smv_relp, smv_zlay, smv_tu, smv_tl, smv_qdot, smv_height
     use solver_data, only: maxteq, rpar2, ipar2, p, pold, pdold, pinit, told, dt, aptol, atol, rtol, rptol, awtol, rwtol, algtol, &
         nofp, nequals, nofprd, nofwt, noftu, noftl, nofvu, nofoxyu, nofoxyl, ndisc, discon, stpmin, stpminflag, stpmin_cnt, &
@@ -110,7 +110,7 @@ module solve_routines
             write(iofill, '(a)') '***Error in initial_solution: Trying non-steady initial guess.'
             go to 1
         end if
-        write(iofill, '(a)') '***Error in initial_solution: Solver could not find an initial solution.'
+        write(errormessage, '(a)') '***Error in initial_solution: Solver could not find an initial solution.'
         call cfastexit('initial_solution',1)
     end if
 
@@ -608,6 +608,7 @@ module solve_routines
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                     call post_process
+                    write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
                     call cfastexit ('solve_simulation', 3)
                     stop
                 end if
@@ -633,6 +634,7 @@ module solve_routines
                     t,' Last time = ',told,' need to back step to ',td
                 write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
+                write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
                 call cfastexit ('solve_simulation', 4)
                 stop
             end if
@@ -651,7 +653,7 @@ module solve_routines
         total_steps = total_steps + 1
         if (stopiter>=0.and.total_steps>stopiter) then
             call delete_output_files (stopfile)
-            write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
             call cfastexit ('solve_simulation', 5)
         end if
         go to 10

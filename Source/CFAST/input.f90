@@ -22,7 +22,7 @@
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssdiag, sscalculation, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
-        overwrite_testcase
+        overwrite_testcase, errormessage
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
@@ -64,12 +64,7 @@
     close (iofili)
     open (newunit=iofili,file=inputfile,status='OLD',iostat=ios)
     if (ios/=0) then
-        if (iofill>0) then
-            write (*,5050) modulo(ios,256)
-            write (iofill,5050) modulo(ios,256)
-        else
-            write (*,5050) modulo(ios,256)
-        end if
+        write (errormessage,5050) modulo(ios,256)
         call cfastexit('readinputfile',1)
         stop
     end if
@@ -97,13 +92,11 @@
     ! check for temperature outside reasonable limits
     if (.not.radi_verification_flag)  then
         if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
-            write (*,5022) exterior_ambient_temperature
-            write (iofill,5022) exterior_ambient_temperature
+            write (errormessage,5022) exterior_ambient_temperature
             call cfastexit('readinputfile',2)
         end if
         if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
-            write (*,5022) interior_ambient_temperature
-            write (iofill,5022) interior_ambient_temperature
+            write (errormessage,5022) interior_ambient_temperature
             if (.not.radi_verification_flag) then
                 call cfastexit('readinputfile',2)
             end if
@@ -144,9 +137,9 @@
         if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
     if (lower_o2_limit<0.0_eb.or.lower_o2_limit>0.230_eb) then
-        write (*,*) '***Error, Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
-        write (iofill,*) '***Error, Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
-        lower_o2_limit = 0.15_eb
+        write (errormessage,'(a)') '***Error, Specified LOI is less than zero or greater than ambient.'
+        call cfastexit('readinputfile',4)
+        stop
     end if
     
     !make sure wall vent specifications are correct
@@ -157,17 +150,14 @@
         zbot = ventptr%sill
         ztop = ventptr%soffit
         if (zbot<0.0_eb.or.zbot>roomptr%cheight.or.ztop<0.0_eb.or.ztop>roomptr%cheight.or.ztop<zbot) then
-            write (*,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =',&
-                zbot, ztop,' out of bounds'
-            write (iofill,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =',&
+            write (errormessage,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =', &
                 zbot, ztop,' out of bounds'
                 call cfastexit('readinputfile',4)
             stop
         end if
         ! outside must always be second compartment
         if (ventptr%room1==n_rooms+1) then
-            write (*,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
-            write (iofill,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
+            write (errormessage,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
             call cfastexit('readinputfile',5)
             stop
         end if
@@ -182,8 +172,7 @@
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         if (ventptr%room1==ventptr%room2) then
-            write (*,*) '***Error, A room can not be connected to itself with a vertical vent'
-            write (iofill,*) '***Error, A room can not be connected to itself with a vertical vent'
+            write (errormessage,'(a)') '***Error, A room can not be connected to itself with a vertical vent'
             call cfastexit('readinputfile',6)
             stop
         end if
@@ -191,8 +180,8 @@
         ibot = ventptr%room2
         deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
         if (itop/=n_rooms+1.and.ibot/=n_rooms+1.and.abs(deps1)>=mx_vsep) then
-            write (*,*) '***Error, Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
-            write (iofill,*) '***Error, Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
+            write (errormessage,'(a,i0,a,i0,a)') '***Error, Vertical vent from ', itop,' to ', ibot, &
+                'Separation between floor and ceiling too large.'
             call cfastexit('readinputfile',7)
             stop
         end if
@@ -215,9 +204,7 @@
 
         ! room numbers must be between 1 and n_rooms. outside is n_rooms+1
         if (iroom1<1.or.iroom2<1.or.iroom1>n_rooms+1.or.iroom2>n_rooms+1) then
-            write (*,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
-                iroom1,'-',iroom2,' do not exist'
-            write (iofill,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
+            write (errormessage,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
                 iroom1,'-',iroom2,' do not exist'
             call cfastexit('readinputfile',8)
             stop
@@ -249,9 +236,7 @@
                 vertical_connections(ii,w_to_wall) = 2
             end if
         else
-            write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
-                iroom1,'-',iroom2,' are not connected'
-            write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
+            write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
                 iroom1,'-',iroom2,' are not connected'
                 call cfastexit('readinputfile',9)
             stop
@@ -263,14 +248,10 @@
         iwall2 = vertical_connections(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
-                write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
-                    iroom1,' is adiabatic'
-                write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
+                write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
                     iroom1,' is adiabatic'
             else
-                write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
-                    iroom2,' is adiabatic'
-                write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
+                write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
                     iroom2,' is adiabatic'
             end if
             call cfastexit('readinputfile',10)
@@ -355,9 +336,8 @@
         targptr => targetinfo(i)
         iroom = targptr%room
         if (iroom<1.or.iroom>n_rooms) then
-            write (*,110) iroom
-            write (iofill,110) iroom
-110         format('***Error, Invalid TARGET specification. Room ',i3, ' is not a valid')
+            write (errormessage,110) iroom
+110         format('***Error, Invalid TARGET specification. Room ',i0, ' is not a valid')
             call cfastexit('readinputfile',11)
             stop
         end if
@@ -373,8 +353,7 @@
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
         if (iroom<1.or.iroom>n_rooms) then
-            write (*,104) iroom
-            write (iofill,104) iroom
+            write (errormessage,104) 
 104         format('***Error, Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             call cfastexit('readinputfile',12)
             stop
@@ -384,8 +363,7 @@
         rti = dtectptr%rti
         itype = dtectptr%dtype
         if (rti<=0.0_eb.and.itype/=smoked) then
-            write (*,101) rti
-            write (iofill,101) rti
+            write (errormessage,101) rti
 101         format('***Error, Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
             call cfastexit('readinputfile',13)
             stop
@@ -395,8 +373,7 @@
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)
         if (xloc<0.0_eb.or.xloc>roomptr%cwidth.or.yloc<0.0_eb.or.yloc>roomptr%cdepth.or.zloc<0.0_eb.or.zloc>roomptr%cheight) then
-            write (*,102) xloc,yloc,zloc
-            write (iofill,102) xloc,yloc,zloc
+            write (errormessage,102) xloc, yloc, zloc
 102         format('***Error, Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             call cfastexit('readinputfile',14)
             stop
@@ -404,9 +381,8 @@
 
         itype = dtectptr%dtype
         if (itype<1.or.itype>3) then
-            write (*,103) itype
-            write (iofill,103) itype
-103         format('***Error, Invalid DETECTOR specification - type= ',i2,' is not a valid')
+            write (errormessage,103) itype
+103         format('***Error, Invalid DETECTOR specification - type= ',i0,' is not a valid')
             call cfastexit('readinputfile',15)
             stop
         end if
@@ -523,14 +499,15 @@
         if (.not.overwrite_testcase) then
             inquire (file=outputfile,exist=ex)
             if (ex) then
-                write (*,'(a,a,a)') '***Error in &MISC, OVERWRITE=.FALSE. and the file ',trim(outputfile),' exists.'
+                write (errormessage,'(3a)') '***Error in &MISC, OVERWRITE=.FALSE. and the file ',trim(outputfile),' exists.'
                 call cfastexit('openfiles',1)
                 stop
             end if
         end if
     else
         input_file_line = buf
-        write (*,*) ' Input file format not recognized. CFAST onlly reads namelist input files. Check first line of input file.'
+        write (errormessage,'(a)') &
+            '***Error, Input file format not recognized. CFAST onlly reads namelist input files. Check first line of input file.'
         call cfastexit('openfiles',2)
         stop
     end if
@@ -550,7 +527,7 @@
     call delete_output_files (errorlogging)
     open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
-        write (*,'(a,i0,a)') '***Error opening log file, returned status = ', ios, &
+        write (errormessage,'(a,i0,a)') '***Error opening log file, returned status = ', ios, &
             '. Log file may be in use by another application.'
         call cfastexit('openfiles',3)
         stop
@@ -601,7 +578,8 @@
     nargs = command_argument_count() + 1
 
     if (nargs<2) then
-        write (*,*) 'The program was called with insufficient arguments on the command line.  At least an input file is required.'
+        write (errormessage,'(a)') &
+            'The program was called with insufficient arguments on the command line.  At least an input file is required.'
         call cfastexit('exehandle',1)
     end if
 
@@ -635,7 +613,7 @@
             pathcount = 5 + ln(i) + li(i) +ld(i) + le(i)
 
             if (pathcount>255.or.ln(i)>64) then
-                write (*,'(a,/,a)') 'Total file name length including path must be less than 256 characters.', &
+                write (errormessage,'(2a)') 'Total file name length including path must be less than 256 characters. ', &
                     'Individual filenames must be less than 64 characters.'
                 call cfastexit('exehandle',3)
             end if
@@ -662,7 +640,7 @@
             extension = '.in'
         end if
     else
-        write (*,*) ' Input file does not exist: ', trim(buf)
+        write (errormessage,*) ' Input file does not exist: ', trim(buf)
         call cfastexit('exehandle',4)
         stop
     end if

@@ -1478,12 +1478,10 @@ module isosurface
 
     character(len=*), intent(in) :: codesect, varname
     integer izero
-    character(len=256) message
 
     if (izero==0) return
 
-    write (message,'(4a)') 'Error, Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
-    write (*,*) message
+    write (errormessage,'(4a)') 'Error, Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
     call cfastexit('chkmemerr',1)
 
     end subroutine chkmemerr

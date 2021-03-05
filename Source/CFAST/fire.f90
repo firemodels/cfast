@@ -16,7 +16,7 @@ module fire_routines
     use fire_data, only: n_fires, fireinfo, lower_o2_limit, summed_total_trace, tgignt, sigma_s
     use option_data, only: ffire, option, fdfire, on, off
     use room_data, only: n_rooms, ns, roominfo, interior_ambient_temperature, adiabatic_walls
-    use setup_data, only: iofill, iofilo
+    use setup_data, only: iofill, iofilo, errormessage
     use smkview_data, only: smv_room, smv_height, smv_qdot, smv_xfire, smv_yfire, smv_zfire
     use solver_data, only: atol
     use devc_data, only: detectorinfo, targetinfo
@@ -1283,7 +1283,7 @@ module fire_routines
                 call check_fire_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
                     fireptr%incident_flux,i,ifobj,tobj,tmpob(1,i))
             else
-                write(iofill, '(a)') '***Error in update_fire_ignition: Incorrectly defined ignition type in input file.'
+                write(errormessage, '(a)') '***Error in update_fire_ignition: Incorrectly defined ignition type in input file.'
                 call cfastexit('update_fire_ignition',1)
                 stop
             end if

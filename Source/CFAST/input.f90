@@ -18,10 +18,10 @@
         mx_dumps, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
-    use namelist_data, only: nmlflag
+    use namelist_data, only: input_file_line
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
-        ssdiag, sscalculation, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        ssdiag, sscalculation, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -77,14 +77,7 @@
     n_matl = 0
  
     ! read in the input file in new (namelist) or old (.csv) format
-    if (nmlflag) then
-        call namelist_input
-    else
-        write(*, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format' 
-        write(iofill, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format'
-        call cfastexit('readinputfile',2)
-        stop
-    end if
+    call namelist_input
 
     ! add the default thermal property
     n_matl = n_matl + 1
@@ -106,13 +99,13 @@
         if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
             write (*,5022) exterior_ambient_temperature
             write (iofill,5022) exterior_ambient_temperature
-            call cfastexit('readinputfile',3)
+            call cfastexit('readinputfile',2)
         end if
         if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
             write (*,5022) interior_ambient_temperature
             write (iofill,5022) interior_ambient_temperature
             if (.not.radi_verification_flag) then
-                call cfastexit('readinputfile',4)
+                call cfastexit('readinputfile',2)
             end if
         end if
     end if
@@ -151,8 +144,8 @@
         if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
     if (lower_o2_limit<0.0_eb.or.lower_o2_limit>0.230_eb) then
-        write (*,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
-        write (iofill,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
+        write (*,*) '***Error, Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
+        write (iofill,*) '***Error, Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
         lower_o2_limit = 0.15_eb
     end if
     
@@ -164,18 +157,18 @@
         zbot = ventptr%sill
         ztop = ventptr%soffit
         if (zbot<0.0_eb.or.zbot>roomptr%cheight.or.ztop<0.0_eb.or.ztop>roomptr%cheight.or.ztop<zbot) then
-            write (*,'(a,2e11.4,a)') '***Error: Invalid HVENT specification. sill and/or soffit height =',&
+            write (*,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =',&
                 zbot, ztop,' out of bounds'
-            write (iofill,'(a,2e11.4,a)') '***Error: Invalid HVENT specification. sill and/or soffit height =',&
+            write (iofill,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =',&
                 zbot, ztop,' out of bounds'
-                call cfastexit('readinputfile',5)
+                call cfastexit('readinputfile',4)
             stop
         end if
         ! outside must always be second compartment
         if (ventptr%room1==n_rooms+1) then
-            write (*,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
-            write (iofill,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
-            call cfastexit('readinputfile',6)
+            write (*,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
+            write (iofill,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
+            call cfastexit('readinputfile',5)
             stop
         end if
     end do
@@ -189,18 +182,18 @@
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         if (ventptr%room1==ventptr%room2) then
-            write (*,*) '***Error: A room can not be connected to itself with a vertical vent'
-            write (iofill,*) '***Error: A room can not be connected to itself with a vertical vent'
-            call cfastexit('readinputfile',7)
+            write (*,*) '***Error, A room can not be connected to itself with a vertical vent'
+            write (iofill,*) '***Error, A room can not be connected to itself with a vertical vent'
+            call cfastexit('readinputfile',6)
             stop
         end if
         itop = ventptr%room1
         ibot = ventptr%room2
         deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
         if (itop/=n_rooms+1.and.ibot/=n_rooms+1.and.abs(deps1)>=mx_vsep) then
-            write (*,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
-            write (iofill,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
-            call cfastexit('readinputfile',8)
+            write (*,*) '***Error, Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
+            write (iofill,*) '***Error, Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
+            call cfastexit('readinputfile',7)
             stop
         end if
     end do
@@ -222,11 +215,11 @@
 
         ! room numbers must be between 1 and n_rooms. outside is n_rooms+1
         if (iroom1<1.or.iroom2<1.or.iroom1>n_rooms+1.or.iroom2>n_rooms+1) then
-            write (*,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
+            write (*,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
                 iroom1,'-',iroom2,' do not exist'
-            write (iofill,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
+            write (iofill,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
                 iroom1,'-',iroom2,' do not exist'
-            call cfastexit('readinputfile',9)
+            call cfastexit('readinputfile',8)
             stop
         end if
 
@@ -256,11 +249,11 @@
                 vertical_connections(ii,w_to_wall) = 2
             end if
         else
-            write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification: ceiling and floor of rooms', &
+            write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
                 iroom1,'-',iroom2,' are not connected'
-            write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification: ceiling and floor of rooms', &
+            write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
                 iroom1,'-',iroom2,' are not connected'
-                call cfastexit('readinputfile',10)
+                call cfastexit('readinputfile',9)
             stop
         end if
 
@@ -270,17 +263,17 @@
         iwall2 = vertical_connections(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
-                write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall1,' of room ', &
+                write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
                     iroom1,' is adiabatic'
-                write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall1,' of room ', &
+                write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
                     iroom1,' is adiabatic'
             else
-                write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall2,' of room ', &
+                write (*,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
                     iroom2,' is adiabatic'
-                write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall2,' of room ', &
+                write (iofill,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
                     iroom2,' is adiabatic'
             end if
-            call cfastexit('readinputfile',11)
+            call cfastexit('readinputfile',10)
             stop
         end if
     end do
@@ -364,8 +357,8 @@
         if (iroom<1.or.iroom>n_rooms) then
             write (*,110) iroom
             write (iofill,110) iroom
-110         format('***Error: Invalid TARGET specification. Room ',i3, ' is not a valid')
-            call cfastexit('readinputfile',12)
+110         format('***Error, Invalid TARGET specification. Room ',i3, ' is not a valid')
+            call cfastexit('readinputfile',11)
             stop
         end if
         roomptr => roominfo(iroom)
@@ -382,8 +375,8 @@
         if (iroom<1.or.iroom>n_rooms) then
             write (*,104) iroom
             write (iofill,104) iroom
-104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
-            call cfastexit('readinputfile',13)
+104         format('***Error, Invalid DETECTOR specification. Room ',i3, ' is not a valid')
+            call cfastexit('readinputfile',12)
             stop
         end if
         roomptr => roominfo(iroom)
@@ -393,8 +386,8 @@
         if (rti<=0.0_eb.and.itype/=smoked) then
             write (*,101) rti
             write (iofill,101) rti
-101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
-            call cfastexit('readinputfile',14)
+101         format('***Error, Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
+            call cfastexit('readinputfile',13)
             stop
         end if
 
@@ -404,8 +397,8 @@
         if (xloc<0.0_eb.or.xloc>roomptr%cwidth.or.yloc<0.0_eb.or.yloc>roomptr%cdepth.or.zloc<0.0_eb.or.zloc>roomptr%cheight) then
             write (*,102) xloc,yloc,zloc
             write (iofill,102) xloc,yloc,zloc
-102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
-            call cfastexit('readinputfile',15)
+102         format('***Error, Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
+            call cfastexit('readinputfile',14)
             stop
         end if
 
@@ -413,8 +406,8 @@
         if (itype<1.or.itype>3) then
             write (*,103) itype
             write (iofill,103) itype
-103         format('***Error: Invalid DETECTOR specification - type= ',i2,' is not a valid')
-            call cfastexit('readinputfile',16)
+103         format('***Error, Invalid DETECTOR specification - type= ',i2,' is not a valid')
+            call cfastexit('readinputfile',15)
             stop
         end if
     end do
@@ -470,10 +463,10 @@
     close (iofili)
     return
 
-5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
+5022 format ('***Error, Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
     ! read format list
-5050 format ('***Error: Error opening the input file = ',I6)
+5050 format ('***Error, Error opening the input file = ',I6)
 
     end subroutine read_input_file
 
@@ -482,8 +475,7 @@
 !> \brief   get the paths and project base name open the input file for reading, delete the output files, and open the log file
 
     subroutine open_files ()
-    
-    use namelist_data
+
 
     logical ex
     integer :: lp, ld, le, ios
@@ -525,10 +517,7 @@
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
     read (unit=iofili,fmt='(a)') buf
     rewind (unit=iofili)
-    if (buf(1:5)==heading) then
-        nmlflag = .false.
-    else if (buf(1:1)=='&') then
-        nmlflag = .true.
+    if (buf(1:1)=='&') then
         rewind (unit=iofili)
         call read_misc (iofili)
         if (.not.overwrite_testcase) then
@@ -540,7 +529,8 @@
             end if
         end if
     else
-        write (*,*) ' Input file format not recognized. Check first line of input file.'
+        input_file_line = buf
+        write (*,*) ' Input file format not recognized. CFAST onlly reads namelist input files. Check first line of input file.'
         call cfastexit('openfiles',2)
         stop
     end if

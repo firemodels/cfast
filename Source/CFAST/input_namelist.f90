@@ -24,17 +24,17 @@
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
         tablinfo, init_fire
-    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag, &
-        convert_negative_distances
+    use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
+        compflag, devcflag, rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, &
+        dumpflag, convert_negative_distances
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
-    use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
+    use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, errormessage
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -79,7 +79,7 @@
     return
 
     ! read format list
-5050 format ('***Error: Error opening the input file = ',I6)
+5050 format ('***Error, Error opening the input file = ',I6)
 
 
     end subroutine namelist_input
@@ -112,14 +112,13 @@
         end if
         read(lu,HEAD,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &HEAD: Invalid specification for inputs.'
+            write(errormessage, '(a)') '***Error in &HEAD: Invalid specification for inputs.'
             call cfastexit('read_head',1)
         end if
     end do head_loop
 
     if (.not.headflag) then
-        write (*, '(/, "***Error: &HEAD inputs are required.")')
-        write (iofill, '(/, "***Error: &HEAD inputs are required.")')
+        write (errormessage,'(a)') '***Error, &HEAD inputs are required.'
         call cfastexit('read_head',2)
     end if
 
@@ -183,14 +182,13 @@
         end if
         read(lu,TIME,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &TIME: Invalid specification for inputs.'
+            write(errormessage, '(a)') '***Error in &TIME: Invalid specification for inputs.'
             call cfastexit('read_time',1)
         end if
     end do time_loop
 
     if (.not.timeflag) then
-        write (*, '(/, "***Error: &TIME inputs are required.")')
-        write (iofill, '(/, "***Error: &TIME inputs are required.")')
+        write (errormessage, '(/, "***Error, &TIME inputs are required.")')
         call cfastexit('read_time',2)
     end if
 
@@ -253,7 +251,7 @@
         end if
         read(lu,INIT,err=34,iostat=ios)
 34      if (ios>0) then
-            write(iofill, '(a)') '***Error in &INIT: Invalid specification for inputs.'
+            write(errormessage, '(a)') '***Error in &INIT: Invalid specification for inputs.'
             call cfastexit('read_init',1)
         end if
     end do init_loop
@@ -320,7 +318,7 @@
         end if
         read(lu,MISC,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MISC: Invalid specification for inputs.'
+            write(errormessage, '(a)') '***Error in &MISC: Invalid specification for inputs.'
             call cfastexit('read_misc',1)
         end if
     end do misc_loop
@@ -393,15 +391,13 @@
         read(lu,MATL,iostat=ios)
         n_matl = n_matl + 1
         if (ios>0) then
-            write(*, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_matl
-            write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_matl
+            write(errormessage, '(a,i0)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_matl
             call cfastexit('read_matl',1)
         end if
     end do matl_loop
 
     if (n_matl>mxmatl) then
-        write (*,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxmatl
-        write (iofill,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxmatl
+        write (errormessage,'(a,i0)') '***Error, Too many thermal properties in input data file. Limit is ', mxmatl
         call cfastexit('read_matl',2)
     end if
 
@@ -420,8 +416,7 @@
             read(lu,MATL)
 
             if (.not.newid(id)) then
-                write(*,'(a48,a64)') '****Error: Not a unique identifier for material ',trim(id)
-                write(iofill,'(a48,a64)') '****Error: Not a unique identifier for material ',trim(id)
+                write(errormessage,'(a48,a64)') '****Error, Not a unique identifier for material ',trim(id)
                 call cfastexit('read_matl', 3)
             end if
             thrmpptr%id            = id
@@ -499,22 +494,19 @@
         end if
         read(lu,COMP,iostat=ios)
         if (ios>0) then
-            write(*, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , n_rooms
-            write(iofill, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , n_rooms
+            write(errormessage, '(a,i0)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , n_rooms
             call cfastexit('read_comp',1)
         end if
         n_rooms = n_rooms + 1
     end do comp_loop
 
     if (n_rooms>mxrooms) then
-        write (*,'(a,i3)') '***Error: Too many compartments in input data file. Limit is ', mxrooms
-        write (iofill,'(a,i3)') '***Error: Too many compartments in input data file. Limit is ', mxrooms
+        write (errormessage,'(a,i0)') '***Error, Too many compartments in input data file. Limit is ', mxrooms
         call cfastexit('read_comp',2)
     end if
 
     if (.not.compflag) then
-        write (*, '(/, "***Error: &COMP inputs are required.")')
-        write (iofill, '(/, "***Error: &COMP inputs are required.")')
+        write (errormessage, '(a)')'***Error, No &COMP inputs found. &COMP inputs are required.'
         call cfastexit('read_comp',3)
     end if
 
@@ -544,8 +536,7 @@
             end do
 
             if (.not.newid(id)) then
-                write(*,'(a)') '**** Error &COMP id not unique ',trim(id)
-                write(iofill,'(a)') '**** Error &COMP id not unique ', trim(id)
+                write(errormessage,'(a)') '**** Error All IDS in input file must be unique. &COMP id not unique ', trim(id)
                 call cfastexit('read_comp',4)
             end if
 
@@ -686,23 +677,21 @@
         end if
         read(lu,DEVC,err=34,iostat=ios)
         if (type == 'PLATE' .or. type == 'CYLINDER') n_targets =n_targets + 1
-        if (type == 'SPRINKLER' .or. type == 'HEAT_DETECTOR'.or. type == 'SMOKE_DETECTOR') n_detectors =n_detectors + 1
+        if (type == 'SPRINKLER' .or. type == 'HEAT_DETECTOR'.or. type == 'SMOKE_DETECTOR') n_detectors = n_detectors + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for inputs. Check &DEVC input, ' , &
+            write(errormessage, '(a,i0)') '***Error in &DEVC: Invalid specification for inputs. Check &DEVC input, ' , &
                 n_targets+n_detectors
             call cfastexit('read_devc',1)
         end if
     end do devc_loop
 
     if (n_targets>mxtarg) then
-        write (*,'(a,i3)') '***Error: Too many targets in input data file. Limit is ', mxtarg
-        write (iofill,'(a,i3)') '***Error: Too many targets in input data file. Limit is ', mxtarg
+        write (errormessage,'(a,i0)') '***Error, Too many targets in input data file. Limit is ', mxtarg
         call cfastexit('read_devc',2)
     end if
 
     if (n_detectors>mxdtect) then
-        write (*,'(a,i3)') '***Error: Too many detectors in input data file. Limit is ', mxdtect
-        write (iofill,'(a,i3)') '***Error: Too many detectors in input data file. Limit is ', mxdtect
+        write (errormessage,'(a,i0)') '***Error, Too many detectors in input data file. Limit is ', mxdtect
         call cfastexit('read_devc',3)
     end if
 
@@ -740,14 +729,12 @@
                 end do searching
 
                 if (.not. idcheck) then
-                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
-                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
+                    write (errormessage,'(a,a,a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
                     call cfastexit('read_devc',4)
                 end if
 
                 if (iroom<1.or.iroom>n_rooms+1) then
-                    write (*,5003) iroom
-                    write (iofill,5003) iroom
+                    write (errormessage,5003) iroom
                     call cfastexit('read_devc',5)
                 end if
 
@@ -771,8 +758,8 @@
 
                 ! target name
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DEVC ',trim(id), 'Check target ',counter1
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &DEVC ',trim(id),'Check target ',counter1
+                    write(errormessage,'(a,a,a,i3)') '***Error, Not a unique identifier for &DEVC ',trim(id), 'Check target ', &
+                        counter1
                     call cfastexit('read_devc', 6)
                 end if
                 targptr%id = id
@@ -791,8 +778,7 @@
                 else if (type=='CYLINDER') then
                     targptr%equaton_type = cylpde
                 else
-                    write (*,913) 'Error',type
-                    write (iofill,913) 'Error',type
+                    write (errormessage,5002) type
                     call cfastexit('read_devc',7)
                 end if
                 
@@ -817,8 +803,7 @@
                 else if (trim(type) == 'SPRINKLER') then
                     i1 = sprinkd
                 else
-                    write (*,'(a,a)') '***Error in &DEVC: Bad type. Not known for ', type
-                    write (iofill,'(a,a)') '***Error in &DEVC: Bad type. Not known for ', type
+                    write (errormessage,'(a,a)') '***Error in &DEVC: Bad type. Not known for ', type
                     call cfastexit('read_devc',8)
                 end if
 
@@ -839,21 +824,19 @@
                 end do searching_2
 
                 if (.not. idcheck) then
-                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
-                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
+                    write (errormessage,'(a,a,a,i0)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
                     call cfastexit('read_devc',9)
                 end if
 
                 dtectptr%room = iroom
                 if (iroom<1.or.iroom>mxrooms) then
-                    write (*,5342) iroom
-                    write (iofill,5342) iroom
+                    write (errormessage,5342) iroom
                     call cfastexit('read_devc',10)
                 end if
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DEVC ',trim(id), 'Check detector ',counter2
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &DEVC ',trim(id),'Check detector ',counter2
+                    write(errormessage,'(a,a,a,i0)') '***Error, Not a unique identifier for &DEVC ',trim(id), 'Check detector ', &
+                        counter2
                     call cfastexit('read_devc', 11)
                 end if
                 dtectptr%id = id
@@ -912,8 +895,7 @@
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
-                    write (*,5339) n_detectors,roomptr%id
-                    write (iofill,5339) n_detectors,roomptr%id
+                    write (errormessage,5339) n_detectors,roomptr%id
                     call cfastexit('read_devc',12)
                 end if
 
@@ -923,11 +905,11 @@
 
     end if devc_detec_flag
 
-913 format('***',A,': BAD DEVC input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')
-5003 format ('***Error: BAD DEVC input. The compartment specified by DEVC does not exist ',i0)
+5002 format ('***Error, Bad DEVC input. Invalid equation type: ',a,' Valid choices are: PDE or CYL')
+5003 format ('***Error, Bad DEVC input. The compartment specified by DEVC does not exist ',i0)
 
-5339 format ('***Error: Bad DEVC input. Device ',i0,' is outside of compartment ',a)
-5342 format ('***Error: Bad DEVC input. Invalid compartment specification ',i0)
+5339 format ('***Error, Bad DEVC input. Device ',i0,' is outside of compartment ',a)
+5342 format ('***Error, Bad DEVC input. Invalid compartment specification ',i0)
 
 
 
@@ -994,14 +976,13 @@
         read(lu,RAMP,iostat=ios)
         n_ramps =n_ramps + 1
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', n_ramps
+            write(errormessage, '(a,i0)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', n_ramps
             call cfastexit('read_ramp',1)
         end if
     end do ramp_loop
 
     if (n_ramps>mxramps) then
-        write (*,'(a,i3)') '***Error: Too many ramps in input data file. Limit is ', mxramps
-        write (iofill,'(a,i3)') '***Error: Too many ramps in input data file. Limit is ', mxramps
+        write (errormessage,'(a,i0)') '***Error, Too many ramps in input data file. Limit is ', mxramps
         call cfastexit('read_ramp',2)
     end if
 
@@ -1020,13 +1001,12 @@
             rampptr => rampinfo(ii)
             rampptr%id = id
             if (count(z/=-1001._eb)>0 .and. count(t/=-1001._eb)>0) then
-                write (*,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
-            else if (count(z/=-1001._eb)==0 .and. count(t/=-1001._eb)==0) then
-                write (*,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
-            end if
+                write (errormessage,'(a,i0)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
                 call cfastexit('read_ramp',3)
+            else if (count(z/=-1001._eb)==0 .and. count(t/=-1001._eb)==0) then
+                write (errormessage,'(a,i0)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
+                call cfastexit('read_ramp',4)
+            end if
             
             if (type=='AREA' .and. count(z/=-1001._eb)>0) then
                 rampptr%x(1:mxpts)  = z(1:mxpts)
@@ -1037,17 +1017,14 @@
 
             if (count(rampptr%x/=-1001._eb) /= count(rampptr%f_of_x/=-1001._eb)) then
                 if (type=='AREA') then
-                    write (*,'(a,i3)') &
+                    write (errormessage,'(a,i0)') &
                         '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
-                    write (iofill,'(a,i3)') &
-                        '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
+                    call cfastexit('read_ramp',5)
                 else
-                    write (*,'(a,i3)') &
+                    write (errormessage,'(a,i0)') &
                         '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
-                    write (iofill,'(a,i3)') &
-                        '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
+                    call cfastexit('read_ramp',6)
                 end if
-                call cfastexit('read_ramp',4)
             end if
             rampptr%npoints=count(rampptr%x/=-1001._eb)
 
@@ -1105,7 +1082,7 @@
         if (ios==1) exit search_loop
         read(lu,tabl,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &TABL: Invalid specification for inputs. Check &TABL input, ', n_tabls+1
+            write(errormessage, '(a,i0)') '***Error in &TABL: Invalid specification for inputs. Check &TABL input, ', n_tabls+1
             call cfastexit('read_tabl',1)
         end if
         do i = 1, n_tabls
@@ -1117,8 +1094,7 @@
         end do
         n_tabls = n_tabls + 1
         if (n_tabls>mxtabls) then
-            write (*,'(a,i3)') '***Error: Too many tables in input data file. Limit is ', mxfires
-            write (iofill,'(a,i3)') '***Error: Too many tables in input data file. Limit is ', mxfires
+            write (errormessage,'(a,i0)') '***Error, Too many tables in input data file. Limit is ', mxfires
             call cfastexit('read_tabl',2)
         end if
         n_tabl_lines = n_tabl_lines +1
@@ -1219,15 +1195,14 @@ continue
         end if
         read(lu,FIRE,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_fires+1
+            write(errormessage, '(a,i0)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_fires+1
             call cfastexit('read_fire',1)
         end if
         n_fires =n_fires + 1
     end do insf_loop
 
     if (n_fires>mxfires) then
-        write (*,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
-        write (iofill,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
+        write (errormessage,'(a,i3)') '***Error, Too many fires in input data file. Limit is ', mxfires
         call cfastexit('read_fire',2)
     end if
 
@@ -1258,16 +1233,14 @@ continue
             end do searching
 
             if (iroom<1.or.iroom>n_rooms) then
-                write (*,5320) iroom
-                write (iofill,5320) iroom
+                write (errormessage,5320) iroom
                 call cfastexit('read_fire',3)
             end if
             roomptr => roominfo(iroom)
 
             fireptr%room = iroom
             if (.not.newid(id)) then
-                write(*,'(a,a,a,i3)') '****Error: Not a unique identifier for &DEVC ',trim(id), 'Check target ',ii
-                write(iofill,'(a,a,a,i3)')'****Error: Not a unique identifier for &DEVC ',trim(id),'Check target ',ii
+                write(errormessage,'(a,a,a,i3)') '****Error, Not a unique identifier for &DEVC ',trim(id), 'Check target ',ii
                 call cfastexit('read_fire', 4)
             end if
             fireptr%id = id
@@ -1283,8 +1256,7 @@ continue
             fireptr%y_position = location(2)
             fireptr%z_position = 0.0_eb
             if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
-                write (*,5323) ii
-                write (iofill,5323) ii
+                write (errormessage,5323) ii
                 call cfastexit('read_fire',5)
             end if
 
@@ -1303,14 +1275,12 @@ continue
                             if (trim(targptr%id)==trim(devc_id)) fireptr%ignition_target = i
                         end do
                         if (fireptr%ignition_target==0) then
-                            write (*,5324) n_fires
-                            write (iofill,5324) n_fires
+                            write (errormessage,5324) n_fires
                             call cfastexit('read_fire',6)
                         end if
                     end if
                 else
-                    write (*,5322)
-                    write (iofill,5322)
+                    write (errormessage,5322)
                     call cfastexit('read_fire',7)
                 end if
             end if
@@ -1338,8 +1308,7 @@ continue
                         stpmax = 1.0_eb
                     end if
                 else
-                    write (*,5358) fireptr%ignition_type
-                    write (iofill,5358) fireptr%ignition_type
+                    write (errormessage,5358) fireptr%ignition_type
                     call cfastexit('read_fire',8)
                 end if
             else
@@ -1351,19 +1320,18 @@ continue
 
     end if insf_flag
 
-5320 format ('***Error: Bad FIRE input. Fire specification error, compartment ',i0,' out of range')
-5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
-5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
-5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
-5324 format ('***Error: Bad FIRE input. Target specified for fire ',i0, ' does not exist')
-5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
+5320 format ('***Error, Bad FIRE input. Fire specification error, compartment ',i0,' out of range')
+5321 format ('***Error, Bad FIRE input. Fire specification error, not an allowed fire type',i0)
+5322 format ('***Error, Bad FIRE input. Fire specification is outdated and must include target for ignition')
+5323 format ('***Error, Bad FIRE input. Fire location ',i0,' is outside its compartment')
+5324 format ('***Error, Bad FIRE input. Target specified for fire ',i0, ' does not exist')
+5358 format ('***Error, Bad FIRE input. Not a valid ignition criterion ',i0)
 
-5001 format ('***Error: invalid heat of combustion, must be greater than zero, ',1pg12.3)
-5002 format ('***Error: invalid fire area. all input values must be greater than zero')
-5106 format ('***Error: object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
+5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)
+5002 format ('***Error, invalid fire area. all input values must be greater than zero')
+5106 format ('***Error, object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
-5108 format ('Typically, this is caused by too small fire area inputs. check hrr and fire area inputs')
-5000 format ('***Error: the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
+5000 format ('***Error, the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
 
     contains
 
@@ -1423,15 +1391,14 @@ continue
         end if
         read(lu,CHEM,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &CHEM: Invalid specification for inputs. Check &CHEM input, ', n_defs+1
+            write(errormessage, '(a,i0)') '***Error in &CHEM: Invalid specification for inputs. Check &CHEM input, ', n_defs+1
             call cfastexit('read_chem',1)
         end if
         n_defs =n_defs + 1
     end do fire_loop
 
     if (n_defs>mxfires) then
-        write (*,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
-        write (iofill,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
+        write (errormessage,'(a,i0)') '***Error, Too many fires in input data file. Limit is ', mxfires
         call cfastexit('read_chem',2)
     end if
 
@@ -1468,8 +1435,7 @@ continue
                     ! Only constrained fires
                     fireptr%chemistry_type = 2
                     if (fireptr%chemistry_type>2) then
-                        write (*,5321) fireptr%chemistry_type
-                        write (iofill,5321) fireptr%chemistry_type
+                        write (errormessage,5321) fireptr%chemistry_type
                         call cfastexit('read_chem',3)
                     end if
 
@@ -1485,8 +1451,7 @@ continue
                     fireptr%flaming_transition_time = flaming_transition_time
                     ohcomb = heat_of_combustion *1.e3_eb
                     if (ohcomb<=0.0_eb) then
-                        write (*,5001) ohcomb
-                        write (iofill,5001) ohcomb
+                        write (errormessage,5001) ohcomb
                         call cfastexit('read_chem',4)
                     end if
 
@@ -1585,9 +1550,8 @@ continue
                         max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
                     end do
                     if (max_area==0.0_eb) then
-                        write (*,5002)
+                        write (errormessage,5002)
                         write (iofill,5002)
-                        call cfastexit('read_chem',5)
                     end if
                     fireptr%firearea = max_area
 
@@ -1604,23 +1568,14 @@ continue
                     ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
                     hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+f_height))
                     if (hrrpm3>4.0e6_eb) then
-                        write (*,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                        write (*, 5108)
-                        write (iofill,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                        write (iofill, 5108)
+                        write (errormessage,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         call cfastexit('read_chem',6)
-                    else if (hrrpm3>2.0e6_eb) then
-                        write (*,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                        write (*, 5108)
-                        write (iofill,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                        write (iofill, 5108)
                     end if
                 end if
             end do searching
 
             if (ifire<1.or.ifire>n_fires) then
-                write (*,5320) ifire
-                write (iofill,5320) ifire
+                write (errormessage,5320) ifire
                 call cfastexit('read_chem',7)
             end if
 
@@ -1628,19 +1583,18 @@ continue
 
     end if fire_flag
 
-5320 format ('***Error: Bad FIRE input. Fire specification error, fire ',i0,' is not referenced')
-5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
-5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
-5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
-5324 format ('***Error: Bad FIRE input. Target specified for fire ',i0, ' does not exist')
-5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
+5320 format ('***Error, Bad FIRE input. Fire specification error, fire ',i0,' is not referenced')
+5321 format ('***Error, Bad FIRE input. Fire specification error, not an allowed fire type',i0)
+5322 format ('***Error, Bad FIRE input. Fire specification is outdated and must include target for ignition')
+5323 format ('***Error, Bad FIRE input. Fire location ',i0,' is outside its compartment')
+5324 format ('***Error, Bad FIRE input. Target specified for fire ',i0, ' does not exist')
+5358 format ('***Error, Bad FIRE input. Not a valid ignition criterion ',i0)
 
-5001 format ('***Error: invalid heat of combustion, must be greater than zero, ',1pg12.3)
-5002 format ('***Error: invalid fire area. all input values must be greater than zero')
-5106 format ('***Error: object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
+5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)
+5002 format ('***Error, invalid fire area. all input values must be greater than zero')
+5106 format ('***Error, object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
-5108 format ('Typically, this is caused by too small fire area inputs. check hrr and fire area inputs')
-5000 format ('***Error: the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
+5000 format ('***Error, the key word ',a,' is not part of a fire definition. fire keywords are likely out of order')
 
     contains
 
@@ -1756,29 +1710,24 @@ continue
         if (trim(type) == 'MECHANICAL') n_mvents =n_mvents + 1
         if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') n_vvents =n_vvents + 1
 34      if (ios>0) then
-            write(*, '(3a,i0)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ',trim(id),': ', &
-                n_hvents + n_mvents + n_vvents
-            write(iofill, '(3a,i0)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ',trim(id),': ', &
-                n_hvents + n_mvents + n_vvents
+            write(errormessage, '(3a,i0)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ',trim(id), &
+                ': ', n_hvents + n_mvents + n_vvents
             call cfastexit('read_vent',1)
         end if
     end do vent_loop
 
     if (n_hvents>mxhvents) then
-        write (*,'(a,i3)') '***Error: Too many wall vents in input data file. Limit is ', mxhvents
-        write (iofill,'(a,i3)') '***Error: Too many wall vents in input data file. Limit is ', mxhvents
+        write (errormessage,'(a,i0)') '***Error, Too many wall vents in input data file. Limit is ', mxhvents
         call cfastexit('read_vent',2)
     end if
 
     if (n_mvents>mxmvents) then
-        write (*,'(a,i3)') '***Error: Too many mechanical vents in input data file. Limit is ', mxmvents
-        write (iofill,'(a,i3)') '***Error: Too many mechanical vents in input data file. Limit is ', mxmvents
+        write (errormessage,'(a,i0)') '***Error, Too many mechanical vents in input data file. Limit is ', mxmvents
         call cfastexit('read_vent',3)
     end if
 
     if (n_vvents>mxvvents) then
-        write (*,'(a,i3)') '***Error: Too many celing/floor vents in input data file. Limit is ', mxvvents
-        write (iofill,'(a,i3)') '***Error: Too many ceiling/floor vents in input data file. Limit is ', mxvvents
+        write (errormessage,'(a,i0)') '***Error, Too many celing/floor vents in input data file. Limit is ', mxvvents
         call cfastexit('read_vent',4)
     end if
 
@@ -1808,18 +1757,15 @@ continue
                 jmax = max(i,j)
                 
                 if (imin>mxrooms-1.or.jmax>mxrooms.or.imin==jmax) then
-                    write (*,5070) i, j
-                    write (iofill,5070) i, j
+                    write (errormessage,5070) i, j
                     call cfastexit('read_vent',5)
                 end if
 
                 ventptr => hventinfo(counter1)
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check wall v ',counter1
-                    write (*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check wall v ',counter1
-                    write (iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), 'Check wall v ', &
+                        counter1, ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
@@ -1839,8 +1785,7 @@ continue
 
 
                 if (n_hvents>mxhvents) then
-                    write (*,5081) i,j,k
-                    write (iofill,5081) i,j,k
+                    write (errormessage,5081) i, j, k
                     call cfastexit('read_vent',7)
                 end if
                 
@@ -1873,18 +1818,16 @@ continue
 
                 k = counter2
                 if (i>n_rooms+1.or.j>n_rooms+1) then
-                    write (*,5191) i, j
-                    write (iofill,5191) i, j
+                    write (errormessage,5191) i, j
                     call cfastexit('read_vent',8)
                 end if
 
                 ventptr => mventinfo(counter2)
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter2
-                    write (*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter2
-                    write (iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                        ' Check mech vent ', counter2, ' for vent ',trim(id), ' &VENT number ', &
+                        counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
@@ -1944,18 +1887,16 @@ continue
 
                 ! check for outside of compartment space; self pointers are covered in read_input_file
                 if (i>mxrooms.or.j>mxrooms) then
-                    write (*,5070) i, j
-                    write (iofill,5070) i, j
+                    write (errormessage,5070) i, j
                     call cfastexit('read_vent',10)
                 end if
 
                 ventptr => vventinfo(counter3)
 
                 if (.not.newid(id)) then
-                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check ceil v ',counter3
-                    write(*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check ceil v ',counter3
-                    write(iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write(errormessage,'(a,a,a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                        'Check ceil vent ', counter3, ' for vent ',trim(id), ' &VENT number ', &
+                        counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
                 end if
                 ventptr%id = id
@@ -1973,10 +1914,8 @@ continue
                 else if (trim(shape) == 'SQUARE') then
                     ventptr%shape = 2
                 else
-                    write (*,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
-                    write(*,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-                    write (iofill,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
-                    write(iofill,*) '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+                    write (errormessage,'(a,a,a,i0)') '***Error, SHAPE must be SQUARE or ROUND. ', shape, ' for vent ',trim(id), &
+                        ' &VENT number ', counter1 + counter2 + counter3
                     call cfastexit('read_vent',12)
                 end if
 
@@ -1992,11 +1931,11 @@ continue
 
     end if vent_flag
 
-5070 format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
-5080 format ('***Error: Bad VENT input. Too many pairwise horizontal connections',3I5)
-5081 format ('***Error: Too many horizontal connections ',3i5)
+5070 format ('***Error, Bad VENT input. Parameter(s) outside of allowable range',2I4)
+5080 format ('***Error, Bad VENT input. Too many pairwise horizontal connections',3I5)
+5081 format ('***Error, Too many horizontal connections ',3i5)
 
-5191 format ('***Error: Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
+5191 format ('***Error, Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
 
     contains
 
@@ -2064,12 +2003,8 @@ continue
                 if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = ic
             end do
             if (ventptr%opening_target==0) then
-                write (*,*) '***Error: Vent opening specification requires an associated target.'
-                write (*,*) '          For vent ',trim(id), ' &VENT number ', &
-                                counter1 + counter2 + counter3
-                write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                write (iofill,*) '          For vent ',trim(id), ' &VENT number ', &
-                                counter1 + counter2 + counter3
+                write (errormessage,'(4a,i0)') '***Error, Vent opening specification requires an associated target.', &
+                    ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
                 call cfastexit('read_vent_set_criterion',1)
             end if
             if (stpmax>0) then
@@ -2079,12 +2014,8 @@ continue
             end if
         end if
     else
-        write (*,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-        write (*,*) '          For vent ',trim(id), ' &VENT number ', &
-                                counter1 + counter2 + counter3
-        write (iofill,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-        write (iofill,*) '          For vent ',trim(id), ' &VENT number ',&
-                                counter1 + counter2 + counter3
+        write (errormessage,'(4a,i0)') '***Error, Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".', &
+            ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
         call cfastexit('read_vent_set_criterion',2)
     end if
     
@@ -2113,11 +2044,8 @@ continue
         end do searching
 
         if (iroom == -101) then
-            write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-            write (*,*)       '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-            write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-            write (iofill,*)       '          For vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-            call cfastexit('read_vent_find_comp_idxes',1)
+            write (errormessage,'(5a,i0)') '***Error, COMP_IDS do not specify existing compartments. ', comp_ids(mm), &
+                ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
         end if
 
         if (mm == 1) i = iroom
@@ -2168,7 +2096,7 @@ continue
         if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) n_vcons = n_vcons + 1
         if (trim(type) == trim('WALL')) nmlcount = nmlcount + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &CONN inputs. Check &CONN input, ' , n_vcons+nmlcount
+            write(errormessage, '(a,i0)') 'Error, Invalid specification in &CONN inputs. Check &CONN input, ' , n_vcons+nmlcount
             call cfastexit('read_conn',1)
         end if
     end do conn_loop
@@ -2201,8 +2129,7 @@ continue
                 end do searching
 
                 if (ifrom == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_id
-                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_id
+                    write (errormessage,'(2a)') '***Error, Compartment not found for from room. ', comp_id
                     call cfastexit('read_conn',2)
                 end if
 
@@ -2229,19 +2156,16 @@ continue
                     end do searching_2
 
                     if (ito == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS do not match existing compartments. ', comp_ids(i)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS do not match existing compartments. ', comp_ids(i)
+                        write (errormessage,'(2a)') '***Error, COMP_IDS do not match existing compartments. ', comp_ids(i)
                         call cfastexit('read_conn',3)
                     end if
 
                     if (ito<1.or.ito==ifrom.or.ito>n_rooms+1) then
-                        write (*, 5356) ifrom,ito
-                        write (iofill, 5356) ifrom,ito
+                        write (errormessage, 5356) ifrom, ito
                         call cfastexit('read_conn',4)
                     end if
                     if (f(i)<0.0_eb.or.f(i)>1.0_eb) then
-                        write (*, 5357) ifrom,ito,f(i)
-                        write (iofill, 5357) ifrom,ito,f(i)
+                        write (errormessage, 5357) ifrom, ito, f(i)
                         call cfastexit('read_conn',5)
                     end if
                     roomptrfrm%heat_frac(ito) = f(i)
@@ -2263,8 +2187,7 @@ continue
                 end do searching_3
 
                 if (i1 == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_id
-                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_id
+                    write (errormessage,'(a,a)') '***Error, COMP_ID not found. ', comp_id
                     call cfastexit('read_conn',6)
                 end if
 
@@ -2281,14 +2204,12 @@ continue
                 end do searching_4
 
                 if (i2 == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_ids(1)
-                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_ids(1)
+                    write (errormessage,'(2a)') '***Error, Compartment not found for to room. ', comp_ids(1)
                     call cfastexit('read_conn',7)
                 end if
 
                 if (i1<1.or.i2<1.or.i1>n_rooms+1.or.i2>n_rooms+1) then
-                    write (*,5345) i1, i2
-                    write (iofill,5345) i1, i2
+                    write (errormessage,5345) i1, i2
                     call cfastexit('read_conn',8)
                 end if
 
@@ -2302,9 +2223,9 @@ continue
 
     end if conn_flag
 
-5356 format ('***Error: Bad CONN input. CONN specification error in compartment pairs: ',2i3)
-5357 format ('***Error: Bad CONN input. Error in fraction for CONN:',2i3,f6.3)
-5345 format ('***Error: Bad VHEAT input. A referenced compartment does not exist')
+5356 format ('***Error, Bad CONN input. CONN specification error in compartment pairs: ',2i3)
+5357 format ('***Error, Bad CONN input. Error in fraction for CONN:',2i3,f6.3)
+5345 format ('***Error, Bad VHEAT input. A referenced compartment does not exist')
 
 
 
@@ -2358,7 +2279,7 @@ continue
         read(lu,ISOF,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &ISOF inputs. Check &ISOF input, ' , counter
+            write(errormessage, '(a,i3)') 'Error, Invalid specification in &ISOF inputs. Check &ISOF input, ' , counter
             call cfastexit('read_isof',1)
         end if
     end do isof_loop
@@ -2394,8 +2315,7 @@ continue
             sliceptr%roomnum = icomp
 
             if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
-                write (*, 5404) counter
-                write (iofill, 5404) counter
+                write (errormessage, 5404) counter
                 call cfastexit('read_isof',2)
             end if
 
@@ -2403,7 +2323,7 @@ continue
 
     end if isof_flag
 
-5404 format ('***Error: Invalid ISOF specification in visualization input ',i0)
+5404 format ('***Error, Invalid ISOF specification in visualization input ',i0)
 
 
 
@@ -2455,7 +2375,7 @@ continue
         read(lu,SLCF,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &SLCF inputs. Check &SLCF input, ' , counter
+            write(errormessage, '(a,i0)') 'Error, Invalid specification in &SLCF inputs. Check &SLCF input, ' , counter
             call cfastexit('read_slcf',1)
         end if
     end do slcf_loop
@@ -2479,8 +2399,7 @@ continue
             else if (trim(domain)=='3-D') then
                 sliceptr%vtype = 2
             else
-                write (*, 5403) counter
-                write (iofill, 5403) counter
+                write (errormessage, 5403) counter
                 call cfastexit('read_slcf',2)
             end if
 
@@ -2505,8 +2424,7 @@ continue
                 sliceptr%position = position
                 sliceptr%roomnum  = icomp
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
-                    write (*, 5403) counter
-                    write (iofill, 5403) counter
+                    write (errormessage,5403) counter
                     call cfastexit('read_slcf',3)
                 end if
                 if (trim(plane) =='X') then
@@ -2514,8 +2432,7 @@ continue
                     if (sliceptr%roomnum>0) then
                         roomptr => roominfo(sliceptr%roomnum)
                         if (sliceptr%position>roomptr%cwidth.or.sliceptr%position<0.0_eb) then
-                            write (*, 5403) counter
-                            write (iofill, 5403) counter
+                            write (errormessage, 5403) counter
                             call cfastexit('read_slcf',4)
                         end if
                     end if
@@ -2524,8 +2441,7 @@ continue
                     if (sliceptr%roomnum>0) then
                         roomptr => roominfo(sliceptr%roomnum)
                         if (sliceptr%position>roomptr%cdepth.or.sliceptr%position<0.0_eb) then
-                            write (*, 5403) counter
-                            write (iofill, 5403) counter
+                            write (errormessage, 5403) counter
                             call cfastexit('read_slcf',5)
                         end if
                     end if
@@ -2534,14 +2450,12 @@ continue
                     if (sliceptr%roomnum>0) then
                         roomptr => roominfo(sliceptr%roomnum)
                         if (sliceptr%position>roomptr%cheight.or.sliceptr%position<0.0_eb) then
-                            write (*, 5403) counter
-                            write (iofill, 5403) counter
+                            write (errormessage, 5403) counter
                             call cfastexit('read_slcf',6)
                         end if
                     end if
                 else
-                    write (*, 5403) counter
-                    write (iofill, 5403) counter
+                    write (errormessage, 5403) counter
                     call cfastexit('read_slcf',7)
                 end if
 
@@ -2549,8 +2463,7 @@ continue
             else if (sliceptr%vtype==2) then
                 sliceptr%roomnum = icomp
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
-                    write (*, 5403) counter
-                    write (iofill, 5403) counter
+                    write (errormessage, 5403) counter
                     call cfastexit('read_slcf',8)
                 end if
             end if
@@ -2559,7 +2472,7 @@ continue
 
     end if slcf_flag
 
-5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
+5403 format ('***Error, Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
 
     contains
 
@@ -2617,7 +2530,7 @@ continue
         end if
         read(lu,DIAG,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &DIAG: Invalid specification for inputs.'
+            write(errormessage, '(a)') '***Error in &DIAG: Invalid specification for inputs.'
             call cfastexit('read_diag',1)
         end if
     end do diag_loop
@@ -2792,8 +2705,7 @@ continue
         read(lu,DUMP,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(*, '(a,i3)') 'Error: Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
+            write(errormessage, '(a,i3)') 'Error, Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
             call cfastexit('read_dump',1)
         end if
     end do dump_loop
@@ -2820,14 +2732,12 @@ continue
             end if
     
             if (id == ' ') then
-                write(*,*) 'Error in &DUMP: ID must be defined number ', counter
-                write(iofill,*) 'Error in &DUMP: ID must be defined number ', counter
+                write(errormessage,*) 'Error in &DUMP: ID must be defined number ', counter
                 call cfastexit('read_dump',2)
             end if
 
             if (.not.newid(id)) then
-                write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DUMP ',trim(id), 'Check dump ',counter
-                write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check dump ',counter
+                write(errormessage,'(3a,i3)') '***Error, Not a unique identifier for &DUMP ',trim(id), 'Check dump ',counter
                 call cfastexit('read_dump',3)
             end if
             found = .false.
@@ -2837,72 +2747,62 @@ continue
                 end if
             end do
             if (.not.found) then
-                write(*,*) 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
-                    ' number ',counter
-                write(iofill,*) 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
                     ' number ',counter
                 call cfastexit('read_dump',4)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
                     (type(1:15)=='CHECK_TOTAL_HRR'))) then
-                write(*,*) 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
-                write(iofill,*) 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
                 call cfastexit('read_dump',5)
             end if
             if (first_field(1)==' ') then
-                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(errormessage,'(a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',6)
             end if 
             if (first_field(2)==' ') then
-                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(errormessage,'(a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',7)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_field(1)==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), ', number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), ', number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                    ', number ',counter
                 call cfastexit('read_dump',8)
             end if
             if ((type(1:8)=='TRIGGER_').and.(second_field(2)==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                    ', number ',counter
                 call cfastexit('read_dump',9)
             end if
             if ((type(1:9)=='INTEGRATE').and.(second_field(2)==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                    ', number ',counter
                 call cfastexit('read_dump',10)
             end if
             if ((trim(type)=='INTEGRATE').and.(second_field(2)==' ')) then
-                write(*,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
-                write(iofill,*) 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type),', number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                    ', number ',counter
                 call cfastexit('read_dump',11)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:4)/='Time')) then
-                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ', trim(type),', number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ',trim(type),&
-                    ', number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ', &
+                    trim(type),', number ',counter
                 call cfastexit('read_dump',12)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:15)/='Simulation Time')) then
-                write(*,*) 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
-                    trim(type),' number ',counter
-                write(iofill,*) 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
+                write(errormessage,'(3a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
                     trim(type),' number ',counter
                 call cfastexit('read_dump',13)
             end if
             if ((type(1:8)=='TRIGGER_').and.(criterion<=0)) then
-                write(*,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0',' number ',counter
-                write(iofill,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0',' number ',counter
+                write(errormessage,'(a,i0)') 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0 number ', counter
                 call cfastexit('read_dump',14)
             end if
             
             n_dumps = n_dumps + 1
             if (n_dumps>mx_dumps) then
-                write(*,*) 'Error in &DUMP: Too many &DUMP entries'
-                write(iofill,*) 'Error in &DUMP: Too many &DUMP entries'
+                write(errormessage,'(a,i0)') 'Error in &DUMP: Too many &DUMP entries. Maximum is', mx_dumps
                 call cfastexit('read_dump',15)
             end if
             dumpptr => dumpinfo(n_dumps)
@@ -2934,7 +2834,7 @@ continue
     end if
     return
 
-5403 format ('***Error: Bad &DUMP input. Invalid &DUMP specification in post-run calculation input ',i0)
+5403 format ('***Error, Bad &DUMP input. Invalid &DUMP specification in post-run calculation input ',i0)
 
     contains
 
@@ -2973,12 +2873,15 @@ continue
     integer, intent(out) :: ios
     integer, intent(in) :: lu
     character(len=4), intent(in) :: name
+    
     character(len=80) text
     ios = 1
+    input_file_line = ''
 
     readloop: do
         read(lu,'(a)',end=10) text
         input_file_line_number = input_file_line_number + 1
+        input_file_line = text
         tloop: do ii=1,72
             if (text(ii:ii)/='&' .and. text(ii:ii)/=' ') exit tloop
             if (text(ii:ii)=='&') then

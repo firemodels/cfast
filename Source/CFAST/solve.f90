@@ -537,9 +537,9 @@ module solve_routines
                 if (stpmin_cnt>stpmin_cnt_max) then
                     ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
                     write (*,'(a,i0,a,e11.4,a,e11.4)') &
-                        '***Error: ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
+                        '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
                     write (iofill,'(a,i0,a,e11.4,a,e11.4)') &
-                        '***Error: ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
+                        '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
                     stop
                 end if
             else
@@ -604,9 +604,9 @@ module solve_routines
                 if (idid<0) then
                     call write_error_component (ipar(3))
                     write (*,'(a,i0)') '***Error, dassl - idid = ', idid
-                    write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    write (*,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-                    write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                     call post_process
                     call cfastexit ('solve_simulation', 3)
                     stop
@@ -629,9 +629,9 @@ module solve_routines
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
+                write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
-                write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
+                write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
                 call cfastexit ('solve_simulation', 4)
                 stop
@@ -1291,7 +1291,7 @@ module solve_routines
         else
             write (*,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
             write (iofill,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
-10          format('***Error: Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
+10          format('***Error, Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
         end if
         
         do i = 1, n_ramps

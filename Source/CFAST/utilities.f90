@@ -136,8 +136,8 @@
     case (5)
         d1mach = log10(b)
     case default
-        write (*,'(''***Error: Internal error, illegal bounds in d1mach '',i0)') i
-        write (iofill,'(''***Error: Internal error, illegal bounds in d1mach '',i0)') i
+        write (*,'(''***Error, Internal error, illegal bounds in d1mach '',i0)') i
+        write (iofill,'(''***Error, Internal error, illegal bounds in d1mach '',i0)') i
         call cfastexit('d1mach',1) 
     end select
     return
@@ -704,8 +704,8 @@
     else if (nend < 0 ) then 
         lastrow = numr
     else 
-        write(*,*) '***Error: nend is less than nstart but >= 0, illogical'
-        write(iofill,*)'***Error: nend is less than nstart but >= 0, illogical'
+        write(*,*) '***Error, nend is less than nstart but >= 0, illogical'
+        write(iofill,*)'***Error, nend is less than nstart but >= 0, illogical'
         call cfastexit('readcsvformat',1)
     end if
 
@@ -733,8 +733,8 @@
 
     ! Cannot exceed work array
     if (maxrow>numr) then
-        write (*,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
-        write (iofill,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
+        write (*,'(a,i0,1x,i0)') '***Error, Too many rows or columns in input file, r,c = ', maxrow, maxcol
+        write (iofill,'(a,i0,1x,i0)') '***Error, Too many rows or columns in input file, r,c = ', maxrow, maxcol
         call cfastexit('sreadcsvformat',3)
     end if
 
@@ -829,7 +829,7 @@
         ! first see if ramp is named
         do iramp = 1, n_ramps
             rampptr=>rampinfo(iramp)
-            if (nmlflag.and.rampid/='NULL') then
+            if (rampid/='NULL') then
                 if (rampptr%id==trim(rampid)) then
                     vent_index = iramp
                     find_vent_opening_ramp = iramp

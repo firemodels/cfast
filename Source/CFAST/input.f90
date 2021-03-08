@@ -640,7 +640,7 @@
             extension = '.in'
         end if
     else
-        write (errormessage,*) ' Input file does not exist: ', trim(buf)
+        write (errormessage,*) '***Error, Input file does not exist: ', trim(buf)
         call cfastexit('exehandle',4)
         stop
     end if

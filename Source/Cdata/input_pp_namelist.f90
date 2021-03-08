@@ -31,9 +31,8 @@
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
-    use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, &
-        datapath, errormessage
+    use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, datapath
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -109,10 +108,10 @@
         call read_mstt(iofili)
         close (iofili)
     elseif(ios == 29) then
-        write(errormessage,*) '***Error, CDATA input file ', trim(inputfile), ' not found'
+        write(*,*) 'file ', trim(inputfile), ' not found'
         call cfastexit('namelist_stt_input', 1)
     else
-        write(*,*) '***Error, I/O error code returned reading namelist_stt_input, ios = ', ios
+        write(*,*) 'error namelist_stt_input, ios = ', ios
         call cfastexit('namelist_stt_input', 2)
     end if 
     
@@ -149,13 +148,14 @@
         end if
         read(lu,MHDR,iostat=ios)
         if (ios>0) then
-            write(errormessage, '(a)') '***Error in &MHDR, Invalid variable specification for inputs.'
+            write(iofill, '(a)') '***Error in &MHDR: Invalid specification for inputs.'
             call cfastexit('read_mhdr',1)
         end if
     end do mhdr_loop
 
     if (.not.mhdrflag) then
-        write (errormessage, '(/, "***Error: &MHDR inputs are required but are not included in input file.")')
+        write (*, '(/, "***Error: &MHDR inputs are required.")')
+        write (iofill, '(/, "***Error: &MHDR inputs are required.")')
         call cfastexit('read_mhdr',2)
     end if
 
@@ -246,18 +246,21 @@
         read(lu,MRND,iostat=ios)
         n_generators = n_generators + 1
         if (ios>0) then
-            write(errormessage, '(a, i0)') '***Error in &MRND, Invalid variable specification for inputs. Generator ', n_generators
+            write(*, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
+            write(iofill, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
             call cfastexit('read_mrnd',1)
         end if
     end do mrnd_loop
 
     if (n_generators>mxgenerators) then
-        write (errormessage,'(a,i3)') '***Error, Too many random generators in input data file. Limit is ', mxgenerators
+        write (*,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
+        write (iofill,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
         call cfastexit('read_mrnd',2)
     end if
 
     if (.not.mrndflag) then
-        write (*, '(/, "***Error, At least one &MRND input is required but not included in input file.")')
+        write (*, '(/, "***Error: &MRND inputs are required.")')
+        write (iofill, '(/, "***Error: &MRND inputs are required.")')
         call cfastexit('read_mrnd',3)
     end if
 
@@ -305,7 +308,6 @@
                 if (value_type == val_types(idx_real)) then
                     genptr%value_type = val_types(idx_real)
                 else
-                    write (errormessage,*) '***Error, Values for uniform destribution must be the real number type.'
                     call cfastexit('READ_MRND',4)
                 end if 
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
@@ -339,7 +341,6 @@
                         genptr%char_array(jj) = string_values(jj)
                     end do 
                 else
-                    write (errormessage,*) '***Error, Invalid input type specified for values for discrete destribution.'
                     call cfastexit('read_mrnd', 5)
                 end if
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
@@ -367,8 +368,6 @@
                 genptr%mean = mean
                 genptr%stdev = stdev
             else
-                    write (errormessage,*) '***Error, Values for ', trim(distribution_type), &
-                        'destribution must be the real number type.'
                 call cfastexit('read_mrnd',1000)
             end if
             

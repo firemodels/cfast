@@ -90,11 +90,11 @@ module accumulator_routines
     lend = .false.
     header = .true.
     i = 1
-    call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 2, maxrowio, maxcolio, lend)
+    call readcsvformat(iunit, iossx, iossc, numr, numc, nstart, 2, maxrowio, maxcolio, lend, iofill)
     if (.not.lend) then
         call fndOpenMCFile(iossc(2,1), workpath, iunit2, ierr)
         if (ierr == 0) then
-            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, tmplend)
+            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, -1, maxrowtmp, maxcoltmp, tmplend, iofill)
             close(iunit2)
             if (.not. tmplend) then
                 do  j = 2, maxcoltmp
@@ -120,11 +120,11 @@ module accumulator_routines
     
     nfiles = 0
     do while (.not. lend)
-        call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend)
+        call readcsvformat(iunit, iossx, iossc, numr, numc, 1, 1, maxrowio, maxcolio, lend, iofill)
         if (debugging) write(*,*)'file = ',trim(iossc(1,1))
         call fndOpenMCFile(iossc(1,1), workpath, iunit2, ierr)
         if (ierr == 0) then
-            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend)
+            call readcsvformat(iunit2, tmpx, tmpc, 2, numc, 1, 2, maxrowtmp, maxcoltmp, tmplend, iofill)
             close(iunit2)
         else
             maxcoltmp = 0

@@ -14,6 +14,9 @@ module preprocessor_types
     
     intrinsic random_seed, random_number
     
+    logical :: debug
+    character(len=256) :: errormessage
+    
     !
     !------preprocessor_type---------
     !
@@ -612,11 +615,13 @@ module preprocessor_types
         class(field_pointer) :: me
         class(value_wrapper_type), intent(inout) :: val
         integer, intent(in) :: iteration
+        character(len=128) :: id
     
         if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
             return
         else if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
             call me%genptr%rand(val, iteration)
+            id = me%id
             select type(val)
                 type is (random_real_type)
                     if (me%temp_flag) then
@@ -1209,12 +1214,11 @@ module preprocessor_types
                     tmp1 = 0
                 end if
                 if (.not. me%fire_time_to_1054_kw) then
-                    deltat = me%firegenerators(2,me%last_growth_pt+1)%realval%val/(me%growth_npts + 1)
-                    a = (me%firegenerators(1,me%last_growth_pt+1)%realval%val - &
-                        me%firegenerators(1,1 + tmp1)%realval%val)/ &
-                        me%firegenerators(2,me%last_growth_pt+1)%realval%val**me%growthexpo
+                    t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val
                     c = me%firegenerators(1,1 + tmp1)%realval%val
+                    a = (me%firegenerators(1, me%last_growth_pt + 1)%realval%val - c)/ t1**me%growthexpo
                     t0 = 0.0_eb
+                    deltat = (t1 - t0)/(me%growth_npts + 1)
                 else 
                     t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val
                     c = me%firegenerators(1,me%last_growth_pt + 1)%realval%val

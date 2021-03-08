@@ -194,7 +194,7 @@ module preprocessor_routines
     
     call add_filename_to_parameters(filename)
     do i = 1, n_fields
-        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(i)%valptr, iteration)
+        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(fieldptr(i))%valptr, iteration)
         call fieldinfo(fieldptr(i))%write_value
     end do 
     do i = 1, n_rndfires

@@ -31,7 +31,7 @@
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
-    use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
+    use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, datapath
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
@@ -658,13 +658,13 @@
                     if (fldptr%dependencies_set()) then
                         idx = idx + 1
                         fieldptr(idx) = ii
+                        tmpptr(ii) = -1001
                     end if
                 end if
             end do
             if (.not. found) then
                 call cfastexit('READ_MFLD',1000001)
             else
-                idx1 = idx2 + 1
                 idx2 = idx
             end if
         end do 

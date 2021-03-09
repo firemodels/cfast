@@ -99,7 +99,7 @@ module preprocessor_output_routines
         
         buf = ' '
         buf = trim(workpath) // trim(project) // '.sh'
-        open(newunit=iounix, file=buf, action='write', iostat=ios, recordtype = 'STREAM_LF')
+        open(newunit=iounix, file=buf, action='write', iostat=ios, access='SEQUENTIAL', form='FORMATTED')
         call start_batch
     
     end subroutine open_preprocessor_outputfiles

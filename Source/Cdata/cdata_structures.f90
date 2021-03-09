@@ -1326,6 +1326,9 @@ module preprocessor_types
         
         integer :: i
         
+        ! line used to supress compiler warning
+        me%id = me%id
+        
         nx = nb
         do i = 1, mxpts
             x(i) = b(i)

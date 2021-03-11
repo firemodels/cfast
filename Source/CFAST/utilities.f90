@@ -865,9 +865,9 @@
     
     type(target_type), pointer :: targptr
 
-    fraction = 1.0_eb
     ! check vent triggering by time
     if (ventptr%opening_type==trigger_by_time) then
+        fraction = 1.0_eb
         if (ventptr%npoints>0) then
             if (time<=ventptr%t(1)) then
                 fraction = ventptr%f(1)
@@ -891,6 +891,7 @@
         ! check vent triggering by temperature. if tripped, turn it into a time-based change
     else if (ventptr%opening_type==trigger_by_temp.and..not.ventptr%opening_triggered) then
         targptr => targetinfo(ventptr%opening_target)
+        fraction = ventptr%f(1)
         if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
             ventptr%t(1) = time
             ventptr%t(2) = time + 1.0_eb
@@ -914,6 +915,7 @@
         ! check vent triggering by flux. if tripped, turn it into a time-based change
     else if (ventptr%opening_type==trigger_by_flux.and..not.ventptr%opening_triggered) then
         targptr => targetinfo(ventptr%opening_target)
+        fraction = ventptr%f(1)
         if (targptr%flux_incident_front>ventptr%opening_criterion) then
             ventptr%t(1) = time
             ventptr%t(2) = time + 1.0_eb

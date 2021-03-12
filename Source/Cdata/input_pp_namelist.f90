@@ -31,8 +31,8 @@
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
-    use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, datapath
+    use setup_data, only: iofili, iofill, cfast_version, title, time_end, print_out_interval, smv_out_interval, &
+        ss_out_interval, validation_flag, overwrite_testcase, inputfile, project, datapath, errormessage
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -148,14 +148,13 @@
         end if
         read(lu,MHDR,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MHDR: Invalid specification for inputs.'
+            write(errormessage,'(a)') '***Error in &MHDR: Invalid variable in specification for inputs.'
             call cfastexit('read_mhdr',1)
         end if
     end do mhdr_loop
 
     if (.not.mhdrflag) then
-        write (*, '(/, "***Error: &MHDR inputs are required.")')
-        write (iofill, '(/, "***Error: &MHDR inputs are required.")')
+        write (errormessage, '(a)') '***Error: &MHDR inputs are required. None included in input file'
         call cfastexit('read_mhdr',2)
     end if
 

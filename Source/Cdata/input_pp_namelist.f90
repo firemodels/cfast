@@ -1487,33 +1487,33 @@
         else if (fieldid(1:16) == 'FLOOR_THICKNESS_') then
             found = .true.
             read(fieldid(17:17),'(i1)') i
-            fldptr%realval%val => item%thick_w(i,1)
+            fldptr%realval%val => item%thick_w(i,2)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else if (fieldid(1:15) == 'WALL_THICKNESS_') then
             found = .true.
             read(fieldid(16:16),'(i1)') i
-            fldptr%realval%val => item%thick_w(i,1)
+            fldptr%realval%val => item%thick_w(i,3)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
-        else if (fieldid(1:17) == 'CEILING_MATERIAL_') then
+        else if (fieldid(1:16) == 'CEILING_MATL_ID_') then
             found = .true.
-            read(fieldid(18:18),'(i1)') i
-            fldptr%charval%val => item%matl(i,1)
-            fldptr%value_type = val_types(idx_real)
-            fldptr%valptr => fldptr%realval
-        else if (fieldid(1:15) == 'FLOOR_MATERIAL_') then
-            found = .true.
-            read(fieldid(16:16),'(i1)') i
+            read(fieldid(17:17),'(i1)') i
             fldptr%charval%val => item%matl(i,1)
             fldptr%value_type = val_types(idx_char)
-            fldptr%valptr => fldptr%realval
-        else if (fieldid(1:14) == 'WALL_MATERIAL_') then
+            fldptr%valptr => fldptr%charval
+        else if (fieldid(1:14) == 'FLOOR_MATL_ID_') then
             found = .true.
             read(fieldid(15:15),'(i1)') i
-            fldptr%charval%val => item%matl(i,1)
+            fldptr%charval%val => item%matl(i,2)
             fldptr%value_type = val_types(idx_char)
-            fldptr%valptr => fldptr%realval
+            fldptr%valptr => fldptr%charval
+        else if (fieldid(1:13) == 'WALL_MATL_ID_') then
+            found = .true.
+            read(fieldid(14:14),'(i1)') i
+            fldptr%charval%val => item%matl(i,3)
+            fldptr%value_type = val_types(idx_char)
+            fldptr%valptr => fldptr%charval
         else if (trim(fieldid) == 'WALL_LEAK_AREA_RATIO') then
             found = .true.
             fldptr%realval%val => item%leak_area_ratios(1)

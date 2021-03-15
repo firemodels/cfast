@@ -1000,18 +1000,11 @@ In this simplified example based on earlier work \cite{Cleary_2019}, we look at 
 \centering
 \begin{tabular*}{\textwidth}{c}
 \includegraphics[width=6.0in]{FIGURES/Detectors.png} \\
-\includegraphics[width=6.0in]{FIGURES/Detectors_Running.png} 
+\includegraphics[width=6.0in]{FIGURES/Detectors_Running.png}
 \end{tabular*}
 \caption{Sample CFAST visualization of a single story residential structure used for example 2.}
 \label{detector_geometry}
 \end{figure}
-
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=6.5in]{FIGURES/Detectors.png}
-%\caption{Sample CFAST visualization of a single story residential structure used for example 2.}
-%\label{detector_geometry}
-%\end{figure}
 
 For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
 
@@ -1155,9 +1148,12 @@ For a study like this it is important to get the distribution of fire parameters
 
 In this example, we look at a simple fire model sensitivity analysis, which ASTM E 1355 defines as a study of how changes in model parameters affect the results \cite{CFAST:ASTM:E1355}. In other words, sensitivity refers to the rate of change of the model output with respect to input variations. The standard also indicates that model predictions may be sensitive to (1) uncertainties in input data, (2) the level of rigor employed in modeling the relevant physics and chemistry, and (3) the accuracy of numerical treatments. Thus, the purpose of a sensitivity analysis is to assess the extent to which uncertainty in the model inputs is manifested as uncertainty in the model results of interest. For this simple example, we will use a single office building and look at the impact of changing important model inputs by $\pm 10$ \%. Figure \ref{sensitivity_geometry} shows the compartment geometry for the example.
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Sensitivity.png}
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[width=6.0in]{FIGURES/Sensitivity.png} \\
+\includegraphics[width=6.0in]{FIGURES/Sensitivity_Running.png}
+\end{tabular*}
 \caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
 \label{sensitivity_geometry}
 \end{figure}

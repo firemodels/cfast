@@ -838,8 +838,8 @@
         scaling_fire_time_random_generator_id, hrr_scale_column_label, time_scale_column_label, &
         fire_compartment_random_generator_id, fire_compartment_id_column_label, &
         flaming_smoldering_incipient_random_generator_id, flaming_incipient_delay_random_generator_id, &
-        flaming_peak_incipient_random_generator_id, smoldering_incipient_delay_random_generator_id, &
-        smoldering_peak_incipient_random_generator_id, fire_label_parameter_column_label
+        flaming_incipient_peak_random_generator_id, smoldering_incipient_delay_random_generator_id, &
+        smoldering_incipient_peak_random_generator_id, fire_label_parameter_column_label
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, &
         add_time_scale_to_parameters, add_fire_compartment_to_parameters
@@ -862,8 +862,8 @@
         fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_to_parameters, &
         fire_compartment_id_column_label, flaming_smoldering_incipient_random_generator_id, &
         flaming_incipient_delay_random_generator_id, fire_label_parameter_column_label, &
-        flaming_peak_incipient_random_generator_id, smoldering_incipient_delay_random_generator_id, &
-        smoldering_peak_incipient_random_generator_id, &
+        flaming_incipient_peak_random_generator_id, smoldering_incipient_delay_random_generator_id, &
+        smoldering_incipient_peak_random_generator_id, &
         fire_hrr_generators, fire_time_generators, type_of_incipient_growth, number_of_incipient_fire_types, &
         incipient_fire_types, incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
         flaming_time_column_label, flaming_hrr_peak_column_label, add_incipient_type_to_parameters, &
@@ -1051,14 +1051,14 @@
             ! Setting up the flaming growth model
             
             if (trim(flaming_incipient_delay_random_generator_id) /= 'NULL' .and. &
-                trim(flaming_peak_incipient_random_generator_id) /= 'NULL') then
+                trim(flaming_incipient_peak_random_generator_id) /= 'NULL') then
                 found = .false.
                 found2 = .false. 
                 do jj = 1, n_generators
                     if (trim(flaming_incipient_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
                         fire%flame_hrr_ptr%genptr => generatorinfo(jj)
                         found = .true.
-                    else if (trim(flaming_peak_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                    else if (trim(flaming_incipient_peak_random_generator_id) == trim(generatorinfo(jj)%id)) then
                         fire%flame_time_ptr%genptr => generatorinfo(jj)
                         found2 = .true.
                     end if        
@@ -1104,14 +1104,14 @@
             ! Setting up the smoldering growth model    
             
             if (trim(smoldering_incipient_delay_random_generator_id) /= 'NULL' .and. &
-                trim(smoldering_peak_incipient_random_generator_id) /= 'NULL') then
+                trim(smoldering_incipient_peak_random_generator_id) /= 'NULL') then
                 found = .false.
                 found2 = .false. 
                 do jj = 1, n_generators
                     if (trim(smoldering_incipient_delay_random_generator_id) == trim(generatorinfo(jj)%id)) then
                         fire%smolder_hrr_ptr%genptr => generatorinfo(jj)
                         found = .true.
-                    else if (trim(smoldering_peak_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
+                    else if (trim(smoldering_incipient_peak_random_generator_id) == trim(generatorinfo(jj)%id)) then
                         fire%smolder_time_ptr%genptr => generatorinfo(jj)
                         found2 = .true.
                     end if        
@@ -1341,9 +1341,9 @@
     fire_compartment_ids = 'NULL'
     flaming_smoldering_incipient_random_generator_id = 'NULL'
     flaming_incipient_delay_random_generator_id = 'NULL'
-    flaming_peak_incipient_random_generator_id = 'NULL'
+    flaming_incipient_peak_random_generator_id = 'NULL'
     smoldering_incipient_delay_random_generator_id = 'NULL'
-    smoldering_peak_incipient_random_generator_id = 'NULL'
+    smoldering_incipient_peak_random_generator_id = 'NULL'
     type_of_incipient_growth = 'NONE'
     number_of_incipient_fire_types = -1001
     incipient_fire_types = 'NULL'

@@ -173,7 +173,7 @@ As briefly discussed in the introduction significant research has gone into unde
   \item Statistical analysis of calculation results
 \end{enumerate}
 
-Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between different compartments and compartments to the outside, and the range and position of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to characterize tenability along egress paths, fire severity, or building structural integrity, for example). For the most part, community and occupant characteristics are outside the scope of this report which focuses on developing the range of CFAST model inputs needed to run the desired set of simulations. These may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining ranges of compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
+Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between different compartments and compartments to the outside, and the range and position of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to characterizing tenability along egress paths, fire severity, or building structural integrity, for example). For the most part, community and occupant characteristics are outside the scope of this report which focuses on developing the range of CFAST model inputs needed to run the desired set of simulations. These may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining ranges of compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
 
 \subsection{Building Characteristics}
 
@@ -604,7 +604,7 @@ Control of what tools are used and what data it is run on is determined with the
 
 \section{Namelist DUMP}
 
-When cases are run in CFAST, a number of single values for the case such as maximum temperature in a compartment or the time to temperature reaching 600 \degc. These values are defined with the {\ct \&DUMP} namelist input.
+When cases are run in CFAST, a number of single values for the case such as maximum temperature in a compartment or the time to temperature reaching 600 C. These values are defined with the {\ct \&DUMP} namelist input.
 
 \begin{description}
   \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 64 characters.
@@ -693,7 +693,7 @@ Here, we define the peak heat release rate as a uniform distribution from 500~kW
 
 As part of the base input file used to generate the set of individual CFAST inputs files to be run, one or more {\ct \&DUMP} inputs can be included to specify summary outputs for each CFAST simulation. This can include maximum/minimum values, time to chosen trigger values (for example, time to peak heat release rate or time to a chosen upper layer temperature), or trigger values based on other inputs (for example, heat release rate when upper layer temperature reaches a chosen value).
 
-For the example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600~\degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
+For the example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600 \degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
@@ -873,11 +873,11 @@ Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is t
 
 \subsubsection{Decision Trees}
 
-Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For variables that are descreet, for example if a detector has activated or not, each leaf node is associated with the best-fit category or most likely. For continous variables, each leaf node is associated with the average of the data that arrives at that node.
+Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For classification trees, each leaf node is associated with the best-fit category. For regression trees, each leaf node is associated with the average of the data that arrives at that node.
 
 Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticeable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases where the same data can be represented by very different trees.
 
-One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. The top node or root node says that if the second HRR point is less than 158.5 kW, which is ther left branch, then the average maximum upper temperature is less then flashover. However if the HRR at the second point is greater than 230.5 kW, taking the right branch from the root and than the right branch again, the average maximum upper layer temperature is above flashover, altough with a big enough vent the average is close to 600~\degc, meaning that likely some cases do not flashover. 
+One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree.
 
 \begin{figure}[h!]
 \centering
@@ -994,14 +994,11 @@ Battery-powered smoke alarms with wireless interconnect signal transmission allo
 The script that was written to do the extra analysis in the following subsections for this example is listed in Appendix \ref{rscript-interconnect}.
 
 \subsection{CData Inputs}
-In this simplified example based on earlier work \cite{Cleary_2019}, we look at the impact of a periodic activation of wireless communications in detectors. We will use a fixed single-story residential structure for the simulations \cite{Madrzykowski:2019}, varying the fire placement and size, the opening/closing of doors within the structure, and the properties of the smoke detectors placed in each compartment. Figure \ref{detector_geometry} shows the compartment geometry for the simulations.
+In this simplified example based on earlier work \cite{Cleary_2019}, we look at the impact of a periodic activation of wireless communications in detectors. We will use a fixed single-story residential structure for the simulations \cite{madrzykowski:2019}, varying the fire placement and size, the opening/closing of doors within the structure, and the properties of the smoke detectors placed in each compartment. Figure \ref{detector_geometry} shows the compartment geometry for the simulations.
 
-\begin{figure}[!ht]
+\begin{figure}[h!]
 \centering
-\begin{tabular*}{\textwidth}{c}
-\includegraphics[width=6.0in]{FIGURES/Detectors.png} \\
-\includegraphics[width=6.0in]{FIGURES/Detectors_Running.png}
-\end{tabular*}
+\includegraphics[width=6.5in]{FIGURES/Detectors.png}
 \caption{Sample CFAST visualization of a single story residential structure used for example 2.}
 \label{detector_geometry}
 \end{figure}
@@ -1077,11 +1074,9 @@ Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms act
 
 For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
 
-To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated for the bedroom alarm sounding shown in  Fig \ref{Ex_3-decision_tree}. The paths to the three leaf nodes with the highest precentages of occurance are given as follows. Starting at the top of the tree note that if the LR to BR Hall door is closed, the left branch, than the Bedroom 1 alarm doesn't sound and this occurs roughly 20~\% of the time. If the LR to BR Hall door is open but the Bedroom 1 door is closed the alarm will not sound and this happens approximately 16~\% of the time. Starting at the top and going down the right branch every time, meaning that the four doors referenced are all open, than Bedroom 1 alarm is activated and this occurs about 41~\% of the time. Also note that because of rounding errors adding up the precentages in all the leaf nodes equals 101~\%.
+To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated for the bedroom alarm sounding (Fig \ref{Ex_3-decision_tree}). It is unusual for a tree to produce results as stark as this one. What becomes clear upon examining the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
 
-It is unusual for a tree to produce results as stark as this one. What becomes clear upon examining the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
-
-Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 s. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. Adding the random delay is not done in CFAST but in R during the analysis. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
+Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 seconds. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
 
 \begin{figure}[h!]
 \centering
@@ -1150,12 +1145,9 @@ For a study like this it is important to get the distribution of fire parameters
 
 In this example, we look at a simple fire model sensitivity analysis, which ASTM E 1355 defines as a study of how changes in model parameters affect the results \cite{CFAST:ASTM:E1355}. In other words, sensitivity refers to the rate of change of the model output with respect to input variations. The standard also indicates that model predictions may be sensitive to (1) uncertainties in input data, (2) the level of rigor employed in modeling the relevant physics and chemistry, and (3) the accuracy of numerical treatments. Thus, the purpose of a sensitivity analysis is to assess the extent to which uncertainty in the model inputs is manifested as uncertainty in the model results of interest. For this simple example, we will use a single office building and look at the impact of changing important model inputs by $\pm 10$ \%. Figure \ref{sensitivity_geometry} shows the compartment geometry for the example.
 
-\begin{figure}[!ht]
+\begin{figure}[h!]
 \centering
-\begin{tabular*}{\textwidth}{c}
-\includegraphics[width=6.0in]{FIGURES/Sensitivity.png} \\
-\includegraphics[width=6.0in]{FIGURES/Sensitivity_Running.png}
-\end{tabular*}
+\includegraphics[width=6.5in]{FIGURES/Sensitivity.png}
 \caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
 \label{sensitivity_geometry}
 \end{figure}
@@ -1313,7 +1305,7 @@ CData supports several statistical analyses with the statistical software R to p
 
 Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results. However, it is not very useful to run many times the number of runs needed to draw statistically justifiable conclusions. For one thing the computational time and storage space, especially the storage space, can overwhelm any system if the number of cases is large enough.
 
-The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have emerges, a plan for a next version of the tool will be made.
+The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have emerges a plan for a next version of the tool will be made.
 
 
 %\backmatter

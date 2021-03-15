@@ -996,12 +996,22 @@ The script that was written to do the extra analysis in the following subsection
 \subsection{CData Inputs}
 In this simplified example based on earlier work \cite{Cleary_2019}, we look at the impact of a periodic activation of wireless communications in detectors. We will use a fixed single-story residential structure for the simulations \cite{Madrzykowski:2019}, varying the fire placement and size, the opening/closing of doors within the structure, and the properties of the smoke detectors placed in each compartment. Figure \ref{detector_geometry} shows the compartment geometry for the simulations.
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Detectors.png}
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[width=6.0in]{FIGURES/Detectors.png} \\
+\includegraphics[width=6.0in]{FIGURES/Detectors_Running.png} 
+\end{tabular*}
 \caption{Sample CFAST visualization of a single story residential structure used for example 2.}
 \label{detector_geometry}
 \end{figure}
+
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=6.5in]{FIGURES/Detectors.png}
+%\caption{Sample CFAST visualization of a single story residential structure used for example 2.}
+%\label{detector_geometry}
+%\end{figure}
 
 For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
 

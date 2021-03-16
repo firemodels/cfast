@@ -89,6 +89,7 @@ module preprocessor_types
         integer, dimension(mxpntsarray) :: int_array
         logical, dimension(mxpntsarray) :: logic_array
         character(len=128), dimension(mxpntsarray) :: char_array
+        character(len=128) :: labelval
         logical :: conditional_min, conditional_max
         integer :: position
     contains
@@ -619,7 +620,7 @@ module preprocessor_types
     
         if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
             return
-        else if (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
+        elseif (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
             call me%genptr%rand(val, iteration)
             id = me%id
             select type(val)
@@ -667,16 +668,24 @@ module preprocessor_types
             end if 
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_scale))) then
             call me%genptr%rand(me%randptr, iteration)
-                select type(val)
-                    type is (random_real_type)
-                        val%val = me%scale_value * me%scale_base_value
-                    class default
-                        call me%errorcall('DO_RAND',6)
-                    end select
+            select type(val)
+                type is (random_real_type)
+                    val%val = me%scale_value * me%scale_base_value
+                class default
+                    call me%errorcall('DO_RAND',6)
+            end select
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
             call me%genptr%rand(me%randptr, iteration)
+            if (me%value_type == val_types(idx_char)) then
+                select type(val)
+                    type is (random_char_type)
+                        val%val = me%char_array(me%index)
+                    class default
+                        call me%errorcall('DO_RAND',7)
+                end select
+            end if
         else
-            call me%errorcall('DO_RAND',7)
+            call me%errorcall('DO_RAND',8)
         end if 
         
     end subroutine do_rand

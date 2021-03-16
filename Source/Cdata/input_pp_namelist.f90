@@ -576,14 +576,17 @@
                 
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_label))) then
                 fldptr%field_type = trim(field_type)
-                fldptr%indexval%val => fldptr%index
-                fldptr%randptr => fldptr%indexval
+                fldptr%intval%val => fldptr%index
+                fldptr%randptr => fldptr%intval
+                fldptr%charval%val => fldptr%labelval
+                fldptr%value_type = val_types(idx_char)
+                fldptr%valptr => fldptr%charval
                 scenaro_loop: do jj = 1, mxpntsarray
-                    if (trim(scenario_titles(jj)) == 'NULL') then
+                    if (trim(string_values(jj)) == 'NULL') then
                         fldptr%nlabel = jj - 1
                         exit scenaro_loop
                     else
-                        fldptr%char_array(jj) = scenario_titles(jj)
+                        fldptr%char_array(jj) = string_values(jj)
                     end if    
                     fldptr%nlabel = jj
                 end do scenaro_loop
@@ -683,7 +686,10 @@
     parameter_column_label = 'NULL'
     base_scaling_value = -1
     position = 1
-    
+    real_values = -1001.0_eb
+    integer_values = -1001
+    string_values = 'NULL'
+    logical_values = .FALSE.
 
     end subroutine set_defaults
 

@@ -858,7 +858,7 @@
             write(buf,'(f11.2)') value
         end if
     else
-        write(buf,'(f11.2)') value
+        write(buf,'(e16.9)') value
     end if
     
     return
@@ -874,7 +874,7 @@
     character, intent(in) :: token*(*)
     character, intent(inout) :: buf*(*)
     
-    character :: tbuf*(512), vbuf*(15)
+    character :: tbuf*(512), vbuf*(20)
     
     call format_number(value, vbuf)
     tbuf = ' '

@@ -1276,7 +1276,6 @@ module preprocessor_types
                 me%fire%n_hoc = me%fire%n_qdot
             end if 
             do i = 3, me%fire%n_qdot
-                me%fire%t_qdot(i) = me%fire%t_qdot(i) + tmp
                 me%fire%t_mdot(i) = me%fire%t_qdot(i)
                 me%fire%t_area(i) = me%fire%t_qdot(i)
                 me%fire%t_height(i) = me%fire%t_qdot(i)
@@ -1286,13 +1285,13 @@ module preprocessor_types
                 me%fire%t_trace(i) = me%fire%t_qdot(i)
                 me%fire%t_hoc(i) = me%fire%t_qdot(i)
             end do
-            end if
-            if (me%modifyfirearea) then
-                do i = 1, me%fire%n_qdot
-                    me%fire%area(i) = (me%fire%qdot(i)/(352.981915_eb*1012._eb*sqrt(9.80665_eb)))**(4./5.)/4._eb
-                    if (me%fire%area(i) < 0.001_eb) me%fire%area(i) = 0.001_eb
-                end do
-            end if
+        end if
+        if (me%modifyfirearea) then
+            do i = 1, me%fire%n_qdot
+                me%fire%area(i) = (me%fire%qdot(i)/(352.981915_eb*1012._eb*sqrt(9.80665_eb)))**(4./5.)/4._eb
+                if (me%fire%area(i) < 0.001_eb) me%fire%area(i) = 0.001_eb
+            end do
+        end if
         
     end subroutine fire_do_rand
     

@@ -883,7 +883,7 @@
         end if
     else
         if (ilen >= 16) then
-            write(buf,'(e16.9)') value
+            write(buf,'(f16.4)') value
         else 
             ierr = 1
         end if 
@@ -954,9 +954,11 @@
     
     tbuf = ' '
     tbuf = trim(adjustl(token))
-    do i = 1, idx
+    call format_number(value(1), vbuf, ierr)
+    tbuf = trim(tbuf) // ' ' // trim(adjustl(vbuf))
+    do i = 2, idx
         call format_number(value(i), vbuf, ierr)
-        tbuf = trim(tbuf) // ' ' // trim(adjustl(vbuf))
+        tbuf = trim(tbuf) // ', ' // trim(adjustl(vbuf))
     end do 
     call add_token(iounit, buf, tbuf)
     return

@@ -109,35 +109,36 @@
     implicit none
     integer, intent(in) :: iounit
     
-    character :: buf*(128), tbuf*(11)
+    character :: buf*(128), tbuf*(20)
     logical :: doline
+    integer :: ierr
     
     doline = .false.
     buf = ' '
-    buf(1:6) = '&TIME '
+    buf(1:5) = '&TIME'
     !if (time_end /= default_simulation_time) then
     if (time_end /= -1001) then
         doline = .true.
         tbuf = ' '
-        call format_number(time_end,tbuf)
-        buf = trim(buf) // ' SIMULATION = ' // trim(adjustl(tbuf))
+        call format_number(time_end,tbuf, ierr)
+            buf = trim(buf) // ' SIMULATION = ' // trim(adjustl(tbuf))
     end if
     if (print_out_interval/=default_print_out_interval) then
         doline = .true.
         tbuf = ' '
-        call format_number(print_out_interval,tbuf)
+        call format_number(print_out_interval,tbuf, ierr)
         buf = trim(buf) // ' PRINT = ' // trim(adjustl(tbuf))
     end if
     if (smv_out_interval /= default_smv_out_interval) then
         doline = .true.
         tbuf = ' '
-        call format_number(smv_out_interval, tbuf)
+        call format_number(smv_out_interval, tbuf, ierr)
         buf = trim(buf) // ' SMOKEVIEW = ' // trim(adjustl(tbuf))
     end if
     if (ss_out_interval /= default_ss_out_interval) then
         doline = .true.
         tbuf = ' '
-        call format_number(ss_out_interval, tbuf)
+        call format_number(ss_out_interval, tbuf, ierr)
         buf = trim(buf) // ' SPREADSHEET = ' // trim(adjustl(tbuf))
     end if
     
@@ -159,9 +160,9 @@
     implicit none
     integer, intent(in) :: iounit
     
-    character :: buf*(128), tbuf*(12)
+    character :: buf*(135), tbuf*(20)
     logical :: doline
-    integer :: i
+    integer :: i, ierr
     real(eb) :: xxpmin
     type(room_type), pointer :: roomptr
     
@@ -174,29 +175,29 @@
     
     doline = .false.
     buf = ' '
-    buf(1:6) = '&INIT '
+    buf(1:5) = '&INIT'
     if (exterior_abs_pressure - xxpmin + pressure_offset /= default_pressure) then
         doline = .true.
         tbuf = ' '
-        call format_number(exterior_abs_pressure - xxpmin + pressure_offset, tbuf)
+        call format_number(exterior_abs_pressure - xxpmin + pressure_offset, tbuf, ierr)
         buf = trim(buf) // ' PRESSURE = ' // trim(adjustl(tbuf))
     end if
     if (exterior_ambient_temperature /= default_temperature) then
         doline = .true.
         tbuf = ' '
-        call format_number(exterior_ambient_temperature - kelvin_c_offset, tbuf)
+        call format_number(exterior_ambient_temperature - kelvin_c_offset, tbuf, ierr)
         buf = trim(buf) // ' EXTERIOR_TEMPERATURE = ' // trim(adjustl(tbuf))
     end if
     if (interior_ambient_temperature /= default_temperature) then
         doline = .true.
         tbuf = ' '
-        call format_number(interior_ambient_temperature - kelvin_c_offset, tbuf)
+        call format_number(interior_ambient_temperature - kelvin_c_offset, tbuf, ierr)
         buf = trim(buf) // ' INTERIOR_TEMPERATURE = ' // trim(adjustl(tbuf))
     end if
     if (relative_humidity /= default_relative_humidity) then
         doline = .true.
         tbuf = ' '
-        call format_number(relative_humidity*100._eb, tbuf)
+        call format_number(relative_humidity*100._eb, tbuf, ierr)
         buf = trim(buf) // ' RELATIVE_HUMIDITY = ' // trim(adjustl(tbuf))
     end if
     
@@ -832,33 +833,60 @@
     
     !-------format_number---------------
     
-    subroutine format_number(value, buf)
+    subroutine format_number(value, buf, ierr)
     
     character, intent(out) :: buf*(*)
     real(eb), intent(in) :: value
-    integer :: itmp
+    integer, intent(out) :: ierr
+    integer :: itmp, ilen
     
+    ierr = 0
+    ilen = len(buf)
     if (floor(value) == value) then
         itmp = value
-        write(buf,'(i7)') itmp
+        if (ilen >= 7) then
+            write(buf,'(i7)') itmp
+        else if (ilen == 6 .and. itmp < 1000000 .and. itmp > -100000) then
+            write(buf, '(i6)') itmp
+        else if (ilen == 5 .and. itmp <100000 .and. itmp > -10000) then 
+            write(buf, '(i5)')
+        else 
+            ierr = 1
+        end if 
     elseif (floor(value*10) == value*10) then
-        write(buf,'(f11.1)') value
+        if (ilen >= 11) then 
+            write(buf,'(f11.1)') value
+        else 
+            ierr = 1
+        end if
     elseif (floor(value*100) == value*100) then
-        write(buf,'(f11.2)') value
-    elseif (value < 100) then
-        if (value < 10) then
-            if (floor(value*1000) == value*1000) then
-                write(buf,'(f11.3)') value
-            elseif (value < 0.001) then
-                write(buf,'(e10.3)') value
-            else
-                write(buf,'(f11.4)') value
-            end if
-        else
+        if (ilen >= 11) then 
             write(buf,'(f11.2)') value
+        else
+            ierr = 1
+        end if 
+    elseif (value < 100) then
+        if (ilen >= 11) then 
+            if (value < 10) then
+                if (floor(value*1000) == value*1000) then
+                    write(buf,'(f11.3)') value
+                elseif (value < 0.001) then
+                    write(buf,'(e10.3)') value
+                else
+                    write(buf,'(f11.4)') value
+                end if 
+            else
+                write(buf,'(f11.2)') value
+            end if
+        else 
+            ierr = 1
         end if
     else
-        write(buf,'(e16.9)') value
+        if (ilen >= 16) then
+            write(buf,'(e16.9)') value
+        else 
+            ierr = 1
+        end if 
     end if
     
     return
@@ -875,8 +903,9 @@
     character, intent(inout) :: buf*(*)
     
     character :: tbuf*(512), vbuf*(20)
+    integer ierr
     
-    call format_number(value, vbuf)
+    call format_number(value, vbuf, ierr)
     tbuf = ' '
     tbuf = trim(adjustl(token)) // ' ' // trim(adjustl(vbuf))
     call add_token(iounit, buf, tbuf)
@@ -920,13 +949,13 @@
     character, intent(in) :: token*(*)
     character, intent(inout) :: buf*(*)
     
-    character :: tbuf*(512), vbuf*(15)
-    integer :: i
+    character :: tbuf*(512), vbuf*(20)
+    integer :: i, ierr
     
     tbuf = ' '
     tbuf = trim(adjustl(token))
     do i = 1, idx
-        call format_number(value(i), vbuf)
+        call format_number(value(i), vbuf, ierr)
         tbuf = trim(tbuf) // ' ' // trim(adjustl(vbuf))
     end do 
     call add_token(iounit, buf, tbuf)

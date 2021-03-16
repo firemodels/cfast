@@ -1015,8 +1015,11 @@
                 fire%fire_comp%randptr => fire%fire_comp%indexval
                 fire%fire_comp%add_to_parameters = .false.
                 fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
-                fire%fire_label%indexval%val => fire%fire_label%index
-                fire%fire_label%randptr => fire%fire_label%indexval
+                fire%fire_label%intval%val => fire%fire_label%index
+                fire%fire_label%randptr => fire%fire_label%intval
+                fire%fire_label%charval%val => fire%fire_label%labelval
+                fire%fire_label%value_type = val_types(idx_char)
+                fire%fire_label%valptr => fire%fire_label%charval
                 complist_search: do jj = 1, mxrooms
                     if (trim(fire_compartment_ids(jj)) == 'NULL') then
                         exit complist_search

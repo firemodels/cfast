@@ -108,10 +108,10 @@
         call read_mstt(iofili)
         close (iofili)
     elseif(ios == 29) then
-        write(*,*) 'file ', trim(inputfile), ' not found'
+        write(errormessage,'(3a)') 'Error***, CData input file, ', trim(inputfile), ', not found'
         call cfastexit('namelist_stt_input', 1)
     else
-        write(*,*) 'error namelist_stt_input, ios = ', ios
+        write(errormessage,'(a,i0)') 'Error***, error reading CData input file. Error code = ', ios
         call cfastexit('namelist_stt_input', 2)
     end if 
     
@@ -245,21 +245,18 @@
         read(lu,MRND,iostat=ios)
         n_generators = n_generators + 1
         if (ios>0) then
-            write(*, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
-            write(iofill, '(a, i4)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
+            write(errormessage,'(a, i0)') '***Error in &MRND: Invalid specification for inputs. Generator ', n_generators
             call cfastexit('read_mrnd',1)
         end if
     end do mrnd_loop
 
     if (n_generators>mxgenerators) then
-        write (*,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
-        write (iofill,'(a,i3)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
+        write (errormessage,'(a,i0)') '***Error: Too many random generators in input data file. Limit is ', mxgenerators
         call cfastexit('read_mrnd',2)
     end if
 
     if (.not.mrndflag) then
-        write (*, '(/, "***Error: &MRND inputs are required.")')
-        write (iofill, '(/, "***Error: &MRND inputs are required.")')
+        write (errormessage,'(a)') '***Error: At least one &MRND input is required.'
         call cfastexit('read_mrnd',3)
     end if
 
@@ -307,6 +304,9 @@
                 if (value_type == val_types(idx_real)) then
                     genptr%value_type = val_types(idx_real)
                 else
+                    write (errormessage,'(a,i0,a)') &
+                        '***Error, Uniform distribution specified in &MRND requires real number values. ', genptr%value_type, &
+                        ' specified.'
                     call cfastexit('READ_MRND',4)
                 end if 
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
@@ -340,6 +340,7 @@
                         genptr%char_array(jj) = string_values(jj)
                     end do 
                 else
+                    write (errormessage,'(a)') '***Error, Invalid values specified for discrete values distribution. '
                     call cfastexit('read_mrnd', 5)
                 end if
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
@@ -366,7 +367,8 @@
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
-            else
+            
+                write (errormessage,'(2a)') '***Error, Invalid distribution type specified in &MRND, ', trim(distribution_type)
                 call cfastexit('read_mrnd',1000)
             end if
             
@@ -451,17 +453,13 @@
         read(lu,MFLD,iostat=ios)
         n_fields = n_fields + 1
         if (ios>0) then
-            write(*, '(a,a,i3)') '***Error in &MFLD: Invalid specification for inputs.', &
-                'For &MFLD ', n_fields
-            write(iofill, '(a,a,i3)') '***Error in &MFLD: Invalid specification for inputs.', &
-                'For &MFLD ', n_fields
+            write(errormessage,'(a,i0)') '***Error in &MFLD, Invalid variable in specification for inputs. &MFLD input ', n_fields
             call cfastexit('read_mfld', 1)
         end if
     end do mfld_loop
 
     if (n_fields>mxfields) then
-        write (*,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxfields
-        write (iofill,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxfields
+        write (errormessage,'(a,i0)') '***Error: Too many &MFLD inputs in data file. Limit is ', mxfields
         call cfastexit('read_mfld',2)
     end if
 
@@ -480,8 +478,7 @@
             call set_defaults
             read(lu,MFLD)
             if (trim(id) == 'NULL') then
-                write(*,'(a)') '***Error: ID field requires a value'
-                write(iofill,'(a)') '***Error: ID field requires a value'
+                write(errormessage,'(a)') '***Error, &MFLD ID field requires a value. No input found'
                 call cfastexit('read_mfld',4)
             end if
             fldptr%id = id
@@ -494,20 +491,23 @@
                 end if
             end do test
             if (.not.found_rand) then 
+                write (errormessage,'(2a)') '***Error, No matching &MRND input found for random generator in &MFLD,', trim(rand_id)
                 call cfastexit('read_mfld',5)
             end if
             
             ! Value Type
-            
             if (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_value))) then
                 fldptr%field_type = trim(field_type)
                 call find_object(field(1), fldptr, found)
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
+                        write (errormessage,'(2a)') '***Error, Value type in &MRND input does not match type expected in &MFLD,', &
+                            trim(fldptr%value_type)
                         call cfastexit('read_mfld',7)
                     end if
-                else
+                else 
+                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
                     call cfastexit('read_mfld',6)
                 end if
             
@@ -518,9 +518,12 @@
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(value_type) /= trim(fldptr%value_type)) then
+                        write (errormessage,'(2a)') '***Error, Value type in &MRND input does not match type expected in &MFLD,', &
+                            trim(fldptr%value_type)
                         call cfastexit('read_mfld',9)
                     end if
                 else
+                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
                     call cfastexit('read_mfld',8)
                 end if
                 fldptr%field_type = trim(field_type)
@@ -547,6 +550,7 @@
                         fldptr%logic_array(jj) = logical_values(jj)
                     end do
                 else
+                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(value_type)
                     call cfastexit('read_mfld',10)
                 end if
                 
@@ -557,8 +561,12 @@
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
                     if (trim(val_types(idx_real)) /= trim(fldptr%value_type)) then
+                        write (errormessage,'(2a)') &
+                            '***Error, Value type in &MRND input does not match type expected in scaling &MFLD,', &
+                            trim(fldptr%value_type)
                         call cfastexit('read_mfld',12)
                     end if
+                    write (errormessage,'(2a)') '***Error, Invalid value type in scaling &MFLD field,', trim(field_type)
                 else
                     call cfastexit('read_mfld',11)
                 end if
@@ -619,7 +627,8 @@
             end if 
         end do
         if (idx == 0) then
-            call cfastexit('READ_MFLXD', 1000000)
+            write (errormessage,'(a)') 'Error***, Missing linked dependency in &MFLD. Cannot resolve linked reference. '
+            call cfastexit('read_mfld', 1000000)
         end if
         idx1 = 1
         idx2 = idx
@@ -665,6 +674,7 @@
                 end if
             end do
             if (.not. found) then
+                write (errormessage,'(a)') 'Error***, Missing linked dependency in &MFLD. Cannot resolve added reference. '
                 call cfastexit('READ_MFLD',1000001)
             else
                 idx2 = idx
@@ -731,20 +741,18 @@
         read(lu,MSTT,iostat=ios)
         n_stats = n_stats + 1
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MSTT: Invalid specification for inputs.'
+            write(errormessage,'(a,i0)') '***Error in &MSTT, Invalid variable in specification for inputs. &MSTT input ', n_stats
             call cfastexit('read_mstt',1)
         end if
     end do mstt_loop
 
     if (n_stats>mxstats) then
-        write (*,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxstats
-        write (iofill,'(a,i3)') '***Error: Too many fields in input data file. Limit is ', mxstats
+        write (errormessage,'(a,i0)') '***Error: Too many fields in input data file. Limit is ', mxstats
         call cfastexit('read_mstt',2)
     end if
 
     if (.not.msttflag) then
-        write (*, '(/, "***Error: &MSTT inputs are required.")')
-        write (iofill, '(/, "***Error: &MTT inputs are required.")')
+        write (errormessage,'(a)') '***Error: No &MSTT inputs in input file.'
         call cfastexit('read_mstt',3)
     end if
 
@@ -772,7 +780,7 @@
                 end if
             end do
             if (idx == 0) then
-                write(*,*) 'analysis_type ',trim(analysis_type),' not recognized'
+                write(errormessage,*) '***Error, MSTT analysis_type ',trim(analysis_type),' not recognized'
                 call cfastexit('read_mstt', 4)
             end if
             statptr%id = id
@@ -804,7 +812,7 @@
                     end if
                 end do
                 if (statptr%img_format(1:4) == 'NULL') then
-                    write(*,*) 'extension file format not recognized'
+                    write(errormessage,'(a)') '***Error, &MSTT R extension file format not recognized'
                     call cfastexit('read_mstt', 5)
                 end if
             end if
@@ -892,14 +900,13 @@
         read(lu,MFIR,iostat=ios)
         n_rndfires = n_rndfires + 1
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MFIR: Invalid specification for inputs.'
+            write(errormessage,'(a,i0)') '***Error in &MFIR, Invalid variable in specification for inputs. &MSTT input ', n_rndfires
             call cfastexit('read_mfir',1)
         end if
     end do mfir_loop
 
     if (n_rndfires>mxrndfires) then
-        write (*,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
-        write (iofill,'(a,i3)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
+        write (errormessage,'(a,i0)') '***Error: Too many fire generators in input data file. Limit is ', mxfiregens
         call cfastexit('read_mfir',2)
     end if
 
@@ -932,6 +939,7 @@
                 end if
             end do
             if (.not.found) then
+                write (errormessage,'(2a)') '***Error, Fire specification not found in input file. ', trim(fire%fireid)
                 call cfastexit('read_mfir', 4)
             end if
             
@@ -947,6 +955,8 @@
                 if (fire%scalehrr) then
                     fire%hrrscaleval%val => fire%hrrscalevalue
                 else
+                    write (errormessage,'(a)') &
+                        '***Error, HRR scaling value found in &MFIR but scaling fire not specified in input file.'
                     call cfastexit('read_mfir', 5)
                 end if 
                 if (add_hrr_scale_to_parameters) then
@@ -973,6 +983,8 @@
                 if (fire%scaletime) then
                     fire%timescaleval%val => fire%timescalevalue
                 else
+                    write (errormessage,'(a)') &
+                        '***Error, Time scaling value found in &MFIR but scaling fire not specified in input file.'
                     call cfastexit('READ_MFIR', 6)
                 end if 
                 if (add_time_scale_to_parameters) then

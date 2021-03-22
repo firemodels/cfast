@@ -1010,35 +1010,98 @@ For this example, the fire location, fire growth, fire peak heat release rate, v
 
 \begin{description}
 \item[Fire location:] Fire is placed in a fixed location in a randomly chosen compartment in the structure and is equally split between flaming and smoldering fires.
-\item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution.
-\item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation.
+\item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution. 
+\item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation. 
 \item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a log-normal distribution with a geometric mean of 9.5 \%/m $\pm$ 4.2 \%/m (3.0~\%/ft $\pm$ 1.3 \%/ft) for flaming fires and 15.5 \%/m $\pm$ 4.2 \%/m (5.0~\%/ft $\pm$ 1.3 \%/ft) for smoldering fires.
 \end{description}
 
+The full file for this case is in Detectors.in. Here are some examples of the inputs. The following gives the full specification of the fire. 
+
+\vspace{\baselineskip}
+\begin{lstlisting}
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
+    INTEGER_VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 23 STDEV = 7 
+    MINIMUM = 10.0 MAXIMUM = 30.0/
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 207 STDEV = 46 
+    MINIMUM = 150 MAXIMUM = 1200/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 11 STDEV = 3 
+    MINIMUM = 10.0 MAXIMUM = 20.0/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 6863 STDEV = 1812 
+    MINIMUM = 4840 MAXIMUM = 10910/
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 205, STDEV = 65
+    MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 1054 /
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+
+&MFIR ID = 'Compartment_generator' 
+	FIRE_ID = 'Random' 
+	FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms' 
+    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room' 
+    FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator' 
+	NUMBER_OF_INCIPIENT_FIRE_TYPES = 2
+    INCIPIENT_FIRE_TYPES = 'FLAMING' 'SMOLDERING' 
+	TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'
+	FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Flaming Peak Generator'
+    FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Time Generator' 
+    SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
+    SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Smoldering Time Generator' 
+	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time' 
+	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR' 
+    NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+The doors all follow the same pattern. As an example here is the specification for the DR LR 1 door. 
+
+\vspace{\baselineskip}
+\begin{lstlisting}
+&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
+    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+    REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+    REAL_VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+    STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
+    PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
+\end{lstlisting}
+
+Notice that the first two  {\ct \&MFLD} entries of  {\ct FIELD\_TYPE = 'INDEX'}. They are for the hieght and width of the door the first 4 of 5 indexes are for the door being 'open', 'three-fourth', 'one-half', and  'one-fourth' open. For these indexes only the width of the door is changed and the height is the full 2.4 m. The fifth index is for the 'closed' door and has the width the full 0.96 m but the height is only 0.025 m to represent the crack under the door. To simplify modeling the data it would be helpful to have a single column that represents the state of the door. This is why the third {\ct \&MFLD} entry of {\ct FIELD\_TYPE = 'LABEL'} is included. 
+
+Like the doors all the detectors follow the same pattern. All the detectors could have been set up with the same sensitivity for each case but here it was decided that the senesitivity of the detectors would be independent. An example of the CData specification for one detector follows
+
+\vspace{\baselineskip}
+\begin{lstlisting}	
+&MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+    MEAN =  9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+	
+&MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Living Room Trigger Generator'
+    FIELD = 'UL Alarm Living Room','TRIGGER' /
+\end{lstlisting}
+
 In the analysis, we will look at the impact of delays in triggering of secondary, interconnected smoke detectors on the overall tenability for a range of fires.
-
-
-\hypertarget{data}{%
-\subsection{Data}\label{data}}
-
-The information on doors is not really in a usable form, so for this analysis the door information is recoded into a door state for each door. The state can be one of ``closed'' ``one-fourth'', ``one-half'', ``three-fourth'', and ``open.'' The recoding for doors is what is used throughout this analysis.
 
 \hypertarget{number-of-cases}{%
 \subsection{Number of Cases}\label{number-of-cases}}
 
-As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_3-convergence_of_mean} and \ref{Ex_3-standard_error}.
+As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_2-convergence_of_mean} and \ref{Ex_2-standard_error}.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-1.pdf}
 \caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
-\label{Ex_3-convergence_of_mean}
+\label{Ex_2-convergence_of_mean}
 \end{figure}
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
 \caption{Standard deviation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
-\label{Ex_3-standard_error}
+\label{Ex_2-standard_error}
 \end{figure}
 
 To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it becomes very quickly apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
@@ -1058,51 +1121,51 @@ Exploratory analysis of the data is an important part of any analysis. Here, ini
 \begin{table}[ht]
 \begin{center}
 \caption[Number of cases by alarm activation status.]{Number of cases by alarm activation status.}
-\label{tbl:Ex_3-1}
+\label{tbl:Ex_2-1}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \hline
 \parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
 Living Room &  &   &   &   \\
-No &  & 738 & 0 & 0 \\
-Yes &  & 3309 & 5929 & 0 \\
-NA &  & 0 & 0 & 24 \\ \hline
+No &  & 410 & 0 & 0 \\
+Yes &  & 2021 & 7566 & 0 \\
+NA &  & 0 & 0 & 3 \\ \hline
 \end{tabular}
 \endgroup
 \end{center}
 \end{table}
 
-Table \ref{tbl:Ex_3-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
+Table \ref{tbl:Ex_2-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
 
 For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
 
-To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated for the bedroom alarm sounding shown in  Fig \ref{Ex_3-decision_tree}. The paths to the three leaf nodes with the highest precentages of occurance are given as follows. Starting at the top of the tree note that if the LR to BR Hall door is closed, the left branch, than the Bedroom 1 alarm doesn't sound and this occurs roughly 20~\% of the time. This means that the LR to BR Hall door being only partially open doesn't stop the alarm from sounding but it may delay activation. If the LR to BR Hall door is open any amount but the Bedroom 1 door is closed the alarm will not sound and this happens approximately 16~\% of the time. Starting at the top and going down the right branch every time, meaning that the four doors referenced are all open, than Bedroom 1 alarm is activated and this occurs about 41~\% of the time. Also note that because of rounding errors adding up the precentages in all the leaf nodes equals 101~\%.
+To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated for the bedroom alarm sounding shown in  Fig \ref{Ex_2-decision_tree}. The paths to the three leaf nodes with the highest precentages of occurance are given as follows. Starting at the top of the tree note that if the LR to BR Hall door is closed, the left branch, than the Bedroom 1 alarm doesn't sound and this occurs roughly 20~\% of the time. This means that the LR to BR Hall door being only partially open doesn't stop the alarm from sounding but it may delay activation. If the LR to BR Hall door is open any amount but the Bedroom 1 door is closed the alarm will not sound and this happens approximately 16~\% of the time. Starting at the top and going down the right branch every time, meaning that the four doors referenced are all open, than Bedroom 1 alarm is activated and this occurs about 41~\% of the time. Also note that because of rounding errors adding up the precentages in all the leaf nodes equals 101~\%.
 
-It is unusual for a tree to produce results as stark as this one. What becomes clear upon examining the tree is that the state of the intervening doors determines whether the bedroom alarm sounds. If the fire is isolated from the bedroom by closed doors then the alarm will not sound. Otherwise it will.
+It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors and the type of fire determines whether the bedroom alarm sounds. If the fire is smoldering and is isolated from the bedroom by closed doors then the alarm will not sound. If the fire is flaming, it must either be in the dining room or kitchen with at least one door closed between the fire and the alarm or if it is in the living room, there must be two closed doors between it and the alarm. Otherwise the alarm will go off.
 
-Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 s. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. Adding the random delay is not done in CFAST but in R during the analysis. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_3-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
+Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 s. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. Adding the random delay is not done in CFAST but in R during the analysis. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_2-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/cart-1.pdf}
 \caption{Decision tree separating cases where the bedroom alarm sounded from those where it did not.}
-\label{Ex_3-decision_tree}
+\label{Ex_2-decision_tree}
 \end{figure}
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/kde-1.pdf}
 \caption{Kernel Density estimate of the time savings for interconnected alarms by fire type.}
-\label{Ex_3-distributions}
+\label{Ex_2-distributions}
 \end{figure}
 
-With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this (see Table \ref{tbl:Ex_3-2}.
+With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this (see Table \ref{tbl:Ex_2-2}.
 
 \noindent
 \begin{table}[ht]
 \begin{center}
 \caption[Quantiles of delay time for bedroom alarm activation]{Quantiles of delay time for bedroom alarm activation}
-\label{tbl:Ex_3-2}
+\label{tbl:Ex_2-2}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{\extracolsep{\fill}}|l|l|l|}
@@ -1119,7 +1182,7 @@ Median & 96.0 & 1597.7 \\
 \end{center}
 \end{table}
 
-This looks only at cases where the Bedroom 1 alarm sounded. If this were a serious attempt to identify the effect of interconnected alarms then the percent of non-activations would need to be taken into account. If non-activations were included all the quantiles larger than the median would fall into the non-activation range.
+This looks only at cases where the Bedroom 1 alarm sounded. If this were a serious attempt to identify the effect of interconnected alarms then the percent of non-activations would need to be taken into account.
 
 \hypertarget{number-of-cases---revisited}{%
 \subsection{Number of Cases - Revisited}\label{number-of-cases---revisited}}
@@ -1231,25 +1294,25 @@ In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly a
 \hypertarget{number-of-cases}{%
 \subsection{Number of Cases}\label{number-of-cases}}
 
-An initial run of 1000 cases was evaluated. Figure \ref{Ex_2-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down. So these results are based on 10~000 cases.
+An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down. So these results are based on 10~000 cases.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
 \caption{Convergence by the number of runs.}
-\label{Ex_2-convergence_of_mean}
+\label{Ex_3-convergence_of_mean}
 \end{figure}
 
 \hypertarget{discussion}{%
 \subsection{Discussion}\label{discussion}}
 
-First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_2-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
+First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_3-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
 
 \noindent
 \begin{table}[ht]
 \begin{center}
 \caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
-\label{tbl:Ex_2-1}
+\label{tbl:Ex_3-1}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
@@ -1272,13 +1335,13 @@ log({\ct Fire\_time\_scaling\_factor}) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ 
 \end{center}
 \end{table}
 
-In Table  \ref{tbl:Ex_2-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
+In Table  \ref{tbl:Ex_3-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
 
 \noindent
 \begin{table}[ht]
 \begin{center}
 \caption[Selected results for sensitivity of time to non-viability for Foyer Heat FED.]{Selected results for sensitivity of time to non-viability for Foyer Heat FED.}
-\label{tbl:Ex_2-2}
+\label{tbl:Ex_3-2}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}

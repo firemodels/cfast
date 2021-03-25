@@ -339,6 +339,11 @@
                     do jj = 1, ndx
                         genptr%char_array(jj) = string_values(jj)
                     end do 
+                else if (ndx > 0) then
+                    genptr%value_type = val_types(idx_logic)
+                    do jj = 1, ndx
+                        genptr%logic_array(jj) = logical_values(jj)
+                    end do 
                 else
                     write (errormessage,'(a)') '***Error, Invalid values specified for discrete values distribution. '
                     call cfastexit('read_mrnd', 5)

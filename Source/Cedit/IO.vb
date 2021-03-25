@@ -39,6 +39,7 @@ Module IO
         ReadInputFileNMLSLCF(NMList, myVisuals)
         ReadInputFileNMLDiag(NMList, myEnvironment)
         ReadInputFileNMLDump(NMList, myDumps)
+        ReadInputFileNMLMHDR(NMList, myMHeaders)
     End Sub
     Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
@@ -1620,6 +1621,51 @@ Module IO
             End If
         Next
     End Sub
+    Private Sub ReadInputFileNMLMHDR(ByVal NMList As NameListFile, ByRef someMHeaders As MonteCarloCollection)
+        Dim i, j, k, max As Integer
+        Dim NumberofCases As Integer
+        Dim Seeds() As Double
+        Dim WriteSeeds As Boolean
+        Dim ParameterFile, WorkFolder, OutputFolder As String
+
+        For i = 1 To NMList.TotNMList
+            NumberofCases = 0
+            ReDim Seeds(2)
+            Seeds(1) = -1001
+            Seeds(2) = -1001
+            WriteSeeds = False
+            ParameterFile = ""
+            WorkFolder = ""
+            OutputFolder = ""
+            If (NMList.GetNMListID(i) = "MHDR") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_CASES") Then
+                        NumberofCases = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SEEDS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                Seeds(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In MHDR namelist for SEEDS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "WRITE_SEEDS" Then
+                        WriteSeeds = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PARAMETER_FILE" Then
+                        ParameterFile = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "WORK_FOLDER" Then
+                        WorkFolder = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OUTPUT_FOLDER" Then
+                        OutputFolder = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MHDR namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                someMHeaders.Add(New MonteCarlo(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder))
+            End If
+        Next
+    End Sub
     Public Sub ReadINIInput(ByRef x As Integer, ByVal label As String, ByVal value As String)
         If value = "ON" Then
             x = Environment.DIAGon
@@ -1884,6 +1930,7 @@ Module IO
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
         WriteOutputFileNMLHead(IO, myEnvironment)
+        WriteOutputFileNMLMHDR(IO, myMHeaders)
         WriteOutputFileNMLTime(IO, myEnvironment)
         WriteOutputFileNMLInit(IO, myEnvironment)
         WriteOutputFileNMLMisc(IO, myEnvironment)
@@ -1902,7 +1949,25 @@ Module IO
         PrintLine(IO, ln)
 
         FileClose(IO)
+    End Sub
 
+    Private Sub WriteOutputFileNMLMHDR(ByVal IO As Integer, ByRef myMHeaders As MonteCarloCollection)
+        Dim ln As String
+
+        'Writing MHDR namelist
+        If myMHeaders.Count > -1 Then
+            Dim MHeader As MonteCarlo = myMHeaders(0)
+            If MHeader.NumberofCases > 0 Then
+                ln = "&MHDR NUMBER_OF_CASES = " + MHeader.NumberofCases.ToString
+                If MHeader.Seeds(1) <> -1001 And MHeader.Seeds(2) <> -1001 Then ln += "SEEDS = " + MHeader.Seeds(1).ToString + ", " + MHeader.Seeds(2).ToString
+                If MHeader.WriteSeeds = True Then ln += " WRITE_SEEDS = .TRUE."
+                If MHeader.ParameterFile <> "" Then ln += " PARAMETER_FILE = " + "'" + MHeader.ParameterFile + "'"
+                If MHeader.WorkFolder <> "" Then ln += " WORK_FOLDER = " + "'" + MHeader.WorkFolder + "'"
+                If MHeader.OutputFile <> "" Then ln += " OUTPUT_FILE = " + "'" + MHeader.OutputFile + "'"
+                ln += " /"
+                PrintLine(IO, ln)
+            End If
+        End If
     End Sub
 
     Private Sub WriteOutputFileNMLHead(ByVal IO As Integer, ByRef MyEnvironment As Environment)
@@ -1911,14 +1976,14 @@ Module IO
         'Writing HEAD namelist
         ln = "&HEAD VERSION = " + MyEnvironment.Version.ToString + ", " + "TITLE = " + "'" + MyEnvironment.Title + "' /"
         PrintLine(IO, ln)
-        PrintLine(IO, " ")
-        ln = "!! Scenario Configuration "
-        PrintLine(IO, ln)
     End Sub
 
     Private Sub WriteOutputFileNMLTime(ByVal IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
+        PrintLine(IO, " ")
+        ln = "!! Scenario Configuration "
+        PrintLine(IO, ln)
         'Writing TIME namelist
         ln = "&TIME SIMULATION = " + MyEnvironment.SimulationTime.ToString + " PRINT = " + MyEnvironment.OutputInterval.ToString + " SMOKEVIEW = " + MyEnvironment.SmokeviewInterval.ToString + " SPREADSHEET = " + MyEnvironment.SpreadsheetInterval.ToString + " / "
         PrintLine(IO, ln)

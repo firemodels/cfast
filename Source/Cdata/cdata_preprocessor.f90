@@ -193,13 +193,13 @@ module preprocessor_routines
     integer :: i, iteration
     
     call add_filename_to_parameters(filename)
-    do i = 1, n_fields
-        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(fieldptr(i))%valptr, iteration)
-        call fieldinfo(fieldptr(i))%write_value
-    end do 
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)
         call randfireinfo(i)%write_value
+    end do 
+    do i = 1, n_fields
+        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(fieldptr(i))%valptr, iteration)
+        call fieldinfo(fieldptr(i))%write_value
     end do 
     
     end subroutine create_case

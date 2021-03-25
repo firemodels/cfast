@@ -106,6 +106,14 @@ Public Class MonteCarlo
         aSecondMeasurement = ""
         aSecondDevice = ""
         aFYI = ""
+
+        aNumberofCases = 0
+        aSeeds(1) = -1001.0
+        aSeeds(2) = -1001.0
+        aWriteSeeds = False
+        aParameterFile = ""
+        aWorkFolder = ""
+        aOutputFolder = ""
     End Sub
     Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criterion As Double, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, fyi As String)
         aID = ID
@@ -118,6 +126,52 @@ Public Class MonteCarlo
         aSecondDevice = SecondDevice
         aFYI = fyi
     End Sub
+    Public Sub New(ByVal NumberofCases As Integer, ByVal Seeds() As Double, ByVal WriteSeeds As Boolean, ByVal ParameterFile As String, ByVal WorkFolder As String, OutputFolder As String)
+        aNumberofCases = NumberofCases
+        If Seeds.GetUpperBound(0) >= 1 Then
+            aSeeds(1) = Seeds(1)
+        End If
+        If Seeds.GetUpperBound(0) >= 2 Then
+            aSeeds(2) = Seeds(2)
+        End If
+        aParameterFile = ParameterFile
+        aWorkFolder = WorkFolder
+        aOutputFolder = OutputFolder
+    End Sub
+    Public ReadOnly Property NumberofCases As Integer
+        Get
+            Return aNumberofCases
+        End Get
+    End Property
+    Public ReadOnly Property Seeds(i As Integer) As Integer
+        Get
+            If i >= 1 And i <= 2 Then
+                Return aSeeds(i)
+            Else
+                Return -1001
+            End If
+        End Get
+    End Property
+    Public ReadOnly Property WriteSeeds As Boolean
+        Get
+            Return aWriteSeeds
+        End Get
+    End Property
+    Public ReadOnly Property ParameterFile As String
+        Get
+            Return aParameterFile
+        End Get
+    End Property
+    Public ReadOnly Property WorkFolder As String
+        Get
+            Return aWorkFolder
+        End Get
+    End Property
+    Public ReadOnly Property OutputFile As String
+        Get
+            Return aOutputFolder
+        End Get
+    End Property
     Public ReadOnly Property ID As String
         Get
             Return aID

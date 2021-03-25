@@ -372,7 +372,7 @@
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
-            
+            else
                 write (errormessage,'(2a)') '***Error, Invalid distribution type specified in &MRND, ', trim(distribution_type)
                 call cfastexit('read_mrnd',1000)
             end if

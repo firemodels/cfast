@@ -40,7 +40,7 @@ Public Class MonteCarlo
     Private aRealValues(0), aRealConstantValue As Double
     Private aIntegerValues(0), aIntegerConstantValue As Integer
     Private aStringValues(0), aStringConstantValue As String
-    Private aLogicalValues, aLogicialConstantValue As Boolean
+    Private aLogicalValues(0), aLogicialConstantValue As Boolean
     Private aProbabilities(0) As Double
     Private aMinimumOffset As Double
     Private aMaximumOffset As Double
@@ -137,6 +137,69 @@ Public Class MonteCarlo
         aParameterFile = ParameterFile
         aWorkFolder = WorkFolder
         aOutputFolder = OutputFolder
+    End Sub
+    Public Sub New(ByVal DistributionType As String, ByVal ValueType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String)
+        Dim i, max As Integer
+
+        aDistributionType = DistributionType
+        aValueType = ValueType
+        aMinimum = Minimum
+        aMaximum = Maximum
+        aMean = Mean
+        aStdev = Stdev
+        aAlpha = Alpha
+        aBeta = Beta
+        max = RandomSeeds.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aRandomSeeds(max)
+            For i = 1 To max
+                aRandomSeeds(i) = RandomSeeds(i)
+            Next
+        End If
+        max = RealValues.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aRealValues(max)
+            For i = 1 To max
+                aRealValues(i) = RealValues(i)
+            Next
+        End If
+        max = IntegerValues.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aIntegerValues(max)
+            For i = 1 To max
+                aIntegerValues(i) = IntegerValues(i)
+            Next
+        End If
+        max = StringValues.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aStringValues(max)
+            For i = 1 To max
+                aStringValues(i) = StringValues(i)
+            Next
+        End If
+        max = LogicalValues.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aLogicalValues(max)
+            For i = 1 To max
+                aLogicalValues(i) = IntegerValues(i)
+            Next
+        End If
+        max = Probabilities.GetUpperBound(0)
+        If max > 0 Then
+            ReDim aProbabilities(max)
+            For i = 1 To max
+                aProbabilities(i) = Probabilities(i)
+            Next
+        End If
+        aRealConstantValue = RealConstantValue
+        aIntegerConstantValue = IntegerConstantValue
+        aStringConstantValue = StringConstantValue
+        aLogicialConstantValue = LogicalConstantValue
+        aMinimumOffset = MinimumOffset
+        aMaximumOffset = MaximumOffset
+        aMinimumField = MinimumField
+        aMaximumField = MaximumField
+        aAddField = AddField
     End Sub
     Public ReadOnly Property NumberofCases As Integer
         Get

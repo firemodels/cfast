@@ -37,15 +37,15 @@ In general, the namelist records can be entered in any order in the input file, 
 \end{lstlisting}
 as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the ``end of file'' character past relevant input.
 
-The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
+The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Simple.in, is part of the CFAST software distribution} removed for clarity.
 
 %\clearpage
 \begin{lstlisting}[basicstyle=\tiny]
 &HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
-&MHDR NUMBER_OF_CASES = 3 WRITE_RANDOM_SEEDS = .TRUE. /
+&MHDR NUMBER_OF_CASES = 3 WRITE_SEEDS = .TRUE. /
 
 !! Scenario Configuration
-&TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 /
+&TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 1 /
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
 
 !! Material Properties
@@ -71,8 +71,7 @@ The general structure of an input file is shown below, with many lines of the or
   FACE = 'FRONT' OFFSET = 1 /
 
 !! Fires
-
-&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500 MAXIMUM = 3000 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
 &MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
 &MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
@@ -90,29 +89,28 @@ The general structure of an input file is shown below, with many lines of the or
 &TABL ID = 'Constant Fire', DATA = 1000, 0, 0, 0, 0, 0, 0, 0, 0 /
 
 !! Special Outputs
-
-&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+&OUTP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+&OUTP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
     FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
+&OUTP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
-&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+&OUTP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
-&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
+&OUTP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
     FIRST_FIELD = 'Comp 1' 'Layer Height' /
-&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+&OUTP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
     FIRST_FIELD = 'Fire' 'HRR Actual' /
 
-&MSTT ID = 'Width of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+&MSTT ID = 'Width of Vent' 
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' COLUMN_TITLE = 'Wall Vent_WIDTH' /
-&MSTT ID = 'Top of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+&MSTT ID = 'Top of Vent' 
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' COLUMN_TITLE = 'Wall Vent_TOP' /
-&MSTT ID = 'Peak HRR' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+&MSTT ID = 'Peak HRR' 
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' COLUMN_TITLE = 'Fire_HRR_PT  2' /
-&MSTT ID = 'Time to FO' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+&MSTT ID = 'Time to FO' 
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' COLUMN_TITLE = 'Time to Upper Layer 600 C' /
-&MSTT ID = 'Max Upper Temp' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'
+&MSTT ID = 'Max Upper Temp' 
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 &MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
     COLUMN_TITLE = 'Time to Layer Height 1.5 m' /

@@ -339,7 +339,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}              &                             &                 \\ \hline
-{\ct HEIGHT}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline 
+{\ct HEIGHT}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSET}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      0        \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
@@ -802,16 +802,16 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Output and Post-Run Calculation parameters ({\ct DUMP} namelist group)]{}
-\label{tbl:DUMP} \\
+\caption[Output and Post-Run Calculation parameters ({\ct OUTP} namelist group)]{}
+\label{tbl:OUTP} \\
 \hline
-\multicolumn{5}{|c|}{{\ct DUMP} (Output and Post-Run Calculation Parameters)} \\
+\multicolumn{5}{|c|}{{\ct OUTP} (Output and Post-Run Calculation Parameters)} \\
 \hline \hline
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct DUMP} (CALCULATION Parameters)} \\
+\multicolumn{5}{|c|}{{\ct OUTP} (CALCULATION Parameters)} \\
 \hline \hline
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 \endhead
@@ -832,10 +832,10 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&DUMP ID = 'Total Time Completed'
+&OUTP ID = 'Total Time Completed'
      FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
      FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
-&DUMP ID = 'Fire Room Ion Detector'
+&OUTP ID = 'Fire Room Ion Detector'
      FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
      FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
      SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
@@ -856,15 +856,15 @@ At the user's option, CFAST outputs simulation results to one or more comma-deli
 \setlength\LTleft{0.5in}
 \setlength\LTright{0.5in}
 \begin{longtable}{|l|l|p{2.0in}|l|}
-\caption[Spreadsheet Outputs ({\ct DUMP} namelist group)]{}
+\caption[Spreadsheet Outputs ({\ct OUTP} namelist group)]{}
 \label{tbl:custom_outputs} \\
 \hline
-\multicolumn{4}{|c|}{{\ct DUMP} (Spreadsheet Outputs)} \\
+\multicolumn{4}{|c|}{{\ct OUTP} (Spreadsheet Outputs)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{4}{|c|}{{\ct DUMP} (Spreadsheet Outputs)} \\
+\multicolumn{4}{|c|}{{\ct OUTP} (Spreadsheet Outputs)} \\
 \hline \hline
 \endhead
 {\bf Device}    & {\bf Measurement}  & {\bf Notes}  & {\bf Default Spreadsheet} \\ \hline

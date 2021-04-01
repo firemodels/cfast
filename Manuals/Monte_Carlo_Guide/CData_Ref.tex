@@ -426,7 +426,7 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
 &MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
-&MRND ID = 'Property Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' 
+&MRND ID = 'Property Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
     VALUE_TYPE = 'INTEGER' INTEGER_VALUES = 1, 2 PROBABILITIES = 0.5, 0.5/
 &MRND ID = 'Flaming Ignition Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
     VALUE_TYPE = 'REAL' MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
@@ -468,7 +468,7 @@ The following example shows the height of a door to the bedroom in the above exa
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MRND ID = 'Door Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
      MINIMUM = 2.0 MAXIMUM_FIELD = 'Height Bedroom' MAXIMUM_OFFSET = -0.15 /
-&MFLD ID = 'Door Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Door Top Generator' 
+&MFLD ID = 'Door Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Door Top Generator'
      FIELD = 'Wall Vent' 'TOP' /
 \end{lstlisting}
 
@@ -548,7 +548,7 @@ The following example shows a fire that varies $\pm$~10~\% from a base fire defi
 &MRND ID = 'Scaling HRR', DISTRIBUTION_TYPE = 'UNIFORM', VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MRND ID = 'Scaling Time', DISTRIBUTION_TYPE = 'UNIFORM', VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Base Fire'
-     SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR' 
+     SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
      SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' /
 \end{lstlisting}
 
@@ -560,8 +560,8 @@ The following example shows a fire with a peak HRR ranging from 500~kW to 3000~k
 &MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
 &MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
 
-&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' 
-     FIRE_TIME_GENERATORS = 'Fire Time Interval' 'Peak HRR Time Interval' 'Fire Time Interval' 
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire'
+     FIRE_TIME_GENERATORS = 'Fire Time Interval' 'Peak HRR Time Interval' 'Fire Time Interval'
      FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
 \end{lstlisting}
 
@@ -583,59 +583,59 @@ The following example defines a t-squared growth rate fire with a peak HRR rangi
 This final example defines a fire in one of three positions in one of five fire rooms. The fire begins with an incipient flaming ignition growing from 0~kW to from 10~kW (normally distributed with a mean of 23~kW and a standard deviation of 7~kW) to 30~kW in from 150~s to 1200~s (normally distributed with a mean of 207~kW and a standard deviation of 46~kW). The ignition period is followed by a t-squared growth to a peak of 130~kW to 4620~kW with a time to 1054~kW of 50~s to 330~s. The fire stays at the peak value for 10~s and decays linearly back to 0~kW in 10~s.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
-!! This determines the fire position, (2,2), (0,2) (0,-0.001). 
+!! This determines the fire position, (2,2), (0,2) (0,-0.001).
 !! The last one is 1 mm from back wall
-&MRND ID = 'Fire Position Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' 
-    VALUE_TYPE = 'INTEGER' INTEGER_VALUES = 1 2 3 
+&MRND ID = 'Fire Position Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+    VALUE_TYPE = 'INTEGER' INTEGER_VALUES = 1 2 3
     PROBABILITIES = 0.3333 0.3333 0.3334/
 &MFLD ID = 'Random x-pos' FIELD_TYPE = 'INDEX' RAND_ID = 'Fire Position Generator'
-    FIELD = 'Random' 'X_POSITION' VALUE_TYPE = 'REAL' REAL_VALUES = 2.0 0.0 0.0 
+    FIELD = 'Random' 'X_POSITION' VALUE_TYPE = 'REAL' REAL_VALUES = 2.0 0.0 0.0
     NUMBER_IN_INDEX = 3 ADD_TO_PARAMETERS = .TRUE. /
 &MFLD ID = 'Random y-pos' FIELD_TYPE = 'INDEX' RAND_ID = 'Fire Position Generator'
-    FIELD = 'Random' 'Y_POSITION' VALUE_TYPE = 'REAL' REAL_VALUES = 2.0 2.0 -0.001 
+    FIELD = 'Random' 'Y_POSITION' VALUE_TYPE = 'REAL' REAL_VALUES = 2.0 2.0 -0.001
     NUMBER_IN_INDEX = 3 ADD_TO_PARAMETERS = .TRUE. /
 
 !! This one sets the fire room randomly
-&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' 
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
     VALUE_TYPE = 'INTEGER'
-    INTEGER_VALUES = 1, 2, 3, 4, 5, 6 
+    INTEGER_VALUES = 1, 2, 3, 4, 5, 6
     PROBABILITIES = 0.16666 0.16666 0.16666 0.16666 0.16666 0.1667/
 	
-!! These define the fire HRR curve as a flaming ignition (growing from 0 kW to 10 kW - 30 kW 
+!! These define the fire HRR curve as a flaming ignition (growing from 0 kW to 10 kW - 30 kW
 !! in from 150 s to 1200 s, both as truncated normal distributions
-!! consistent with data from Cleary, T.G., "Improving Smoke Alarm Performance - Justification for 
-!! New Smoldering and Flaming Test Criteria", in Technical Note 1837. 
+!! consistent with data from Cleary, T.G., "Improving Smoke Alarm Performance - Justification for
+!! New Smoldering and Flaming Test Criteria", in Technical Note 1837.
 !! 2014, Natl. Inst. Stand. Technol. p. 27 pp.
-&MRND ID = 'Flaming Ignition Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' 
-    VALUE_TYPE = 'REAL' 
+&MRND ID = 'Flaming Ignition Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+    VALUE_TYPE = 'REAL'
     MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
-&MRND ID = 'Flaming Ignition Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' 
-    VALUE_TYPE = 'REAL' 
+&MRND ID = 'Flaming Ignition Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+    VALUE_TYPE = 'REAL'
     MEAN = 207 STDEV = 46 MINIMUM = 150 MAXIMUM = 1200/
-!! The ignition period is followed by a t^2 fire growth to peak HRR (130 kW to 4620 kW) 
+!! The ignition period is followed by a t^2 fire growth to peak HRR (130 kW to 4620 kW)
 !! with t^2 growth to 1054 kW in 50 s to 330 s
-&MRND ID = 'Growth Time Generator', DISTRIBUTION_TYPE = 'UNIFORM' 
+&MRND ID = 'Growth Time Generator', DISTRIBUTION_TYPE = 'UNIFORM'
     VALUE_TYPE = 'REAL' MINIMUM = 50 MAXIMUM = 330 /
-&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' 
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM'
     VALUE_TYPE = 'REAL' MINIMUM = 130 MAXIMUM = 4620 /
-&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' 
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT'
     VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
-&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' 
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT'
     VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
-&MRND ID = 'Fire End HRR' DISTRIBUTION_TYPE = 'CONSTANT' 
+&MRND ID = 'Fire End HRR' DISTRIBUTION_TYPE = 'CONSTANT'
     VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
 
 &MFIR ID = 'Compartment_generator' FIRE_ID = 'Random'
     FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
-    FIRE_COMPARTMENT_IDS = 'Living Room' 'Kitchen' 'Bedroom 1' 'Bedroom 2' 'Bedroom 3' 
-        'Dining Room' 
+    FIRE_COMPARTMENT_IDS = 'Living Room' 'Kitchen' 'Bedroom 1' 'Bedroom 2' 'Bedroom 3'
+        'Dining Room'
     ADD_FIRE_COMPARTMENT_TO_PARAMETERS = .TRUE.
-    FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Ignition Peak Generator' 
+    FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Ignition Peak Generator'
     FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Flaming Ignition Time Generator'
 	TIME_TO_1054_KW=.TRUE.
     FIRE_TIME_GENERATORS = 'Growth Time Generator' 'Plateau End Time' 'Fire End Time'
-    FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'Fire End HRR' 
-    NUMBER_OF_GROWTH_POINTS = 20 
+    FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'Fire End HRR'
+    NUMBER_OF_GROWTH_POINTS = 20
     GROWTH_EXPONENT = 2 /
 \end{lstlisting}
 
@@ -986,9 +986,15 @@ A single compartment with gypsum ceiling and walls and a concrete floor includes
 \begin{description}
 \item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 20 m x 20 m x 20 m.
 \item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 1.65 m to 19.85 m limited to 0.15 m below the compartment height, and a uniform distribution scaling vent width from 0.25 m to 19 m limited to 1.0 m less than the compartment width.
-\item[Fire growth rate:] Fire growth is varied with a uniform distribution ranging from 75 s to 1000 s to
- the peak heat release rate. Peak heat release rate set to 160 MW to ensure flashover in the largest compartments when there is sufficient oxygen.
+\item[Fire growth rate:] Fire growth is varied with a uniform distribution ranging from 75 s to 1000 s to the peak heat release rate. Peak heat release rate set to 160 MW to ensure flashover in the largest compartments when there is sufficient oxygen. Figure \ref{flashover_fires} includes a few of the sampled HRR curves showing a range of peak HRR and time to peak which were varied independently.
 \end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Flashover_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a compartment structure used for example 1.}
+\label{flashover_fires}
+\end{figure}
 
 For the analysis, we will look at the minimum heat release rate necessary to achieve flashover in the compartment defined by a typically-used metrics of 600 \degc upper layer temperature \cite{Valid:Peacock_Flashover_1} \cite{Valid:Peacock_Flashover_2}.
 
@@ -1078,11 +1084,18 @@ In this simplified example based on earlier work \cite{Cleary_2019}, we look at 
 For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
 
 \begin{description}
-\item[Fire location:] Fire is placed in a fixed location in a randomly chosen compartment in the structure and is equally split between flaming and smoldering fires.
-\item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution.
 \item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation.
 \item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a log-normal distribution with a geometric mean of 9.5 \%/m $\pm$ 4.2 \%/m (3.0~\%/ft $\pm$ 1.3 \%/ft) for flaming fires and 15.5 \%/m $\pm$ 4.2 \%/m (5.0~\%/ft $\pm$ 1.3 \%/ft) for smoldering fires.
+    \item[Fire location:] Fire is placed in a fixed location in a randomly chosen compartment in the structure and is equally split between flaming and smoldering fires.
+\item[Initial fire growth rate:] Flaming fires grow from zero to 23~kW $\pm$ 7~kW in 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 222~s $\pm$ 47~s again using a normal distribution. Smoldering fires grow from zero to 11~ kW $\pm$ 3~kW in 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in 189~s $\pm$ 48~s again using a normal distribution. Figure \ref{detector_fires} shows a few of the sampled HRR curves.
 \end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Detector_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a single story residential structure used for example 2.}
+\label{detector_fires}
+\end{figure}
 
 The full file for this case is in Detectors.in. Here are some examples of the inputs. The following gives the full specification of the fire.
 
@@ -1305,9 +1318,16 @@ For this example, we will independently vary the following inputs by $\pm$~10~\%
 \item[Compartment materials:] Thermal properties for all materials will be varied by $\pm$ 10~\% of base values for thermal conductivity, density, and specific heat. Thickness will be  varied by $\pm$ 10~\% of base values.
 \item[Compartment doors:] The size of compartment doors, both interior and exterior, will be  varied by $\pm$ 10~\% of base values for height and width. All interior vents will be open for this example.
 \item[Mechanical ventilation:] For mechanical ventilation, the height of each vent, area of each vent, and fan flowrate will each be varied by $\pm$ 10~\% of base values.
-\item[Fire:] Fire is in one of the rooms. Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value. Position of the fire is varied by $\pm$ 10~\% of base values in width and depth, and height.
 \item[Detectors:] Sensitivity of heat detectors will be varied by $\pm$ 10~\% of base values for activation temperature and RTI. Smoke detector activation obscuration will be varied by $\pm$ 10~\% of base values.
+\item[Fire:] Fire is in one of the rooms. Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value. Position of the fire is varied by $\pm$ 10~\% of base values in width and depth, and height. Figure \ref{detector_fires} shows a few of the sampled HRR curves.
 \end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Sensitivity_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a single story commercial structure used for example 3.}
+\label{Sensitivity_fires}
+\end{figure}
 
 In the analysis, we will look at typically-used outputs to determine those which are more sensitive (a 10 ~\% change in an input value leads to more than a 10~\% change in an output) and less sensitive (a 10 ~\% change in an input value leads to less than a 10~\% change in an output) to a change in selected model inputs to identify the relative importance of selected model inputs to the results of a simulation.
 

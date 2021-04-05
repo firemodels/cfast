@@ -440,7 +440,7 @@
 
     namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_column_label, add_to_parameters, &
         real_values, integer_values, string_values, logical_values, &
-        scenario_titles, value_type, number_in_index, base_scaling_value, position
+        scenario_titles, value_type, base_scaling_value, position
                     
     
     ios = 1
@@ -488,13 +488,17 @@
             end if
             fldptr%id = id
             found_rand = .false.
-            test: do jj = 1, n_generators
-                if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
-                    fldptr%genptr => generatorinfo(jj)
-                    found_rand = .true.
-                    exit test
-                end if
-            end do test
+            if (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_pointer))) then
+                found_rand = .true.
+            else 
+                test: do jj = 1, n_generators
+                    if (trim(rand_id) == trim(generatorinfo(jj)%id)) then
+                        fldptr%genptr => generatorinfo(jj)
+                        found_rand = .true.
+                        exit test
+                    end if
+                end do test
+            end if
             if (.not.found_rand) then 
                 write (errormessage,'(2a)') '***Error, No matching &MRND input found for random generator in &MFLD,', trim(rand_id)
                 call cfastexit('read_mfld',5)
@@ -534,24 +538,21 @@
                 fldptr%field_type = trim(field_type)
                 fldptr%intval%val => fldptr%index
                 fldptr%randptr => fldptr%intval
+                fldptr%nidx = fldptr%genptr%num_discrete_values
                 if (trim(value_type) == val_types(idx_real)) then
-                    fldptr%nidx = number_in_index
-                    do jj = 1, number_in_index
+                    do jj = 1, fldptr%nidx
                         fldptr%real_array(jj) = real_values(jj)
                     end do
                 elseif (trim(value_type) == val_types(idx_int)) then
-                    fldptr%nidx = number_in_index
-                    do jj = 1, number_in_index
+                    do jj = 1, fldptr%nidx
                         fldptr%int_array(jj) = integer_values(jj)
                     end do
                 elseif (trim(value_type) == val_types(idx_char)) then
-                    fldptr%nidx = number_in_index
-                    do jj = 1, number_in_index
+                    do jj = 1, fldptr%nidx
                         fldptr%char_array(jj) = string_values(jj)
                     end do
                 elseif (trim(value_type) == val_types(idx_logic)) then
-                    fldptr%nidx = number_in_index
-                    do jj = 1, number_in_index
+                    do jj = 1, fldptr%nidx
                         fldptr%logic_array(jj) = logical_values(jj)
                     end do
                 else
@@ -603,8 +604,19 @@
                     end if    
                     fldptr%nlabel = jj
                 end do scenaro_loop
+            
+            ! Pointer Type
+            elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_pointer))) then
+                fldptr%field_type = trim(field_type)
+                call find_object(field(1), fldptr, found)
+                if (found) then
+                    call find_field(field(2), fldptr%itemptr, fldptr, found)
+                else 
+                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
+                    call cfastexit('read_mfld',13)
+                end if
             else
-                call cfastexit('read_mfld',13)
+                call cfastexit('read_mfld',14)
             end if
             
             ! Add Parameters

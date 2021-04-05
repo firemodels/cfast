@@ -409,8 +409,10 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
   \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct REAL}, it is the value that is returned by the generator.
   \item[INTEGER\_CONSTANT] is a single integer value. For the {\ct INTEGER\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct INTEGER}, it is the value that is returned by the generator.
   \item[STRING\_CONSTANT] is a single string value. For the {\ct STRING\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct CHARACTER}, it is the value that is returned by the generator.
-  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
-  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
+  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
+  {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
+  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
+  {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
   \item[ALPHA] alpha value for the {\ct BETA} distribution type.
   \item[BETA] beta value for the {\ct BETA} distribution type.
@@ -485,7 +487,8 @@ Automatically-generated fires are created for an individual test case by modifyi
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
   \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dQ^*$, is defined as $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
-  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses \\
+      {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
   \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them. This matches the index chosen by {\ct FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID} to actual compartment names in the input file.
   \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[FIRE\_COMPARTMENT\_ID\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
@@ -496,8 +499,12 @@ Fires can be defined by either scaling time and/or HRR values from a base fire o
   \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This one determines if you have a smoldering or flaming incipient fire for a specific generated scenario. If  not defined, then only one of the other two sets of two can be defined and the other two must not be left blank. This is an {\ct INDEX} field type.
   \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
   \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
-  \item[FLAMING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
-  \item[FLAMING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] This is the second of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the final HRR for the incipient flaming fire ramp. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
+  \item[FLAMING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both \\
+      {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and \\
+      {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
+  \item[FLAMING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] This is the second of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the final HRR for the incipient flaming fire ramp. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both \\
+      {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and \\
+      {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
   \item[SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
   \item[SMOLDERING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
   \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
@@ -530,9 +537,11 @@ Secondly, inputs for the scaling fire are described.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
   \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_1054\_KW] specifies the time for the growth phase of a power law fire to grow from 0~kW to 1054~kW. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_1054\_KW] specifies the time for the growth phase of a power law fire to grow from 0~kW to 1054~kW. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or \\
+      {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
   \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_0\_KW] specifies the time for the growth phase of a power law fire to decay from its peak value to 0~kW. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_0\_KW] specifies the time for the growth phase of a power law fire to decay from its peak value to 0~kW. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or \\
+      {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.
@@ -653,7 +662,8 @@ Control of what tools are used and what data it is run on is determined with the
  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
   \item[FYI] A user defined comment that can provide additional information about the input.
  \item[ANALYSIS\_TYPE] Describes the type of analysis to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct DECISION\_TREES}.
- \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the {\ct <project>\_accumulate.csv}.
+ \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the \\
+     {\ct <project>\_accumulate.csv}.
  \item[OUTPUT\_FILENAME] The filename for the finished graphic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
  \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
  \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
@@ -679,7 +689,8 @@ When cases are run in CFAST, a number of single values for the case such as maxi
   \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 64 characters.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[FILE] specifies which of the CFAST output files are used for the summary output. Allowable inputs are {\ct COMPARTMENTS}, {\ct DEVICES}, {\ct FIRES}, {\ct MASSES}, or {\ct WALLS}.
-  \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
+  \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, \\
+      {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
   \item[FIRST\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the first input in a calculation. For example, {\ct FIELD="Time","Simulation Time"} would specify the simulation time.
   \item[SECOND\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the second input in a calculation, if required. For example, {\ct FIELD="Comp 1","Upper Layer Temperature"} would specify the upper layer temperature in compartment named {\ct Comp 1}.
   \item[CRITERION] Specifies the value to be evaluated in a {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER} calculation.

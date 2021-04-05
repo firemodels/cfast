@@ -24,6 +24,7 @@ echo.
 echo ***Copying executables
 echo.
 
+call :COPY  %bindir%\CData.exe %DISTDIR%\
 call :COPY  %bindir%\CEdit.exe %DISTDIR%\
 call :COPY  %bindir%\CFAST.exe %DISTDIR%\
 call :COPY  %vandvdir%\VandV_Calcs_win_64.exe %DISTDIR%\VandV_Calcs.exe
@@ -69,6 +70,7 @@ echo ***Copying CFAST example files
 echo.
 
 call :COPY  %bindir%\Data\Users_Guide_Example.in %DISTDIR%\Examples\
+call :COPY  %docdir%\Monte_Carlo_Guide\*.in.in %DISTDIR%\Examples\
 
 echo.
 echo ***Copying CFAST documentation
@@ -78,6 +80,7 @@ call :COPY %docdir%\Tech_Ref\Tech_Ref.pdf                       %DISTDIR%\Docume
 call :COPY %docdir%\Users_Guide\Users_Guide.pdf                 %DISTDIR%\Documents\
 call :COPY %docdir%\Validation_Guide\Validation_Guide.pdf       %DISTDIR%\Documents\
 call :COPY %docdir%\Configuration_Guide\Configuration_Guide.pdf %DISTDIR%\Documents\
+call :COPY %docdir%\Monte_Carlo_Guide\CData_Guide.pdf           %DISTDIR%\Documents\
 
 echo.
 echo ***Copying Smokeview files

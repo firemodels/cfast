@@ -64,12 +64,13 @@ module preprocessor_types
     end type random_logic_type
     
     type, extends(value_wrapper_type) :: field_pointer
-        character(len=7), dimension(5) :: fld_types = (/'VALUE  ', &
+        character(len=7), dimension(6) :: fld_types = (/'VALUE  ', &
                                                         'INDEX  ', &
                                                         'SCALING', &
                                                         'LABEL  ', &
+                                                        'POINTER', &
                                                         'NULL   '/)
-        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 5
+        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 6, idx_pointer = 5
         character(len=7) :: field_type = 'NULL'
         character(len=9) :: value_type = 'NULL'
         logical :: temp_flag, kilo_flag
@@ -620,6 +621,8 @@ module preprocessor_types
     
         if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
             return
+        else if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            return
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
             call me%genptr%rand(val, iteration)
             id = me%id
@@ -977,7 +980,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependent = me%genptr%dependencies()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            dependent = .false.
+        else
+            dependent = me%genptr%dependencies()
+        end if
     
     end function field_dependencies
     
@@ -986,7 +993,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: set
         
-        set = me%genptr%dependencies_set()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            set = .true.
+        else
+            set = me%genptr%dependencies_set()
+        end if
     
     end function field_dependencies_set
     
@@ -995,7 +1006,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependent = me%genptr%min_dependent()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            dependent = .false.
+        else
+            dependent = me%genptr%min_dependent()
+        end if
     
     end function field_min_dependent
     
@@ -1004,7 +1019,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependent = me%genptr%max_dependent()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            dependent = .false.
+        else
+            dependent = me%genptr%max_dependent()
+        end if
     
     end function field_max_dependent
     
@@ -1013,7 +1032,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: dependent
         
-        dependent = me%genptr%add_dependent()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            dependent = .false.
+        else
+            dependent = me%genptr%add_dependent()
+        end if
     
     end function field_add_dependent
     
@@ -1022,7 +1045,11 @@ module preprocessor_types
         class(field_pointer) :: me
         character(len=28) :: field_id
         
-        field_id = me%genptr%min_dependency()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            field_id = 'NULL'
+        else
+            field_id = me%genptr%min_dependency()
+        end if
     
     end function field_min_dependency
     
@@ -1031,7 +1058,11 @@ module preprocessor_types
         class(field_pointer) :: me
         character(len=28) :: field_id
         
-        field_id = me%genptr%max_dependency()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            field_id = 'NULL'
+        else
+            field_id = me%genptr%max_dependency()
+        end if
     
     end function field_max_dependency
     
@@ -1040,7 +1071,11 @@ module preprocessor_types
         class(field_pointer) :: me
         character(len=28) :: field_id
         
-        field_id = me%genptr%add_dependency()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            field_id = 'NULL'
+        else
+            field_id = me%genptr%add_dependency()
+        end if
     
     end function field_add_dependency
     
@@ -1049,7 +1084,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: set
         
-        set = me%genptr%max_dependency_set()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            set = .true.
+        else
+            set = me%genptr%max_dependency_set()
+        end if
     
     end function field_max_dependency_set
     
@@ -1058,7 +1097,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: set
         
-        set = me%genptr%min_dependency_set()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            set = .true.
+        else
+            set = me%genptr%min_dependency_set()
+        end if
     
     end function field_min_dependency_set
     
@@ -1067,7 +1110,11 @@ module preprocessor_types
         class(field_pointer) :: me
         logical :: set
         
-        set = me%genptr%add_dependency_set()
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            set = .true.
+        else
+            set = me%genptr%add_dependency_set()
+        end if
     
     end function field_add_dependency_set
     
@@ -1076,7 +1123,11 @@ module preprocessor_types
         class(field_pointer) :: me
         real(eb) :: minimum
         
-        call set_min_value(me%genptr, minimum)
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            minimum = -1001._eb
+        else
+            call set_min_value(me%genptr, minimum)
+        end if
         
     end subroutine field_set_min_value
     
@@ -1085,7 +1136,11 @@ module preprocessor_types
         class(field_pointer) :: me
         real(eb) :: maximum
         
-        call me%genptr%set_max_value(maximum)
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            maximum = -1001._eb
+        else
+            call me%genptr%set_max_value(maximum)
+        end if
         
     end subroutine field_set_max_value
     
@@ -1094,7 +1149,11 @@ module preprocessor_types
         class(field_pointer) :: me
         real(eb) :: add
         
-        call me%genptr%set_add_value(add)
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+            
+        else
+            call me%genptr%set_add_value(add)
+        end if
         
     end subroutine field_set_add_value
     

@@ -1662,7 +1662,9 @@ Module IO
                         myErrors.Add("In MHDR namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someMHeaders.Add(New MonteCarlo(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder))
+                Dim aMHDR As New MonteCarlo
+                aMHDR.SetMHDR(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
+                someMHeaders.Add(aMHDR)
             End If
         Next
     End Sub
@@ -1951,31 +1953,40 @@ Module IO
         FileClose(IO)
     End Sub
 
-    Private Sub WriteOutputFileNMLMHDR(ByVal IO As Integer, ByRef myMHeaders As MonteCarloCollection)
-        Dim ln As String
-
-        'Writing MHDR namelist
-        If myMHeaders.Count > -1 Then
-            Dim MHeader As MonteCarlo = myMHeaders(0)
-            If MHeader.NumberofCases > 0 Then
-                ln = "&MHDR NUMBER_OF_CASES = " + MHeader.NumberofCases.ToString
-                If MHeader.Seeds(1) <> -1001 And MHeader.Seeds(2) <> -1001 Then ln += "SEEDS = " + MHeader.Seeds(1).ToString + ", " + MHeader.Seeds(2).ToString
-                If MHeader.WriteSeeds = True Then ln += " WRITE_SEEDS = .TRUE."
-                If MHeader.ParameterFile <> "" Then ln += " PARAMETER_FILE = " + "'" + MHeader.ParameterFile + "'"
-                If MHeader.WorkFolder <> "" Then ln += " WORK_FOLDER = " + "'" + MHeader.WorkFolder + "'"
-                If MHeader.OutputFile <> "" Then ln += " OUTPUT_FILE = " + "'" + MHeader.OutputFile + "'"
-                ln += " /"
-                PrintLine(IO, ln)
-            End If
-        End If
-    End Sub
-
     Private Sub WriteOutputFileNMLHead(ByVal IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
         'Writing HEAD namelist
         ln = "&HEAD VERSION = " + MyEnvironment.Version.ToString + ", " + "TITLE = " + "'" + MyEnvironment.Title + "' /"
         PrintLine(IO, ln)
+    End Sub
+
+    Private Sub WriteOutputFileNMLMHDR(ByVal IO As Integer, ByRef myMHeaders As MonteCarloCollection)
+        Dim ln As String
+
+        'Writing MHDR namelist
+        If myMHeaders.Count > -1 Then
+            Dim aMHeader As MonteCarlo = myMHeaders(0)
+            Dim NumberofCases As Integer, Seeds(2) As Double, WriteSeeds As Boolean, ParameterFile, WorkFolder, OutputFolder As String
+            NumberofCases = 0
+            Seeds(1) = -1001.0
+            Seeds(2) = -1001.0
+            WriteSeeds = False
+            ParameterFile = ""
+            WorkFolder = ""
+            OutputFolder = ""
+            Call aMHeader.GetMHDR(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
+            If NumberofCases > 0 Then
+                ln = "&MHDR NUMBER_OF_CASES = " + NumberofCases.ToString
+                If Seeds(1) <> -1001 And Seeds(2) <> -1001 Then ln += "SEEDS = " + Seeds(1).ToString + ", " + Seeds(2).ToString
+                If WriteSeeds = True Then ln += " WRITE_SEEDS = .TRUE."
+                If ParameterFile <> "" Then ln += " PARAMETER_FILE = " + "'" + ParameterFile + "'"
+                If WorkFolder <> "" Then ln += " WORK_FOLDER = " + "'" + WorkFolder + "'"
+                If OutputFolder <> "" Then ln += " OUTPUT_FILE = " + "'" + OutputFolder + "'"
+                ln += " /"
+                PrintLine(IO, ln)
+            End If
+        End If
     End Sub
 
     Private Sub WriteOutputFileNMLTime(ByVal IO As Integer, ByRef MyEnvironment As Environment)
@@ -2850,7 +2861,7 @@ Module IO
                     ln += "  SECOND_FIELD = '" + SecondDevice + "', '" + SecondMeasurement + "'"
                 End If
                 If FYI <> "" Then
-                    ln += " FYI = '" + adump.FYI + "'"
+                    ln += " FYI = '" + FYI + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

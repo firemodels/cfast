@@ -231,91 +231,29 @@ Public Class MonteCarlo
         aMaximumField = MaximumField
         aAddField = AddField
     End Sub
-    Public ReadOnly Property NumberofCases As Integer
-        Get
-            Return aNumberofCases
-        End Get
-    End Property
-    Public ReadOnly Property Seeds(i As Integer) As Integer
-        Get
-            If i >= 1 And i <= 2 Then
-                Return aSeeds(i)
-            Else
-                Return -1001
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property WriteSeeds As Boolean
-        Get
-            Return aWriteSeeds
-        End Get
-    End Property
-    Public ReadOnly Property ParameterFile As String
-        Get
-            Return aParameterFile
-        End Get
-    End Property
-    Public ReadOnly Property WorkFolder As String
-        Get
-            Return aWorkFolder
-        End Get
-    End Property
-    Public ReadOnly Property OutputFile As String
-        Get
-            Return aOutputFolder
-        End Get
-    End Property
-    Public ReadOnly Property ID As String
-        Get
-            Return aID
-        End Get
-    End Property
-    Public ReadOnly Property FileType As String
-        Get
-            Return aFileType
-        End Get
-    End Property
-    Public ReadOnly Property Type As String
-        Get
-            Return aType
-        End Get
-    End Property
-    Public ReadOnly Property Criterion As Double
-        Get
-            Return aCriterion
-        End Get
-    End Property
-    Public ReadOnly Property FirstMeasurement As String
-        Get
-            Return aFirstMeasurement
-        End Get
-    End Property
-    Public ReadOnly Property FirstDevice As String
-        Get
-            Return aFirstDevice
-        End Get
-    End Property
-    Public ReadOnly Property SecondMeasurement As String
-        Get
-            Return aSecondMeasurement
-        End Get
-    End Property
-    Public ReadOnly Property SecondDevice As String
-        Get
-            Return aSecondDevice
-        End Get
-    End Property
-    Public Property FYI() As String
-        Get
-            Return aFYI
-        End Get
-        Set(ByVal Value As String)
-            If Value <> aFYI Then
-                aFYI = Value
-            End If
-        End Set
-    End Property
-    Public Sub SetOutp(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub SetMHDR(ByVal NumberofCases As Integer, ByVal Seeds() As Double, ByVal WriteSeeds As Boolean, ByVal ParameterFile As String, WorkFolder As String, OutputFolder As String)
+        aNumberofCases = NumberofCases
+        If Seeds.GetUpperBound(0) >= 2 Then
+            aSeeds(1) = Seeds(1)
+            aSeeds(2) = Seeds(2)
+        End If
+        aWriteSeeds = WriteSeeds
+        aParameterFile = ParameterFile
+        aWorkFolder = WorkFolder
+        aOutputFolder = OutputFolder
+    End Sub
+    Public Sub GetMHDR(ByRef NumberofCases As Integer, Seeds() As Double, WriteSeeds As Boolean, ByRef ParameterFile As String, WorkFolder As String, OutputFolder As String)
+        NumberofCases = aNumberofCases
+        If Seeds.GetUpperBound(0) >= 2 Then
+            Seeds(1) = aSeeds(1)
+            Seeds(2) = aSeeds(2)
+        End If
+        WriteSeeds = aWriteSeeds
+        ParameterFile = aParameterFile
+        WorkFolder = aWorkFolder
+        OutputFolder = aOutputFolder
+    End Sub
+    Public Sub SetOutp(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criterion As Double, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String)
         ID = aID
         aFileType = FileType
         aType = Type

@@ -48,6 +48,15 @@ Public Class NameListFile
             Return ssht.num(fsht.num(idx, 1) + jdx, 3 + kdx)
         End Get
     End Property
+    Public ReadOnly Property ForNMListVarGetBool(ByVal idx As Integer, ByVal jdx As Integer, ByVal kdx As Integer) As Boolean
+        Get
+            If ssht.CSVcell(fsht.num(idx, 1) + jdx, 3 + kdx).ToUpper = ".TRUE." Then
+                Return True
+            Else
+                Return False
+            End If
+        End Get
+    End Property
     Private ReadOnly Property NextNMLInFile() As Boolean
         Get
             Dim flag As Boolean = False

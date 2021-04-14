@@ -4,7 +4,7 @@ Imports System.Xml
 
 Module IO
 #Region "Read Routines"
-    Public Sub ReadInputFile(ByVal Filename As String)
+    Public Sub ReadInputFile(Filename As String)
         Dim IO As Integer = 1
         Dim str As String
 
@@ -17,7 +17,7 @@ Module IO
             System.Windows.Forms.MessageBox.Show("CFAST no longer supports the older spreadsheet input file format.")
         End If
     End Sub
-    Private Sub ReadInputFileNML(ByVal Filename As String)
+    Private Sub ReadInputFileNML(Filename As String)
         'Filename is assumed to be the complete path plus name and extenstion
         Dim NMList As NameListFile
 
@@ -38,10 +38,122 @@ Module IO
         ReadInputFileNMLISOF(NMList, myVisuals)
         ReadInputFileNMLSLCF(NMList, myVisuals)
         ReadInputFileNMLDiag(NMList, myEnvironment)
-        ReadInputFileNMLOutp(NMList, myOutps)
+
         ReadInputFileNMLMHDR(NMList, myMHeaders)
+        ReadInputFileNMLMRND(NMList, myRandoms)
+        ReadInputFileNMLOutp(NMList, myOutputs)
     End Sub
-    Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
+    Private Sub ReadInputFileNMLMRND(NMList As NameListFile, ByRef someRandoms As MonteCarloCollection)
+        Dim i, j, k As Integer
+        Dim id As String
+        Dim max As Integer
+        Dim DistributionType As String, ValueType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
+        Dim Minimum As Double, Maximum As Double, Mean As Double, Stdev As Double, Alpha As Double, Beta As Double, Peak As Double, RandomSeeds(2) As Double, RealValues() As Double, RealConstantValue As Double, Probabilities() As Double, MinimumOffset As Double, MaximumOffset As Double
+        Dim IntegerValues() As Integer, IntegerConstantValue As Integer
+        Dim LogicalValues() As Boolean, LogicalConstantValue As Boolean
+
+        For i = 1 To NMList.TotNMList
+            id = ""
+            DistributionType = ""
+            ValueType = ""
+            StringConstantValue = ""
+            MinimumField = ""
+            MaximumField = ""
+            AddField = ""
+            Minimum = 0.0
+            Maximum = 0.0
+            Mean = 0.0
+            Stdev = 0.0
+            Alpha = 0.0
+            Beta = 0.0
+            Peak = 0.0
+            RandomSeeds(1) = -1001.0
+            RandomSeeds(2) = -1001.0
+            RealConstantValue = 0.0
+            IntegerConstantValue = 0
+            LogicalConstantValue = False
+
+            If (NMList.GetNMListID(i) = "MRND") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "DISTRIBUTION_TYPE") Then
+                        DistributionType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUE_TYPE") Then
+                        ValueType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM") Then
+                        Minimum = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM") Then
+                        Maximum = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MEAN") Then
+                        Mean = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STDEV") Then
+                        Stdev = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ALPHA") Then
+                        Alpha = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "BETA") Then
+                        Beta = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PEAK") Then
+                        Peak = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim RealValues(max)
+                        For k = 1 To max
+                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_CONSTANT_VALUE") Then
+                        RealConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim IntegerValues(max)
+                        For k = 1 To max
+                            IntegerValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_CONSTANT_VALUE") Then
+                        IntegerConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim StringValues(max)
+                        For k = 1 To max
+                            StringValues(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_CONSTANT_VALUE") Then
+                        StringConstantValue = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim LogicalValues(max)
+                        For k = 1 To max
+                            LogicalValues(k) = NMList.ForNMListVarGetBool(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_CONSTANT_VALUE") Then
+                        LogicalConstantValue = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PROBABILITIES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim Probabilities(max)
+                        For k = 1 To max
+                            Probabilities(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_OFFSET") Then
+                        MinimumOffset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_OFFSET") Then
+                        MaximumOffset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_FIELD") Then
+                        MaximumField = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIELD") Then
+                        AddField = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MRND namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aRandom As New MonteCarlo
+                aRandom.SetRandom(id, DistributionType, ValueType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                someRandoms.Add(aRandom)
+            End If
+        Next
+    End Sub
+    Private Sub ReadInputFileNMLHead(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim ver As Integer
         Dim title As String
@@ -65,7 +177,7 @@ Module IO
         someEnvironment.Version = ver
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
+    Private Sub ReadInputFileNMLTime(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim print, sim, smoke, ss As Double
 
@@ -96,7 +208,7 @@ Module IO
         someEnvironment.SpreadsheetInterval = ss
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLInit(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
+    Private Sub ReadInputFileNMLInit(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim pressure, rh, intemp, extemp As Double
 
@@ -127,7 +239,7 @@ Module IO
         someEnvironment.IntAmbRH = rh
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
+    Private Sub ReadInputFileNMLMisc(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, max As Integer
         Dim adiabatic, overwrite As Boolean
         Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Double
@@ -184,7 +296,7 @@ Module IO
         someEnvironment.Overwrite = overwrite
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
+    Private Sub ReadInputFileNMLMatl(NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
         Dim i, j As Integer
         Dim conduct, dens, emiss, spech, thick As Double
         Dim id, matl, fyi As String
@@ -264,7 +376,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
+    Private Sub ReadInputFileNMLComp(NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
         Dim id, fyi As String
         Dim depth, height, width As Double
@@ -476,7 +588,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
+    Private Sub ReadInputFileNMLDevc(NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type, fyi, targetfacing As String
         Dim tempdepthunits As String = "FRACTION"
@@ -699,7 +811,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile, ByRef someFireInstances As FireCollection)
+    Private Sub ReadInputFileNMLFire(NMList As NameListFile, ByRef someFireInstances As FireCollection)
         Dim i, j, k, max As Integer
         Dim compid, id, devcid, ignitcrit, fireid, fyi As String
         Dim setp As Double
@@ -770,7 +882,7 @@ Module IO
             End If
         Next
     End Sub
-    Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile, ByRef someFires As FireCollection)
+    Private Sub ReadInputFileNMLChem(NMList As NameListFile, ByRef someFires As FireCollection)
         Dim i, j As Integer
         Dim id As String
         Dim carbon, chlorine, flametime, hoc, hydrogen, nitrogen, oxygen, radfrac As Double
@@ -839,7 +951,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Double, ByRef Valid As Boolean)
+    Private Sub ReadInputFileNMLTabl(NMList As NameListFile, id As String, ByRef aFireCurves(,) As Double, ByRef Valid As Boolean)
         Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
@@ -920,7 +1032,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
+    Private Sub ReadInputFileNMLVent(NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Double
         Dim tt(0), ff(0) As Double
@@ -1245,7 +1357,7 @@ Module IO
             End If
         Next
     End Sub
-    Private Sub ReadInputFileNMLConn(ByVal NMList As NameListFile, ByRef someHHeats As VentCollection, ByRef someVHeats As VentCollection)
+    Private Sub ReadInputFileNMLConn(NMList As NameListFile, ByRef someHHeats As VentCollection, ByRef someVHeats As VentCollection)
         Dim i, j, k, max, cFirst, cSecond As Integer
         Dim compid, compids(1), type As String
         Dim f(1) As Double
@@ -1317,7 +1429,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
+    Private Sub ReadInputFileNMLISOF(NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid As String
         Dim value As Double
@@ -1350,7 +1462,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
+    Private Sub ReadInputFileNMLSLCF(NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid, domain, plane As String
         Dim pos As Double
@@ -1399,7 +1511,7 @@ Module IO
         Next
 
     End Sub
-    Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
+    Public Sub ReadInputFileNMLDiag(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
         Dim f(0), t(0) As Double
         Dim ppco2, pph2o, gastemp, ULThickness, verificationstep, fireheatflux As Double
@@ -1572,7 +1684,7 @@ Module IO
         Next
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLOutp(ByVal NMList As NameListFile, ByRef someOutps As MonteCarloCollection)
+    Private Sub ReadInputFileNMLOutp(NMList As NameListFile, ByRef someOutputs As MonteCarloCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
         Dim criterion As Double
@@ -1617,11 +1729,13 @@ Module IO
                         myErrors.Add("In OUTP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someOutps.Add(New MonteCarlo(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
+                Dim aOutput As New MonteCarlo
+                aOutput.SetOutput(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi)
+                someOutputs.Add(aOutput)
             End If
         Next
     End Sub
-    Private Sub ReadInputFileNMLMHDR(ByVal NMList As NameListFile, ByRef someMHeaders As MonteCarloCollection)
+    Private Sub ReadInputFileNMLMHDR(NMList As NameListFile, ByRef someMHeaders As MonteCarloCollection)
         Dim i, j, k, max As Integer
         Dim NumberofCases As Integer
         Dim Seeds() As Double
@@ -1662,13 +1776,13 @@ Module IO
                         myErrors.Add("In MHDR namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                Dim aMHDR As New MonteCarlo
-                aMHDR.SetMHDR(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
-                someMHeaders.Add(aMHDR)
+                Dim aHeader As New MonteCarlo
+                aHeader.SetHeader(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
+                someMHeaders.Add(aHeader)
             End If
         Next
     End Sub
-    Public Sub ReadINIInput(ByRef x As Integer, ByVal label As String, ByVal value As String)
+    Public Sub ReadINIInput(ByRef x As Integer, label As String, value As String)
         If value = "ON" Then
             x = Environment.DIAGon
         ElseIf value = "OFF" Then
@@ -1677,13 +1791,13 @@ Module IO
             myErrors.Add("In DIAG namelist for " + label + " " + value + " Is Not a valid parameter", ErrorMessages.TypeFatal)
         End If
     End Sub
-    Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
+    Public Sub ReadThermalProperties(FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
         'Simple read of only thermal properties from a file. 
         FindThermalProperties(FileName, SomeThermalProperties)
         SomeThermalProperties.FileName = FileName
         SomeThermalProperties.FileChanged = False
     End Sub
-    Public Sub FindThermalProperties(ByVal Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+    Public Sub FindThermalProperties(Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
         Dim IO As Integer = 1
         Dim str As String
 
@@ -1699,11 +1813,11 @@ Module IO
             End If
         End If
     End Sub
-    Public Sub FindThermalPropertiesNML(ByVal Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+    Public Sub FindThermalPropertiesNML(Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
         Dim NMList As New NameListFile(Filename)
         ReadInputFileNMLMatl(NMList, SomeThermalProperties)
     End Sub
-    Public Sub FindThermalPropertiesCSV(ByVal csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+    Public Sub FindThermalPropertiesCSV(csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
         Dim i As Integer
         ' do material properties so they are defined for compartments, fires, and targets
         Dim hcl() As Double = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
@@ -1738,7 +1852,7 @@ Module IO
         Loop
         myUnits.SI = False
     End Sub
-    Public Sub FindaThermalProperty(ByVal Filename As String, ByVal Material As String, ByRef aThermalPropery As ThermalProperty)
+    Public Sub FindaThermalProperty(Filename As String, Material As String, ByRef aThermalPropery As ThermalProperty)
         ' look for a specific material in the current spreadsheet
         Dim SomeThermalProperties As New ThermalPropertiesCollection, aMaterial As New ThermalProperty, index As Integer
         FindThermalProperties(Filename, SomeThermalProperties)
@@ -1751,7 +1865,7 @@ Module IO
         End If
         aThermalPropery.ShortName = " "
     End Sub
-    Private Sub readFires(ByVal Filename As String, FileType As Integer)
+    Private Sub readFires(Filename As String, FileType As Integer)
         Dim csv As New CSVsheet(Filename), i As Integer
         If csv.MaxRow > 0 Then
             FindFires(FileType, Filename)
@@ -1764,7 +1878,7 @@ Module IO
             End If
         End If
     End Sub
-    Public Sub FindFires(ByVal FileType As Integer, ByVal Filename As String)
+    Public Sub FindFires(FileType As Integer, Filename As String)
         If FileType = InsertDataType.ObjectFile Then
             FindFiresCSV(FileType, Filename)
         Else
@@ -1782,12 +1896,12 @@ Module IO
             End If
         End If
     End Sub
-    Public Sub FindFiresNML(ByVal FileType As Integer, ByVal Filename As String)
+    Public Sub FindFiresNML(FileType As Integer, Filename As String)
         Dim NMList As New NameListFile(Filename)
 
         ReadInputFileNMLChem(NMList, TempFires)
     End Sub
-    Public Sub FindFiresCSV(ByVal FileType As Integer, ByVal Filename As String)
+    Public Sub FindFiresCSV(FileType As Integer, Filename As String)
         'simple read of a fire object file
         Dim csv As New CSVsheet(Filename)
         Dim fireComments As New Collection
@@ -1925,7 +2039,7 @@ Module IO
     End Sub
 #End Region
 #Region "Write Routines"
-    Public Sub WriteInputFileNML(ByVal filename As String)
+    Public Sub WriteInputFileNML(filename As String)
         Dim IO As Integer = 1
         Dim ln As String
 
@@ -1944,7 +2058,7 @@ Module IO
         WriteOutputFileNMLDevc(IO, myTargets, myDetectors)
         WriteOutputFileNMLConn(IO, myCompartments, myHHeats, myVHeats)
         WriteOutputFileNMLIsoSlcf(IO, myVisuals)
-        WriteOutputFileNMLOutp(IO, myOutps)
+        WriteOutputFileNMLOutp(IO, myOutputs)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -1953,7 +2067,7 @@ Module IO
         FileClose(IO)
     End Sub
 
-    Private Sub WriteOutputFileNMLHead(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+    Private Sub WriteOutputFileNMLHead(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
         'Writing HEAD namelist
@@ -1961,7 +2075,7 @@ Module IO
         PrintLine(IO, ln)
     End Sub
 
-    Private Sub WriteOutputFileNMLMHDR(ByVal IO As Integer, ByRef myMHeaders As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLMHDR(IO As Integer, ByRef myMHeaders As MonteCarloCollection)
         Dim ln As String
 
         'Writing MHDR namelist
@@ -1975,7 +2089,7 @@ Module IO
             ParameterFile = ""
             WorkFolder = ""
             OutputFolder = ""
-            Call aMHeader.GetMHDR(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
+            Call aMHeader.GetHeader(NumberofCases, Seeds, WriteSeeds, ParameterFile, WorkFolder, OutputFolder)
             If NumberofCases > 0 Then
                 ln = "&MHDR NUMBER_OF_CASES = " + NumberofCases.ToString
                 If Seeds(1) <> -1001 And Seeds(2) <> -1001 Then ln += "SEEDS = " + Seeds(1).ToString + ", " + Seeds(2).ToString
@@ -1989,7 +2103,7 @@ Module IO
         End If
     End Sub
 
-    Private Sub WriteOutputFileNMLTime(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+    Private Sub WriteOutputFileNMLTime(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
         PrintLine(IO, " ")
@@ -2000,7 +2114,7 @@ Module IO
         PrintLine(IO, ln)
     End Sub
 
-    Private Sub WriteOutputFileNMLInit(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+    Private Sub WriteOutputFileNMLInit(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
         'Writing INIT namelist
@@ -2010,7 +2124,7 @@ Module IO
         PrintLine(IO, ln)
     End Sub
 
-    Private Sub WriteOutputFileNMLMisc(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+    Private Sub WriteOutputFileNMLMisc(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String, aFlag As Boolean
 
         'Writing MISC namelist
@@ -2043,7 +2157,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLDiag(ByVal IO As Integer, ByRef Myenvironment As Environment)
+    Private Sub WriteOutputFileNMLDiag(IO As Integer, ByRef Myenvironment As Environment)
         Dim ln As String, wrtDIAG As Boolean, wrtSlash As Boolean
         Dim x(0), f(0) As Double, i As Integer
 
@@ -2204,7 +2318,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLMatl(ByVal IO As Integer, ByVal MyThermalProperties As ThermalPropertiesCollection)
+    Private Sub WriteOutputFileNMLMatl(IO As Integer, MyThermalProperties As ThermalPropertiesCollection)
         Dim ln, field As String, i, j As Integer, aThermalProperty As New ThermalProperty
 
         'Writing MATL namelist
@@ -2249,7 +2363,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLComp(ByVal IO As Integer, MyCompartments As CompartmentCollection)
+    Private Sub WriteOutputFileNMLComp(IO As Integer, MyCompartments As CompartmentCollection)
         Dim ln As String, aComp As Compartment, i, j, k As Integer
         Dim x(0), f(0) As Double
         Dim hasmaterials As Boolean
@@ -2354,7 +2468,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLVent(ByVal IO As Integer, ByRef myHvents As VentCollection, ByRef MyVVents As VentCollection, MyMVents As VentCollection)
+    Private Sub WriteOutputFileNMLVent(IO As Integer, ByRef myHvents As VentCollection, ByRef MyVVents As VentCollection, MyMVents As VentCollection)
         Dim ln As String, i, j As Integer, aVent As Vent
 
         ' Writing VENT namelist for wall vents
@@ -2566,7 +2680,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLFire(ByVal IO As Integer, ByRef MyFireProperties As FireCollection)
+    Private Sub WriteOutputFileNMLFire(IO As Integer, ByRef MyFireProperties As FireCollection)
         Dim ln As String, aFire As Fire, i, j, k, l As Integer
         Dim aFireCurves(12, 0) As Double
 
@@ -2638,7 +2752,7 @@ Module IO
         End If
     End Sub
 
-    Private Sub WriteOutputFileNMLDevc(ByVal IO As Integer, ByRef MyTargets As TargetCollection, ByRef MyDetectors As TargetCollection)
+    Private Sub WriteOutputFileNMLDevc(IO As Integer, ByRef MyTargets As TargetCollection, ByRef MyDetectors As TargetCollection)
         Dim ln As String, i As Integer, aTarg As Target
 
         ' Writing devices (targets, detectors, sprinklers)
@@ -2734,7 +2848,7 @@ Module IO
 
     End Sub
 
-    Private Sub WriteOutputFileNMLConn(ByVal IO As Integer, ByRef MyCompartments As CompartmentCollection, MyHHeats As VentCollection, MyVHeats As VentCollection)
+    Private Sub WriteOutputFileNMLConn(IO As Integer, ByRef MyCompartments As CompartmentCollection, MyHHeats As VentCollection, MyVHeats As VentCollection)
         Dim ln As String, i, j As Integer, aVent As Vent
 
         'Writing Surface Connections
@@ -2825,7 +2939,7 @@ Module IO
         End If
     End Sub
 
-    Private Sub WriteOutputFileNMLOutp(ByVal IO As Integer, MyOutps As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLOutp(IO As Integer, MyOutps As MonteCarloCollection)
         Dim ln As String, i As Integer, adump As MonteCarlo
 
         ' Writing Outps
@@ -2847,7 +2961,7 @@ Module IO
                 SecondDevice = ""
                 FYI = ""
                 adump = MyOutps.Item(i)
-                adump.GetOutp(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
+                adump.GetOutput(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
 
                 ln = "&OUTP ID = '" + Id + "'"
                 PrintLine(IO, ln)
@@ -2868,7 +2982,7 @@ Module IO
             Next
         End If
     End Sub
-    Public Sub WriteDIAGsimpleln(ByVal IO As Integer, ByRef wrtDIAG As Boolean, ByRef wrtSlash As Boolean, ByVal line As String)
+    Public Sub WriteDIAGsimpleln(IO As Integer, ByRef wrtDIAG As Boolean, ByRef wrtSlash As Boolean, line As String)
         Dim ln As String
 
         If wrtDIAG Then
@@ -2883,7 +2997,7 @@ Module IO
     End Sub
 #End Region
 #Region "Support Routines"
-    Private Sub AddHeadertoOutput(ByRef csv As CSVsheet, ByRef i As Integer, ByVal header As String)
+    Private Sub AddHeadertoOutput(ByRef csv As CSVsheet, ByRef i As Integer, header As String)
         csv.str(i, CFASTlnNum.keyWord) = "!!"
         i += 1
         csv.str(i, CFASTlnNum.keyWord) = "!!" + header
@@ -2891,7 +3005,7 @@ Module IO
         csv.str(i, CFASTlnNum.keyWord) = "!!"
         i += 1
     End Sub
-    Private Function SkipLine(ByVal str As String) As Boolean
+    Private Function SkipLine(str As String) As Boolean
         If str = Nothing Then
             Return True
         End If
@@ -2903,7 +3017,7 @@ Module IO
             Return False
         End If
     End Function
-    Private Function HeaderComment(ByVal str As String) As Boolean
+    Private Function HeaderComment(str As String) As Boolean
         If str = Nothing Then
             Return False
         End If
@@ -2915,7 +3029,7 @@ Module IO
             Return False
         End If
     End Function
-    Private Function Comment(ByVal str As String) As Boolean
+    Private Function Comment(str As String) As Boolean
         If str = Nothing Then
             Return True
         End If
@@ -2927,7 +3041,7 @@ Module IO
             Return False
         End If
     End Function
-    Private Function DropComment(ByVal str As String) As Boolean
+    Private Function DropComment(str As String) As Boolean
         If str = Nothing Then
             Return True
         End If

@@ -9,7 +9,7 @@ Public Class MonteCarlo
     Private aID As String                   ' id used a heading for output column
     Private aFYI As String                  ' Descriptor for additional user supplied information
 
-    ' Inputs for &DUMP
+    ' Inputs for &OUTP
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
     Private aCriterion As Double            ' Value used in 'trigger_...' analysis
@@ -97,6 +97,8 @@ Public Class MonteCarlo
     Private aTimeLabeels As String
 
     Public Sub New()
+        ' Generic New that initializes everything
+        ' &OUTP
         aID = ""
         aFileType = ""
         aType = ""
@@ -107,6 +109,7 @@ Public Class MonteCarlo
         aSecondDevice = ""
         aFYI = ""
 
+        ' &MHDR
         aNumberofCases = 0
         aSeeds(1) = -1001.0
         aSeeds(2) = -1001.0
@@ -114,8 +117,34 @@ Public Class MonteCarlo
         aParameterFile = ""
         aWorkFolder = ""
         aOutputFolder = ""
+
+        ' &MRND
+        aDistributionType = ""
+        aValueType = ""
+        aMinimum = -Double.MaxValue
+        aMaximum = Double.MaxValue
+        aMean = 0.0
+        aStdev = 0.0
+        aAlpha = 0.0
+        aBeta = 0.0
+        ReDim aRandomSeeds(0)
+        ReDim aRealValues(0)
+        ReDim aIntegerValues(0)
+        ReDim aStringValues(0)
+        ReDim aLogicalValues(0)
+        ReDim aProbabilities(0)
+        aRealConstantValue = 0.0
+        aIntegerConstantValue = 0
+        aStringConstantValue = ""
+        aLogicialConstantValue = True
+        aMinimumOffset = 0
+        aMaximumOffset = 0
+        aMinimumField = ""
+        aMaximumField = ""
+        aAddField = ""
     End Sub
     Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criterion As Double, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, fyi As String)
+        ' New for &OUTP
         aID = ID
         aFileType = FileType
         aType = Type
@@ -127,6 +156,7 @@ Public Class MonteCarlo
         aFYI = fyi
     End Sub
     Public Sub New(ByVal NumberofCases As Integer, ByVal Seeds() As Double, ByVal WriteSeeds As Boolean, ByVal ParameterFile As String, ByVal WorkFolder As String, OutputFolder As String)
+        ' New for &MHDR
         aNumberofCases = NumberofCases
         If Seeds.GetUpperBound(0) >= 1 Then
             aSeeds(1) = Seeds(1)
@@ -139,8 +169,8 @@ Public Class MonteCarlo
         aOutputFolder = OutputFolder
     End Sub
     Public Sub New(ByVal DistributionType As String, ByVal ValueType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String)
+        ' New for &MRND
         Dim i, max As Integer
-
         aDistributionType = DistributionType
         aValueType = ValueType
         aMinimum = Minimum
@@ -181,7 +211,7 @@ Public Class MonteCarlo
         If max > 0 Then
             ReDim aLogicalValues(max)
             For i = 1 To max
-                aLogicalValues(i) = IntegerValues(i)
+                aLogicalValues(i) = LogicalValues(i)
             Next
         End If
         max = Probabilities.GetUpperBound(0)
@@ -285,7 +315,7 @@ Public Class MonteCarlo
             End If
         End Set
     End Property
-    Public Sub SetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub SetOutp(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         ID = aID
         aFileType = FileType
         aType = Type
@@ -295,7 +325,7 @@ Public Class MonteCarlo
         aSecondMeasurement = SecondMeasurement
         aSecondDevice = SecondDevice
     End Sub
-    Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub GetOutp(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String, FYI As String)
         aID = ID
         FileType = aFileType
         Type = aType
@@ -304,6 +334,7 @@ Public Class MonteCarlo
         FirstDevice = aFirstDevice
         SecondMeasurement = aSecondMeasurement
         SecondDevice = aSecondDevice
+        FYI = aFYI
     End Sub
 End Class
 Public Class MonteCarloCollection

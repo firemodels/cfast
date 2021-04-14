@@ -53,7 +53,7 @@ Friend Module Data
 
     Friend myMHeaders As New MonteCarloCollection
     Friend myRandoms As New MonteCarloCollection
-    Friend myOutps As New MonteCarloCollection
+    Friend myOutputs As New MonteCarloCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments

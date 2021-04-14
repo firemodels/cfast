@@ -9,7 +9,7 @@ Public Class MonteCarlo
     Private aID As String                   ' id used a heading for output column
     Private aFYI As String                  ' Descriptor for additional user supplied information
 
-    ' Inputs for &DUMP
+    ' Inputs for &OUTP
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
     Private aCriterion As Double            ' Value used in 'trigger_...' analysis
@@ -315,7 +315,7 @@ Public Class MonteCarlo
             End If
         End Set
     End Property
-    Public Sub SetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub SetOutp(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         ID = aID
         aFileType = FileType
         aType = Type
@@ -325,7 +325,7 @@ Public Class MonteCarlo
         aSecondMeasurement = SecondMeasurement
         aSecondDevice = SecondDevice
     End Sub
-    Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub GetOutp(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String, FYI As String)
         aID = ID
         FileType = aFileType
         Type = aType
@@ -334,6 +334,7 @@ Public Class MonteCarlo
         FirstDevice = aFirstDevice
         SecondMeasurement = aSecondMeasurement
         SecondDevice = aSecondDevice
+        FYI = aFYI
     End Sub
 End Class
 Public Class MonteCarloCollection

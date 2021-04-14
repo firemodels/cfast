@@ -53,7 +53,7 @@ Friend Module Data
 
     Friend myMHeaders As New MonteCarloCollection
     Friend myRandoms As New MonteCarloCollection
-    Friend myDumps As New MonteCarloCollection
+    Friend myOutps As New MonteCarloCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments
@@ -63,7 +63,7 @@ Friend Module Data
     Friend CommandWindowVisible As Boolean = False
     Friend NetHeatFluxCFASTOutput As Boolean = True                 ' True if heat flux output is to be net heat flux rather than incident heat flux (adds -N option to CFAST execution command)
     Friend ValidationOutput As Boolean = False                      ' True if heat flux output is to be net heat flux (adds -V option to CFAST execution command)
-    Friend DebugOutput As Boolean = False                           ' True if CFAST is to output debug file from successful RESID Dumps (creates casename.resid file when checked)
+    Friend DebugOutput As Boolean = False                           ' True if CFAST is to output debug file from successful RESID solutions (creates casename.resid file when checked)
 
     Friend SSOutputCompartments As Boolean = True                   ' True if CFAST run should generate a compartments spreadsheet
     Friend SSOutputDevices As Boolean = True                        ' True if CFAST run should generate a devices spreadsheet

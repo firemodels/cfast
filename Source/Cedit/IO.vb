@@ -38,7 +38,7 @@ Module IO
         ReadInputFileNMLISOF(NMList, myVisuals)
         ReadInputFileNMLSLCF(NMList, myVisuals)
         ReadInputFileNMLDiag(NMList, myEnvironment)
-        ReadInputFileNMLDump(NMList, myDumps)
+        ReadInputFileNMLOutp(NMList, myOutps)
         ReadInputFileNMLMHDR(NMList, myMHeaders)
     End Sub
     Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
@@ -1572,7 +1572,7 @@ Module IO
         Next
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As MonteCarloCollection)
+    Private Sub ReadInputFileNMLOutp(ByVal NMList As NameListFile, ByRef someOutps As MonteCarloCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
         Dim criterion As Double
@@ -1587,7 +1587,7 @@ Module IO
             secondmeasurement = ""
             seconddevice = ""
             fyi = ""
-            If (NMList.GetNMListID(i) = "DUMP") Then
+            If (NMList.GetNMListID(i) = "DUMP" Or NMList.GetNMListID(i) = "OUTP") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1614,10 +1614,10 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
                         fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In DUMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In OUTP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someDumps.Add(New MonteCarlo(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
+                someOutps.Add(New MonteCarlo(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
             End If
         Next
     End Sub
@@ -1942,7 +1942,7 @@ Module IO
         WriteOutputFileNMLDevc(IO, myTargets, myDetectors)
         WriteOutputFileNMLConn(IO, myCompartments, myHHeats, myVHeats)
         WriteOutputFileNMLIsoSlcf(IO, myVisuals)
-        WriteOutputFileNMLDump(IO, myDumps)
+        WriteOutputFileNMLOutp(IO, myOutps)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -2814,30 +2814,42 @@ Module IO
         End If
     End Sub
 
-    Private Sub WriteOutputFileNMLDump(ByVal IO As Integer, MyDumps As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLOutp(ByVal IO As Integer, MyOutps As MonteCarloCollection)
         Dim ln As String, i As Integer, adump As MonteCarlo
 
-        ' Writing Dumps
-        If MyDumps.Count > 0 Then
+        ' Writing Outps
+        If MyOutps.Count > 0 Then
             PrintLine(IO, " ")
-            ln = "!! Dumps"
+            ln = "!! User-specified Outputs"
             PrintLine(IO, ln)
 
-            For i = 0 To MyDumps.Count - 1
-                adump = MyDumps.Item(i)
+            Dim Id, FileType, Type, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI As String
+            Dim Criterion As Double
+            For i = 0 To MyOutps.Count - 1
+                Id = ""
+                FileType = ""
+                Type = ""
+                Criterion = 0.0
+                FirstMeasurement = ""
+                FirstDevice = ""
+                SecondMeasurement = ""
+                SecondDevice = ""
+                FYI = ""
+                adump = MyOutps.Item(i)
+                adump.GetOutp(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
 
-                ln = "&DUMP ID = '" + adump.ID + "'"
+                ln = "&OUTP ID = '" + Id + "'"
                 PrintLine(IO, ln)
-                ln = "     FILE = '" + adump.FileType + "'  TYPE = '" + adump.Type + "'"
-                If adump.Type <> "MINIMUM" And adump.Type <> "MAXIMUM" And adump.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  CRITERION = " + adump.Criterion.ToString
+                ln = "     FILE = '" + FileType + "'  TYPE = '" + Type + "'"
+                If Type <> "MINIMUM" And Type <> "MAXIMUM" And Type <> "CHECK_TOTAL_HRR" Then
+                    ln += "  CRITERION = " + Criterion.ToString
                 End If
                 PrintLine(IO, ln)
-                ln = "     FIRST_FIELD = '" + adump.FirstDevice + "', '" + adump.FirstMeasurement + "'"
-                If adump.Type <> "MINIMUM" And adump.Type <> "MAXIMUM" And adump.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  SECOND_FIELD = '" + adump.SecondDevice + "', '" + adump.SecondMeasurement + "'"
+                ln = "     FIRST_FIELD = '" + FirstDevice + "', '" + FirstMeasurement + "'"
+                If Type <> "MINIMUM" And Type <> "MAXIMUM" And Type <> "CHECK_TOTAL_HRR" Then
+                    ln += "  SECOND_FIELD = '" + SecondDevice + "', '" + SecondMeasurement + "'"
                 End If
-                If adump.FYI <> "" Then
+                If FYI <> "" Then
                     ln += " FYI = '" + adump.FYI + "'"
                 End If
                 ln += " /"

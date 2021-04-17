@@ -1730,8 +1730,8 @@ Module IO
                     End If
                 Next
                 Dim aOutput As New MonteCarlo
-                aOutput.SetOutput(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi)
                 someOutputs.Add(aOutput)
+                aOutput.SetOutput(id, filetype, type, criterion, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi)
             End If
         Next
     End Sub
@@ -2059,6 +2059,7 @@ Module IO
         WriteOutputFileNMLConn(IO, myCompartments, myHHeats, myVHeats)
         WriteOutputFileNMLIsoSlcf(IO, myVisuals)
         WriteOutputFileNMLOutp(IO, myOutputs)
+        writeOutputFileNMLMRND(IO, myRandoms)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -2938,11 +2939,156 @@ Module IO
             Next
         End If
     End Sub
+    Private Sub writeOutputFileNMLMRND(IO As Integer, myRandoms As MonteCarloCollection)
+        Dim ln As String, i As Integer, j As Integer, aRandom As MonteCarlo, max As Integer
 
+        ' Writing &MRND
+        If myRandoms.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Random Distributions"
+            PrintLine(IO, ln)
+
+            Dim Id As String, DistributionType As String, ValueType As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
+            Dim Minimum As Double, Maximum As Double, Mean As Double, StDev As Double, Alpha As Double, Beta As Double, Peak As Double, MinimumOffset As Double, MaximumOffset As Double
+            Dim RandomSeeds(2) As Double, RealValues(0) As Double, IntegerValues(0) As Integer, LogicalValues(0) As Boolean, Probabilities(0) As Double, StringValues(0) As String
+            Dim RealConstantValue As Double, IntegerConstantValue As Double, StringConstantValue As String, LogicalConstantValue As Boolean
+            For i = 0 To myRandoms.Count - 1
+                Id = ""
+                DistributionType = ""
+                ValueType = ""
+                Minimum = 0.0
+                Maximum = 0.0
+                Mean = 0.0
+                StDev = 0.0
+                Alpha = 0.0
+                Beta = 0.0
+                RandomSeeds(1) = -1001.0
+                RandomSeeds(2) = -1001.0
+                RealConstantValue = 0.0
+                IntegerConstantValue = 0
+                StringConstantValue = ""
+                LogicalConstantValue = False
+                MinimumOffset = 0.0
+                MaximumOffset = 0.0
+                MinimumField = ""
+                MaximumField = ""
+                AddField = ""
+                FYI = ""
+                aRandom = myRandoms.Item(i)
+                aRandom.GetRandom(Id, DistributionType, ValueType, Minimum, Maximum, Mean, StDev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                ln = "&MRND ID = '" + Id + "' DISTRIBUTION_TYPE = '" + DistributionType + "'"
+                If DistributionType = "UNIFORM" Then
+                    ln += " VALUE_TYPE = '" + ValueType + "'"
+                    PrintLine(IO, ln)
+                    If MinimumField = "" Then
+                        ln = "     MINIMUM = " + Minimum.ToString
+                    Else
+                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                    End If
+                    If MaximumField = "" Then
+                        ln += " MAXIMUM = " + Maximum.ToString
+                    Else
+                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                    End If
+                    If FYI <> "" Then
+                        PrintLine(IO, ln)
+                        ln = "     FYI = '" + FYI + "' /"
+                    Else
+                        ln += " /"
+                    End If
+                    PrintLine(IO, ln)
+                ElseIf DistributionType = "TRIANGLE" Then
+                    ln += "     VALUE_TYPE = '" + ValueType + "'"
+                    PrintLine(IO, ln)
+                    If MinimumField = "" Then
+                        ln = "     MINIMUM = " + Minimum.ToString
+                    Else
+                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                    End If
+                    If MaximumField = "" Then
+                        ln += " MAXIMUM = " + Maximum.ToString
+                    Else
+                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                    End If
+                    ln += " PEAK = " + Peak.ToString
+                    If FYI <> "" Then
+                        PrintLine(IO, ln)
+                        ln = "     FYI = '" + FYI + "' /"
+                    Else
+                        ln += " /"
+                    End If
+                    PrintLine(IO, ln)
+                ElseIf DistributionType = "USER_DEFINED_DISCRETE" Then
+                    ln += " VALUE_TYPE = '" + ValueType + "'"
+                    PrintLine(IO, ln)
+                    If ValueType = "REAL" Then
+                        ln = "     REAL_VALUES = "
+                        If Not Data.IsArrayEmpty(RealValues) Then
+                            max = RealValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += RealValues(j).ToString + ", "
+                                Next
+                                ln += RealValues(max).ToString
+                            End If
+                        End If
+                    End If
+                    If ValueType = "INTEGER" Then
+                        ln = "     INTEGER_VALUES = "
+                        If Not Data.IsArrayEmpty(IntegerValues) Then
+                            max = IntegerValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += IntegerValues(j).ToString + ", "
+                                Next
+                                ln += IntegerValues(max).ToString
+                            End If
+                        End If
+                    End If
+                    If ValueType = "STRING" Then
+                        ln = "     STRING_VALUES = "
+                        If Not Data.IsArrayEmpty(StringValues) Then
+                            max = StringValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += StringValues(j) + ", "
+                                Next
+                                ln += StringValues(max)
+                            End If
+                        End If
+                    End If
+                    If ValueType = "LOGICAL" Then
+                        ln = "     LOGICAL_VALUES = "
+                        If Not Data.IsArrayEmpty(LogicalValues) Then
+                            max = LogicalValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += LogicalValues(j).ToString + ", "
+                                Next
+                                ln += LogicalValues(max).ToString
+                            End If
+                        End If
+                    End If
+                    PrintLine(IO, ln)
+                    ln = "     PROBABILITIES = "
+                    If Not Data.IsArrayEmpty(Probabilities) Then
+                        max = Probabilities.GetUpperBound(0)
+                        If max > 0 Then
+                            For j = 1 To max - 1
+                                ln += Probabilities(j).ToString + ", "
+                            Next
+                            ln += Probabilities(max).ToString
+                        End If
+                    End If
+                    PrintLine(IO, ln)
+                End If
+            Next
+        End If
+    End Sub
     Private Sub WriteOutputFileNMLOutp(IO As Integer, MyOutps As MonteCarloCollection)
-        Dim ln As String, i As Integer, adump As MonteCarlo
+        Dim ln As String, i As Integer, aOutput As MonteCarlo
 
-        ' Writing Outps
+        ' Writing &OUTP
         If MyOutps.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! User-specified Outputs"
@@ -2960,8 +3106,8 @@ Module IO
                 SecondMeasurement = ""
                 SecondDevice = ""
                 FYI = ""
-                adump = MyOutps.Item(i)
-                adump.GetOutput(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
+                aOutput = MyOutps.Item(i)
+                aOutput.GetOutput(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
 
                 ln = "&OUTP ID = '" + Id + "'"
                 PrintLine(IO, ln)

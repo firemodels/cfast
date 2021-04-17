@@ -124,21 +124,15 @@ Public Class MonteCarlo
         aMinimum = -Double.MaxValue
         aMaximum = Double.MaxValue
         aMean = 0.0
-        aStdev = 0.0
-        aAlpha = 0.0
-        aBeta = 0.0
-        ReDim aRandomSeeds(0)
-        ReDim aRealValues(0)
-        ReDim aIntegerValues(0)
-        ReDim aStringValues(0)
-        ReDim aLogicalValues(0)
-        ReDim aProbabilities(0)
-        aRealConstantValue = 0.0
-        aIntegerConstantValue = 0
+        aStdev = -1001.0
+        aAlpha = -1001.0
+        aBeta = -1001.0
+        aRealConstantValue = -1001.0
+        aIntegerConstantValue = -1001
         aStringConstantValue = ""
         aLogicialConstantValue = True
-        aMinimumOffset = 0
-        aMaximumOffset = 0
+        aMinimumOffset = -1001.0
+        aMaximumOffset = -1001.0
         aMinimumField = ""
         aMaximumField = ""
         aAddField = ""
@@ -218,69 +212,88 @@ Public Class MonteCarlo
         aAddField = AddField
         aFYI = FYI
     End Sub
-
-    Public Sub GetRandom(ByRef DistributionType As String, ByRef ValueType As String, ByRef Minimum As Double, ByRef Maximum As Double, ByRef Mean As Double, ByRef Stdev As Double, ByRef Alpha As Double, ByRef Beta As Double, ByRef Peak As Double, ByRef RandomSeeds() As Double, ByRef RealValues() As Double, ByRef RealConstantValue As Double, ByRef IntegerValues() As Integer, ByRef IntegerConstantValue As Integer, ByRef StringValues() As String, ByRef StringConstantValue As String, ByRef LogicalValues() As Boolean, ByRef LogicalConstantValue As Boolean, ByRef Probabilities() As Double, ByRef MinimumOffset As Double, ByRef MaximumOffset As Double, ByRef MinimumField As String, ByRef MaximumField As String, ByRef AddField As String)
-        ' Get values for an &MRND output
+    Public Sub GetRandom(ByRef id As String, ByRef DistributionType As String, ByRef ValueType As String, ByRef Minimum As Double, ByRef Maximum As Double, ByRef Mean As Double, ByRef Stdev As Double, ByRef Alpha As Double, ByRef Beta As Double, ByRef Peak As Double, ByRef RandomSeeds() As Double, ByRef RealValues() As Double, ByRef RealConstantValue As Double, ByRef IntegerValues() As Integer, ByRef IntegerConstantValue As Integer, ByRef StringValues() As String, ByRef StringConstantValue As String, ByRef LogicalValues() As Boolean, ByRef LogicalConstantValue As Boolean, ByRef Probabilities() As Double, ByRef MinimumOffset As Double, ByRef MaximumOffset As Double, ByRef MinimumField As String, ByRef MaximumField As String, ByRef AddField As String, ByRef FYI As String)
+        ' Define values from an &MRND input
         Dim i, max As Integer
-        aDistributionType = DistributionType
-        aValueType = ValueType
-        aMinimum = Minimum
-        aMaximum = Maximum
-        aMean = Mean
-        aStdev = Stdev
-        aAlpha = Alpha
-        aBeta = Beta
-        max = RandomSeeds.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aRandomSeeds(max)
-            For i = 1 To max
-                aRandomSeeds(i) = RandomSeeds(i)
-            Next
+        id = aID
+        DistributionType = aDistributionType
+        ValueType = aValueType
+        Minimum = aMinimum
+        Maximum = aMaximum
+        Mean = aMean
+        Stdev = aStdev
+        Alpha = aAlpha
+        Beta = aBeta
+        ReDim RandomSeeds(0)
+        If Not Data.IsArrayEmpty(aRandomSeeds) Then
+            max = aRandomSeeds.GetUpperBound(0)
+            If max > 0 Then
+                ReDim RandomSeeds(max)
+                For i = 1 To max
+                    RandomSeeds(i) = aRandomSeeds(i)
+                Next
+            End If
         End If
-        max = RealValues.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aRealValues(max)
-            For i = 1 To max
-                aRealValues(i) = RealValues(i)
-            Next
+        ReDim RealValues(0)
+        If Not Data.IsArrayEmpty(aRealValues) Then
+            max = aRealValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim RealValues(max)
+                For i = 1 To max
+                    RealValues(i) = aRealValues(i)
+                Next
+            End If
         End If
-        max = IntegerValues.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aIntegerValues(max)
-            For i = 1 To max
-                aIntegerValues(i) = IntegerValues(i)
-            Next
+        ReDim IntegerValues(0)
+        If Not Data.IsArrayEmpty(aIntegerValues) Then
+            max = aIntegerValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim IntegerValues(max)
+                For i = 1 To max
+                    IntegerValues(i) = aIntegerValues(i)
+                Next
+            End If
         End If
-        max = StringValues.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aStringValues(max)
-            For i = 1 To max
-                aStringValues(i) = StringValues(i)
-            Next
+        ReDim aStringValues(0)
+        If Not Data.IsArrayEmpty(aStringValues) Then
+            max = aStringValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim StringValues(max)
+                For i = 1 To max
+                    StringValues(i) = aStringValues(i)
+                Next
+            End If
         End If
-        max = LogicalValues.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aLogicalValues(max)
-            For i = 1 To max
-                aLogicalValues(i) = LogicalValues(i)
-            Next
+        ReDim LogicalValues(0)
+        If Not Data.IsArrayEmpty(aLogicalValues) Then
+            max = aLogicalValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim LogicalValues(max)
+                For i = 1 To max
+                    LogicalValues(i) = aLogicalValues(i)
+                Next
+            End If
         End If
-        max = Probabilities.GetUpperBound(0)
-        If max > 0 Then
-            ReDim aProbabilities(max)
-            For i = 1 To max
-                aProbabilities(i) = Probabilities(i)
-            Next
+        ReDim Probabilities(0)
+        If Not Data.IsArrayEmpty(aProbabilities) Then
+            max = aProbabilities.GetUpperBound(0)
+            If max > 0 Then
+                ReDim Probabilities(max)
+                For i = 1 To max
+                    Probabilities(i) = aProbabilities(i)
+                Next
+            End If
         End If
-        aRealConstantValue = RealConstantValue
-        aIntegerConstantValue = IntegerConstantValue
-        aStringConstantValue = StringConstantValue
-        aLogicialConstantValue = LogicalConstantValue
-        aMinimumOffset = MinimumOffset
-        aMaximumOffset = MaximumOffset
-        aMinimumField = MinimumField
-        aMaximumField = MaximumField
-        aAddField = AddField
+        RealConstantValue = aRealConstantValue
+        IntegerConstantValue = aIntegerConstantValue
+        StringConstantValue = aStringConstantValue
+        LogicalConstantValue = aLogicialConstantValue
+        MinimumOffset = aMinimumOffset
+        MaximumOffset = aMaximumOffset
+        MinimumField = aMinimumField
+        MaximumField = aMaximumField
+        AddField = aAddField
+        FYI = aFYI
     End Sub
     Public Sub SetHeader(ByVal NumberofCases As Integer, ByVal Seeds() As Double, ByVal WriteSeeds As Boolean, ByVal ParameterFile As String, WorkFolder As String, OutputFolder As String)
         aNumberofCases = NumberofCases
@@ -325,53 +338,6 @@ Public Class MonteCarlo
         SecondDevice = aSecondDevice
         FYI = aFYI
     End Sub
-    Private Function IsArrayEmpty(Arr As Object) As Boolean
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        ' IsArrayEmpty
-        ' This function tests whether the array is empty (unallocated). Returns TRUE or FALSE.
-        '
-        ' The IsArray function indicates whether a variable is an array, but it does not
-        ' distinguish between allocated and unallocated arrays. It will return TRUE for both
-        ' allocated and unallocated arrays. This function tests whether the array has actually
-        ' been allocated.
-        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-        Dim LB As Long
-        Dim UB As Long
-
-        Err.Clear()
-        On Error Resume Next
-        If IsArray(Arr) = False Then
-            ' we weren't passed an array, return True
-            IsArrayEmpty = True
-        End If
-
-        ' Attempt to get the UBound of the array. If the array is
-        ' unallocated, an error will occur.
-        UB = UBound(Arr, 1)
-        If (Err.Number <> 0) Then
-            IsArrayEmpty = True
-        Else
-            ''''''''''''''''''''''''''''''''''''''''''
-            ' On rare occassion, under circumstances I
-            ' cannot reliably replictate, Err.Number
-            ' will be 0 for an unallocated, empty array.
-            ' On these occassions, LBound is 0 and
-            ' UBoung is -1.
-            ' To accomodate the weird behavior, test to
-            ' see if LB > UB. If so, the array is not
-            ' allocated.
-            ''''''''''''''''''''''''''''''''''''''''''
-            Err.Clear()
-            LB = LBound(Arr)
-            If LB > UB Then
-                IsArrayEmpty = True
-            Else
-                IsArrayEmpty = False
-            End If
-        End If
-
-    End Function
 End Class
 Public Class MonteCarloCollection
     Inherits System.Collections.CollectionBase

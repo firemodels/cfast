@@ -3084,7 +3084,9 @@ Module IO
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
-                ElseIf DistributionType = "BETA" Then
+                ElseIf DistributionType = "BETA" Or DistributionType = "GAMMA" Then
+                    ln += "  ALPHA = " + Alpha.ToString + "  BETA = " + Beta.ToString + " /"
+                    PrintLine(IO, ln)
                 ElseIf DistributionType = "NORMAL" Or DistributionType = "LOG_NORMAL" Then
                     ln += "  MEAN = " + Mean.ToString + "  STDEV = " + StDev.ToString + " /"
                     PrintLine(IO, ln)

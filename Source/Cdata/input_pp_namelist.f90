@@ -430,8 +430,8 @@
     
     character(len=128) :: id, rand_id, parameter_column_label, fyi, field_type, value_type 
     character(len=128), dimension(2) :: field
-    real(eb) ::base_scaling_value
-    integer ::number_in_index, position
+    real(eb) :: base_scaling_value
+    integer :: position
     logical :: add_to_parameters
     real(eb), dimension(mxpntsarray) :: real_values
     integer, dimension(mxpntsarray) :: integer_values

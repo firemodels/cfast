@@ -3081,6 +3081,8 @@ Module IO
                         End If
                     End If
                     PrintLine(IO, ln)
+                ElseIf DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
+
                 End If
             Next
         End If

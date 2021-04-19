@@ -137,6 +137,8 @@ Module IO
                         MinimumOffset = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_OFFSET") Then
                         MaximumOffset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_FIELD") Then
+                        MinimumField = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_FIELD") Then
                         MaximumField = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIELD") Then
@@ -3082,7 +3084,38 @@ Module IO
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
-
+                ElseIf DistributionType = "BETA" Then
+                ElseIf DistributionType = "NORMAL" Or DistributionType = "LOG_NORMAL" Then
+                    ln += "  MEAN = " + Mean.ToString + "  STDEV = " + StDev.ToString + " /"
+                    PrintLine(IO, ln)
+                ElseIf DistributionType = "TRUNCATED_NORMAL" Or DistributionType = "TRUNCATED_LOG_NORMAL" Then
+                    ln += "  MEAN = " + Mean.ToString + "  STDEV = " + StDev.ToString
+                    PrintLine(IO, ln)
+                    If MinimumField = "" Then
+                        ln = "     MINIMUM = " + Minimum.ToString
+                    Else
+                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                    End If
+                    If MaximumField = "" Then
+                        ln += " MAXIMUM = " + Maximum.ToString
+                    Else
+                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                    End If
+                    If FYI <> "" Then
+                        PrintLine(IO, ln)
+                        ln = "     FYI = '" + FYI + "' /"
+                    Else
+                        ln += " /"
+                    End If
+                    PrintLine(IO, ln)
+                ElseIf DistributionType = "CONSTANT" Then
+                    ln += " VALUE_TYPE = '" + ValueType + "'"
+                    If ValueType = "REAL" Then ln += "  REAL_CONSTANT_VALUE = " + RealConstantValue.ToString
+                    If ValueType = "INTEGER" Then ln += "  INTEGER_CONSTANT_VALUE = " + IntegerConstantValue.ToString
+                    If ValueType = "STRING" Then ln += "  STRING_CONSTANT_VALUE = " + StringConstantValue
+                    If ValueType = "LOGICAL" Then ln += "  LOGICAL_CONSTANT_VALUE = " + LogicalConstantValue
+                    ln += " /"
+                    PrintLine(IO, ln)
                 End If
             Next
         End If

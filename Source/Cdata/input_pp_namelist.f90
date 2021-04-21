@@ -42,7 +42,8 @@
         idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections, mxpntsarray, idx_user_defined_discrete, &
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
         mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear, &
-        idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal
+        idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal, idx_beta, idx_gamma, &
+        idx_user_defined_continous_interval
         
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
@@ -304,8 +305,9 @@
                 if (value_type == val_types(idx_real)) then
                     genptr%value_type = val_types(idx_real)
                 else
-                    write (errormessage,'(a,i0,a)') &
-                        '***Error, Uniform distribution specified in &MRND requires real number values. ', genptr%value_type, &
+                    write (errormessage,'(5a)') &
+                        '***Error, Uniform distribution specified in &MRND ', trim(genptr%id), &
+                        ' requires real number values. ', trim(genptr%value_type), &
                         ' specified.'
                     call cfastexit('READ_MRND',4)
                 end if 
@@ -345,9 +347,48 @@
                         genptr%logic_array(jj) = logical_values(jj)
                     end do 
                 else
-                    write (errormessage,'(a)') '***Error, Invalid values specified for discrete values distribution. '
+                    write (errormessage,'(2a)') &
+                        '***Error, Invalid values specified for discrete values distribution for &MRND ', &
+                        trim(genptr%id)
                     call cfastexit('read_mrnd', 5)
+                end if 
+            else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_continous_interval))) then
+                ndx = 1
+                genptr%type_dist = distribution_type
+                ndx_loop_2: do while(ndx + 1 <= mxpntsarray)
+                    if (probabilities(ndx + 1) >= 0._eb) then
+                        ndx = ndx + 1
+                    else
+                        exit ndx_loop_2
+                    end if
+                end do ndx_loop_2
+                ndx = ndx + 1
+                genptr%num_discrete_values = ndx
+                genptr%prob_array(1) = 0.0_eb
+                do jj = 2, ndx
+                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj - 1)
+                end do  
+                if (genptr%prob_array(ndx) /= 1) then
+                    write (errormessage, '(2a)') '***Error, probablities must add up to 1.0, &MRND ', trim(genptr%id)
+                    call cfastexit('read_mrnd', 6)
                 end if
+                if (real_values(1) /= -1001._eb) then
+                    genptr%value_type = val_types(idx_real)
+                    genptr%real_array(1) = real_values(1)
+                    do jj = 2, ndx
+                        if (real_values(jj) <= real_values(jj-1)) then
+                            write (errormessage, '(2a)') '***Error, real_values must be increasing for &MRND ', &
+                                trim(genptr%id)
+                            call cfastexit('rean_mrnd', 7)
+                        end if
+                        genptr%real_array(jj) = real_values(jj)
+                    end do
+                else
+                    write (errormessage,'(2a)') &
+                        '***Error, Invalid values specified for continuous values distribution for &MRND ', &
+                        trim(genptr%id)
+                    call cfastexit('read_mrnd', 8)
+                end if 
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
@@ -372,8 +413,45 @@
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
+            else if (trim(distribution_type) == trim(rand_dist(idx_beta))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                if (alpha <= 0) then 
+                    write (errormessage, '(2a)') '***Error, For BETA distribution ALPHA nust be >0 in& MRND ', &
+                        trim(genptr%id)
+                    call cfastexit('read_mrnd', 9)
+                end if 
+                if (beta <= 0) then 
+                    write (errormessage, '(2a)') '***Error, For BETA distribution BETA nust be >0 in &MRND ', &
+                        trim(genptr%id)
+                    call cfastexit('read_mrnd', 10)
+                end if 
+                genptr%alpha = alpha
+                genptr%beta = beta
+                if (trim(minimum_field) /= 'NULL' .and. trim(maximum_field) /= 'NULL') then
+                    if (genptr%minimum() == -d1mach(2) .and. genptr%maximum() == d1mach(2)) then 
+                        call genptr%set_min_value(0.0_eb)
+                        call genptr%set_max_value(1.0_eb)
+                    end if
+                end if
+            else if (trim(distribution_type) == trim(rand_dist(idx_gamma))) then
+                genptr%type_dist = distribution_type
+                genptr%value_type = val_types(idx_real)
+                if (alpha <= 0) then 
+                    write (errormessage, '(2a)') '***Error, For GAMMA distribution ALPHA nust be >0 in &MRND ', &
+                        trim(genptr%id)
+                    call cfastexit('read_mrnd', 11)
+                end if 
+                if (beta <= 0) then 
+                    write (errormessage, '(2a)') '***Error, For GAMMA distribution BETA nust be >0 in &MRND ', &
+                        trim(genptr%id)
+                    call cfastexit('read_mrnd', 12)
+                end if 
+                genptr%alpha = alpha
+                genptr%beta = beta
             else
-                write (errormessage,'(2a)') '***Error, Invalid distribution type specified in &MRND, ', trim(distribution_type)
+                write (errormessage,'(4a)') '***Error, Invalid distribution type specified in &MRND ', trim(genptr%id), &
+                    ' type ', trim(distribution_type)
                 call cfastexit('read_mrnd',1000)
             end if
             

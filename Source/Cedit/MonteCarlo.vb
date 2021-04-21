@@ -8,6 +8,11 @@ Public Class MonteCarlo
     ' Variables shared by different Montecarlo commands
     Private aID As String                   ' id used a heading for output column
     Private aFYI As String                  ' Descriptor for additional user supplied information
+    Private aRealValues(0), aRealConstantValue As Double
+    Private aIntegerValues(0), aIntegerConstantValue As Integer
+    Private aStringValues(0), aStringConstantValue As String
+    Private aLogicalValues(0), aLogicialConstantValue As Boolean
+    Private aValueType As String
 
     ' Inputs for &OUTP
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
@@ -28,7 +33,6 @@ Public Class MonteCarlo
 
     ' Inputs for &MRND
     Private aDistributionType As String
-    Private aValueType As String
     Private aMinimum As Double
     Private aMaximum As Double
     Private aMean As Double
@@ -37,16 +41,22 @@ Public Class MonteCarlo
     Private aBeta As Double
     Private aPeak As Double
     Private aRandomSeeds(0) As Double
-    Private aRealValues(0), aRealConstantValue As Double
-    Private aIntegerValues(0), aIntegerConstantValue As Integer
-    Private aStringValues(0), aStringConstantValue As String
-    Private aLogicalValues(0), aLogicialConstantValue As Boolean
     Private aProbabilities(0) As Double
     Private aMinimumOffset As Double
     Private aMaximumOffset As Double
     Private aMinimumField As String
     Private aMaximumField As String
     Private aAddField As String
+
+    ' Inputs for &MFLD
+    Private aFieldType As String
+    Private aField(2) As String
+    Private aRandId As String
+    Private aParameterColumnLabel As String
+    Private aAddToParameters As Boolean
+    Private aScenarioTitles(0) As String
+    Private aBaseScalingValue As Double
+    Private aPosition As Integer
 
     ' Inputs for &MFIR
     Private aFireID As String
@@ -136,11 +146,135 @@ Public Class MonteCarlo
         aMinimumField = ""
         aMaximumField = ""
         aAddField = ""
+
+        ' &MFLD
+        aFieldType = ""
+        afield(1) = ""
+        afield(2) = ""
+        aRandId = ""
+        aParameterColumnLabel = ""
+        aAddToParameters = False
+        aBaseScalingValue = 1.0
+        aPosition = 1
     End Sub
-    Public Sub SetRandom(ByVal id As String, ByVal DistributionType As String, ByVal ValueType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
+    Public Sub SetField(ByVal Id As String, ByVal FieldType As String, ByVal Field() As String, ByVal RandId As String, ByVal ParameterColumnLabel As String, ByVal AddToParameters As Boolean, ByVal ValueType As String, RealValues() As Double, ByVal IntegerValues() As Integer, ByVal StringValues() As String, ByVal LogicalValues() As Boolean, ByVal BaseScalingValue As Double, ByVal Position As Integer, ByVal FYI As String)
+        Dim i, max As Integer
+        aID = Id
+        aFieldType = FieldType
+        If Not IsArrayEmpty(Field) Then
+            max = Field.GetUpperBound(0)
+            If max >= 2 Then
+                ReDim aField(max)
+                For i = 1 To 2
+                    aField(i) = Field(i)
+                Next
+            End If
+        End If
+        aRandId = RandId
+        aParameterColumnLabel = ParameterColumnLabel
+        aAddToParameters = AddToParameters
+        aValueType = ValueType
+        If Not IsArrayEmpty(RealValues) Then
+            max = RealValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim aRealValues(max)
+                For i = 1 To max
+                    aRealValues(i) = RealValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(IntegerValues) Then
+            max = IntegerValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim aIntegerValues(max)
+                For i = 1 To max
+                    aIntegerValues(i) = IntegerValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(StringValues) Then
+            max = StringValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim aStringValues(max)
+                For i = 1 To max
+                    aStringValues(i) = StringValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(LogicalValues) Then
+            max = LogicalValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim aLogicalValues(max)
+                For i = 1 To max
+                    aLogicalValues(i) = LogicalValues(i)
+                Next
+            End If
+        End If
+        aBaseScalingValue = BaseScalingValue
+        aPosition = Position
+        aFYI = FYI
+    End Sub
+    Public Sub GetField(ByRef Id As String, ByRef FieldType As String, ByRef Field() As String, ByRef RandId As String, ByRef ParameterColumnLabel As String, ByRef AddToParameters As Boolean, ByRef ValueType As String, RealValues() As Double, ByRef IntegerValues() As Integer, ByRef StringValues() As String, ByRef LogicalValues() As Boolean, ByRef BaseScalingValue As Double, ByRef Position As Integer, ByRef FYI As String)
+        Dim i, max As Integer
+        Id = aID
+        FieldType = aFieldType
+        If Not IsArrayEmpty(aField) Then
+            max = aField.GetUpperBound(0)
+            If max >= 2 Then
+                ReDim Field(max)
+                For i = 1 To 2
+                    Field(i) = aField(i)
+                Next
+            End If
+        End If
+        RandId = aRandId
+        ParameterColumnLabel = aParameterColumnLabel
+        AddToParameters = aAddToParameters
+        ValueType = aValueType
+        If Not IsArrayEmpty(aRealValues) Then
+            max = aRealValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim RealValues(max)
+                For i = 1 To max
+                    RealValues(i) = aRealValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(aIntegerValues) Then
+            max = aIntegerValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim IntegerValues(max)
+                For i = 1 To max
+                    IntegerValues(i) = aIntegerValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(aStringValues) Then
+            max = aStringValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim StringValues(max)
+                For i = 1 To max
+                    StringValues(i) = aStringValues(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(aLogicalValues) Then
+            max = aLogicalValues.GetUpperBound(0)
+            If max > 0 Then
+                ReDim LogicalValues(max)
+                For i = 1 To max
+                    LogicalValues(i) = aLogicalValues(i)
+                Next
+            End If
+        End If
+        BaseScalingValue = aBaseScalingValue
+        Position = aPosition
+        FYI = aFYI
+    End Sub
+    Public Sub SetRandom(ByVal Id As String, ByVal DistributionType As String, ByVal ValueType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
         ' Define values from an &MRND input
         Dim i, max As Integer
-        aID = id
+        aID = Id
         aDistributionType = DistributionType
         aValueType = ValueType
         aMinimum = Minimum

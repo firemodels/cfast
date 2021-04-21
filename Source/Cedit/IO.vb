@@ -41,7 +41,90 @@ Module IO
 
         ReadInputFileNMLMHDR(NMList, myMHeaders)
         ReadInputFileNMLMRND(NMList, myRandoms)
+        ReadInputFileNMLMFLD(NMList, myFields)
         ReadInputFileNMLOutp(NMList, myOutputs)
+    End Sub
+    Private Sub ReadInputFileNMLMFLD(NMList As NameListFile, ByRef someFields As MonteCarloCollection)
+        Dim i, j, k As Integer
+        Dim id As String, FYI As String
+        Dim max As Integer
+        Dim FieldType As String, Field(2) As String, RandId As String, ParameterColumnLabel As String, ValueType As String, StringValues() As String
+        Dim RealValues() As Double, BaseScalingValue As Double
+        Dim IntegerValues() As Integer, Position As Integer
+        Dim LogicalValues() As Boolean, AddToParameters As Boolean
+
+        For i = 1 To NMList.TotNMList
+            FieldType = ""
+            Field(1) = ""
+            Field(2) = ""
+            RandId = ""
+            ParameterColumnLabel = ""
+            AddToParameters = False
+            BaseScalingValue = 1.0
+            Position = -1001
+            FYI = ""
+
+            If (NMList.GetNMListID(i) = "MFLD") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "RAND_ID") Then
+                        RandId = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD_TYPE") Then
+                        FieldType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUE_TYPE") Then
+                        ValueType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim RealValues(max)
+                        For k = 1 To max
+                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim IntegerValues(max)
+                        For k = 1 To max
+                            IntegerValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim StringValues(max)
+                        For k = 1 To max
+                            StringValues(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim LogicalValues(max)
+                        For k = 1 To max
+                            LogicalValues(k) = NMList.ForNMListVarGetBool(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 Then
+                            Field(1) = NMList.ForNMListVarGetStr(i, j, 1)
+                            Field(2) = NMList.ForNMListVarGetStr(i, j, 2)
+                        Else
+                            Field(1) = ""
+                            Field(2) = ""
+                        End If
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PARAMETER_COLUMN_LABEL") Then
+                        ParameterColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TO_PARAMETERS") Then
+                        AddToParameters = False
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then AddToParameters = True
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "BASE_SCALING_VALUE") Then
+                        BaseScalingValue = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "POSITION") Then
+                        Position = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        Position = NMList.ForNMListVarGetStr(i, j, 1)
+                    End If
+                Next
+                Dim aField As New MonteCarlo
+                aField.SetField(id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, ValueType, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
+                someFields.Add(aField)
+            End If
+        Next
     End Sub
     Private Sub ReadInputFileNMLMRND(NMList As NameListFile, ByRef someRandoms As MonteCarloCollection)
         Dim i, j, k As Integer
@@ -2063,6 +2146,7 @@ Module IO
         WriteOutputFileNMLIsoSlcf(IO, myVisuals)
         WriteOutputFileNMLOutp(IO, myOutputs)
         writeOutputFileNMLMRND(IO, myRandoms)
+        WriteOutputFIleNMLMFLD(IO, myFields)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -2942,13 +3026,13 @@ Module IO
             Next
         End If
     End Sub
-    Private Sub writeOutputFileNMLMRND(IO As Integer, myRandoms As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLMRND(IO As Integer, myRandoms As MonteCarloCollection)
         Dim ln As String, i As Integer, j As Integer, aRandom As MonteCarlo, max As Integer
 
         ' Writing &MRND
         If myRandoms.Count > 0 Then
             PrintLine(IO, " ")
-            ln = "!! Random Distributions"
+            ln = "!! Monte Carlo Random Distributions"
             PrintLine(IO, ln)
 
             Dim Id As String, DistributionType As String, ValueType As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
@@ -3136,6 +3220,107 @@ Module IO
                     ln += " /"
                     PrintLine(IO, ln)
                 End If
+            Next
+        End If
+    End Sub
+    Private Sub WriteOutputFileNMLMFLD(IO As Integer, MyFields As MonteCarloCollection)
+        Dim ln As String, i, j As Integer, aField As MonteCarlo
+        Dim max As Integer
+        ' Writing &OUTP
+        If MyFields.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Monte-Carlo Field Definitions"
+            PrintLine(IO, ln)
+            Dim Id As String, RandId As String, FieldType As String, ValueType As String, ParameterColumnLabel As String, FYI As String
+            Dim RealValues(0) As Double, IntegerValues(0) As Integer, LogicalValues(0) As Boolean, StringValues(0) As String
+            Dim Field(2) As String
+            Dim AddToParameters As Boolean
+            Dim BaseScalingValue As Double, Position As Integer
+            For i = 0 To MyFields.Count - 1
+                Id = ""
+                FieldType = ""
+                RandId = ""
+                Field(1) = ""
+                Field(2) = ""
+                ValueType = ""
+                ParameterColumnLabel = ""
+                AddToParameters = False
+                BaseScalingValue = 1.0
+                Position = -1001
+
+                aField = MyFields.Item(i)
+                aField.GetField(Id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, ValueType, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
+                ln = "&MFLD ID = '" + Id + "  RAND_ID = '" + RandId + "'  FIELD_TYPE = '" + FieldType + "'  FIELD = '" + Field(1) + "', '" + Field(2) + "'"
+                If FieldType = "INDEX" Then
+                    ln += "  VALUE_TYPE = '" + ValueType + "'"
+                    PrintLine(IO, ln)
+                    If ValueType = "REAL" Then
+                        ln = "     REAL_VALUES = "
+                        If Not Data.IsArrayEmpty(RealValues) Then
+                            max = RealValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += RealValues(j).ToString + ", "
+                                Next
+                                ln += RealValues(max).ToString
+                            End If
+                        End If
+                    ElseIf ValueType = "INTEGER" Then
+                        ln = "     INTEGER_VALUES = "
+                        If Not Data.IsArrayEmpty(IntegerValues) Then
+                            max = IntegerValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += IntegerValues(j).ToString + ", "
+                                Next
+                                ln += IntegerValues(max).ToString
+                            End If
+                        End If
+                    ElseIf ValueType = "STRING" Then
+                        ln = "     STRING_VALUES = "
+                        If Not Data.IsArrayEmpty(StringValues) Then
+                            max = StringValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += StringValues(j) + ", "
+                                Next
+                                ln += StringValues(max)
+                            End If
+                        End If
+                    ElseIf ValueType = "LOGICAL" Then
+                        ln = "     LOGICAL_VALUES = "
+                        If Not Data.IsArrayEmpty(LogicalValues) Then
+                            max = LogicalValues.GetUpperBound(0)
+                            If max > 0 Then
+                                For j = 1 To max - 1
+                                    ln += LogicalValues(j).ToString + ", "
+                                Next
+                                ln += LogicalValues(max).ToString
+                            End If
+                        End If
+                    End If
+                ElseIf FieldType = "SCALING" Then
+                    If BaseScalingValue <> 1.0 Then
+                        ln += "  BASE_SCALING_VALUE = " + BaseScalingValue.ToString
+                    End If
+                ElseIf FieldType = "VALUE" Then
+                    ' nothing additional needed for the value type
+                End If
+                If AddToParameters = True Or FYI <> "" Then
+                    PrintLine(IO, ln)
+                    ln = "   "
+                    If AddToParameters = True Then
+                        ln += "  ADD_TO_PARAMETERS = .TRUE."
+                        If ParameterColumnLabel <> "" Then
+                            ln += "  PARAMETER_COLUMN_LABEL = '" + ParameterColumnLabel + "'"
+                        End If
+                    End If
+                    If FYI <> "" Then
+                        ln += "  FYI ='" + FYI + "'"
+                    End If
+                End If
+                ln += " /"
+                PrintLine(IO, ln)
             Next
         End If
     End Sub

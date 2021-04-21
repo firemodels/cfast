@@ -72,6 +72,7 @@ Module IO
             RealConstantValue = 0.0
             IntegerConstantValue = 0
             LogicalConstantValue = False
+            FYI = ""
 
             If (NMList.GetNMListID(i) = "MRND") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
@@ -3020,7 +3021,7 @@ Module IO
                         ln += " /"
                     End If
                     PrintLine(IO, ln)
-                ElseIf DistributionType = "USER_DEFINED_DISCRETE" Then
+                ElseIf DistributionType = "USER_DEFINED_DISCRETE" Or DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
                     ln += " VALUE_TYPE = '" + ValueType + "'"
                     PrintLine(IO, ln)
                     If ValueType = "REAL" Then
@@ -3034,8 +3035,7 @@ Module IO
                                 ln += RealValues(max).ToString
                             End If
                         End If
-                    End If
-                    If ValueType = "INTEGER" Then
+                    ElseIf ValueType = "INTEGER" Then
                         ln = "     INTEGER_VALUES = "
                         If Not Data.IsArrayEmpty(IntegerValues) Then
                             max = IntegerValues.GetUpperBound(0)
@@ -3046,8 +3046,7 @@ Module IO
                                 ln += IntegerValues(max).ToString
                             End If
                         End If
-                    End If
-                    If ValueType = "STRING" Then
+                    ElseIf ValueType = "STRING" Then
                         ln = "     STRING_VALUES = "
                         If Not Data.IsArrayEmpty(StringValues) Then
                             max = StringValues.GetUpperBound(0)
@@ -3058,8 +3057,7 @@ Module IO
                                 ln += StringValues(max)
                             End If
                         End If
-                    End If
-                    If ValueType = "LOGICAL" Then
+                    ElseIf ValueType = "LOGICAL" Then
                         ln = "     LOGICAL_VALUES = "
                         If Not Data.IsArrayEmpty(LogicalValues) Then
                             max = LogicalValues.GetUpperBound(0)
@@ -3083,8 +3081,27 @@ Module IO
                         End If
                     End If
                     PrintLine(IO, ln)
-                ElseIf DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
-                ElseIf DistributionType = "BETA" Or DistributionType = "GAMMA" Then
+                ElseIf DistributionType = "BETA" Then
+                    ln += "  ALPHA = " + Alpha.ToString + "  BETA = " + Beta.ToString
+                    PrintLine(IO, ln)
+                    If MinimumField = "" Then
+                        ln = "     MINIMUM = " + Minimum.ToString
+                    Else
+                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                    End If
+                    If MaximumField = "" Then
+                        ln += " MAXIMUM = " + Maximum.ToString
+                    Else
+                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                    End If
+                    ln += " PEAK = " + Peak.ToString
+                    If FYI <> "" Then
+                        PrintLine(IO, ln)
+                        ln = "     FYI = '" + FYI + "' /"
+                    Else
+                        ln += " /"
+                    End If
+                ElseIf DistributionType = "GAMMA" Then
                     ln += "  ALPHA = " + Alpha.ToString + "  BETA = " + Beta.ToString + " /"
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "NORMAL" Or DistributionType = "LOG_NORMAL" Then

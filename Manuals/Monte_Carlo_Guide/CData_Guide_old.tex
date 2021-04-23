@@ -148,7 +148,7 @@ The Monte Carlo method is "a broad class of computational algorithms that use re
 
 Work continued to better characterize the Monte Carlo method in its use in fire safety research and design. Notarianni \cite{Notarianni:2000} used Monte Carlo methods to characterize and quantify uncertainty in performance-based designs for fire safety. Bruns \cite{bruns_tn_2016}, in a study using Monte Carlo methods to assess the impact of inner liners in residential upholstered furniture, formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance-based designs.
 
-Monte Carlo methods are already used in the fire protection industry. The US Nuclear Regulatory Commission (NRC) is one industry that makes a lot of use of Monte Carlo and other methods making use of a large number of model runs to generate statisitics to quantify risk. Some examples include NUREG/CR-6850 Volume 2 Appendix L \cite{NRCNUREGCR6850V2}, NUREG-2178 Volume 1 \cite{NRCNUREG2178V1} Chapter 5, obstructed plumes,  NUREG-2178 Volume 2 \cite{NRCNUREG2178V2} Chapter2 2 and 3, obstructed radiation, Chapter 5, Motors and transformers, Chapter 6, wall and corner effects, and chapter 7, main control boards.
+Monte Carlo methods are already used in the fire protection industry. The US Nuclear Regulatory Commission (NRC) is one industry that makes a lot of use of Monte Carlo and other methods making use of a large number of model runs to generate statisitics to quantify risk. Some examples include NUREG/CR-6850 Volume 2 Appendix L \cite{NRCNUREGCR6850V2}, NUREG-2178 Volume 1 \cite{NRCNUREG2178V1} Chapter 5, obstructed plumes,  NUREG-2178 Volume 2 \cite{NRCNUREG2178V2} Chapter2 2 and 3, obstructed radiation, Chapter 5, Motors and transformers, Chapter 6, wall and corner effects, and chapter 7, main control boards. 
 
 At one time issues of both insufficient computational power and a lack of tools designed to do the analysis were obstacles to using Monte Carlo methods. However, it is now relatively easy to obtain the computational power and storage to generate and analyze huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end, the Fire Research Division at the National Institute of Standards and Technology (NIST) has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo fire hazard analysis a more widely used form of analysis using the Consolidated Fire And Smoke Transport (CFAST) model. The result of this effort is the CFAST Fire Data Generator (CData), documented in this report.
 
@@ -356,7 +356,9 @@ Time Histories    & Time                         & s                           \
 \chapter{Defining Data for Analysis, CData Inputs}
 \label{commands_section}
 
-This chapter describes the inputs that are used to define a set of scenarios for analysis. The inputs allow the user to define one or more distributions that are then used to vary individual variables within a CFAST input file. Each subsection will discuss one set of namelist inputs and what each of the parameters does. All the inputs are combined in Appendix \ref{preprocessor_reference} to serve as a reference for commands. Examples are included in with each section to
+Choosing modeling results for analysis depends on the goals of the hazard analysis and the particular technology under study. In the most general sense, this means understanding what results are indicative of improved fire safety. To improve fire safety generally means reducing the deaths and injuries due to a fire. So, the goal is to identify which variables, that can be calculated, would give an indication that a new technology will reduce deaths and injuries.
+
+Each subsection will discuss one set of namelist inputs and what each of the parameters does. All the inputs are combined in Appendix \ref{preprocessor_reference}  to serve as a reference for commands.
 
 Section \ref{preprocessor} has additional details on how to run CData. One example of running CData from a command line is the following
 
@@ -410,17 +412,14 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
         \item[BETA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
         \item[GAMMA] requires additional inputs {\ct ALPHA} and {\ct BETA}. Returns real values.
         \item[TRUNCATED\_GAMMA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
-        \item[USER\_DEFINED\_CONTINUOUS] requires additional inputs {\ct PROBABILITIES}, and \\
-{\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct REAL\_VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct REAL\_VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there’s then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
-        \item[USER\_DEFINED\_DISCRETE] requires additional inputs {\ct PROBABILITIES}, and \\
-{\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must match the number of \\
-{\ct REAL\_VALUES} inputs. Returns real values.
+        \item[USER\_DEFINED\_CONTINUOUS] requires additional inputs {\ct PROBABILITIES}, and {\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct REAL\_VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct REAL\_VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there’s then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
+        \item[USER\_DEFINED\_DISCRETE] requires additional inputs {\ct PROBABILITIES}, and {\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must match the number of {\ct REAL\_VALUES} inputs. Returns real values.
       \end{description}
-  \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. As an example suppose that a set of 1000 cases are created and run. For some reason the user wants to have the next 1000 cases to have the ceiling height in one compartment to be the same as the first run but have other variables change. Setting the {\ct RANDOM\_SEEDS} in the {\ct \&MFLD} that sets the ceiling height in that compartment will result in the ceiling heights being the same while other variable are different. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
-  \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution it is the value that is returned by the generator.
-  \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution types. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution types. These are not cumulative probabilities and the total of all values must add to 1.0
-    \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED\_DISCRETE} and \\
+  \item[RANDOM\_SEEDS]like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Suppose that a set of 1000 cases are created and run. For some reason the user wants to have the next 1000 cases to have the ceiling height in one compartment to be the same but have other variables change. Setting the {\ct RANDOM\_SEEDS} in the {\ct \&MFLD} that sets the ceiling height in that compartment will result in the ceiling heights being the same. 
+  \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct REAL}, it is the value that is returned by the generator.
+  \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct REAL}. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct PROBABILITIES}. These are not cumulative probabilities and the total of all values must add to 1.0
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED\_DISCRETE} and \\
  { \ct USER\_DEFINED\_CONTINOUS} distribution types. These are not cumulative probabilities and the total of all values must add to 1.0
   \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
       {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
@@ -553,7 +552,7 @@ Secondly, inputs for the scaling fire are described.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
   \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_1054\_KW] Is a logical. If {\ct .FALSE.}, the default value, means that the first generator in the {\ct FIRE\_HRR\_GENERATORS} list is giving the HRR for that point. If {\ct .TRUE.} then the first generator is giving the time the fires growth will reach 1054 KW and the HRR is determined by combining this value with the corresponding value in the {\ct FIRE\_TIME\_GENERATORS} list.
+  \item[TIME\_TO\_1054\_KW] Is a logical. If {\ct .FALSE.}, the default value, means that the first generator in the {\ct FIRE\_HRR\_GENERATORS} list is giving the HRR for that point. If {\ct .TRUE.} then the first generator is giving the time the fires growth will reach 1054 KW and the HRR is determined by combining this value with the corresponding value in the {\ct FIRE\_TIME\_GENERATORS} list. 
   \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
@@ -874,7 +873,7 @@ In order to allow CFAST cases to be run efficiently in parallel on systems with 
 \vspace{\baselineskip}
 {\ct cdata Simple.in -A}
 
-There is a reason for sepearating the accumulation of data from the generation of data. It allows for greater flexiablity in running cases. We have run sets of data on 256 8 core processors. Some cases run a lot longer then others so it is not always easy to determine if all the cases or even a particular case is complete. So for the time being the safest way to ensure every case is run to completion and to not crash cases that are still running is to let the user make sure all the cases are run before attempting the accumulation of data.
+There is a reason for sepearating the accumulation of data from the generation of data. It allows for greater flexiablity in running cases. We have run sets of data on 256 8 core processors. Some cases run a lot longer then others so it is not always easy to determine if all the cases or even a particular case is complete. So for the time being the safest way to ensure every case is run to completion and to not crash cases that are still running is to let the user make sure all the cases are run before attempting the accumulation of data. 
 
 \subsection{Statistics}
 

@@ -148,6 +148,8 @@ The Monte Carlo method is "a broad class of computational algorithms that use re
 
 Work continued to better characterize the Monte Carlo method in its use in fire safety research and design. Notarianni \cite{Notarianni:2000} used Monte Carlo methods to characterize and quantify uncertainty in performance-based designs for fire safety. Bruns \cite{bruns_tn_2016}, in a study using Monte Carlo methods to assess the impact of inner liners in residential upholstered furniture, formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance-based designs.
 
+Monte Carlo methods are already used in the fire protection industry. The US Nuclear Regulatory Commission (NRC) is one industry that makes a lot of use of Monte Carlo and other methods making use of a large number of model runs to generate statisitics to quantify risk. Some examples include NUREG/CR-6850 Volume 2 Appendix L \cite{NRCNUREGCR6850V2}, NUREG-2178 Volume 1 \cite{NRCNUREG2178V1} Chapter 5, obstructed plumes,  NUREG-2178 Volume 2 \cite{NRCNUREG2178V2} Chapter2 2 and 3, obstructed radiation, Chapter 5, Motors and transformers, Chapter 6, wall and corner effects, and chapter 7, main control boards. 
+
 At one time issues of both insufficient computational power and a lack of tools designed to do the analysis were obstacles to using Monte Carlo methods. However, it is now relatively easy to obtain the computational power and storage to generate and analyze huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end, the Fire Research Division at the National Institute of Standards and Technology (NIST) has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo fire hazard analysis a more widely used form of analysis using the Consolidated Fire And Smoke Transport (CFAST) model. The result of this effort is the CFAST Fire Data Generator (CData), documented in this report.
 
 The fire model being used, CFAST, is documented by four publications, a user's guide~\cite{CFAST_Users_Guide_7}, a technical reference guide~\cite{CFAST_Tech_Guide_7} a verification and validation guide \cite{CFAST_Valid_Guide_7}, and a configuration management guide~\cite{CFAST_Config_Guide_7}. The user's guide describes how to use the model and the input editor CEdit. The technical reference guide describes the underlying physical principles, provides a comparison with other models, and includes an evaluation of the model following the guidelines of ASTM~E1355~\cite{CFAST:ASTM:E1355}. The model verification and validation guide documents verification and validation efforts for the model. The configuration management guide documents the processes used during the development and validation of the model. This guide is a companion to the CFAST software and describes the use of the program CData to generate, summarize, and analyze numerous CFAST simulations.
@@ -325,7 +327,7 @@ Fuel Composition        & Carbon Molecules              & $\geq$ 0              
                         & Radiative Fraction            & 0 - 1                         \\ \hline
 Ignition Criteria       & Ignition Criterion            & Selection List                \\
                         & Setpoint                      & s, \degc, or kW/m$^2$         \\ \hline
-Time Histories          & \multicolumn{2}{|c|}{See Section \ref{Fire_Time_Histories}}   \\ \hline
+Time Histories          & \multicolumn{2}{|c|}{See Table \ref{tbl:fire_variables}}   \\ \hline
 \end{longtable}
 
 \subsubsection{Time Histories}
@@ -392,7 +394,7 @@ The {\ct \&MHDR} inputs specify general inputs of the scenarios to be generated 
 \section{Namelist MRND}
 \label{info:MRND}
 
-The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator.
+The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. {\ct \&MRND} always returns a real value. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator.
 
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
@@ -417,6 +419,12 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
   \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct REAL}, it is the value that is returned by the generator.
   \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct REAL}. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
   \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct PROBABILITIES}. These are not cumulative probabilities and the total of all values must add to 1.0
+\item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Suppose that a set of 1000 cases are created and run. For some reason the user wants to have the next 1000 cases to have the ceiling height in one compartment to be the same but have other variables change. Setting the {\ct RANDOM\_SEEDS} in the {\ct \&MFLD} that sets the ceiling height in that compartment will result in the ceiling heights being the same. 
+  \item[VALUES] a set of real numbers for the {\ct USER\_DEFINED\_DISCRETE} and \\
+{\ct USER\_DEFINED\_CONTINOUS} distribution type. Inputs are real constants. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED\_DISCRETE} and \\
+ { \ct USER\_DEFINED\_CONTINOUS} distribution types. These are not cumulative probabilities and the total of all values must add to 1.0
+  \item[CONSTANT] is a single real value. For the {\ct CONSTANT} distribution, it is the value that is returned by the generator.
   \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
       {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
@@ -548,11 +556,8 @@ Secondly, inputs for the scaling fire are described.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
   \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_1054\_KW] specifies the time for the growth phase of a power law fire to grow from 0~kW to 1054~kW. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or \\
-      {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_1054\_KW] Is a logical. If {\ct .FALSE.}, the default value, means that the first generator in the {\ct FIRE\_HRR\_GENERATORS} list is giving the HRR for that point. If {\ct .TRUE.} then the first generator is giving the time the fires growth will reach 1054 KW and the HRR is determined by combining this value with the corresponding value in the {\ct FIRE\_TIME\_GENERATORS} list. 
   \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_0\_KW] specifies the time for the growth phase of a power law fire to decay from its peak value to 0~kW. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or \\
-      {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.
@@ -872,9 +877,11 @@ In order to allow CFAST cases to be run efficiently in parallel on systems with 
 \vspace{\baselineskip}
 {\ct cdata Simple.in -A}
 
+There is a reason for sepearating the accumulation of data from the generation of data. It allows for greater flexiablity in running cases. We have run sets of data on 256 8 core processors. Some cases run a lot longer then others so it is not always easy to determine if all the cases or even a particular case is complete. So for the time being the safest way to ensure every case is run to completion and to not crash cases that are still running is to let the user make sure all the cases are run before attempting the accumulation of data. 
+
 \subsection{Statistics}
 
-The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&OUTP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it in important to include {\ct \&OUTP} inputs for everything that might be of interest to avoid having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&OUTP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it is important to include {\ct \&OUTP} inputs for everything that might be of interest to avoid having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 &MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
@@ -964,11 +971,11 @@ Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is t
 
 \subsubsection{Decision Trees}
 
-Sometimes what is of interest is the relationship one variable has to other variables in the output. There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For variables that are descreet, for example if a detector has activated or not, each leaf node is associated with the best-fit category or most likely. For continous variables, each leaf node is associated with the average of the data that arrives at that node.
+There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For variables that are descreet, for example if a detector has activated or not, each leaf node is associated with the best-fit category or most likely. For continous variables, each leaf node is associated with the average of the data that arrives at that node.
 
 Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticeable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases where the same data can be represented by very different trees.
 
-One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. The top node or root node says that if the second HRR point is less than 158.5 kW, which is ther left branch, then the average maximum upper temperature is less then flashover. However if the HRR at the second point is greater than 230.5 kW, taking the right branch from the root and than the right branch again, the average maximum upper layer temperature is above flashover, altough with a big enough vent the average is close to 600~\degc, meaning that likely some cases do not flashover.
+One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. The top node or root node says that if the second HRR point is less than 158.5 kW, which is ther left branch, then the average maximum upper temperature is less then flashover. However if the HRR at the second point is greater than 230.5 kW, taking the right branch from the root and than the right branch again, the average maximum upper layer temperature is above flashover, although with a big enough vent the average is close to 600~\degc, meaning that likely some cases do not flashover.
 
 \begin{figure}[h!]
 \centering

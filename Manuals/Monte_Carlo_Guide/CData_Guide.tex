@@ -389,7 +389,6 @@ The {\ct \&MHDR} inputs specify general inputs of the scenarios to be generated 
 \end{lstlisting}
 
 
-
 \section{Namelist MRND}
 \label{info:MRND}
 
@@ -398,21 +397,30 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
   \item[FYI] A user defined comment that can provide additional information about the input.
-  \item[DISTRIBUTION\_TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct TRUNCATE\_NORMAL}, {\ct LOG\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL} {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
+  \item[DISTRIBUTION\_TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are
+      \begin{description}
+        \item[CONSTANT] requires additional inputs {\ct REAL\_CONSTANT\_VALUE}. Returns a real number with a value of {\ct REAL\_CONSTANT\_VALUE}.
+        \item[LINEAR] requires additional inputs {\ct MINIMUM} and {\ct MAXIMUM}. Returns real values from the {\ct MINIMUM} value to {\ct MAXIMUM} incremented by 1/{\ct NUMBER\_OF\_CASES}.
+        \item[UNIFORM] requires additional inputs {\ct MINIMUM} and {\ct MAXIMUM}. Returns real values.
+        \item[TRIANGLE] requires additional inputs {\ct MINIMUM}, {\ct MAXIMUM}, and {\ct PEAK}. Returns real values.
+        \item[NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}. Returns real values.
+        \item[TRUNCATED\_NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}, and also {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
+        \item[LOG\_NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}. Returns real values.
+        \item[TRUNCATED\_LOG\_NORMAL] {\ct MEAN} and {\ct STDEV}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
+        \item[BETA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
+        \item[GAMMA] requires additional inputs {\ct ALPHA} and {\ct BETA}. Returns real values.
+        \item[TRUNCATED\_GAMMA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
+        \item[USER\_DEFINED\_CONTINUOUS] requires additional inputs {\ct PROBABILITIES}, and {\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct REAL\_VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct REAL\_VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there’s then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
+        \item[USER\_DEFINED\_DISCRETE] requires additional inputs {\ct PROBABILITIES}, and {\ct REAL\_VALUES}. The number of {\ct PROBABILITIES} inputs must match the number of {\ct REAL\_VALUES} inputs. Returns real values.
+      \end{description}
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files. All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
-  \item[VALUE\_TYPE] defines the input type in VALUES. Must be {\ct INTEGER}, {\ct REAL}, or {\ct CHARACTER}.
-  \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct REAL}. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[INTEGER\_VALUES] a set of integer numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct INTEGER}. Inputs are input as integer constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[STRING\_VALUES] a set of character strings for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct CHARACTER}. Inputs are input as ASCII character string constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[LOGICAL\_VALUES] a set of Fortran Boolean values (.TRUE. or .FALSE.) for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct LOGICAL}. Inputs are input as Boolean constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct PROBABILITIES}. These are not cumulative probabilities and the total of all values must add to 1.0
   \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct REAL}, it is the value that is returned by the generator.
-  \item[INTEGER\_CONSTANT] is a single integer value. For the {\ct INTEGER\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct INTEGER}, it is the value that is returned by the generator.
-  \item[STRING\_CONSTANT] is a single string value. For the {\ct STRING\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct CHARACTER}, it is the value that is returned by the generator.
+  \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct REAL}. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct PROBABILITIES}. These are not cumulative probabilities and the total of all values must add to 1.0
   \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
-  {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
+      {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
-  {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
+      {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
   \item[ALPHA] alpha value for the {\ct BETA} distribution type.
   \item[BETA] beta value for the {\ct BETA} distribution type.
@@ -420,12 +428,14 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
   \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
   \item[MINIMUM\_FIELD] specifies the ID of the specific \&MFLD within the input whose value is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the vent height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low the height of the compartment is set.
   \item[MAXIMUM\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MAXIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the ceiling height input such as {\ct MAXIMUM\_FIELD="Comp 1", "HEIGHT"} to limit how high the top of the vent is set.
-  \item[ADD\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be added to the value generated by the current random generator. Suppose that a vent is to be closed at a random time, then a second random generator can be set as a constant 1 s and have the first \&MFLD as the STACK\_FIELD  to have the time the vent finishes closing to be 1 s after the start.
+  \item[MINIMUM\_OFFSET] is a value added to {\ct MINIMUM} value (or value returned from a {\ct MINIMUM\_FIELD}. It is typically used to bound the value to allowable values in a compartment geometry (for example, to ensure a vent bottom is above the floor of a compartment).
+  \item[MAXIMUM\_OFFSET] is a value added to {\ct MAXIMUM} value (or value returned from a {\ct MAXIMUM\_FIELD}. It is typically used to bound the value to allowable values in a compartment geometry (for example, to ensure a vent top is below the ceiling of a compartment).
+  \item[ADD\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be added to the value generated by the current random generator. Suppose that a vent is to be closed at a random time, then a second random generator can be set as a constant 1 s and have the first \&MFLD as the ADD\_FIELD  to have the time the vent finishes closing to be 1 s after the start.
 \end{description}
 
 \vspace{\baselineskip}
 \noindent Example:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=Fortran, basicstyle=\scriptsize]
 &MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
 &MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
 &MRND ID = 'Property Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
@@ -442,12 +452,12 @@ The basic structure in CData to change values of a CFAST input file is the { \ct
 \begin{description}
   \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 128 characters.
   \item[FYI] A user defined comment that can provide additional information about the input.
-  \item[FIELD\_TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES} input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
-  \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD="Comp 1","HEIGHT"} would vary the height of the compartment named {\ct Comp 1}.
   \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each field input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields. The number of inputs in the {\ct \&MRND} input must match those for the field type.
+  \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD="Comp 1","HEIGHT"} would vary the height of the compartment named {\ct Comp 1}.
+  \item[FIELD\_TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES} input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct CHARACTER}, or {\ct LOGICAL}, array at the index is placed in the field.
   \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label.
   \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
-  \item[VALUE\_TYPE] defines the input type in the {\ct VALUES} included in the input. Must be {\ct INTEGER}, {\ct REAL}, {\ct CHARACTER}, or {\ct LOGICIAL}.
+  \item[VALUE\_TYPE] defines the input type in the {\ct VALUES} included in the input. Must be {\ct INTEGER}, {\ct REAL}, {\ct CHARACTER}, or {\ct LOGICAL}.
   \item[REAL\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[INTEGER\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
   \item[STRING\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.

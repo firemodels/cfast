@@ -395,19 +395,18 @@ The {\ct \&MHDR} inputs specify general inputs of the scenarios to be generated 
 \section{Namelist MRND}
 \label{info:MRND}
 
-The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator.
+The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. {\ct \&MRND} always returns a real value. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator.
 
 \begin{description}
   \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
   \item[FYI] A user defined comment that can provide additional information about the input.
   \item[DISTRIBUTION\_TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are {\ct CONSTANT},  {\ct UNIFORM}, {\ct TRIANGLE}, {\ct NORMAL}, {\ct TRUNCATE\_NORMAL}, {\ct LOG\_NORMAL}, {\ct TRUNCATED\_LOG\_NORMAL} {\ct BETA}, {\ct LINEAR }, and {\ct USER\_DEFINED}.
   \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Suppose that a set of 1000 cases are created and run. For some reason the user wants to have the next 1000 cases to have the ceiling height in one compartment to be the same but have other variables change. Setting the {\ct RANDOM\_SEEDS} in the {\ct \&MFLD} that sets the ceiling height in that compartment will result in the ceiling heights being the same. 
-  \item[REAL\_VALUES] a set of real numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct REAL}. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[INTEGER\_VALUES] a set of integer numbers for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct INTEGER}. Inputs are input as integer constants. Values for an individual scenario are chosen randomly from the list of values provided.
-  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED} distribution type with {\ct VALUE\_TYPE} {\ct PROBABILITIES}. These are not cumulative probabilities and the total of all values must add to 1.0
-  \item[REAL\_CONSTANT] is a single real value. For the {\ct REAL\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct REAL}, it is the value that is returned by the generator.
-  \item[INTEGER\_CONSTANT] is a single integer value. For the {\ct INTEGER\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct INTEGER}, it is the value that is returned by the generator.
-  \item[STRING\_CONSTANT] is a single string value. For the {\ct STRING\_CONSTANT} distribution with {\ct VALUE\_TYPE} {\ct CHARACTER}, it is the value that is returned by the generator.
+  \item[VALUES] a set of real numbers for the {\ct USER\_DEFINED\_DISCRETE} and \\
+{\ct USER\_DEFINED\_CONTINOUS} distribution type. Inputs are real constants. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED\_DISCRETE} and \\
+ { \ct USER\_DEFINED\_CONTINOUS} distribution types. These are not cumulative probabilities and the total of all values must add to 1.0
+  \item[CONSTANT] is a single real value. For the {\ct CONSTANT} distribution, it is the value that is returned by the generator.
   \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
   {\ct TRUNCATED\_LOG\_NORMAL}, and {\ct LINEAR} distribution types.
   \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
@@ -537,11 +536,8 @@ Secondly, inputs for the scaling fire are described.
   \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
   \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
   \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_1054\_KW] specifies the time for the growth phase of a power law fire to grow from 0~kW to 1054~kW. Must be a positive number. Only one of {\ct GROWTH\_EXPONENT} or \\
-      {\ct TIME\_TO\_1054\_KW} can be included in an {\ct \&MFIR} input.
+  \item[TIME\_TO\_1054\_KW] Is a logical. If {\ct .FALSE.}, the default value, means that the first generator in the {\ct FIRE\_HRR\_GENERATORS} list is giving the HRR for that point. If {\ct .TRUE.} then the first generator is giving the time the fires growth will reach 1054 KW and the HRR is determined by combining this value with the corresponding value in the {\ct FIRE\_TIME\_GENERATORS} list. 
   \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
-  \item[TIME\_TO\_0\_KW] specifies the time for the growth phase of a power law fire to decay from its peak value to 0~kW. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or \\
-      {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
   \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less then or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.

@@ -10,18 +10,18 @@
   CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
  
 !! Compartments 
+&MRND ID = 'Comp 1 Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 2.0 MAXIMUM = 3.0/
+&MFLD ID = 'Comp 1 Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Height Generator' FIELD = 'Comp 1' 'HEIGHT' /
 &COMP ID = 'Comp 1'
   DEPTH = 3 HEIGHT = 3 WIDTH = 3
   CEILING_MATL_ID = 'CONCRETE' CEILING_THICKNESS = 0.15 WALL_MATL_ID = 'CONCRETE' WALL_THICKNESS = 0.15
   ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' 
-  MINIMUM = 0.25 MAXIMUM = 2.0/
+&MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 0.25 MAXIMUM = 2.0/
 &MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH' /
 
-&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' 
-  MINIMUM = 1.5 MAXIMUM = 2.5/
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 1.5 MAXIMUM_FIELD = 'Comp 1 Height' MAXIMUM_OFFSET = -0.5/
 &MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator' FIELD = 'Wall Vent' 'TOP' /
 
 &VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2, WIDTH = 1
@@ -29,10 +29,10 @@
  
 !! Fires 
 
-&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500 MAXIMUM = 3000 /
-&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
-&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
-&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 500 MAXIMUM = 3000 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 900 /
+&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 
 &MFIR ID = 'Fire_generator' FIRE_ID = 'Fire' FIRE_TIME_GENERATORS = 'Fire Time Interval'
     'Peak HRR Time Interval' 'Fire Time Interval' FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
@@ -48,17 +48,17 @@
 
 !! Special Outputs
 
-&DUMP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
+&OUTP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-&DUMP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
+&OUTP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER' 
     FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-&DUMP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER' 
+&OUTP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER' 
     FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
-&DUMP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
+&OUTP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
-&DUMP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM' 
+&OUTP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM' 
     FIRST_FIELD = 'Comp 1' 'Layer Height' /
-&DUMP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
+&OUTP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM' 
     FIRST_FIELD = 'Fire' 'HRR Actual' /
 
 &MSTT ID = 'Width of Vent' FYI = 'I am a firm believer in checking the inputs to make sure that you are getting what you expect'

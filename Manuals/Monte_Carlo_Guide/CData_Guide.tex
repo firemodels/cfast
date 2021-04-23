@@ -737,22 +737,30 @@ The CData program has several functions, 1) a preprocessor function that generat
 
 All inputs for generating a set of multiple CFAST runs are contained within a single CFAST input file with inputs that define the base case for analysis, and Monte Carlo-related inputs that define how those inputs will be varied to create multiple individual CFAST input files. In addition, the file may contain a series of specific inputs to generate summary outputs for statistical analysis of the results and a series of inputs that define simple statistical analyses on the summary data.  This chapter presents a simple example from start to finish.
 
-The base case, {\ct Simple.in}, defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m thick concrete. For the example, the width and height of the door will be varied along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
+The base case, {\ct Simple.in}, defines a single compartment with width and depth of 3 m and a single door to the outside.  Compartment surface are constructed of 0.15 m thick concrete. For the example, the height of the compartment, the width and height of the door will be varied along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
 
 \section{PreProcessor}
 \label{preprocessor}
 
-To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two inputs, one that defines the distribution of values for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
+To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two parts, one that defines the random generator that generators values following a specific distribution for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
 
 \begin{lstlisting}[basicstyle=\scriptsize]
+!! Compartments 
+&MRND ID = 'Comp 1 Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 2.0 MAXIMUM = 3.0/
+&MFLD ID = 'Comp 1 Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Height Generator' FIELD = 'Comp 1' 'HEIGHT' /
+&COMP ID = 'Comp 1'
+  DEPTH = 3 HEIGHT = 3 WIDTH = 3
+  CEILING_MATL_ID = 'CONCRETE' CEILING_THICKNESS = 0.15 
+  WALL_MATL_ID = 'CONCRETE' WALL_THICKNESS = 0.15
+  ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+
 !! Wall Vents
 &MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
   MINIMUM = 0.25 MAXIMUM = 2.0/
 &MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator'
   FIELD = 'Wall Vent' 'WIDTH' /
 
-&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
-  MINIMUM = 1.5 MAXIMUM = 2.5/
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 1.5 MAXIMUM_FIELD = 'Comp 1 Height' MAXIMUM_OFFSET = -0.5/
 &MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator'
   FIELD = 'Wall Vent' 'TOP' /
 
@@ -760,7 +768,7 @@ To create the varying door size inputs, the vent is defined in the input file an
   WIDTH = 1 FACE = 'FRONT' OFFSET = 1 /
 \end{lstlisting}
 
-The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct HEIGHT} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
+The first two inputs varies the height of the compartment, a uniform distirbution 2.0~m to 3.0~m. The third input is the CFAST definition of the compartment. The next two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The third two inputs define the distribution for the height of the door. There is a problem because the compartment's height varies. One solution would be to have the {\ct MAXIMUM} for the {\ct TOP} of the door to be less the {\ct MINIMUM} compartment {\ct HEIGHT}. However, suppose that we always want the space between the top of the door and the ceiling to be at least 0.5~m. One way to do this is use {\ct MAXIMUM\_FIELD} and {\ct MAXIMUM\_OFFSET}. {\ct MAXIMUM\_FIELD} means that for every case being generated the value of the referenced field will be found first and than will be used as the maximum value for this random generator this case. {\ct MAXIMUM\_OFFSET} is a value added to the maximum value to determine the final maximum value, in this case -0.5~m to insure the top of the door is at least 0.5~m below the ceiling. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct HEIGHT} inputs are replaced with random values for each individual CFAST input file generated. All other values in the {\ct \&VENT} input remain at the base values.
 
 To define the fire, the {\ct \&MRND} input defines the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
 

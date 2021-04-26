@@ -57,10 +57,18 @@
     showspaces=false,
     showstringspaces=false,
     identifierstyle=\ttfamily,
-    commentstyle=\color{gray},
-    stringstyle=\color{cyan}
+    keywordstyle=\color{teal},
+    commentstyle=\color{green},
+    stringstyle=\color{magenta}
 }
-
+\lstdefinelanguage{cdata} {morekeywords={NUMBER_OF_CASES,SEEDS,WRITE_SEEDS,PARAMETER_FILE,WORK_FOLDER,OUTPUT_FILE,FYI,
+    ID,TYPE,DISTRIBUTION_TYPE,CONSTANT,VALUES,MINIMUM,MINIMUM_FIELD,MAXIMUM,MAXIMUM_FIELD,MEAN,STDEV,ALPHA,BETA,PEk,PROBABILITIES,
+    RAND_ID,FIELD_TYPE,FIELD,BASE_SCALING_VALUE,ADD_TO_PARAMETERS,PARAMETER_COLUMN_LABEL,
+    FILE,TYPE,CHECK_TOTAL_HEE,CRITERION,FIRST_FIELD,SECOND_FIELD},
+sensitive=false,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]', }
 \usepackage{wrapfig}
 \usepackage{morefloats}
 \usepackage{siunitx}

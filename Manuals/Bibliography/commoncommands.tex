@@ -38,6 +38,9 @@
 \usepackage{textcomp}
 \usepackage{footmisc}
 \definecolor{lbcolor}{rgb}{0.96,0.96,0.96}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codered}{rgb}{0.7, 0.11, 0.11}
 \lstset{
     %backgroundcolor=\color{lbcolor},
     tabsize=4,
@@ -57,17 +60,25 @@
     showspaces=false,
     showstringspaces=false,
     identifierstyle=\ttfamily,
-    keywordstyle=\color{teal},
-    commentstyle=\color{green},
-    stringstyle=\color{magenta}
+    keywordstyle=\color{codered},
+    commentstyle=\color{codegreen},
+    stringstyle=\color{codegray}
 }
-\lstdefinelanguage{cdata} {morekeywords={NUMBER_OF_CASES,SEEDS,WRITE_SEEDS,PARAMETER_FILE,WORK_FOLDER,OUTPUT_FILE,FYI,
-    ID,TYPE,DISTRIBUTION_TYPE,CONSTANT,VALUES,MINIMUM,MINIMUM_FIELD,MAXIMUM,MAXIMUM_FIELD,MEAN,STDEV,ALPHA,BETA,PEk,PROBABILITIES,
-    RAND_ID,FIELD_TYPE,FIELD,BASE_SCALING_VALUE,ADD_TO_PARAMETERS,PARAMETER_COLUMN_LABEL,
-    FILE,TYPE,CHECK_TOTAL_HEE,CRITERION,FIRST_FIELD,SECOND_FIELD},
+\lstdefinelanguage{cdata} {morekeywords={number_of_cases,seeds,write_seeds,parameter_file,work_folder,output_folder,fyi,
+    id,type,distribution_type,constant,values,minimum,minimum_field,maximum,maximum_field,minimum_offset,maximum_offset,add_field,mean,stdev,alpha,beta,pek,probabilities,
+    rand_id,field_type,field,field_type,value_type,real_value,integer_values,string_values,logical_values,scenario_titles,base_scaling_value,add_to_parameters,parameter_column_label,position,
+    fire_id,base_fire_id,modify_fire_area_to_match_hrr,fire_compartment_random_generator_id,fire_compartment_ids,scaling_fire_hrr_random_generator_id,
+        scaling_fire_time_random_generator_id,add_hrr_scale_to_parameters,add_time_scale_to_parameters,hrr_scale_column_label,time_scale_column_label,
+        add_fire_compartment_to_parameters,fire_compartment_id_column_label,flaming_smoldering_incipient_random_generator_id,
+        flaming_incipient_delay_random_generator_id,fire_label_parameter_column_label,flaming_incipient_peak_random_generator_id,smoldering_incipient_delay_random_generator_id,
+        smoldering_incipient_peak_random_generator_id,fire_hrr_generators,fire_time_generators,type_of_incipient_growth,number_of_incipient_fire_types,
+        incipient_fire_types,incipient_type_column_label,smoldering_time_column_label,smoldering_hrr_peak_column_label,flaming_time_column_label,
+        flaming_hrr_peak_column_label,add_incipient_type_to_parameters,add_incipient_peak_hrr_to_parameters,add_incipient_time_to_parameters,number_of_growth_points,
+        number_of_decay_points,growth_exponent,decay_exponent,add_hrr_to_parameters,add_time_to_parameters,hrr_labels,time_labels,add_fire_to_parameters,generator_is_time_to_1054_kw,
+        generator_is_time_to_peak,
+    file,type,check_total_hrr,criterion,first_field,second_field},
 sensitive=false,
-morecomment=[l]{//},
-morecomment=[s]{/*}{*/},
+morecomment=[l]{!},
 morestring=[b]', }
 \usepackage{wrapfig}
 \usepackage{morefloats}

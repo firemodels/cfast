@@ -382,7 +382,7 @@ The {\ct \&MHDR} inputs specify general inputs of the scenarios to be generated 
 
 \vspace{\baselineskip}
 \noindent Examples:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MHDR NUMBER_OF_CASES = 10000 /
 &MHDR NUMBER_OF_CASES = 20000 WRITE_SEEDS = .TRUE.
 	PARAMETER_FILE = 'Outputfile' WORK_FOLDER = 'Z:\'  OUTPUT_FOLDER = '..\project'/
@@ -440,7 +440,7 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
 
 \vspace{\baselineskip}
 \noindent Example:
-\begin{lstlisting}[language=Fortran, basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
 &MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
 &MRND ID = 'Property Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
@@ -475,14 +475,14 @@ The basic structure in CData to change values of a CFAST input file is the { \ct
 \noindent Examples:
 
 The following example shows the height of the bedroom varying uniformly from 2.44 m to 3.66 m.
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Room height generator', TYPE = 'UNIFORM',  MINIMUM = 2.44, MAXIMUM = 3.66 /
 &MFLD ID = 'Height bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'Room height generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
 \end{lstlisting}
 
 The following example shows the height of a door to the bedroom in the above example varying from a minimum of 2 m to a maximum 0.15 m below the ceiling of the varying height of the bedroom ceiling.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Door Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
      MINIMUM = 2.0 MAXIMUM_FIELD = 'Height Bedroom' MAXIMUM_OFFSET = -0.15 /
 &MFLD ID = 'Door Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Door Top Generator'
@@ -566,7 +566,7 @@ Secondly, inputs for the scaling fire are described.
 
 The following example shows a fire that varies $\pm$~10~\% from a base fire defined in the input file.  Note that the base fire definition is not shown in the example. See the sensitivity analysis example in section \ref{chapter:Sensitivity} for details of the complete fire definition.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Scaling HRR', DISTRIBUTION_TYPE = 'UNIFORM', VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MRND ID = 'Scaling Time', DISTRIBUTION_TYPE = 'UNIFORM', VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Base Fire'
@@ -576,7 +576,7 @@ The following example shows a fire that varies $\pm$~10~\% from a base fire defi
 
 The following example shows a fire with a peak HRR ranging from 500~kW to 3000~kW that grows linearly to the peak in 10~s, stays at the peak value for 900~s and decays linearly back to 0~kW in~10 s.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500 MAXIMUM = 3000 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
 &MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
@@ -589,7 +589,7 @@ The following example shows a fire with a peak HRR ranging from 500~kW to 3000~k
 
 The following example defines a t-squared growth rate fire with a peak HRR ranging from 1500~kW to 160~kW with a time to peak HRR ranging from 75~s to 1000~s. The fire stays at the peak value for 10~s and decays linearly back to 0~kW in 10~s.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 75 MAXIMUM = 1000 /
 &MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 1500 MAXIMUM = 160000/
@@ -604,7 +604,7 @@ The following example defines a t-squared growth rate fire with a peak HRR rangi
 
 This final example defines a fire in one of three positions in one of five fire rooms. The fire begins with an incipient flaming ignition growing from 0~kW to from 10~kW (normally distributed with a mean of 23~kW and a standard deviation of 7~kW) to 30~kW in from 150~s to 1200~s (normally distributed with a mean of 207~kW and a standard deviation of 46~kW). The ignition period is followed by a t-squared growth to a peak of 130~kW to 4620~kW with a time to 1054~kW of 50~s to 330~s. The fire stays at the peak value for 10~s and decays linearly back to 0~kW in 10~s.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 !! This determines the fire position, (2,2), (0,2) (0,-0.001).
 !! The last one is 1 mm from back wall
 &MRND ID = 'Fire Position Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
@@ -685,7 +685,7 @@ Control of what tools are used and what data it is run on is determined with the
 
 \vspace{\baselineskip}
 \noindent Example:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
 	COLUMN_TITLE = 'Wall Vent_WIDTH' /
 &MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
@@ -711,7 +711,7 @@ When cases are run in CFAST, a number of single values for the case such as maxi
 
 \vspace{\baselineskip}
 \noindent Example:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &OUTP ID = 'Total Time Completed'
      FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
      FIRST_FIELD = 'Time', 'Simulation Time' /
@@ -735,14 +735,14 @@ The CData program has several functions, 1) a preprocessor function that generat
 
 All inputs for generating a set of multiple CFAST runs are contained within a single CFAST input file with inputs that define the base case for analysis, and Monte Carlo-related inputs that define how those inputs will be varied to create multiple individual CFAST input files. In addition, the file may contain a series of specific inputs to generate summary outputs for statistical analysis of the results and a series of inputs that define simple statistical analyses on the summary data.  This chapter presents a simple example from start to finish.
 
-The base case, {\ct Simple.in}, defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m thick concrete. For the example, the width and height of the door will be varied\footnote{In this simple example, we have taken care to ensure that the width and height of the door are within the limits of the varying compartment size. In some cases, it would be desirable to vary inputs that could create invalid geometries such as a door height higher than the compartment ceiling height. For cases like this, it is possible to set the values so that they are constrained based on another variable using the {\ct MAXIMUM\_FIELD and MINIMUM\_FIELD} inputs in the \&MRND inputs. See the examples is sections \ref{info:MRND} and \ref{info:MFLD} and the flashover example in section \ref{info:Flashover}} along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
+The base case, {\ct Simple.in}, defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m thick concrete. For the example, the width and height of the door will be varied\footnote{In this simple example, we have taken care to ensure that the width and height of the door are within the limits of the varying compartment size. In some cases, it would be desirable to vary inputs that could create invalid geometries such as a door height higher than the compartment ceiling height. For cases like this, it is possible to set the values so that they are constrained based on another variable using the {\ct MAXIMUM\_FIELD} and {\ct MINIMUM\_FIELD} inputs in the \&MRND inputs. See the examples is sections \ref{info:MRND} and \ref{info:MFLD} and the flashover example in section \ref{info:Flashover}} along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
 
 \section{PreProcessor}
 \label{preprocessor}
 
 To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two inputs, one that defines the distribution of values for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 !! Wall Vents
 &MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
   MINIMUM = 0.25 MAXIMUM = 2.0/
@@ -762,7 +762,7 @@ The first two inputs define the distribution for the door width, a uniform distr
 
 To define the fire, the {\ct \&MRND} input defines the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL' MINIMUM = 500000 MAXIMUM = 3000000 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
 &MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 900 /
@@ -788,7 +788,7 @@ As part of the base input file used to generate the set of individual CFAST inpu
 
 For the example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600~\degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &OUTP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
     FIRST_FIELD = 'Fire' 'HRR Actual' /
 &OUTP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
@@ -880,7 +880,7 @@ There is a reason for sepearating the accumulation of data from the generation o
 
 The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&OUTP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it is important to include {\ct \&OUTP} inputs for everything that might be of interest to avoid having to rerun all the cases. The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
 &MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
 	COLUMN_TITLE = 'Wall Vent_WIDTH' /
 &MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
@@ -1027,7 +1027,7 @@ For the analysis, we will look at the minimum heat release rate necessary to ach
 The example below shows how to vary the width uniformly over the range of 2.0 m to 20.0 m. Other dimensions are handled in a similar fashion.
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Comp 1 Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 2.0 MAXIMUM = 20.0/
 &MFLD ID = 'Comp 1 Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Width Generator' FIELD = 'Comp 1' 'WIDTH'
@@ -1037,7 +1037,7 @@ The example below shows how to vary the width uniformly over the range of 2.0 m 
 The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the top of the vent is defined as 0.15 m below the compartment ceiling (specified by the {\ct MAXIMUM\_OFFSET} of -0.15 m, with the negative number indicating an offset relative to the top of the compartment) and the vent width maximum is defined as 1 m less than the vent width (specified by the {\ct MAXIMUM\_OFFSET} of -1.0 m).
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Wall Vent Bottom Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 0.0 MAXIMUM = 1.5/
 &MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Bottom Generator' FIELD = 'Wall Vent' 'BOTTOM'
@@ -1056,7 +1056,7 @@ The vent height and width also vary randomly, but must be limited to the compart
 
 The fire specification is naturally the most complex. For this example, we use a t-squared growth rate fire that grows to a peak value in a time period from 75 s to 1000 s, followed by a 10 s plateau and 10 s decay back to 0~kW. Since both the plateau and decay are set to 10 s, the same generator input can be used for both time points.
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
     MINIMUM = 75 MAXIMUM = 1000 /
 &MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
@@ -1126,7 +1126,7 @@ For this example, the fire location, fire growth, fire peak heat release rate, v
 The full file for this case is in Detectors.in. Here are some examples of the inputs. The following gives the full specification of the fire.
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
     INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
 &MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
@@ -1166,7 +1166,7 @@ The full file for this case is in Detectors.in. Here are some examples of the in
 The doors all follow the same pattern. As an example here is the specification for the DR LR 1 door.
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
     INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
 
@@ -1184,7 +1184,7 @@ Notice that the first two  {\ct \&MFLD} entries of  {\ct FIELD\_TYPE = 'INDEX'}.
 Like the doors, all the detectors follow the same pattern. All the detectors could have been set up with the same sensitivity for each case but for this example, it was decided that the sensitivity of the detectors would be independent. An example of the CData specification for one detector follows
 
 \vspace{\baselineskip}
-\begin{lstlisting}	
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
     MEAN =  9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
 	
@@ -1363,7 +1363,7 @@ As part of the inputs one of the things to keep in mind is that the foyer and ha
 
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Scaling height', FYI = 'Scaling for everything that has the same max height', DISTRIBUTION_TYPE = 'UNIFORM',
     VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
@@ -1385,7 +1385,7 @@ As part of the inputs one of the things to keep in mind is that the foyer and ha
 After all the fields that are to be varied are set up there is also the fire to vary. Instead of varying the fire we will scale the HRR and time with single independent scaling factors. This requires only two random generators and is implemented as follows.
 
 \vspace{\baselineskip}
-\begin{lstlisting}
+\begin{lstlisting} [language=cdata]
 &MRND ID = 'Scaling HRR', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
     VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MRND ID = 'Scaling Time', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',

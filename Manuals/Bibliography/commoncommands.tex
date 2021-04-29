@@ -38,9 +38,10 @@
 \usepackage{textcomp}
 \usepackage{footmisc}
 \definecolor{lbcolor}{rgb}{0.96,0.96,0.96}
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codered}{rgb}{0.7, 0.11, 0.11}
+\definecolor{codegreen}{rgb}{131,187,126}
+\definecolor{codegray}{RGB}{138,143,145}
+\definecolor{codeblue}{RGB}{43,64,231}
+\definecolor{codeorange}{RGB}{234,149,48}
 \lstset{
     %backgroundcolor=\color{lbcolor},
     tabsize=4,
@@ -60,9 +61,8 @@
     showspaces=false,
     showstringspaces=false,
     identifierstyle=\ttfamily,
-    keywordstyle=\color{codered},
-    commentstyle=\color{codegreen},
-    stringstyle=\color{codegray}
+    keywordstyle=\color{codeblue},
+    commentstyle=\color{codegray},
 }
 \lstdefinelanguage{cdata} {morekeywords={number_of_cases,seeds,write_seeds,parameter_file,work_folder,output_folder,fyi,
     id,type,distribution_type,constant,values,minimum,minimum_field,maximum,maximum_field,minimum_offset,maximum_offset,add_field,mean,stdev,alpha,beta,pek,probabilities,

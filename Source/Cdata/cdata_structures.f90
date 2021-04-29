@@ -38,6 +38,7 @@ module preprocessor_types
         character(len=128) :: parameter_column_label
         character(len=128), pointer :: paramptr
         logical :: pointer_set = .false.
+        logical :: temp_flag, kilo_flag
     contains
         procedure :: add_header
         procedure :: write_value
@@ -64,16 +65,14 @@ module preprocessor_types
     end type random_logic_type
     
     type, extends(value_wrapper_type) :: field_pointer
-        character(len=7), dimension(6) :: fld_types = (/'VALUE  ', &
+        character(len=7), dimension(5) :: fld_types = (/'VALUE  ', &
                                                         'INDEX  ', &
                                                         'SCALING', &
                                                         'LABEL  ', &
-                                                        'POINTER', &
-                                                        'NULL   '/)
-        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_null = 6, idx_pointer = 5
+                                                        'POINTER'/)
+        integer :: idx_value = 1, idx_index = 2, idx_scale = 3, idx_label = 4, idx_pointer = 5
         character(len=7) :: field_type = 'NULL'
         character(len=9) :: value_type = 'NULL'
-        logical :: temp_flag, kilo_flag
         class(cfast_type), pointer :: itemptr
         type(random_generator_type), pointer :: genptr
         class(value_wrapper_type), pointer :: valptr
@@ -81,11 +80,9 @@ module preprocessor_types
         type(random_real_type) :: realval
         type(random_int_type) :: intval
         type(random_logic_type) :: logicval
-        class(value_wrapper_type), pointer :: randptr
-        type(random_int_type) :: indexval
-        type(random_real_type) :: scaleval
-        integer :: index, nidx, nlabel
-        real(eb) :: scale_value, scale_base_value
+        type(random_real_type) :: randptr
+        integer :: nidx, nlabel
+        real(eb) :: scale_value, scale_base_value, rand_value
         real(eb), dimension(mxpntsarray) :: real_array
         integer, dimension(mxpntsarray) :: int_array
         logical, dimension(mxpntsarray) :: logic_array
@@ -279,7 +276,7 @@ module preprocessor_types
     subroutine rand(me, val, iteration)
     
         class(random_generator_type) :: me
-        class(value_wrapper_type), intent(inout) :: val
+        type(random_real_type), intent(inout) :: val
         integer, intent(in) :: iteration
         real(eb) :: x
         real :: a, b, p1, p2
@@ -306,39 +303,9 @@ module preprocessor_types
         end if
         
         if (me%current_iteration == iteration) then
-            select type(val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        select type(val)
-                            type is (random_real_type)
-                                val%val = me%current_real_val
-                            class default
-                                call me%errorcall('RAND', 1)
-                        end select
-                    else 
-                        call me%errorcall('Rand', 1)
-                    end if
-                type is (random_int_type)
-                    if (me%value_type == val_types(idx_int)) then
-                        val%val = me%current_int_val
-                    else 
-                        call me%errorcall('Rand', 2)
-                    end if
-                type is (random_char_type)
-                    if (me%value_type == val_types(idx_char)) then
-                        val%val = me%current_char_val
-                    else 
-                        call me%errorcall('Rand', 3)
-                    end if
-                type is (random_logic_type)
-                    if (me%value_type == val_types(idx_logic)) then
-                        val%val = me%current_logic_val
-                    else 
-                        call me%errorcall('Rand', 4)
-                    end if
-                class default
-                    call me%errorcall('Rand',5)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                val%val = me%current_real_val
+            end if
             return
         end if
         
@@ -350,19 +317,14 @@ module preprocessor_types
             call RANDOM_NUMBER(x)
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type (val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%minimum() + me%min_offset + & 
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = me%minimum() + me%min_offset + & 
                             x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
-                        me%current_real_val = me%current_real_val + me%add()
-                        val%val = me%current_real_val
-                    else 
-                        call me%errorcall('RAND', 6)
-                    end if
-                class default
-                        call me%errorcall('RAND', 7)
-            end select 
+                 me%current_real_val = me%current_real_val + me%add()
+                val%val = me%current_real_val
+            else 
+                    call me%errorcall('RAND', 6)
+            end if
         else if (me%type_dist == rand_dist(idx_user_defined_discrete)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
@@ -375,31 +337,12 @@ module preprocessor_types
                     exit
                 end if
             end do 
-            select type (val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%real_array(idx) + me%add()
-                        val%val = me%current_real_val
-                    else 
-                        call me%errorcall('RAND', 8)
-                    end if
-                type is (random_int_type)
-                    if (me%value_type == val_types(idx_int)) then
-                        me%current_int_val = me%int_array(idx) + int(me%add())
-                        val%val = me%current_int_val
-                    else 
-                        call me%errorcall('RAND', 9)
-                    end if
-                type is (random_char_type)
-                    if (me%value_type == val_types(idx_char)) then
-                        me%current_char_val = me%char_array(idx) 
-                        val%val = me%current_char_val
-                    else 
-                        call me%errorcall('RAND', 10)
-                    end if
-                class default 
-                    call me%errorcall('RAND', 11)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = me%real_array(idx) + me%add()
+                val%val = me%current_real_val
+            else 
+                call me%errorcall('RAND', 8)
+            end if
         else if (me%type_dist == rand_dist(idx_user_defined_continous_interval)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
@@ -416,113 +359,71 @@ module preprocessor_types
                     exit
                 end if
             end do 
-            select type (val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = a + (x-p1)/(p2-p1)*(b-a) 
-                        me%current_real_val = me%current_real_val + me%add()
-                        val%val = me%current_real_val
-                    else 
-                        call me%errorcall('RAND', 12)
-                    end if
-                class default 
-                    call me%errorcall('RAND', 13)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = a + (x-p1)/(p2-p1)*(b-a) 
+                me%current_real_val = me%current_real_val + me%add()
+                val%val = me%current_real_val
+            else 
+                call me%errorcall('RAND', 12)
+            end if
         else if (me%type_dist == rand_dist(idx_const)) then
-            select type(val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%constant + me%add()
-                        val%val = me%current_real_val
-                    end if
-                type is (random_int_type) 
-                    if (me%value_type == val_types(idx_int)) then
-                        me%current_int_val = int(me%constant) + int(me%add())
-                        val%val = me%current_int_val
-                    else
-                        call me%errorcall('RAND', 14)
-                    end if
-                class default
-                    call me%errorcall('RAND',15)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = me%constant + me%add()
+                val%val = me%current_real_val
+            end if
         else if (me%type_dist == rand_dist(idx_linear)) then
-            select type(val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%constant = me%constant + me%linear_delta
-                        me%current_real_val = me%constant + me%add()
-                        val%val = me%current_real_val
-                    else
-                        call me%errorcall('RAND', 16)
-                    end if
-                class default
-                    call me%errorcall('RAND', 17)
-                end select
+            if (me%value_type == val_types(idx_real)) then
+                me%constant = me%constant + me%linear_delta
+                me%current_real_val = me%constant + me%add()
+                val%val = me%current_real_val
+            else
+                call me%errorcall('RAND', 16)
+            end if
         else if (me%type_dist == rand_dist(idx_log_normal)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
             x = random_normal()
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type(val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
-                        me%current_real_val = me%current_real_val + me%add()
-                        val%val = me%current_real_val
-                    end if
-                class default
-                    call me%errorcall('RAND', 18)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
+                me%current_real_val = me%current_real_val + me%add()
+                val%val = me%current_real_val
+            end if
         else if (me%type_dist == rand_dist(idx_normal)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
             x = random_normal()
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type(val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%stdev*x + me%mean + me%add()
-                        val%val = me%current_real_val
-                    end if
-                class default
-                    call me%errorcall('RAND', 19)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = me%stdev*x + me%mean + me%add()
+                val%val = me%current_real_val
+            end if
         else if (me%type_dist == rand_dist(idx_trun_normal)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
-            select type(val)
-                type is (random_real_type)
-                    val%val = me%minimum() + me%min_offset - 100.0_eb
-                    if (me%value_type == val_types(idx_real)) then
-                        do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
-                            x = random_normal()
-                            me%current_real_val = me%stdev*x + me%mean + me%add()
-                            val%val = me%current_real_val
-                        end do
-                    end if
-                class default
-                    call me%errorcall('RAND', 20)
-            end select
+            val%val = me%minimum() + me%min_offset - 100.0_eb
+            if (me%value_type == val_types(idx_real)) then
+                do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
+                    x = random_normal()
+                    me%current_real_val = me%stdev*x + me%mean + me%add()
+                    val%val = me%current_real_val
+                end do
+            end if
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
         else if (me%type_dist == rand_dist(idx_trun_log_normal)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
-            select type(val)
-                type is (random_real_type)
-                    val%val = me%minimum() - 100.0_eb
-                    if (me%value_type == val_types(idx_real)) then
-                        do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
-                            x = random_normal()
-                            me%current_real_val = exp(log(me%stdev)*x+log(me%mean)) + me%add()
-                            val%val = me%current_real_val
-                        end do
-                    end if
-                class default
-                    call me%errorcall('RAND', 21)
-            end select
+            val%val = me%minimum() - 100.0_eb
+            if (me%value_type == val_types(idx_real)) then
+                do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
+                    x = random_normal()
+                    me%current_real_val = exp(log(me%stdev)*x+log(me%mean)) + me%add()
+                    val%val = me%current_real_val
+                end do
+            end if
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
         else if (me%type_dist == rand_dist(idx_triangle)) then
@@ -531,21 +432,16 @@ module preprocessor_types
             call RANDOM_NUMBER(x)
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type(val)
-                type is (random_real_type)
-                    if (x <= (me%peak - me%minimum() - me%min_offset)/ &
-                        (me%maximum() + me%max_offset - me%minimum() - me%min_offset)) then
-                        me%current_real_val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
-                            (me%peak - me%minimum() - me%min_offset)) + me%minimum() + me%min_offset + me%add()
-                    else
-                        me%current_real_val = me%maximum() +  me%max_offset - &
-                            sqrt((1 - x)*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
-                            (me%maximum() + me%max_offset - me%peak)) + me%add()
-                    end if
-                    val%val = me%current_real_val
-                class default
-                    call me%errorcall('RAND', 22)
-            end select
+            if (x <= (me%peak - me%minimum() - me%min_offset)/ &
+                (me%maximum() + me%max_offset - me%minimum() - me%min_offset)) then
+                me%current_real_val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
+                    (me%peak - me%minimum() - me%min_offset)) + me%minimum() + me%min_offset + me%add()
+            else
+                 me%current_real_val = me%maximum() +  me%max_offset - &
+                    sqrt((1 - x)*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
+                    (me%maximum() + me%max_offset - me%peak)) + me%add()
+            end if
+            val%val = me%current_real_val
         else if (me%type_dist == rand_dist(idx_beta)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
@@ -554,19 +450,14 @@ module preprocessor_types
             x = random_beta(a, b, first)
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type (val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = me%minimum() + me%min_offset + & 
-                            x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
-                        me%current_real_val = me%current_real_val + me%add()
-                        val%val = me%current_real_val
-                    else 
-                        call me%errorcall('RAND', 23)
-                    end if
-                class default
-                        call me%errorcall('RAND', 24)
-            end select 
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = me%minimum() + me%min_offset + & 
+                    x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
+                me%current_real_val = me%current_real_val + me%add()
+                val%val = me%current_real_val
+            else 
+                call me%errorcall('RAND', 23)
+            end if
         else if (me%type_dist == rand_dist(idx_gamma)) then
             call RANDOM_SEED(GET=tmpseeds)
             call RANDOM_SEED(PUT=me%seeds)
@@ -574,18 +465,13 @@ module preprocessor_types
             x = random_gamma(a, first)
             call RANDOM_SEED(GET=me%seeds)
             call RANDOM_SEED(PUT = tmpseeds)
-            select type (val)
-                type is (random_real_type)
-                    if (me%value_type == val_types(idx_real)) then
-                        me%current_real_val = x/me%beta
-                        me%current_real_val = me%current_real_val + me%add()
-                        val%val = me%current_real_val
-                    else 
-                        call me%errorcall('RAND', 25)
-                    end if
-                class default
-                        call me%errorcall('RAND', 26)
-            end select 
+            if (me%value_type == val_types(idx_real)) then
+                me%current_real_val = x/me%beta
+                me%current_real_val = me%current_real_val + me%add()
+                val%val = me%current_real_val
+            else 
+                call me%errorcall('RAND', 25)
+            end if
         else
             call me%errorcall('RAND', 27)
         end if
@@ -641,13 +527,21 @@ module preprocessor_types
         class(value_wrapper_type), intent(inout) :: me
         
         integer :: i
+        real(eb) :: tmp
     
         if (me%add_to_parameters .and. me%parameter_field_set) then
             select type (me)
             type is (value_wrapper_type)
                 write(me%paramptr,'(a)') 'Values not set'
             type is (random_real_type)
-                write(me%paramptr,'(e13.6)') me%val
+                if (me%temp_flag) then 
+                    tmp = me%val - kelvin_c_offset
+                else if (me%kilo_flag) then
+                    tmp = me%val/1000.0_eb
+                else 
+                    tmp = me%val
+                end if 
+                write(me%paramptr,'(e13.6)') tmp
             type is (random_int_type)
                 write(me%paramptr,'(i10)') me%val
             type is (random_char_type)
@@ -660,13 +554,20 @@ module preprocessor_types
                 end if
             type is (field_pointer)
                 if (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
-                    write(me%paramptr, '(a)') me%char_array(me%index)
+                    write(me%paramptr, '(a)') me%char_array(floor(me%rand_value))
                 else
                     select case (me%value_type)
                     case ('NULL')
                         call me%errorcall('write_value',1)
                     case (val_types(idx_real))
-                        write(me%paramptr,'(e13.6)') me%realval%val
+                        if (me%temp_flag) then 
+                            tmp = me%realval%val - kelvin_c_offset
+                        else if (me%kilo_flag) then
+                            tmp = me%realval%val/1000.0_eb
+                        else 
+                            tmp = me%realval%val
+                        end if 
+                        write(me%paramptr,'(e13.6)') tmp
                     case (val_types(idx_int))
                         write(me%paramptr,'(i10)') me%intval%val
                     case (val_types(idx_char))
@@ -700,83 +601,62 @@ module preprocessor_types
         end if
     end subroutine write_value
     
-    subroutine do_rand(me, val, iteration)
+    subroutine do_rand(me, iteration)
     
         class(field_pointer) :: me
-        class(value_wrapper_type), intent(inout) :: val
         integer, intent(in) :: iteration
+        integer :: idx
         character(len=128) :: id
     
-        if (trim(me%field_type) == trim(me%fld_types(me%idx_null))) then
+        if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
             return
-        else if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
+        elseif (trim(me%field_type) == 'NULL') then
             return
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_value))) then 
-            call me%genptr%rand(val, iteration)
+            call me%genptr%rand(me%randptr, iteration)
             id = me%id
-            select type(val)
-                type is (random_real_type)
-                    if (me%temp_flag) then
-                        val%val = val%val + kelvin_c_offset
-                    else if (me%kilo_flag) then
-                        val%val = val%val*1000.0_eb
-                    end if
-                class default
-                    
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                if (me%temp_flag) then
+                    me%realval%val = me%rand_value + kelvin_c_offset
+                else if (me%kilo_flag) then
+                    me%realval%val = me%rand_value*1000.0_eb
+                else 
+                    me%realval%val = me%rand_value
+                end if
+            else
+                call me%errorcall('DO_RAND',1)
+            end if
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_index))) then
             call me%genptr%rand(me%randptr, iteration)
+            idx = floor(me%randptr%val)
             if (me%value_type == val_types(idx_real)) then
-                select type(val)
-                    type is (random_real_type)
-                        val%val = me%real_array(me%index)
-                    class default
-                        call me%errorcall('DO_RAND',1)
-                end select
+                me%realval%val = me%real_array(idx)
             elseif (me%value_type == val_types(idx_char)) then
-                select type(val)
-                    type is (random_char_type)
-                        val%val = me%char_array(me%index)
-                    class default
-                        call me%errorcall('DO_RAND',2)
-                end select
+                me%charval%val = me%char_array(idx)
             elseif (me%value_type == val_types(idx_int)) then
-                select type(val)
-                    type is (random_int_type)
-                        val%val = me%int_array(me%index)
-                    class default
-                        call me%errorcall('DO_RAND',3)
-                end select
+                me%intval%val = me%int_array(idx)
             elseif (me%value_type == val_types(idx_logic)) then
-                select type(val)
-                    type is (random_logic_type)
-                        val%val = me%logic_array(me%index)
-                    class default
-                        call me%errorcall('DO_RAND',4)
-                end select
+                me%logicval%val = me%logic_array(idx)
             else
-                call me%errorcall('DO_RAND',5)
+                call me%errorcall('DO_RAND',2)
             end if 
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_scale))) then
             call me%genptr%rand(me%randptr, iteration)
-            select type(val)
-                type is (random_real_type)
-                    val%val = me%scale_value * me%scale_base_value
-                class default
-                    call me%errorcall('DO_RAND',6)
-            end select
+            if (me%value_type == val_types(idx_real)) then
+                me%realval%val = me%scale_value * me%scale_base_value
+            else
+                call me%errorcall('DO_RAND',3)
+            end if
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
             call me%genptr%rand(me%randptr, iteration)
+            idx = floor(me%randptr%val)
             if (me%value_type == val_types(idx_char)) then
-                select type(val)
-                    type is (random_char_type)
-                        val%val = me%char_array(me%index)
-                    class default
-                        call me%errorcall('DO_RAND',7)
-                end select
+                me%charval%val = me%char_array(idx)
+            else
+                call me%errorcall('DO_RAND',4)
             end if
         else
-            call me%errorcall('DO_RAND',8)
+            call me%errorcall('DO_RAND',100)
         end if 
         
     end subroutine do_rand
@@ -1332,8 +1212,8 @@ module preprocessor_types
         end if 
         
         if (me%do_fire_comp) then
-            call me%fire_comp%do_rand(me%fire_comp%valptr,iteration)
-            call me%fire_label%do_rand(me%fire_label%valptr,iteration)
+            call me%fire_comp%do_rand(iteration)
+            call me%fire_label%do_rand(iteration)
         end if 
         
         tmp = 0
@@ -1341,27 +1221,27 @@ module preprocessor_types
         ! Doing the incipient growth model
         ! determing if it is flaming or smoldering if that is set up
         if (trim(me%incipient_type) == trim(me%incip_typ(me%idx_random))) then
-            call me%fs_fire_ptr%do_rand(me%fs_fire_ptr%valptr, iteration)
+            call me%fs_fire_ptr%do_rand(iteration)
         end if 
         ! Determing the actual values for peak HRR and length of time
         if (trim(me%incipient_growth) == trim(me%incip_typ(me%idx_flame))) then
             tmp = me%flame_time_ptr%realval%val
-            call me%flame_time_ptr%do_rand(me%flame_time_ptr%valptr, iteration)
+            call me%flame_time_ptr%do_rand(iteration)
             tmp = me%flame_time_ptr%realval%val - tmp
-            call me%flame_hrr_ptr%do_rand(me%flame_hrr_ptr%valptr, iteration)
+            call me%flame_hrr_ptr%do_rand(iteration)
             me%fire%flaming_transition_time = 0
         else if (trim(me%incipient_growth) == trim(me%incip_typ(me%idx_smolder))) then
             tmp = me%smolder_time_ptr%realval%val
-            call me%smolder_time_ptr%do_rand(me%smolder_time_ptr%valptr, iteration)
+            call me%smolder_time_ptr%do_rand(iteration)
             tmp = me%smolder_time_ptr%realval%val - tmp
-            call me%smolder_hrr_ptr%do_rand(me%smolder_hrr_ptr%valptr, iteration)
+            call me%smolder_hrr_ptr%do_rand(iteration)
             me%fire%flaming_transition_time = me%smolder_time_ptr%realval%val
         end if
         
         if (me%generate_fire) then
             do i = 1, me%n_firepoints
-                call me%firegenerators(1,i)%do_rand(me%firegenerators(1,i)%valptr, iteration)
-                call me%firegenerators(2,i)%do_rand(me%firegenerators(2,i)%valptr, iteration)
+                call me%firegenerators(1,i)%do_rand(iteration)
+                call me%firegenerators(2,i)%do_rand(iteration)
             end do
             if (me%growth_npts >= 0) then
                 if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then

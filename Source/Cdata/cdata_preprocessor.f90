@@ -84,7 +84,7 @@ module preprocessor_routines
     
     subroutine preprocessor_initialize
     
-    integer :: i
+    integer :: i, j, k
     integer, parameter :: i1 = 5554803, i2 = 7033951, c = 4*214783398 + 1
     integer :: values(8)
     character(len=10) :: date, time, zone
@@ -150,6 +150,7 @@ module preprocessor_routines
         fieldinfo(i)%int_array(1:mxpntsarray) = -1001
         fieldinfo(i)%logic_array(1:mxpntsarray) = .false.
         fieldinfo(i)%char_array(1:mxpntsarray) = 'NULL'
+        fieldinfo(i)%randptr%val => fieldinfo(i)%rand_value
     end do
     allocate(fieldptr(mxfields))
     fieldptr(1:mxfields) = -1001
@@ -177,6 +178,24 @@ module preprocessor_routines
     randfireinfo(1:mxrandfires)%hrrscalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%timescalevalue = -1001.0_eb
     randfireinfo(1:mxrandfires)%stimevalue = -1001.0_eb
+    do i = 1, mxrandfires
+        do j = 1, 2
+            do k = 1, mxpts
+                randfireinfo(i)%firegenerators(j, k)%id = 'NULL'
+                randfireinfo(i)%firegenerators(j, k)%fyi = 'NULL'
+                randfireinfo(i)%firegenerators(j, k)%add_to_parameters = .false.
+                randfireinfo(i)%firegenerators(j, k)%parameter_column_label = 'NULL'
+                randfireinfo(i)%firegenerators(j, k)%position = 1
+                randfireinfo(i)%firegenerators(j, k)%temp_flag = .false.
+                randfireinfo(i)%firegenerators(j, k)%kilo_flag = .true.
+                randfireinfo(i)%firegenerators(j, k)%real_array(1:mxpntsarray) = -1001.0_eb
+                randfireinfo(i)%firegenerators(j, k)%int_array(1:mxpntsarray) = -1001
+                randfireinfo(i)%firegenerators(j, k)%logic_array(1:mxpntsarray) = .false.
+                randfireinfo(i)%firegenerators(j, k)%char_array(1:mxpntsarray) = 'NULL'
+                randfireinfo(i)%firegenerators(j, k)%randptr%val => randfireinfo(i)%firegenerators(j, k)%rand_value
+            end do
+        end do
+    end do
     
     
     return
@@ -198,7 +217,7 @@ module preprocessor_routines
         call randfireinfo(i)%write_value
     end do 
     do i = 1, n_fields
-        call fieldinfo(fieldptr(i))%do_rand(fieldinfo(fieldptr(i))%valptr, iteration)
+        call fieldinfo(fieldptr(i))%do_rand(iteration)
         call fieldinfo(fieldptr(i))%write_value
     end do 
     

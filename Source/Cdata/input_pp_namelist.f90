@@ -210,7 +210,7 @@
     logical :: mrndflag
     type(random_generator_type), pointer :: genptr
     
-    character(len=128) :: id, fyi, value_type
+    character(len=128) :: id, fyi
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, minimum_offset, maximum_offset
@@ -219,16 +219,16 @@
     integer :: integer_values(mxpntsarray)
     logical :: logical_values(mxpntsarray)
     character(len = 128) :: string_values(mxpntsarray)
-    real(eb) :: real_constant_value
-    integer :: integer_constant_value
-    character(len=128) :: string_constant_value
-    logical :: logical_constant_value
+    real(eb) :: real_constant
+    integer :: integer_constant
+    character(len=128) :: string_constant
+    logical :: logical_constant
     character(len=128) :: minimum_field,  maximum_field, add_field
 
-    namelist /MRND/ id, fyi, distribution_type, value_type, minimum, maximum, mean, stdev, alpha, beta, &
+    namelist /MRND/ id, fyi, distribution_type, minimum, maximum, mean, stdev, alpha, beta, &
         peak, random_seeds, real_values, integer_values, string_values, logical_values, &
-        probabilities, real_constant_value, integer_constant_value, string_constant_value, &
-        logical_constant_value,minimum_field, maximum_field, minimum_offset, maximum_offset, add_field
+        probabilities, real_constant, integer_constant, minimum_field, maximum_field, minimum_offset, &
+        maximum_offset, add_field
 
     ios = 1
     n_generators = 0
@@ -302,15 +302,7 @@
         
             if (trim(distribution_type) == trim(rand_dist(idx_uniform))) then
                 genptr%type_dist = distribution_type
-                if (value_type == val_types(idx_real)) then
-                    genptr%value_type = val_types(idx_real)
-                else
-                    write (errormessage,'(5a)') &
-                        '***Error, Uniform distribution specified in &MRND ', trim(genptr%id), &
-                        ' requires real number values. ', trim(genptr%value_type), &
-                        ' specified.'
-                    call cfastexit('READ_MRND',4)
-                end if 
+                genptr%value_type = val_types(idx_real)
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
@@ -331,21 +323,6 @@
                     do jj = 1, ndx
                         genptr%real_array(jj) = real_values(jj)
                     end do
-                else if (integer_values(1) /= -1001) then
-                    genptr%value_type = val_types(idx_int)
-                    do jj = 1, ndx
-                        genptr%int_array(jj) = integer_values(jj)
-                    end do
-                else if (trim(string_values(1)) /= 'NULL') then
-                    genptr%value_type = val_types(idx_char)
-                    do jj = 1, ndx
-                        genptr%char_array(jj) = string_values(jj)
-                    end do 
-                else if (ndx > 0) then
-                    genptr%value_type = val_types(idx_logic)
-                    do jj = 1, ndx
-                        genptr%logic_array(jj) = logical_values(jj)
-                    end do 
                 else
                     write (errormessage,'(2a)') &
                         '***Error, Invalid values specified for discrete values distribution for &MRND ', &
@@ -355,13 +332,13 @@
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_continous_interval))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
-                ndx_loop_2: do while(ndx + 1 <= mxpntsarray)
+                ndx_loop2: do while(ndx + 1 <= mxpntsarray)
                     if (probabilities(ndx + 1) >= 0._eb) then
                         ndx = ndx + 1
                     else
-                        exit ndx_loop_2
+                        exit ndx_loop2
                     end if
-                end do ndx_loop_2
+                end do ndx_loop2
                 ndx = ndx + 1
                 genptr%num_discrete_values = ndx
                 genptr%prob_array(1) = 0.0_eb
@@ -392,7 +369,7 @@
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
-                genptr%constant = real_constant_value
+                genptr%constant = real_constant
             else if (trim(distribution_type) == trim(rand_dist(idx_linear))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
@@ -467,7 +444,6 @@
     id = 'NULL'
     fyi = 'NULL'
     distribution_type = 'NULL'
-    value_type = 'NULL'
     minimum = -d1mach(2)
     maximum = d1mach(2)
     mean = 0.0_eb
@@ -480,10 +456,10 @@
     string_values = 'NULL'
     logical_values = .false.
     probabilities = -1001._eb
-    real_constant_value = -1001.0_eb
-    integer_constant_value = -1001
-    string_constant_value = 'NULL'
-    logical_constant_value = .false.
+    real_constant = -1001.0_eb
+    integer_constant = -1001
+    string_constant = 'NULL'
+    logical_constant = .false.
     minimum_field = 'NULL'
     maximum_field = 'NULL'
     add_field = 'NULL'
@@ -585,16 +561,17 @@
             ! Value Type
             if (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_value))) then
                 fldptr%field_type = trim(field_type)
+                fldptr%randptr%val => fldptr%rand_value
                 call find_object(field(1), fldptr, found)
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
-                    if (trim(generatorinfo(jj)%value_type) /= trim(fldptr%value_type)) then
-                        write (errormessage,'(2a)') '***Error, Value type in &MRND input does not match type expected in &MFLD,', &
-                            trim(fldptr%value_type)
-                        call cfastexit('read_mfld',7)
+                    if (.not.found) then 
+                        write(errormessage, '(4a)') '***Error, FIELD(2) not found in &MFLD, ID = ', trim(fldptr%id), &
+                            ' FIELD(2) = ',trim(field(2))
                     end if
                 else 
-                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
+                    write (errormessage,'(2a)') &
+                        '***Error, FIELD(1) not found in &MFLD, ID = ', trim(fldptr%id), ' FIELD(1) = ', trim(field(1))
                     call cfastexit('read_mfld',6)
                 end if
             
@@ -614,8 +591,7 @@
                     call cfastexit('read_mfld',8)
                 end if
                 fldptr%field_type = trim(field_type)
-                fldptr%intval%val => fldptr%index
-                fldptr%randptr => fldptr%intval
+                fldptr%randptr%val => fldptr%rand_value
                 fldptr%nidx = fldptr%genptr%num_discrete_values
                 if (trim(value_type) == val_types(idx_real)) then
                     do jj = 1, fldptr%nidx
@@ -655,10 +631,8 @@
                     call cfastexit('read_mfld',11)
                 end if
                 fldptr%field_type = trim(field_type)
-                fldptr%scaleval%val => fldptr%scale_value
-                fldptr%scaleval%value_type = val_types(idx_real)
-                fldptr%randptr => fldptr%scaleval
-                if (base_scaling_value > 1.0_eb) then
+                fldptr%randptr%val => fldptr%scale_value
+                if (base_scaling_value > 0.0_eb) then
                     fldptr%scale_base_value = base_scaling_value
                 else
                     fldptr%scale_base_value = fldptr%realval%val
@@ -668,8 +642,7 @@
                 
             elseif (trim(field_type) == trim(fldptr%fld_types(fldptr%idx_label))) then
                 fldptr%field_type = trim(field_type)
-                fldptr%intval%val => fldptr%index
-                fldptr%randptr => fldptr%intval
+                fldptr%randptr%val => fldptr%rand_value
                 fldptr%charval%val => fldptr%labelval
                 fldptr%value_type = val_types(idx_char)
                 fldptr%valptr => fldptr%charval
@@ -1118,12 +1091,10 @@
                     call cfastexit('READ_MFIR',9)
                 end if
                 fire%fire_comp%field_type = trim(fire%fire_comp%fld_types(fire%fire_comp%idx_index))
-                fire%fire_comp%indexval%val => fire%fire_comp%index
-                fire%fire_comp%randptr => fire%fire_comp%indexval
+                fire%fire_comp%randptr%val => fire%fire_comp%rand_value
                 fire%fire_comp%add_to_parameters = .false.
                 fire%fire_label%field_type = trim(fire%fire_label%fld_types(fire%fire_label%idx_label))
-                fire%fire_label%intval%val => fire%fire_label%index
-                fire%fire_label%randptr => fire%fire_label%intval
+                fire%fire_label%randptr%val => fire%fire_label%rand_value
                 fire%fire_label%charval%val => fire%fire_label%labelval
                 fire%fire_label%value_type = val_types(idx_char)
                 fire%fire_label%valptr => fire%fire_label%charval
@@ -1294,8 +1265,7 @@
                 fire%fs_fire_ptr%value_type = val_types(idx_char)
                 fire%fs_fire_ptr%charval%val => fire%incipient_growth
                 fire%fs_fire_ptr%valptr => fire%fs_fire_ptr%charval
-                fire%fs_fire_ptr%intval%val => fire%fs_fire_ptr%index
-                fire%fs_fire_ptr%randptr => fire%fs_fire_ptr%intval
+                fire%fs_fire_ptr%randptr%val => fire%fs_fire_ptr%rand_value
                 fire%fs_fire_ptr%nidx = number_of_incipient_fire_types
                 do jj = 1, number_of_incipient_fire_types
                     if (trim(incipient_fire_types(jj)) == 'FLAMING' .or. & 
@@ -1372,12 +1342,12 @@
                     fire%firegenerators(1,fire%n_firepoints)%field_type =  &
                         trim(fire%firegenerators(1, idx_firepts)%field_type)
                     fire%firegenerators(1,idx_firepts)%field_type = &
-                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_pointer))
                     fire%firegenerators(2, fire%n_firepoints)%genptr => fire%firegenerators(2, idx_firepts)%genptr
                     fire%firegenerators(2,fire%n_firepoints)%field_type =  &
                         trim(fire%firegenerators(1, idx_firepts)%field_type)
                     fire%firegenerators(1,idx_firepts)%field_type = &
-                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_null))
+                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_pointer))
                 end if
                 do jj = 1, fire%n_firepoints
                     if (add_fire_to_parameters(jj)) fire%add_to_parameters = .true.

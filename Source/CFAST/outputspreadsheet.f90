@@ -9,10 +9,10 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist, readcsvformat, tointstring
     
-    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, outp_type, ssout_type, vent_type
+    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, dump_type, ssout_type, vent_type
 
     use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mx_outps, mxss, cjetvelocitymin, &
+        ns, soot, soot_flaming, soot_smolder, smoked, mx_dumps, mxss, cjetvelocitymin, &
         n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
         fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
     
@@ -26,7 +26,7 @@ module spreadsheet_routines
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use outp_data, only: n_outps, outpinfo, csvnames, num_csvfiles, iocsv
+    use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
     
@@ -34,7 +34,7 @@ module spreadsheet_routines
 
     private
 
-    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_outp
+    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_dump
 
     contains
     
@@ -1744,57 +1744,57 @@ module spreadsheet_routines
     return
     end subroutine output_spreadsheet_diag
     
-    !--------------------------output_spreadsheet_outp-----------------------------------------------------------
+    !--------------------------output_spreadsheet_dump-----------------------------------------------------------
     
-    subroutine output_spreadsheet_outp 
+    subroutine output_spreadsheet_dump 
     
-    integer, parameter :: nr = 2, nc = mx_outps+1
-    real(eb) :: outparray(nr, nc)
-    character(len=128) :: outpcarray(nr, nc)
+    integer, parameter :: nr = 2, nc = mx_dumps+1
+    real(eb) :: dumparray(nr, nc)
+    character(len=128) :: dumpcarray(nr, nc)
     integer :: i, icount, mxcol
     
-    outparray(1, 1:nc) = 0.0
-    outparray(2, 2:nc) = -1001
-    outpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    outparray(2,1) = 0.0
-    outpcarray(1,1) = 'File Name'
-    outpcarray(2,1) = trim(project) // trim(extension)
+    dumparray(1, 1:nc) = 0.0
+    dumparray(2, 2:nc) = -1001
+    dumpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
+    dumparray(2,1) = 0.0
+    dumpcarray(1,1) = 'File Name'
+    dumpcarray(2,1) = trim(project) // trim(extension)
     mxcol = 0 
-    if (ss_out_interval>0 .and. n_outps > 0) then 
-        icount = n_outps
+    if (ss_out_interval>0 .and. n_dumps > 0) then 
+        icount = n_dumps
         do i = 1, num_csvfiles
             if (icount>0) then
-                call do_csvfile(nr, nc, outparray, outpcarray, i, icount, mxcol)
+                call do_csvfile(nr, nc, dumparray, dumpcarray, i, icount, mxcol)
             else 
                 exit
             end if
         end do
-        call writecsvformat(iofilcalc, outparray, outpcarray, nr, nc, 1, 2, mxcol)
+        call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
     end if      
     
     return
-    end subroutine output_spreadsheet_outp
+    end subroutine output_spreadsheet_dump
     
     !--------------------do_csvfile---------------------------------------
     
-    subroutine do_csvfile(nr, nc, outparray, outpcarray, idx, icount, mxcol)
+    subroutine do_csvfile(nr, nc, dumparray, dumpcarray, idx, icount, mxcol)
     
     integer, intent(in) :: nr, nc, idx
     integer, intent(inout) :: mxcol, icount
-    real(eb), intent(inout) :: outparray(nr, nc)
-    character(len=*), intent(inout) :: outpcarray(nr, nc)
+    real(eb), intent(inout) :: dumparray(nr, nc)
+    character(len=*), intent(inout) :: dumpcarray(nr, nc)
     
     integer :: i
-    type(outp_type), pointer :: outpptr
+    type(dump_type), pointer :: dumpptr
     logical :: first, lend
     
     integer, parameter :: numr = 3, numc = 32000
-    real(eb) :: lastval(2, mx_outps), lasttime(mx_outps), x(numr, numc)
+    real(eb) :: lastval(2, mx_dumps), lasttime(mx_dumps), x(numr, numc)
     character(len=128) :: header(numr, numc), c(numr, numc)
     
-    integer :: relcol, mxhr, mxhc, ic, cols(mx_outps), icol, num_entries
-    integer :: primecol(mx_outps), seccol(2, mx_outps), mxr, mxc
-    real(eb) :: dummy(2, mx_outps)
+    integer :: relcol, mxhr, mxhc, ic, cols(mx_dumps), icol, num_entries
+    integer :: primecol(mx_dumps), seccol(2, mx_dumps), mxr, mxc
+    real(eb) :: dummy(2, mx_dumps)
     
     lastval = 0.0_eb
     lasttime = 0.0_eb
@@ -1809,18 +1809,18 @@ module spreadsheet_routines
     first = .true.
     num_entries = 0
     icol = 0
-    do i = 1, n_outps
+    do i = 1, n_dumps
         if (icount>0)  then
-            outpptr => outpinfo(i)
-            outpptr%found = .false.
-            if (outpptr%file==csvnames(idx)) then
+            dumpptr => dumpinfo(i)
+            dumpptr%found = .false.
+            if (dumpptr%file==csvnames(idx)) then
                 num_entries = num_entries + 1
-                relcol = outpptr%relative_column + 1
+                relcol = dumpptr%relative_column + 1
                 icount = icount - 1
                 icol = icol + 1
                 cols(icol) = i
                 mxcol = max(mxcol, relcol)
-                outpcarray(1,relcol) = outpptr%id
+                dumpcarray(1,relcol) = dumpptr%id
                 if (first) then
                     rewind(iocsv(idx))
                     call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend)
@@ -1829,31 +1829,31 @@ module spreadsheet_routines
                         return
                     end if
                 end if 
-                call fnd_col(ic, header, numr, numc, mxhr, mxhc, outpptr%first_field(1), outpptr%first_field(2))
+                call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%first_field(1), dumpptr%first_field(2))
                 primecol(cols(icol)) = ic
                 if (ic>0) then
-                    outpptr%found = .true.
+                    dumpptr%found = .true.
                 end if
-                if ((outpptr%type(1:8) == 'TRIGGER_' .or. &
-                        outpptr%type(1:9) == 'INTEGRATE').and.outpptr%found) then 
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, outpptr%second_field(1), &
-                                    outpptr%second_field(2))
+                if ((dumpptr%type(1:8) == 'TRIGGER_' .or. &
+                        dumpptr%type(1:9) == 'INTEGRATE').and.dumpptr%found) then 
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
+                                    dumpptr%second_field(2))
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
-                        outpptr%found = .false.
+                        dumpptr%found = .false.
                     end if
-                else if (outpptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.outpptr%found) then
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, outpptr%second_field(1), &
-                                    outpptr%second_field(2))
+                else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.dumpptr%found) then
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
+                                    dumpptr%second_field(2))
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
-                        outpptr%found = .false.
+                        dumpptr%found = .false.
                     end if
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, outpptr%second_field(1), &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
                                     'HRR Expected')
                     seccol(2,cols(icol)) = ic
                     if (ic<1) then
-                        outpptr%found = .false.
+                        dumpptr%found = .false.
                     end if
                 end if
             end if
@@ -1863,24 +1863,24 @@ module spreadsheet_routines
     call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend) 
     if (.not.lend) then
         do i = 1, icol
-            outpptr => outpinfo(cols(i))
-            if (outpptr%found) then
-                relcol = outpptr%relative_column + 1
-                if (outpptr%type(1:1) == 'M') then
-                    outparray(2,relcol) = x(1, primecol(cols(i)))
-                else if (outpptr%type(1:8) == 'TRIGGER_') then
-                    outparray(2,relcol) = -1
-                else if (outpptr%type(1:9) == 'INTEGRATE') then
-                    outparray(2,relcol) = -1
+            dumpptr => dumpinfo(cols(i))
+            if (dumpptr%found) then
+                relcol = dumpptr%relative_column + 1
+                if (dumpptr%type(1:1) == 'M') then
+                    dumparray(2,relcol) = x(1, primecol(cols(i)))
+                else if (dumpptr%type(1:8) == 'TRIGGER_') then
+                    dumparray(2,relcol) = -1
+                else if (dumpptr%type(1:9) == 'INTEGRATE') then
+                    dumparray(2,relcol) = -1
                     lasttime(i) = x(1, primecol(cols(i)))
                     lastval(1,i) = x(1, seccol(1,cols(i)))
-                else if (outpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
-                    outparray(2,relcol) = -1
+                else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
+                    dumparray(2,relcol) = -1
                     dummy(1:2,i) = 0
                     lasttime(i) = x(1, primecol(cols(i)))
                     lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                 else
-                    outparray(2,relcol) = -1001
+                    dumparray(2,relcol) = -1001
                 end if
             end if 
         end do 
@@ -1892,36 +1892,36 @@ module spreadsheet_routines
         call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend)
         if (.not.lend) then
             do i = 1, icol
-                outpptr => outpinfo(cols(i))
-                if (outpptr%found) then
-                    relcol = outpptr%relative_column + 1
-                    if (outpptr%type(1:3) == 'MAX') then
-                        outparray(2,relcol) = max(outparray(2,relcol),x(1, primecol(cols(i))))
-                    else if (outpptr%type(1:3) == 'MIN') then
-                        outparray(2,relcol) = min(outparray(2,relcol),x(1, primecol(cols(i))))
-                    else if (outpptr%type(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(1,cols(i)))>=outpptr%criterion.and.outparray(2,relcol)== -1) then
-                            outparray(2,relcol) = x(1, primecol(cols(i)))
+                dumpptr => dumpinfo(cols(i))
+                if (dumpptr%found) then
+                    relcol = dumpptr%relative_column + 1
+                    if (dumpptr%type(1:3) == 'MAX') then
+                        dumparray(2,relcol) = max(dumparray(2,relcol),x(1, primecol(cols(i))))
+                    else if (dumpptr%type(1:3) == 'MIN') then
+                        dumparray(2,relcol) = min(dumparray(2,relcol),x(1, primecol(cols(i))))
+                    else if (dumpptr%type(1:15) == 'TRIGGER_GREATER') then
+                        if (x(1, seccol(1,cols(i)))>=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
+                            dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
-                    else if (outpptr%type(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(1,i))<=outpptr%criterion.and.outparray(2,relcol)== -1) then
-                            outparray(2,relcol) = x(1, primecol(cols(i)))
+                    else if (dumpptr%type(1:14) == 'TRIGGER_LESSER') then
+                        if (x(1, seccol(1,i))<=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
+                            dumparray(2,relcol) = x(1, primecol(cols(i)))
                         end if
-                    else if (outpptr%type(1:9) == 'INTEGRATE') then
-                        outparray(2,relcol) = outparray(2,relcol) + &
+                    else if (dumpptr%type(1:9) == 'INTEGRATE') then
+                        dumparray(2,relcol) = dumparray(2,relcol) + &
                             (x(1, seccol(1,cols(i)))+lastval(1,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
                         lasttime(i) = x(1, primecol(cols(i)))
                         lastval(1,i) = x(1, seccol(1,cols(i)))
-                    else if (outpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
+                    else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
                         dummy(1:2,i) = dummy(1:2,i) + &
                             (x(1, seccol(1:2,cols(i)))+lastval(1:2,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
                         if (dummy(2,i)>0) then
-                            outparray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
+                            dumparray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
                         end if 
                         lasttime(i) = x(1, primecol(cols(i)))
                         lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                     else
-                        outparray(2,relcol) = -1001
+                        dumparray(2,relcol) = -1001
                     end if
                 end if
             end do

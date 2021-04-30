@@ -1463,12 +1463,12 @@ An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean
 \hypertarget{discussion}{%
 \subsection{Discussion}\label{discussion}}
 
-First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table \ref{tbl:Ex_3-1}. In the column listed Value, the number shows what a one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the compartment where the fire occurred, the lab space.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of Office 1 produce minimal changes to the heat FED for the Foyer
+First we look at the sensitivity of maximum heat FED in the Foyer. Selected results are displayed in Table \ref{tbl:Ex_3-1}. In the column listed Value, the number shows what a one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the compartment where the fire occurred, the lab space.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of Office 1 produce minimal changes to the heat FED for the Foyer
 
 \noindent
 \begin{table}[ht]
 \begin{center}
-\caption[Selected result for sensitivity of maximum temperature FED.]{Selected result for sensitivity of maximum temperature FED.}
+\caption[Selected result for sensitivity of maximum heat FED.]{Selected result for sensitivity of maximum heat FED.}
 \label{tbl:Ex_3-1}
 \begingroup
 \renewcommand{\arraystretch}{1.2}
@@ -1531,7 +1531,7 @@ This publication introduces the CFAST Fire Data Generator, CData, that has been 
 
 CData supports several statistical analyses with the statistical software R to provide several built-in tools to analyze the data. Three of the tools are useful in determining that enough cases have been run to draw justifiable conclusions from the analysis. The first, convergence of the mean, allows the user to make a determination if enough cases have been run. Two other tools, the histogram generator and the empirical probability density function, allow users to look at the distributions of input variables to determine that distributions are as expected. Both can also be used to look at the distributions of output variables. Finally, the decision trees model can be used to look for the most important variables in determining the value of a particular output variable. These tools as well as the R software distributed with CData will allow users to do a significant amount of analysis of data that is generated.
 
-Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results. However, it is not very useful to run many times the number of runs needed to draw statistically justifiable conclusions. For one thing the computational time and storage space, especially the storage space, can overwhelm any system if the number of cases is large enough.
+Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results. 
 
 The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have emerges, a plan for a next version of the tool will be made.
 

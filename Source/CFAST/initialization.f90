@@ -13,12 +13,12 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxmatl, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        smoked, mx_dumps, mxss
+        smoked, mx_outps, mxss
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo, alloc_devc, init_devc
-    use dump_data, only: n_dumps, dumpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices, &
-        alloc_dump, init_dump
+    use outp_data, only: n_outps, outpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices, &
+        alloc_outp, init_outp
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace, &
         alloc_fire, init_fire
     use material_data, only: n_matl, material_info, alloc_matl, init_matl
@@ -568,21 +568,21 @@ module initialization_routines
     end if
     
     ! post-run calculation data
-    if (alloc_dump) then
-        alloc_dump = .false.
-        allocate (dumpinfo(mx_dumps))
+    if (alloc_outp) then
+        alloc_outp = .false.
+        allocate (outpinfo(mx_outps))
     end if
-    if (init_dump) then
-        init_dump = .false.
-        n_dumps = 0
-        dumpinfo(1:mx_dumps)%file = ' '
-        dumpinfo(1:mx_dumps)%type = ' '
-        dumpinfo(1:mx_dumps)%first_field(1) = ' '
-        dumpinfo(1:mx_dumps)%first_field(2) = ' '
-        dumpinfo(1:mx_dumps)%second_field(1) = ' '
-        dumpinfo(1:mx_dumps)%second_field(2) = ' '
-        dumpinfo(1:mx_dumps)%relative_column = -1
-        dumpinfo(1:mx_dumps)%criterion = -1
+    if (init_outp) then
+        init_outp = .false.
+        n_outps = 0
+        outpinfo(1:mx_outps)%file = ' '
+        outpinfo(1:mx_outps)%type = ' '
+        outpinfo(1:mx_outps)%first_field(1) = ' '
+        outpinfo(1:mx_outps)%first_field(2) = ' '
+        outpinfo(1:mx_outps)%second_field(1) = ' '
+        outpinfo(1:mx_outps)%second_field(2) = ' '
+        outpinfo(1:mx_outps)%relative_column = -1
+        outpinfo(1:mx_outps)%criterion = -1
     end if
 
     return

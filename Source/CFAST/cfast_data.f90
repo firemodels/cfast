@@ -79,15 +79,15 @@ module  diag_data
 
 end module diag_data
 
-! -------------------------dump_data---------------------------------------
+! -------------------------outp_data---------------------------------------
     
-module dump_data
+module outp_data
     
     use precision_parameters
     
-    use cfast_types, only: dump_type
+    use cfast_types, only: outp_type
     
-    use cparams, only: mx_dumps, mxitems
+    use cparams, only: mx_outps, mxitems
     
     implicit none
     save
@@ -99,12 +99,12 @@ module dump_data
         (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
     integer, dimension(num_csvfiles) :: iocsv
     
-    integer :: n_dumps
-    type (dump_type), allocatable, dimension(:), target :: dumpinfo
+    integer :: n_outps
+    type (outp_type), allocatable, dimension(:), target :: outpinfo
     
-    logical :: alloc_dump = .true., init_dump = .true.
+    logical :: alloc_outp = .true., init_outp = .true.
     
-    end module dump_data
+    end module outp_data
 
 ! --------------------------- fire_data -------------------------------------------
 
@@ -190,7 +190,7 @@ module material_data
     logical :: timeflag = .false.
     logical :: ventflag = .false. 
     logical :: diagflag = .false.
-    logical :: dumpflag = .false.
+    logical :: outpflag = .false.
 
     end module namelist_data
     

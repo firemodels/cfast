@@ -15,7 +15,7 @@
 
     use cenviro, only: rgas
     use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        mx_dumps, interior, exterior
+        mx_outps, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: input_file_line
@@ -29,7 +29,7 @@
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
-    use dump_data, only: n_dumps, dumpinfo
+    use outp_data, only: n_outps, outpinfo
 
     implicit none
     external get_info

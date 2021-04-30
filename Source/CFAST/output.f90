@@ -10,7 +10,7 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, material_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg, mx_dumps, cjetvelocitymin
+        w_from_room, w_from_wall, idx_tempf_trg, mx_outps, cjetvelocitymin
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
@@ -27,7 +27,7 @@ module output_routines
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
+    use outp_data, only: n_outps, outpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
 
     implicit none
     external grabky, get_info
@@ -1500,7 +1500,7 @@ module output_routines
         if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(newunit=iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw
         
-        if (n_dumps/=0) then
+        if (n_outps/=0) then
             open (newunit=iofilcalc, file=sscalculation,form='formatted')
         end if
         

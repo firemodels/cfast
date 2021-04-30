@@ -11,7 +11,7 @@ module cfast_types
     end type cfast_type
     
     ! user-customized data and calculation output data structure
-    type, extends(cfast_type) :: dump_type
+    type, extends(cfast_type) :: outp_type
         ! these are for user-specified calculations on data. output goes to _calculations.csv
         character(len=24) :: file                   ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
@@ -26,7 +26,7 @@ module cfast_types
         integer :: relative_column                  ! Order of columns. This is just the order in the input file
         
         logical :: found                            ! The input channels are found in the requested csv files
-    end type dump_type
+    end type outp_type
 
     ! detector / sprinkler structure
     type, extends(cfast_type) :: detector_type

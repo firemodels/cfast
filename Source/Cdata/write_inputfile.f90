@@ -5,11 +5,11 @@
     use fire_routines, only: flame_height
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
-        vent_type, visual_type, outp_type
+        vent_type, visual_type, dump_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
-        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_outps
+        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
@@ -23,7 +23,7 @@
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
     use material_data, only: n_matl, material_info
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, outpflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
@@ -35,7 +35,7 @@
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use outp_data, only: n_outps, outpinfo, num_csvfiles, csvnames
+    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
 
     implicit none 
     
@@ -80,8 +80,8 @@
     write(iofilcalc, '(a)') '!! Fires'
     call write_chem_tabl(iofilcalc)
     write(iofilcalc,'(a1)')
-    write(iofilcalc, '(a)') '!! outps'
-    call write_outp (iofilcalc)
+    write(iofilcalc, '(a)') '!! Dumps'
+    call write_dump (iofilcalc)
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '&TAIL /'
 
@@ -750,35 +750,35 @@
     return
     end subroutine write_conn
     
-    !------------------------write_outp-------------------------------------------------------------------
-    subroutine write_outp(iounit)
+    !------------------------write_dump-------------------------------------------------------------------
+    subroutine write_dump(iounit)
     
     implicit none
     integer, intent(in) :: iounit
     
-    type(outp_type), pointer :: outpptr
+    type(dump_type), pointer :: dumpptr
     integer :: i
     character :: buf*(128)
     
-    if (n_outps > 0) then
-        do i = 1, n_outps
-            outpptr => outpinfo(i)
-            call start_namelist(buf, 'outp')
-            call add_token_str(iounit, buf, 'ID = ', outpptr%id)
-            call add_token_str(iounit, buf, 'FYI = ', outpptr%fyi)
-            call add_token_str(iounit, buf, 'TYPE = ', outpptr%type)
-            call add_token_str(iounit, buf, 'FILE = ', outpptr%file)
-            call add_token_carray(iounit, buf, 'FIRST_FIELD = ', outpptr%first_field, 2)
-            call add_token_carray(iounit, buf, 'SECOND_FIELD = ', outpptr%second_field, 2)
-            if (outpptr%type(1:3) == 'TRI') then
-                call add_token_val(iounit, buf, 'CRITERION = ', outpptr%criterion)
+    if (n_dumps > 0) then
+        do i = 1, n_dumps
+            dumpptr => dumpinfo(i)
+            call start_namelist(buf, 'DUMP')
+            call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
+            call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
+            call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)
+            call add_token_str(iounit, buf, 'FILE = ', dumpptr%file)
+            call add_token_carray(iounit, buf, 'FIRST_FIELD = ', dumpptr%first_field, 2)
+            call add_token_carray(iounit, buf, 'SECOND_FIELD = ', dumpptr%second_field, 2)
+            if (dumpptr%type(1:3) == 'TRI') then
+                call add_token_val(iounit, buf, 'CRITERION = ', dumpptr%criterion)
             end if
             call end_namelist(iounit, buf)
         end do
     end if
     
     return
-    end subroutine write_outp
+    end subroutine write_dump
     
     !--------start_namelist   --------
     

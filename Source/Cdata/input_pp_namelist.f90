@@ -7,11 +7,11 @@
     use utility_routines, only: d1mach
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
-        vent_type, visual_type, dump_type, cfast_type
+        vent_type, visual_type, outp_type, cfast_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
-        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
+        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_outps
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
@@ -21,10 +21,10 @@
     use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
         verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
-    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
+    use outp_data, only: n_outps, outpinfo, num_csvfiles, csvnames
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, outpflag
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo

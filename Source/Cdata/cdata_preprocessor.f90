@@ -4,7 +4,7 @@ module preprocessor_routines
     use precision_parameters
     use cparams
 
-    use dump_data, only: n_dumps
+    use outp_data, only: n_outps
     use namelist_data, only: convert_negative_distances
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &

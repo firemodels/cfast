@@ -491,6 +491,39 @@ The following example shows the height of a door to the bedroom in the above exa
      FIELD = 'Wall Vent' 'TOP' /
 \end{lstlisting}
 
+The next example is of both {\ct FIELD\_TYPE = INDEX} and {\ct FIELD\_TYPE = LABEL}. A door has 5 postions, fully open, three quaters open, half open, one quater open, and closed. The close position is represented with the vent having the full width but the top of the vent only being 2.5~cm above the floor. The other four positions are determined by the width of the door with the top at full height. Because two parameters are being coordinated and more could be included a {\ct LABEL} column is included to provide a single place to determine the state of the door. For more about this example look at section \ref{Detectors}
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+	VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' 
+	RAND_ID = 'Generator for DR LR 1'  REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 
+	FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX' 
+	RAND_ID = 'Generator for DR LR 1'  REAL_VALUES = 0.96 0.72 0.48 0.24 0.96 
+	FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' 
+	RAND_ID = 'Generator for DR LR 1' 
+	STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' 
+	ADD_TO_PARAMETERS = .TRUE. 
+	PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
+\end{lstlisting}
+
+The last example is for {\ct FIELD\_TYPE = SCALING}. Section \ref{chapter:Sensitivity} is a sensitivity analysis. In it a number of compartments are connected in such a way that their hieghts need to be the same. The example shows how three of the compartments are set to scale the their heights together. 
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling height', 
+	FYI = 'Scaling for everything that has the same max height', 
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
+    RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE. 
+    PARAMETER_COLUMN_LABEL = 'Foyer_and_Halls_height' /
+&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+\end{lstlisting}
 
 \clearpage
 
@@ -782,14 +815,15 @@ For the example in this chapter, inputs are included to determine the peak heat 
     FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
 &OUTP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
     FIRST_FIELD = 'Comp 1' 'Layer Height' /
-
 &OUTP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
-    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' CRITERION = 1.5 /
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height' 
+    CRITERION = 1.5 /
 &OUTP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
-    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
-
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' 
+    CRITERION = 600 /
 &OUTP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
-    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' CRITERION = 600 /
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature' 
+    CRITERION = 600 /
 \end{lstlisting}
 
 With the rest of the input file defining the base input file, creating a set of CFAST input files requires running CData from a command prompt with the {\ct -P} option as
@@ -1016,51 +1050,46 @@ For the analysis, we will look at the minimum heat release rate necessary to ach
 The example below shows how to vary the width uniformly over the range of 2.0 m to 20.0 m. Other dimensions are handled in a similar fashion.
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Comp 1 Width Generator' DISTRIBUTION_TYPE = 'UNIFORM'
 	MINIMUM = 2.0 MAXIMUM = 20.0/
-&MFLD ID = 'Comp 1 Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Width Generator' FIELD = 'Comp 1' 'WIDTH'
-    ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Comp 1 Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Width Generator' 
+	FIELD = 'Comp 1' 'WIDTH' ADD_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
 The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the top of the vent is defined as 0.15 m below the compartment ceiling (specified by the {\ct MAXIMUM\_OFFSET} of -0.15 m, with the negative number indicating an offset relative to the top of the compartment) and the vent width maximum is defined as 1 m less than the vent width (specified by the {\ct MAXIMUM\_OFFSET} of -1.0 m).
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
-&MRND ID = 'Wall Vent Bottom Generator' DISTRIBUTION_TYPE = 'UNIFORM'  MINIMUM = 0.0 MAXIMUM = 1.5/
-&MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE'
-	RAND_ID = 'Wall Vent Bottom Generator' FIELD = 'Wall Vent' 'BOTTOM'
-    ADD_TO_PARAMETERS = .TRUE. /
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Wall Vent Bottom Generator' DISTRIBUTION_TYPE = 'UNIFORM'  
+	MINIMUM = 0.0 MAXIMUM = 1.5/
+&MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Bottom Generator' 
+	FIELD = 'Wall Vent' 'BOTTOM' ADD_TO_PARAMETERS = .TRUE. /
 
 &MRND ID = 'Wall Vent Top Generator' DISTRIBUTION_TYPE = 'UNIFORM'
 	MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1' 'Height' MAXIMUM_OFFSET = -0.15/
-&MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE'
-	RAND_ID = 'Wall Vent Top Generator' FIELD = 'Wall Vent' 'TOP'
-    ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Top Generator' 
+	FIELD = 'Wall Vent' 'TOP' ADD_TO_PARAMETERS = .TRUE. /
 
 &MRND ID = 'Wall Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM'
     MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1' 'Width' MAXIMUM_OFFSET = -1.0/
-&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE'
-	RAND_ID = 'Wall Vent Width Generator' FIELD = 'Wall Vent' 'WIDTH'
-    ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Width Generator' 
+	FIELD = 'Wall Vent' 'WIDTH' ADD_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
 The fire specification is naturally the most complex. For this example, we use a t-squared growth rate fire that grows to a peak value in a time period from 75 s to 1000 s, followed by a 10 s plateau and 10 s decay back to 0~kW. Since both the plateau and decay are set to 10 s, the same generator input can be used for both time points.
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 75 MAXIMUM = 1000 /
 &MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 &MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
-
 &MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM'
 	MINIMUM = 1500 MAXIMUM = 160000/
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
 
 &MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1'
-	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time'
-	'Fire End Time'
-	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator'
-	'End of Fire HRR'
+	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time'
+	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR'
 	NUMBER_OF_GROWTH_POINTS = 20 GROWTH_EXPONENT = 2 /
 \end{lstlisting}
 
@@ -1083,6 +1112,7 @@ Flashover is a term describing the transition of a relatively localized interior
 %%%%%%%%%%
 
 \section{Example 2: Impact of smoke detector interconnection}
+\label{Detectors}
 
 Battery-powered smoke alarms with wireless interconnect signal transmission allow for retrofitting of homes with interconnected smoke alarms up to the current code-required installation locations without hardwiring. However, wireless communication draws additional current beyond basic smoke alarm operation and will affect battery life. To receive an interconnect signal, wireless smoke alarms must periodically power up the transceiver and listen for a transmitted signal from another alarm that initially responds to smoke. Naturally a question arises: what is an acceptable maximum delay time for wireless interconnected smoke alarms given the desire to extend battery life?
 
@@ -1120,28 +1150,27 @@ For this example, the fire location, fire growth, fire peak heat release rate, v
 The full file for this case is in Detectors.in. Here are some examples of the inputs. The following gives the full specification of the fire.
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
-&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' 
 	VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
-&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' 
 	VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
-&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 23 STDEV = 7
-    MINIMUM = 10.0 MAXIMUM = 30.0/
-&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 207 STDEV = 46
-    MINIMUM = 150 MAXIMUM = 1200/
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	 MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' 
+	MEAN = 207 STDEV = 46 MINIMUM = 150 MAXIMUM = 1200/
 &MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
 	MEAN = 11 STDEV = 3 MINIMUM = 10.0 MAXIMUM = 20.0/
-&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'MEAN = 6863 STDEV = 1812
-    MINIMUM = 4840 MAXIMUM = 10910/
-&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 205, STDEV = 65
-    MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	MEAN = 6863 STDEV = 1812 MINIMUM = 4840 MAXIMUM = 10910/
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' 
+	MEAN = 205, STDEV = 65 MINIMUM = 75 MAXIMUM = 500 /
 &MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 1054 /
 &MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 &MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
 
-&MFIR ID = 'Compartment_generator'
-	FIRE_ID = 'Random'
+&MFIR ID = 'Compartment_generator' FIRE_ID = 'Random'
 	FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
     FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room'
     FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator'
@@ -1160,17 +1189,17 @@ The full file for this case is in Detectors.in. Here are some examples of the in
 The doors all follow the same pattern. As an example here is the specification for the DR LR 1 door.
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
 &MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
 	VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
 
-&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL'
-    REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL'
-    REAL_VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'CHARACTER'
-    STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE.
-    PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1'  
+	VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX'  RAND_ID = 'Generator for DR LR 1'  
+	VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1' 
+	STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' 
+	ADD_TO_PARAMETERS = .TRUE. PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
 \end{lstlisting}
 
 Notice that the first two  {\ct \&MFLD} entries of  {\ct FIELD\_TYPE = 'INDEX'}. They are for the height and width of the door the first 4 of 5 indexes are for the door being 'open', 'three-fourth', 'one-half', and  'one-fourth' open. For these indexes only the width of the door is changed and the height is the full 2.4 m. The fifth index is for the 'closed' door and has the width the full 0.96 m but the height is only 0.025 m to represent the crack under the door. To simplify modeling the data it would be helpful to have a single column that represents the state of the door. This is why the third {\ct \&MFLD} entry of {\ct FIELD\_TYPE = 'LABEL'} is included.
@@ -1178,11 +1207,13 @@ Notice that the first two  {\ct \&MFLD} entries of  {\ct FIELD\_TYPE = 'INDEX'}.
 Like the doors, all the detectors follow the same pattern. All the detectors could have been set up with the same sensitivity for each case but for this example, it was decided that the sensitivity of the detectors would be independent. An example of the CData specification for one detector follows
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
-&MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL'
-    MEAN =  9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'UL Alarm Living Room Trigger Generator' 
+	DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN =  9.5 STDEV = 1.3 
+	MINIMUM = 1.6 MAXIMUM = 41.3/
 	
-&MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Living Room Trigger Generator'
+&MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE' 
+	RAND_ID = 'UL Alarm Living Room Trigger Generator'
     FIELD = 'UL Alarm Living Room','TRIGGER' /
 \end{lstlisting}
 
@@ -1357,35 +1388,51 @@ As part of the inputs one of the things to keep in mind is that the foyer and ha
 
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
-&MRND ID = 'Scaling height', FYI = 'Scaling for everything that has the same max height', DISTRIBUTION_TYPE = 'UNIFORM',
-    MINIMUM = 0.9 MAXIMUM = 1.1 /
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling height', FYI = 'Scaling for everything that has the same max height', 
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
 &MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
-    RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE. PARAMETER_HEADER = 'Foyer_and_Halls_height' /
-&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Front Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Back Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Bathroom Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Bathroom Hall'  'HEIGHT' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2FrontHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2FrontHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'Foyer2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2OddHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'FrontHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'FrontHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2OddHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'BackHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2EvenHall'  'TOP' RAND_ID = 'Scaling height' /
-&MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'TOP' RAND_ID = 'Scaling height' /
+    RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE. 
+    PARAMETER_COLUMN_LABEL = 'Foyer_and_Halls_height' /
+&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Front Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'HEIGHT' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Back Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'HEIGHT' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Bathroom Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Bathroom Hall'  'HEIGHT' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2FrontHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2FrontHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2EvenHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2OddHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2EvenHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2OddHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2EvenHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'TOP' 
+	RAND_ID = 'Scaling height' /
 \end{lstlisting}
 
 After all the fields that are to be varied are set up there is also the fire to vary. Instead of varying the fire we will scale the HRR and time with single independent scaling factors. This requires only two random generators and is implemented as follows.
 
 \vspace{\baselineskip}
-\begin{lstlisting} [language=cdata]
-&MRND ID = 'Scaling HRR', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MRND ID = 'Scaling Time', FYI = 'Just making sure it works', DISTRIBUTION_TYPE = 'UNIFORM',
-    VALUE_TYPE = 'REAL', MINIMUM = 0.9 MAXIMUM = 1.1 /
-&MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Back Fire' SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
-    SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' ADD_HRR_SCALE_TO_PARAMETERS = .TRUE. ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling HRR', FYI = 'Just making sure it works', 
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MRND ID = 'Scaling Time', FYI = 'Just making sure it works', 
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Back Fire' 
+	SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
+    SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' 
+    ADD_HRR_SCALE_TO_PARAMETERS = .TRUE. 
+    ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
 \end{lstlisting}
 
 The other advantage, besides ease of implementation, is that it eliminates the possibility of variation of individual time points reducing the impact of the variability. For example if one point has the HRR increasing by some amount but the next HHR value decreases it won't completely average out but it could reduce the impact on the overall scenario.
@@ -1416,7 +1463,7 @@ An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean
 \hypertarget{discussion}{%
 \subsection{Discussion}\label{discussion}}
 
-First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_3-1}. The single most significant factor is the depth of the lab space--where the fire occurred. A one-percent change in the lab depth will produce a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a one percent change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
+First we look at the sensitivity of maximum temperature FED in the Foyer. Selected results are displayed in Table  \ref{tbl:Ex_3-1}. In the column listed Value the number shows what one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the lab space--where the fire occurred.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of office 1 produce minimal changes to the heat FED for the Foyer
 
 \noindent
 \begin{table}[ht]

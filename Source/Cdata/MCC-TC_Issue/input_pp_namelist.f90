@@ -214,7 +214,7 @@
     character(len=35) :: distribution_type
     integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, minimum_offset, maximum_offset
-    integer :: random_seeds(mxseeds), ndx
+    integer ::random_seeds(mxseeds), ndx
     real(eb) :: probabilities(mxpntsarray), values(mxpntsarray) 
     real(eb) :: constant
     character(len=128) :: minimum_field,  maximum_field, add_field
@@ -297,10 +297,10 @@
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_discrete))) then
-                ndx = 1
+                ndx = 0
                 genptr%type_dist = distribution_type
                 ndx_loop: do while(ndx <= mxpntsarray)
-                    if (probabilities(ndx) >= 0._eb) then
+                    if (probabilities(ndx+1) >= 0._eb) then
                         ndx = ndx + 1
                     else
                         exit ndx_loop
@@ -311,17 +311,18 @@
                 do jj = 2, ndx
                     genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj)
                 end do 
-                if (values(1) /= -1001._eb) then
-                    genptr%value_type = val_types(idx_real)
-                    do jj = 1, ndx
+                genptr%value_type = val_types(idx_real)
+                do jj = 1, ndx
+                    if (values(jj) /= -1001.0_eb) then
                         genptr%real_array(jj) = values(jj)
-                    end do
-                else
-                    write (errormessage,'(2a)') &
-                        '***Error, Invalid values specified for discrete values distribution for &MRND ', &
-                        trim(genptr%id)
-                    call cfastexit('read_mrnd', 5)
-                end if 
+                    else
+                        write (errormessage,'(2a)') &
+                            '***Error, Invalid values specified for discrete values distribution for &MRND ', &
+                            trim(genptr%id)
+                        call cfastexit('read_mrnd', 4)
+                    end if 
+                end do
+                
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_continous_interval))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
@@ -340,25 +341,23 @@
                 end do  
                 if (genptr%prob_array(ndx) /= 1) then
                     write (errormessage, '(2a)') '***Error, probablities must add up to 1.0, &MRND ', trim(genptr%id)
-                    call cfastexit('read_mrnd', 6)
+                    call cfastexit('read_mrnd', 5)
                 end if
-                if (values(1) /= -1001._eb) then
-                    genptr%value_type = val_types(idx_real)
-                    genptr%real_array(1) = values(1)
-                    do jj = 2, ndx
-                        if (values(jj) <= values(jj-1)) then
-                            write (errormessage, '(2a)') '***Error, real_values must be increasing for &MRND ', &
-                                trim(genptr%id)
-                            call cfastexit('rean_mrnd', 7)
-                        end if
-                        genptr%real_array(jj) = values(jj)
-                    end do
-                else
-                    write (errormessage,'(2a)') &
-                        '***Error, Invalid values specified for continuous values distribution for &MRND ', &
-                        trim(genptr%id)
-                    call cfastexit('read_mrnd', 8)
-                end if 
+                genptr%value_type = val_types(idx_real)
+                do jj = 1, ndx
+                    if (values(jj) == -1001._eb) then
+                        write (errormessage,'(2a)') &
+                            '***Error, Invalid values specified for continuous values distribution for &MRND ', &
+                            trim(genptr%id)
+                        call cfastexit('read_mrnd', 6)
+                    end if 
+                    if (values(jj) <= values(jj-1)) then
+                        write (errormessage, '(2a)') '***Error, values must be increasing for &MRND ', &
+                            trim(genptr%id)
+                        call cfastexit('rean_mrnd', 7)
+                    end if
+                    genptr%real_array(jj) = values(jj)
+                end do
             else if (trim(distribution_type) == trim(rand_dist(idx_const))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
@@ -378,23 +377,37 @@
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
+                if (trim(minimum_field) /= 'NULL' .and. trim(maximum_field) /= 'NULL') then
+                    if (genptr%minimum() == -d1mach(2) .and. genptr%maximum() == d1mach(2)) then 
+                        write(errormessage, '(4a)') '***Error, for ', trim(rand_dist(idx_trun_log_normal)), &
+                            ' distribution the min and max have to be defined, ', trim(genptr%id)
+                        call cfastexit('read_mrnd', 8)
+                    end if
+                end if
             else if (trim(distribution_type) == trim(rand_dist(idx_trun_log_normal))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 genptr%mean = mean
                 genptr%stdev = stdev
+                if (trim(minimum_field) /= 'NULL' .and. trim(maximum_field) /= 'NULL') then
+                    if (genptr%minimum() == -d1mach(2) .and. genptr%maximum() == d1mach(2)) then 
+                        write(errormessage, '(4a)') '***Error, for ', trim(rand_dist(idx_trun_log_normal)), &
+                            ' distribution the min and max have to be defined, ', trim(genptr%id)
+                        call cfastexit('read_mrnd', 9)
+                    end if
+                end if
             else if (trim(distribution_type) == trim(rand_dist(idx_beta))) then
                 genptr%type_dist = distribution_type
                 genptr%value_type = val_types(idx_real)
                 if (alpha <= 0) then 
                     write (errormessage, '(2a)') '***Error, For BETA distribution ALPHA nust be >0 in& MRND ', &
                         trim(genptr%id)
-                    call cfastexit('read_mrnd', 9)
+                    call cfastexit('read_mrnd', 10)
                 end if 
                 if (beta <= 0) then 
                     write (errormessage, '(2a)') '***Error, For BETA distribution BETA nust be >0 in &MRND ', &
                         trim(genptr%id)
-                    call cfastexit('read_mrnd', 10)
+                    call cfastexit('read_mrnd', 11)
                 end if 
                 genptr%alpha = alpha
                 genptr%beta = beta
@@ -410,12 +423,12 @@
                 if (alpha <= 0) then 
                     write (errormessage, '(2a)') '***Error, For GAMMA distribution ALPHA nust be >0 in &MRND ', &
                         trim(genptr%id)
-                    call cfastexit('read_mrnd', 11)
+                    call cfastexit('read_mrnd', 12)
                 end if 
                 if (beta <= 0) then 
                     write (errormessage, '(2a)') '***Error, For GAMMA distribution BETA nust be >0 in &MRND ', &
                         trim(genptr%id)
-                    call cfastexit('read_mrnd', 12)
+                    call cfastexit('read_mrnd', 13)
                 end if 
                 genptr%alpha = alpha
                 genptr%beta = beta
@@ -479,7 +492,7 @@
     logical, dimension(mxpntsarray) :: logical_values
     character(len=128), dimension(mxpntsarray) :: string_values, scenario_titles
 
-    namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_column_label, add_to_parameters, &
+    namelist /MFLD/ id, fyi, field_type, value_type, field, rand_id, parameter_column_label, add_to_parameters, &
         real_values, integer_values, string_values, logical_values, &
         scenario_titles, value_type, base_scaling_value, position
                     
@@ -1143,15 +1156,11 @@
                 call find_field('HRR_PT2   ', fire%fire, fire%flame_hrr_ptr, found)
                 if (.not.found) then
                     call cfastexit('MFIR', 12)
-                else
-                    fire%flame_hrr_ptr%randptr%val => fire%flame_hrr_ptr%rand_value
                 end if 
                 fire%flame_hrr_ptr%field_type = trim(fire%flame_hrr_ptr%fld_types(fire%fire_comp%idx_value))
                 call find_field('T_HRR_PT2   ', fire%fire, fire%flame_time_ptr, found)
                 if (.not.found) then
                     call cfastexit('MFIR', 13)
-                else
-                    fire%flame_time_ptr%randptr%val => fire%flame_time_ptr%rand_value
                 end if 
                 fire%flame_time_ptr%field_type = trim(fire%flame_time_ptr%fld_types(fire%fire_comp%idx_value))
                 flameset = .true. 
@@ -1200,15 +1209,11 @@
                 call find_field('HRR_PT2  ', fire%fire, fire%smolder_hrr_ptr, found)
                 if (.not.found) then
                     call cfastexit('MFIR', 16)
-                else
-                    fire%smolder_hrr_ptr%randptr%val => fire%smolder_hrr_ptr%rand_value
                 end if 
                 fire%smolder_hrr_ptr%field_type = trim(fire%smolder_hrr_ptr%fld_types(fire%fire_comp%idx_value))
                 call find_field('T_HRR_PT2  ', fire%fire, fire%smolder_time_ptr, found)
                 if (.not.found) then
                     call cfastexit('MFIR', 17)
-                else
-                    fire%smolder_time_ptr%randptr%val => fire%smolder_time_ptr%rand_value
                 end if 
                 fire%smolder_time_ptr%field_type = trim(fire%smolder_time_ptr%fld_types(fire%fire_comp%idx_value))
                 smolderset = .true.

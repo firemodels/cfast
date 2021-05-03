@@ -763,7 +763,7 @@
     if (n_dumps > 0) then
         do i = 1, n_dumps
             dumpptr => dumpinfo(i)
-            call start_namelist(buf, 'DUMP')
+            call start_namelist(buf, 'OUTP')
             call add_token_str(iounit, buf, 'ID = ', dumpptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dumpptr%fyi)
             call add_token_str(iounit, buf, 'TYPE = ', dumpptr%type)

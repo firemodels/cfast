@@ -2682,6 +2682,7 @@ continue
     logical :: found
     
     real(eb) :: criterion
+    character(len=4) :: dump_syntax
     character(len=25) :: file, type
     character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
     character(len=64), dimension(2) :: first_field, second_field
@@ -2689,27 +2690,54 @@ continue
 
     namelist /DUMP/ id, file, first_device, first_measurement, second_device, &
                     second_measurement, first_field, second_field, criterion, type, fyi
+    namelist /OUTP/ id, file, first_device, first_measurement, second_device, &
+                    second_measurement, first_field, second_field, criterion, type, fyi
+
 
     ios = 1
-
     rewind (unit=lu)
     input_file_line_number = 0
     counter = 0
+    dump_syntax = "NULL"
 
-    ! Scan entire file to look for 'DUMP'   `
+    ! Scan entire file to look for 'DUMP'
     dump_loop: do
         call checkread ('DUMP',lu,ios)
-        if (ios==0) dumpflag=.true.
-        if (ios==1) then
+        if (ios==0) then
+            dumpflag=.true.
+            dump_syntax = 'DUMP'
+            read(lu,DUMP,err=34,iostat=ios)
+            counter = counter + 1
+34          if (ios>0) then
+                write(errormessage, '(a,i3)') 'Error, Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
+                call cfastexit('read_dump',1)
+            end if
+        else if (ios==1) then
             exit dump_loop
         end if
-        read(lu,DUMP,err=34,iostat=ios)
-        counter = counter + 1
-34      if (ios>0) then
-            write(errormessage, '(a,i3)') 'Error, Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
-            call cfastexit('read_dump',1)
-        end if
     end do dump_loop
+    if (.not.dumpflag.and.counter==0) then
+        ios = 1
+        rewind (unit=lu)
+        input_file_line_number = 0
+        counter = 0
+        ! Scan entire file to look for 'OUTP'
+        outp_loop: do
+            call checkread ('OUTP',lu,ios)
+            if (ios==0) then
+                dumpflag=.true.
+                dump_syntax = 'OUTP'
+                read(lu,OUTP,err=35,iostat=ios)
+                counter = counter + 1
+35              if (ios>0) then
+                    write(errormessage, '(a,i3)') 'Error, Invalid specification in &OUTP inputs. Check &OUTP number ' , counter+1
+                    call cfastexit('read_dump',1)
+                end if
+            else if (ios==1) then
+                exit outp_loop
+            end if
+        end do outp_loop
+    end if
 
     if (dumpflag) then
 
@@ -2719,9 +2747,10 @@ continue
         ! Assign value to CFAST variables for further calculations
         read_dump_loop: do ii = 1,counter
 
-            call checkread('DUMP',lu,ios)
+            call checkread(dump_syntax,lu,ios)
             call set_defaults
-            read(lu,DUMP)
+            if (dump_syntax=='DUMP') read(lu,DUMP)
+            if (dump_syntax=='OUTP') read(lu,OUTP)
             
             if (first_field(1)==' ' .and. first_field(2)==' ' .and. first_device/=' ' .and. first_measurement/=' ') then
                 first_field(1) = first_device
@@ -2733,12 +2762,13 @@ continue
             end if
     
             if (id == ' ') then
-                write(errormessage,*) 'Error in &DUMP: ID must be defined number ', counter
+                write(errormessage,'(3a,i0)') 'Error in &',dump_syntax,': ID must be defined number ', counter
                 call cfastexit('read_dump',2)
             end if
 
             if (.not.newid(id)) then
-                write(errormessage,'(3a,i3)') '***Error, Not a unique identifier for &DUMP ',trim(id), 'Check dump ',counter
+                write(errormessage,'(5a,i3)') '***Error, Not a unique identifier for &',dump_syntax,': ',trim(id), &
+                    'Check dump ',counter
                 call cfastexit('read_dump',3)
             end if
             found = .false.
@@ -2748,62 +2778,64 @@ continue
                 end if
             end do
             if (.not.found) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: Invalid specification for FILE ',trim(file), &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': Invalid specification for FILE ',trim(file), &
                     ' number ',counter
                 call cfastexit('read_dump',4)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
                     (type(1:15)=='CHECK_TOTAL_HRR'))) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: Invalid specification for type ',trim(type), ' number ',counter
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': Invalid specification for type ',trim(type), &
+                    ' number ',counter
                 call cfastexit('read_dump',5)
             end if
             if (first_field(1)==' ') then
-                write(errormessage,'(a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &',dump_syntax,': FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',6)
             end if 
             if (first_field(2)==' ') then
-                write(errormessage,'(a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined, number ',counter
+                write(errormessage,'(3a,i0)') 'Error in &',dump_syntax,': FIRST_FIELD must be defined, number ',counter
                 call cfastexit('read_dump',7)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_field(1)==' ')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': SECOND_FIELD must be defined for type ', trim(type), &
                     ', number ',counter
                 call cfastexit('read_dump',8)
             end if
             if ((type(1:8)=='TRIGGER_').and.(second_field(2)==' ')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': SECOND_FIELD must be defined for type ', trim(type), &
                     ', number ',counter
                 call cfastexit('read_dump',9)
             end if
             if ((type(1:9)=='INTEGRATE').and.(second_field(2)==' ')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': SECOND_FIELD must be defined for type ', trim(type), &
                     ', number ',counter
                 call cfastexit('read_dump',10)
             end if
             if ((trim(type)=='INTEGRATE').and.(second_field(2)==' ')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: SECOND_FIELD must be defined for type ', trim(type), &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': SECOND_FIELD must be defined for type ', trim(type), &
                     ', number ',counter
                 call cfastexit('read_dump',11)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:4)/='Time')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined as Simulation Time for ', &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': FIRST_FIELD must be defined as Simulation Time for ', &
                     trim(type),', number ',counter
                 call cfastexit('read_dump',12)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_field(1)(1:15)/='Simulation Time')) then
-                write(errormessage,'(3a,i0)') 'Error in &DUMP: FIRST_FIELD must be defined as Time for ', &
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': FIRST_FIELD must be defined as Time for ', &
                     trim(type),' number ',counter
                 call cfastexit('read_dump',13)
             end if
             if ((type(1:8)=='TRIGGER_').and.(criterion<=0)) then
-                write(errormessage,'(a,i0)') 'Error in  &DUMP: for a TRIGGER analysis CRITERION must be > 0 number ', counter
+                write(errormessage,'(3a,i0)') 'Error in  &',dump_syntax,': for a TRIGGER analysis CRITERION must be > 0 number ', &
+                    counter
                 call cfastexit('read_dump',14)
             end if
             
             n_dumps = n_dumps + 1
             if (n_dumps>mx_dumps) then
-                write(errormessage,'(a,i0)') 'Error in &DUMP: Too many &DUMP entries. Maximum is', mx_dumps
+                write(errormessage,'(5a,i0)') 'Error in &',dump_syntax,': Too many &',dump_syntax,' entries. Maximum is', mx_dumps
                 call cfastexit('read_dump',15)
             end if
             dumpptr => dumpinfo(n_dumps)
@@ -2834,8 +2866,6 @@ continue
 
     end if
     return
-
-5403 format ('***Error, Bad &DUMP input. Invalid &DUMP specification in post-run calculation input ',i0)
 
     contains
 

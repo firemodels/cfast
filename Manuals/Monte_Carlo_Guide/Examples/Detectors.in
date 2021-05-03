@@ -51,84 +51,75 @@
  
 !! Wall Vents
 
-&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for DR LR 2' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for DR Kit' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for Kit LR' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for LR to BR Hall' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for Bedroom 1 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for Bedroom 2 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
-&MRND ID = 'Generator for Bedroom 3 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER' 
-    INTEGER_VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for DR LR 2' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for DR Kit' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for Kit LR' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for LR to BR Hall' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for Bedroom 1 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for Bedroom 2 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+&MRND ID = 'Generator for Bedroom 3 Door' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
 
-&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
 
-&MFLD ID = 'Height DR LR 2' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height DR LR 2' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'REAL'
     REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 2','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width DR LR 2' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width DR LR 2' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 2','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label DR LR 2' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label DR LR 2' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 2' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'DR LR 2 Opening Status'/
 
-&MFLD ID = 'Height DR Kit' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height DR Kit' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR Kit','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width DR Kit' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width DR Kit' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 1.3 0.975 0.65 0.325 1.3 FIELD = 'DR Kit','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label DR Kit' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label DR Kit' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR Kit' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'DR Kit Opening Status'/
 
-&MFLD ID = 'Height Kit LR' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height Kit LR' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'Kit LR','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width Kit LR' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width Kit LR' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.8 0.6 0.4 0.2 0.8 FIELD = 'Kit LR','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label Kit LR' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label Kit LR' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Kit LR' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'Kit LR Opening Status'/
 
-&MFLD ID = 'Height LR to BR Hall' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height LR to BR Hall' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'LR to BR Hall','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width LR to BR Hall' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width LR to BR Hall' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 1.1 0.825 0.55 0.275 1.1 FIELD = 'LR to BR Hall','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label LR to BR Hall' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label LR to BR Hall' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for LR to BR Hall' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'LR to BR Hall Opening Status'/
 
-&MFLD ID = 'Height Bedroom 1 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height Bedroom 1 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.1, 2.1, 2.1, 2.1 0.025 FIELD = 'Bedroom 1 Door','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width Bedroom 1 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width Bedroom 1 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.7 0.525 0.35 0.175 0.7 FIELD = 'Bedroom 1 Door','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label Bedroom 1 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
-    STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
+&MFLD ID = 'Label Bedroom 1 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 1 Door' VALUE_TYPE = 'CHARACTER' 
     PARAMETER_COLUMN_LABEL = 'Bedroom 1 Door Opening Status'/
 
-&MFLD ID = 'Height Bedroom 2 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height Bedroom 2 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.1, 2.1, 2.1, 2.1 0.025 FIELD = 'Bedroom 2 Door','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width Bedroom 2 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width Bedroom 2 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.7 0.525 0.35 0.175 0.7 FIELD = 'Bedroom 2 Door','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label Bedroom 2 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label Bedroom 2 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 2 Door' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'Bedroom 2 Door Opening Status'/
 
-&MFLD ID = 'Height Bedroom 3 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Height Bedroom 3 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 2.1, 2.1, 2.1, 2.1 0.025 FIELD = 'Bedroom 3 Door','TOP' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Width Bedroom 3 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'REAL' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Width Bedroom 3 Door' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'REAL' 
     REAL_VALUES = 0.7 0.525 0.35 0.175 0.7 FIELD = 'Bedroom 3 Door','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
-&MFLD ID = 'Label Bedroom 3 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'CHARACTER' NUMBER_IN_INDEX = 5
+&MFLD ID = 'Label Bedroom 3 Door' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for Bedroom 3 Door' VALUE_TYPE = 'CHARACTER' 
     STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed' ADD_TO_PARAMETERS = .TRUE. 
     PARAMETER_COLUMN_LABEL = 'Bedroom 3 Door Opening Status'/
 
@@ -169,24 +160,17 @@
  
 !! Fires 
 
-&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
-    INTEGER_VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
-&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUE_TYPE = 'INTEGER'
-    INTEGER_VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
-&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 23 STDEV = 7 
-    MINIMUM = 10.0 MAXIMUM = 30.0/
-&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 207 STDEV = 46 
-    MINIMUM = 150 MAXIMUM = 1200/
-&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 11 STDEV = 3 
-    MINIMUM = 10.0 MAXIMUM = 20.0/
-&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 6863 STDEV = 1812 
-    MINIMUM = 4840 MAXIMUM = 10910/
-&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' VALUE_TYPE = 'REAL' MEAN = 205, STDEV = 65
-    MINIMUM = 75 MAXIMUM = 500 /
-&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 1054 /
-&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
-&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 10 /
-&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' VALUE_TYPE = 'REAL' REAL_CONSTANT_VALUE = 0 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1 2 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE' VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 207 STDEV = 46 MINIMUM = 150 MAXIMUM = 1200/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 11 STDEV = 3 MINIMUM = 10.0 MAXIMUM = 20.0/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 6863 STDEV = 1812 MINIMUM = 4840 MAXIMUM = 10910/
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL' MEAN = 205, STDEV = 65 MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 1054 /
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 
 &MFIR ID = 'Compartment_generator' 
 	FIRE_ID = 'Random' 
@@ -217,29 +201,23 @@
  
 !! Devices
 	
-&MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN =  9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Dining Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Kitchen Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 1 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 2 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 3 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
-    MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Living Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Living Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN =  9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Dining Room Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Kitchen Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Bedroom 1 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Bedroom 2 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Bedroom 3 Trigger Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN = 9.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
+&MRND ID = 'UL Alarm Living Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Dining Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Dining Room Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Kitchen Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Kitchen Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 1 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Bedroom 1 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 2 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Bedroom 2 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
-&MRND ID = 'UL Alarm Bedroom 3 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' VALUE_TYPE = 'REAL'
+&MRND ID = 'UL Alarm Bedroom 3 Trigger_smolder Generator' DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' 
     MEAN = 15.5 STDEV = 1.3 MINIMUM = 1.6 MAXIMUM = 41.3/
 	
 &MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE' RAND_ID = 'UL Alarm Living Room Trigger Generator'
@@ -298,17 +276,17 @@
 &DEVC ID = 'UL Alarm Bedroom 3' COMP_ID = 'Bedroom 3' LOCATION = 0.25, 0.25, 2.37 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 15.48871, 15.48871 /
 &DEVC ID = 'UL Alarm Dining Room' COMP_ID = 'Dining Room' LOCATION = 0.25, 0.25, 2.37 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 15.48871, 15.48871 /
 
-&DUMP ID = 'Living Room Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Living Room Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Living Room', 'Sensor Activation' CRITERION = 1.0 /
-&DUMP ID = 'Dining Room Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Dining Room Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Dining Room', 'Sensor Activation' CRITERION = 1.0 /
-&DUMP ID = 'Kitchen Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Kitchen Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Kitchen', 'Sensor Activation' CRITERION = 1.0 /
-&DUMP ID = 'Bedroom 1 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Bedroom 1 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Bedroom 1', 'Sensor Activation' CRITERION = 1.0 /
-&DUMP ID = 'Bedroom 2 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Bedroom 2 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Bedroom 2', 'Sensor Activation' CRITERION = 1.0 /
-&DUMP ID = 'Bedroom 3 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
+&OUTP ID = 'Bedroom 3 Alarm' TYPE = 'TRIGGER_GREATER' FILE = 'DEVICES' FIRST_FIELD = 'Time', 'Simulation Time' 
     SECOND_FIELD = 'UL Alarm Bedroom 3', 'Sensor Activation' CRITERION = 1.0 /
  
 &TAIL /

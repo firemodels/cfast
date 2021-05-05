@@ -187,7 +187,7 @@ module preprocessor_routines
                 randfireinfo(i)%firegenerators(j, k)%parameter_column_label = 'NULL'
                 randfireinfo(i)%firegenerators(j, k)%position = 1
                 randfireinfo(i)%firegenerators(j, k)%temp_flag = .false.
-                randfireinfo(i)%firegenerators(j, k)%kilo_flag = .true.
+                randfireinfo(i)%firegenerators(j, k)%kilo_flag = .false.
                 randfireinfo(i)%firegenerators(j, k)%real_array(1:mxpntsarray) = -1001.0_eb
                 randfireinfo(i)%firegenerators(j, k)%int_array(1:mxpntsarray) = -1001
                 randfireinfo(i)%firegenerators(j, k)%logic_array(1:mxpntsarray) = .false.

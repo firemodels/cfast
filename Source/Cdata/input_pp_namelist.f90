@@ -1312,6 +1312,7 @@
                             fire%firegenerators(1, idx_firepts + jj)%genptr => generatorinfo(kk)
                             fire%firegenerators(1,idx_firepts + jj)%field_type =  &
                                 trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
+                            fire%firegenerators(1, idx_firepts + jj)%kilo_flag = .true. 
                         else if (trim(fire_time_generators(jj)) == trim(generatorinfo(kk)%id)) then
                             found2 = .true.
                             fire%firegenerators(2, idx_firepts + jj)%genptr => generatorinfo(kk)

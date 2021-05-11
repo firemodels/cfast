@@ -527,7 +527,7 @@ The last example is for {\ct FIELD\_TYPE = SCALING}. Section \ref{chapter:Sensit
 
 \clearpage
 
-\section{Namelist MFIR}
+\section{Namelist MFIR}    
 \label{info:MFIR}
 
 Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution), to define a power law fire based on several inputs, or to modify individual time points from a constant defined by a user-specified distribution.
@@ -558,8 +558,9 @@ Fires can be defined by either scaling time and/or HRR values from a base fire o
       {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
   \item[SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
   \item[SMOLDERING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
-  \item[ADD\_IGNITION\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of ignition happens.
-  \item[IGNITION\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include a label of the type of incipient fire in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of incipient fire in the case.
+  \item[INCIPIENT\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included and \\ 
+{\ct ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS} is .TRUE. the column label will be filled in by CData with {\ct <FIRE\_ID>\_INCIPIENT\_FIRE\_TYPE}.
  \end{description}
 Secondly, inputs for the scaling fire are described.
 

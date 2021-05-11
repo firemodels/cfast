@@ -179,44 +179,14 @@ Module IO
                         Beta = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "PEAK") Then
                         Peak = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUES") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         ReDim RealValues(max)
                         For k = 1 To max
                             RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
                         Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_CONSTANT_VALUE") Then
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CONSTANT") Then
                         RealConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim IntegerValues(max)
-                        For k = 1 To max
-                            IntegerValues(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_CONSTANT_VALUE") Then
-                        IntegerConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim StringValues(max)
-                        For k = 1 To max
-                            StringValues(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_CONSTANT_VALUE") Then
-                        StringConstantValue = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim LogicalValues(max)
-                        For k = 1 To max
-                            LogicalValues(k) = NMList.ForNMListVarGetBool(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_CONSTANT_VALUE") Then
-                        LogicalConstantValue = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "PROBABILITIES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim Probabilities(max)
-                        For k = 1 To max
-                            Probabilities(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_OFFSET") Then
                         MinimumOffset = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_OFFSET") Then
@@ -3065,7 +3035,6 @@ Module IO
                 aRandom.GetRandom(Id, DistributionType, ValueType, Minimum, Maximum, Mean, StDev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
                 ln = "&MRND ID = '" + Id + "' DISTRIBUTION_TYPE = '" + DistributionType + "'"
                 If DistributionType = "UNIFORM" Then
-                    ln += " VALUE_TYPE = '" + ValueType + "'"
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
                         ln = "     MINIMUM = " + Minimum.ToString
@@ -3085,7 +3054,6 @@ Module IO
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "TRIANGLE" Then
-                    ln += "     VALUE_TYPE = '" + ValueType + "'"
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
                         ln = "     MINIMUM = " + Minimum.ToString
@@ -3106,51 +3074,15 @@ Module IO
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "USER_DEFINED_DISCRETE" Or DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
-                    ln += " VALUE_TYPE = '" + ValueType + "'"
                     PrintLine(IO, ln)
-                    If ValueType = "REAL" Then
-                        ln = "     REAL_VALUES = "
-                        If Not Data.IsArrayEmpty(RealValues) Then
-                            max = RealValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += RealValues(j).ToString + ", "
-                                Next
-                                ln += RealValues(max).ToString
-                            End If
-                        End If
-                    ElseIf ValueType = "INTEGER" Then
-                        ln = "     INTEGER_VALUES = "
-                        If Not Data.IsArrayEmpty(IntegerValues) Then
-                            max = IntegerValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += IntegerValues(j).ToString + ", "
-                                Next
-                                ln += IntegerValues(max).ToString
-                            End If
-                        End If
-                    ElseIf ValueType = "STRING" Then
-                        ln = "     STRING_VALUES = "
-                        If Not Data.IsArrayEmpty(StringValues) Then
-                            max = StringValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += StringValues(j) + ", "
-                                Next
-                                ln += StringValues(max)
-                            End If
-                        End If
-                    ElseIf ValueType = "LOGICAL" Then
-                        ln = "     LOGICAL_VALUES = "
-                        If Not Data.IsArrayEmpty(LogicalValues) Then
-                            max = LogicalValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += LogicalValues(j).ToString + ", "
-                                Next
-                                ln += LogicalValues(max).ToString
-                            End If
+                    ln = "     VALUES = "
+                    If Not Data.IsArrayEmpty(RealValues) Then
+                        max = RealValues.GetUpperBound(0)
+                        If max > 0 Then
+                            For j = 1 To max - 1
+                                ln += RealValues(j).ToString + ", "
+                            Next
+                            ln += RealValues(max).ToString
                         End If
                     End If
                     PrintLine(IO, ln)
@@ -3212,12 +3144,7 @@ Module IO
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "CONSTANT" Then
-                    ln += " VALUE_TYPE = '" + ValueType + "'"
-                    If ValueType = "REAL" Then ln += "  REAL_CONSTANT_VALUE = " + RealConstantValue.ToString
-                    If ValueType = "INTEGER" Then ln += "  INTEGER_CONSTANT_VALUE = " + IntegerConstantValue.ToString
-                    If ValueType = "STRING" Then ln += "  STRING_CONSTANT_VALUE = " + StringConstantValue
-                    If ValueType = "LOGICAL" Then ln += "  LOGICAL_CONSTANT_VALUE = " + LogicalConstantValue
-                    ln += " /"
+                    ln += "  CONSTANT = " + RealConstantValue.ToString + " /"
                     PrintLine(IO, ln)
                 End If
             Next

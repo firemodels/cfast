@@ -1275,7 +1275,7 @@
                     fire%fs_fire_ptr%add_to_parameters = .true. 
                     if (trim(incipient_type_column_label) == 'NULL') then
                         fire%fs_fire_ptr%parameter_column_label = ' '
-                        fire%fs_fire_ptr%parameter_column_label = trim(fire_id) // '_ignition_type'
+                        fire%fs_fire_ptr%parameter_column_label = trim(fire_id) // '_INCIPIENT_TYPE'
                     else 
                         fire%fs_fire_ptr%parameter_column_label =  incipient_type_column_label
                     end if

@@ -902,7 +902,7 @@
     integer, intent(in) :: lu
     
     integer :: ios, ii, jj, kk, idx_firepts
-    logical :: mfirflag, found, found2, flameset, smolderset, time_to_1054_kW
+    logical :: mfirflag, found, found2, flameset, smolderset, generator_is_time_to_1054_kW
     character(len=128) :: id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, hrr_scale_column_label, time_scale_column_label, &
         fire_compartment_random_generator_id, fire_compartment_id_column_label, &
@@ -937,7 +937,7 @@
         flaming_time_column_label, flaming_hrr_peak_column_label, add_incipient_type_to_parameters, &
         add_incipient_peak_hrr_to_parameters, add_incipient_time_to_parameters, number_of_growth_points,&
         number_of_decay_points, growth_exponent, decay_exponent, add_hrr_to_parameters, add_time_to_parameters, &
-        hrr_labels, time_labels, add_fire_to_parameters, time_to_1054_kW
+        hrr_labels, time_labels, add_fire_to_parameters, generator_is_time_to_1054_kW
     
     ios = 1
 
@@ -1288,7 +1288,7 @@
             If (trim(fire_hrr_generator_ids(1)) /= 'NULL' .and. trim(fire_time_generator_ids(1)) /= 'NULL') then
                 fire%generate_fire =   .true. 
                 fire%add_to_parameters = .true.
-                fire%fire_time_to_1054_kw = time_to_1054_kW
+                fire%fire_generator_is_time_to_1054_kW = generator_is_time_to_1054_kW
                 if (flameset .or. smolderset) then
                     idx_firepts = 2
                 else 
@@ -1446,7 +1446,7 @@
     hrr_labels = 'NULL'
     time_labels = 'NULL'
     add_fire_to_parameters = .true.
-    time_to_1054_kW = .false.
+    generator_is_time_to_1054_kW = .false.
     
     end subroutine set_defaults
     

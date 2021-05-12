@@ -184,8 +184,8 @@
     FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Time Generator' 
     SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
     SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Smoldering Time Generator' 
-	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time' 
-	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR' 
+	FIRE_TIME_GENERATOR_IDS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time' 
+	FIRE_HRR_GENERATOR_IDS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR' 
     NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
 
 &FIRE ID = 'Random'  COMP_ID = 'Living Room', FIRE_ID = 'Random_Fire'  LOCATION = 1, 1 / 

@@ -527,7 +527,7 @@ The last example is for {\ct FIELD\_TYPE = SCALING}. Section \ref{chapter:Sensit
 
 \clearpage
 
-\section{Namelist MFIR}    
+\section{Namelist MFIR}
 \label{info:MFIR}
 
 Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution), to define a power law fire based on several inputs, or to modify individual time points from a constant defined by a user-specified distribution.
@@ -546,7 +546,7 @@ Automatically-generated fires are created for an individual test case by modifyi
 Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
 
  \begin{description}
-  \item[FLAMING\_SMOLDERING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This random generator, if included, switches the incipient fire between flaming and smoldering. This is an {\ct INDEX} field type. The types being switched through are listed in \\
+  \item[FLAMING\_SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This random generator, if included, switches the incipient fire between flaming and smoldering. This is an {\ct INDEX} field type. The types being switched through are listed in \\
    { \ct INCIPIENT\_FIRE\_TYPES}. {\ct TYPE\_OF\_INCIPIENT\_GROWTH} has to be set to {\ct RANDOM}.
   \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
   \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
@@ -559,7 +559,7 @@ Fires can be defined by either scaling time and/or HRR values from a base fire o
   \item[SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
   \item[SMOLDERING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
   \item[ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include a label of the type of incipient fire in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of incipient fire in the case.
-  \item[INCIPIENT\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included and \\ 
+  \item[INCIPIENT\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included and \\
 {\ct ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS} is .TRUE. the column label will be filled in by CData with {\ct <FIRE\_ID>\_INCIPIENT\_FIRE\_TYPE}.
  \end{description}
 Secondly, inputs for the scaling fire are described.
@@ -1466,7 +1466,7 @@ An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean
 
 First we look at the sensitivity of maximum heat FED in the Foyer. Selected results are displayed in Table \ref{tbl:Ex_3-1}. In the column listed Value, the number shows what a one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the compartment where the fire occurred, the lab space.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of Office 1 produce minimal changes to the heat FED for the Foyer
 
-In two following tables there are four other columns. The first, Std. Error, is closely related to a confidence interval. Typically (and this is probably close enough for our purposes) $\pm$ 2 times the standard error gives a 95~\% confidence limit. So, for lab depth, a 95~\% confidence interval would be -0.53 $\pm$ 0.17 or -0.53 $\pm$ 2*0.16*0.53. The t value is an intermediate step to getting the confidence levels for each variable. The larger the absolute value is the smaller the confidence interval will be and the t value always has the same sign as the value. The next column is the confidence value, smaller is better. A 1\% value (0.01) for confidence value means that there is only a 1\% chance of the actual value being zero. Meaning we can be pretty confident that this number is not zero. The last column is just a visual que to which are the significant variables. The more * in the column the better the confidence. The pattern is * means the confidence value is <0.1, ** means the value is < 0.05, and finally *** means the value is < 0.01. 
+In two following tables there are four other columns. The first, Std. Error, is closely related to a confidence interval. Typically (and this is probably close enough for our purposes) $\pm$ 2 times the standard error gives a 95~\% confidence limit. So, for lab depth, a 95~\% confidence interval would be -0.53 $\pm$ 0.17 or -0.53 $\pm$ 2*0.16*0.53. The t value is an intermediate step to getting the confidence levels for each variable. The larger the absolute value is the smaller the confidence interval will be and the t value always has the same sign as the value. The next column is the confidence value, smaller is better. A 1\% value (0.01) for confidence value means that there is only a 1\% chance of the actual value being zero. Meaning we can be pretty confident that this number is not zero. The last column is just a visual que to which are the significant variables. The more * in the column the better the confidence. The pattern is * means the confidence value is <0.1, ** means the value is < 0.05, and finally *** means the value is < 0.01.
 
 \noindent
 \begin{table}[ht]
@@ -1534,7 +1534,7 @@ This publication introduces the CFAST Fire Data Generator, CData, that has been 
 
 CData supports several statistical analyses with the statistical software R to provide several built-in tools to analyze the data. Three of the tools are useful in determining that enough cases have been run to draw justifiable conclusions from the analysis. The first, convergence of the mean, allows the user to make a determination if enough cases have been run. Two other tools, the histogram generator and the empirical probability density function, allow users to look at the distributions of input variables to determine that distributions are as expected. Both can also be used to look at the distributions of output variables. Finally, the decision trees model can be used to look for the most important variables in determining the value of a particular output variable. These tools as well as the R software distributed with CData will allow users to do a significant amount of analysis of data that is generated.
 
-Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results. 
+Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results.
 
 The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have emerges, a plan for a next version of the tool will be made.
 

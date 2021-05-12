@@ -546,7 +546,7 @@ Automatically-generated fires are created for an individual test case by modifyi
 Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
 
  \begin{description}
-  \item[FLAMING\_SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This random generator, if included, switches the incipient fire between flaming and smoldering. This is an {\ct INDEX} field type. The types being switched through are listed in \\
+  \item[FLAMING\_SMOLDERING\_INCIPIENT\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This random generator, if included, switches the incipient fire between flaming and smoldering. This is an {\ct INDEX} field type. The types being switched through are listed in \\
    { \ct INCIPIENT\_FIRE\_TYPES}. {\ct TYPE\_OF\_INCIPIENT\_GROWTH} has to be set to {\ct RANDOM}.
   \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
   \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}

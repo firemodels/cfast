@@ -917,8 +917,7 @@
     integer :: number_of_growth_points, number_of_decay_points
     real(eb) :: growth_exponent, decay_exponent 
     character(len=10) :: type_of_incipient_growth
-    integer :: number_of_incipient_fire_types
-    character(len=128), dimension(20) :: incipient_fire_types
+    character(len=128), dimension(mxpntsarray) :: incipient_fire_types
     character(len=128) :: incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
         flaming_time_column_label, flaming_hrr_peak_column_label
     logical :: add_incipient_type_to_parameters, add_incipient_time_to_parameters, add_incipient_peak_hrr_to_parameters
@@ -933,7 +932,7 @@
         flaming_incipient_delay_random_generator_id, fire_label_parameter_column_label, &
         flaming_incipient_peak_random_generator_id, smoldering_incipient_delay_random_generator_id, &
         smoldering_incipient_peak_random_generator_id, &
-        fire_hrr_generators, fire_time_generators, type_of_incipient_growth, number_of_incipient_fire_types, &
+        fire_hrr_generators, fire_time_generators, type_of_incipient_growth, &
         incipient_fire_types, incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
         flaming_time_column_label, flaming_hrr_peak_column_label, add_incipient_type_to_parameters, &
         add_incipient_peak_hrr_to_parameters, add_incipient_time_to_parameters, number_of_growth_points,&
@@ -1261,15 +1260,15 @@
                 fire%fs_fire_ptr%charval%val => fire%incipient_growth
                 fire%fs_fire_ptr%valptr => fire%fs_fire_ptr%charval
                 fire%fs_fire_ptr%randptr%val => fire%fs_fire_ptr%rand_value
-                fire%fs_fire_ptr%nidx = number_of_incipient_fire_types
-                do jj = 1, number_of_incipient_fire_types
+                fs_do:do jj = 1, mxpntsarray
                     if (trim(incipient_fire_types(jj)) == 'FLAMING' .or. & 
                         trim(incipient_fire_types(jj)) == 'SMOLDERING') then
                         fire%fs_fire_ptr%char_array(jj) = incipient_fire_types(jj)
                     else
-                        call cfastexit('MFIR', 20)
+                        fire%fs_fire_ptr%nidx = jj - 1
+                        exit fs_do
                     end if
-                end do
+                end do fs_do
                 if (add_incipient_type_to_parameters) then
                     fire%add_to_parameters = .true. 
                     fire%fs_fire_ptr%add_to_parameters = .true. 
@@ -1427,7 +1426,6 @@
     smoldering_incipient_delay_random_generator_id = 'NULL'
     smoldering_incipient_peak_random_generator_id = 'NULL'
     type_of_incipient_growth = 'NONE'
-    number_of_incipient_fire_types = -1001
     incipient_fire_types = 'NULL'
     incipient_type_column_label = 'NULL'
     smoldering_time_column_label = 'NULL'

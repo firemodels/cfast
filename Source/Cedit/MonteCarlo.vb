@@ -67,7 +67,7 @@ Public Class MonteCarlo
     Private aAddFireCompartmentIDtoParameters As Boolean
     Private aFireCompartmentIDColumnLabel As String
 
-    Private aFlamingSmolderingIgnitionRandomGeneratorID As String
+    Private aFlamingSmolderingIncipientRandomGeneratorID As String
     Private aIncipientFireTypes(0) As String
     Private aTypeofIncipientFireGrowth As String
     Private aFlamingIncipientDelayRandomGeneratorID As String
@@ -149,8 +149,8 @@ Public Class MonteCarlo
 
         ' &MFLD
         aFieldType = ""
-        afield(1) = ""
-        afield(2) = ""
+        aField(1) = ""
+        aField(2) = ""
         aRandId = ""
         aParameterColumnLabel = ""
         aAddToParameters = False
@@ -166,7 +166,7 @@ Public Class MonteCarlo
         aAddFireCompartmentIDtoParameters = False
         aFireCompartmentIDColumnLabel = ""
 
-        aFlamingSmolderingIgnitionRandomGeneratorID = ""
+        aFlamingSmolderingIncipientRandomGeneratorID = ""
         aIncipientFireTypes(0) = ""
         aTypeofIncipientFireGrowth = ""
         aFlamingIncipientDelayRandomGeneratorID = ""
@@ -203,7 +203,7 @@ Public Class MonteCarlo
         aAddHRRtoParameters = False
         aAddTimetoParameters = False
     End Sub
-    Public Sub SetFire(ByVal ID As String, ByVal FYI As String, ByVal FireID As String, ByVal BaseFireID As String, ByVal ModifyFireAreatoMatchHRR As Boolean, ByVal FireCompartmentRandomGeneratorID As String, ByVal FireCompartmentIDs() As String, ByVal AddFireCompartmentIDtoParameters As Boolean, ByVal FireCompartmentIDColumnLabel As String, ByVal FlamingSmolderingIgnitionRandomGeneratorID As String, ByVal IncipientFireTypes() As String, ByVal TypeofIncipientFireGrowth As String, ByVal FlamingIncipientDelayRandomGeneratorID As String, ByVal FlamingIncipientPeakRandomGeneratorID As String, ByVal SmolderingIncipientDelayRandomGeneratorID As String, ByVal SmolderingIncipientPeakRandomGeneratorID As String, ByVal AddIncipientTypetoParameters As Boolean, ByVal AddSmolderingIncipientTimetoParameters As Boolean, ByVal AddSmolderingIncipientPeaktoParameters As Boolean, ByVal AddFlamingIncipientTimetoParameters As Boolean, ByVal AddFlamingIncipientPeaktoParameters As Boolean, ByVal IncipientTypeColumnLabel As String, ByVal FlamingIncipientTimeColumnLabel As String, ByVal FlamingIncipientPeakColumnLabel As String, ByVal SmolderingIncipientTimeColumnLabel As String, ByVal SmolderingIncipientPeakColumnLabel As String, ByVal ScalingFireHRRRandomGeneratorID As String, ByVal ScalingFireTimeRandomGeneratorID As String, ByVal AddHRRScaletoParameters As Boolean, ByVal HRRScaleColumnLabel As String, ByVal AddTimeScaletoParameters As Boolean, ByVal TimeScaleColumnLabel As String, ByVal FireHRRGeneratorIDs() As String, ByVal FireTimeGeneratorIDs() As String, ByVal NumberofGrowthPoints As Integer, ByVal NumberofDecayPoints As Integer, ByVal GrowthExponent As Double, ByVal DecayExponent As Double, ByVal Timeto1054kW As Double, ByVal Timeto0kW As Double, ByVal AddFiretoParameters As Boolean, ByVal AddHRRtoParameters As Boolean, ByVal AddTimetoParameters As Boolean, ByVal HRRLabels() As String, ByVal TimeLabels() As String)
+    Public Sub SetFire(ByVal ID As String, ByVal FYI As String, ByVal FireID As String, ByVal BaseFireID As String, ByVal ModifyFireAreatoMatchHRR As Boolean, ByVal FireCompartmentRandomGeneratorID As String, ByVal FireCompartmentIDs() As String, ByVal AddFireCompartmentIDtoParameters As Boolean, ByVal FireCompartmentIDColumnLabel As String, ByVal FlamingSmolderingIncipientRandomGeneratorID As String, ByVal IncipientFireTypes() As String, ByVal TypeofIncipientFireGrowth As String, ByVal FlamingIncipientDelayRandomGeneratorID As String, ByVal FlamingIncipientPeakRandomGeneratorID As String, ByVal SmolderingIncipientDelayRandomGeneratorID As String, ByVal SmolderingIncipientPeakRandomGeneratorID As String, ByVal AddIncipientTypetoParameters As Boolean, ByVal AddSmolderingIncipientTimetoParameters As Boolean, ByVal AddSmolderingIncipientPeaktoParameters As Boolean, ByVal AddFlamingIncipientTimetoParameters As Boolean, ByVal AddFlamingIncipientPeaktoParameters As Boolean, ByVal IncipientTypeColumnLabel As String, ByVal FlamingIncipientTimeColumnLabel As String, ByVal FlamingIncipientPeakColumnLabel As String, ByVal SmolderingIncipientTimeColumnLabel As String, ByVal SmolderingIncipientPeakColumnLabel As String, ByVal ScalingFireHRRRandomGeneratorID As String, ByVal ScalingFireTimeRandomGeneratorID As String, ByVal AddHRRScaletoParameters As Boolean, ByVal HRRScaleColumnLabel As String, ByVal AddTimeScaletoParameters As Boolean, ByVal TimeScaleColumnLabel As String, ByVal FireHRRGeneratorIDs() As String, ByVal FireTimeGeneratorIDs() As String, ByVal NumberofGrowthPoints As Integer, ByVal NumberofDecayPoints As Integer, ByVal GrowthExponent As Double, ByVal DecayExponent As Double, ByVal Timeto1054kW As Double, ByVal Timeto0kW As Double, ByVal AddFiretoParameters As Boolean, ByVal AddHRRtoParameters As Boolean, ByVal AddTimetoParameters As Boolean, ByVal HRRLabels() As String, ByVal TimeLabels() As String)
         Dim i, max As Integer
         aID = ID
         aFYI = FYI
@@ -224,7 +224,7 @@ Public Class MonteCarlo
         aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
         aAddFireCompartmentIDtoParameters = AddFireCompartmentIDtoParameters
         aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
-        aFlamingSmolderingIgnitionRandomGeneratorID = FlamingSmolderingIgnitionRandomGeneratorID
+        aFlamingSmolderingIncipientRandomGeneratorID = FlamingSmolderingIncipientRandomGeneratorID
         If Not IsArrayEmpty(IncipientFireTypes) Then
             max = IncipientFireTypes.GetUpperBound(0)
             If max > 0 Then
@@ -297,6 +297,104 @@ Public Class MonteCarlo
                 ReDim aTimeLabels(max)
                 For i = 1 To max
                     aTimeLabels(i) = TimeLabels(i)
+                Next
+            End If
+        End If
+    End Sub
+    Public Sub GetFire(ByRef ID As String, ByRef FYI As String, ByRef FireID As String, ByRef BaseFireID As String, ByRef ModifyFireAreatoMatchHRR As Boolean, ByRef FireCompartmentRandomGeneratorID As String, ByRef FireCompartmentIDs() As String, ByRef AddFireCompartmentIDtoParameters As Boolean, ByRef FireCompartmentIDColumnLabel As String, ByRef FlamingSmolderingIncipientRandomGeneratorID As String, ByRef IncipientFireTypes() As String, ByRef TypeofIncipientFireGrowth As String, ByRef FlamingIncipientDelayRandomGeneratorID As String, ByRef FlamingIncipientPeakRandomGeneratorID As String, ByRef SmolderingIncipientDelayRandomGeneratorID As String, ByRef SmolderingIncipientPeakRandomGeneratorID As String, ByRef AddIncipientTypetoParameters As Boolean, ByRef AddSmolderingIncipientTimetoParameters As Boolean, ByRef AddSmolderingIncipientPeaktoParameters As Boolean, ByRef AddFlamingIncipientTimetoParameters As Boolean, ByRef AddFlamingIncipientPeaktoParameters As Boolean, ByRef IncipientTypeColumnLabel As String, ByRef FlamingIncipientTimeColumnLabel As String, ByRef FlamingIncipientPeakColumnLabel As String, ByRef SmolderingIncipientTimeColumnLabel As String, ByRef SmolderingIncipientPeakColumnLabel As String, ByRef ScalingFireHRRRandomGeneratorID As String, ByRef ScalingFireTimeRandomGeneratorID As String, ByRef AddHRRScaletoParameters As Boolean, ByRef HRRScaleColumnLabel As String, ByRef AddTimeScaletoParameters As Boolean, ByRef TimeScaleColumnLabel As String, ByRef FireHRRGeneratorIDs() As String, ByRef FireTimeGeneratorIDs() As String, ByRef NumberofGrowthPoints As Integer, ByRef NumberofDecayPoints As Integer, ByRef GrowthExponent As Double, ByRef DecayExponent As Double, ByRef Timeto1054kW As Double, ByRef Timeto0kW As Double, ByRef AddFiretoParameters As Boolean, ByRef AddHRRtoParameters As Boolean, ByRef AddTimetoParameters As Boolean, ByRef HRRLabels() As String, ByRef TimeLabels() As String)
+        Dim i, max As Integer
+        ID = aID
+        FYI = aFYI
+        FireID = aFireID
+        BaseFireID = aBaseFireID
+        aModifyFireAreatoMatchHRR = ModifyFireAreatoMatchHRR
+        aFireCompartmentRandomGeneratorID = FireCompartmentRandomGeneratorID
+        If Not IsArrayEmpty(FireCompartmentIDs) Then
+            max = FireCompartmentIDs.GetUpperBound(0)
+            If max > 0 Then
+                ReDim aStringValues(max)
+                For i = 1 To max
+                    aFireCompartmentIDs(i) = FireCompartmentIDs(i)
+                Next
+            End If
+        End If
+        aAddFireCompartmentIDtoParameters = AddFireCompartmentIDtoParameters
+        aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
+        aAddFireCompartmentIDtoParameters = AddFireCompartmentIDtoParameters
+        aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
+        aFlamingSmolderingIncipientRandomGeneratorID = FlamingSmolderingIncipientRandomGeneratorID
+        If Not IsArrayEmpty(aIncipientFireTypes) Then
+            max = aIncipientFireTypes.GetUpperBound(0)
+            If max > 0 Then
+                ReDim IncipientFireTypes(max)
+                For i = 1 To max
+                    IncipientFireTypes(i) = aIncipientFireTypes(i)
+                Next
+            End If
+        End If
+        TypeofIncipientFireGrowth = aTypeofIncipientFireGrowth
+        FlamingIncipientDelayRandomGeneratorID = aFlamingIncipientDelayRandomGeneratorID
+        FlamingIncipientPeakRandomGeneratorID = aFlamingIncipientPeakRandomGeneratorID
+        SmolderingIncipientDelayRandomGeneratorID = aSmolderingIncipientDelayRandomGeneratorID
+        SmolderingIncipientPeakRandomGeneratorID = aSmolderingIncipientPeakRandomGeneratorID
+        AddIncipientTypetoParameters = aAddIncipientTypetoParameters
+        AddSmolderingIncipientTimetoParameters = aAddSmolderingIncipientTimetoParameters
+        AddSmolderingIncipientPeaktoParameters = aAddSmolderingIncipientPeaktoParameters
+        AddFlamingIncipientTimetoParameters = aAddFlamingIncipientTimetoParameters
+        AddFlamingIncipientPeaktoParameters = aAddFlamingIncipientPeaktoParameters
+        IncipientTypeColumnLabel = aIncipientTypeColumnLabel
+        FlamingIncipientTimeColumnLabel = aFlamingIncipientTimeColumnLabel
+        FlamingIncipientPeakColumnLabel = aFlamingIncipientPeakColumnLabel
+        SmolderingIncipientTimeColumnLabel = aSmolderingIncipientTimeColumnLabel
+        SmolderingIncipientPeakColumnLabel = aSmolderingIncipientPeakColumnLabel
+        ScalingFireHRRRandomGeneratorID = aScalingFireHRRRandomGeneratorID
+        ScalingFireTimeRandomGeneratorID = aScalingFireTimeRandomGeneratorID
+        AddHRRScaletoParameters = aAddHRRScaletoParameters
+        HRRScaleColumnLabel = aHRRScaleColumnLabel
+        AddTimeScaletoParameters = aAddTimeScaletoParameters
+        TimeScaleColumnLabel = aTimeScaleColumnLabel
+        If Not IsArrayEmpty(aFireHRRGeneratorIDs) Then
+            max = aFireHRRGeneratorIDs.GetUpperBound(0)
+            If max > 0 Then
+                ReDim FireHRRGeneratorIDs(max)
+                For i = 1 To max
+                    FireHRRGeneratorIDs(i) = aFireHRRGeneratorIDs(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(aFireTimeGeneratorIDs) Then
+            max = aFireTimeGeneratorIDs.GetUpperBound(0)
+            If max > 0 Then
+                ReDim FireTimeGeneratorIDs(max)
+                For i = 1 To max
+                    FireTimeGeneratorIDs(i) = aFireTimeGeneratorIDs(i)
+                Next
+            End If
+        End If
+        NumberofGrowthPoints = aNumberofGrowthPoints
+        NumberofDecayPoints = aNumberofDecayPoints
+        GrowthExponent = aGrowthExponent
+        DecayExponent = aDecayExponent
+        Timeto1054kW = aTimeto1054kW
+        Timeto0kW = aTimeto0kW
+        AddFiretoParameters = aAddFiretoParameters
+        AddHRRtoParameters = aAddHRRtoParameters
+        AddTimetoParameters = aAddTimetoParameters
+        If Not IsArrayEmpty(aHRRLabels) Then
+            max = aHRRLabels.GetUpperBound(0)
+            If max > 0 Then
+                ReDim HRRLabels(max)
+                For i = 1 To max
+                    HRRLabels(i) = aHRRLabels(i)
+                Next
+            End If
+        End If
+        If Not IsArrayEmpty(aTimeLabels) Then
+            max = aTimeLabels.GetUpperBound(0)
+            If max > 0 Then
+                ReDim TimeLabels(max)
+                For i = 1 To max
+                    TimeLabels(i) = aTimeLabels(i)
                 Next
             End If
         End If

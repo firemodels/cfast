@@ -912,7 +912,7 @@
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, &
         add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
-    character(len=128), dimension(mxpts) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
+    character(len=128), dimension(mxpts) :: fire_hrr_generator_ids, fire_time_generator_ids, hrr_labels, time_labels
     logical, dimension(100) :: add_hrr_to_parameters, add_time_to_parameters 
     integer :: number_of_growth_points, number_of_decay_points
     real(eb) :: growth_exponent, decay_exponent 
@@ -932,7 +932,7 @@
         flaming_incipient_delay_random_generator_id, fire_label_parameter_column_label, &
         flaming_incipient_peak_random_generator_id, smoldering_incipient_delay_random_generator_id, &
         smoldering_incipient_peak_random_generator_id, &
-        fire_hrr_generators, fire_time_generators, type_of_incipient_growth, &
+        fire_hrr_generator_ids, fire_time_generator_ids, type_of_incipient_growth, &
         incipient_fire_types, incipient_type_column_label, smoldering_time_column_label, smoldering_hrr_peak_column_label, &
         flaming_time_column_label, flaming_hrr_peak_column_label, add_incipient_type_to_parameters, &
         add_incipient_peak_hrr_to_parameters, add_incipient_time_to_parameters, number_of_growth_points,&
@@ -1285,7 +1285,7 @@
             
             ! Setting up the fire where all points are determined by generators
             
-            If (trim(fire_hrr_generators(1)) /= 'NULL' .and. trim(fire_time_generators(1)) /= 'NULL') then
+            If (trim(fire_hrr_generator_ids(1)) /= 'NULL' .and. trim(fire_time_generator_ids(1)) /= 'NULL') then
                 fire%generate_fire =   .true. 
                 fire%add_to_parameters = .true.
                 fire%fire_time_to_1054_kw = time_to_1054_kW
@@ -1298,21 +1298,21 @@
                     idx_firepts = idx_firepts + number_of_growth_points
                 end if 
                 outfireloop: do jj = 1, 100
-                    if (trim(fire_hrr_generators(jj)) /= 'NULL' .and. trim(fire_time_generators(jj)) /= 'NULL') then
+                    if (trim(fire_hrr_generator_ids(jj)) /= 'NULL' .and. trim(fire_time_generator_ids(jj)) /= 'NULL') then
                         fire%n_firegenerators = jj 
-                    else if (trim(fire_hrr_generators(jj)) == 'NULL' .and. trim(fire_time_generators(jj)) == 'NULL') then
+                    else if (trim(fire_hrr_generator_ids(jj)) == 'NULL' .and. trim(fire_time_generator_ids(jj)) == 'NULL') then
                         exit outfireloop
                     end if 
                     found = .false.
                     found2 = .false.
                     infireloop: do kk = 1, n_generators
-                        if (trim(fire_hrr_generators(jj)) == trim(generatorinfo(kk)%id)) then
+                        if (trim(fire_hrr_generator_ids(jj)) == trim(generatorinfo(kk)%id)) then
                             found = .true.
                             fire%firegenerators(1, idx_firepts + jj)%genptr => generatorinfo(kk)
                             fire%firegenerators(1,idx_firepts + jj)%field_type =  &
                                 trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
                             fire%firegenerators(1, idx_firepts + jj)%kilo_flag = .true. 
-                        else if (trim(fire_time_generators(jj)) == trim(generatorinfo(kk)%id)) then
+                        else if (trim(fire_time_generator_ids(jj)) == trim(generatorinfo(kk)%id)) then
                             found2 = .true.
                             fire%firegenerators(2, idx_firepts + jj)%genptr => generatorinfo(kk)
                             fire%firegenerators(2, idx_firepts + jj)%field_type =  &
@@ -1435,8 +1435,8 @@
     add_incipient_type_to_parameters = .true.
     add_incipient_time_to_parameters = .true.
     add_incipient_peak_hrr_to_parameters = .true.
-    fire_hrr_generators = 'NULL'
-    fire_time_generators = 'NULL'
+    fire_hrr_generator_ids = 'NULL'
+    fire_time_generator_ids = 'NULL'
     number_of_growth_points = 0
     number_of_decay_points = 0
     growth_exponent = 1

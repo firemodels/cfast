@@ -57,8 +57,8 @@
 &MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
 &MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
 
-&MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1' FIRE_TIME_GENERATORS = 'End of Time Growth Generator'
-    'Plateau End Time' 'Fire End Time' FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 
+&MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1' FIRE_TIME_GENERATOR_IDS = 'End of Time Growth Generator'
+    'Plateau End Time' 'Fire End Time' FIRE_HRR_GENERATOR_IDS = 'Peak HRR Generator' 'Peak HRR Generator' 
     'End of Fire HRR' NUMBER_OF_GROWTH_POINTS = 20 GROWTH_EXPONENT = 2 /
 	
 &FIRE ID = 'New Fire 1'  COMP_ID = 'Comp 1', FIRE_ID = 'Wood Fire'  LOCATION = 0.25, 0.25 / 

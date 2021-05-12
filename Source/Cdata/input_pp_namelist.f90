@@ -911,7 +911,7 @@
         smoldering_incipient_peak_random_generator_id, fire_label_parameter_column_label
     character(len=128), dimension(mxrooms) :: fire_compartment_ids
     logical :: modify_fire_area_to_match_hrr, add_hrr_scale_to_parameters, &
-        add_time_scale_to_parameters, add_fire_compartment_to_parameters
+        add_time_scale_to_parameters, add_fire_compartment_id_to_parameters
     character(len=128), dimension(mxpts) :: fire_hrr_generators, fire_time_generators, hrr_labels, time_labels
     logical, dimension(100) :: add_hrr_to_parameters, add_time_to_parameters 
     integer :: number_of_growth_points, number_of_decay_points
@@ -928,7 +928,7 @@
     namelist /MFIR/ id, fyi, fire_id, base_fire_id, scaling_fire_hrr_random_generator_id, &
         scaling_fire_time_random_generator_id, modify_fire_area_to_match_hrr, &
         add_hrr_scale_to_parameters, add_time_scale_to_parameters, hrr_scale_column_label, time_scale_column_label, &
-        fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_to_parameters, &
+        fire_compartment_random_generator_id, fire_compartment_ids, add_fire_compartment_id_to_parameters, &
         fire_compartment_id_column_label, flaming_smoldering_incipient_random_generator_id, &
         flaming_incipient_delay_random_generator_id, fire_label_parameter_column_label, &
         flaming_incipient_peak_random_generator_id, smoldering_incipient_delay_random_generator_id, &
@@ -1104,8 +1104,8 @@
                         call cfastexit('READ_MFIR', 10)
                     end if
                 end do complist_search
-                fire%add_to_parameters = add_fire_compartment_to_parameters
-                if (add_fire_compartment_to_parameters) then
+                fire%add_to_parameters = add_fire_compartment_id_to_parameters
+                if (add_fire_compartment_id_to_parameters) then
                     fire%add_to_parameters = .true. 
                     fire%fire_label%add_to_parameters = .true. 
                     fire%parameter_field_set = .true. 
@@ -1418,7 +1418,7 @@
     add_hrr_scale_to_parameters = .true.
     add_time_scale_to_parameters = .true.
     fire_compartment_random_generator_id = 'NULL'
-    add_fire_compartment_to_parameters = .true.
+    add_fire_compartment_id_to_parameters = .true.
     fire_compartment_id_column_label = 'NULL'
     fire_compartment_ids = 'NULL'
     flaming_smoldering_incipient_random_generator_id = 'NULL'

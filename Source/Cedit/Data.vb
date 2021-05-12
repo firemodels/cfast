@@ -52,8 +52,9 @@ Friend Module Data
     Friend Const MaximumThermalProperties As Integer = 150
 
     Friend myMHeaders As New MonteCarloCollection
-    Friend myRandoms As New MonteCarloCollection
-    Friend myFields As New MonteCarloCollection
+    Friend myMRandoms As New MonteCarloCollection
+    Friend myMFields As New MonteCarloCollection
+    Friend myMFires As New MonteCarloCollection
     Friend myOutputs As New MonteCarloCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)

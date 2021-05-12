@@ -218,7 +218,7 @@ module preprocessor_types
         integer :: growth_npts, decay_npts, last_growth_pt, first_decay_pt
         integer :: n_firepoints, n_firegenerators
         logical :: generate_fire = .false.
-        logical :: fire_time_to_1054_kw
+        logical :: fire_generator_is_time_to_1054_kW
         type(field_pointer), dimension(2,mxpts) :: firegenerators
         real(eb), dimension(2, mxpts) :: firevals
         
@@ -1249,7 +1249,7 @@ module preprocessor_types
                 else 
                     tmp1 = 0
                 end if
-                if (.not. me%fire_time_to_1054_kw) then
+                if (.not. me%fire_generator_is_time_to_1054_kW) then
                     t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val
                     c = me%firegenerators(1,1 + tmp1)%realval%val
                     a = (me%firegenerators(1, me%last_growth_pt + 1)%realval%val - c)/ t1**me%growthexpo

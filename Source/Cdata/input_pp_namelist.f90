@@ -306,7 +306,7 @@
                         exit ndx_loop
                     end if
                 end do ndx_loop
-                genptr%num_discrete_values = ndx
+                genptr%num_discrete_values = ndx - 1
                 genptr%prob_array(1) = probabilities(1)
                 do jj = 2, ndx
                     genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj)
@@ -325,15 +325,14 @@
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_continous_interval))) then
                 ndx = 1
                 genptr%type_dist = distribution_type
-                ndx_loop2: do while(ndx + 1 <= mxpntsarray)
+                ndx_loop2: do while(ndx <= mxpntsarray)
                     if (probabilities(ndx + 1) >= 0._eb) then
                         ndx = ndx + 1
                     else
                         exit ndx_loop2
                     end if
                 end do ndx_loop2
-                ndx = ndx + 1
-                genptr%num_discrete_values = ndx
+                genptr%num_discrete_values = ndx - 1
                 genptr%prob_array(1) = 0.0_eb
                 do jj = 2, ndx
                     genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj - 1)
@@ -469,7 +468,7 @@
     integer, dimension(mxfields) :: tmpptr
     
     
-    character(len=128) :: id, rand_id, parameter_column_label, fyi, field_type, value_type 
+    character(len=128) :: id, rand_id, parameter_column_label, fyi, field_type 
     character(len=128), dimension(2) :: field
     real(eb) :: base_scaling_value
     integer :: position
@@ -481,7 +480,7 @@
 
     namelist /MFLD/ id, fyi, field_type, field, rand_id, parameter_column_label, add_to_parameters, &
         real_values, integer_values, string_values, logical_values, &
-        scenario_titles, value_type, base_scaling_value, position
+        scenario_titles, base_scaling_value, position
                     
     
     ios = 1
@@ -568,37 +567,53 @@
                 call find_object(field(1), fldptr, found)
                 if (found) then
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
-                    if (trim(value_type) /= trim(fldptr%value_type)) then
-                        write (errormessage,'(2a)') '***Error, Value type in &MRND input does not match type expected in &MFLD,', &
-                            trim(fldptr%value_type)
+                    if (.not.found) then
+                        write (errormessage,'(5a)') '***Error, in &MFLD ',trim(fldptr%id), &
+                            ' Entry 2 in FIELD not found,', trim(field(1)),', ', trim(field(2))
                         call cfastexit('read_mfld',9)
                     end if
                 else
-                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
+                    write (errormessage,'(5a)') '***Error,  in &MFLD,', trim(fldptr%id), 'Entry 1 not found', &
+                            ' Entry 1 in FIELD not found,', trim(field(1)),', ', trim(field(2))
                     call cfastexit('read_mfld',8)
                 end if
                 fldptr%field_type = trim(field_type)
                 fldptr%randptr%val => fldptr%rand_value
                 fldptr%nidx = fldptr%genptr%num_discrete_values
-                if (trim(value_type) == val_types(idx_real)) then
+                if (trim(fldptr%value_type) == val_types(idx_real)) then
                     do jj = 1, fldptr%nidx
+                        if (real_values(jj) == -1001.0_eb) then
+                            write(errormessage, '(3a,i4,a)') '***Error, for &MFLD ',trim(fldptr%id), &
+                                ' not enough REAL_VALUES defined, ', fldptr%nidx, ' needed.'
+                            call cfastexit('read_mfld', 10)
+                        end if
                         fldptr%real_array(jj) = real_values(jj)
                     end do
-                elseif (trim(value_type) == val_types(idx_int)) then
+                elseif (trim(fldptr%value_type) == val_types(idx_int)) then
                     do jj = 1, fldptr%nidx
+                        if (integer_values(jj) == -1001) then
+                            write(errormessage, '(3a,i4,a)') '***Error, for &MFLD ',trim(fldptr%id), &
+                                ' not enough INTEGER_VALUES defined, ', fldptr%nidx, ' needed.'
+                            call cfastexit('read_mfld', 11)
+                        end if
                         fldptr%int_array(jj) = integer_values(jj)
                     end do
-                elseif (trim(value_type) == val_types(idx_char)) then
+                elseif (trim(fldptr%value_type) == val_types(idx_char)) then
                     do jj = 1, fldptr%nidx
+                        if (trim(string_values(jj)) == 'NULL') then
+                            write(errormessage, '(3a,i4,a)') '***Error, for &MFLD ',trim(fldptr%id), &
+                                ' not enough STRING_VALUES defined, ', fldptr%nidx, ' needed.'
+                            call cfastexit('read_mfld', 12)
+                        end if
                         fldptr%char_array(jj) = string_values(jj)
                     end do
-                elseif (trim(value_type) == val_types(idx_logic)) then
+                elseif (trim(fldptr%value_type) == val_types(idx_logic)) then
                     do jj = 1, fldptr%nidx
                         fldptr%logic_array(jj) = logical_values(jj)
                     end do
                 else
-                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(value_type)
-                    call cfastexit('read_mfld',10)
+                    write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(fldptr%value_type)
+                    call cfastexit('read_mfld',13)
                 end if
                 
             ! Scale Type
@@ -611,11 +626,11 @@
                         write (errormessage,'(2a)') &
                             '***Error, Value type in &MRND input does not match type expected in scaling &MFLD,', &
                             trim(fldptr%value_type)
-                        call cfastexit('read_mfld',12)
+                        call cfastexit('read_mfld',15)
                     end if
                     write (errormessage,'(2a)') '***Error, Invalid value type in scaling &MFLD field,', trim(field_type)
                 else
-                    call cfastexit('read_mfld',11)
+                    call cfastexit('read_mfld',14)
                 end if
                 fldptr%field_type = trim(field_type)
                 fldptr%randptr%val => fldptr%scale_value
@@ -651,10 +666,10 @@
                     call find_field(field(2), fldptr%itemptr, fldptr, found)
                 else 
                     write (errormessage,'(2a)') '***Error, Invalid value type in &MFLD,', trim(field_type)
-                    call cfastexit('read_mfld',13)
+                    call cfastexit('read_mfld',16)
                 end if
             else
-                call cfastexit('read_mfld',14)
+                call cfastexit('read_mfld',17)
             end if
             
             ! Add Parameters
@@ -954,7 +969,7 @@
         read(lu,MFIR,iostat=ios)
         n_rndfires = n_rndfires + 1
         if (ios>0) then
-            write(errormessage,'(a,i0)') '***Error in &MFIR, Invalid variable in specification for inputs. &MSTT input ', n_rndfires
+            write(errormessage,'(a,i0)') '***Error in &MFIR, Invalid variable in specification for inputs. &MFIR input ', n_rndfires
             call cfastexit('read_mfir',1)
         end if
     end do mfir_loop

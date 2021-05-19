@@ -6784,6 +6784,11 @@ Public Class CeditMain
         myFireProperties = New FireCollection
         TempFires = New FireCollection
         myVisuals = New VisualCollection
+        myMHeaders = New MonteCarloCollection
+        myMRandoms = New MonteCarloCollection
+        myMFields = New MonteCarloCollection
+        myMFires = New MonteCarloCollection
+        myMStats = New MonteCarloCollection
         myErrors.Queue.Clear()
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)

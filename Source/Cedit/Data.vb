@@ -55,6 +55,7 @@ Friend Module Data
     Friend myMRandoms As New MonteCarloCollection
     Friend myMFields As New MonteCarloCollection
     Friend myMFires As New MonteCarloCollection
+    Friend myMStats As New MonteCarloCollection
     Friend myOutputs As New MonteCarloCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)

@@ -109,6 +109,8 @@ Module IO
 
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID") Then
                         FlamingSmolderingIncipientRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_INCIPIENT_FIRE_TYPES") Then
+                        ' This keyword is no longer used and here just to prevent flagging an error
                     ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_FIRE_TYPES") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         ReDim IncipientFireTypes(max)
@@ -205,7 +207,7 @@ Module IO
         Dim i, j, k As Integer
         Dim id As String, FYI As String
         Dim max As Integer
-        Dim FieldType As String, Field(2) As String, RandId As String, ParameterColumnLabel As String, ValueType As String, StringValues() As String
+        Dim FieldType As String, Field(2) As String, RandId As String, ParameterColumnLabel As String, StringValues() As String
         Dim RealValues() As Double, BaseScalingValue As Double
         Dim IntegerValues() As Integer, Position As Integer
         Dim LogicalValues() As Boolean, AddToParameters As Boolean
@@ -230,8 +232,6 @@ Module IO
                         RandId = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD_TYPE") Then
                         FieldType = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUE_TYPE") Then
-                        ValueType = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         ReDim RealValues(max)
@@ -281,7 +281,7 @@ Module IO
                     End If
                 Next
                 Dim aField As New MonteCarlo
-                aField.SetField(id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, ValueType, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
+                aField.SetField(id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
                 someFields.Add(aField)
             End If
         Next
@@ -290,7 +290,7 @@ Module IO
         Dim i, j, k As Integer
         Dim id As String
         Dim max As Integer
-        Dim DistributionType As String, ValueType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
+        Dim DistributionType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
         Dim Minimum As Double, Maximum As Double, Mean As Double, Stdev As Double, Alpha As Double, Beta As Double, Peak As Double, RandomSeeds(2) As Double, RealValues() As Double, RealConstantValue As Double, Probabilities() As Double, MinimumOffset As Double, MaximumOffset As Double
         Dim IntegerValues() As Integer, IntegerConstantValue As Integer
         Dim LogicalValues() As Boolean, LogicalConstantValue As Boolean
@@ -298,7 +298,6 @@ Module IO
         For i = 1 To NMList.TotNMList
             id = ""
             DistributionType = ""
-            ValueType = ""
             StringConstantValue = ""
             MinimumField = ""
             MaximumField = ""
@@ -323,8 +322,6 @@ Module IO
                         id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "DISTRIBUTION_TYPE") Then
                         DistributionType = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUE_TYPE") Then
-                        ValueType = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM") Then
                         Minimum = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM") Then
@@ -370,7 +367,7 @@ Module IO
                     End If
                 Next
                 Dim aRandom As New MonteCarlo
-                aRandom.SetRandom(id, DistributionType, ValueType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                aRandom.SetRandom(id, DistributionType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
                 someRandoms.Add(aRandom)
             End If
         Next
@@ -2283,6 +2280,7 @@ Module IO
         WriteOutputFileNMLOutp(IO, myOutputs)
         WriteOutputFileNMLMRND(IO, myMRandoms)
         WriteOutputFileNMLMFLD(IO, myMFields)
+        WriteOutputFileNMLMFIR(IO, myMFires)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -2298,7 +2296,6 @@ Module IO
         ln = "&HEAD VERSION = " + MyEnvironment.Version.ToString + ", " + "TITLE = " + "'" + MyEnvironment.Title + "' /"
         PrintLine(IO, ln)
     End Sub
-
     Private Sub WriteOutputFileNMLMHDR(IO As Integer, ByRef myMHeaders As MonteCarloCollection)
         Dim ln As String
 
@@ -2326,7 +2323,6 @@ Module IO
             End If
         End If
     End Sub
-
     Private Sub WriteOutputFileNMLTime(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
@@ -2337,7 +2333,6 @@ Module IO
         ln = "&TIME SIMULATION = " + MyEnvironment.SimulationTime.ToString + " PRINT = " + MyEnvironment.OutputInterval.ToString + " SMOKEVIEW = " + MyEnvironment.SmokeviewInterval.ToString + " SPREADSHEET = " + MyEnvironment.SpreadsheetInterval.ToString + " / "
         PrintLine(IO, ln)
     End Sub
-
     Private Sub WriteOutputFileNMLInit(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String
 
@@ -2347,7 +2342,6 @@ Module IO
         ln += " EXTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.ExtAmbTemperature - 273.15), 2).ToString + " /"
         PrintLine(IO, ln)
     End Sub
-
     Private Sub WriteOutputFileNMLMisc(IO As Integer, ByRef MyEnvironment As Environment)
         Dim ln As String, aFlag As Boolean
 
@@ -2380,7 +2374,6 @@ Module IO
         MyEnvironment.Changed = False
 
     End Sub
-
     Private Sub WriteOutputFileNMLDiag(IO As Integer, ByRef Myenvironment As Environment)
         Dim ln As String, wrtDIAG As Boolean, wrtSlash As Boolean
         Dim x(0), f(0) As Double, i As Integer
@@ -2541,7 +2534,6 @@ Module IO
         End If
 
     End Sub
-
     Private Sub WriteOutputFileNMLMatl(IO As Integer, MyThermalProperties As ThermalPropertiesCollection)
         Dim ln, field As String, i, j As Integer, aThermalProperty As New ThermalProperty
 
@@ -2586,7 +2578,6 @@ Module IO
         End If
 
     End Sub
-
     Private Sub WriteOutputFileNMLComp(IO As Integer, MyCompartments As CompartmentCollection)
         Dim ln As String, aComp As Compartment, i, j, k As Integer
         Dim x(0), f(0) As Double
@@ -2691,7 +2682,6 @@ Module IO
         End If
 
     End Sub
-
     Private Sub WriteOutputFileNMLVent(IO As Integer, ByRef myHvents As VentCollection, ByRef MyVVents As VentCollection, MyMVents As VentCollection)
         Dim ln As String, i, j As Integer, aVent As Vent
 
@@ -2716,12 +2706,12 @@ Module IO
                 End If
                 ln += ", BOTTOM = " + aVent.Bottom.ToString + " HEIGHT = " + aVent.Height.ToString + ", WIDTH = " + aVent.Width.ToString
                 PrintLine(IO, ln)
-                ln = " "
+                ln = "    "
                 If aVent.OpenType = Vent.OpenbyTime Then
                     Dim ff(2), xx(2), numpoints As Double
                     aVent.GetRamp(xx, ff, numpoints)
                     If numpoints > 1 Then
-                        ln += " CRITERION = 'TIME'"
+                        ln += "  CRITERION = 'TIME'"
                         ln += " T = " + xx(1).ToString
                         For j = 2 To numpoints
                             ln += ", " + xx(j).ToString
@@ -2731,29 +2721,29 @@ Module IO
                             ln += ", " + ff(j).ToString
                         Next
                     ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                        ln += " CRITERION = 'TIME'"
-                        ln += " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
-                        ln += " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
+                        ln += "  CRITERION = 'TIME'"
+                        ln += "  T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
+                        ln += "  F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
                     End If
                 ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
-                    ln += " CRITERION = 'TEMPERATURE', SETPOINT = " + Math.Round((aVent.OpenValue - 273.15), 2).ToString + " DEVC_ID = '" + aVent.Target + "'"
-                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                    ln += "  CRITERION = 'TEMPERATURE', SETPOINT = " + Math.Round((aVent.OpenValue - 273.15), 2).ToString + " DEVC_ID = '" + aVent.Target + "'"
+                    ln += "  PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
                 ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                    ln += " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                    ln += "  CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
+                    ln += "  PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
                 End If
                 If aVent.Face = 2 Then
-                    ln += " FACE = 'RIGHT'"
+                    ln += "  FACE = 'RIGHT'"
                 ElseIf aVent.Face = 3 Then
-                    ln += " FACE = 'REAR'"
+                    ln += "  FACE = 'REAR'"
                 ElseIf aVent.Face = 4 Then
-                    ln += " FACE = 'LEFT'"
+                    ln += "  FACE = 'LEFT'"
                 Else
-                    ln += " FACE = 'FRONT'"
+                    ln += "  FACE = 'FRONT'"
                 End If
-                ln += " OFFSET = " + aVent.Offset.ToString
+                ln += "  OFFSET = " + aVent.Offset.ToString
                 If aVent.FYI <> "" Then
-                    ln += " FYI = '" + aVent.FYI + "'"
+                    ln += "  FYI = '" + aVent.FYI + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)
@@ -2812,7 +2802,7 @@ Module IO
                     ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
                 ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                     PrintLine(IO, ln)
-                    ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "'"
+                    ln = "     CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "'"
                     ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
                 End If
                 ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
@@ -2903,7 +2893,6 @@ Module IO
         End If
 
     End Sub
-
     Private Sub WriteOutputFileNMLFire(IO As Integer, ByRef MyFireProperties As FireCollection)
         Dim ln As String, aFire As Fire, i, j, k, l As Integer
         Dim aFireCurves(12, 0) As Double
@@ -2975,7 +2964,6 @@ Module IO
             Next
         End If
     End Sub
-
     Private Sub WriteOutputFileNMLDevc(IO As Integer, ByRef MyTargets As TargetCollection, ByRef MyDetectors As TargetCollection)
         Dim ln As String, i As Integer, aTarg As Target
 
@@ -3071,7 +3059,6 @@ Module IO
         End If
 
     End Sub
-
     Private Sub WriteOutputFileNMLConn(IO As Integer, ByRef MyCompartments As CompartmentCollection, MyHHeats As VentCollection, MyVHeats As VentCollection)
         Dim ln As String, i, j As Integer, aVent As Vent
 
@@ -3130,7 +3117,6 @@ Module IO
             Next
         End If
     End Sub
-
     Private Sub WriteOutputFileNMLIsoSlcf(IO As Integer, ByRef MyVisuals As VisualCollection)
         Dim ln As String, i As Integer, aVisual As Visual
 
@@ -3162,6 +3148,161 @@ Module IO
             Next
         End If
     End Sub
+    Private Sub WriteOutputFileNMLMFIR(IO As Integer, myMFires As MonteCarloCollection)
+        Dim ln As String, i As Integer, j As Integer, aFire As MonteCarlo, max As Integer
+
+        ' These are for all fire types
+        Dim id As String, FYI As String, FireID As String, BaseFireID As String
+        Dim FireCompartmentRandomGeneratorID As String, FireCompartmentIDs() As String, FireCompartmentIDColumnLabel As String
+        Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean
+
+        ' These are for incipient fire definitions
+        Dim FlamingSmolderingIncipientRandomGeneratorID As String, IncipientFireTypes() As String
+        Dim TypeofIncipientFireGrowth As String, FlamingIncipientDelayRandomGeneratorID As String, FlamingIncipientPeakRandomGeneratorID As String, SmolderingIncipientDelayRandomGeneratorID As String, SmolderingIncipientPeakRandomGeneratorID As String
+        Dim IncipientTypeColumnLabel As String, IncipientTimeColumnLabel As String, IncipientPeakColumnLabel As String
+        Dim AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
+
+        ' These are for scaling fires
+        Dim ScalingFireHRRRandomGeneratorID As String, ScalingFireTimeRandomGeneratorID As String, HRRScaleColumnLabel As String, TimeScaleColumnLabel As String
+        Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean
+
+        ' These are for time curve fire definitions, including power law fires
+        Dim FireHRRGeneratorIDs() As String, FireTimeGeneratorIDs() As String, HRRLabels() As String, TimeLabels() As String
+        Dim GeneratorIsTimeto1054kW As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
+        Dim NumberofGrowthPoints As Double, NumberofDecayPoints As Double, GrowthExponent As Double, DecayExponent As Double
+
+        ' Writing &MFIR
+        If myMFires.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Monte Carlo Fire Specifications"
+            PrintLine(IO, ln)
+
+            For i = 0 To myMFires.Count - 1
+                id = ""
+                FYI = ""
+                FireID = ""
+                BaseFireID = ""
+                FireCompartmentRandomGeneratorID = ""
+                AddFireCompartmentIDtoParameters = True
+                FireCompartmentIDColumnLabel = ""
+
+                FlamingSmolderingIncipientRandomGeneratorID = ""
+                TypeofIncipientFireGrowth = ""
+                FlamingIncipientDelayRandomGeneratorID = ""
+                FlamingIncipientPeakRandomGeneratorID = ""
+                SmolderingIncipientDelayRandomGeneratorID = ""
+                SmolderingIncipientPeakRandomGeneratorID = ""
+                AddIncipientTypetoParameters = True
+                IncipientTypeColumnLabel = ""
+                AddIncipientTimetoParameters = True
+                IncipientTimeColumnLabel = ""
+                IncipientPeakColumnLabel = ""
+                IncipientPeakColumnLabel = ""
+
+                ScalingFireHRRRandomGeneratorID = ""
+                ScalingFireTimeRandomGeneratorID = ""
+                AddHRRScaletoParameters = True
+                HRRScaleColumnLabel = ""
+                AddTimeScaletoParameters = True
+                TimeScaleColumnLabel = True
+
+                GeneratorIsTimeto1054kW = False
+                AddFiretoParameters = True
+                AddHRRtoParameters = True
+                AddTimetoParameters = True
+                NumberofGrowthPoints = -1001
+                NumberofDecayPoints = -1001
+                GrowthExponent = 1001.0
+                DecayExponent = -1001.0
+
+                aFire = myMFires.Item(i)
+                aFire.GetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
+                ln = "&MFIR = '" + id + "'  FIRE_ID = '" + FireID + "'"
+                PrintLine(IO, ln)
+
+                'Output for incipient fire
+                If TypeofIncipientFireGrowth = "RANDOM" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'  FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = '" + FlamingSmolderingIncipientRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                    If Not Data.IsArrayEmpty(IncipientFireTypes) Then
+                        max = IncipientFireTypes.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      NUMBER_OF_INCIPIENT_FIRE_TYPES = " + max.ToString
+                            PrintLine(IO, ln)
+                            ln = "      INCIPIENT_FIRE_TYPES = "
+                            For j = 1 To max - 1
+                                ln += "'" + IncipientFireTypes(j) + "', "
+                            Next
+                            ln += "'" + IncipientFireTypes(max) + "'"
+                            PrintLine(IO, ln)
+                            ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                            PrintLine(IO, ln)
+                            ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                            PrintLine(IO, ln)
+                        End If
+                    End If
+                ElseIf TypeofIncipientFireGrowth = "FLAMING" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'FLAMING'"
+                    PrintLine(IO, ln)
+                    ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                ElseIf TypeofIncipientFireGrowth = "SMOLDERING" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'SMOLDERING'"
+                    PrintLine(IO, ln)
+                    ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                End If
+
+                ' Output for a scaled fire
+                If BaseFireID <> "" Then
+                    ln = "      BASE_FIRE_ID = '" + BaseFireID + "'  SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = '" + ScalingFireHRRRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                    ln = "      SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = '" + ScalingFireTimeRandomGeneratorID
+                    PrintLine(IO, ln)
+                    ln = "     "
+                    If AddHRRScaletoParameters = False Then
+                        ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .FALSE."
+                    Else
+                        If HRRScaleColumnLabel <> "" Then ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.  HRR_SCALE_COLUMN_LABEL = '" + HRRScaleColumnLabel + "'"
+                    End If
+                    If AddTimeScaletoParameters = False Then
+                        ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .FALSE."
+                    Else
+                        If TimeScaleColumnLabel <> "" Then ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .TRUE.  TIME_SCALE_COLUMN_LABEL = '" + TimeScaleColumnLabel + "'"
+                    End If
+                    If ln <> "     " Then PrintLine(IO, ln)
+                End If
+
+                ' Output for a timed or power law fire
+                max = 0
+                If Not Data.IsArrayEmpty(FireTimeGeneratorIDs) Then
+                    max = FireTimeGeneratorIDs.GetUpperBound(0)
+                    If max > 0 Then
+                        ln = "      FIRE_TIME_GENERATOR_IDS = "
+                        For j = 1 To max - 1
+                            ln += "'" + FireTimeGeneratorIDs(j) + "', "
+                        Next
+                        ln += "'" + FireTimeGeneratorIDs(max) + "'"
+                        PrintLine(IO, ln)
+                        ln = "      FIRE_HRR_GENERATOR_IDS = "
+                        For j = 1 To max - 1
+                            ln += "'" + FireHRRGeneratorIDs(j) + "', "
+                        Next
+                        ln += "'" + FireHRRGeneratorIDs(max) + "'"
+                        PrintLine(IO, ln)
+                    End If
+                    If NumberofGrowthPoints > 0 Then
+                        ln = "      NUMBER_OF_GROWTH_POINTS = " + NumberofGrowthPoints.ToString + "  GROWTH_EXPONENT = " + GrowthExponent.ToString
+                        PrintLine(IO, ln)
+                    End If
+                    If NumberofDecayPoints > 0 Then
+                        ln = "      NUMBER_OF_DECAY_POINTS = " + NumberofDecayPoints.ToString + "  DECAY_EXPONENT = " + DecayExponent.ToString
+                        PrintLine(IO, ln)
+                    End If
+                End If
+            Next
+        End If
+    End Sub
     Private Sub WriteOutputFileNMLMRND(IO As Integer, myMRandoms As MonteCarloCollection)
         Dim ln As String, i As Integer, j As Integer, aRandom As MonteCarlo, max As Integer
 
@@ -3171,14 +3312,13 @@ Module IO
             ln = "!! Monte Carlo Random Distributions"
             PrintLine(IO, ln)
 
-            Dim Id As String, DistributionType As String, ValueType As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
+            Dim Id As String, DistributionType As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
             Dim Minimum As Double, Maximum As Double, Mean As Double, StDev As Double, Alpha As Double, Beta As Double, Peak As Double, MinimumOffset As Double, MaximumOffset As Double
             Dim RandomSeeds(2) As Double, RealValues(0) As Double, IntegerValues(0) As Integer, LogicalValues(0) As Boolean, Probabilities(0) As Double, StringValues(0) As String
             Dim RealConstantValue As Double, IntegerConstantValue As Double, StringConstantValue As String, LogicalConstantValue As Boolean
             For i = 0 To myMRandoms.Count - 1
                 Id = ""
                 DistributionType = ""
-                ValueType = ""
                 Minimum = 0.0
                 Maximum = 0.0
                 Mean = 0.0
@@ -3198,14 +3338,14 @@ Module IO
                 AddField = ""
                 FYI = ""
                 aRandom = myMRandoms.Item(i)
-                aRandom.GetRandom(Id, DistributionType, ValueType, Minimum, Maximum, Mean, StDev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                aRandom.GetRandom(Id, DistributionType, Minimum, Maximum, Mean, StDev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
                 ln = "&MRND ID = '" + Id + "' DISTRIBUTION_TYPE = '" + DistributionType + "'"
                 If DistributionType = "UNIFORM" Then
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
-                        ln = "     MINIMUM = " + Minimum.ToString
+                        ln = "      MINIMUM = " + Minimum.ToString
                     Else
-                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                        ln = "      MINIMUM_FIELD = '" + MinimumField + "'"
                     End If
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
@@ -3214,7 +3354,7 @@ Module IO
                     End If
                     If FYI <> "" Then
                         PrintLine(IO, ln)
-                        ln = "     FYI = '" + FYI + "' /"
+                        ln = "      FYI = '" + FYI + "' /"
                     Else
                         ln += " /"
                     End If
@@ -3222,9 +3362,9 @@ Module IO
                 ElseIf DistributionType = "TRIANGLE" Then
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
-                        ln = "     MINIMUM = " + Minimum.ToString
+                        ln = "      MINIMUM = " + Minimum.ToString
                     Else
-                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                        ln = "      MINIMUM_FIELD = '" + MinimumField + "'"
                     End If
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
@@ -3234,14 +3374,14 @@ Module IO
                     ln += " PEAK = " + Peak.ToString
                     If FYI <> "" Then
                         PrintLine(IO, ln)
-                        ln = "     FYI = '" + FYI + "' /"
+                        ln = "      FYI = '" + FYI + "' /"
                     Else
                         ln += " /"
                     End If
                     PrintLine(IO, ln)
                 ElseIf DistributionType = "USER_DEFINED_DISCRETE" Or DistributionType = "USER_DEFINED_CONTINOUS_INTERVAL" Then
                     PrintLine(IO, ln)
-                    ln = "     VALUES = "
+                    ln = "      VALUES = "
                     If Not Data.IsArrayEmpty(RealValues) Then
                         max = RealValues.GetUpperBound(0)
                         If max > 0 Then
@@ -3252,7 +3392,7 @@ Module IO
                         End If
                     End If
                     PrintLine(IO, ln)
-                    ln = "     PROBABILITIES = "
+                    ln = "      PROBABILITIES = "
                     If Not Data.IsArrayEmpty(Probabilities) Then
                         max = Probabilities.GetUpperBound(0)
                         If max > 0 Then
@@ -3267,9 +3407,9 @@ Module IO
                     ln += "  ALPHA = " + Alpha.ToString + "  BETA = " + Beta.ToString
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
-                        ln = "     MINIMUM = " + Minimum.ToString
+                        ln = "      MINIMUM = " + Minimum.ToString
                     Else
-                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                        ln = "      MINIMUM_FIELD = '" + MinimumField + "'"
                     End If
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
@@ -3293,9 +3433,9 @@ Module IO
                     ln += "  MEAN = " + Mean.ToString + "  STDEV = " + StDev.ToString
                     PrintLine(IO, ln)
                     If MinimumField = "" Then
-                        ln = "     MINIMUM = " + Minimum.ToString
+                        ln = "      MINIMUM = " + Minimum.ToString
                     Else
-                        ln = "     MINIMUM_FIELD = '" + MinimumField + "'"
+                        ln = "      MINIMUM_FIELD = '" + MinimumField + "'"
                     End If
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
@@ -3304,7 +3444,7 @@ Module IO
                     End If
                     If FYI <> "" Then
                         PrintLine(IO, ln)
-                        ln = "     FYI = '" + FYI + "' /"
+                        ln = "      FYI = '" + FYI + "' /"
                     Else
                         ln += " /"
                     End If
@@ -3324,7 +3464,7 @@ Module IO
             PrintLine(IO, " ")
             ln = "!! Monte-Carlo Field Definitions"
             PrintLine(IO, ln)
-            Dim Id As String, RandId As String, FieldType As String, ValueType As String, ParameterColumnLabel As String, FYI As String
+            Dim Id As String, RandId As String, FieldType As String, ParameterColumnLabel As String, FYI As String
             Dim RealValues(0) As Double, IntegerValues(0) As Integer, LogicalValues(0) As Boolean, StringValues(0) As String
             Dim Field(2) As String
             Dim AddToParameters As Boolean
@@ -3335,7 +3475,6 @@ Module IO
                 RandId = ""
                 Field(1) = ""
                 Field(2) = ""
-                ValueType = ""
                 ParameterColumnLabel = ""
                 AddToParameters = False
                 BaseScalingValue = 1.0
@@ -3343,54 +3482,62 @@ Module IO
                 FYI = ""
 
                 aField = myMFields.Item(i)
-                aField.GetField(Id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, ValueType, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
-                ln = "&MFLD ID = '" + Id + "  RAND_ID = '" + RandId + "'  FIELD_TYPE = '" + FieldType + "'  FIELD = '" + Field(1) + "', '" + Field(2) + "'"
-                If FieldType = "INDEX" Then
-                    ln += "  VALUE_TYPE = '" + ValueType + "'"
+                aField.GetField(Id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
+                ln = "&MFLD ID = '" + Id + "  RAND_ID = '" + RandId + "'  FIELD_TYPE = '" + FieldType + "'"
+                If FieldType = "VALUE" Then
+                    ln += "  FIELD = '" + Field(1) + "', '" + Field(2) + "'"
                     PrintLine(IO, ln)
-                    If ValueType = "REAL" Then
-                        ln = "     REAL_VALUES = "
-                        If Not Data.IsArrayEmpty(RealValues) Then
-                            max = RealValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += RealValues(j).ToString + ", "
-                                Next
-                                ln += RealValues(max).ToString
-                            End If
+                ElseIf FieldType = "LABEL" Then
+                    PrintLine(IO, ln)
+                    If Not Data.IsArrayEmpty(StringValues) Then
+                        max = StringValues.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      STRING_VALUES = "
+                            For j = 1 To max - 1
+                                ln += StringValues(j) + ", "
+                            Next
+                            ln += StringValues(max)
                         End If
-                    ElseIf ValueType = "INTEGER" Then
-                        ln = "     INTEGER_VALUES = "
-                        If Not Data.IsArrayEmpty(IntegerValues) Then
-                            max = IntegerValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += IntegerValues(j).ToString + ", "
-                                Next
-                                ln += IntegerValues(max).ToString
-                            End If
+                    End If
+                ElseIf FieldType = "INDEX" Then
+                    PrintLine(IO, ln)
+                    ln = "      FIELD = '" + Field(1) + "', '" + Field(2) + "'"
+                    PrintLine(IO, ln)
+                    If Not Data.IsArrayEmpty(RealValues) Then
+                        max = RealValues.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      REAL_VALUES = "
+                            For j = 1 To max - 1
+                                ln += RealValues(j).ToString + ", "
+                            Next
+                            ln += RealValues(max).ToString
                         End If
-                    ElseIf ValueType = "STRING" Then
-                        ln = "     STRING_VALUES = "
-                        If Not Data.IsArrayEmpty(StringValues) Then
-                            max = StringValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += StringValues(j) + ", "
-                                Next
-                                ln += StringValues(max)
-                            End If
+                    ElseIf Not Data.IsArrayEmpty(IntegerValues) Then
+                        max = IntegerValues.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      INTEGER_VALUES = "
+                            For j = 1 To max - 1
+                                ln += IntegerValues(j).ToString + ", "
+                            Next
+                            ln += IntegerValues(max).ToString
                         End If
-                    ElseIf ValueType = "LOGICAL" Then
-                        ln = "     LOGICAL_VALUES = "
-                        If Not Data.IsArrayEmpty(LogicalValues) Then
-                            max = LogicalValues.GetUpperBound(0)
-                            If max > 0 Then
-                                For j = 1 To max - 1
-                                    ln += LogicalValues(j).ToString + ", "
-                                Next
-                                ln += LogicalValues(max).ToString
-                            End If
+                    ElseIf Not Data.IsArrayEmpty(StringValues) Then
+                        max = StringValues.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      STRING_VALUES = "
+                            For j = 1 To max - 1
+                                ln += StringValues(j) + ", "
+                            Next
+                            ln += StringValues(max)
+                        End If
+                    ElseIf Not Data.IsArrayEmpty(LogicalValues) Then
+                        max = LogicalValues.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      LOGICAL_VALUES = "
+                            For j = 1 To max - 1
+                                ln += LogicalValues(j).ToString + ", "
+                            Next
+                            ln += LogicalValues(max).ToString
                         End If
                     End If
                 ElseIf FieldType = "SCALING" Then
@@ -3400,17 +3547,17 @@ Module IO
                 ElseIf FieldType = "VALUE" Then
                     ' nothing additional needed for the value type
                 End If
-                If AddToParameters = True Or FYI <> "" Then
+                If ParameterColumnLabel <> "" Or FYI <> "" Or AddToParameters = False Then
                     PrintLine(IO, ln)
-                    ln = "   "
-                    If AddToParameters = True Then
-                        ln += "  ADD_TO_PARAMETERS = .TRUE."
-                        If ParameterColumnLabel <> "" Then
-                            ln += "  PARAMETER_COLUMN_LABEL = '" + ParameterColumnLabel + "'"
-                        End If
+                    ln = "    "
+                    If ParameterColumnLabel <> "" Then
+                        ln += "  PARAMETER_COLUMN_LABEL = '" + ParameterColumnLabel + "'"
                     End If
                     If FYI <> "" Then
                         ln += "  FYI ='" + FYI + "'"
+                    End If
+                    If AddToParameters = False Then
+                        ln += "  ADD_TO_PARAMETERS = .FALSE."
                     End If
                 End If
                 ln += " /"
@@ -3444,12 +3591,12 @@ Module IO
 
                 ln = "&OUTP ID = '" + Id + "'"
                 PrintLine(IO, ln)
-                ln = "     FILE = '" + FileType + "'  TYPE = '" + Type + "'"
+                ln = "      FILE = '" + FileType + "'  TYPE = '" + Type + "'"
                 If Type <> "MINIMUM" And Type <> "MAXIMUM" And Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  CRITERION = " + Criterion.ToString
                 End If
                 PrintLine(IO, ln)
-                ln = "     FIRST_FIELD = '" + FirstDevice + "', '" + FirstMeasurement + "'"
+                ln = "      FIRST_FIELD = '" + FirstDevice + "', '" + FirstMeasurement + "'"
                 If Type <> "MINIMUM" And Type <> "MAXIMUM" And Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  SECOND_FIELD = '" + SecondDevice + "', '" + SecondMeasurement + "'"
                 End If

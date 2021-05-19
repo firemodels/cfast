@@ -43,334 +43,8 @@ Module IO
         ReadInputFileNMLMRND(NMList, myMRandoms)
         ReadInputFileNMLMFLD(NMList, myMFields)
         ReadInputFileNMLMFIR(NMList, myMFires)
+        ReadInputFileNMLMSTT(NMList, myMStats)
         ReadInputFileNMLOutp(NMList, myOutputs)
-    End Sub
-    Private Sub ReadInputFileNMLMFIR(NMList As NameListFile, ByRef someFields As MonteCarloCollection)
-        Dim i, j, k As Integer
-        Dim max As Integer
-
-        Dim id As String, FYI As String, FireID As String, BaseFireID As String, FireCompartmentRandomGeneratorID As String, FireCompartmentIDs() As String, FireCompartmentIDColumnLabel As String, FlamingSmolderingIncipientRandomGeneratorID As String
-        Dim IncipientFireTypes() As String, TypeofIncipientFireGrowth As String, FlamingIncipientDelayRandomGeneratorID As String, FlamingIncipientPeakRandomGeneratorID As String, SmolderingIncipientDelayRandomGeneratorID As String, SmolderingIncipientPeakRandomGeneratorID As String
-        Dim IncipientTypeColumnLabel As String, IncipientTimeColumnLabel As String, IncipientPeakColumnLabel As String, ScalingFireHRRRandomGeneratorID As String, ScalingFireTimeRandomGeneratorID As String
-        Dim HRRScaleColumnLabel As String, TimeScaleColumnLabel As String, FireHRRGeneratorIDs() As String, FireTimeGeneratorIDs() As String, HRRLabels() As String, TimeLabels() As String
-        Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean, AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
-        Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
-        Dim NumberofGrowthPoints As Integer, NumberofDecayPoints As Integer
-        Dim GrowthExponent As Double, DecayExponent As Double, GeneratorIsTimeto1054kW As Double
-
-        For i = 1 To NMList.TotNMList
-            If (NMList.GetNMListID(i) = "MFIR") Then
-                id = ""
-                FYI = ""
-                FireID = ""
-                BaseFireID = ""
-                FireCompartmentRandomGeneratorID = ""
-                FireCompartmentIDColumnLabel = ""
-                FlamingSmolderingIncipientRandomGeneratorID = ""
-                TypeofIncipientFireGrowth = ""
-                FlamingIncipientDelayRandomGeneratorID = ""
-                FlamingIncipientPeakRandomGeneratorID = ""
-                SmolderingIncipientDelayRandomGeneratorID = ""
-                SmolderingIncipientPeakRandomGeneratorID = ""
-                IncipientTypeColumnLabel = ""
-                IncipientTimeColumnLabel = ""
-                IncipientPeakColumnLabel = ""
-                ScalingFireHRRRandomGeneratorID = ""
-                ScalingFireTimeRandomGeneratorID = ""
-                HRRScaleColumnLabel = ""
-                TimeScaleColumnLabel = ""
-
-
-                For j = 1 To NMList.ForNMListNumVar(i)
-                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
-                        id = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_ID") Then
-                        FireID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "BASE_FIRE_ID") Then
-                        BaseFireID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
-                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MODIFY_FIRE_AREA_TO_MATCH_HRR") Then
-                        ModifyFireAreatoMatchHRR = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
-                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_RANDOM_GENERATOR_ID") Then
-                        FireCompartmentRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_IDS") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim FireCompartmentIDs(max)
-                        For k = 1 To max
-                            FireCompartmentIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIRE_COMPARTMENT_ID_TO_PARAMETERS") Then
-                        AddFireCompartmentIDtoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_ID_COLUMN_LABEL") Then
-                        FireCompartmentIDColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID") Then
-                        FlamingSmolderingIncipientRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_INCIPIENT_FIRE_TYPES") Then
-                        ' This keyword is no longer used and here just to prevent flagging an error
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_FIRE_TYPES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim IncipientFireTypes(max)
-                        For k = 1 To max
-                            IncipientFireTypes(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE_OF_INCIPIENT_GROWTH") Then
-                        TypeofIncipientFireGrowth = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID") Then
-                        FlamingIncipientDelayRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID") Then
-                        FlamingIncipientPeakRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID") Then
-                        SmolderingIncipientDelayRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID") Then
-                        SmolderingIncipientPeakRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_TYPE_TO_PARAMETERS") Then
-                        AddIncipientTypetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_TIME_TO_PARAMETERS") Then
-                        AddIncipientTimetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_PEAK_TO_PARAMETERS") Then
-                        AddIncipientPeaktoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_TYPE_COLUMN_LABEL") Then
-                        IncipientTypeColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_TIME_COLUMN_LABEL") Then
-                        IncipientTimeColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_PEAK_COLUMN_LABEL") Then
-                        IncipientPeakColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "SCALING_FIRE_HRR_RANDOM_GENERATOR_ID") Then
-                        ScalingFireHRRRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "SCALING_FIRE_TIME_RANDOM_GENERATOR_ID") Then
-                        ScalingFireTimeRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_HRR_SCALE_TO_PARAMETERS") Then
-                        AddHRRScaletoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TIME_SCALE_TO_PARAMETERS") Then
-                        AddTimeScaletoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "HRR_SCALE_COLUMN_LABEL") Then
-                        HRRScaleColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "TIME_SCALE_COLUMN_LABEL") Then
-                        TimeScaleColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_HRR_GENERATOR_IDS") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim FireHRRGeneratorIDs(max)
-                        For k = 1 To max
-                            FireHRRGeneratorIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_TIME_GENERATOR_IDS") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim FireTimeGeneratorIDs(max)
-                        For k = 1 To max
-                            FireTimeGeneratorIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_GROWTH_POINTS") Then
-                        NumberofGrowthPoints = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_DECAY_POINTS") Then
-                        NumberofDecayPoints = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "GROWTH_EXPONENT") Then
-                        GrowthExponent = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "DECAY_EXPONENT") Then
-                        DecayExponent = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "GENERATOR_IS_TIME_TO_1054_KW") Then
-                        GeneratorIsTimeto1054kW = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIRE_TO_PARAMETERS") Then
-                        AddFiretoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_HRR_TO_PARAMETERS") Then
-                        AddHRRtoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TIME_TO_PARAMETERS") Then
-                        AddTimetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "HRR_LABELS") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim HRRLabels(max)
-                        For k = 1 To max
-                            HRRLabels(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "TIME_LABELS") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim TimeLabels(max)
-                        For k = 1 To max
-                            TimeLabels(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    Else
-                        myErrors.Add("In MFIR namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
-                    End If
-                Next
-                Dim aFire As New MonteCarlo
-                aFire.SetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
-                someFields.Add(aFire)
-            End If
-        Next
-    End Sub
-    Private Sub ReadInputFileNMLMFLD(NMList As NameListFile, ByRef someFields As MonteCarloCollection)
-        Dim i, j, k As Integer
-        Dim id As String, FYI As String
-        Dim max As Integer
-        Dim FieldType As String, Field(2) As String, RandId As String, ParameterColumnLabel As String, StringValues() As String
-        Dim RealValues() As Double, BaseScalingValue As Double
-        Dim IntegerValues() As Integer, Position As Integer
-        Dim LogicalValues() As Boolean, AddToParameters As Boolean
-
-        For i = 1 To NMList.TotNMList
-            id = ""
-            FieldType = ""
-            Field(1) = ""
-            Field(2) = ""
-            RandId = ""
-            ParameterColumnLabel = ""
-            AddToParameters = False
-            BaseScalingValue = 1.0
-            Position = -1001
-            FYI = ""
-
-            If (NMList.GetNMListID(i) = "MFLD") Then
-                For j = 1 To NMList.ForNMListNumVar(i)
-                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
-                        id = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "RAND_ID") Then
-                        RandId = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD_TYPE") Then
-                        FieldType = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim RealValues(max)
-                        For k = 1 To max
-                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim IntegerValues(max)
-                        For k = 1 To max
-                            IntegerValues(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim StringValues(max)
-                        For k = 1 To max
-                            StringValues(k) = NMList.ForNMListVarGetStr(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim LogicalValues(max)
-                        For k = 1 To max
-                            LogicalValues(k) = NMList.ForNMListVarGetBool(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 2 Then
-                            Field(1) = NMList.ForNMListVarGetStr(i, j, 1)
-                            Field(2) = NMList.ForNMListVarGetStr(i, j, 2)
-                        Else
-                            Field(1) = ""
-                            Field(2) = ""
-                        End If
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "PARAMETER_COLUMN_LABEL") Then
-                        ParameterColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TO_PARAMETERS") Then
-                        AddToParameters = False
-                        If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then AddToParameters = True
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "BASE_SCALING_VALUE") Then
-                        BaseScalingValue = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "POSITION") Then
-                        Position = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
-                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
-                    Else
-                        myErrors.Add("In MFLD namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
-                    End If
-                Next
-                Dim aField As New MonteCarlo
-                aField.SetField(id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
-                someFields.Add(aField)
-            End If
-        Next
-    End Sub
-    Private Sub ReadInputFileNMLMRND(NMList As NameListFile, ByRef someRandoms As MonteCarloCollection)
-        Dim i, j, k As Integer
-        Dim id As String
-        Dim max As Integer
-        Dim DistributionType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
-        Dim Minimum As Double, Maximum As Double, Mean As Double, Stdev As Double, Alpha As Double, Beta As Double, Peak As Double, RandomSeeds(2) As Double, RealValues() As Double, RealConstantValue As Double, Probabilities() As Double, MinimumOffset As Double, MaximumOffset As Double
-        Dim IntegerValues() As Integer, IntegerConstantValue As Integer
-        Dim LogicalValues() As Boolean, LogicalConstantValue As Boolean
-
-        For i = 1 To NMList.TotNMList
-            id = ""
-            DistributionType = ""
-            StringConstantValue = ""
-            MinimumField = ""
-            MaximumField = ""
-            AddField = ""
-            Minimum = 0.0
-            Maximum = 0.0
-            Mean = 0.0
-            Stdev = 0.0
-            Alpha = 0.0
-            Beta = 0.0
-            Peak = 0.0
-            RandomSeeds(1) = -1001.0
-            RandomSeeds(2) = -1001.0
-            RealConstantValue = 0.0
-            IntegerConstantValue = 0
-            LogicalConstantValue = False
-            FYI = ""
-
-            If (NMList.GetNMListID(i) = "MRND") Then
-                For j = 1 To NMList.ForNMListNumVar(i)
-                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
-                        id = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "DISTRIBUTION_TYPE") Then
-                        DistributionType = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM") Then
-                        Minimum = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM") Then
-                        Maximum = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MEAN") Then
-                        Mean = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "STDEV") Then
-                        Stdev = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ALPHA") Then
-                        Alpha = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "BETA") Then
-                        Beta = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "PEAK") Then
-                        Peak = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim RealValues(max)
-                        For k = 1 To max
-                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "PROBABILITIES") Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        ReDim Probabilities(max)
-                        For k = 1 To max
-                            Probabilities(k) = NMList.ForNMListVarGetNum(i, j, k)
-                        Next
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "CONSTANT") Then
-                        RealConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_OFFSET") Then
-                        MinimumOffset = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_OFFSET") Then
-                        MaximumOffset = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_FIELD") Then
-                        MinimumField = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_FIELD") Then
-                        MaximumField = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIELD") Then
-                        AddField = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
-                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
-                    Else
-                        myErrors.Add("In MRND namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
-                    End If
-                Next
-                Dim aRandom As New MonteCarlo
-                aRandom.SetRandom(id, DistributionType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
-                someRandoms.Add(aRandom)
-            End If
-        Next
     End Sub
     Private Sub ReadInputFileNMLHead(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
@@ -2001,6 +1675,374 @@ Module IO
             End If
         Next
     End Sub
+    Private Sub ReadInputFileNMLMRND(NMList As NameListFile, ByRef someRandoms As MonteCarloCollection)
+        Dim i, j, k As Integer
+        Dim id As String
+        Dim max As Integer
+        Dim DistributionType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
+        Dim Minimum As Double, Maximum As Double, Mean As Double, Stdev As Double, Alpha As Double, Beta As Double, Peak As Double, RandomSeeds(2) As Double, RealValues() As Double, RealConstantValue As Double, Probabilities() As Double, MinimumOffset As Double, MaximumOffset As Double
+        Dim IntegerValues() As Integer, IntegerConstantValue As Integer
+        Dim LogicalValues() As Boolean, LogicalConstantValue As Boolean
+
+        For i = 1 To NMList.TotNMList
+            id = ""
+            DistributionType = ""
+            StringConstantValue = ""
+            MinimumField = ""
+            MaximumField = ""
+            AddField = ""
+            Minimum = 0.0
+            Maximum = 0.0
+            Mean = 0.0
+            Stdev = 0.0
+            Alpha = 0.0
+            Beta = 0.0
+            Peak = 0.0
+            RandomSeeds(1) = -1001.0
+            RandomSeeds(2) = -1001.0
+            RealConstantValue = 0.0
+            IntegerConstantValue = 0
+            LogicalConstantValue = False
+            FYI = ""
+
+            If (NMList.GetNMListID(i) = "MRND") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "DISTRIBUTION_TYPE") Then
+                        DistributionType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM") Then
+                        Minimum = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM") Then
+                        Maximum = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MEAN") Then
+                        Mean = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STDEV") Then
+                        Stdev = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ALPHA") Then
+                        Alpha = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "BETA") Then
+                        Beta = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PEAK") Then
+                        Peak = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim RealValues(max)
+                        For k = 1 To max
+                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PROBABILITIES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim Probabilities(max)
+                        For k = 1 To max
+                            Probabilities(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CONSTANT") Then
+                        RealConstantValue = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_OFFSET") Then
+                        MinimumOffset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_OFFSET") Then
+                        MaximumOffset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MINIMUM_FIELD") Then
+                        MinimumField = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAXIMUM_FIELD") Then
+                        MaximumField = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIELD") Then
+                        AddField = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MRND namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aRandom As New MonteCarlo
+                aRandom.SetRandom(id, DistributionType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                someRandoms.Add(aRandom)
+            End If
+        Next
+    End Sub
+    Private Sub ReadInputFileNMLMFLD(NMList As NameListFile, ByRef someFields As MonteCarloCollection)
+        Dim i, j, k As Integer
+        Dim id As String, FYI As String
+        Dim max As Integer
+        Dim FieldType As String, Field(2) As String, RandId As String, ParameterColumnLabel As String, StringValues() As String
+        Dim RealValues() As Double, BaseScalingValue As Double
+        Dim IntegerValues() As Integer, Position As Integer
+        Dim LogicalValues() As Boolean, AddToParameters As Boolean
+
+        For i = 1 To NMList.TotNMList
+            id = ""
+            FieldType = ""
+            Field(1) = ""
+            Field(2) = ""
+            RandId = ""
+            ParameterColumnLabel = ""
+            AddToParameters = False
+            BaseScalingValue = 1.0
+            Position = -1001
+            FYI = ""
+
+            If (NMList.GetNMListID(i) = "MFLD") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "RAND_ID") Then
+                        RandId = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD_TYPE") Then
+                        FieldType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "REAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim RealValues(max)
+                        For k = 1 To max
+                            RealValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTEGER_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim IntegerValues(max)
+                        For k = 1 To max
+                            IntegerValues(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "STRING_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim StringValues(max)
+                        For k = 1 To max
+                            StringValues(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOGICAL_VALUES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim LogicalValues(max)
+                        For k = 1 To max
+                            LogicalValues(k) = NMList.ForNMListVarGetBool(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIELD") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 Then
+                            Field(1) = NMList.ForNMListVarGetStr(i, j, 1)
+                            Field(2) = NMList.ForNMListVarGetStr(i, j, 2)
+                        Else
+                            Field(1) = ""
+                            Field(2) = ""
+                        End If
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "PARAMETER_COLUMN_LABEL") Then
+                        ParameterColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TO_PARAMETERS") Then
+                        AddToParameters = False
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then AddToParameters = True
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "BASE_SCALING_VALUE") Then
+                        BaseScalingValue = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "POSITION") Then
+                        Position = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MFLD namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aField As New MonteCarlo
+                aField.SetField(id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
+                someFields.Add(aField)
+            End If
+        Next
+    End Sub
+    Private Sub ReadInputFileNMLMFIR(NMList As NameListFile, ByRef someFires As MonteCarloCollection)
+        Dim i, j, k As Integer
+        Dim max As Integer
+
+        Dim id As String, FYI As String, FireID As String, BaseFireID As String, FireCompartmentRandomGeneratorID As String, FireCompartmentIDs() As String, FireCompartmentIDColumnLabel As String, FlamingSmolderingIncipientRandomGeneratorID As String
+        Dim IncipientFireTypes() As String, TypeofIncipientFireGrowth As String, FlamingIncipientDelayRandomGeneratorID As String, FlamingIncipientPeakRandomGeneratorID As String, SmolderingIncipientDelayRandomGeneratorID As String, SmolderingIncipientPeakRandomGeneratorID As String
+        Dim IncipientTypeColumnLabel As String, IncipientTimeColumnLabel As String, IncipientPeakColumnLabel As String, ScalingFireHRRRandomGeneratorID As String, ScalingFireTimeRandomGeneratorID As String
+        Dim HRRScaleColumnLabel As String, TimeScaleColumnLabel As String, FireHRRGeneratorIDs() As String, FireTimeGeneratorIDs() As String, HRRLabels() As String, TimeLabels() As String
+        Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean, AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
+        Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
+        Dim NumberofGrowthPoints As Integer, NumberofDecayPoints As Integer
+        Dim GrowthExponent As Double, DecayExponent As Double, GeneratorIsTimeto1054kW As Double
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "MFIR") Then
+                id = ""
+                FYI = ""
+                FireID = ""
+                BaseFireID = ""
+                FireCompartmentRandomGeneratorID = ""
+                FireCompartmentIDColumnLabel = ""
+                FlamingSmolderingIncipientRandomGeneratorID = ""
+                TypeofIncipientFireGrowth = ""
+                FlamingIncipientDelayRandomGeneratorID = ""
+                FlamingIncipientPeakRandomGeneratorID = ""
+                SmolderingIncipientDelayRandomGeneratorID = ""
+                SmolderingIncipientPeakRandomGeneratorID = ""
+                IncipientTypeColumnLabel = ""
+                IncipientTimeColumnLabel = ""
+                IncipientPeakColumnLabel = ""
+                ScalingFireHRRRandomGeneratorID = ""
+                ScalingFireTimeRandomGeneratorID = ""
+                HRRScaleColumnLabel = ""
+                TimeScaleColumnLabel = ""
+
+
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_ID") Then
+                        FireID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "BASE_FIRE_ID") Then
+                        BaseFireID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MODIFY_FIRE_AREA_TO_MATCH_HRR") Then
+                        ModifyFireAreatoMatchHRR = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_RANDOM_GENERATOR_ID") Then
+                        FireCompartmentRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_IDS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim FireCompartmentIDs(max)
+                        For k = 1 To max
+                            FireCompartmentIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIRE_COMPARTMENT_ID_TO_PARAMETERS") Then
+                        AddFireCompartmentIDtoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_COMPARTMENT_ID_COLUMN_LABEL") Then
+                        FireCompartmentIDColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID") Then
+                        FlamingSmolderingIncipientRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_INCIPIENT_FIRE_TYPES") Then
+                        ' This keyword is no longer used and here just to prevent flagging an error
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_FIRE_TYPES") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim IncipientFireTypes(max)
+                        For k = 1 To max
+                            IncipientFireTypes(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE_OF_INCIPIENT_GROWTH") Then
+                        TypeofIncipientFireGrowth = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID") Then
+                        FlamingIncipientDelayRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID") Then
+                        FlamingIncipientPeakRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID") Then
+                        SmolderingIncipientDelayRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID") Then
+                        SmolderingIncipientPeakRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_TYPE_TO_PARAMETERS") Then
+                        AddIncipientTypetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_TIME_TO_PARAMETERS") Then
+                        AddIncipientTimetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_INCIPIENT_PEAK_TO_PARAMETERS") Then
+                        AddIncipientPeaktoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_TYPE_COLUMN_LABEL") Then
+                        IncipientTypeColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_TIME_COLUMN_LABEL") Then
+                        IncipientTimeColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INCIPIENT_PEAK_COLUMN_LABEL") Then
+                        IncipientPeakColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SCALING_FIRE_HRR_RANDOM_GENERATOR_ID") Then
+                        ScalingFireHRRRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SCALING_FIRE_TIME_RANDOM_GENERATOR_ID") Then
+                        ScalingFireTimeRandomGeneratorID = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_HRR_SCALE_TO_PARAMETERS") Then
+                        AddHRRScaletoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TIME_SCALE_TO_PARAMETERS") Then
+                        AddTimeScaletoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "HRR_SCALE_COLUMN_LABEL") Then
+                        HRRScaleColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TIME_SCALE_COLUMN_LABEL") Then
+                        TimeScaleColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_HRR_GENERATOR_IDS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim FireHRRGeneratorIDs(max)
+                        For k = 1 To max
+                            FireHRRGeneratorIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRE_TIME_GENERATOR_IDS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim FireTimeGeneratorIDs(max)
+                        For k = 1 To max
+                            FireTimeGeneratorIDs(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_GROWTH_POINTS") Then
+                        NumberofGrowthPoints = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "NUMBER_OF_DECAY_POINTS") Then
+                        NumberofDecayPoints = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "GROWTH_EXPONENT") Then
+                        GrowthExponent = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "DECAY_EXPONENT") Then
+                        DecayExponent = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "GENERATOR_IS_TIME_TO_1054_KW") Then
+                        GeneratorIsTimeto1054kW = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIRE_TO_PARAMETERS") Then
+                        AddFiretoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_HRR_TO_PARAMETERS") Then
+                        AddHRRtoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_TIME_TO_PARAMETERS") Then
+                        AddTimetoParameters = NMList.ForNMListVarGetBool(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "HRR_LABELS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim HRRLabels(max)
+                        For k = 1 To max
+                            HRRLabels(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TIME_LABELS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim TimeLabels(max)
+                        For k = 1 To max
+                            TimeLabels(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    Else
+                        myErrors.Add("In MFIR namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aFire As New MonteCarlo
+                aFire.SetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
+                someFires.Add(aFire)
+            End If
+        Next
+    End Sub
+    Private Sub ReadInputFileNMLMSTT(NMList As NameListFile, ByRef someStats As MonteCarloCollection)
+        Dim i As Integer, j As Integer
+
+        Dim id As String, AnalysisType As String, InputFileName As String, OutputFileName As String, ErrorFileName As String, LogFIleName As String, ColumnLabel As String, FYI As String
+        For i = 1 To NMList.TotNMList
+            If NMList.GetNMListID(i) = "MSTT" Then
+                id = ""
+                AnalysisType = ""
+                InputFileName = ""
+                OutputFileName = ""
+                ErrorFileName = ""
+                LogFIleName = ""
+                ColumnLabel = ""
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FYI") Then
+                        FYI = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ANALYSIS_TYPE") Then
+                        AnalysisType = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INPUT_FILENAME") Then
+                        InputFileName = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "OUTPUT_FILENAME") Then
+                        OutputFileName = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ERROR_FILENAME") Then
+                        ErrorFileName = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOG_FILENAME") Then
+                        LogFIleName = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "COLUMN_LABEL") Then
+                        ColumnLabel = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MSTT namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+
+                Dim aStat As New MonteCarlo
+                aStat.SetStat(id, FYI, AnalysisType, InputFileName, OutputFileName, ErrorFileName, LogFIleName, ColumnLabel)
+                someStats.Add(aStat)
+            End If
+        Next
+    End Sub
     Public Sub ReadINIInput(ByRef x As Integer, label As String, value As String)
         If value = "ON" Then
             x = Environment.DIAGon
@@ -2277,10 +2319,11 @@ Module IO
         WriteOutputFileNMLDevc(IO, myTargets, myDetectors)
         WriteOutputFileNMLConn(IO, myCompartments, myHHeats, myVHeats)
         WriteOutputFileNMLIsoSlcf(IO, myVisuals)
-        WriteOutputFileNMLOutp(IO, myOutputs)
         WriteOutputFileNMLMRND(IO, myMRandoms)
         WriteOutputFileNMLMFLD(IO, myMFields)
         WriteOutputFileNMLMFIR(IO, myMFires)
+        WriteOutputFileNMLOutp(IO, myOutputs)
+        WriteOutputFileNMLMSTT(IO, myMStats)
 
         PrintLine(IO, " ")
         ln = "&TAIL /"
@@ -3148,162 +3191,7 @@ Module IO
             Next
         End If
     End Sub
-    Private Sub WriteOutputFileNMLMFIR(IO As Integer, myMFires As MonteCarloCollection)
-        Dim ln As String, i As Integer, j As Integer, aFire As MonteCarlo, max As Integer
-
-        ' These are for all fire types
-        Dim id As String, FYI As String, FireID As String, BaseFireID As String
-        Dim FireCompartmentRandomGeneratorID As String, FireCompartmentIDs() As String, FireCompartmentIDColumnLabel As String
-        Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean
-
-        ' These are for incipient fire definitions
-        Dim FlamingSmolderingIncipientRandomGeneratorID As String, IncipientFireTypes() As String
-        Dim TypeofIncipientFireGrowth As String, FlamingIncipientDelayRandomGeneratorID As String, FlamingIncipientPeakRandomGeneratorID As String, SmolderingIncipientDelayRandomGeneratorID As String, SmolderingIncipientPeakRandomGeneratorID As String
-        Dim IncipientTypeColumnLabel As String, IncipientTimeColumnLabel As String, IncipientPeakColumnLabel As String
-        Dim AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
-
-        ' These are for scaling fires
-        Dim ScalingFireHRRRandomGeneratorID As String, ScalingFireTimeRandomGeneratorID As String, HRRScaleColumnLabel As String, TimeScaleColumnLabel As String
-        Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean
-
-        ' These are for time curve fire definitions, including power law fires
-        Dim FireHRRGeneratorIDs() As String, FireTimeGeneratorIDs() As String, HRRLabels() As String, TimeLabels() As String
-        Dim GeneratorIsTimeto1054kW As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
-        Dim NumberofGrowthPoints As Double, NumberofDecayPoints As Double, GrowthExponent As Double, DecayExponent As Double
-
-        ' Writing &MFIR
-        If myMFires.Count > 0 Then
-            PrintLine(IO, " ")
-            ln = "!! Monte Carlo Fire Specifications"
-            PrintLine(IO, ln)
-
-            For i = 0 To myMFires.Count - 1
-                id = ""
-                FYI = ""
-                FireID = ""
-                BaseFireID = ""
-                FireCompartmentRandomGeneratorID = ""
-                AddFireCompartmentIDtoParameters = True
-                FireCompartmentIDColumnLabel = ""
-
-                FlamingSmolderingIncipientRandomGeneratorID = ""
-                TypeofIncipientFireGrowth = ""
-                FlamingIncipientDelayRandomGeneratorID = ""
-                FlamingIncipientPeakRandomGeneratorID = ""
-                SmolderingIncipientDelayRandomGeneratorID = ""
-                SmolderingIncipientPeakRandomGeneratorID = ""
-                AddIncipientTypetoParameters = True
-                IncipientTypeColumnLabel = ""
-                AddIncipientTimetoParameters = True
-                IncipientTimeColumnLabel = ""
-                IncipientPeakColumnLabel = ""
-                IncipientPeakColumnLabel = ""
-
-                ScalingFireHRRRandomGeneratorID = ""
-                ScalingFireTimeRandomGeneratorID = ""
-                AddHRRScaletoParameters = True
-                HRRScaleColumnLabel = ""
-                AddTimeScaletoParameters = True
-                TimeScaleColumnLabel = True
-
-                GeneratorIsTimeto1054kW = False
-                AddFiretoParameters = True
-                AddHRRtoParameters = True
-                AddTimetoParameters = True
-                NumberofGrowthPoints = -1001
-                NumberofDecayPoints = -1001
-                GrowthExponent = 1001.0
-                DecayExponent = -1001.0
-
-                aFire = myMFires.Item(i)
-                aFire.GetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
-                ln = "&MFIR = '" + id + "'  FIRE_ID = '" + FireID + "'"
-                PrintLine(IO, ln)
-
-                'Output for incipient fire
-                If TypeofIncipientFireGrowth = "RANDOM" Then
-                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'  FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = '" + FlamingSmolderingIncipientRandomGeneratorID + "'"
-                    PrintLine(IO, ln)
-                    If Not Data.IsArrayEmpty(IncipientFireTypes) Then
-                        max = IncipientFireTypes.GetUpperBound(0)
-                        If max > 0 Then
-                            ln = "      NUMBER_OF_INCIPIENT_FIRE_TYPES = " + max.ToString
-                            PrintLine(IO, ln)
-                            ln = "      INCIPIENT_FIRE_TYPES = "
-                            For j = 1 To max - 1
-                                ln += "'" + IncipientFireTypes(j) + "', "
-                            Next
-                            ln += "'" + IncipientFireTypes(max) + "'"
-                            PrintLine(IO, ln)
-                            ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
-                            PrintLine(IO, ln)
-                            ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
-                            PrintLine(IO, ln)
-                        End If
-                    End If
-                ElseIf TypeofIncipientFireGrowth = "FLAMING" Then
-                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'FLAMING'"
-                    PrintLine(IO, ln)
-                    ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
-                    PrintLine(IO, ln)
-                ElseIf TypeofIncipientFireGrowth = "SMOLDERING" Then
-                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'SMOLDERING'"
-                    PrintLine(IO, ln)
-                    ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
-                    PrintLine(IO, ln)
-                End If
-
-                ' Output for a scaled fire
-                If BaseFireID <> "" Then
-                    ln = "      BASE_FIRE_ID = '" + BaseFireID + "'  SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = '" + ScalingFireHRRRandomGeneratorID + "'"
-                    PrintLine(IO, ln)
-                    ln = "      SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = '" + ScalingFireTimeRandomGeneratorID
-                    PrintLine(IO, ln)
-                    ln = "     "
-                    If AddHRRScaletoParameters = False Then
-                        ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .FALSE."
-                    Else
-                        If HRRScaleColumnLabel <> "" Then ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.  HRR_SCALE_COLUMN_LABEL = '" + HRRScaleColumnLabel + "'"
-                    End If
-                    If AddTimeScaletoParameters = False Then
-                        ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .FALSE."
-                    Else
-                        If TimeScaleColumnLabel <> "" Then ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .TRUE.  TIME_SCALE_COLUMN_LABEL = '" + TimeScaleColumnLabel + "'"
-                    End If
-                    If ln <> "     " Then PrintLine(IO, ln)
-                End If
-
-                ' Output for a timed or power law fire
-                max = 0
-                If Not Data.IsArrayEmpty(FireTimeGeneratorIDs) Then
-                    max = FireTimeGeneratorIDs.GetUpperBound(0)
-                    If max > 0 Then
-                        ln = "      FIRE_TIME_GENERATOR_IDS = "
-                        For j = 1 To max - 1
-                            ln += "'" + FireTimeGeneratorIDs(j) + "', "
-                        Next
-                        ln += "'" + FireTimeGeneratorIDs(max) + "'"
-                        PrintLine(IO, ln)
-                        ln = "      FIRE_HRR_GENERATOR_IDS = "
-                        For j = 1 To max - 1
-                            ln += "'" + FireHRRGeneratorIDs(j) + "', "
-                        Next
-                        ln += "'" + FireHRRGeneratorIDs(max) + "'"
-                        PrintLine(IO, ln)
-                    End If
-                    If NumberofGrowthPoints > 0 Then
-                        ln = "      NUMBER_OF_GROWTH_POINTS = " + NumberofGrowthPoints.ToString + "  GROWTH_EXPONENT = " + GrowthExponent.ToString
-                        PrintLine(IO, ln)
-                    End If
-                    If NumberofDecayPoints > 0 Then
-                        ln = "      NUMBER_OF_DECAY_POINTS = " + NumberofDecayPoints.ToString + "  DECAY_EXPONENT = " + DecayExponent.ToString
-                        PrintLine(IO, ln)
-                    End If
-                End If
-            Next
-        End If
-    End Sub
-    Private Sub WriteOutputFileNMLMRND(IO As Integer, myMRandoms As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLMRND(IO As Integer, ByRef myMRandoms As MonteCarloCollection)
         Dim ln As String, i As Integer, j As Integer, aRandom As MonteCarlo, max As Integer
 
         ' Writing &MRND
@@ -3350,7 +3238,7 @@ Module IO
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
                     Else
-                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                        ln += " MAXIMUM_FIELD = '" + MaximumField + "'"
                     End If
                     If FYI <> "" Then
                         PrintLine(IO, ln)
@@ -3369,7 +3257,7 @@ Module IO
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
                     Else
-                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                        ln += " MAXIMUM_FIELD = '" + MaximumField + "'"
                     End If
                     ln += " PEAK = " + Peak.ToString
                     If FYI <> "" Then
@@ -3414,7 +3302,7 @@ Module IO
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
                     Else
-                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                        ln += " MAXIMUM_FIELD = '" + MaximumField + "'"
                     End If
                     ln += " PEAK = " + Peak.ToString
                     If FYI <> "" Then
@@ -3440,7 +3328,7 @@ Module IO
                     If MaximumField = "" Then
                         ln += " MAXIMUM = " + Maximum.ToString
                     Else
-                        ln += " MAXIMUM_FIELD = '" + MaximumField
+                        ln += " MAXIMUM_FIELD = '" + MaximumField + "'"
                     End If
                     If FYI <> "" Then
                         PrintLine(IO, ln)
@@ -3456,7 +3344,7 @@ Module IO
             Next
         End If
     End Sub
-    Private Sub WriteOutputFileNMLMFLD(IO As Integer, myMFields As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLMFLD(IO As Integer, ByRef myMFields As MonteCarloCollection)
         Dim ln As String, i, j As Integer, aField As MonteCarlo
         Dim max As Integer
         ' Writing &OUTP
@@ -3565,18 +3453,174 @@ Module IO
             Next
         End If
     End Sub
-    Private Sub WriteOutputFileNMLOutp(IO As Integer, MyOutps As MonteCarloCollection)
+    Private Sub WriteOutputFileNMLMFIR(IO As Integer, ByRef myMFires As MonteCarloCollection)
+        Dim ln As String, i As Integer, j As Integer, aFire As MonteCarlo, max As Integer
+
+        ' These are for all fire types
+        Dim id As String, FYI As String, FireID As String, BaseFireID As String
+        Dim FireCompartmentRandomGeneratorID As String, FireCompartmentIDs() As String, FireCompartmentIDColumnLabel As String
+        Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean
+
+        ' These are for incipient fire definitions
+        Dim FlamingSmolderingIncipientRandomGeneratorID As String, IncipientFireTypes() As String
+        Dim TypeofIncipientFireGrowth As String, FlamingIncipientDelayRandomGeneratorID As String, FlamingIncipientPeakRandomGeneratorID As String, SmolderingIncipientDelayRandomGeneratorID As String, SmolderingIncipientPeakRandomGeneratorID As String
+        Dim IncipientTypeColumnLabel As String, IncipientTimeColumnLabel As String, IncipientPeakColumnLabel As String
+        Dim AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
+
+        ' These are for scaling fires
+        Dim ScalingFireHRRRandomGeneratorID As String, ScalingFireTimeRandomGeneratorID As String, HRRScaleColumnLabel As String, TimeScaleColumnLabel As String
+        Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean
+
+        ' These are for time curve fire definitions, including power law fires
+        Dim FireHRRGeneratorIDs() As String, FireTimeGeneratorIDs() As String, HRRLabels() As String, TimeLabels() As String
+        Dim GeneratorIsTimeto1054kW As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
+        Dim NumberofGrowthPoints As Double, NumberofDecayPoints As Double, GrowthExponent As Double, DecayExponent As Double
+
+        ' Writing &MFIR
+        If myMFires.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Monte Carlo Fire Specifications"
+            PrintLine(IO, ln)
+
+            For i = 0 To myMFires.Count - 1
+                id = ""
+                FYI = ""
+                FireID = ""
+                BaseFireID = ""
+                FireCompartmentRandomGeneratorID = ""
+                AddFireCompartmentIDtoParameters = True
+                FireCompartmentIDColumnLabel = ""
+
+                FlamingSmolderingIncipientRandomGeneratorID = ""
+                TypeofIncipientFireGrowth = ""
+                FlamingIncipientDelayRandomGeneratorID = ""
+                FlamingIncipientPeakRandomGeneratorID = ""
+                SmolderingIncipientDelayRandomGeneratorID = ""
+                SmolderingIncipientPeakRandomGeneratorID = ""
+                AddIncipientTypetoParameters = True
+                IncipientTypeColumnLabel = ""
+                AddIncipientTimetoParameters = True
+                IncipientTimeColumnLabel = ""
+                IncipientPeakColumnLabel = ""
+                IncipientPeakColumnLabel = ""
+
+                ScalingFireHRRRandomGeneratorID = ""
+                ScalingFireTimeRandomGeneratorID = ""
+                AddHRRScaletoParameters = True
+                HRRScaleColumnLabel = ""
+                AddTimeScaletoParameters = True
+                TimeScaleColumnLabel = True
+
+                GeneratorIsTimeto1054kW = False
+                AddFiretoParameters = True
+                AddHRRtoParameters = True
+                AddTimetoParameters = True
+                NumberofGrowthPoints = -1001
+                NumberofDecayPoints = -1001
+                GrowthExponent = 1001.0
+                DecayExponent = -1001.0
+
+                aFire = myMFires.Item(i)
+                aFire.GetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
+                ln = "&MFIR ID = '" + id + "'  FIRE_ID = '" + FireID + "'"
+                PrintLine(IO, ln)
+
+                'Output for incipient fire
+                If TypeofIncipientFireGrowth = "RANDOM" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'  FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = '" + FlamingSmolderingIncipientRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                    If Not Data.IsArrayEmpty(IncipientFireTypes) Then
+                        max = IncipientFireTypes.GetUpperBound(0)
+                        If max > 0 Then
+                            ln = "      NUMBER_OF_INCIPIENT_FIRE_TYPES = " + max.ToString
+                            PrintLine(IO, ln)
+                            ln = "      INCIPIENT_FIRE_TYPES = "
+                            For j = 1 To max - 1
+                                ln += "'" + IncipientFireTypes(j) + "', "
+                            Next
+                            ln += "'" + IncipientFireTypes(max) + "'"
+                            PrintLine(IO, ln)
+                            ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                            PrintLine(IO, ln)
+                            ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                            PrintLine(IO, ln)
+                        End If
+                    End If
+                ElseIf TypeofIncipientFireGrowth = "FLAMING" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'FLAMING'"
+                    PrintLine(IO, ln)
+                    ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                ElseIf TypeofIncipientFireGrowth = "SMOLDERING" Then
+                    ln = "      TYPE_OF_INCIPIENT_GROWTH = 'SMOLDERING'"
+                    PrintLine(IO, ln)
+                    ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                    PrintLine(IO, ln)
+                End If
+
+                ' Output for a scaled fire
+                If BaseFireID <> "" Then
+                    ln = "      BASE_FIRE_ID = '" + BaseFireID + "'"
+                    PrintLine(IO, ln)
+                    ln = "      SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = '" + ScalingFireHRRRandomGeneratorID + "'"
+                    ln += "  SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = '" + ScalingFireTimeRandomGeneratorID
+                    PrintLine(IO, ln)
+                    ln = "     "
+                    If AddHRRScaletoParameters = False Then
+                        ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .FALSE."
+                    Else
+                        If HRRScaleColumnLabel <> "" Then ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.  HRR_SCALE_COLUMN_LABEL = '" + HRRScaleColumnLabel + "'"
+                    End If
+                    If AddTimeScaletoParameters = False Then
+                        ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .FALSE."
+                    Else
+                        If TimeScaleColumnLabel <> "" Then ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .TRUE.  TIME_SCALE_COLUMN_LABEL = '" + TimeScaleColumnLabel + "'"
+                    End If
+                    If ln <> "     " Then PrintLine(IO, ln)
+                End If
+
+                ' Output for a timed or power law fire
+                max = 0
+                If Not Data.IsArrayEmpty(FireTimeGeneratorIDs) Then
+                    max = FireTimeGeneratorIDs.GetUpperBound(0)
+                    If max > 0 Then
+                        ln = "      FIRE_TIME_GENERATOR_IDS = "
+                        For j = 1 To max - 1
+                            ln += "'" + FireTimeGeneratorIDs(j) + "', "
+                        Next
+                        ln += "'" + FireTimeGeneratorIDs(max) + "'"
+                        PrintLine(IO, ln)
+                        ln = "      FIRE_HRR_GENERATOR_IDS = "
+                        For j = 1 To max - 1
+                            ln += "'" + FireHRRGeneratorIDs(j) + "', "
+                        Next
+                        ln += "'" + FireHRRGeneratorIDs(max) + "'"
+                        PrintLine(IO, ln)
+                    End If
+                    If NumberofGrowthPoints > 0 Then
+                        ln = "      NUMBER_OF_GROWTH_POINTS = " + NumberofGrowthPoints.ToString + "  GROWTH_EXPONENT = " + GrowthExponent.ToString
+                        PrintLine(IO, ln)
+                    End If
+                    If NumberofDecayPoints > 0 Then
+                        ln = "      NUMBER_OF_DECAY_POINTS = " + NumberofDecayPoints.ToString + "  DECAY_EXPONENT = " + DecayExponent.ToString
+                        PrintLine(IO, ln)
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+    Private Sub WriteOutputFileNMLOutp(IO As Integer, ByRef myOutps As MonteCarloCollection)
         Dim ln As String, i As Integer, aOutput As MonteCarlo
 
         ' Writing &OUTP
-        If MyOutps.Count > 0 Then
+        If myOutps.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! User-specified Outputs"
             PrintLine(IO, ln)
 
             Dim Id, FileType, Type, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI As String
             Dim Criterion As Double
-            For i = 0 To MyOutps.Count - 1
+            For i = 0 To myOutps.Count - 1
                 Id = ""
                 FileType = ""
                 Type = ""
@@ -3586,7 +3630,7 @@ Module IO
                 SecondMeasurement = ""
                 SecondDevice = ""
                 FYI = ""
-                aOutput = MyOutps.Item(i)
+                aOutput = myOutps.Item(i)
                 aOutput.GetOutput(Id, FileType, Type, Criterion, FirstMeasurement, FirstDevice, SecondMeasurement, SecondDevice, FYI)
 
                 ln = "&OUTP ID = '" + Id + "'"
@@ -3605,6 +3649,41 @@ Module IO
                 End If
                 ln += " /"
                 PrintLine(IO, ln)
+            Next
+        End If
+    End Sub
+    Private Sub WriteOutputFileNMLMSTT(IO As Integer, ByRef myMStats As MonteCarloCollection)
+        Dim ln As String, i As Integer, aStat As MonteCarlo
+
+        ' Writing &MSTT
+        If myMStats.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Monte-Carlo Statistics Outputs"
+            PrintLine(IO, ln)
+
+            Dim id As String, AnalysisType As String, InputFileName As String, OutputFileName As String, ErrorFileName As String, LogFileName As String, ColumnLabel As String, FYI As String
+            For i = 0 To myMStats.Count - 1
+                id = ""
+                AnalysisType = ""
+                InputFileName = ""
+                OutputFileName = ""
+                ErrorFileName = ""
+                LogFileName = ""
+                ColumnLabel = ""
+                aStat = myMStats.Item(i)
+                aStat.GetStat(id, FYI, AnalysisType, InputFileName, OutputFileName, ErrorFileName, LogFileName, ColumnLabel)
+                ln = "&MSTT ID ='" + id + "'"
+                If AnalysisType <> "" Then ln += "  ANALYSIS_TYPE = '" + AnalysisType + "'"
+                If InputFileName <> "" Then ln += "  INPUT_FILE_NAME = '" + InputFileName + "'"
+                If OutputFileName <> "" Then ln += "  OUTPUT_FILE_NAME = '" + OutputFileName + "'"
+                If ErrorFileName <> "" Then ln += "  ERROR_FILE_NAME = '" + ErrorFileName + "'"
+                If LogFileName <> "" Then ln += "  LOG_FILE_NAME = '" + LogFileName + "'"
+                If ColumnLabel <> "" Then ln += "  COLUMN_LABEL = '" + ColumnLabel + "'"
+                PrintLine(IO, ln)
+                If FYI <> "" Then
+                    ln = "      FYI = '" + FYI + "'"
+                    PrintLine(IO, ln)
+                End If
             Next
         End If
     End Sub

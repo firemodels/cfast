@@ -100,6 +100,14 @@ Public Class MonteCarlo
     Private aHRRLabels(0) As String
     Private aTimeLabels(0) As String
 
+    'Inputs for &MSTT
+    Private aAnalysisType
+    Private aInputFileName
+    Private aOutputFileName
+    Private aErrorFileName
+    Private aLogFileName
+    Private aColumnLabel
+
     Public Sub New()
         ' Generic New that initializes everything
         ' &OUTP
@@ -189,6 +197,34 @@ Public Class MonteCarlo
         aAddFiretoParameters = True
         aAddHRRtoParameters = True
         aAddTimetoParameters = True
+
+        ' &MSTT
+        aAnalysisType = ""
+        aInputFileName = ""
+        aOutputFileName = ""
+        aErrorFileName = ""
+        aLogFileName = ""
+        aColumnLabel = ""
+    End Sub
+    Public Sub SetStat(ByRef ID As String, ByVal FYI As String, ByVal AnalysisType As String, ByVal InputFileName As String, ByVal OutputFileName As String, ByVal ErrorFileName As String, ByVal LogFileName As String, ByVal ColumnLabel As String)
+        aID = ID
+        aFYI = FYI
+        aAnalysisType = AnalysisType
+        aInputFileName = InputFileName
+        aOutputFileName = OutputFileName
+        aErrorFileName = ErrorFileName
+        aLogFileName = LogFileName
+        aColumnLabel = ColumnLabel
+    End Sub
+    Public Sub GetStat(ByRef ID As String, ByRef FYI As String, ByRef AnalysisType As String, ByRef InputFileName As String, ByRef OutputFileName As String, ByRef ErrorFileName As String, ByRef LogFileName As String, ByRef ColumnLabel As String)
+        ID = aID
+        aFYI = FYI
+        AnalysisType = aAnalysisType
+        InputFileName = aInputFileName
+        OutputFileName = aOutputFileName
+        ErrorFileName = aErrorFileName
+        LogFileName = aLogFileName
+        ColumnLabel = aColumnLabel
     End Sub
     Public Sub SetFire(ByVal ID As String, ByVal FYI As String, ByVal FireID As String, ByVal BaseFireID As String, ByVal ModifyFireAreatoMatchHRR As Boolean, ByVal FireCompartmentRandomGeneratorID As String, ByVal FireCompartmentIDs() As String, ByVal AddFireCompartmentIDtoParameters As Boolean, ByVal FireCompartmentIDColumnLabel As String, ByVal FlamingSmolderingIncipientRandomGeneratorID As String, ByVal IncipientFireTypes() As String, ByVal TypeofIncipientFireGrowth As String, ByVal FlamingIncipientDelayRandomGeneratorID As String, ByVal FlamingIncipientPeakRandomGeneratorID As String, ByVal SmolderingIncipientDelayRandomGeneratorID As String, ByVal SmolderingIncipientPeakRandomGeneratorID As String, ByVal AddIncipientTypetoParameters As Boolean, ByVal AddIncipientTimetoParameters As Boolean, ByVal AddIncipientPeaktoParameters As Boolean, ByVal IncipientTypeColumnLabel As String, ByVal IncipientTimeColumnLabel As String, ByVal IncipientPeakColumnLabel As String, ByVal ScalingFireHRRRandomGeneratorID As String, ByVal ScalingFireTimeRandomGeneratorID As String, ByVal AddHRRScaletoParameters As Boolean, ByVal HRRScaleColumnLabel As String, ByVal AddTimeScaletoParameters As Boolean, ByVal TimeScaleColumnLabel As String, ByVal FireHRRGeneratorIDs() As String, ByVal FireTimeGeneratorIDs() As String, ByVal NumberofGrowthPoints As Integer, ByVal NumberofDecayPoints As Integer, ByVal GrowthExponent As Double, ByVal DecayExponent As Double, ByVal GeneratorIsTimeto1054kW As Double, ByVal AddFiretoParameters As Boolean, ByVal AddHRRtoParameters As Boolean, ByVal AddTimetoParameters As Boolean, ByVal HRRLabels() As String, ByVal TimeLabels() As String)
         Dim i, max As Integer
@@ -291,22 +327,22 @@ Public Class MonteCarlo
         FYI = aFYI
         FireID = aFireID
         BaseFireID = aBaseFireID
-        aModifyFireAreatoMatchHRR = ModifyFireAreatoMatchHRR
-        aFireCompartmentRandomGeneratorID = FireCompartmentRandomGeneratorID
-        If Not IsArrayEmpty(FireCompartmentIDs) Then
-            max = FireCompartmentIDs.GetUpperBound(0)
+        ModifyFireAreatoMatchHRR = aModifyFireAreatoMatchHRR
+        FireCompartmentRandomGeneratorID = aFireCompartmentRandomGeneratorID
+        If Not IsArrayEmpty(aFireCompartmentIDs) Then
+            max = aFireCompartmentIDs.GetUpperBound(0)
             If max > 0 Then
-                ReDim aStringValues(max)
+                ReDim FireCompartmentIDs(max)
                 For i = 1 To max
-                    aFireCompartmentIDs(i) = FireCompartmentIDs(i)
+                    FireCompartmentIDs(i) = aFireCompartmentIDs(i)
                 Next
             End If
         End If
-        aAddFireCompartmentIDtoParameters = AddFireCompartmentIDtoParameters
-        aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
-        aAddFireCompartmentIDtoParameters = AddFireCompartmentIDtoParameters
-        aFireCompartmentIDColumnLabel = FireCompartmentIDColumnLabel
-        aFlamingSmolderingIncipientRandomGeneratorID = FlamingSmolderingIncipientRandomGeneratorID
+        AddFireCompartmentIDtoParameters = aAddFireCompartmentIDtoParameters
+        FireCompartmentIDColumnLabel = aFireCompartmentIDColumnLabel
+        AddFireCompartmentIDtoParameters = aAddFireCompartmentIDtoParameters
+        FireCompartmentIDColumnLabel = aFireCompartmentIDColumnLabel
+        FlamingSmolderingIncipientRandomGeneratorID = aFlamingSmolderingIncipientRandomGeneratorID
         If Not IsArrayEmpty(aIncipientFireTypes) Then
             max = aIncipientFireTypes.GetUpperBound(0)
             If max > 0 Then
@@ -669,7 +705,7 @@ Public Class MonteCarlo
         OutputFolder = aOutputFolder
     End Sub
     Public Sub SetOutput(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criterion As Double, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, ByVal fyi As String)
-        ID = aID
+        aID = ID
         aFileType = FileType
         aType = Type
         aCriterion = Criterion
@@ -679,7 +715,7 @@ Public Class MonteCarlo
         aSecondDevice = SecondDevice
     End Sub
     Public Sub GetOutput(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criterion As Double, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String, ByRef FYI As String)
-        aID = ID
+        ID = aID
         FileType = aFileType
         Type = aType
         Criterion = aCriterion

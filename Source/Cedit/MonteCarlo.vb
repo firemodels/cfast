@@ -12,7 +12,6 @@ Public Class MonteCarlo
     Private aIntegerValues(0), aIntegerConstantValue As Integer
     Private aStringValues(0), aStringConstantValue As String
     Private aLogicalValues(0), aLogicialConstantValue As Boolean
-    Private aValueType As String
 
     ' Inputs for &OUTP
     Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
@@ -125,7 +124,6 @@ Public Class MonteCarlo
 
         ' &MRND
         aDistributionType = ""
-        aValueType = ""
         aMinimum = -Double.MaxValue
         aMaximum = Double.MaxValue
         aMean = 0.0
@@ -287,7 +285,7 @@ Public Class MonteCarlo
             End If
         End If
     End Sub
-    Public Sub GetFire(ByRef ID As String, ByRef FYI As String, ByRef FireID As String, ByRef BaseFireID As String, ByRef ModifyFireAreatoMatchHRR As Boolean, ByRef FireCompartmentRandomGeneratorID As String, ByRef FireCompartmentIDs() As String, ByRef AddFireCompartmentIDtoParameters As Boolean, ByRef FireCompartmentIDColumnLabel As String, ByRef FlamingSmolderingIncipientRandomGeneratorID As String, ByRef IncipientFireTypes() As String, ByRef TypeofIncipientFireGrowth As String, ByRef FlamingIncipientDelayRandomGeneratorID As String, ByRef FlamingIncipientPeakRandomGeneratorID As String, ByRef SmolderingIncipientDelayRandomGeneratorID As String, ByRef SmolderingIncipientPeakRandomGeneratorID As String, ByRef AddIncipientTypetoParameters As Boolean, ByRef AddIncipientTimetoParameters As Boolean, ByRef AddIncipientPeaktoParameters As Boolean, ByRef IncipientTypeColumnLabel As String, ByRef IncipientTimeColumnLabel As String, ByRef IncipientPeakColumnLabel As String, ByRef ScalingFireHRRRandomGeneratorID As String, ByRef ScalingFireTimeRandomGeneratorID As String, ByRef AddHRRScaletoParameters As Boolean, ByRef HRRScaleColumnLabel As String, ByRef AddTimeScaletoParameters As Boolean, ByRef TimeScaleColumnLabel As String, ByRef FireHRRGeneratorIDs() As String, ByRef FireTimeGeneratorIDs() As String, ByRef NumberofGrowthPoints As Integer, ByRef NumberofDecayPoints As Integer, ByRef GrowthExponent As Double, ByRef DecayExponent As Double, ByRef GeneratorIsTimeto1054kW As Double, ByRef Timeto0kW As Double, ByRef AddFiretoParameters As Boolean, ByRef AddHRRtoParameters As Boolean, ByRef AddTimetoParameters As Boolean, ByRef HRRLabels() As String, ByRef TimeLabels() As String)
+    Public Sub GetFire(ByRef ID As String, ByRef FYI As String, ByRef FireID As String, ByRef BaseFireID As String, ByRef ModifyFireAreatoMatchHRR As Boolean, ByRef FireCompartmentRandomGeneratorID As String, ByRef FireCompartmentIDs() As String, ByRef AddFireCompartmentIDtoParameters As Boolean, ByRef FireCompartmentIDColumnLabel As String, ByRef FlamingSmolderingIncipientRandomGeneratorID As String, ByRef IncipientFireTypes() As String, ByRef TypeofIncipientFireGrowth As String, ByRef FlamingIncipientDelayRandomGeneratorID As String, ByRef FlamingIncipientPeakRandomGeneratorID As String, ByRef SmolderingIncipientDelayRandomGeneratorID As String, ByRef SmolderingIncipientPeakRandomGeneratorID As String, ByRef AddIncipientTypetoParameters As Boolean, ByRef AddIncipientTimetoParameters As Boolean, ByRef AddIncipientPeaktoParameters As Boolean, ByRef IncipientTypeColumnLabel As String, ByRef IncipientTimeColumnLabel As String, ByRef IncipientPeakColumnLabel As String, ByRef ScalingFireHRRRandomGeneratorID As String, ByRef ScalingFireTimeRandomGeneratorID As String, ByRef AddHRRScaletoParameters As Boolean, ByRef HRRScaleColumnLabel As String, ByRef AddTimeScaletoParameters As Boolean, ByRef TimeScaleColumnLabel As String, ByRef FireHRRGeneratorIDs() As String, ByRef FireTimeGeneratorIDs() As String, ByRef NumberofGrowthPoints As Integer, ByRef NumberofDecayPoints As Integer, ByRef GrowthExponent As Double, ByRef DecayExponent As Double, ByRef GeneratorIsTimeto1054kW As Boolean, ByRef AddFiretoParameters As Boolean, ByRef AddHRRtoParameters As Boolean, ByRef AddTimetoParameters As Boolean, ByRef HRRLabels() As String, ByRef TimeLabels() As String)
         Dim i, max As Integer
         ID = aID
         FYI = aFYI
@@ -380,7 +378,7 @@ Public Class MonteCarlo
             End If
         End If
     End Sub
-    Public Sub SetField(ByVal Id As String, ByVal FieldType As String, ByVal Field() As String, ByVal RandId As String, ByVal ParameterColumnLabel As String, ByVal AddToParameters As Boolean, ByVal ValueType As String, RealValues() As Double, ByVal IntegerValues() As Integer, ByVal StringValues() As String, ByVal LogicalValues() As Boolean, ByVal BaseScalingValue As Double, ByVal Position As Integer, ByVal FYI As String)
+    Public Sub SetField(ByVal Id As String, ByVal FieldType As String, ByVal Field() As String, ByVal RandId As String, ByVal ParameterColumnLabel As String, ByVal AddToParameters As Boolean, RealValues() As Double, ByVal IntegerValues() As Integer, ByVal StringValues() As String, ByVal LogicalValues() As Boolean, ByVal BaseScalingValue As Double, ByVal Position As Integer, ByVal FYI As String)
         Dim i, max As Integer
         aID = Id
         aFieldType = FieldType
@@ -396,7 +394,6 @@ Public Class MonteCarlo
         aRandId = RandId
         aParameterColumnLabel = ParameterColumnLabel
         aAddToParameters = AddToParameters
-        aValueType = ValueType
         If Not IsArrayEmpty(RealValues) Then
             max = RealValues.GetUpperBound(0)
             If max > 0 Then
@@ -437,7 +434,7 @@ Public Class MonteCarlo
         aPosition = Position
         aFYI = FYI
     End Sub
-    Public Sub GetField(ByRef Id As String, ByRef FieldType As String, ByRef Field() As String, ByRef RandId As String, ByRef ParameterColumnLabel As String, ByRef AddToParameters As Boolean, ByRef ValueType As String, RealValues() As Double, ByRef IntegerValues() As Integer, ByRef StringValues() As String, ByRef LogicalValues() As Boolean, ByRef BaseScalingValue As Double, ByRef Position As Integer, ByRef FYI As String)
+    Public Sub GetField(ByRef Id As String, ByRef FieldType As String, ByRef Field() As String, ByRef RandId As String, ByRef ParameterColumnLabel As String, ByRef AddToParameters As Boolean, RealValues() As Double, ByRef IntegerValues() As Integer, ByRef StringValues() As String, ByRef LogicalValues() As Boolean, ByRef BaseScalingValue As Double, ByRef Position As Integer, ByRef FYI As String)
         Dim i, max As Integer
         Id = aID
         FieldType = aFieldType
@@ -453,7 +450,6 @@ Public Class MonteCarlo
         RandId = aRandId
         ParameterColumnLabel = aParameterColumnLabel
         AddToParameters = aAddToParameters
-        ValueType = aValueType
         If Not IsArrayEmpty(aRealValues) Then
             max = aRealValues.GetUpperBound(0)
             If max > 0 Then
@@ -494,12 +490,11 @@ Public Class MonteCarlo
         Position = aPosition
         FYI = aFYI
     End Sub
-    Public Sub SetRandom(ByVal Id As String, ByVal DistributionType As String, ByVal ValueType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
+    Public Sub SetRandom(ByVal Id As String, ByVal DistributionType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
         ' Define values from an &MRND input
         Dim i, max As Integer
         aID = Id
         aDistributionType = DistributionType
-        aValueType = ValueType
         aMinimum = Minimum
         aMaximum = Maximum
         aMean = Mean
@@ -569,12 +564,11 @@ Public Class MonteCarlo
         aAddField = AddField
         aFYI = FYI
     End Sub
-    Public Sub GetRandom(ByRef id As String, ByRef DistributionType As String, ByRef ValueType As String, ByRef Minimum As Double, ByRef Maximum As Double, ByRef Mean As Double, ByRef Stdev As Double, ByRef Alpha As Double, ByRef Beta As Double, ByRef Peak As Double, ByRef RandomSeeds() As Double, ByRef RealValues() As Double, ByRef RealConstantValue As Double, ByRef IntegerValues() As Integer, ByRef IntegerConstantValue As Integer, ByRef StringValues() As String, ByRef StringConstantValue As String, ByRef LogicalValues() As Boolean, ByRef LogicalConstantValue As Boolean, ByRef Probabilities() As Double, ByRef MinimumOffset As Double, ByRef MaximumOffset As Double, ByRef MinimumField As String, ByRef MaximumField As String, ByRef AddField As String, ByRef FYI As String)
+    Public Sub GetRandom(ByRef id As String, ByRef DistributionType As String, ByRef Minimum As Double, ByRef Maximum As Double, ByRef Mean As Double, ByRef Stdev As Double, ByRef Alpha As Double, ByRef Beta As Double, ByRef Peak As Double, ByRef RandomSeeds() As Double, ByRef RealValues() As Double, ByRef RealConstantValue As Double, ByRef IntegerValues() As Integer, ByRef IntegerConstantValue As Integer, ByRef StringValues() As String, ByRef StringConstantValue As String, ByRef LogicalValues() As Boolean, ByRef LogicalConstantValue As Boolean, ByRef Probabilities() As Double, ByRef MinimumOffset As Double, ByRef MaximumOffset As Double, ByRef MinimumField As String, ByRef MaximumField As String, ByRef AddField As String, ByRef FYI As String)
         ' Define values from an &MRND input
         Dim i, max As Integer
         id = aID
         DistributionType = aDistributionType
-        ValueType = aValueType
         Minimum = aMinimum
         Maximum = aMaximum
         Mean = aMean

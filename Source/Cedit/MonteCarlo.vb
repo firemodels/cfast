@@ -470,7 +470,7 @@ Public Class MonteCarlo
         aPosition = Position
         aFYI = FYI
     End Sub
-    Public Sub GetField(ByRef Id As String, ByRef FieldType As String, ByRef Field() As String, ByRef RandId As String, ByRef ParameterColumnLabel As String, ByRef AddToParameters As Boolean, RealValues() As Double, ByRef IntegerValues() As Integer, ByRef StringValues() As String, ByRef LogicalValues() As Boolean, ByRef BaseScalingValue As Double, ByRef Position As Integer, ByRef FYI As String)
+    Public Sub GetField(ByRef Id As String, ByRef FieldType As String, ByRef Field() As String, ByRef RandId As String, ByRef ParameterColumnLabel As String, ByRef AddToParameters As Boolean, ByRef RealValues() As Double, ByRef IntegerValues() As Integer, ByRef StringValues() As String, ByRef LogicalValues() As Boolean, ByRef BaseScalingValue As Double, ByRef Position As Integer, ByRef FYI As String)
         Dim i, max As Integer
         Id = aID
         FieldType = aFieldType
@@ -526,7 +526,7 @@ Public Class MonteCarlo
         Position = aPosition
         FYI = aFYI
     End Sub
-    Public Sub SetRandom(ByVal Id As String, ByVal DistributionType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal IntegerValues() As Integer, ByVal IntegerConstantValue As Integer, ByVal StringValues() As String, ByVal StringConstantValue As String, ByVal LogicalValues() As Boolean, ByVal LogicalConstantValue As Boolean, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
+    Public Sub SetRandom(ByVal Id As String, ByVal DistributionType As String, ByVal Minimum As Double, ByVal Maximum As Double, ByVal Mean As Double, ByVal Stdev As Double, ByVal Alpha As Double, ByVal Beta As Double, ByVal Peak As Double, ByVal RandomSeeds() As Double, ByVal RealValues() As Double, ByVal RealConstantValue As Double, ByVal Probabilities() As Double, ByVal MinimumOffset As Double, ByVal MaximumOffset As Double, ByVal MinimumField As String, ByVal MaximumField As String, ByVal AddField As String, ByVal FYI As String)
         ' Define values from an &MRND input
         Dim i, max As Integer
         aID = Id

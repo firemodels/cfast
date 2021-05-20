@@ -1681,8 +1681,6 @@ Module IO
         Dim max As Integer
         Dim DistributionType As String, StringValues() As String, StringConstantValue As String, MinimumField As String, MaximumField As String, AddField As String, FYI As String
         Dim Minimum As Double, Maximum As Double, Mean As Double, Stdev As Double, Alpha As Double, Beta As Double, Peak As Double, RandomSeeds(2) As Double, RealValues() As Double, RealConstantValue As Double, Probabilities() As Double, MinimumOffset As Double, MaximumOffset As Double
-        Dim IntegerValues() As Integer, IntegerConstantValue As Integer
-        Dim LogicalValues() As Boolean, LogicalConstantValue As Boolean
 
         For i = 1 To NMList.TotNMList
             id = ""
@@ -1701,9 +1699,8 @@ Module IO
             RandomSeeds(1) = -1001.0
             RandomSeeds(2) = -1001.0
             RealConstantValue = 0.0
-            IntegerConstantValue = 0
-            LogicalConstantValue = False
             FYI = ""
+            ReDim RealValues(0), Probabilities(0)
 
             If (NMList.GetNMListID(i) = "MRND") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
@@ -1756,7 +1753,7 @@ Module IO
                     End If
                 Next
                 Dim aRandom As New MonteCarlo
-                aRandom.SetRandom(id, DistributionType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, IntegerValues, IntegerConstantValue, StringValues, StringConstantValue, LogicalValues, LogicalConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
+                aRandom.SetRandom(id, DistributionType, Minimum, Maximum, Mean, Stdev, Alpha, Beta, Peak, RandomSeeds, RealValues, RealConstantValue, Probabilities, MinimumOffset, MaximumOffset, MinimumField, MaximumField, AddField, FYI)
                 someRandoms.Add(aRandom)
             End If
         Next
@@ -1771,18 +1768,19 @@ Module IO
         Dim LogicalValues() As Boolean, AddToParameters As Boolean
 
         For i = 1 To NMList.TotNMList
-            id = ""
-            FieldType = ""
-            Field(1) = ""
-            Field(2) = ""
-            RandId = ""
-            ParameterColumnLabel = ""
-            AddToParameters = False
-            BaseScalingValue = 1.0
-            Position = -1001
-            FYI = ""
-
             If (NMList.GetNMListID(i) = "MFLD") Then
+                id = ""
+                FieldType = ""
+                Field(1) = ""
+                Field(2) = ""
+                RandId = ""
+                ParameterColumnLabel = ""
+                AddToParameters = False
+                BaseScalingValue = 1.0
+                Position = -1001
+                FYI = ""
+                ReDim RealValues(0), IntegerValues(0), StringValues(0), LogicalValues(0)
+
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -3368,14 +3366,16 @@ Module IO
                 BaseScalingValue = 1.0
                 Position = -1001
                 FYI = ""
+                ReDim RealValues(0), IntegerValues(0), LogicalValues(0), StringValues(0)
 
                 aField = myMFields.Item(i)
                 aField.GetField(Id, FieldType, Field, RandId, ParameterColumnLabel, AddToParameters, RealValues, IntegerValues, StringValues, LogicalValues, BaseScalingValue, Position, FYI)
-                ln = "&MFLD ID = '" + Id + "  RAND_ID = '" + RandId + "'  FIELD_TYPE = '" + FieldType + "'"
+                ln = "&MFLD ID = '" + Id + "'  FIELD_TYPE = '" + FieldType + "'"
                 If FieldType = "VALUE" Then
-                    ln += "  FIELD = '" + Field(1) + "', '" + Field(2) + "'"
+                    ln += +"  RAND_ID = '" + RandId + "'  FIELD = '" + Field(1) + "', '" + Field(2) + "'"
                     PrintLine(IO, ln)
                 ElseIf FieldType = "LABEL" Then
+                    ln += +"  RAND_ID = '" + RandId + "'"
                     PrintLine(IO, ln)
                     If Not Data.IsArrayEmpty(StringValues) Then
                         max = StringValues.GetUpperBound(0)
@@ -3388,6 +3388,7 @@ Module IO
                         End If
                     End If
                 ElseIf FieldType = "INDEX" Then
+                    ln += +"  RAND_ID = '" + RandId + "'"
                     PrintLine(IO, ln)
                     ln = "      FIELD = '" + Field(1) + "', '" + Field(2) + "'"
                     PrintLine(IO, ln)
@@ -3400,7 +3401,8 @@ Module IO
                             Next
                             ln += RealValues(max).ToString
                         End If
-                    ElseIf Not Data.IsArrayEmpty(IntegerValues) Then
+                    End If
+                    If Not Data.IsArrayEmpty(IntegerValues) Then
                         max = IntegerValues.GetUpperBound(0)
                         If max > 0 Then
                             ln = "      INTEGER_VALUES = "
@@ -3409,16 +3411,18 @@ Module IO
                             Next
                             ln += IntegerValues(max).ToString
                         End If
-                    ElseIf Not Data.IsArrayEmpty(StringValues) Then
+                    End If
+                    If Not Data.IsArrayEmpty(StringValues) Then
                         max = StringValues.GetUpperBound(0)
                         If max > 0 Then
                             ln = "      STRING_VALUES = "
                             For j = 1 To max - 1
-                                ln += StringValues(j) + ", "
+                                ln += "'" + StringValues(j) + "', "
                             Next
-                            ln += StringValues(max)
+                            ln += "'" + StringValues(max) + "'"
                         End If
-                    ElseIf Not Data.IsArrayEmpty(LogicalValues) Then
+                    End If
+                    If Not Data.IsArrayEmpty(LogicalValues) Then
                         max = LogicalValues.GetUpperBound(0)
                         If max > 0 Then
                             ln = "      LOGICAL_VALUES = "
@@ -3430,10 +3434,13 @@ Module IO
                     End If
                 ElseIf FieldType = "SCALING" Then
                     If BaseScalingValue <> 1.0 Then
+                        ln += +"  RAND_ID = '" + RandId + "'"
                         ln += "  BASE_SCALING_VALUE = " + BaseScalingValue.ToString
                     End If
                 ElseIf FieldType = "VALUE" Then
-                    ' nothing additional needed for the value type
+                    ln += +"  RAND_ID = '" + RandId + "'"
+                ElseIf FieldType = "POINTER" Then
+                    chunkachubkaerror
                 End If
                 If ParameterColumnLabel <> "" Or FYI <> "" Or AddToParameters = False Then
                     PrintLine(IO, ln)

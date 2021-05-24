@@ -101,12 +101,12 @@ Public Class MonteCarlo
     Private aTimeLabels(0) As String
 
     'Inputs for &MSTT
-    Private aAnalysisType
-    Private aInputFileName
-    Private aOutputFileName
-    Private aErrorFileName
-    Private aLogFileName
-    Private aColumnLabel
+    Private aAnalysisType As String
+    Private aInputFileName As String
+    Private aOutputFileName As String
+    Private aErrorFileName As String
+    Private aLogFileName As String
+    Private aColumnLabel As String
 
     Public Sub New()
         ' Generic New that initializes everything
@@ -553,33 +553,6 @@ Public Class MonteCarlo
                 Next
             End If
         End If
-        If Not IsArrayEmpty(IntegerValues) Then
-            max = IntegerValues.GetUpperBound(0)
-            If max > 0 Then
-                ReDim aIntegerValues(max)
-                For i = 1 To max
-                    aIntegerValues(i) = IntegerValues(i)
-                Next
-            End If
-        End If
-        If Not IsArrayEmpty(StringValues) Then
-            max = StringValues.GetUpperBound(0)
-            If max > 0 Then
-                ReDim aStringValues(max)
-                For i = 1 To max
-                    aStringValues(i) = StringValues(i)
-                Next
-            End If
-        End If
-        If Not IsArrayEmpty(LogicalValues) Then
-            max = LogicalValues.GetUpperBound(0)
-            If max > 0 Then
-                ReDim aLogicalValues(max)
-                For i = 1 To max
-                    aLogicalValues(i) = LogicalValues(i)
-                Next
-            End If
-        End If
         If Not IsArrayEmpty(Probabilities) Then
             max = Probabilities.GetUpperBound(0)
             If max > 0 Then
@@ -590,9 +563,6 @@ Public Class MonteCarlo
             End If
         End If
         aRealConstantValue = RealConstantValue
-        aIntegerConstantValue = IntegerConstantValue
-        aStringConstantValue = StringConstantValue
-        aLogicialConstantValue = LogicalConstantValue
         aMinimumOffset = MinimumOffset
         aMaximumOffset = MaximumOffset
         aMinimumField = MinimumField

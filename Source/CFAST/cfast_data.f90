@@ -331,7 +331,7 @@ module setup_data
     real(eb) :: stime, deltat
     character(len=128) :: title
     
-    integer :: cfast_version = 7600     ! current cfast version
+    integer :: cfast_version = 7700     ! current cfast version
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.

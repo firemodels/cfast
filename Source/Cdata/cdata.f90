@@ -32,7 +32,7 @@
     integer :: program_version
 
     program_name = 'CData'
-    program_version = 1000
+    program_version = 7700
     
     if (command_argument_count().eq.0) then
         call output_version(0,program_name,program_version)

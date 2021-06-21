@@ -102,15 +102,15 @@ The general structure of an input file is shown below, with many lines of the or
 &OUTP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
     FIRST_FIELD = 'Fire' 'HRR Actual' /
 
-&MSTT ID = 'Width of Vent' 
+&MSTT ID = 'Width of Vent'
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg' COLUMN_TITLE = 'Wall Vent_WIDTH' /
-&MSTT ID = 'Top of Vent' 
+&MSTT ID = 'Top of Vent'
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg' COLUMN_TITLE = 'Wall Vent_TOP' /
-&MSTT ID = 'Peak HRR' 
+&MSTT ID = 'Peak HRR'
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg' COLUMN_TITLE = 'Fire_HRR_PT  2' /
-&MSTT ID = 'Time to FO' 
+&MSTT ID = 'Time to FO'
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg' COLUMN_TITLE = 'Time to Upper Layer 600 C' /
-&MSTT ID = 'Max Upper Temp' 
+&MSTT ID = 'Max Upper Temp'
     ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
 &MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg' ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN'
     COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
@@ -281,7 +281,7 @@ Examples of each of the Monte Carlo inputs are included in the sections that fol
 \renewcommand{\tabcolsep}{.1in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|}
 \caption[{\ct \&MFLD} Inputs That Can be Varied Based on User-Defined Distributions]{{\ct \&MFLD} Inputs That Can be Varied Based on User-Defined Distributions}
-\label{tbl:distributable_variables} \\ \hline
+\\ \hline
 \parbox{1.5in}{\bf Category}    & \parbox{1.5in}{\bf Input}  & \parbox{1.5in}{\bf {\ct \&MFLD} Input}  & \parbox{1in}{\bf Units} \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline

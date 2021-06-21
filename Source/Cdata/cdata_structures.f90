@@ -1184,7 +1184,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         integer :: i, tmp, tmp1
-        real(eb) :: deltat, a, c, t1, t0
+        real(eb) :: deltat, a, b, c, t1, t0
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
@@ -1243,7 +1243,7 @@ module preprocessor_types
                 call me%firegenerators(1,i)%do_rand(iteration)
                 call me%firegenerators(2,i)%do_rand(iteration)
             end do
-            if (me%growth_npts >= 0) then
+            if (me%growth_npts > 0) then
                 if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
                     tmp1 = 1
                 else 
@@ -1269,6 +1269,29 @@ module preprocessor_types
                     me%fire%qdot(i) = a*((i - 1 - tmp1)*deltat + t0)**me%growthexpo + c
                 end do
                 me%fire%t_qdot(me%last_growth_pt + 1) = deltat
+            end if
+            if (me%decay_npts > 0) then
+                t1 = me%firegenerators(2,me%n_firepoints)%realval%val
+                c = me%firegenerators(1,me%first_decay_pt - 1)%realval%val
+                b = me%firegenerators(1,me%n_firepoints)%realval%val - c
+                deltat = (t1)/(me%decay_npts + 1)
+                if (me%decayexpo > 1) then
+                    a = b/(t1**me%decayexpo*(1 - me%decayexpo))
+                    b = -me%decayexpo*a*t1**(me%decayexpo - 1)
+                else if (me%decayexpo == 1) then
+                    a = b/t1
+                    b = 0.0_eb
+                else if (me%decayexpo > 0) then
+                    a = b/t1**me%decayexpo
+                    b = 0.0_eb
+                end if
+                tmp = 0
+                do i = me%first_decay_pt, me%n_firepoints - 1
+                    tmp = tmp + 1
+                    me%fire%t_qdot(i) = deltat
+                    me%fire%qdot(i) = a*(tmp*deltat)**me%decayexpo + b*(tmp*deltat) + c
+                end do
+                me%fire%t_qdot(me%n_firepoints) = deltat
             end if
             me%fire%n_qdot = me%n_firepoints
             do i = 2 + tmp1, me%n_firepoints

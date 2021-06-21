@@ -309,7 +309,7 @@ The quantitative definition of fires is arguably the most important \cite{Babrau
 \noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
 \caption[CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions}
-\label{tbl:fire_variables} \\ \hline
+                                                                                   \\ \hline
 \parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
 \endfirsthead
 \caption[]{Continued} \\ \hline
@@ -1318,8 +1318,7 @@ Median & 96.0 & 1597.7 \\
 
 This looks only at cases where the Bedroom 1 alarm sounded. For a more detailed analysis to identify the effect of interconnected alarms, the percent of non-activations would need to be taken into account.
 
-\hypertarget{number-of-cases---revisited}{%
-\subsection{Number of Cases - Revisited}\label{number-of-cases---revisited}}
+\subsection{Number of Cases - Revisited}\label{number-of-cases---revisited}
 
 The preliminary analysis above suggested that we appeared to have enough cases. However, the values of interest here are complex manipulations of the data. Even though the average of the Bedroom activation time has converged, it is possible that the results of interest to us have not. To finally determine if we have enough cases we look at how the outcomes we analyze change with the number of cases (Fig \ref{Ex_3-quintiles}).
 
@@ -1332,8 +1331,8 @@ The preliminary analysis above suggested that we appeared to have enough cases. 
 
 While the preliminary results look settled down within a couple of thousand cases, these results take longer. In particular the extreme quantiles take somewhat longer to converge. In particular, the 5 \% quantile value doesn't really settle down until we have 7500 cases or so. However, looking at the results it looks like our results have settled down sufficiently by the 10~000 cases we actually use to have reasonable confidence in our results.
 
-\hypertarget{discussion}{%
-\subsection{Discussion}\label{discussion}}
+
+\subsection{Discussion}\label{discussion}
 
 For a study like this it is important to get the distribution of fire parameters correct. For example, if the proportion of fires starting in the Kitchen were low compared to the real world then all of the time-delay values would be underestimated. If the likelihood of closed doors were overestimated, then there would be far fewer cases of alarm failure for the bedroom alarms, and the benefit of interconnection would be lower.
 
@@ -1449,8 +1448,8 @@ The second target variable--Foyer Heat FED--was selected to illustrate an additi
 
 In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
 
-\hypertarget{number-of-cases}{%
-\subsection{Number of Cases}\label{number-of-cases}}
+
+\subsection{Number of Cases}\label{number-of-cases_3}
 
 An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down. So these results are based on 10~000 cases.
 
@@ -1461,8 +1460,8 @@ An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean
 \label{Ex_3-convergence_of_mean}
 \end{figure}
 
-\hypertarget{discussion}{%
-\subsection{Discussion}\label{discussion}}
+
+\subsection{Discussion}\label{discussion_3}
 
 First we look at the sensitivity of maximum heat FED in the Foyer. Selected results are displayed in Table \ref{tbl:Ex_3-1}. In the column listed Value, the number shows what a one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the compartment where the fire occurred, the lab space.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of Office 1 produce minimal changes to the heat FED for the Foyer
 

@@ -1272,24 +1272,15 @@ module preprocessor_types
             end if
             if (me%decay_npts > 0) then
                 t1 = me%firegenerators(2,me%n_firepoints)%realval%val
-                c = me%firegenerators(1,me%first_decay_pt - 1)%realval%val
-                b = me%firegenerators(1,me%n_firepoints)%realval%val - c
+                c = me%firegenerators(1,me%n_firepoints)%realval%val
+                b = me%firegenerators(1,me%first_decay_pt-1)%realval%val - c
+                a = b/t1**me%decayexpo
                 deltat = (t1)/(me%decay_npts + 1)
-                if (me%decayexpo > 1) then
-                    a = b/(t1**me%decayexpo*(1 - me%decayexpo))
-                    b = -me%decayexpo*a*t1**(me%decayexpo - 1)
-                else if (me%decayexpo == 1) then
-                    a = b/t1
-                    b = 0.0_eb
-                else if (me%decayexpo > 0) then
-                    a = b/t1**me%decayexpo
-                    b = 0.0_eb
-                end if
                 tmp = 0
                 do i = me%first_decay_pt, me%n_firepoints - 1
                     tmp = tmp + 1
                     me%fire%t_qdot(i) = deltat
-                    me%fire%qdot(i) = a*(tmp*deltat)**me%decayexpo + b*(tmp*deltat) + c
+                    me%fire%qdot(i) = a*(t1 - tmp*deltat)**me%decayexpo + c
                 end do
                 me%fire%t_qdot(me%n_firepoints) = deltat
             end if

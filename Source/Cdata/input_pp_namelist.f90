@@ -1348,16 +1348,20 @@
                 fire%n_firepoints = idx_firepts + number_of_decay_points
                 fire%first_decay_pt = idx_firepts
                 if (fire%decay_npts > 0) then
-                    fire%firegenerators(1, fire%n_firepoints)%genptr => fire%firegenerators(1, idx_firepts)%genptr
-                    fire%firegenerators(1,fire%n_firepoints)%field_type =  &
-                        trim(fire%firegenerators(1, idx_firepts)%field_type)
-                    fire%firegenerators(1,idx_firepts)%field_type = &
-                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_pointer))
-                    fire%firegenerators(2, fire%n_firepoints)%genptr => fire%firegenerators(2, idx_firepts)%genptr
-                    fire%firegenerators(2,fire%n_firepoints)%field_type =  &
-                        trim(fire%firegenerators(1, idx_firepts)%field_type)
-                    fire%firegenerators(1,idx_firepts)%field_type = &
-                        trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_pointer))
+                    do kk = 1, n_generators
+                        if (trim(fire%firegenerators(1,idx_firepts)%genptr%id) == &
+                            trim(generatorinfo(kk)%id)) then
+                            fire%firegenerators(1, fire%n_firepoints)%genptr => generatorinfo(kk)
+                            fire%firegenerators(1, fire%n_firepoints)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
+                            fire%firegenerators(1, fire%n_firepoints)%kilo_flag = .true. 
+                        else if (trim(fire%firegenerators(2,idx_firepts)%genptr%id) == &
+                            trim(generatorinfo(kk)%id)) then
+                            fire%firegenerators(2, fire%n_firepoints)%genptr => generatorinfo(kk)
+                            fire%firegenerators(2, fire%n_firepoints)%field_type =  &
+                                trim(fire%firegenerators(1, 1)%fld_types(fire%firegenerators(1, 1)%idx_value))
+                        end if 
+                    end do
                 end if
                 do jj = 1, fire%n_firepoints
                     if (add_fire_to_parameters(jj)) fire%add_to_parameters = .true.

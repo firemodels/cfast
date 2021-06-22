@@ -384,4 +384,288 @@ rm(list=setdiff(ls(), keep))
 save.image(file=paste0(params$save_file, ".RData"))
 ```
 
+\end{lstlisting}
+
+
+\section{R Script for Model Sensitivity}
+\label{rscript-model-sensitivity}
+\vspace{\baselineskip}
+\begin{lstlisting}[basicstyle=\scriptsize]
+---
+title: "Sensitivity Analysis"
+author: ""
+date: "`r format(Sys.Date(), '%e %B %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+params:
+  save_file: "example2"
+  seed: 244213930
+  detail: FALSE
+  max_t: 1000
+---
+
+```{r setup, include=FALSE}
+# The `survival` library is part of core R.
+# The remaining libraries are not.
+# The libraries `magrittr` and `foreach` are just easier and more intuitive ways of doing
+# some tasks. The library `ggplot2` is a graphics engine that is used in lieu of core R's
+# graphics engine. It is possible to rewrite this script file to work without those libraries.
+library(magrittr)
+library(foreach)
+library(ggplot2)
+library(survival)
+# set.seed(as.integer(params$seed))
+keep <- union(ls(), c("ex2", "out", "use.vars", "converg"))
+
+knitr::opts_chunk$set(echo=params$detail, results="hold", warning=FALSE, message=FALSE)
+
+do.ex2     <- ! exists("ex2")
+do.find    <- do.ex2  | ! exists("use.vars")
+do.mdl     <- do.find | ! exists("out")
+do.cvg     <- do.find | ! exists("converg")
+```
+
+```{r data, eval=do.ex2}
+ex2 <- read.csv("Sensitivity_accumulate.csv",
+# Note that the column names as supplied are not R-compliant names.
+# It is more complicated to work with the names as supplied, but
+# it makes reporting easier. So I use `check.names=FALSE` to import
+# the names as supplied, and deal with the complications.
+                check.names=FALSE,
+                stringsAsFactors = FALSE)
+# There are a few columns that are empty, so they are removed.
+tmp <- sapply(ex2, function(x) all(is.na(x)))
+ex2 <- ex2[,!tmp]
+
+# In addition, there are rows that are empty as well, and they are removed.
+tmp <- apply(ex2, 1, function(x) all(is.na(x) | trimws(x) == ""))
+ex2 <- ex2[!tmp,]
+
+# The "File.Names" Column does me no good and can cause problems with some of
+# the analyses. For this work, I just delete it from the data.
+#!!!Saving it in case it is needed might be a good idea for future reference.
+fn <- grep("File[. ]Names", names(ex2))
+if(length(fn) > 0){
+  ex2 <- ex2[,-fn]
+}
+```
+
+```{r data_setup, eval=do.find | do.mdl | do.cvg}
+# Note that independent variables are not necessarily pre-stated.
+# So I pick out the independent variables as those with no NAs.
+# NAs result from run failures, which happen about 10% of the time.
+# Any column with an NA is a dependent variable.
+
+a <- sapply(ex2, function(x) any(is.na(x)))
+vars <- list(IV=(1:length(a))[!a],
+             DV=(1:length(a))[ a])
+
+# For sensitivity, no variable is particularly important to the discussion,
+# so pick one with high sensitivity to something.
+
+a <- sapply(ex2[,vars$DV], function(x) length(x[! is.na(x) & x > 0]))
+n <- max(a)
+
+# Generate a random "column" name. If it is in the table, try again until you
+# find a name that is not in the table.
+# This seems more complicated than necessary, but it GUARANTEES that my index
+# name is not already in the table.
+idx <- names(a)[1]
+while(idx %in% names(ex2)){
+  idx <- c(sample(letters, 1), sample(c(letters, 0:9), 9, replace=TRUE)) %>% paste0(collapse="")
+}
+
+# The first is simply a log-log analysis.
+# Since some of these variables are times till an event, where the event may not
+# occur within the time of the run, those need to be analyzed using a Tobit model.
+# The second sets that up. This is still a log-log analysis, just with the tools
+# of Tobit analysis set up.
+fmla1 <- paste0("log(`", idx, "`) ~ log(`",
+                paste0(names(ex2)[vars$IV], collapse="`) + log(`"),
+                "`)")
+fmla2 <- paste0("Surv(log(ifelse(`", idx, "` < 0, ", params$max_t, ", `", idx, "`)), `",
+                idx, "` > 0, type=\"right\") ~ log(`",
+                paste0(names(ex2)[vars$IV], collapse="`) + log(`"), "`)")
+```
+
+```{r select, eval=do.find}
+# I can use pretty much any of the dependent variables that I want
+# for this. So I select the ones with the largest effect to use in the
+# actual analysis.
+summ <- list(lm=foreach(i=names(a)[a == n], .combine="rbind") %do% {
+                        do.call("lm", list(formula=sub(idx, i, fmla1) %>% formula(),
+                                           data=quote(ex2))) %>%
+                        coef()
+               },
+             sr=foreach(i=names(a)[a > 10 & a < n], .combine="rbind") %do% {
+                        do.call("survreg", list(formula=gsub(idx, i, fmla2) %>% formula(),
+                                                data=quote(ex2),
+                                                dist="gaussian")) %>%
+                        coef()
+               })
+row.names(summ$lm) <- names(a)[a == n]
+row.names(summ$sr) <- names(a)[a > 10 & a < n]
+
+use.vars <- foreach(i=names(summ), .combine="c") %do% {
+  y <- apply(summ[[i]][,-1], 1, function(x) max(x) == max(summ[[i]][,-1]))
+  row.names(summ[[i]])[y][1]
+}
+```
+
+## Approach
+
+For this example it is assumed that the output variables of interest are
+'`r use.vars[1]`' and '`r use.vars[2]`'. Notionally, we might say that we are
+interested in the amount of time they have to escape (represented by the time during
+which they foyer--through which they must evacuate--remains viable) and the worst
+temperature they might have to face in the Foyer during that evacuation.
+
+Sensitivity analysis is interested in the sensitivity the output has to each input.
+This is typically expressed in terms of the percent variation in output produced by
+a one percent variation in each input. As it turns out, simple linear regression of
+the *log* of the inputs against the *log* of the output will give exactly that
+value.
+
+```{r test}
+# Percent cases where FED > 1 does not occur.
+u <- ex2[[use.vars[2]]]
+u <- u[! is.na(u)]
+u <- length(u[u < 0]) / length(u)
+```
+
+The second target variable--`r use.vars[2]`--was selected to illustrate an additional
+complication in the analysis. This variable expresses the time till the FED reaches
+the value of 1--assumed to represent the condition where the space is no longer viable.
+The complication is that in a number of cases nonviability does not occur within the
+time of the simulation: here some `r formatC(u * 100, digits=3)`; % of cases do not
+result in non-viability. That presents a problem because analyzing the data without taking
+that into account will result in incorrect estimates of the sensitivity.
+
+In this case what is run is a 'Tobit' analysis [Tobin, James (1958). "Estimation of Relationships for Limited Dependent Variables." Econometrica.
+26 (1): 24, 36. doi:10.2307/1907382.] which properly accounts for the effect of the cases where non-viability did not occur. The 'Tobit'
+analysis is also performed on a log-log transformation of the data.
+
+```{r analyze, eval=do.mdl}
+# This section does the analyses
+out <- list(lm=do.call("lm", list(formula=sub(idx, use.vars[1], fmla1) %>% formula(),
+                                           data=quote(ex2))),
+            sr=do.call("survreg", list(formula=gsub(idx, use.vars[2], fmla2) %>% formula(),
+                                                data=quote(ex2),
+                                                dist="gaussian")))
+```
+
+```{r converg, eval=do.cvg}
+# This section does the convergence analysis that is built into CDATA.
+# The code has been modified slightly to fit this analysis, but is otherwise
+# identical to what is built into CDATA.
+converg <- foreach(i=1:10000, .combine="rbind") %do% {
+  if(i == 1) {
+    X <- model.matrix(sub(idx, use.vars[1], fmla1) %>% formula(), ex2)
+    y <- model.response(model.frame(sub(idx, use.vars[1], fmla1) %>% formula(), ex2))
+    omit <- na.omit(ex2) %>% attr("na.action")
+    j <- 99 - length(omit[omit <= 99])
+    XX <- t(X[1:j,]) %*% X[1:j,]
+    Xy <- t(X[1:j,]) %*% y[1:j]
+  } else if(i < 100 ){
+  } else {
+    j <- i - length(omit[omit <= i])
+    XX <- XX + X[j,] %*% t(X[j,])
+    Xy <- Xy + X[j,] * y[j]
+  }
+  if(i < 100 | i %in% omit){
+    rep(NA, ncol(X))
+  } else {
+    (solve(XX) %*% Xy) %>% as.numeric()
+  }
+} %>% as.data.frame()
+names(converg) <- colnames(X)
+converg <- cbind(n=1:nrow(converg), converg)
+```
+
+```{r results}
+# Select the variables to include in the table. For the log-log analysis
+# I select variables with high, medium and low levels of sensitivity as
+# well as the fire scaling factors.
+# For the Tobit analysis I select the most sensitive variables as well
+# as the fire scaling factors.
+vars <- list(lm=coef(out$lm) %>% extract(-1) %>% abs() %>%
+                   sort(decreasing=TRUE) %>%
+                   extract(c(1:3, 30:32, 67:70)) %>% names() %>%
+                union(grep("scal", names(coef(out$lm)), value=TRUE)),
+             sr=coef(out$sr) %>% extract(-1) %>% abs() %>%
+               extract(. > .2) %>% sort(decreasing = TRUE) %>% names() %>%
+                union(grep("scal", names(coef(out$lm)), value=TRUE)))
+```
+
+# Number of Cases
+
+An initial run of 1000 cases was evaluated. The chart below shows the coefficient for
+`Lab_depth` for the first model as a function of the number of cases. Examination of the
+chart shows that the value for the coefficient is still changing substantially at the end
+of 1000 cases. When the number of cases were increased to 2500 the results still did not
+seem very stable. When the cases increased again to 5000 there was a noticeable trend over
+the last thousand or so cases. When the cases were increased to 10000, the estimated value
+over the last couple of thousand cases seems to have settled down. So these results are
+based on 10000 cases.
+
+```{r cvg_plot}
+tmp <- rbind(cbind(test=1000, converg[1:1000, c("n", "log(Lab_depth)")]),
+             cbind(test=2500, converg[1:2500, c("n", "log(Lab_depth)")]),
+             cbind(test=5000, converg[1:5000, c("n", "log(Lab_depth)")]),
+             cbind(test=10000, converg[1:10000, c("n", "log(Lab_depth)")]))
+# This uses the ggplot graphics engine to plot this data instead of the base
+# R graphics engine. Otherwise this is the same as what is in CDATA.
+print(tmp %>% ggplot() + aes(x=n, y=`log(Lab_depth)`) +
+        geom_line() + geom_point() + facet_wrap(~ test, scales="free_x") +
+        theme_bw() + coord_cartesian(ylim=c(-1,1)))
+```
+
+# Discussion
+
+First we look at the sensitivity of maximum temperature FED in the Foyer. Selected
+results are displayed in Table 1. The single most significant factor is the
+depth of the lab space--where the fire occurred.. A one-percent change in the lab
+depth will produce a 0.53&nbsp;% decrease in the maximum heat FED for the Foyer.
+Similarly a one percent change in the height of the Foyer and halls produces a
+0.47&nbsp;% decrease in the heat FED for the Foyer. At the other end of the scale
+changes in the Foyer width or the depth of office 1 produce minimal changes to the
+heat FED for the Foyer.
+
+```{r tbl1}
+tbl1 <- summary(out$lm)$coefficients %>% as.data.frame()
+tbl1$` ` <- cut(tbl1[[4]],
+                breaks=c(-Inf, .001, .01, .05, .1, Inf),
+                labels=c("***", "**", "*", ".", " "))
+tbl1[row.names(tbl1) %in% vars$lm,] %>%
+        knitr::kable(align="rrrrc",
+                     col.names=c("Value", "Std. Error", "t value", "Pr(>|t|)", ""),
+                     digits=c(4,2,2,4,0))
+```
+
+In Table 2, we look at just those variables for which a one-percent change
+produces a change of greater than 0.2&nbsp;% in the time to non-viability
+for the Foyer, plus the scaling factors for the fire. Those variables include variables
+related to the room of fire origin (Lab_depth), factors related to the space itself
+(Foyer_width, Front_Door_Width), factors related to the spaces through which the fire must
+travel (Even_Hallway_depth, Odd_Hallway_width, Front_Hall_depth) and some additional
+miscellaneous factors (Office_.2_height Office_.5_height Gyp_Conductivity.1 Gyp_Density.1).
+
+```{r tbl2}
+tbl2 <- summary(out$sr)$table %>% as.data.frame()
+tbl2$` ` <- cut(tbl2[[4]],
+                breaks=c(-Inf, .001, .01, .05, .1, Inf),
+                labels=c("***", "**", "*", ".", " "))
+tbl2[row.names(tbl2) %in% vars$sr,] %>%
+        knitr::kable(align="rrrrc",
+                     col.names=c("Value", "Std. Error", "t value", "Pr(>|t|)", ""),
+                     digits=c(4,2,2,4,0))
+```
+
+
+```{r cleanup}
+rm(list=setdiff(ls(), keep))
+save.image(file=paste0(params$save_file, ".RData"))
+```
+
 \end{lstlisting} 

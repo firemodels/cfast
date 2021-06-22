@@ -415,7 +415,7 @@ The {\ct \&MRND} input defines a random number generator that uses a number of i
         \item[TRUNCATED\_GAMMA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. The {\ct GAMMA} distribution type returns values from $0$ to $+\infty$. The \\
             {\ct TRUNCATED\_GAMMA} distribution type allows the user to limit the values returned to a specified range. Returns real values.
         \item[USER\_DEFINED\_CONTINUOUS] requires additional inputs {\ct PROBABILITIES}, and
-{\ct VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there’s then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
+{\ct VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there is then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
         \item[USER\_DEFINED\_DISCRETE] requires additional inputs {\ct PROBABILITIES}, and
 {\ct VALUES}. The number of {\ct PROBABILITIES} inputs must match the number of \\
 {\ct VALUES} inputs. Returns real values.
@@ -566,8 +566,8 @@ Secondly, inputs for the scaling fire are described.
 
 \begin{description}
   \item[BASE\_FIRE\_ID] For scaling fires only. This provides internal temporary storage for all the base values for a fire to be scaled. Typically, it will just be a copy of the corresponding {\ct FIRE\_ID} input.
-  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the scaling factor that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient fire portion of the fire curve.
-  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the  scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it won’t impact the delay or HRR value for the incipient portion of the fire curve.
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the scaling factor that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it does not impact the delay or HRR value for the incipient fire portion of the fire curve.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the  scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it wonâ€™t impact the delay or HRR value for the incipient portion of the fire curve.
   \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
   \item[HRR\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
   \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.

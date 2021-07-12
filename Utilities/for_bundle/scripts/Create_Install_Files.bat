@@ -28,6 +28,7 @@ call :COPY  %bindir%\CData.exe %DISTDIR%\
 call :COPY  %bindir%\CEdit.exe %DISTDIR%\
 call :COPY  %bindir%\CFAST.exe %DISTDIR%\
 call :COPY  %vandvdir%\VandV_Calcs_win_64.exe %DISTDIR%\VandV_Calcs.exe
+call :COPY  %bindir%\background.exe %DISTDIR%\
 
 echo.
 echo ***Copying CFAST DLLs

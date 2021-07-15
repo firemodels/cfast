@@ -2340,7 +2340,7 @@ Module IO
         Dim ln As String
 
         'Writing MHDR namelist
-        If myMHeaders.Count > -1 Then
+        If myMHeaders.Count > 0 Then
             Dim aMHeader As MonteCarlo = myMHeaders(0)
             Dim NumberofCases As Integer, Seeds(2) As Double, WriteSeeds As Boolean, ParameterFile, WorkFolder, OutputFolder As String
             NumberofCases = 0

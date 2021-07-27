@@ -1852,7 +1852,7 @@ Module IO
         Dim ModifyFireAreatoMatchHRR As Boolean, AddFireCompartmentIDtoParameters As Boolean, AddIncipientTypetoParameters As Boolean, AddIncipientTimetoParameters As Boolean, AddIncipientPeaktoParameters As Boolean
         Dim AddHRRScaletoParameters As Boolean, AddTimeScaletoParameters As Boolean, AddFiretoParameters As Boolean, AddHRRtoParameters As Boolean, AddTimetoParameters As Boolean
         Dim NumberofGrowthPoints As Integer, NumberofDecayPoints As Integer
-        Dim GrowthExponent As Double, DecayExponent As Double, GeneratorIsTimeto1054kW As Double
+        Dim GrowthExponent As Double, DecayExponent As Double, GeneratorIsTimeto1054kW As Boolean
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "MFIR") Then
@@ -1970,7 +1970,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "DECAY_EXPONENT") Then
                         DecayExponent = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "GENERATOR_IS_TIME_TO_1054_KW") Then
-                        GeneratorIsTimeto1054kW = NMList.ForNMListVarGetNum(i, j, 1)
+                        GeneratorIsTimeto1054kW = NMList.ForNMListVarGetBool(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_FIRE_TO_PARAMETERS") Then
                         AddFiretoParameters = NMList.ForNMListVarGetBool(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "ADD_HRR_TO_PARAMETERS") Then
@@ -3533,6 +3533,25 @@ Module IO
                 aFire.GetFire(id, FYI, FireID, BaseFireID, ModifyFireAreatoMatchHRR, FireCompartmentRandomGeneratorID, FireCompartmentIDs, AddFireCompartmentIDtoParameters, FireCompartmentIDColumnLabel, FlamingSmolderingIncipientRandomGeneratorID, IncipientFireTypes, TypeofIncipientFireGrowth, FlamingIncipientDelayRandomGeneratorID, FlamingIncipientPeakRandomGeneratorID, SmolderingIncipientDelayRandomGeneratorID, SmolderingIncipientPeakRandomGeneratorID, AddIncipientTypetoParameters, AddIncipientTimetoParameters, AddIncipientPeaktoParameters, IncipientTypeColumnLabel, IncipientTimeColumnLabel, IncipientPeakColumnLabel, ScalingFireHRRRandomGeneratorID, ScalingFireTimeRandomGeneratorID, AddHRRScaletoParameters, HRRScaleColumnLabel, AddTimeScaletoParameters, TimeScaleColumnLabel, FireHRRGeneratorIDs, FireTimeGeneratorIDs, NumberofGrowthPoints, NumberofDecayPoints, GrowthExponent, DecayExponent, GeneratorIsTimeto1054kW, AddFiretoParameters, AddHRRtoParameters, AddTimetoParameters, HRRLabels, TimeLabels)
                 ln = "&MFIR ID = '" + id + "'  FIRE_ID = '" + FireID + "'"
                 PrintLine(IO, ln)
+                ln = ""
+
+                'Output for random fire compartment
+                If FireCompartmentRandomGeneratorID <> "" Then
+                    ln = "      FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = " + FireCompartmentRandomGeneratorID
+                    PrintLine(IO, ln)
+                End If
+                max = 0
+                If Not Data.IsArrayEmpty(FireCompartmentIDs) Then
+                    max = FireCompartmentIDs.GetUpperBound(0)
+                    If max > 0 Then
+                        ln = "      FIRE_COMPARTMENT_IDS = "
+                        For j = 1 To max - 1
+                            ln += "'" + FireCompartmentIDs(j) + "', "
+                        Next
+                        ln += "'" + FireCompartmentIDs(max) + "'"
+                        PrintLine(IO, ln)
+                    End If
+                End If
 
                 'Output for incipient fire
                 If TypeofIncipientFireGrowth = "RANDOM" Then
@@ -3549,21 +3568,21 @@ Module IO
                             Next
                             ln += "'" + IncipientFireTypes(max) + "'"
                             PrintLine(IO, ln)
-                            ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                            ln = "      FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'  FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'"
                             PrintLine(IO, ln)
-                            ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                            ln = "      SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'  SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'"
                             PrintLine(IO, ln)
                         End If
                     End If
                 ElseIf TypeofIncipientFireGrowth = "FLAMING" Then
                     ln = "      TYPE_OF_INCIPIENT_GROWTH = 'FLAMING'"
                     PrintLine(IO, ln)
-                    ln = "      FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'  FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'"
+                    ln = "      FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + FlamingIncipientDelayRandomGeneratorID + "'  FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + FlamingIncipientPeakRandomGeneratorID + "'"
                     PrintLine(IO, ln)
                 ElseIf TypeofIncipientFireGrowth = "SMOLDERING" Then
                     ln = "      TYPE_OF_INCIPIENT_GROWTH = 'SMOLDERING'"
                     PrintLine(IO, ln)
-                    ln = "      SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'  SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'"
+                    ln = "      SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = '" + SmolderingIncipientDelayRandomGeneratorID + "'  SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = '" + SmolderingIncipientPeakRandomGeneratorID + "'"
                     PrintLine(IO, ln)
                 End If
 
@@ -3589,6 +3608,10 @@ Module IO
                 End If
 
                 ' Output for a timed or power law fire
+                If GeneratorIsTimeto1054kW = True Then
+                    ln = "      GENERATOR_IS_TIME_TO_1054_KW = .TRUE."
+                    PrintLine(IO, ln)
+                End If
                 max = 0
                 If Not Data.IsArrayEmpty(FireTimeGeneratorIDs) Then
                     max = FireTimeGeneratorIDs.GetUpperBound(0)
@@ -3604,14 +3627,17 @@ Module IO
                             ln += "'" + FireHRRGeneratorIDs(j) + "', "
                         Next
                         ln += "'" + FireHRRGeneratorIDs(max) + "'"
+                        If NumberofGrowthPoints <= 0 And NumberofDecayPoints <= 0 Then ln += " /"
                         PrintLine(IO, ln)
                     End If
                     If NumberofGrowthPoints > 0 Then
                         ln = "      NUMBER_OF_GROWTH_POINTS = " + NumberofGrowthPoints.ToString + "  GROWTH_EXPONENT = " + GrowthExponent.ToString
-                        PrintLine(IO, ln)
                     End If
                     If NumberofDecayPoints > 0 Then
-                        ln = "      NUMBER_OF_DECAY_POINTS = " + NumberofDecayPoints.ToString + "  DECAY_EXPONENT = " + DecayExponent.ToString
+                        ln += "  NUMBER_OF_DECAY_POINTS = " + NumberofDecayPoints.ToString + "  DECAY_EXPONENT = " + DecayExponent.ToString
+                    End If
+                    If NumberofGrowthPoints > 0 Or NumberofDecayPoints > 0 Then
+                        ln += " /"
                         PrintLine(IO, ln)
                     End If
                 End If

@@ -93,7 +93,7 @@ Public Class MonteCarlo
     Private aNumberofDecayPoints As Integer
     Private aGrowthExponent As Double
     Private aDecayExponent As Double
-    Private aGeneratorIsTimeto1054kW As Double
+    Private aGeneratorIsTimeto1054kW As Boolean
     Private aAddFiretoParameters As Boolean
     Private aAddHRRtoParameters As Boolean
     Private aAddTimetoParameters As Boolean
@@ -193,7 +193,7 @@ Public Class MonteCarlo
         aNumberofDecayPoints = 0
         aGrowthExponent = 0.0
         aDecayExponent = 0.0
-        aGeneratorIsTimeto1054kW = 0.0
+        aGeneratorIsTimeto1054kW = True
         aAddFiretoParameters = True
         aAddHRRtoParameters = True
         aAddTimetoParameters = True
@@ -226,7 +226,7 @@ Public Class MonteCarlo
         LogFileName = aLogFileName
         ColumnLabel = aColumnLabel
     End Sub
-    Public Sub SetFire(ByVal ID As String, ByVal FYI As String, ByVal FireID As String, ByVal BaseFireID As String, ByVal ModifyFireAreatoMatchHRR As Boolean, ByVal FireCompartmentRandomGeneratorID As String, ByVal FireCompartmentIDs() As String, ByVal AddFireCompartmentIDtoParameters As Boolean, ByVal FireCompartmentIDColumnLabel As String, ByVal FlamingSmolderingIncipientRandomGeneratorID As String, ByVal IncipientFireTypes() As String, ByVal TypeofIncipientFireGrowth As String, ByVal FlamingIncipientDelayRandomGeneratorID As String, ByVal FlamingIncipientPeakRandomGeneratorID As String, ByVal SmolderingIncipientDelayRandomGeneratorID As String, ByVal SmolderingIncipientPeakRandomGeneratorID As String, ByVal AddIncipientTypetoParameters As Boolean, ByVal AddIncipientTimetoParameters As Boolean, ByVal AddIncipientPeaktoParameters As Boolean, ByVal IncipientTypeColumnLabel As String, ByVal IncipientTimeColumnLabel As String, ByVal IncipientPeakColumnLabel As String, ByVal ScalingFireHRRRandomGeneratorID As String, ByVal ScalingFireTimeRandomGeneratorID As String, ByVal AddHRRScaletoParameters As Boolean, ByVal HRRScaleColumnLabel As String, ByVal AddTimeScaletoParameters As Boolean, ByVal TimeScaleColumnLabel As String, ByVal FireHRRGeneratorIDs() As String, ByVal FireTimeGeneratorIDs() As String, ByVal NumberofGrowthPoints As Integer, ByVal NumberofDecayPoints As Integer, ByVal GrowthExponent As Double, ByVal DecayExponent As Double, ByVal GeneratorIsTimeto1054kW As Double, ByVal AddFiretoParameters As Boolean, ByVal AddHRRtoParameters As Boolean, ByVal AddTimetoParameters As Boolean, ByVal HRRLabels() As String, ByVal TimeLabels() As String)
+    Public Sub SetFire(ByVal ID As String, ByVal FYI As String, ByVal FireID As String, ByVal BaseFireID As String, ByVal ModifyFireAreatoMatchHRR As Boolean, ByVal FireCompartmentRandomGeneratorID As String, ByVal FireCompartmentIDs() As String, ByVal AddFireCompartmentIDtoParameters As Boolean, ByVal FireCompartmentIDColumnLabel As String, ByVal FlamingSmolderingIncipientRandomGeneratorID As String, ByVal IncipientFireTypes() As String, ByVal TypeofIncipientFireGrowth As String, ByVal FlamingIncipientDelayRandomGeneratorID As String, ByVal FlamingIncipientPeakRandomGeneratorID As String, ByVal SmolderingIncipientDelayRandomGeneratorID As String, ByVal SmolderingIncipientPeakRandomGeneratorID As String, ByVal AddIncipientTypetoParameters As Boolean, ByVal AddIncipientTimetoParameters As Boolean, ByVal AddIncipientPeaktoParameters As Boolean, ByVal IncipientTypeColumnLabel As String, ByVal IncipientTimeColumnLabel As String, ByVal IncipientPeakColumnLabel As String, ByVal ScalingFireHRRRandomGeneratorID As String, ByVal ScalingFireTimeRandomGeneratorID As String, ByVal AddHRRScaletoParameters As Boolean, ByVal HRRScaleColumnLabel As String, ByVal AddTimeScaletoParameters As Boolean, ByVal TimeScaleColumnLabel As String, ByVal FireHRRGeneratorIDs() As String, ByVal FireTimeGeneratorIDs() As String, ByVal NumberofGrowthPoints As Integer, ByVal NumberofDecayPoints As Integer, ByVal GrowthExponent As Double, ByVal DecayExponent As Double, ByVal GeneratorIsTimeto1054kW As Boolean, ByVal AddFiretoParameters As Boolean, ByVal AddHRRtoParameters As Boolean, ByVal AddTimetoParameters As Boolean, ByVal HRRLabels() As String, ByVal TimeLabels() As String)
         Dim i, max As Integer
         aID = ID
         aFYI = FYI
@@ -257,7 +257,6 @@ Public Class MonteCarlo
                 Next
             End If
         End If
-        aTypeofIncipientFireGrowth = TypeofIncipientFireGrowth
         aFlamingIncipientDelayRandomGeneratorID = FlamingIncipientDelayRandomGeneratorID
         aFlamingIncipientPeakRandomGeneratorID = FlamingIncipientPeakRandomGeneratorID
         aSmolderingIncipientDelayRandomGeneratorID = SmolderingIncipientDelayRandomGeneratorID
@@ -268,6 +267,16 @@ Public Class MonteCarlo
         aIncipientTypeColumnLabel = IncipientTypeColumnLabel
         aIncipientTimeColumnLabel = IncipientTimeColumnLabel
         aIncipientPeakColumnLabel = IncipientPeakColumnLabel
+        aTypeofIncipientFireGrowth = TypeofIncipientFireGrowth
+        If aTypeofIncipientFireGrowth = "" Then
+            If aFlamingIncipientDelayRandomGeneratorID <> "" And aSmolderingIncipientDelayRandomGeneratorID <> "" Then
+                aTypeofIncipientFireGrowth = "RANDOM"
+            ElseIf aFlamingIncipientDelayRandomGeneratorID <> "" Then
+                aTypeofIncipientFireGrowth = "FLAMING"
+            ElseIf aSmolderingIncipientDelayRandomGeneratorID <> "" Then
+                aTypeofIncipientFireGrowth = "SMOLDERING"
+            End If
+        End If
 
         aScalingFireHRRRandomGeneratorID = ScalingFireHRRRandomGeneratorID
         aScalingFireTimeRandomGeneratorID = ScalingFireTimeRandomGeneratorID

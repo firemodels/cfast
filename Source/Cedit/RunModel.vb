@@ -280,13 +280,13 @@ Public Class RunModel
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Validation Output"
         End If
-        Outputs = " -S:"
+        Outputs = " -O:"
         If SSOutputCompartments Then Outputs += "C"
         If SSOutputDevices Then Outputs += "D"
         If SSOutputMasses Then Outputs += "M"
         If SSOutputVents Then Outputs += "V"
         If SSOutputWalls Then Outputs += "W"
-        If Outputs <> " -S:" And Outputs <> " -S:CDMVW" Then Arguments += Outputs
+        If Outputs <> " -O:" And Outputs <> " -O:CDMVW" Then Arguments += Outputs
 
         RunOK.Enabled = False
         RunStop.Enabled = True

@@ -3591,24 +3591,29 @@ Module IO
                     ln = "      BASE_FIRE_ID = '" + BaseFireID + "'"
                     PrintLine(IO, ln)
                     ln = "      SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = '" + ScalingFireHRRRandomGeneratorID + "'"
-                    ln += "  SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = '" + ScalingFireTimeRandomGeneratorID
-                    PrintLine(IO, ln)
-                    ln = "     "
-                    If AddHRRScaletoParameters = False Then
-                        ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .FALSE."
+                    ln += "  SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = '" + ScalingFireTimeRandomGeneratorID + "'"
+                    If AddHRRScaletoParameters = False Or HRRScaleColumnLabel <> "" Or AddTimeScaletoParameters = False Or TimeScaleColumnLabel <> "" Then
+                        PrintLine(IO, ln)
+                        ln = "     "
+                        If AddHRRScaletoParameters = False Then
+                            ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .FALSE."
+                        Else
+                            If HRRScaleColumnLabel <> "" Then ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.  HRR_SCALE_COLUMN_LABEL = '" + HRRScaleColumnLabel + "'"
+                        End If
+                        If AddTimeScaletoParameters = False Then
+                            ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .FALSE."
+                        Else
+                            If TimeScaleColumnLabel <> "" Then ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .TRUE.  TIME_SCALE_COLUMN_LABEL = '" + TimeScaleColumnLabel + "'"
+                        End If
+                        If ln <> "     " Then PrintLine(IO, ln + " /")
                     Else
-                        If HRRScaleColumnLabel <> "" Then ln += "  ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.  HRR_SCALE_COLUMN_LABEL = '" + HRRScaleColumnLabel + "'"
+                        ln += " /"
+                        PrintLine(IO, ln)
                     End If
-                    If AddTimeScaletoParameters = False Then
-                        ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .FALSE."
-                    Else
-                        If TimeScaleColumnLabel <> "" Then ln += "  ADD_TIME_SCALE_TO_PARAMETERS = .TRUE.  TIME_SCALE_COLUMN_LABEL = '" + TimeScaleColumnLabel + "'"
-                    End If
-                    If ln <> "     " Then PrintLine(IO, ln)
                 End If
 
-                ' Output for a timed or power law fire
-                If GeneratorIsTimeto1054kW = True Then
+                    ' Output for a timed or power law fire
+                    If GeneratorIsTimeto1054kW = True Then
                     ln = "      GENERATOR_IS_TIME_TO_1054_KW = .TRUE."
                     PrintLine(IO, ln)
                 End If

@@ -109,7 +109,7 @@ module initialization_routines
     xxpmin = min(roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     do i = 2, n_rooms
         roomptr => roominfo(i)
-        xxpmin = max(xxpmin,roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
+        xxpmin = min(xxpmin,roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     end do
     do i = 1, n_rooms
         roomptr => roominfo(i)
@@ -117,8 +117,8 @@ module initialization_routines
         roomptr%exterior_relp_initial = roomptr%exterior_relp_initial - xxpmin
     end do
     pressure_offset = pressure_offset + xxpmin
-    interior_abs_pressure = interior_abs_pressure + xxpmin - pressure_offset
-    exterior_abs_pressure = exterior_abs_pressure + xxpmin - pressure_offset
+    interior_abs_pressure = interior_abs_pressure - pressure_offset
+    exterior_abs_pressure = exterior_abs_pressure - pressure_offset
 
     ! copy all of the variables from the initial values into the data arrays
     call update_data (dummy,constvar)

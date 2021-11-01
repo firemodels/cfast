@@ -89,12 +89,7 @@ module initialization_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    ! simplify and make initial pressure calculations consistent.  inside pressures
-    ! were calculated using rho*g*h .  but outside pressures were calculated using
-    ! atmosp.  fictional flows resulted making  snsqe work a log harder to get
-    ! an initial solution.  the initial temperature values calculated by atmosp
-    ! at the top of the empire state building (about 400 m above base) is only
-    ! about 0.2 k different that at the base.
+    ! make initial pressure calculations consistent
     do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%interior_relp_initial = -interior_rho*grav_con*roomptr%z0

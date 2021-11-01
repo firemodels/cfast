@@ -48,7 +48,7 @@
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr
+        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr, dummy
     use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
@@ -628,7 +628,6 @@
                             trim(fldptr%value_type)
                         call cfastexit('read_mfld',15)
                     end if
-                    write (errormessage,'(2a)') '***Error, Invalid value type in scaling &MFLD field,', trim(field_type)
                 else
                     call cfastexit('read_mfld',14)
                 end if
@@ -1481,6 +1480,11 @@
     integer :: i
     
     flag = .false.
+    if (trim(id)=='INIT') then
+        flag = .true.
+        field%itemptr => dummy
+        return
+    end if 
     do i = 1, n_rooms
         if (trim(id)==trim(roominfo(i)%id)) then
             flag = .true.
@@ -1777,7 +1781,28 @@
             call cfastexit('find_field', 7)
         end if 
     class default
-        call cfastexit('find_field',99)
+        if (trim(fieldid) == 'PRESSURE') then
+            fldptr%realval%val => exterior_abs_pressure
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+            fldptr%press_flag = .true.
+        elseif (trim(fieldid) == 'EXTERIOR_AMBIENT_TEMPERATURE') then
+            fldptr%realval%val =>  exterior_ambient_temperature
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+            fldptr%temp_flag = .true.
+        elseif (trim(fieldid) == 'INTERIOR_AMBIENT_TEMPERATURE') then
+            fldptr%realval%val =>  interior_ambient_temperature
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+            fldptr%temp_flag = .true.
+        elseif (trim(fieldid) == 'RELATIVE_HUMIDITY') then
+            fldptr%realval%val =>  relative_humidity
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else
+            call cfastexit('find_field',99)
+        end if
     end select
     
     return

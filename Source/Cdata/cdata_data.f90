@@ -18,6 +18,7 @@ module ppfilehandeling
     
     use precision_parameters
     
+    use cfast_types, only: cfast_type
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     
     implicit none
@@ -38,6 +39,8 @@ module ppfilehandeling
     
     integer :: n_rndfires
     type (fire_generator_type), allocatable, dimension(:), target :: randfireinfo
+    
+    type (cfast_type), target :: dummy
     
     character(len=256) :: workpath, parameterfile 
     

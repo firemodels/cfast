@@ -9,6 +9,7 @@ module preprocessor_types
     
     use cparams
     use cfast_types, only: cfast_type, fire_type
+    use room_data, only: pressure_offset
     
     use random, only: random_normal, random_gamma, random_beta
     
@@ -38,7 +39,7 @@ module preprocessor_types
         character(len=128) :: parameter_column_label
         character(len=128), pointer :: paramptr
         logical :: pointer_set = .false.
-        logical :: temp_flag, kilo_flag
+        logical :: temp_flag, kilo_flag, press_flag
     contains
         procedure :: add_header
         procedure :: write_value
@@ -63,6 +64,14 @@ module preprocessor_types
         character(len=9) :: value_type = val_types(idx_logic)
         logical, pointer :: val
     end type random_logic_type
+    
+    type, extends(value_wrapper_type) :: value_wrapper_pointer
+        type(value_wrapper_type), pointer :: val
+    end type value_wrapper_pointer
+    
+    !
+    !----------------------field_pointer
+    !
     
     type, extends(value_wrapper_type) :: field_pointer
         character(len=7), dimension(5) :: fld_types = (/'VALUE  ', &
@@ -181,6 +190,10 @@ module preprocessor_types
         procedure, private :: rand_mm_sub2
     end type random_generator_type
     
+    type, extends(preprocessor_type) :: random_generator_pointer
+        type(random_generator_type), pointer :: genptr
+    end type random_generator_pointer
+    
      
     
     !
@@ -226,7 +239,18 @@ module preprocessor_types
         procedure :: do_rand => fire_do_rand
         procedure :: copybasetofire
         procedure :: copytimebasedprop
-    end type
+    end type fire_generator_type
+    
+    type, extends(value_wrapper_type) :: correlation_type
+        integer :: n_states, n_vals
+        type(value_wrapper_pointer), dimension(5) :: valptrs
+        real(eb), dimension(32, 5) :: states
+        type(random_generator_pointer), dimension(5) :: genptr
+        type(random_generator_type), pointer :: failgenptr
+    contains
+    
+    end type correlation_type
+    
     
     !
     !-----CONTAINS--------
@@ -618,8 +642,10 @@ module preprocessor_types
             if (me%value_type == val_types(idx_real)) then
                 if (me%temp_flag) then
                     me%realval%val = me%rand_value + kelvin_c_offset
-                else if (me%kilo_flag) then
+                elseif (me%kilo_flag) then
                     me%realval%val = me%rand_value*1000.0_eb
+                elseif (me%press_flag) then
+                    me%realval%val = me%rand_value - pressure_offset
                 else 
                     me%realval%val = me%rand_value
                 end if
@@ -643,7 +669,13 @@ module preprocessor_types
         elseif (trim(me%field_type) == trim(me%fld_types(me%idx_scale))) then
             call me%genptr%rand(me%randptr, iteration)
             if (me%value_type == val_types(idx_real)) then
-                me%realval%val = me%scale_value * me%scale_base_value
+                if (me%temp_flag) then
+                    me%realval%val = me%scale_value*(me%scale_base_value - kelvin_c_offset) + kelvin_c_offset
+                elseif (me%press_flag) then
+                    me%realval%val = me%scale_value*(me%scale_base_value + pressure_offset) - pressure_offset
+                else 
+                    me%realval%val = me%scale_value*me%scale_base_value
+                end if
             else
                 call me%errorcall('DO_RAND',3)
             end if

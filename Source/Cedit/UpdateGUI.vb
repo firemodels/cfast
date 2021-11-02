@@ -779,6 +779,7 @@ Public Class UpdateGUI
                                     MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
                                     MainWin.TargetZNormal.Enabled = True
                                     MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
+                                    MainWin.TargetNormalType.SelectedIndex = 0
                                 End If
                             End If
                         Next
@@ -791,6 +792,7 @@ Public Class UpdateGUI
                 MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
                 MainWin.TargetZNormal.Enabled = True
                 MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
+                MainWin.TargetNormalType.SelectedIndex = 0
             End If
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
             MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType

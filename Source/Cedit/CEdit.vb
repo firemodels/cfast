@@ -5860,9 +5860,9 @@ Public Class CeditMain
             If sender Is TargetName Then aTarget.Name = TargetName.Text
             If sender Is TargetComp Then
                 aTarget.Compartment = TargetComp.SelectedIndex
-                If Val(TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(TargetXPosition.Text)
-                If Val(TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(TargetYPosition.Text)
-                If Val(TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(TargetZPosition.Text)
+                'If Val(TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(TargetXPosition.Text)
+                'If Val(TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(TargetYPosition.Text)
+                'If Val(TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(TargetZPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
             If sender Is TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
@@ -5978,9 +5978,9 @@ Public Class CeditMain
             If sender Is DetectorType Then aDetector.DetectorType = DetectorType.SelectedIndex
             If sender Is DetectorComp Then
                 aDetector.Compartment = DetectorComp.SelectedIndex
-                If Val(DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(DetectorXPosition.Text)
-                If Val(DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(DetectorYPosition.Text)
-                If Val(DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(DetectorZPosition.Text)
+                'If Val(DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(DetectorXPosition.Text)
+                'If Val(DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(DetectorYPosition.Text)
+                'If Val(DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(DetectorZPosition.Text)
             End If
             If sender Is DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(DetectorActivationTemperature.Text)
             If sender Is DetectorActivationObscuration Then aDetector.ActivationObscurationFlaming = Val(DetectorActivationObscuration.Text)

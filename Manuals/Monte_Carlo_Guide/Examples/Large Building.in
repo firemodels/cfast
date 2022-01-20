@@ -24,13 +24,13 @@
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.0127 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.0127 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.1524
       ORIGIN = 3.6576, 3.6576, 0 GRID = 50, 50, 50 /
 &COMP ID = 'East Office 1'
-      DEPTH = 3.6576 HEIGHT = 3.6576 WIDTH = 3.6576
+      DEPTH = 2.4384 HEIGHT = 3.6576 WIDTH = 3.6576
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.0127 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.0127 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.1524
       ORIGIN = 14.6304, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'East Office 2'
       DEPTH = 4.8768 HEIGHT = 3.6576 WIDTH = 3.6576
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.025 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.025 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.15
-      ORIGIN = 14.6304, 3.6576, 0 GRID = 50, 50, 50 /
+      ORIGIN = 14.6304, 2.4384, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Break Room'
       DEPTH = 2.4384 HEIGHT = 2.4384 WIDTH = 2.4384
       CEILING_MATL_ID = 'Gyp' CEILING_THICKNESS = 0.0127 WALL_MATL_ID = 'Gyp' WALL_THICKNESS = 0.0127 FLOOR_MATL_ID = 'Concrete' FLOOR_THICKNESS = 0.1524
@@ -41,15 +41,15 @@
       ORIGIN = 3.6576, 5.1816, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'Entry' COMP_IDS = 'Hallway', 'Foyer', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 1.0668
-      FACE = 'REAR'  OFFSET = 4.953 /
 &VENT TYPE = 'WALL' ID = 'Open Foyer Wall' COMP_IDS = 'Foyer' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 3.556, WIDTH = 10.9728
       FACE = 'REAR'  OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Entry' COMP_IDS = 'Hallway', 'Foyer', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 1.0668
+      FACE = 'REAR'  OFFSET = 6.7818 /
 &VENT TYPE = 'WALL' ID = 'West Door' COMP_IDS = 'West Office', 'Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
       FACE = 'RIGHT'  OFFSET = 3.9624 /
 &VENT TYPE = 'WALL' ID = 'Break Room Door' COMP_IDS = 'Hallway', 'Break Room', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
       FACE = 'FRONT'  OFFSET = 9.7536 /
-&VENT TYPE = 'WALL' ID = 'East Office 1 Door' COMP_IDS = 'Hallway', 'East Office 1', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
+&VENT TYPE = 'WALL' ID = 'East Office Door' COMP_IDS = 'Hallway', 'East Office 2', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
       FACE = 'RIGHT'  OFFSET = 0.3048 /
 &VENT TYPE = 'WALL' ID = 'South Office Door 1' COMP_IDS = 'South Office', 'Hallway', BOTTOM = 0 HEIGHT = 2.1336, WIDTH = 0.9144
       FACE = 'REAR'  OFFSET = 1.2192 /
@@ -85,5 +85,90 @@
 &TABL ID = 'Fire', DATA = 870, 10.54, 0, 0.0188108199221482, 0.01, 0.01, 0, 0, 0 /
 &TABL ID = 'Fire', DATA = 900, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
 &TABL ID = 'Fire', DATA = 910, 0, 0, 0.09, 0.01, 0.01, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'SD West Office 1' COMP_ID = 'West Office' LOCATION = 1.8288, 4.8768, 3.5814 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD South Office' COMP_ID = 'South Office' LOCATION = 3.6576, 1.8288, 3.5814 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD West Office 2' COMP_ID = 'West Office' LOCATION = 1.8288, 1.8288, 3.5814 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD Foyer' COMP_ID = 'Foyer' LOCATION = 7.3152, 1.0668, 3.5814 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD Hallway 1' COMP_ID = 'Hallway' LOCATION = 3.6576, 0.762, 2.3622 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 23.9334605082804 /
+&DEVC ID = 'SD Hallway 2' COMP_ID = 'Hallway' LOCATION = 7.3152, 0.762, 2.3622 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD Break Room' COMP_ID = 'Break Room' LOCATION = 1.2192, 1.2192, 2.3622 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+&DEVC ID = 'SD East Office 1' COMP_ID = 'East Office 1' LOCATION = 1.8288, 1.2192, 3.5814 TYPE = 'HEAT_DETECTOR' SETPOINT = 57.22, RTI = 404 /
+&DEVC ID = 'SD East Office 2' COMP_ID = 'East Office 2' LOCATION = 1.8288, 2.4384, 3.5814 TYPE = 'SMOKE_DETECTOR' SETPOINTS = 23.9334605082804, 15.4887129993793 /
+ 
+!! User-specified Outputs
+&OUTP ID = 'Living Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Living Room', 'Sensor Activation' /
+&OUTP ID = 'Dining Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Dining Room', 'Sensor Activation' /
+&OUTP ID = 'Kitchen Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Kitchen', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 1 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 1', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 2 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 2', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 3 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 3', 'Sensor Activation' /
+&OUTP ID = 'Living Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Living Room', 'Sensor Activation' /
+&OUTP ID = 'Dining Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Dining Room', 'Sensor Activation' /
+&OUTP ID = 'Kitchen Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Kitchen', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 1 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 1', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 2 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 2', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 3 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 3', 'Sensor Activation' /
+&OUTP ID = 'Living Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Living Room', 'Sensor Activation' /
+&OUTP ID = 'Dining Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Dining Room', 'Sensor Activation' /
+&OUTP ID = 'Kitchen Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Kitchen', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 1 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 1', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 2 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 2', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 3 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 3', 'Sensor Activation' /
+&OUTP ID = 'Living Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Living Room', 'Sensor Activation' /
+&OUTP ID = 'Dining Room Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Dining Room', 'Sensor Activation' /
+&OUTP ID = 'Kitchen Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Kitchen', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 1 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 1', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 2 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 2', 'Sensor Activation' /
+&OUTP ID = 'Bedroom 3 Alarm'
+      FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+      FIRST_FIELD = 'Time', 'Simulation Time'  SECOND_FIELD = 'UL Alarm Bedroom 3', 'Sensor Activation' /
  
 &TAIL /

@@ -1361,7 +1361,7 @@ continue
 
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii, jj, kk, n_defs, ifire, np
+    integer :: ios, i, ii, jj, kk, n_defs, ifire !, np
     real(eb) :: tmpcond, max_hrr, f_height, hrrpm3, max_area, ohcomb
 
     type(fire_type),   pointer :: fireptr
@@ -1496,42 +1496,43 @@ continue
                     tabl_search: do kk = 1, n_tabls
                         tablptr=>tablinfo(kk)
                         if (trim(tablptr%id)==trim(fireptr%fire_id)) then
-                            np = tablptr%n_points
-                            do i = 1,mxtablcols
-                                select case (trim(tablptr%labels(i)))
-                                case ('TIME')
-                                    fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_qdot = np
-                                    fireptr%t_soot(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_soot = np
-                                    fireptr%t_co(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_co = np
-                                    fireptr%t_hcn(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_hcn = np
-                                    fireptr%t_trace(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_trace = np
-                                    fireptr%t_area(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_area = np
-                                    fireptr%t_height(1:np) = tablptr%data(1:np,i)
-                                    fireptr%n_height = np
-                                case ('HRR')
-                                    fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
-                                case ('HEIGHT')
-                                    fireptr%height(1:np) = tablptr%data(1:np,i)
-                                case ('AREA')
-                                    fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
-                                case ('CO_YIELD')
-                                    fireptr%y_co(1:np) = tablptr%data(1:np,i)
-                                case ('SOOT_YIELD')
-                                    fireptr%y_soot(1:np) = tablptr%data(1:np,i)
-                                case ('HCN_YIELD')
-                                    fireptr%y_hcn(1:np) = tablptr%data(1:np,i)
-                                case ('HCL_YIELD')
-                                    ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
-                                case ('TRACE_YIELD')
-                                    fireptr%y_trace(1:np) = tablptr%data(1:np,i)
-                                end select
-                            end do
+                            call fireptr%pop_table(tablptr)
+                            !np = tablptr%n_points
+                            !do i = 1,mxtablcols
+                            !    select case (trim(tablptr%labels(i)))
+                            !    case ('TIME')
+                            !        fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_qdot = np
+                            !        fireptr%t_soot(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_soot = np
+                            !        fireptr%t_co(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_co = np
+                            !        fireptr%t_hcn(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_hcn = np
+                            !        fireptr%t_trace(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_trace = np
+                            !        fireptr%t_area(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_area = np
+                            !        fireptr%t_height(1:np) = tablptr%data(1:np,i)
+                            !        fireptr%n_height = np
+                            !    case ('HRR')
+                            !        fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
+                            !    case ('HEIGHT')
+                            !        fireptr%height(1:np) = tablptr%data(1:np,i)
+                            !    case ('AREA')
+                            !        fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
+                            !    case ('CO_YIELD')
+                            !        fireptr%y_co(1:np) = tablptr%data(1:np,i)
+                            !    case ('SOOT_YIELD')
+                            !        fireptr%y_soot(1:np) = tablptr%data(1:np,i)
+                            !    case ('HCN_YIELD')
+                            !        fireptr%y_hcn(1:np) = tablptr%data(1:np,i)
+                            !    case ('HCL_YIELD')
+                            !        ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
+                            !    case ('TRACE_YIELD')
+                            !        fireptr%y_trace(1:np) = tablptr%data(1:np,i)
+                            !    end select
+                            !end do
                         end if
                     end do tabl_search
 

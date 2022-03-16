@@ -2,7 +2,8 @@ module cfast_types
 
     use precision_parameters
     
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, &
+        mxcoeff, mxtablcols
     
     ! base type that all other types extend
     type cfast_type
@@ -118,6 +119,9 @@ module cfast_types
 
         real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
+        
+    contains
+        procedure :: pop_table
     end type fire_type
 
     ! ramp data structure
@@ -380,5 +384,52 @@ module cfast_types
         real(eb) :: value       ! for isosurface, temperature for surface (K)
         integer :: roomnum      ! compartment
     end type visual_type
+    
+    contains 
+    
+        subroutine pop_table(me, table)
+            class(fire_type) :: me
+            type(table_type), intent(in) :: table
+            
+            integer :: np, i
+            
+            np = table%n_points
+            do i = 1, mxtablcols
+                select case (trim(table%labels(i)))
+                case ('TIME')
+                    me%t_qdot(1:np) = table%data(1:np,i)
+                    me%n_qdot = np
+                    me%t_soot(1:np) = table%data(1:np,i)
+                    me%n_soot = np
+                    me%t_co(1:np) = table%data(1:np,i)
+                    me%n_co = np
+                    me%t_hcn(1:np) = table%data(1:np,i)
+                    me%n_hcn = np
+                    me%t_trace(1:np) = table%data(1:np,i)
+                    me%n_trace = np
+                    me%t_area(1:np) = table%data(1:np,i)
+                    me%n_area = np
+                    me%t_height(1:np) = table%data(1:np,i)
+                    me%n_height = np
+                case ('HRR')
+                    me%qdot(1:np) = table%data(1:np,i)*1000._eb
+                case ('HEIGHT')
+                    me%height(1:np) = table%data(1:np,i)
+                case ('AREA')
+                    me%area(1:np) = max(table%data(1:np,i),pio4*0.2_eb**2)
+                case ('CO_YIELD')
+                    me%y_co(1:np) = table%data(1:np,i)
+                case ('SOOT_YIELD')
+                    me%y_soot(1:np) = table%data(1:np,i)
+                case ('HCN_YIELD')
+                    me%y_hcn(1:np) = table%data(1:np,i)
+                case ('HCL_YIELD')
+                    ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
+                case ('TRACE_YIELD')
+                    me%y_trace(1:np) = table%data(1:np,i)
+                end select
+            end do
+        
+        end subroutine pop_table
 
 end module cfast_types

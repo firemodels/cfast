@@ -167,6 +167,8 @@
     type(room_type), pointer :: roomptr
     
     roomptr => roominfo(1)
+    
+    
     xxpmin = min(roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     do i = 2, n_rooms
         roomptr => roominfo(i)
@@ -305,9 +307,9 @@
             call add_token_str(iounit, buf, 'ID = ',roomptr%id)
             call add_token_str(iounit, buf, 'FYI = ',roomptr%fyi)
             call flush_buffer(iounit,buf)
-            call add_token_val(iounit, buf, 'DEPTH = ', roomptr%cdepth)
-            call add_token_val(iounit,buf,'HEIGHT = ', roomptr%cheight)
             call add_token_val(iounit, buf, 'WIDTH =', roomptr%cwidth)
+            call add_token_val(iounit, buf, 'DEPTH = ', roomptr%cdepth)
+            call add_token_val(iounit, buf, 'HEIGHT = ', roomptr%cheight)
             if (roomptr%surface_on(1)) then
                 do j = 1, roomptr%nslab_w(1)
                     mat(j) = " "

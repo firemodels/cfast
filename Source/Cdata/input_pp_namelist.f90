@@ -1777,6 +1777,11 @@
             fldptr%realval%val => item%t_qdot(i)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:7)) == 'FIRE_ID') then 
+            found = .true. 
+            fldptr%charval%val => item%fire_id
+            fldptr%value_type = val_types(idx_char)
+            fldptr%valptr => fldptr%charval
         else
             call cfastexit('find_field', 7)
         end if 

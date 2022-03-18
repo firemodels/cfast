@@ -80,7 +80,7 @@
     write(iofilcalc, '(a)') '!! Fires'
     call write_chem_tabl(iofilcalc)
     write(iofilcalc,'(a1)')
-    write(iofilcalc, '(a)') '!! Dumps'
+    write(iofilcalc, '(a)') '!! Outp'
     call write_dump (iofilcalc)
     write(iofilcalc,'(a1)')
     write(iofilcalc, '(a)') '&TAIL /'
@@ -510,15 +510,19 @@
     integer, intent(in) :: iounit
     
     type(fire_type),   pointer :: fireptr
-    integer :: i, j
+    type(table_type),   pointer :: tablptr
+    integer :: i, j, k, kdx, np
     character :: buf*(128), lbuf*(256) 
     character :: lbls(8)*(15) = &
         (/ 'TIME           ', 'HRR            ', 'HEIGHT         ', &
            'AREA           ', 'CO_YIELD       ', 'SOOT_YIELD     ', &
            'HCN_YIELD      ', 'TRACE_YIELD    ' /)
-    logical :: dup
+    logical :: dup, tablflgs(mxtabls)
     real(eb) :: vals(8)
     
+    do k = 1, n_tabls
+        tablflgs(k) = .true.
+    end do 
     if (n_fires > 0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
@@ -553,6 +557,12 @@
                 end if
                 call end_namelist(iounit, buf)
                 
+                do k = 1, n_tabls
+                    if (trim(fireptr%fire_id) == trim(tablinfo(k)%id)) then
+                        tablflgs(k) = .false.
+                        kdx = k
+                    end if
+                end do 
                 call start_namelist(lbuf, 'TABL')
                 call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
                 call add_token_carray(iounit, lbuf, 'LABELS = ', lbls, 8)
@@ -575,6 +585,76 @@
             end if
         end do 
     end if
+    
+    do k = 1, n_tabls
+        if (tablflgs(k)) then
+            tablptr=>tablinfo(k)
+            call start_namelist(lbuf, 'TABL')
+            call add_token_str(iounit, lbuf, 'ID = ', tablptr%id)
+            j = 0
+            do i = 1, mxtablcols
+                select case (trim(tablptr%labels(i)))
+                case ('TIME')
+                    j = j + 1
+                case ('HRR')
+                    j = j + 1
+                case ('HEIGHT')
+                    j = j + 1
+                case ('AREA')
+                    j = j + 1
+                case ('CO_YIELD')
+                    j = j + 1
+                case ('SOOT_YIELD')
+                    j = j + 1
+                case ('HCN_YIELD')
+                    j = j + 1
+                case ('TRACE_YIELD')
+                    j = j + 1
+                end select
+            end do 
+            call add_token_carray(iounit, lbuf, 'LABELS = ', tablptr%labels, j)
+            call end_namelist(iounit, lbuf)
+            np = tablptr%n_points
+            do kdx = 1, np
+                call start_namelist(lbuf, 'TABL')
+                call add_token_str(iounit, lbuf, 'ID = ', tablptr%id)
+                j = 0
+                do i = 1,mxtablcols
+                    select case (trim(tablptr%labels(i)))
+                    case ('TIME')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('HRR')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('HEIGHT')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('AREA')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('CO_YIELD')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('SOOT_YIELD')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('HCN_YIELD')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    case ('HCL_YIELD')
+                        ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
+                    case ('TRACE_YIELD')
+                        j = j + 1
+                        vals(j) = tablptr%data(kdx,i)
+                    end select
+                end do
+                call add_token_rarray(iounit, lbuf, 'DATA = ',vals, 8)
+                call end_namelist(iounit, lbuf)
+            end do 
+        end if
+        write(iounit, '(a1)')
+    end do
     
     return
     end subroutine write_chem_tabl

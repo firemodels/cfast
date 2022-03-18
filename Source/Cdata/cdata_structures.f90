@@ -8,7 +8,8 @@ module preprocessor_types
                      idx_trun_normal, idx_trun_log_normal, idx_gamma
     
     use cparams
-    use cfast_types, only: cfast_type, fire_type
+    use cfast_types, only: cfast_type, fire_type, table_type
+    use fire_data, only: n_tabls, tablinfo
     use room_data, only: pressure_offset
     
     use random, only: random_normal, random_gamma, random_beta
@@ -1215,11 +1216,19 @@ module preprocessor_types
         class(fire_generator_type) :: me
         integer, intent(in) :: iteration
         
+        type(table_type),   pointer :: tablptr
         integer :: i, tmp, tmp1
         real(eb) :: deltat, a, b, c, t1, t0
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)
+        else
+            do i = 1, n_tabls
+                tablptr=>tablinfo(i)
+                if (trim(tablptr%id)==trim(me%fire%fire_id)) then
+                    call me%fire%pop_table(tablptr)
+                end if
+            end do
         end if 
         
         if (me%scalehrr) then 

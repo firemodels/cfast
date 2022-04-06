@@ -1067,7 +1067,7 @@
                 end if
             end if
             
-            ! Randomizing Fire Comp[artment 
+            ! Randomizing Fire Compartment 
             
             if (trim(fire_compartment_random_generator_id) /= 'NULL') then
                 compgen_search: do jj = 1, n_generators
@@ -1738,6 +1738,65 @@
         else if (trim(fieldid)  == 'TRIGGER_SMOLDER') then
             found = .true.
             fldptr%realval%val => item%trigger_smolder
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid)  == 'COMPARTMENT') then
+            found = .true.
+            fldptr%charval%val => item%room_id
+            fldptr%value_type = val_types(idx_char)
+            fldptr%valptr => fldptr%charval
+        else if (trim(fieldid) == 'X_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Z_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(3)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else
+            call cfastexit('find_field',6)
+        end if
+    class is (target_type)
+        if (trim(fieldid)  == 'COMPARTMENT') then
+            found = .true.
+            fldptr%charval%val => item%room_id
+            fldptr%value_type = val_types(idx_char)
+            fldptr%valptr => fldptr%charval
+        else if (trim(fieldid) == 'X_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Z_POSITION') then
+            found = .true.
+            fldptr%realval%val => item%center(3)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'X_NORMAL') then
+            found = .true.
+            fldptr%realval%val => item%normal(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_NORMAL') then
+            found = .true.
+            fldptr%realval%val => item%normal(2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Z_NORMAL') then
+            found = .true.
+            fldptr%realval%val => item%normal(3)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else

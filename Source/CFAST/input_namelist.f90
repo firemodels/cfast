@@ -739,6 +739,7 @@
                 end if
 
                 targptr%room = iroom
+                targptr%room_id = compartment_id
 
                 ! position and normal vector
                 if (convert_negative_distances) then
@@ -829,6 +830,8 @@
                 end if
 
                 dtectptr%room = iroom
+                dtectptr%room_id = compartment_id
+                
                 if (iroom<1.or.iroom>mxrooms) then
                     write (errormessage,5342) iroom
                     call cfastexit('read_devc',10)

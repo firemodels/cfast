@@ -388,7 +388,7 @@
             call start_namelist(buf, 'DEVC')
             call add_token_str(iounit, buf, 'ID = ', targptr%id)
             call add_token_str(iounit, buf, 'FYI = ', targptr%fyi)
-            call add_token_str(iounit, buf, 'COMP_ID = ', roominfo(targptr%room)%id)
+            call add_token_str(iounit, buf, 'COMP_ID = ', targptr%room_id)
             if (targptr%equaton_type == pde) then
                 call add_token_str(iounit, buf, 'TYPE = ', 'PLATE')
             elseif (targptr%equaton_type == cylpde) then
@@ -423,7 +423,7 @@
             call start_namelist(buf, 'DEVC')
             call add_token_str(iounit, buf, 'ID = ', dtectptr%id)
             call add_token_str(iounit, buf, 'FYI = ', dtectptr%fyi)
-            call add_token_str(iounit, buf, 'COMP_ID = ', roominfo(dtectptr%room)%id)
+            call add_token_str(iounit, buf, 'COMP_ID = ', dtectptr%room_id)
             if(dtectptr%dtype == smoked) then
                 call add_token_str(iounit, buf, 'TYPE = ', 'SMOKE_DETECTOR')
                 call add_token_rarray(iounit, buf, 'LOCATION = ', dtectptr%center, 3)
@@ -509,16 +509,19 @@
     implicit none
     integer, intent(in) :: iounit
     
+    integer, parameter :: maxlbls = 8
+    character, parameter :: lbls(maxlbls)*(15) = &
+        (/'TIME          ', 'HRR           ', 'HEIGHT        ', &
+          'AREA          ', 'CO_YIELD      ', 'SOOT_YIELD    ', &
+          'HCN_YIELD     ', 'TRACE_YIELD   ' /)
     type(fire_type),   pointer :: fireptr
     type(table_type),   pointer :: tablptr
-    integer :: i, j, k, kdx, np
+    integer :: i, j, k, l, kdx
     character :: buf*(128), lbuf*(256) 
-    character :: lbls(8)*(15) = &
-        (/ 'TIME           ', 'HRR            ', 'HEIGHT         ', &
-           'AREA           ', 'CO_YIELD       ', 'SOOT_YIELD     ', &
-           'HCN_YIELD      ', 'TRACE_YIELD    ' /)
+    character :: charvals(maxlbls)*(15)
+    integer :: imaplbls(maxlbls) 
     logical :: dup, tablflgs(mxtabls)
-    real(eb) :: vals(8)
+    real(eb) :: vals(maxlbls)
     
     do k = 1, n_tabls
         tablflgs(k) = .true.
@@ -563,22 +566,61 @@
                         kdx = k
                     end if
                 end do 
+                tablptr => tablinfo(kdx)
+                imaplbls = -1
                 call start_namelist(lbuf, 'TABL')
                 call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
-                call add_token_carray(iounit, lbuf, 'LABELS = ', lbls, 8)
+                j = 0 
+                do k = 1, mxtablcols
+                    select case (trim(tablptr%labels(k)))
+                    case (lbls(1))
+                        j = j + 1
+                        imaplbls(1) = k
+                    case (lbls(2))
+                        j = j + 1
+                        imaplbls(2) = k
+                    case (lbls(3))
+                        j = j + 1
+                        imaplbls(3) = k
+                    case (lbls(4))
+                        j = j + 1
+                        imaplbls(4) = k
+                    case (lbls(5))
+                        j = j + 1
+                        imaplbls(5) = k
+                    case (lbls(6))
+                        j = j + 1
+                        imaplbls(6) = k
+                    case (lbls(7))
+                        j = j + 1
+                        imaplbls(7) = k
+                    case (lbls(8))
+                        j = j + 1
+                        imaplbls(8) = k
+                    case defaulT
+                    
+                    end select
+                end do
+                j = 0
+                do k = 1, maxlbls
+                    if (imaplbls(k).gt.0) then
+                        j = j + 1
+                        charvals(j) = lbls(k)
+                    end if
+                end do 
+                call add_token_carray(iounit, lbuf, 'LABELS = ', charvals, j)
                 call end_namelist(iounit, lbuf)
-                do j = 1, fireptr%n_qdot
-                    vals(1) = fireptr%t_qdot(j)
-                    vals(2) = fireptr%qdot(j)/1000._eb
-                    vals(3) = fireptr%height(j)
-                    vals(4) = fireptr%area(j)
-                    vals(5) = fireptr%y_co(j)
-                    vals(6) = fireptr%y_soot(j)
-                    vals(7) = fireptr%y_hcn(j)
-                    vals(8) = fireptr%y_trace(j)
+                do k = 1, tablptr%n_points
+                    j = 0
+                    do l = 1, maxlbls
+                        if (imaplbls(l).gt.0) then
+                            j = j + 1
+                            vals(j) = tablptr%data(k, imaplbls(l))
+                        end if
+                    end do 
                     call start_namelist(lbuf, 'TABL')
-                    call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
-                    call add_token_rarray(iounit, lbuf, 'DATA = ',vals, 8)
+                    call add_token_str(iounit, lbuf, 'ID = ', tablptr%id)
+                    call add_token_rarray(iounit, lbuf, 'DATA = ',vals, j)
                     call end_namelist(iounit, lbuf)
                 end do 
                 write(iounit, '(a1)')
@@ -586,70 +628,64 @@
         end do 
     end if
     
-    do k = 1, n_tabls
-        if (tablflgs(k)) then
-            tablptr=>tablinfo(k)
+    do i = 1, n_tabls
+        if (tablflgs(i)) then
+            tablflgs(i) = .false. 
+            tablptr=>tablinfo(i)
             call start_namelist(lbuf, 'TABL')
             call add_token_str(iounit, lbuf, 'ID = ', tablptr%id)
             j = 0
-            do i = 1, mxtablcols
-                select case (trim(tablptr%labels(i)))
-                case ('TIME')
-                    j = j + 1
-                case ('HRR')
-                    j = j + 1
-                case ('HEIGHT')
-                    j = j + 1
-                case ('AREA')
-                    j = j + 1
-                case ('CO_YIELD')
-                    j = j + 1
-                case ('SOOT_YIELD')
-                    j = j + 1
-                case ('HCN_YIELD')
-                    j = j + 1
-                case ('TRACE_YIELD')
-                    j = j + 1
+            imaplbls = -1
+            do k = 1, mxtablcols
+                select case (trim(tablptr%labels(k)))
+                    case (lbls(1))
+                        j = j + 1
+                        imaplbls(1) = k
+                    case (lbls(2))
+                        j = j + 1
+                        imaplbls(2) = k
+                    case (lbls(3))
+                        j = j + 1
+                        imaplbls(3) = k
+                    case (lbls(4))
+                        j = j + 1
+                        imaplbls(4) = k
+                    case (lbls(5))
+                        j = j + 1
+                        imaplbls(5) = k
+                    case (lbls(6))
+                        j = j + 1
+                        imaplbls(6) = k
+                    case (lbls(7))
+                        j = j + 1
+                        imaplbls(7) = k
+                    case (lbls(8))
+                        j = j + 1
+                        imaplbls(8) = k
+                    case defaulT
+                    
                 end select
             end do 
-            call add_token_carray(iounit, lbuf, 'LABELS = ', tablptr%labels, j)
+            j = 0
+            do k = 1, maxlbls
+                if (imaplbls(k).gt.0) then
+                    j = j + 1
+                    charvals(j) = lbls(k)
+                end if
+            end do 
+            call add_token_carray(iounit, lbuf, 'LABELS = ', charvals, j)
             call end_namelist(iounit, lbuf)
-            np = tablptr%n_points
-            do kdx = 1, np
+            do k = 1, tablptr%n_points
+                j = 0
+                do l = 1, maxlbls
+                    if (imaplbls(l).gt.0) then
+                        j = j + 1
+                        vals(j) = tablptr%data(k, imaplbls(l))
+                    end if
+                end do 
                 call start_namelist(lbuf, 'TABL')
                 call add_token_str(iounit, lbuf, 'ID = ', tablptr%id)
-                j = 0
-                do i = 1,mxtablcols
-                    select case (trim(tablptr%labels(i)))
-                    case ('TIME')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('HRR')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('HEIGHT')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('AREA')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('CO_YIELD')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('SOOT_YIELD')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('HCN_YIELD')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    case ('HCL_YIELD')
-                        ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
-                    case ('TRACE_YIELD')
-                        j = j + 1
-                        vals(j) = tablptr%data(kdx,i)
-                    end select
-                end do
-                call add_token_rarray(iounit, lbuf, 'DATA = ',vals, 8)
+                call add_token_rarray(iounit, lbuf, 'DATA = ',vals, j)
                 call end_namelist(iounit, lbuf)
             end do 
         end if

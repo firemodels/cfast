@@ -39,6 +39,7 @@ module cfast_types
         real(eb) :: spray_density       ! sprinkler spray density (user input)
 
         integer :: room                 ! compartment where the detector is located (user input)
+        character(len=128) :: room_id   ! compartment id
         integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler (user input)
         logical :: quench               ! true if type is sprinkler and spray is non-zero (user input)
 
@@ -242,6 +243,7 @@ module cfast_types
                                         !       (from user input with default of 0.5*thickness)
 
         integer :: room                 ! compartment where the target is located (user input)
+        character(len=128) :: room_id   ! compartment id 
         integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input)
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering

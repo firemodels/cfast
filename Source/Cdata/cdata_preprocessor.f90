@@ -21,7 +21,7 @@ module preprocessor_routines
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
         mxiterations
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
-        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile, fieldptr
+        n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile, fieldptr, validation_output
     use preprocessor_types, only: random_generator_type
     
     !------------------------CData routines-------------------------------------
@@ -108,6 +108,7 @@ module preprocessor_routines
     mc_write_seeds = .false.
     
     mc_max_iterations = mxiterations
+    validation_output = validation_flag
     
     n_generators = 0
     allocate(generatorinfo(mxgenerators))

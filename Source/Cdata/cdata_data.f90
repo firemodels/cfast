@@ -27,7 +27,7 @@ module ppfilehandeling
     integer :: mc_number_of_cases
     character(len=512) :: mc_datapath
     character(len=128) :: mc_filename_pattern
-    logical :: mc_write_seeds
+    logical :: mc_write_seeds, validation_output
     integer :: mc_max_iterations
     
     integer :: n_generators

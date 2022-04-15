@@ -48,7 +48,7 @@
     use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
-        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr, dummy
+        randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr, dummy, validation_output
     use analysis_data, only: n_stats, statinfo, outpath
     
     use namelist_input_routines, only: checkread
@@ -127,13 +127,13 @@
     integer :: ios
     integer :: number_of_cases
     integer :: seeds(2)
-    logical :: mhdrflag, write_seeds
+    logical :: mhdrflag, write_seeds, write_validation_output
     character(len=256) :: work_folder, output_folder, parameter_file
     
     integer, intent(in) :: lu
 
     namelist /MHDR/ number_of_cases, seeds, write_seeds, work_folder, &
-        output_folder, parameter_file
+        output_folder, parameter_file, write_validation_output
 
     ios = 1
 
@@ -182,6 +182,7 @@
         end if 
         outpath = output_folder
         parameterfile = parameter_file
+        validation_output = write_validation_output
 
     end if mhdr_flag
 
@@ -195,6 +196,7 @@
     work_folder = 'NULL'
     output_folder = 'NULL'
     parameter_file = 'NULL'
+    write_validation_output = validation_flag
 
     end subroutine set_defaults
 

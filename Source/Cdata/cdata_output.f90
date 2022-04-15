@@ -2,7 +2,7 @@ module preprocessor_output_routines
     
     use precision_parameters
     use preprocessor_types, only: value_wrapper_type
-    use montecarlo_data, only: mc_max_iterations
+    use montecarlo_data, only: mc_max_iterations, validation_output 
     
     implicit none
     save
@@ -245,9 +245,14 @@ module preprocessor_output_routines
         
         outfilename = filename(ibeg:idot) // 'stop'
         write(iobat, '(a18, a)') 'echo %MAX_ITER% > ', trim(outfilename)
-        write(iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
         
-        write(iounix,'(a,a,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH ', filename(ib:iend), ' -v'
+        if (validation_output) then
+            write(iobat,'(a8, a, a3)') '%CFAST% ', filename(ibeg:iend), ' -v'
+            write(iounix,'(a,a,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH ', filename(ib:iend), ' -v'
+        else
+            write(iobat,'(a8, a)') '%CFAST% ', filename(ibeg:iend)
+            write(iounix,'(a,a)') 'qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH ', filename(ib:iend)
+        end if 
         
     end subroutine add_filename_to_batch 
     

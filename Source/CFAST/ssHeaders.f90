@@ -218,14 +218,17 @@ module spreadsheet_header_routines
 
     ! header information for the calculate_residuals spreadsheet output
 
-    integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
-    character(len=35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2), Species(9)
-    integer position, i, j, k, l
+    integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms + 8*mxrooms
+    character(len=35) :: headertext(3,maxhead), Labels(23), LabelUnits(8), Layers(2), Species(9)
+    integer position, i, j, k, l, tmp
     type(room_type), pointer :: roomptr
 
-    data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
-       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'vent jet Fire Flow', 'Mixing Between Layers', &
-    'Convective Flow', 'Radiative Flow'/
+    data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', &
+        'Ceiling Temp (Interior)', 'Ceiling Temp (Exterior)', 'Upper Wall Temp (Interior)', &
+        'Upper Wall Temp (Exterior)', 'Lower Wall (Interior)', 'Lower Wall (Exterior)', &
+        'Floor Temp (Interior)', 'Floor Temp (Exterior)', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', &
+        'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'vent jet Fire Flow', 'Mixing Between Layers', &
+        'Convective Flow', 'Radiative Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'K', 'K', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
     data Species /'N2','O2','CO2','CO','HCN','HCL','FUEL','H2O','Soot'/
@@ -234,6 +237,7 @@ module spreadsheet_header_routines
     headertext(1,1) = Labels(1)
     headertext(2,1) = Labels(1)
     headertext(3,1) = LabelUnits(1)
+    tmp = maxhead
 
     position = 1
 
@@ -256,21 +260,53 @@ module spreadsheet_header_routines
         headertext(1,position) = trim(Labels(5))
         headertext(2,position) = roomptr%id
         headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(6))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(7))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(8))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(9))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(10))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(11))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(12))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
+        position = position + 1
+        headertext(1,position) = trim(Labels(13))
+        headertext(2,position) = roomptr%id
+        headertext(3,position) = LabelUnits(5)
         do i = 1, 2
             do k = 1, 2
                 do l = 2, 9
                     position = position + 1
-                    headertext(1,position) = trim(Labels(l+4))//trim(Layers(i))
+                    headertext(1,position) = trim(Labels(l+12))//trim(Layers(i))
                     headertext(2,position) = roomptr%id
                     headertext(3,position) = LabelUnits(k+5)
                 end do
             end do
             position = position + 1
-            headertext(1,position) = trim(Labels(14))//trim(Layers(i))
+            headertext(1,position) = trim(Labels(22))//trim(Layers(i))
             headertext(2,position) = roomptr%id
             headertext(3,position) = LabelUnits(7)
             position = position + 1
-            headertext(1,position) = trim(Labels(15))//trim(Layers(i))
+            headertext(1,position) = trim(Labels(23))//trim(Layers(i))
             headertext(2,position) = roomptr%id
             headertext(3,position) = LabelUnits(7)
         end do
@@ -290,9 +326,9 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (ioresid,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (ioresid,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (ioresid,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (ioresid,"(44664a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (ioresid,"(44664a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (ioresid,"(44664a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
 
  end subroutine ssHeaders_resid
 

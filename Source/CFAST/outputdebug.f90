@@ -139,6 +139,14 @@ module debug_routines
         call ssaddtolist (position,roomptr%volume(u),outarray)
         call ssaddtolist(position,roomptr%temp(u),outarray)
         call ssaddtolist(position,roomptr%temp(l),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(1,1),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(2,1),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(1,3),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(2,3),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(1,4),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(2,4),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(1,2),outarray)
+        call ssaddtolist(position,roomptr%t_surfaces(2,2),outarray)
         do j = 1, 2
             do k = 1, 2
                 call ssaddtolist (position,flows_total(i,k,j),outarray)

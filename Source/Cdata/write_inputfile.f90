@@ -490,11 +490,11 @@
             else if (fireptr%ignition_type == trigger_by_temp) then
                 call add_token_str(iounit, buf, 'IGNITION_CRITERION = ', 'TEMPERATURE')
                 call add_token_val(iounit, buf, 'SETPOINT = ', fireptr%ignition_criterion - kelvin_c_offset)
-                call add_token_str(iounit, buf, 'DEVICE = ', targetinfo(fireptr%ignition_target)%id)
+                call add_token_str(iounit, buf, 'DEVC_ID = ', targetinfo(fireptr%ignition_target)%id)
             else if (fireptr%ignition_type == trigger_by_flux) then
                 call add_token_str(iounit, buf, 'IGNITION_CRITERION = ', 'FLUX')
                 call add_token_val(iounit, buf, 'SETPOINT = ', fireptr%ignition_criterion/1000._eb)
-                call add_token_str(iounit, buf, 'DEVICE = ', targetinfo(fireptr%ignition_target)%id)
+                call add_token_str(iounit, buf, 'DEVC_ID = ', targetinfo(fireptr%ignition_target)%id)
             end if 
             call end_namelist(iounit, buf)
         end do

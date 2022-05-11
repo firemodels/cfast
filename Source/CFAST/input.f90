@@ -424,7 +424,7 @@
                 roomptr%heat_frac(1:n_rooms+1) = roomptr%heat_frac(1:n_rooms+1)/sum
             end if
             roomptr%nheats = 0
-            do j = 1, n_rooms
+            do j = 1, n_rooms + 1
                 if (roomptr%heat_frac(j)/=0.0_eb) then
                     roomptr%nheats = roomptr%nheats + 1
                     roomptr%hheat_connections(roomptr%nheats) = j

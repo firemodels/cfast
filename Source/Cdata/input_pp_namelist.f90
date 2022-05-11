@@ -1747,6 +1747,21 @@
             fldptr%charval%val => item%room_id
             fldptr%value_type = val_types(idx_char)
             fldptr%valptr => fldptr%charval
+        else if (trim(fieldid) == 'X_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Z_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(3)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else if (trim(fieldid) == 'X_POSITION') then
             found = .true.
             fldptr%realval%val => item%center(1)
@@ -1771,6 +1786,21 @@
             fldptr%charval%val => item%room_id
             fldptr%value_type = val_types(idx_char)
             fldptr%valptr => fldptr%charval
+        else if (trim(fieldid) == 'X_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(2)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Z_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%center(3)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else if (trim(fieldid) == 'X_POSITION') then
             found = .true.
             fldptr%realval%val => item%center(1)
@@ -1802,7 +1832,7 @@
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else
-            call cfastexit('find_field',6)
+            call cfastexit('find_field', 7)
         end if
     class is (fire_type)
         if (trim(fieldid) == 'COMPARTMENT') then
@@ -1810,6 +1840,16 @@
             fldptr%intval%val => item%room
             fldptr%value_type = val_types(idx_int)
             fldptr%valptr => fldptr%intval
+        else if (trim(fieldid) == 'X_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%x_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'Y_LOCATION') then
+            found = .true.
+            fldptr%realval%val => item%y_position
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else if (trim(fieldid) == 'X_POSITION') then
             found = .true.
             fldptr%realval%val => item%x_position
@@ -1843,8 +1883,22 @@
             fldptr%charval%val => item%fire_id
             fldptr%value_type = val_types(idx_char)
             fldptr%valptr => fldptr%charval
+        else if (trim(fieldid(1:8)) == 'SETPOINT') then
+            if (item%ignition_type == 2) then
+                found = .true. 
+                fldptr%realval%val => item%temperature
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            else if (item%ignition_type == 3) then
+                found = .true. 
+                fldptr%realval%val => item%incident_flux
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            else
+                call cfastexit('find_field', 8)
+            end if
         else
-            call cfastexit('find_field', 7)
+            call cfastexit('find_field', 9)
         end if 
     class default
         if (trim(fieldid) == 'PRESSURE') then

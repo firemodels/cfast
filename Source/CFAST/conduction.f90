@@ -29,10 +29,10 @@ module conduction_routines
 !> \param   fluxes_total (output): total flux striking walls
 !> \param   delta: (output): the residual of q'' + k dt/dx
     
-    subroutine conduction(update,dt,fluxes_total,delta)
+    subroutine conduction(update,t,dt,fluxes_total,delta)
 
     integer, intent(in) :: update
-    real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
+    real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal),t
     real(eb), intent(out) :: delta(*)
 
     real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes), walldx(nnodes)

@@ -1109,7 +1109,7 @@ module solve_routines
     end if
 
     ! conduction residual
-    call conduction (update,tsec,dt,fluxes_total,f_vector)
+    call conduction (update,dt,fluxes_total,f_vector)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then

@@ -22,7 +22,7 @@
     use statistics_routines, only: statistics
     use preprocessor_output_routines, only: flush_parameters_buffer
     use setup_data, only: program_name, cdata_accumulator, cdata_preprocessor, cdata_statistics, &
-        exepath, datapath, project, extension
+        exepath, datapath, project, extension, cfast_version
     use input_routines, only: exehandle
     use output_routines, only: output_version
     use utility_routines, only: read_command_options
@@ -32,7 +32,7 @@
     integer :: program_version
 
     program_name = 'CData'
-    program_version = 7702
+    program_version = cfast_version
     
     if (command_argument_count().eq.0) then
         call output_version(0,program_name,program_version)

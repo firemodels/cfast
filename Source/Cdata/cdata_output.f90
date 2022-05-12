@@ -1,6 +1,12 @@
 module preprocessor_output_routines
-    
+
     use precision_parameters
+    
+    use namelist_data, only: input_file_line, input_file_line_number
+    use setup_data, only: validation_flag, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
+        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, errormessage
+    use exit_routines, only: cfastexit
+    
     use preprocessor_types, only: value_wrapper_type
     use montecarlo_data, only: mc_max_iterations, validation_output 
     
@@ -12,7 +18,7 @@ module preprocessor_output_routines
     character(len=128), allocatable, dimension(:), target :: parameters_array
     character(len=128), allocatable, dimension(:,:), target :: seeds_array
     character(len=256) :: work_dir
-    integer :: mxparam, mxseeds, n_param, n_seeds, mxgen
+    integer :: mxparam, mxseeds, n_param, n_seeds, mxgen, mxchar
     integer :: ioparam, ioseeds, iobat, iounix
     
     public initialize_preprocessor_output_routines, setup_col_parameters_output, open_preprocessor_outputfiles, &
@@ -32,6 +38,7 @@ module preprocessor_output_routines
         mxparam = tmp_mxparams
         mxseeds = tmp_mxseeds
         mxgen = tmp_mxgen
+        mxchar = 128*mxparam + mxparam
     
         allocate(parameters_array(mxparam))
         parameters_array(1:mxparam) = ' '
@@ -55,8 +62,11 @@ module preprocessor_output_routines
     
         class (value_wrapper_type), intent(inout) :: field
 
-        if (field%add_to_parameters) then
+        if (field%add_to_parameters.and.n_param < mxparam) then
             call field%add_header(n_param, parameters_array)
+        else if (n_param >= mxparam) then
+            errormessage = 'Setting up too many output columns'
+            call cfastexit('SETUP_COL_PARAMETERS_OUTPUT',1)
         end if
     
     end subroutine setup_col_parameters_output
@@ -110,7 +120,7 @@ module preprocessor_output_routines
     
     subroutine flush_parameters_buffer
     
-        character(len=20000) :: buf
+        character(len=mxchar+mxparam) :: buf
         integer :: i
         
         buf = ' '

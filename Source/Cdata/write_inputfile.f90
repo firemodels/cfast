@@ -570,7 +570,7 @@
                 call end_namelist(iounit, lbuf)
                 do k = 1, fireptr%n_qdot
                     vals(1) = fireptr%t_qdot(k)
-                    vals(2) = fireptr%qdot(k)
+                    vals(2) = fireptr%qdot(k)/1000._eb
                     vals(3) = fireptr%height(k)
                     vals(4) = fireptr%area(k)
                     vals(5) = fireptr%y_co(k)

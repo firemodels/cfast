@@ -637,7 +637,10 @@
             do k = 1, tablptr%n_points
                 j = 0
                 do l = 1, maxlbls
-                    if (imaplbls(l).gt.0) then
+                    if (l == 2 .and. imaplbls(l).gt.0) then
+                        j = j + 1
+                        vals(j) = tablptr%data(k, imaplbls(l))/1000._eb
+                    elseif (imaplbls(l).gt.0) then
                         j = j + 1
                         vals(j) = tablptr%data(k, imaplbls(l))
                     end if

@@ -1886,12 +1886,13 @@
         else if (trim(fieldid(1:8)) == 'SETPOINT') then
             if (item%ignition_type == 2) then
                 found = .true. 
-                fldptr%realval%val => item%temperature
+                fldptr%realval%val => item%ignition_criterion
+                fldptr%temp_flag = .true.
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             else if (item%ignition_type == 3) then
                 found = .true. 
-                fldptr%realval%val => item%incident_flux
+                fldptr%realval%val => item%ignition_criterion
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             else

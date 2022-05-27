@@ -724,7 +724,7 @@ Public Class Fire
                     End If
                 ElseIf aIgnitionType = FireIgnitionbyFlux Then
                     If aIgnitionValue < 0.0 Or aIgnitionValue > MaxFlux Then
-                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux + " kW/m².", ErrorMessages.TypeWarning)
+                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux.ToString + " kW/m².", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                 End If

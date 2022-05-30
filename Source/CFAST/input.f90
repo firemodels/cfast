@@ -8,7 +8,7 @@
     use namelist_input_routines, only: namelist_input, read_misc
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files
-    use utility_routines, only: emix
+    use utility_routines, only: emix, get_filenumber
     
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, material_type, vent_type, &
         visual_type
@@ -62,7 +62,8 @@
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
-    open (newunit=iofili,file=inputfile,status='OLD',iostat=ios)
+    iofili = get_filenumber()
+    open (iofili,file=inputfile,status='OLD',iostat=ios)
     if (ios/=0) then
         write (errormessage,5050) modulo(ios,256)
         call cfastexit('readinputfile',1)
@@ -490,7 +491,9 @@
     sscalculation = datapath(1:lp) // project(1:ld) // '_calculations.csv'
 
     !open input file and check to see if it's a new (namelist) format file
-    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+
+    iofili = get_filenumber()
+    open (iofili, file=inputfile, action='read', status='old', iostat=ios)
     read (unit=iofili,fmt='(a)') buf
     rewind (unit=iofili)
     if (buf(1:1)=='&') then
@@ -515,7 +518,8 @@
     ! output the revision for later identification of validation plots
     if (validation_flag) then
         call delete_output_files (gitfile)
-        open (newunit=iofilg, file=gitfile, action='write', iostat=ios, status='new')
+        iofilg = get_filenumber()
+        open (iofilg, file=gitfile, action='write', iostat=ios, status='new')
         if (ios==0) then
             call get_info(revision, revision_date, compile_date)
             write (iofilg,'(a)') revision
@@ -525,7 +529,8 @@
 
     ! open the log file to write error messages and such
     call delete_output_files (errorlogging)
-    open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
+    iofill = get_filenumber()
+    open (iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
         write (errormessage,'(a,i0,a)') '***Error opening log file, returned status = ', ios, &
             '. Log file may be in use by another application.'

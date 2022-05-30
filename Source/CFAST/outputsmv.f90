@@ -5,7 +5,7 @@
     use exit_routines, only: cfastexit
     use fire_routines, only: get_gas_temp_and_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
-    use utility_routines, only: tointstring
+    use utility_routines, only: tointstring, get_filenumber
 
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     
@@ -444,13 +444,15 @@
         end do
 
         if (first_time.eq.1) then
-            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((tslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -459,13 +461,15 @@
 
         sf => sliceinfo(i+1)
         if (first_time.eq.1) then
-            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (newunit=unit,file=sf%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((uslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -474,13 +478,15 @@
 
         sf => sliceinfo(i+2)
         if (first_time.eq.1) then
-            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((vslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -489,13 +495,15 @@
 
         sf => sliceinfo(i+3)
         if (first_time.eq.1) then
-            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -504,13 +512,15 @@
 
         sf => sliceinfo(i+4)
         if (first_time.eq.1) then
-            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((sslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -605,6 +615,7 @@ module isosurface
 
     use exit_routines, only: cfastexit
     use fire_routines, only: get_gas_temp_and_velocity
+    use utility_routines, only: get_filenumber
     
     
     use cfast_types, only: room_type
@@ -667,9 +678,11 @@ module isosurface
         end do
 
         if (first_time.eq.1) then
-            open (newunit=unit,file=isoptr%filename,form='unformatted',status='replace')
+            unit = get_filenumber()
+            open (unit,file=isoptr%filename,form='unformatted',status='replace')
         else
-            open (newunit=unit,file=isoptr%filename,form='unformatted',status='old',position='append')
+            unit = get_filenumber()
+            open (unit,file=isoptr%filename,form='unformatted',status='old',position='append')
         end if
         call iso_to_file(unit,first_time, timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, &
             roomptr%zpltf, kbar+1)

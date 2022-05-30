@@ -12,6 +12,7 @@
     implicit none
 
     character(len=lbufln) :: lbuf
+    integer :: file_counter = 10
 
     ! unlike most other routines, this one does not have the private specifier since all routines here are intended to be
     ! used by other routines
@@ -65,6 +66,13 @@
     istring = trim(string)
     return
     end subroutine toIntString
+
+    ! --------------------------- get_filenumber ---------------------------------------
+
+    integer function get_filenumber()
+      file_counter = file_counter + 1
+      get_filenumber = file_counter
+    end function get_filenumber
 
     ! --------------------------- tanhsmooth ---------------------------------------
 

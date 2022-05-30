@@ -5,6 +5,7 @@
     use exit_routines, only: cfastexit
     use fire_routines, only: flame_height
     use initialization_routines, only: initialize_memory
+    use utility_routines, only: get_filenumber
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type
@@ -3017,7 +3018,8 @@ continue
     character(len=256) :: buf
     
     !open input file and check to see if it's a new (namelist) format file
-    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    iofili = get_filenumber()
+    open (iofili, file=inputfile, action='read', status='old', iostat=ios)
     read (unit=iofili,fmt='(a)') buf
     rewind (unit=iofili)
     

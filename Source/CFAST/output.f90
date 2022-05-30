@@ -2,6 +2,7 @@ module output_routines
     
     use precision_parameters
 
+    use utility_routines, only: get_filenumber
     use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
@@ -760,7 +761,7 @@ module output_routines
 5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
      5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment  Name              Surface      Layer      Conductivity    ', &
           'Specific Heat    Density        Thickness     Emissivity      Material',/, &
-          '                                                       (kW/(m °C))     (kJ/(m °C))      (kg/m^3)       (m)',/,146('-'))  
+          '                                                       (kW/(m ï¿½C))     (kJ/(m ï¿½C))      (kg/m^3)       (m)',/,146('-'))  
 5030 format (i5,8x,a13,5x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
 5040 format (31x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
 5050 format (43x,i2,6x,5(1pg13.3,3x),2x,a)
@@ -1041,7 +1042,7 @@ module output_routines
 
 5000 format (//,'All compartment surfaces are adiabatic.')
      5010 format (//,'THERMAL PROPERTIES',//,'Name',4X,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
-          5X,'Emissivity',/,8x, '(kW/(m °C))       (kJ/(m °C))       (kg/m^3)       (m)',/,83('-'))
+          5X,'Emissivity',/,8x, '(kW/(m ï¿½C))       (kJ/(m ï¿½C))       (kg/m^3)       (m)',/,83('-'))
 5040 format (a8,5(1pg13.3,3x),5e10.2)
 5050 format (8x,4(1pg13.3,3x))
 5060 format (' ')
@@ -1445,7 +1446,7 @@ module output_routines
 
 5001 FORMAT('Status at T = ',1pg11.2, ' DT = ',g11.3, ' STEPS = ',i0)
     end subroutine output_status
-
+    
 ! --------------------------- open_output_files -------------------------------------------
 
 !> \brief   open the appropriate files
@@ -1474,38 +1475,50 @@ module output_routines
     integer :: ios
 
     ! first the file for "printed" output
-    open (newunit=iofilo,file=outputfile,status='new')
+    iofilo = get_filenumber()
+    open (iofilo,file=outputfile,status='new')
     if (outputformat==0) outputformat = 2
 
     ! the status files
-    open (newunit=iofilstat,file=statusfile,access='append',err=81,iostat=ios)
+    iofilstat = get_filenumber()
+    open (iofilstat,file=statusfile,access='append',err=81,iostat=ios)
 
     ! the smokeview files
     if (smv_out_interval>0) then
-        open (newunit=iofilsmv,file=smvhead,form='formatted',err=11,iostat=ios)
-        open (newunit=iofilsmvplt,file=smvdata,form="unformatted",err=11,iostat=ios)
-        open (newunit=iofilsmvzone, file=smvcsv,form='formatted')
+        iofilsmv = get_filenumber()
+        open (iofilsmv,file=smvhead,form='formatted',err=11,iostat=ios)
+        iofilsmvplt = get_filenumber()
+        open (iofilsmvplt,file=smvdata,form="unformatted",err=11,iostat=ios)
+        iofilsmvzone = get_filenumber()
+        open (iofilsmvzone, file=smvcsv,form='formatted')
     end if
 
     ! the spread sheet files
     if (ss_out_interval>0) then
-        if (ssoutoptions(ichar('C')-ichar('A')+1)>0) open(newunit=iofilssc, file=sscompartment,form='formatted')
+        iofilssc = get_filenumber()
+        iofilssd = get_filenumber()
+        iofilssm = get_filenumber()
+        iofilssv = get_filenumber()
+        iofilssw = get_filenumber()
+        if (ssoutoptions(ichar('C')-ichar('A')+1)>0) open(iofilssc, file=sscompartment,form='formatted')
         iocsv(iocsv_compartments) = iofilssc
-        if (ssoutoptions(ichar('D')-ichar('A')+1)>0) open(newunit=iofilssd, file=ssdevice,form='formatted')
+        if (ssoutoptions(ichar('D')-ichar('A')+1)>0) open(iofilssd, file=ssdevice,form='formatted')
         iocsv(iocsv_devices) = iofilssd
-        if (ssoutoptions(ichar('M')-ichar('A')+1)>0) open(newunit=iofilssm, file=ssmasses,form='formatted')
+        if (ssoutoptions(ichar('M')-ichar('A')+1)>0) open(iofilssm, file=ssmasses,form='formatted')
         iocsv(iocsv_masses) = iofilssm
-        if (ssoutoptions(ichar('V')-ichar('A')+1)>0) open(newunit=iofilssv, file=ssvent,form='formatted')
+        if (ssoutoptions(ichar('V')-ichar('A')+1)>0) open(iofilssv, file=ssvent,form='formatted')
         iocsv(iocsv_vents) = iofilssv
-        if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(newunit=iofilssw, file=sswall,form='formatted')
+        if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw
         
         if (n_dumps/=0) then
-            open (newunit=iofilcalc, file=sscalculation,form='formatted')
+           iofilcalc = get_filenumber()
+            open (iofilcalc, file=sscalculation,form='formatted')
         end if
         
         if (radi_verification_flag) then
-            open (newunit=iofilssdiag, file=ssdiag,form='formatted')
+            iofilssdiag = get_filenumber()
+            open (iofilssdiag, file=ssdiag,form='formatted')
         end if
     end if
 

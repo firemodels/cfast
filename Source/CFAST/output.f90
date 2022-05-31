@@ -761,7 +761,7 @@ module output_routines
 5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
      5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment  Name              Surface      Layer      Conductivity    ', &
           'Specific Heat    Density        Thickness     Emissivity      Material',/, &
-          '                                                       (kW/(m �C))     (kJ/(m �C))      (kg/m^3)       (m)',/,146('-'))  
+          '                                                       (kW/(m C))     (kJ/(m C))      (kg/m^3)       (m)',/,146('-'))  
 5030 format (i5,8x,a13,5x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
 5040 format (31x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
 5050 format (43x,i2,6x,5(1pg13.3,3x),2x,a)

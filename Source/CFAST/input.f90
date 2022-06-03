@@ -579,6 +579,8 @@
     character(len=64) :: ext(2)
     integer(kind=4) :: length, pathcount, splitpathqq, ilen
     logical :: DoesTheFileExist
+    
+    external splitpathqq
 
     nargs = command_argument_count() + 1
 

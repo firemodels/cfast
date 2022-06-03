@@ -14,6 +14,7 @@
 
     character(len=1) :: ch, getcharqq
     logical :: peekcharqq
+    external peekcharqq, getcharqq
 
     ich = 0
     hit = 0

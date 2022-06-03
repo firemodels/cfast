@@ -64,6 +64,8 @@
     character(len=35) :: cTarg
     integer(4) :: length, splitpathqq
     integer :: vtype
+    
+    external splitpathqq
 
     integer ibar, jbar, kbar
     integer :: j

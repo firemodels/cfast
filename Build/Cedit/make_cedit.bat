@@ -8,7 +8,7 @@ mkdir temp
 set KWDIR=..\..\Utilities\keyword
 set SDIR=.\
 set BINDIR=..\..\Utilities\for_bundle\Bin
-set MSBUILD="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
+set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe"
 
 Title Building CEdit for 64 bit Windows
 

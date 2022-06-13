@@ -625,6 +625,9 @@ module initialization_routines
         fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
+        
+        ! For CData
+        fireinfo(1:mxfires)%CData_modifying_fire_flag = .false. 
 
         ! trace species stuff
         fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb

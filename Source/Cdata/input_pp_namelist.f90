@@ -1016,6 +1016,7 @@
             ! Scaling Fire HRR
             
             if (trim(scaling_fire_hrr_random_generator_id) /= 'NULL') then
+                fire%fire%CData_modifying_fire_flag = .true.
                 do jj = 1, n_generators
                     if (trim(scaling_fire_hrr_random_generator_id)== trim(generatorinfo(jj)%id)) then
                         fire%hrrscale => generatorinfo(jj)
@@ -1044,6 +1045,7 @@
             ! Scaling Fire Time
             
             if (trim(scaling_fire_time_random_generator_id) /= 'NULL') then
+                fire%fire%CData_modifying_fire_flag = .true.
                 do jj = 1, n_generators
                     if (trim(scaling_fire_time_random_generator_id)== trim(generatorinfo(jj)%id)) then
                         fire%timescale => generatorinfo(jj)
@@ -1141,6 +1143,7 @@
             
             if (trim(flaming_incipient_delay_random_generator_id) /= 'NULL' .and. &
                 trim(flaming_incipient_peak_random_generator_id) /= 'NULL') then
+                fire%fire%CData_modifying_fire_flag = .true.
                 found = .false.
                 found2 = .false. 
                 do jj = 1, n_generators
@@ -1198,6 +1201,7 @@
             
             if (trim(smoldering_incipient_delay_random_generator_id) /= 'NULL' .and. &
                 trim(smoldering_incipient_peak_random_generator_id) /= 'NULL') then
+                fire%fire%CData_modifying_fire_flag = .true.
                 found = .false.
                 found2 = .false. 
                 do jj = 1, n_generators
@@ -1260,6 +1264,7 @@
                 
             if (flameset .and. smolderset .and. & 
                 trim(flaming_smoldering_incipient_random_generator_id) /= 'NULL' ) then
+                fire%fire%CData_modifying_fire_flag = .true.
                 found = .false.
                 do jj = 1, n_generators
                     if (trim(flaming_smoldering_incipient_random_generator_id) == trim(generatorinfo(jj)%id)) then
@@ -1302,6 +1307,7 @@
             ! Setting up the fire where all points are determined by generators
             
             If (trim(fire_hrr_generator_ids(1)) /= 'NULL' .and. trim(fire_time_generator_ids(1)) /= 'NULL') then
+                fire%fire%CData_modifying_fire_flag = .true.
                 fire%generate_fire =   .true. 
                 fire%add_to_parameters = .true.
                 fire%fire_generator_is_time_to_1054_kW = generator_is_time_to_1054_kW
@@ -1898,6 +1904,26 @@
             else
                 call cfastexit('find_field', 8)
             end if
+        else if (trim(fieldid(1:8)) == 'CO_YIELD') then
+            found = .true. 
+            fldptr%realval%val => item%y_co(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:8)) == 'HCN_YIELD') then
+            found = .true. 
+            fldptr%realval%val => item%y_hcn(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:8)) == 'SOOT_YIELD') then
+            found = .true. 
+            fldptr%realval%val => item%y_soot(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid(1:8)) == 'TRACE_YIELD') then
+            found = .true. 
+            fldptr%realval%val => item%y_trace(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else
             call cfastexit('find_field', 9)
         end if 

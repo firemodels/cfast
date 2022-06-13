@@ -121,6 +121,8 @@ module cfast_types
         real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
         
+        logical :: CData_modifying_fire_flag            ! Flag for CData
+        
     contains
         procedure :: pop_table
     end type fire_type
@@ -393,42 +395,54 @@ module cfast_types
             class(fire_type) :: me
             type(table_type), intent(in) :: table
             
-            integer :: np, i
+            integer :: np, i, tidx
             
             np = table%n_points
+            tidx = 0
+            time_label_loop: do i = 1, mxtablcols
+                if (trim(table%labels(i)) == 'TIME') then
+                    tidx = i
+                    exit time_label_loop
+                end if
+            end do time_label_loop
+            if (tidx <= 0) then
+                stop 'ERROR in pop_table in cfast_structures'
+            end if 
+
             do i = 1, mxtablcols
                 select case (trim(table%labels(i)))
                 case ('TIME')
-                    me%t_qdot(1:np) = table%data(1:np,i)
-                    me%n_qdot = np
-                    me%t_soot(1:np) = table%data(1:np,i)
-                    me%n_soot = np
-                    me%t_co(1:np) = table%data(1:np,i)
-                    me%n_co = np
-                    me%t_hcn(1:np) = table%data(1:np,i)
-                    me%n_hcn = np
-                    me%t_trace(1:np) = table%data(1:np,i)
-                    me%n_trace = np
-                    me%t_area(1:np) = table%data(1:np,i)
-                    me%n_area = np
-                    me%t_height(1:np) = table%data(1:np,i)
-                    me%n_height = np
+                    ! place holder at this point. 
                 case ('HRR')
                     me%qdot(1:np) = table%data(1:np,i)*1000._eb
+                    me%t_qdot(1:np) = table%data(1:np,tidx)
+                    me%n_qdot = np
                 case ('HEIGHT')
                     me%height(1:np) = table%data(1:np,i)
+                    me%t_height(1:np) = table%data(1:np,tidx)
+                    me%n_height = np
                 case ('AREA')
                     me%area(1:np) = max(table%data(1:np,i),pio4*0.2_eb**2)
+                    me%t_area(1:np) = table%data(1:np,tidx)
+                    me%n_area = np
                 case ('CO_YIELD')
                     me%y_co(1:np) = table%data(1:np,i)
+                    me%t_co(1:np) = table%data(1:np,tidx)
+                    me%n_co = np
                 case ('SOOT_YIELD')
                     me%y_soot(1:np) = table%data(1:np,i)
+                    me%t_soot(1:np) = table%data(1:np,tidx)
+                    me%n_soot = np
                 case ('HCN_YIELD')
                     me%y_hcn(1:np) = table%data(1:np,i)
+                    me%t_hcn(1:np) = table%data(1:np,tidx)
+                    me%n_hcn = np
                 case ('HCL_YIELD')
                     ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
                 case ('TRACE_YIELD')
                     me%y_trace(1:np) = table%data(1:np,i)
+                    me%t_trace(1:np) = table%data(1:np,tidx)
+                    me%n_trace = np
                 end select
             end do
         

@@ -1372,11 +1372,11 @@ continue
     type(table_type),   pointer :: tablptr
 
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
-    real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
+    real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
         soot_yield, trace_yield, flaming_transition_time
     character(len=64) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
-        hcl_yield, hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
+        hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
         table_id, trace_yield, flaming_transition_time
 
     ios = 1

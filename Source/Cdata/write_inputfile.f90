@@ -519,7 +519,7 @@
     integer :: i, j, k, l
     character :: buf*(128), lbuf*(256) 
     character :: charvals(maxlbls)*(15)
-    integer :: imaplbls(maxlbls) 
+    integer :: imaplbls(maxlbls), iflglbls(maxlbls)
     logical :: dup, tablflgs(mxtabls)
     real(eb) :: vals(maxlbls)
     
@@ -558,31 +558,73 @@
                 if (fireptr%flaming_transition_time > 0._eb) then
                     call add_token_val(iounit, buf, 'FLAMING_TRANSITION_TIME = ', fireptr%flaming_transition_time)
                 end if
+                iflglbls(1:maxlbls) = 0
+                if (fireptr%n_co == 1) then 
+                    call add_token_val(iounit, buf, 'CO_YIELD = ', fireptr%y_co(1))
+                    iflglbls(5) = 1
+                end if 
+                if (fireptr%n_soot == 1) then 
+                    call add_token_val(iounit, buf, 'SOOT_YIELD = ', fireptr%y_soot(1))
+                    iflglbls(6) = 1
+                end if 
+                if (fireptr%n_hcn == 1) then 
+                    call add_token_val(iounit, buf, 'HCN_YIELD = ', fireptr%y_hcn(1))
+                    iflglbls(7) = 1
+                end if 
+                if (fireptr%n_soot == 1) then 
+                    call add_token_val(iounit, buf, 'TRACE_YIELD = ', fireptr%y_trace(1))
+                    iflglbls(8) = 1
+                end if 
                 call end_namelist(iounit, buf)
-                do k = 1, n_tabls
-                    if (trim(fireptr%fire_id) == trim(tablinfo(k)%id)) then
-                        tablflgs(k) = .false.
-                    end if
-                end do 
-                call start_namelist(lbuf, 'TABL')
-                call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
-                call add_token_carray(iounit, lbuf, 'LABELS = ', lbls, maxlbls)
-                call end_namelist(iounit, lbuf)
-                do k = 1, fireptr%n_qdot
-                    vals(1) = fireptr%t_qdot(k)
-                    vals(2) = fireptr%qdot(k)/1000._eb
-                    vals(3) = fireptr%height(k)
-                    vals(4) = fireptr%area(k)
-                    vals(5) = fireptr%y_co(k)
-                    vals(6) = fireptr%y_soot(k)
-                    vals(7) = fireptr%y_hcn(k)
-                    vals(8) = fireptr%y_trace(k)
+                if (fireptr%CData_modifying_fire_flag) then
+                    do k = 1, n_tabls
+                        if (trim(fireptr%fire_id) == trim(tablinfo(k)%id)) then
+                            tablflgs(k) = .false.
+                        end if
+                    end do 
                     call start_namelist(lbuf, 'TABL')
                     call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
-                    call add_token_rarray(iounit, lbuf, 'DATA = ',vals, maxlbls)
+                    j = 0
+                    do k = 1, maxlbls
+                        if (iflglbls(k) == 0) then
+                            j = j + 1
+                            charvals(j) = lbls(k)
+                        end if
+                    end do
+                    call add_token_carray(iounit, lbuf, 'LABELS = ', charvals, j)
                     call end_namelist(iounit, lbuf)
-                end do 
-                write(iounit, '(a1)')
+                    do k = 1, fireptr%n_qdot
+                        j = 1
+                        vals(j) = fireptr%t_qdot(k)
+                        j = j + 1
+                        vals(j) = fireptr%qdot(k)/1000._eb
+                        j = j + 1
+                        vals(j) = fireptr%height(k)
+                        j = j + 1
+                        vals(j) = fireptr%area(k)
+                        if (iflglbls(5) == 0) then
+                            j = j + 1
+                            vals(j) = fireptr%y_co(k)
+                        end if
+                        if (iflglbls(6) == 0) then
+                            j = j + 1
+                            vals(j) = fireptr%y_soot(k)
+                        end if
+                        if (iflglbls(7) == 0) then
+                            j = j + 1
+                            vals(j) = fireptr%y_hcn(k)
+                        end if
+                        if (iflglbls(8) == 0) then
+                            j = j + 1
+                            vals(j) = fireptr%y_trace(k)
+                        end if
+                        call start_namelist(lbuf, 'TABL')
+                        call add_token_str(iounit, lbuf, 'ID = ', fireptr%fire_id)
+                        call add_token_rarray(iounit, lbuf, 'DATA = ',vals, j)
+                        call end_namelist(iounit, lbuf)
+                    end do 
+                    write(iounit, '(a1)')
+                end if
             end if
         end do 
     end if
@@ -598,30 +640,22 @@
             do k = 1, mxtablcols
                 select case (trim(tablptr%labels(k)))
                     case (lbls(1))
-                        j = j + 1
                         imaplbls(1) = k
                     case (lbls(2))
-                        j = j + 1
                         imaplbls(2) = k
                     case (lbls(3))
-                        j = j + 1
                         imaplbls(3) = k
                     case (lbls(4))
-                        j = j + 1
                         imaplbls(4) = k
                     case (lbls(5))
-                        j = j + 1
                         imaplbls(5) = k
                     case (lbls(6))
-                        j = j + 1
                         imaplbls(6) = k
                     case (lbls(7))
-                        j = j + 1
                         imaplbls(7) = k
                     case (lbls(8))
-                        j = j + 1
                         imaplbls(8) = k
-                    case defaulT
+                    case default
                     
                 end select
             end do 

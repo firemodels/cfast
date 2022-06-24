@@ -25,15 +25,16 @@ Public Class Vent
     Public Const default_max_cutoff_relp As Double = 300.0
 
     ' All units within the class are assumed to be consistent and typically SI
-    Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
+    Private aVentType As Integer                ' Type of vent; 0 = wall vent flow, 1 = ceiling/floor vent flow, 2 = mechanical flow
     Private aFirstCompartment As Integer        ' First of compartments connected by vent
     Private aSecondCompartment As Integer       ' Second of compartments connected by vent
-    Private aOffset As Double                   ' vent position along wall from end of first compartment for Wall vents
+    Private aOffset As Double                   ' vent position along wall from end of first compartment for wall vents
     Private aOffsetX As Double                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
     Private aOffsetY As Double                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
     Private aWidth As Double                    ' Width of the wall vent
     Private aHeight As Double                   ' Height of the wall vent relative to the bottom of the vent
-    Private aBottom As Double                   ' Bottom (bottom of vent) height from floor of first comparment for Wall vents
+    Private aBottom As Double                   ' Bottom (bottom of vent) height from floor of first comparment for wall vents
+    Private aCoeff As Double                    ' Optional vent flow coefficient for wall vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for right, 3 for back, 4 for left
     Private aOpenType As Integer                ' Vent opening by time, temperature, or incident heat flux
     Private aOpenValue As Double                ' Vent opening criterion if by temperature or flux
@@ -44,7 +45,7 @@ Public Class Vent
     Private aFinalOpeningTime As Double         ' EVENT vent opening times
     Private aRampTimePoints(0) As Double        ' Vent opening times
     Private aRampFractionPoints(0) As Double    ' Vent open fractions
-    Private aArea As Double                     ' Cross-sectional area of vent for Ceiling/Floor vents
+    Private aArea As Double                     ' Cross-sectional area of vent for ceiling/floor vents
     Private aShape As Integer                   ' Ceiling/Floor vent shape, 1 for circular and 2 for square
     Private aFirstArea As Double                ' Mechanical vent opening size in first compartment
     Private aFirstCenterHeight As Double        ' Height of center of Mechanical vent opening
@@ -77,6 +78,7 @@ Public Class Vent
         aInitialOpening = 1.0
         aFilterEfficiency = 0.0
         aFYI = ""
+        aCoeff = 0.0
     End Sub
     Public Property VentType() As Integer
         Get
@@ -212,6 +214,17 @@ Public Class Vent
         Set(ByVal Value As Double)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aHeight Then
                 aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property Coeff() As Double
+        Get
+            Return aCoeff
+        End Get
+        Set(ByVal Value As Double)
+            If Value <> aCoeff Then
+                aCoeff = Value
                 aChanged = True
             End If
         End Set
@@ -748,7 +761,10 @@ Public Class Vent
             ' check vent size, position, and parameters specific to each vent type
             Select Case aVentType
                 Case TypeHVent
-                    If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
+                    If aCoeff < 0.0 Or aCoeff > 1.0 Then
+                        myErrors.Add("Wall vent " + VentNumber.ToString + " has an invalid vent flow coefficient. Value must be greater than zero and less than 1", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    ElseIf aFirstCompartment < -1 Or aSecondCompartment < -1 Then
                         myErrors.Add("Wall vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then

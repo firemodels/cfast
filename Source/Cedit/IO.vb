@@ -927,7 +927,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLVent(NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
         Dim i, j, k, max As Integer
-        Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff As Double
+        Dim area, areas(2), bot, top, height, width, cutoffs(2), flow, heights(2), offset, offsets(2), setp, prefrac, postfrac, filttime, filteff, coeff As Double
         Dim tt(0), ff(0) As Double
         Dim compids(2), filtramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
         Dim valid As Boolean
@@ -939,6 +939,7 @@ Module IO
                 bot = 0
                 top = 0
                 height = 0
+                coeff = 0
                 crit = "TIME"
                 devcid = ""
                 setp = 0.0
@@ -1007,6 +1008,8 @@ Module IO
                         top = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHT" Then
                         height = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "VENT_FLOW_COEFFICIENT" Then
+                        coeff = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_TIME" Then
                         filttime = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_EFFICIENCY" Then
@@ -1120,6 +1123,9 @@ Module IO
                             myErrors.Add("In &VENT namelist " + NMList.ForNMListGetVar(i, j) + "  HEIGHT must be greater than zero.", ErrorMessages.TypeFatal)
                         End If
                         aVent.SetVent(comp0dx, comp1dx, width, height, bot, top)
+                        If coeff > 0 Then
+                            aVent.Coeff = coeff
+                        End If
                         ' This is the new format that includes trigger by flux or temperature
                         If face = "FRONT" Then
                             aVent.Face = 1
@@ -2745,6 +2751,7 @@ Module IO
                     ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
                 End If
                 ln += ", BOTTOM = " + aVent.Bottom.ToString + " HEIGHT = " + aVent.Height.ToString + ", WIDTH = " + aVent.Width.ToString
+                If aVent.Coeff > 0 Then ln += "  VENT_FLOW_COEFFICIENT = " + aVent.Coeff.ToString
                 PrintLine(IO, ln)
                 ln = "    "
                 If aVent.OpenType = Vent.OpenbyTime Then

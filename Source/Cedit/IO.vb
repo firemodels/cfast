@@ -2723,6 +2723,7 @@ Module IO
                 ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString
                 If aComp.WallLeak > 0 Or aComp.FloorLeak > 0 Then
                     ln += " LEAK_AREA_RATIO = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
+                    If aComp.Coeff > 0 Then ln += "  FLOW_COEFFICIENT = " + aComp.Coeff.ToString
                 End If
                 If aComp.FYI <> "" Then
                     ln += " FYI = '" + aComp.FYI + "'"

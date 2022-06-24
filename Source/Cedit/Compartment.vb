@@ -33,6 +33,7 @@ Public Class Compartment
     Private aGridCells(3) As Integer        ' Number of grid cells for visualization in x, y, z directions
     Private aWallLeak As Double             ' Wall leakage per unit area of wall
     Private aFloorLeak As Double            ' Floor leakage per unit area of floor
+    Private aCoeff As Double                ' FLow coefficient for compartment leaks
     Private aFYI As String                  ' Descriptor for additional user supplied information
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
@@ -371,6 +372,17 @@ Public Class Compartment
             If value <> aFloorLeak Then
                 aChanged = True
                 aFloorLeak = value
+            End If
+        End Set
+    End Property
+    Public Property Coeff() As Double
+        Get
+            Return aCoeff
+        End Get
+        Set(ByVal Value As Double)
+            If Value <> aCoeff Then
+                aCoeff = Value
+                aChanged = True
             End If
         End Set
     End Property

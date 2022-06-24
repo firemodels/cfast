@@ -272,7 +272,7 @@ Module IO
     Private Sub ReadInputFileNMLComp(NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
         Dim id, fyi As String
-        Dim depth, height, width As Double
+        Dim depth, height, width, coeff As Double
         Dim shaft, hall, valid, leakasarea, leakasratio As Boolean
         Dim grid(3) As Integer
         Dim origin(3), leakareas(2), leakratios(2), comparea(0), compheight(0) As Double
@@ -283,6 +283,7 @@ Module IO
                 shaft = False
                 leakasarea = False
                 leakasratio = False
+                coeff = 0
                 depth = -1
                 width = -1
                 height = -1
@@ -402,6 +403,8 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FLOW_COEFFICIENT" Then
+                        coeff = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
                         fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
@@ -471,6 +474,9 @@ Module IO
                         aComp.FloorLeak = leakratios(2)
                     ElseIf leakasratio = True Then
                         myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                    End If
+                    If coeff > 0 Then
+                        aComp.Coeff = coeff
                     End If
                     aComp.FYI = fyi
                     aComp.Changed = False
@@ -1008,7 +1014,7 @@ Module IO
                         top = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHT" Then
                         height = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "VENT_FLOW_COEFFICIENT" Then
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FLOW_COEFFICIENT" Then
                         coeff = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_TIME" Then
                         filttime = NMList.ForNMListVarGetNum(i, j, 1)
@@ -2751,7 +2757,7 @@ Module IO
                     ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
                 End If
                 ln += ", BOTTOM = " + aVent.Bottom.ToString + " HEIGHT = " + aVent.Height.ToString + ", WIDTH = " + aVent.Width.ToString
-                If aVent.Coeff > 0 Then ln += "  VENT_FLOW_COEFFICIENT = " + aVent.Coeff.ToString
+                If aVent.Coeff > 0 Then ln += "  FLOW_COEFFICIENT = " + aVent.Coeff.ToString
                 PrintLine(IO, ln)
                 ln = "    "
                 If aVent.OpenType = Vent.OpenbyTime Then

@@ -70,29 +70,8 @@
     ! --------------------------- get_filenumber ---------------------------------------
 
     integer function get_filenumber()
-    
-    ! find an open logical unit for cfast files since the openfile= specifier dosen't work on linux
-    
-    logical :: inuse
-    integer :: n
-    integer, parameter :: lumin=10       ! avoid lowest logical units that might be in use
-    integer, parameter :: lumax=999
-    
-    inuse = .false.
-    do n = lumin, lumax
-        inquire (unit = n, opened=inuse)
-        if (.not.inuse) then
-            get_filenumber = n
-            return
-        end if
-    end do
-    
-    ! if you get here, we couldn't find an available logical unit number
-    write (errormessage,'(a)') '***Error, Cannot find available logical unit for a CFAST output file.'
-    call cfastexit('get_filenumber',1)
-    
-    return
-    
+      file_counter = file_counter + 1
+      get_filenumber = file_counter
     end function get_filenumber
 
     ! --------------------------- tanhsmooth ---------------------------------------

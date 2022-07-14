@@ -162,6 +162,7 @@ module cfast_types
         
         real(eb), dimension(2) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls and (2) floor
         real(eb), dimension(2) :: leak_areas            ! leakage area in m^2; (1) walls and (2) floor
+        real(eb)               :: cvent                 ! leak vent flow coefficient. Default is 0.7
 
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area
@@ -311,6 +312,8 @@ module cfast_types
         real(eb) :: area                    ! cross-sectional area of vent
         real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
         real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
+        
+        real(eb) :: cvent                   ! coefficient for vent flow. Default value 0.7
         
         ! These define a wall vent
         real(eb) :: sill                                ! height of vent bottom relative to compartment floor

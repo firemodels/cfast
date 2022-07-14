@@ -108,7 +108,7 @@ module hflow_routines
         if (avent>=1.0e-10_eb) then
             call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&
                 epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
-                yvelev,xmslab,nslab)
+                yvelev,xmslab,nslab,ventptr%cvent)
 
             ventptr%n_slabs = nslab
             do islab = 1,nslab
@@ -234,7 +234,7 @@ module hflow_routines
         if (avent>=1.0e-10_eb) then
             call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&
                 epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
-                yvelev,xmslab,nslab)
+                yvelev,xmslab,nslab,ventptr%cvent)
 
             ventptr%n_slabs = nslab
             do islab = 1,nslab
@@ -442,13 +442,13 @@ module hflow_routines
 !> \param   n_velev (output): number of unique elevations delineating slabs
 
     subroutine ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,epsp,cslab,pslab,qslab, &
-        vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
+        vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,cvent)
 
     integer, intent(in) :: mxfslab
     integer, intent(out) :: nslab, dirs12(*)
 
     real(eb), intent(in) :: zflor(*), zlay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
-    real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(ns,2), conu(ns,2),  epsp
+    real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(ns,2), conu(ns,2),  epsp, cvent
 
     real(eb), intent(out) :: yvelev(*), dpv1m2(10)
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
@@ -457,7 +457,7 @@ module hflow_routines
     integer :: nneut, nelev, i, jroom, iprod
 
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
-    real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
+    real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, area, r1m8, sum, ys
 
     ! create initial elevation height array (ignoring neutral planes)
     call get_slab_elevations(yvbot,yvtop,zlay,yelev,nelev)
@@ -543,7 +543,8 @@ module hflow_routines
             r1 = max(rslab(i),0.0_eb)
             y2 = yvelev(i+1)
             y1 = yvelev(i)
-            cvent = 0.70_eb
+            ! This is where CFAST originally hardcoded the vent flow coefficient 
+            !cvent = 0.70_eb
 
             area = avent*(y2-y1)/(yvtop-yvbot)
             r1m8 = 8.0_eb*r1

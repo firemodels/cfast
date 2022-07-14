@@ -468,7 +468,7 @@
     type(room_type), pointer :: roomptr
 
     integer,dimension(3) :: grid
-    real(eb) :: depth, height ,width
+    real(eb) :: depth, height ,width, flow_coefficient
     real(eb), dimension(3) :: origin
     real(eb), dimension(2) :: leak_area_ratio, leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
@@ -479,7 +479,7 @@
     character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
         ceiling_matl_id, floor_matl_id, wall_matl_id,ceiling_thickness, floor_thickness, wall_thickness, &
-        origin, shaft, width, leak_area_ratio, leak_area
+        origin, shaft, width, leak_area_ratio, leak_area, flow_coefficient
 
     ios = 1
 
@@ -598,6 +598,7 @@
             ! leakage
             roomptr%leak_area_ratios = leak_area_ratio
             roomptr%leak_areas = leak_area
+            roomptr%cvent = flow_coefficient 
 
         end do read_comp_loop
 
@@ -624,6 +625,7 @@
     origin(:)               = 0.0_eb
     leak_area_ratio(:)      = 0.0_eb
     leak_area(:)            = 0.0
+    flow_coefficient        = 0.07_eb
     hall                    = .false.
     shaft                   = .false.
 
@@ -1685,7 +1687,7 @@ continue
     type(vent_type), pointer :: ventptr
 
     real(eb) :: area, bottom, flow, height, offset, setpoint, top, width, pre_fraction, post_fraction, &
-        filter_time, filter_efficiency
+        filter_time, filter_efficiency, flow_coefficient
     real(eb), dimension(2) :: areas, cutoffs, heights, offsets
     real(eb), dimension(mxpts) :: t, f
     character(len=64),dimension(2) :: comp_ids, orientations
@@ -1693,7 +1695,7 @@ continue
     character(len=128) :: fyi
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
         filter_time, flow, height, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
-        setpoint, shape, t, top, type, width, fyi
+        setpoint, shape, t, top, type, width, fyi, flow_coefficient
 
     ios = 1
 
@@ -1789,6 +1791,7 @@ continue
                 ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
                 ventptr%absolute_sill = ventptr%sill + roomptr%z0
 
+                ventptr%cvent = flow_coefficient
 
                 if (n_hvents>mxhvents) then
                     write (errormessage,5081) i, j, k
@@ -1973,6 +1976,7 @@ continue
     t(:)                  = -1001._eb
     top                   = 0._eb
     type                  = 'NULL'
+    flow_coefficient      = 0.7_eb
     width                 = 0._eb
     height                = 0._eb
 

@@ -231,7 +231,7 @@ module preprocessor_types
         real(eb) :: growthexpo, decayexpo
         integer :: growth_npts, decay_npts, last_growth_pt, first_decay_pt
         integer :: n_firepoints, n_firegenerators
-        logical :: generate_fire = .false.
+        logical :: generate_fire 
         logical :: fire_generator_is_time_to_1054_kW
         type(field_pointer), dimension(2,mxpts) :: firegenerators
         real(eb), dimension(2, mxpts) :: firevals

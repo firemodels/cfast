@@ -1906,22 +1906,55 @@
             end if
         else if (trim(fieldid(1:8)) == 'CO_YIELD') then
             found = .true. 
+            item%n_co = 1
+            item%t_co(1) = 0.0_eb
             fldptr%realval%val => item%y_co(1)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else if (trim(fieldid(1:8)) == 'HCN_YIELD') then
             found = .true. 
+            item%n_hcn = 1
+            item%t_hcn(1) = 0.0_eb
             fldptr%realval%val => item%y_hcn(1)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else if (trim(fieldid(1:8)) == 'SOOT_YIELD') then
             found = .true. 
+            item%n_soot = 1
+            item%t_soot(1) = 0.0_eb
             fldptr%realval%val => item%y_soot(1)
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else if (trim(fieldid(1:8)) == 'TRACE_YIELD') then
             found = .true. 
+            item%n_trace = 1
+            item%t_trace(1) = 0.0_eb
             fldptr%realval%val => item%y_trace(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'CARBON') then
+            found = .true. 
+            fldptr%realval%val => item%n_c
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'HYDROGEN') then
+            found = .true. 
+            fldptr%realval%val => item%n_h
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'OXYGEN') then
+            found = .true. 
+            fldptr%realval%val => item%n_o
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'NITROGEN') then
+            found = .true. 
+            fldptr%realval%val => item%n_n
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'CHLORINE') then
+            found = .true. 
+            fldptr%realval%val => item%n_cl
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
         else

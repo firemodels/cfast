@@ -171,6 +171,7 @@ module preprocessor_routines
         randfireinfo(i)%compname(1:mxrooms) = 'NULL'
         randfireinfo(i)%compindex(1:mxrooms) = -1001
     end do
+    randfireinfo(1:mxrandfires)%generate_fire = .false.
     randfireinfo(1:mxrandfires)%first_time_point_smoldering = .false.
     randfireinfo(1:mxrandfires)%modifyfirearea = .false.
     randfireinfo(1:mxrandfires)%scalehrr = .false.

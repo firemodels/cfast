@@ -1957,6 +1957,12 @@
             fldptr%realval%val => item%n_cl
             fldptr%value_type = val_types(idx_real)
             fldptr%valptr => fldptr%realval
+        else if (trim(fieldid) == 'HEAT_OF_COMBUSTION') then
+            found = .true. 
+            item%n_hoc = 1
+            fldptr%realval%val => item%hoc(1)
+            fldptr%value_type = val_types(idx_real)
+            fldptr%valptr => fldptr%realval
         else
             call cfastexit('find_field', 9)
         end if 

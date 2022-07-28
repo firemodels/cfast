@@ -247,6 +247,7 @@ module initialization_routines
             ventptr%opening_final_fraction = 1._eb
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
+            ventptr%cvent = 0.7_eb
         end if
         
         ! floor leakage
@@ -273,6 +274,7 @@ module initialization_routines
             ventptr%opening_final_fraction = 1._eb
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
+            ventptr%cvent = 0.7_eb
         end if
     end do
     

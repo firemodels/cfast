@@ -325,7 +325,7 @@
                     call cfastexit('read_mrnd', 5)
                 end if 
             else if (trim(distribution_type) == trim(rand_dist(idx_user_defined_continous_interval))) then
-                ndx = 1
+                ndx = 0
                 genptr%type_dist = distribution_type
                 ndx_loop2: do while(ndx <= mxpntsarray)
                     if (probabilities(ndx + 1) >= 0._eb) then
@@ -334,10 +334,9 @@
                         exit ndx_loop2
                     end if
                 end do ndx_loop2
-                genptr%num_discrete_values = ndx - 1
-                genptr%prob_array(1) = 0.0_eb
+                genptr%prob_array(1) = probabilities(1)
                 do jj = 2, ndx
-                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj - 1)
+                    genptr%prob_array(jj) = genptr%prob_array(jj-1) + probabilities(jj)
                 end do  
                 if (genptr%prob_array(ndx) /= 1) then
                     write (errormessage, '(2a)') '***Error, probablities must add up to 1.0, &MRND ', trim(genptr%id)
@@ -347,10 +346,10 @@
                     genptr%value_type = val_types(idx_real)
                     genptr%real_array(1) = values(1)
                     do jj = 2, ndx
-                        if (values(jj) <= values(jj-1)) then
-                            write (errormessage, '(2a)') '***Error, real_values must be increasing for &MRND ', &
-                                trim(genptr%id)
-                            call cfastexit('rean_mrnd', 7)
+                        if (values(jj) == -1001._eb) then
+                            write (errormessage,'(3a)') '***Error, Must be equal number of values as probabilities' &
+                                ,' &MRND ', trim(genptr%id)
+                            call cfastexit('read_mrnd', 7)
                         end if
                         genptr%real_array(jj) = values(jj)
                     end do
@@ -999,6 +998,8 @@
             fire%fireid = fire_id
             fire%basefireid = base_fire_id
             fire%modifyfirearea = modify_fire_area_to_match_hrr
+            fire%incipient_growth = fire%incip_typ(fire%idx_none)
+            fire%incipient_type = fire%incip_typ(fire%idx_none)
             found = .false.
             do jj = 1, n_fires
                 if (trim(fireinfo(jj)%id) == trim(fire%fireid)) then
@@ -1276,6 +1277,7 @@
                     call cfastexit('MFIR', 19)
                 end if
                 fire%incipient_type = fire%incip_typ(fire%idx_random)
+                fire%incipient_growth = fire%incip_typ(fire%idx_random)
                 fire%fs_fire_ptr%field_type = trim(fire%fs_fire_ptr%fld_types(fire%fs_fire_ptr%idx_index))
                 fire%fs_fire_ptr%value_type = val_types(idx_char)
                 fire%fs_fire_ptr%charval%val => fire%incipient_growth

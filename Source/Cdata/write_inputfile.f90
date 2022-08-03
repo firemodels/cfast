@@ -673,7 +673,7 @@
                 do l = 1, maxlbls
                     if (l == 2 .and. imaplbls(l).gt.0) then
                         j = j + 1
-                        vals(j) = tablptr%data(k, imaplbls(l))/1000._eb
+                        vals(j) = tablptr%data(k, imaplbls(l))
                     elseif (imaplbls(l).gt.0) then
                         j = j + 1
                         vals(j) = tablptr%data(k, imaplbls(l))

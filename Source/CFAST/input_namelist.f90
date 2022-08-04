@@ -1376,6 +1376,7 @@ continue
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
         soot_yield, trace_yield, flaming_transition_time
+    logical :: found
     character(len=64) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
@@ -1499,48 +1500,19 @@ continue
                     fireptr%t_height = 0.0_eb
                     fireptr%height(1) = 0.0_eb
 
+                    found = .false. 
                     tabl_search: do kk = 1, n_tabls
                         tablptr=>tablinfo(kk)
                         if (trim(tablptr%id)==trim(fireptr%fire_id)) then
+                            found = .true. 
                             call fireptr%pop_table(tablptr)
-                            !np = tablptr%n_points
-                            !do i = 1,mxtablcols
-                            !    select case (trim(tablptr%labels(i)))
-                            !    case ('TIME')
-                            !        fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_qdot = np
-                            !        fireptr%t_soot(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_soot = np
-                            !        fireptr%t_co(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_co = np
-                            !        fireptr%t_hcn(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_hcn = np
-                            !        fireptr%t_trace(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_trace = np
-                            !        fireptr%t_area(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_area = np
-                            !        fireptr%t_height(1:np) = tablptr%data(1:np,i)
-                            !        fireptr%n_height = np
-                            !    case ('HRR')
-                            !        fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
-                            !    case ('HEIGHT')
-                            !        fireptr%height(1:np) = tablptr%data(1:np,i)
-                            !    case ('AREA')
-                            !        fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
-                            !    case ('CO_YIELD')
-                            !        fireptr%y_co(1:np) = tablptr%data(1:np,i)
-                            !    case ('SOOT_YIELD')
-                            !        fireptr%y_soot(1:np) = tablptr%data(1:np,i)
-                            !    case ('HCN_YIELD')
-                            !        fireptr%y_hcn(1:np) = tablptr%data(1:np,i)
-                            !    case ('HCL_YIELD')
-                            !        ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
-                            !    case ('TRACE_YIELD')
-                            !        fireptr%y_trace(1:np) = tablptr%data(1:np,i)
-                            !    end select
-                            !end do
                         end if
                     end do tabl_search
+                    
+                    if (.not.found) then
+                        write (errormessage,5320) tablptr%id
+                        call cfastexit('read_chem',5)
+                    end if
 
                     ! calculate mass loss rate from hrr and hoc inputs
                     fireptr%mdot = fireptr%qdot / ohcomb
@@ -1595,6 +1567,7 @@ continue
 5322 format ('***Error, Bad FIRE input. Fire specification is outdated and must include target for ignition')
 5323 format ('***Error, Bad FIRE input. Fire location ',i0,' is outside its compartment')
 5324 format ('***Error, Bad FIRE input. Target specified for fire ',i0, ' does not exist')
+5325 format ('***Error, Bad FIRE input. Fire ID ',a,' has not been found')
 5358 format ('***Error, Bad FIRE input. Not a valid ignition criterion ',i0)
 
 5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)

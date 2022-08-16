@@ -409,7 +409,9 @@ module cfast_types
                 end if
             end do time_label_loop
             if (tidx <= 0) then
-                stop 'ERROR in pop_table in cfast_structures'
+                write(*,5000) table%id
+                write(*,*) 'ERROR in cfast_structures:fire_type:pop_table'
+                stop
             end if 
 
             do i = 1, mxtablcols
@@ -448,6 +450,8 @@ module cfast_types
                     me%n_trace = np
                 end select
             end do
+            
+5000 format ('***Error, Table ',a,' does not have TIME column ')
         
         end subroutine pop_table
 

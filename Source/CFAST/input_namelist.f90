@@ -1553,10 +1553,10 @@ continue
                 end if
             end do searching
 
-            if (ifire<1.or.ifire>n_fires) then
-                write (errormessage,5320) ifire
-                call cfastexit('read_chem',7)
-            end if
+           ! if (ifire<1.or.ifire>n_fires) then
+           !     write (errormessage,5320) ifire
+           !     call cfastexit('read_chem',7)
+           ! end if
 
         end do read_fire_loop
 

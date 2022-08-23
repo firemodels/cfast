@@ -552,7 +552,8 @@
                     call add_token_val(iounit, buf, 'CHLORINE = ', fireptr%n_Cl)
                 end if
                 if (fireptr%hoc(1) /= 5.0e7) then
-                    call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1)/1000._eb)
+                   ! call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1)/1000.0_eb)
+                    call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1))
                 end if 
                 call add_token_val(iounit, buf, 'RADIATIVE_FRACTION = ', fireptr%chirad)
                 if (fireptr%flaming_transition_time > 0._eb) then

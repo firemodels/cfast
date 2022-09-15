@@ -219,6 +219,14 @@ module spreadsheet_routines
                 targptr%id, 'kW/m^2')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXT_'//trim(cDet), 'Target Net Flux', &
                 targptr%id, 'kW/m^2')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGULT_'//trim(cDet), 'Target Upper Layer Temperature', &
+                targptr%id, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGLLT_'//trim(cDet), 'Target Lower Layer Temperature', &
+                targptr%id, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGHGT_'//trim(cDet), 'Target Layer Height', &
+                targptr%id, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGPRS_'//trim(cDet), 'Target Pressure', &
+                targptr%id, 'C')
             if (validation_flag) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', &
                     targptr%id, 'kW/m^2')
@@ -715,7 +723,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
     real(eb), intent(out) :: outarray(*)
     
-    integer i, idir, layer
+    integer i, j, idir, layer
     real(eb) :: fire_ignition, f_height, ssvalue, tjet, flow(4)
     
     character(len=50) :: measurement, device
@@ -1323,6 +1331,44 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 call ssaddtolist (position,targptr%tinternal-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Target Upper Layer Temperature', 'Target Lower Layer Temperature')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%id==device) then
+                do j = 1, n_rooms+1
+                    layer = u
+                    if (index(measurement,'Upper')==0) layer = l
+                    roomptr => roominfo(j)
+                    if (roomptr%id==targptr%room_id) then
+                        call ssaddtolist (position, roomptr%temp(layer)-kelvin_c_offset, outarray)
+                    end if
+                end do
+            end if
+        end do
+    case ('Target Layer Height')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%id==device) then
+                do j = 1, n_rooms+1
+                    roomptr => roominfo(j)
+                    if (roomptr%id==targptr%room_id) then
+                        call ssaddtolist (position, roomptr%depth(l), outarray)
+                    end if
+                end do
+            end if
+        end do
+    case ('Target Pressure')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%id==device) then
+                do j = 1, n_rooms+1
+                    roomptr => roominfo(j)
+                    if (roomptr%id==targptr%room_id) then
+                        call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
+                    end if
+                end do
             end if
         end do
     case ('Target Incident Flux', 'Back Target Incident Flux')

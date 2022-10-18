@@ -309,7 +309,7 @@ case $OPTION  in
    stopjob=1
    ;;
   S)
-   SCRIPTFILE="./$OPTARG"
+   SCRIPTFILE="$OPTARG"
    benchmark="yes"
    ;;
   t)
@@ -870,7 +870,7 @@ if [ "$SCRIPTFILE" != "" ]; then
 fi
 if [ "$OPENMPCASES" == "" ]; then
 cat << EOF >> $scriptfile
-$MPIRUN $exe $in $SCRIPTFILE $OUT2ERROR 
+bash $SCRIPTFILE $OUT2ERROR 
 EOF
 if [ "$SMVZIP" != "" ]; then
 cat << EOF >> $scriptfile

@@ -7,6 +7,8 @@ NCASES=
 ECHO=echo
 BASE=Tam_8_AH_A-
 
+SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 #---------------------------------------------
 #                   usage
 #---------------------------------------------
@@ -85,7 +87,7 @@ fi
 i=1
 while [ $END -le $NCASES ]; do
   SCRIPT=$GROUP$i
-  ./make_scripts.sh $BASE $BEG $END $SCRIPT
+  $SCRIPTDIR/make_scripts.sh $BASE $BEG $END $SCRIPT
   if [ -e error ]; then
     echo "***some intput files exist. runs aborted"
     ECHO=echo

@@ -19,7 +19,7 @@ for i in `seq $BEG $END`; do
      echo "***error: the input file $INPUT does not exist"
      error=1
   fi
-  echo \$CFAST $INPUT -V > $OUTFILE
+  echo \$CFAST $INPUT -V >> $OUTFILE
 done
 if [  "$error" != "" ]; then
   touch error

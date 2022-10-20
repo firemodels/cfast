@@ -310,7 +310,6 @@ case $OPTION  in
    ;;
   S)
    SCRIPTFILE="$OPTARG"
-   benchmark="yes"
    ;;
   t)
    benchmark="yes"
@@ -369,11 +368,6 @@ if [ "$MAX_MPI_PROCESSES_PER_NODE" == "1" ]; then
    if test $n_mpi_processes_per_node -gt $ncores ; then
      n_mpi_processes_per_node=$ncores
    fi
-fi
-
-# use 1 process per node if input file is a script
-if [ "$SCRIPT" == "1" ]; then
-  n_mpi_processes_per_node=1
 fi
 
 #*** define input file

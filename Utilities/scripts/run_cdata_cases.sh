@@ -3,10 +3,13 @@ QCFAST="$FIREMODELS/cfast/Utilities/scripts/qcfast.sh"
 CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
 GROUP=group
 NCASES_PER_GROUP=30
-NCASES=
 NGROUPS=
 ECHO=echo
 BASE=`ls -l *-1.in | awk '{print $NF}' | awk -F'-' '{print $1}'`
+NCASES=`ls -l *-*.in | wc -l`
+if [ "$NCASES" == "0" ]; then
+  NCASES=
+fi
 if [ "$BASE" != "" ]; then
   BASE=$BASE"-"
 fi
@@ -33,7 +36,11 @@ echo "-k - kill all jobs owned by $USER"
 echo "-m num - number of groups"
 #echo "-n num - number of cases in each group [default: $NCASES_PER_GROUP]"
 #echo "         specify -m or -n not both"
-echo "-N NUM - total number of cfast cases to run"
+if [ "$NCASES" != "" ]; then
+  echo "-N NUM - total number of cfast cases to run [default: $NCASES]"
+else
+  echo "-N NUM - total number of cfast cases to run"
+fi
 echo "-q queue - slurm queue used to run cfast jobs [default: $QUEUE]"
 echo "-r      - run cases (otherwise just generate scripts)"
 exit

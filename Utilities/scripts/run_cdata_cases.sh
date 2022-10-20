@@ -2,8 +2,9 @@
 QCFAST="$FIREMODELS/cfast/Utilities/scripts/qcfast.sh"
 CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
 GROUP=group
-NCASES_PER_SCRIPT=30
+NCASES_PER_GROUP=30
 NCASES=
+NGROUPS=
 ECHO=echo
 BASE=`ls -l *-1.in | awk '{print $NF}' | awk -F'-' '{print $1}'`
 if [ "$BASE" != "" ]; then
@@ -17,7 +18,7 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 #---------------------------------------------
 
 function usage {
-echo "Run cfast CDATA cases"
+echo "Run cfast CDATA cases in groups"
 echo ""
 echo "Options:"
 if [ "$BASE" != "" ]; then
@@ -29,15 +30,16 @@ echo "-e exe - location of cfast executable [default: $CFAST]"
 echo "-g group - base name of scripts used to run cfast [default: $GROUP]"
 echo "-h - display this message"
 echo "-k - kill all jobs owned by $USER"
-echo "-n num - number of cases in each script"
-echo "-N NUM - number of cfast cases to run"
-echo "         number of cases in each script is then NUM/num"
+echo "-m num - number of groups"
+#echo "-n num - number of cases in each group [default: $NCASES_PER_GROUP]"
+#echo "         specify -m or -n not both"
+echo "-N NUM - total number of cfast cases to run"
 echo "-q queue - slurm queue used to run cfast jobs [default: $QUEUE]"
 echo "-r      - run cases (otherwise just generate scripts)"
 exit
 }
 
-while getopts 'b:e:g:hkn:N:q:r' OPTION
+while getopts 'b:e:g:hkm:n:N:q:r' OPTION
 do
 case $OPTION  in
   b)
@@ -57,8 +59,11 @@ case $OPTION  in
    scancel -u $USER
    exit
    ;;
+  m)
+   NGROUPS="$OPTARG"
+   ;;
   n)
-   NCASES_PER_SCRIPT="$OPTARG"
+   NCASES_PER_GROUP="$OPTARG"
    ;;
   N)
    NCASES="$OPTARG"
@@ -92,8 +97,11 @@ if [ "$QUEUE" != "" ]; then
   QUEUE="-q $QUEUE"
 fi
 
+if [ "$NGROUPS" != "" ]; then
+  NCASES_PER_GROUP=$((NCASES / NGROUPS))
+fi
 BEG=1
-END=$((BEG + NCASES_PER_SCRIPT - 1))
+END=$((BEG + NCASES_PER_GROUP - 1))
 if [ $END -gt $NCASES ]; then
   END=$NCASES
 fi
@@ -115,8 +123,8 @@ while [ $END -le $NCASES ]; do
     ECHO=echo
   fi
   $ECHO $QCFAST -S $SCRIPT $QUEUE
-  BEG=`expr $BEG + $NCASES_PER_SCRIPT`
-  END=`expr $END + $NCASES_PER_SCRIPT`
+  BEG=`expr $BEG + $NCASES_PER_GROUP`
+  END=`expr $END + $NCASES_PER_GROUP`
   if [ $BEG -gt $NCASES ]; then
     exit
   fi

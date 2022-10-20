@@ -17,7 +17,7 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 #---------------------------------------------
 
 function usage {
-echo "Run cfast CDATA cases"
+echo "Run cfast CDATA cases in groups"
 echo ""
 echo "Options:"
 if [ "$BASE" != "" ]; then
@@ -29,9 +29,8 @@ echo "-e exe - location of cfast executable [default: $CFAST]"
 echo "-g group - base name of scripts used to run cfast [default: $GROUP]"
 echo "-h - display this message"
 echo "-k - kill all jobs owned by $USER"
-echo "-n num - number of cases in each script"
-echo "-N NUM - number of cfast cases to run"
-echo "         number of cases in each script is then NUM/num"
+echo "-n num - number of cases in each group (except possibly for last group)"
+echo "-N NUM - total number of cfast cases to run"
 echo "-q queue - slurm queue used to run cfast jobs [default: $QUEUE]"
 echo "-r      - run cases (otherwise just generate scripts)"
 exit

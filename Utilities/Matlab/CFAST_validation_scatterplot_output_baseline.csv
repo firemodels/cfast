@@ -15,7 +15,7 @@
 "Compartment Over-Pressure",4,66,"0.23","0.55","1.48"
 "Target Temperature",4,423,"0.07","0.49","1.26"
 "Surface Temperature",6,403,"0.07","0.21","0.99"
-"Target Heat Flux",3,244,"0.11","0.60","0.97"
+"Target Heat Flux",3,244,"0.11","0.60","0.98"
 "Surface Heat Flux",7,241,"0.11","0.23","0.91"
 "Smoke Alarm Activation Time (Temperature Surrogate)",1,142,"0.34","0.43","1.23"
 "Smoke Alarm Activation Time (Smoke Obscuration)",1,142,"0.34","0.51","0.56"

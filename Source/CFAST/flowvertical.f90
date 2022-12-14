@@ -7,11 +7,10 @@ module vflow_routines
     
     use cfast_types, only: room_type, vent_type
     
-    use cenviro, only: cp, rgas
+    use cenviro, only: cp
     use cparams, only: u, l, m, q, deltatemp_min, pp, mxrooms
     use option_data, only: fvflow, option, on
-    use room_data, only: n_rooms, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, &
-                        exterior_abs_pressure
+    use room_data, only: n_rooms, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho
     use vent_data, only: n_vvents, vventinfo
 
     implicit none
@@ -229,7 +228,7 @@ module vflow_routines
         dp(1) = 0.0_eb
         relp(1) = toproomptr%relp
     else
-        dp(1) = -grav_con*botroomptr%cheight*botroomptr%exterior_den_initial
+        dp(1) = -grav_con*botroomptr%cheight*exterior_rho
         relp(1) = botroomptr%exterior_relp_initial
     end if
 
@@ -258,13 +257,12 @@ module vflow_routines
     if (itop<=n_rooms) then
         den(1) = toproomptr%rho(ilay(1))
     else
-        den(1) = botroomptr%exterior_relp_initial-grav_con*botroomptr%cheight*botroomptr%exterior_den_initial
-        den(1) = (exterior_abs_pressure - den(1))/rgas/exterior_ambient_temperature
+        den(1) = exterior_rho
     end if
     if (ibot<=n_rooms) then
         den(2) = botroomptr%rho(ilay(2))
     else
-        den(2) = toproomptr%exterior_den_initial
+        den(2) = exterior_rho
     end if
     delden = den(1) - den(2)
 

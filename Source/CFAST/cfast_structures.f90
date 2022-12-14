@@ -156,7 +156,6 @@ module cfast_types
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb) :: interior_relp_initial               ! initial value of interior pressure relative to minimum pressure
         real(eb) :: exterior_relp_initial               ! initial value of exterior pressure relative to minimum pressure
-        real(eb) :: exterior_den_initial                ! initial value for exterior density at base of compartment
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room

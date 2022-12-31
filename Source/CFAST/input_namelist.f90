@@ -1999,7 +1999,7 @@ continue
     else
         write (errormessage,'(4a,i0)') '***Error, Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".', &
             ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
-        call cfastexit('read_vent_set_criterion',2)
+        call cfastexit('read_vent:set_criterion',1)
     end if
     
     end subroutine set_criterion
@@ -2029,6 +2029,7 @@ continue
         if (iroom == -101) then
             write (errormessage,'(5a,i0)') '***Error, COMP_IDS do not specify existing compartments. ', comp_ids(mm), &
                 ' for vent ',trim(id), ' &VENT number ', counter1 + counter2 + counter3
+            call cfastexit('read_vent:find_comp_idxes',1)
         end if
 
         if (mm == 1) i = iroom

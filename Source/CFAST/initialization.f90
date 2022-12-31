@@ -9,7 +9,7 @@ module initialization_routines
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
 
-    use cenviro, only: constvar, odevara
+    use cenviro, only: constvar, odevara, rgas
     use cparams, only: u, l, mxrooms, mxthrmplen, mxmatl, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
@@ -94,6 +94,8 @@ module initialization_routines
         roomptr => roominfo(i)
         roomptr%interior_relp_initial = -interior_rho*grav_con*roomptr%z0
         roomptr%exterior_relp_initial = -exterior_rho*grav_con*roomptr%z0
+        roomptr%exterior_den_initial = (exterior_abs_pressure +                         &
+            roomptr%exterior_relp_initial)/rgas/exterior_ambient_temperature     
     end do
     roomptr => roominfo(n_rooms+1)
     roomptr%exterior_relp_initial = 0.0_eb

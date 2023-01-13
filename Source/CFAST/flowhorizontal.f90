@@ -666,22 +666,34 @@ module hflow_routines
 
     integer :: iprod, ip, room_index(2), iroom, i
 
-    type(room_type), pointer :: roomptr
-
+    type(room_type), pointer :: roomptr, otherptr
+    
     room_index(1) = from_room
     room_index(2) = to_room
 
     do i = 1, 2
         iroom = room_index(i)
         roomptr=>roominfo(iroom)
-        zflor(i) = roomptr%z0
         zceil(i) = roomptr%z1
-        pflor(i) = roomptr%relp
         zlay(i) = roomptr%depth(l)
         tu(i) = roomptr%temp(u)
         tl(i) = roomptr%temp(l)
-        denu(i) = roomptr%rho(u)
-        denl(i) = roomptr%rho(l)
+        if (iroom .eq. n_rooms+1) then
+            if (i .eq. 1) then
+                otherptr=>roominfo(room_index(2))
+            else
+                otherptr=>roominfo(room_index(1))
+            end if
+            zflor(i) = otherptr%z0
+            pflor(i) = otherptr%exterior_relp_initial
+            denu(i) = otherptr%exterior_den_initial
+            denl(i) = otherptr%exterior_den_initial
+        else
+            zflor(i) = roomptr%z0
+            pflor(i) = roomptr%relp
+            denu(i) = roomptr%rho(u)
+            denl(i) = roomptr%rho(l)
+        end if
         do iprod = 1, ns
             ip = i_speciesmap(iprod+2) - 2
             conl(iprod,i) = roomptr%species_fraction(l,ip)

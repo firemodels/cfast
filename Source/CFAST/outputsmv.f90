@@ -281,8 +281,8 @@
             xyz(3) = voffset
             xyz(4) = voffset + ventptr%width
         end if
-        xyz(5) = ventptr%soffit
-        xyz(6) = ventptr%sill
+        xyz(5) = ventptr%sill
+        xyz(6) = ventptr%soffit
     else if (venttype=='V') then
         ventptr => vventinfo(ivent)
         if (ventptr%room1<=n_rooms) then

@@ -442,7 +442,9 @@ module solve_routines
                     nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, t, i_time_step)
                 call output_smokeview_header (cfast_version,n_rooms,nfires)
             end if
-            smv_relp(1:n_rooms) = roominfo(1:n_rooms)%relp
+            ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to 
+            ! smokeview are what is expected. 
+            smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
             smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
             smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
             smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)

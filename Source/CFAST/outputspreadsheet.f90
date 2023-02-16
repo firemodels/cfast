@@ -20,7 +20,7 @@ module spreadsheet_routines
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: n_rooms, roominfo
+    use room_data, only: n_rooms, roominfo, pressure_ref
     use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions, errormessage
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
@@ -1662,7 +1662,8 @@ module spreadsheet_routines
             call ssaddtolist(position,roomptr%temp(l)-kelvin_c_offset,outarray)
             call ssaddtolist(position,roomptr%depth(l),outarray)
         end if
-        call ssaddtolist(position,roomptr%relp,outarray)
+        ! changed to assure that the relative pressure is consistant to assumptions in smokeview. 
+        call ssaddtolist(position,roomptr%absp - pressure_ref,outarray)
         call ssaddtolist(position,roomptr%rho(u),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
         call ssaddtolist(position,roomptr%species_output(u,soot),outarray)

@@ -71,7 +71,7 @@ echo ***Copying CFAST example files
 echo.
 
 call :COPY  %bindir%\Data\Users_Guide_Example.in %DISTDIR%\Examples\
-call :COPY  %docdir%\Monte_Carlo_Guide\Examples\*.in %DISTDIR%\Examples\
+call :COPY  %docdir%\CData_Guide\Examples\*.in   %DISTDIR%\Examples\
 
 echo.
 echo ***Copying CFAST documentation
@@ -81,7 +81,7 @@ call :COPY %docdir%\Tech_Ref\Tech_Ref.pdf                       %DISTDIR%\Docume
 call :COPY %docdir%\Users_Guide\Users_Guide.pdf                 %DISTDIR%\Documents\
 call :COPY %docdir%\Validation_Guide\Validation_Guide.pdf       %DISTDIR%\Documents\
 call :COPY %docdir%\Configuration_Guide\Configuration_Guide.pdf %DISTDIR%\Documents\
-call :COPY %docdir%\Monte_Carlo_Guide\CData_Guide.pdf           %DISTDIR%\Documents\
+call :COPY %docdir%\CData_Guide\CData_Guide.pdf                 %DISTDIR%\Documents\
 
 echo.
 echo ***Copying Smokeview files

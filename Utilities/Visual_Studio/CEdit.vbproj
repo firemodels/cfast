@@ -116,19 +116,22 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C1.C1Report.4, Version=4.0.20221.548, Culture=neutral, PublicKeyToken=594a0605db190bb9, processorArchitecture=MSIL">
+    <Reference Include="C1.C1Report.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=594a0605db190bb9, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="C1.Win.C1FlexGrid.4, Version=4.0.20221.548, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL">
+    <Reference Include="C1.Win.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=944ae1ea0e47ca04, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="C1.Win.C1Report.4, Version=4.0.20221.548, Culture=neutral, PublicKeyToken=41780e2fc605e636, processorArchitecture=MSIL">
+    <Reference Include="C1.Win.C1FlexGrid.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="C1.Win.C1ReportDesigner.4, Version=4.0.20221.548, Culture=neutral, PublicKeyToken=fb528571dbff5bd2, processorArchitecture=MSIL">
+    <Reference Include="C1.Win.C1Report.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=41780e2fc605e636, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="C1.Win.C1Sizer.4, Version=4.0.20221.548, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL">
+    <Reference Include="C1.Win.C1ReportDesigner.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=fb528571dbff5bd2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="C1.Win.C1Sizer.4.8, Version=4.8.20223.584, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.VisualBasic">
@@ -323,6 +326,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <EmbeddedResource Include="CEdit.gclicx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
@@ -331,4 +335,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="licenses.licx" />
+  </ItemGroup>
 </Project>

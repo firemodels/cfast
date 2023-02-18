@@ -1,4 +1,5 @@
 @echo off
+set arg1=%1
 
 :: setup compiler environment
 cd ..\..\Source\CEdit

@@ -1,5 +1,5 @@
 @echo off
-set paper=Configuration_Guide
+set paper=CFAST_CData_Guide
 
 git describe --long --dirty > gitinfo.txt
 set /p gitrevision=<gitinfo.txt

@@ -46,14 +46,14 @@ target_2(data_dir);
 
 Dataplot_Inputs_File = [pwd, '/CFAST_verification_dataplot_inputs.csv'];
 Working_Dir = '../../Verification/';
-Manuals_Dir = '../../Manuals/Validation_Guide/';
+Manuals_Dir = '../../Manuals/CFAST_Validation_Guide/';
 Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 
 % Statistics output options
 
 Stats_Output = 'Verification';
 Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
-Statistics_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
+Statistics_Tex_Output = [pwd, '/../../Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
 
 % Run dataplot and scatplot scripts
 

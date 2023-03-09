@@ -5,7 +5,7 @@ export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 clean_build=1
 
-doc=CData_Guide
+doc=CFAST_Tech_Ref
 docpdf=${doc}.pdf
 rm -f $docpdf
 # Build guide

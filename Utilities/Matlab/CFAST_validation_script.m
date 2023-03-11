@@ -34,15 +34,15 @@ max_plume_temp
 Dataplot_Inputs_File = [pwd, '/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
 Experimental_Dir = [pwd, '/../../../exp/'];
-Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
+Manuals_Dir = [pwd, '/../../Manuals/CFAST_Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 
 % Statistics output options
 
 Stats_Output = 'Validation';
 Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
-Statistics_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_statistics.tex'];
-Histogram_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_histograms.tex'];
+Statistics_Tex_Output = [pwd, '/../../Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_statistics.tex'];
+Histogram_Tex_Output = [pwd, '/../../Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_histograms.tex'];
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Experimental_Dir, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...

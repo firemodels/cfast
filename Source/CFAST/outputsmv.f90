@@ -8,9 +8,10 @@
     use utility_routines, only: tointstring, get_filenumber
 
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
-    
+    use setup_data, only: smvcsv, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssdiag, sscalculation
+
     use cparams, only: smoked, face_front, face_left, face_back, face_right
-    
+
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use room_data, only: n_rooms, roominfo
     use setup_data, only: smvcsv, iofilsmv, iofilsmvplt
@@ -64,7 +65,8 @@
     character(len=35) :: cTarg
     integer(4) :: length, splitpathqq
     integer :: vtype
-    
+    integer :: csvf_output
+
     external splitpathqq
 
     integer ibar, jbar, kbar
@@ -96,6 +98,23 @@
     write (iofilsmv,"(1x,a)") "C"
     write (iofilsmv,"(a)") "AMBIENT"
     write (iofilsmv,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
+
+    ! change to csvf_output = 1 to test 2d plots in smokeview
+    csvf_output = 0
+    if (csvf_output == 1) then
+       write (iofilsmv,"(a)") "CSVF"
+       write (iofilsmv,"( a)") "zone"
+       write (iofilsmv,"( a)") trim(smvcsv)
+       write (iofilsmv,"(a)") "CSVF"
+       write (iofilsmv,"( a)") "compartments"
+       write (iofilsmv,"( a)") trim(sscompartment)
+       write (iofilsmv,"(a)") "CSVF"
+       write (iofilsmv,"( a)") "walls"
+       write (iofilsmv,"( a)") trim(sswall)
+       write (iofilsmv,"(a)") "CSVF"
+       write (iofilsmv,"( a)") "vents"
+       write (iofilsmv,"( a)") trim(ssvent)
+    endif
 
     ! Compartment geometry
     do i = 1, nrm

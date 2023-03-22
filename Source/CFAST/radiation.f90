@@ -147,11 +147,20 @@ module radiation_routines
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
     real(eb) :: f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ff14
+    real(eb) :: factor_l
+    integer  :: use_correction    
 
     logical black
 
     data iflag /mxroom*0/
 
+    factor_l = 1.0_eb
+    ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
+    use_correction = 0  ! to turn off correction set to 0
+    if( use_correction == 1 .and. hlay<0.1_eb) then
+      factor_l = hlay/0.1_eb
+      factor_l = 0.0_eb
+    endif
     if (iflag(iroom)==0) then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1
@@ -296,12 +305,15 @@ module radiation_routines
     do i = 1, 4
         qflux(i) = -dq(i)
     end do
+    qflux(3) = factor_l*qflux(3)
+    qflux(4) = factor_l*qflux(4)
 
     ! compute radiation absorbed by each layer
     call rabs(4,2,e,dqde,emis,area,figs,tauu,taul,qllay,qulay)
 
     qlay(u) = qulay
     qlay(l) = qllay
+    qlay(l) = factor_l*qlay(l)
 
     return
     end subroutine rad4

@@ -25,8 +25,7 @@ module radiation_routines
 
     subroutine radiation(flows_radiation,fluxes_radiation)
 
-    ! interface between calculate_residuals and RAD2 or RAD4.  Loops over rooms setting up varibles to pass.  If one or more fires
-    !     are in a room calls RAD4 otherwise RAD2.
+    ! interface between calculate_residuals and RAD4.  Loops over rooms setting up varibles to pass.
     !     arguments: flows_radiation  net enthalphy into each layer
     !                fluxes_radiation net enthalphy flux into surface
 
@@ -40,7 +39,7 @@ module radiation_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    ! work and dummy arrays passed to rad2 and rad4
+    ! work and dummy arrays passed to rad4
 
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
     real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)

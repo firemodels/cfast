@@ -111,7 +111,7 @@ module radiation_routines
 
 ! --------------------------- rad4 -------------------------------------------
 
-    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
+    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay_arg,qfire,xfire,yfire,zfire,nfire,&
        qflux,qlay,mxfires,taufl,taufu,firang,qout,black)
 
     ! computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
@@ -139,7 +139,8 @@ module radiation_routines
     integer, parameter :: u = 1, l = 2, mxroom = 100
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
 
-    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay_arg
+    real(eb), intent(in) :: qfire(*), xfire(*), yfire(*), zfire(*)
     real(eb), intent(out) :: taufl(mxfires,*), taufu(mxfires,*), firang(4,mxfires)
 
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
@@ -147,18 +148,19 @@ module radiation_routines
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
     real(eb) :: f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ff14
-    real(eb) :: factor_l
+    real(eb) :: hlay, factor_l
     integer  :: use_correction    
 
     logical black
 
     data iflag /mxroom*0/
 
-    factor_l = 1.0_eb
     ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
-    use_correction = 0  ! to turn off correction set to 0
-    if( use_correction == 1 .and. hlay<0.1_eb) then
-      factor_l = hlay/0.1_eb
+    hlay = hlay_arg
+    factor_l = 1.0_eb
+    use_correction = 1  ! to turn off correction set to 0
+    if( use_correction == 1 .and. hlay_arg<0.1_eb) then
+      hlay = 0.1_eb
       factor_l = 0.0_eb
     endif
     if (iflag(iroom)==0) then

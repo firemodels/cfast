@@ -7,7 +7,7 @@ module radiation_routines
 
     use cfast_types, only: fire_type, room_type
 
-    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot
+    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot, radiation_fix
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data, only: n_rooms, roominfo
@@ -148,7 +148,6 @@ module radiation_routines
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
     real(eb) :: f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ff14
     real(eb) :: hlay, factor_l
-    integer  :: use_correction    
 
     logical black
 
@@ -157,8 +156,7 @@ module radiation_routines
     ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
     hlay = hlay_arg
     factor_l = 1.0_eb
-    use_correction = 1  ! to turn off correction set to 0
-    if( use_correction == 1 .and. hlay_arg<0.1_eb) then
+    if( radiation_fix == 1 .and. hlay_arg<0.1_eb) then
       hlay = 0.1_eb
       factor_l = 0.0_eb
     endif

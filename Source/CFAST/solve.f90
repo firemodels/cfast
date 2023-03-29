@@ -25,7 +25,8 @@ module solve_routines
     
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
     use cparams, only: u, l, m, q, mxrooms, mxtarg, mxnode, mxbranch, mxdiscon, maxeq, ns, check_state, set_state, update_state, &
-        nwal, ns_mass, vminfrac, n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
+        nwal, ns_mass, vminfrac, n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition, &
+        radiation_fix
     
     use devc_data, only: n_detectors, n_targets, targetinfo, idset
     use diag_data, only: radi_verification_flag, verification_time_step, upper_layer_thickness, dbtime, gas_temperature, &
@@ -1392,6 +1393,12 @@ module solve_routines
                 call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%volume(l),1,roomptr%depth(l))
                 roomptr%depth(u) = roomptr%cheight - roomptr%depth(l)
             end if
+            if(radiation_fix==1.and.roomptr%depth(l)<0.1_eb)then
+                roomptr%depth(l)  = 0.1_eb
+                roomptr%depth(u)  = roomptr%cheight - 0.1_eb
+                roomptr%volume(l) = 0.1_eb*roomptr%floor_area
+                roomptr%volume(u) = roomptr%cvolume - roomptr%volume(l)
+            endif
 
             roomptr%relp = y_vector(iroom)
             roomptr%absp = y_vector(iroom) + pressure_offset

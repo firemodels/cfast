@@ -6,6 +6,9 @@
     use precision_parameters
 
     integer, parameter :: lbufln=1024           ! default line length for all inputs
+    
+    integer, parameter :: radiation_fix = 0     ! keep layer from dropping below 0.1 m when computing radiation
+                                                ! in that layer                                                
 
     ! geometry parameters
     integer, parameter :: mxrooms = 101         ! maximum number of compartments

@@ -6,9 +6,6 @@
     use precision_parameters
 
     integer, parameter :: lbufln=1024           ! default line length for all inputs
-    
-    integer, parameter :: radiation_fix = 1     ! keep layer from dropping below 0.1 m when computing radiation
-                                                ! in that layer                                                
 
     ! geometry parameters
     integer, parameter :: mxrooms = 101         ! maximum number of compartments
@@ -72,6 +69,7 @@
     ! room related parameters
     real(eb), parameter :: cjetvelocitymin = 0.1_eb ! default minimum ceiling jet velocity
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume
+    integer, parameter :: radiation_fix = 1         ! adjust radiation calculation when layer reaches minimum volume 
 
     real(eb), parameter :: mx_vsep=0.01_eb          ! maximum vertical distance between elements before they are considered
                                                     ! separate elements (connected compartments for example)

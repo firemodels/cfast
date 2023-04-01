@@ -7,7 +7,7 @@ module radiation_routines
 
     use cfast_types, only: fire_type, room_type
 
-    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot, radiation_fix
+    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot, radiation_fix, vminfrac
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data, only: n_rooms, roominfo
@@ -153,13 +153,14 @@ module radiation_routines
 
     data iflag /mxroom*0/
 
-    ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
+    ! this correction turns off radiation to the lower layer when the lower layer reaches minimum volume
     hlay = hlay_arg
     factor_l = 1.0_eb
-    if (radiation_fix == 1 .and. hlay_arg<zroom/5000.0_eb) then
-      hlay = zroom/5000.0_eb
+    if (radiation_fix == 1 .and. hlay_arg/zroom<=vminfrac) then
+      hlay = vminfrac/zroom
       factor_l = 0.0_eb
     endif
+    
     if (iflag(iroom)==0) then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1

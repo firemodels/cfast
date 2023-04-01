@@ -156,8 +156,8 @@ module radiation_routines
     ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
     hlay = hlay_arg
     factor_l = 1.0_eb
-    if( radiation_fix == 1 .and. hlay_arg<0.1_eb) then
-      hlay = 0.1_eb
+    if (radiation_fix == 1 .and. hlay_arg<zroom/5000.0_eb) then
+      hlay = zroom/5000.0_eb
       factor_l = 0.0_eb
     endif
     if (iflag(iroom)==0) then

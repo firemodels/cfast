@@ -7,7 +7,7 @@
 
     integer, parameter :: lbufln=1024           ! default line length for all inputs
     
-    integer, parameter :: radiation_fix = 0     ! keep layer from dropping below 0.1 m when computing radiation
+    integer, parameter :: radiation_fix = 1     ! keep layer from dropping below 0.1 m when computing radiation
                                                 ! in that layer                                                
 
     ! geometry parameters

@@ -50,5 +50,7 @@
     character(len=3), parameter :: imgformatext_list(mximgformats) = (/'jpg', 'svg', 'tif', 'pdf', 'png'/)
     character(len=5), parameter :: imgformat_list(mximgformats) = (/'jpeg', 'svg ', 'tiff', 'pdf ', 'png '/)
     
+    integer, parameter :: mxdiags = 20, mxdiagcols = 1000
+    
     end module pp_params
     

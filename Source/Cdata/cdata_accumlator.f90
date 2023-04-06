@@ -25,7 +25,7 @@ module accumulator_routines
     
     private
 
-    public accumulator
+    public accumulator, writecsvformat
 
     contains
     
@@ -48,7 +48,7 @@ module accumulator_routines
     real(eb), allocatable :: iossx(:, :), tmpx(:, :)
     character, allocatable :: iossc(:, :)*(128), tmpc(:,:)*(128)
     
-    integer :: i, j, ierr
+    integer :: i, j, ierr, ios
     character(len=256) :: outfile
     character(len=512) :: lbuf, obuf
 
@@ -106,15 +106,15 @@ module accumulator_routines
                 maxcoltmp = 0
             end if
             maxcolout = maxcolio + maxcoltmp - 1
-            open(newunit = iunit2, file = obuf)
+            open(newunit = iunit2, file = obuf, iostat = ios)
             call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 2, maxcolout, iofill)
             close(iunit2) 
         else
-            write(*,*) 'Number 2 first case does not open'
+            write(*,*) 'Accumulator:First case does not open'
             call cfastexit('accumulator', 1)
         end if
     else
-        write(*,*) 'Number 1 could not read iofile'
+        write(*,*) 'Accumulator:Unit 1 could not read iofile'
         call cfastexit('acumulator', 2)
     end if
     
@@ -182,7 +182,7 @@ module accumulator_routines
     real(eb), intent(in) :: x(numr,numc)
     character, intent(inout) :: c(numr,numc)*(128)
 
-    character :: buf*204800
+    character :: buf*10000
     integer :: i, j, ic, ie
     
     do i = nstart, maxrow
@@ -197,12 +197,12 @@ module accumulator_routines
             ic = ie+1
             buf(ic:ic) = ','
             ic = ic+1
-            if (ic > 204800) then
+            if (ic > 10000) then
                 write(iofill,*) 'WRITECSVFORMAT:Line to long for CSV format'
                 call cfastexit('WRITECSVFORMAT', 1)
             end if
         end do
-        write(iunit,'(A)') buf(1:ic)
+        write(iunit,'(A10000)') buf(1:ic)
     end do
     
     return

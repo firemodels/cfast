@@ -45,19 +45,21 @@
         idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal, idx_beta, idx_gamma, &
         idx_user_defined_continous_interval
         
-    use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
+    use preprocessor_types, only: preprocessor_type, random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
+    use diagnostic_types, only: diagnostic_type
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds, n_rndfires, &
         randfireinfo, workpath, parameterfile, n_rndfires, randfireinfo, fieldptr, dummy, validation_output
     use analysis_data, only: n_stats, statinfo, outpath
+    use diagnostic_data, only: n_diag, diaginfo, diagptr
     
-    use namelist_input_routines, only: checkread
+    use namelist_input_routines, only: checkread, read_time
 
     implicit none
     
     private
 
-    public namelist_pp_input, namelist_acc_input, namelist_stt_input
+    public namelist_pp_input, namelist_acc_input, namelist_stt_input, namelist_diag_input
 
     contains
     
@@ -120,17 +122,42 @@
 
     end subroutine namelist_stt_input
     
+    ! --------------------------- namelist_diag_input ----------------------------------
+    subroutine namelist_diag_input
+
+    implicit none
+    
+    integer :: ios
+    
+    close(iofili)
+    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    if (ios == 0) then
+        call read_time(iofili)
+        call read_mdia(iofili)
+        close (iofili)
+    elseif(ios == 29) then
+        write(errormessage,'(3a)') 'Error***, CData input file, ', trim(inputfile), ', not found'
+        call cfastexit('namelist_dia_input', 1)
+    else
+        write(errormessage,'(a,i0)') 'Error***, error reading CData input file. Error code = ', ios
+        call cfastexit('namelist_dia_input', 2)
+    end if 
+    
+    return
+
+    end subroutine namelist_diag_input
+    
     
     !--------------------------------------------read_mhdr----------------------
     subroutine read_mhdr(lu)
+    
+    integer, intent(in) :: lu
     
     integer :: ios
     integer :: number_of_cases
     integer :: seeds(2)
     logical :: mhdrflag, write_seeds, write_validation_output
     character(len=256) :: work_folder, output_folder, parameter_file
-    
-    integer, intent(in) :: lu
 
     namelist /MHDR/ number_of_cases, seeds, write_seeds, work_folder, &
         output_folder, parameter_file, write_validation_output
@@ -1479,6 +1506,137 @@
     end subroutine set_defaults
     
     end subroutine read_mfir
+    !
+    !------------ read_mdia
+    !
+    subroutine read_mdia(lu)
+    
+    integer, intent(in) :: lu
+    integer :: ios, input_file_line_number, ii, i
+    
+    logical :: column_output, mdiaflag
+    real(eb) :: criterion, cutoffs(2)
+    character(128) :: id 
+    character(len=256) :: type, test, zero_exceptions(2), first_field(3), &
+        second_field(3) , test_column, column_headers(5)
+
+    namelist /MDIA/ id, type, first_field, second_field, zero_exceptions, &
+            test, criterion, column_output, cutoffs, test_column, &
+            column_headers
+
+    ios = 1
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+    mdiaflag = .false.
+    n_diag = 0
+
+    ! scan entire file to look for &HEAD input
+    mdia_loop: do
+        call checkread ('MDIA', lu, ios)
+        if (ios==0) mdiaflag=.true.
+        if (ios==1) then
+            exit mdia_loop
+        end if
+        read(lu,MDIA,iostat=ios)
+        n_diag = n_diag + 1
+        if (ios>0) then
+            write(errormessage,'(a,i3)') '***Error in &MDIA: Invalid variable in specification for inputs.',n_diag
+            call cfastexit('read_mdia',1)
+        end if
+    end do mdia_loop
+
+    ! we found one. read it (only the first one counts; others are ignored)
+    mdia_flag: if (mdiaflag) then
+
+        rewind (lu)
+        input_file_line_number = 0
+
+        ! Assign value to CFAST variables for further calculations
+        read_mdia_loop: do ii=1,n_diag
+
+            diagptr => diaginfo(ii)
+
+            call checkread('MDIA',lu,ios)
+            call set_defaults
+            read(lu,MDIA)
+            
+            if (trim(id) == 'NULL') then
+                call cfastexit('read_mdia',1)
+            end if 
+            diagptr%id = trim(id)
+            if (trim(type) == 'NULL') then
+                call cfastexit('read_mdia',2)
+            end if 
+            diagptr%diagnostic = trim(type)
+            if (trim(test) == 'NULL') then
+                call cfastexit('read_mdia',3)
+            end if 
+            diagptr%test = trim(test)
+            if (trim(zero_exceptions(1)) == 'NULL') then
+                call cfastexit('read_mdia',4)
+            end if 
+            diagptr%zero_except(1:2) = zero_exceptions(1:2)
+            if (trim(test_column) == 'NULL') then
+                call cfastexit('read_mdia',5)
+            end if 
+            diagptr%test_column = trim(test_column)
+            if (criterion == -1001.0_eb) then
+                call cfastexit('read_mdia',6)
+            end if 
+            diagptr%criterion = criterion
+            if (cutoffs(1) == -1001.0_eb.or.cutoffs(2)==-1001.0_eb) then
+                call cfastexit('read_mdia',7)
+            end if 
+            diagptr%cutoffs(1:2) = cutoffs(1:2)
+            if (trim(first_field(1)) == 'NULL') then
+                call cfastexit('read_mdia',8)
+            elseif (trim(first_field(2)) == 'NULL') then
+                call cfastexit('read_mdia',9)
+            elseif (trim(first_field(3)) == 'NULL') then
+                call cfastexit('read_mdia',10)
+            end if 
+            diagptr%fst_fld(1:3) = first_field(1:3)
+            if (trim(second_field(1)) == 'NULL') then
+                call cfastexit('read_mdia',11)
+            elseif (trim(second_field(2)) == 'NULL') then
+                call cfastexit('read_mdia',12)
+            elseif (trim(second_field(3)) == 'NULL') then
+                call cfastexit('read_mdia',13)
+            end if 
+            diagptr%sec_fld(1:3) = second_field(1:3)
+            diagptr%column_skip = 0
+            col_loop:do i = 1, diagptr%mx_hdrs
+                if (trim(column_headers(i)) == 'NULL') then
+                    exit col_loop
+                else
+                    diagptr%col_hdrs(i) = trim(column_headers(i))
+                    diagptr%column_skip = diagptr%column_skip + 1
+                end if
+            end do col_loop
+        end do read_mdia_loop
+    end if mdia_flag
+    
+
+    contains
+    
+    subroutine set_defaults
+    
+    id = 'NULL'
+    type = 'NULL'
+    test = 'NULL'
+    zero_exceptions(1:2) = 'NULL'
+    first_field(1:3) = 'NULL'
+    second_field(1:3) = 'NULL'
+    test_column = 'NULL'
+    criterion = -1001.0_eb
+    cutoffs(1:2) = -1001.0_eb
+    column_output = .false.
+    column_headers(1:5) = 'NULL'
+    
+    end subroutine set_defaults
+    
+    end subroutine read_mdia
     
     !-------------------------------find_object--------------------------------------
     

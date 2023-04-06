@@ -1452,3 +1452,35 @@ module preprocessor_types
     end type stat_type
     
     end module analysis_types
+    !
+    !-------------------diagnostic_type definition--------------------------
+    !
+    module diagnostic_types
+    
+    use precision_parameters
+    
+    use preprocessor_types, only: preprocessor_type
+    
+    !
+    !-------------------diagnostic_type--------------------------
+    !
+    type, extends(preprocessor_type) :: diagnostic_type
+        character(len=128) :: diagnostic
+        character(len=128) :: test
+        character(len=128) :: test_column
+        character(len=256) :: fst_fld(3), sec_fld(3)
+        integer            :: funit, sunit
+        integer            :: fcol, scol
+        character(len=256) :: zero_except(2)
+        real(eb)           :: cutoffs(2)
+        logical            :: column_file
+        integer            :: column_skip
+        integer            :: n_col
+        integer            :: mx_hdrs 
+        character(len=256) :: col_hdrs(5)
+        integer            :: skip_col_cntr
+        real(eb)           :: criterion
+    end type diagnostic_type
+    
+    end module diagnostic_types
+    !-------------------end diagnosit_type definition------------------

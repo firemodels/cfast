@@ -337,6 +337,7 @@ module setup_data
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
     logical :: cdata_accumulator = .false., cdata_preprocessor = .false., cdata_statistics = .true.
+    logical :: cdata_diagnostics = .false.
     integer :: outputformat = 0
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile = " ", datafile

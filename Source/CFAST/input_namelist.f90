@@ -45,7 +45,7 @@
     
     private
 
-    public namelist_input, read_misc, checkread, cdata_preprocessor_rereadinputfile
+    public namelist_input, read_misc, checkread, cdata_preprocessor_rereadinputfile, read_time
 
     contains
 

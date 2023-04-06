@@ -12,6 +12,8 @@ module radiation_routines
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data, only: n_rooms, roominfo
     use setup_data, only: iofill
+    
+    use exit_routines, only: cfastexit
 
     implicit none
 
@@ -156,7 +158,7 @@ module radiation_routines
 
     factor_l = 1.0_eb
     ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
-    use_correction = 0  ! to turn off correction set to 0
+    use_correction = 1  ! to turn off correction set to 0
     if( use_correction == 1 .and. hlay<0.1_eb) then
       factor_l = hlay/0.1_eb
       factor_l = 0.0_eb
@@ -314,6 +316,12 @@ module radiation_routines
     qlay(u) = qulay
     qlay(l) = qllay
     qlay(l) = factor_l*qlay(l)
+    if( use_correction == 1 .and. hlay<0.1_eb) then
+      if (factor_l > 0) then
+        write(*,*) 'Error: factor_l not equal to 0'
+        call cfastexit('rad4', 1)
+      end if
+    endif
 
     return
     end subroutine rad4

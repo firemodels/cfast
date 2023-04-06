@@ -997,7 +997,8 @@ module solve_routines
     if (update==all) then
         if (residprn) then
             call output_spreadsheet_residuals (tsec, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
-                filtered, flows_doorjets, flows_layer_mixing, flows_convection, flows_radiation)
+                filtered, flows_doorjets, flows_layer_mixing, flows_convection, flows_radiation, fluxes_convection, &
+                fluxes_radiation)
         end if
     end if
     ! sum flux for inside rooms

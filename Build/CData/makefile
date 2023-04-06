@@ -38,7 +38,7 @@ objf = keyboard_int.o srev.o prec.o random.o cfast_parameters.o cfast_interfaces
 		cfastexit.o convection.o conduction.o cdata_structures.o cdata_data.o utilities.o compartments.o cdata_output.o montecarlo.o \
 		flowvertical.o flowfan.o fire.o ssHeaders.o outputdebug.o numerics.o outputsmv.o flowhorizontal.o write_inputfile.o radiation.o \
 		target.o output.o outputspreadsheet.o solve.o initialization.o input_namelist.o input.o input_pp_namelist.o cdata_preprocessor.o \
-		cdata_statistics.o cdata_accumlator.o cdata.o
+		cdata_statistics.o cdata_accumlator.o cdata.o cdata_diagnostics.o
 
 objwin = $(objf:.o=.obj)
 

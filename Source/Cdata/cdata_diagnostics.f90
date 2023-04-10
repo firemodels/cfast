@@ -151,7 +151,7 @@ module diagnostic_routines
             rcol = i
         end if
     end do find_col
-    write(*,*)'After find_col loop'
+    write(*,*)'After find_col loop, icol, rcol', icol, rcol
     
     if(icol < maxcolio)then
         do i = icol + 1, icol + iskip
@@ -163,12 +163,6 @@ module diagnostic_routines
             ossx(1,i+iskip) = 0.0_eb
         end do
     end if
-    open(newunit = iunit2, file = obuf, iostat=ios)
-    if (ios /= 0) then
-        call cfastexit('diagnostics',1)
-    end if
-    write(*,*)'test write'
-    close(iunit2)
     open(newunit = iunit2, file = obuf, status='old', iostat=ios)
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
@@ -178,18 +172,28 @@ module diagnostic_routines
     write(*,*) 'After writecsv'
     close(iunit2)
     
+    lend = .false.
     do while(.not.lend)
+        write(*,*)
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then
             if (issx(1, icol) > 0 .and. issx(1, icol) < time_end) then
                 call do_test    
+            else 
+                ossx(1, icol + 1) = -1
+                ossc(1,icol + 1) = ' '
+                ossx(1, icol + 2) = -1
+                ossc(1,icol + 2) = ' '
+                ossx(1, icol + 3) = -1
+                ossc(1,icol + 3) = ' '
             end if
         end if 
         open(newunit=iunit2,file = obuf, position = 'append', iostat = ios)
         if (ios /= 0) then
             call cfastexit('diagnostics',2)
         end if
+        write(*,*) 'Before writecsvformat in do while(.not.lend) loop'
         call writecsvformat(iunit2, ossx, ossc, numr, numc, 1, 1, maxcolout, iofill)
         close(iunit2)
     end do 

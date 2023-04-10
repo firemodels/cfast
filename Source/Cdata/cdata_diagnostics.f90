@@ -196,7 +196,7 @@ module diagnostic_routines
             call cfastexit('diagnostics',2)
         end if
         write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
-        call writecsvformat(iunit2, ossx, ossc, numr, numc, 1, 1, maxcolio, iofill)
+        call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
         close(iunit2)
     end do 
     

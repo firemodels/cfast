@@ -188,7 +188,7 @@ module accumulator_routines
     write(*,*)'begining of writecsvformat x(1), c(1)',x(1,1), trim(c(1,1))
     write(*,*)nstart, maxrow
     do i = nstart, maxrow
-        write(*,*)'first line in loop writecsvformat',i
+        write(*,*)'first line in loop writecsvformat',i,maxcol
         buf = '                    '
         ic = 1
         do j = 1, maxcol

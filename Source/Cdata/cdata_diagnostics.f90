@@ -176,7 +176,7 @@ module diagnostic_routines
     i = 0
     do while(.not.lend)
         i = i + 1
-        write(*,*)'lend = ',lend, i, nstart
+        write(*,*)'lend = ',lend, i
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then
@@ -195,7 +195,7 @@ module diagnostic_routines
         if (ios /= 0) then
             call cfastexit('diagnostics',2)
         end if
-        write(*,*) 'Before writecsvformat in do while(.not.lend) loop'
+        write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
         call writecsvformat(iunit2, ossx, ossc, numr, numc, 1, 1, maxcolout, iofill)
         close(iunit2)
     end do 
@@ -213,6 +213,7 @@ module diagnostic_routines
     do i = 1, icol
         if (issx(1,i) /= 0.0_eb) then
             ossx(1,i) = issx(1,i)
+            ossc(1,i) = ""
         else
             ossc(1,i) = trim(issc(1,i))
             ossx(1,i) = 0.0_eb
@@ -225,6 +226,7 @@ module diagnostic_routines
     do i = icol+1, maxcolio
         if (issx(1,i) /= 0.0_eb) then
             ossx(1,i+iskip) = issx(1,i)
+            ossc(1,i) = ""
         else
             ossc(1,i+iskip) = trim(issc(1,i))
             ossx(1,i+iskip) = 0.0_eb

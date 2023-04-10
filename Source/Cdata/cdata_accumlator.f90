@@ -185,6 +185,7 @@ module accumulator_routines
     character :: buf*10000
     integer :: i, j, ic, ie
     
+    write(*,*)'begining of writecsvformat x(1), c(1)',x(1,1), trim(c(1,1))
     do i = nstart, maxrow
         buf = '                    '
         ic = 1

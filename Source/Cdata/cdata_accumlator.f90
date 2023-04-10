@@ -192,7 +192,7 @@ module accumulator_routines
         buf = '                    '
         ic = 1
         do j = 1, maxcol
-            write(*,*)'in j loop',j, ic, ie
+            write(*,*)'in j loop',j, ic
             if (x(i,j) /= 0.0) then
                 write(c(i,j),'(e16.9)') x(i,j)
             end if

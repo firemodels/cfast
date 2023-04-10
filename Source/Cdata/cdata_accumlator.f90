@@ -190,7 +190,8 @@ module accumulator_routines
     do i = nstart, maxrow
         write(*,*)'first line in loop writecsvformat',i,maxcol
         buf = '                    '
-        ic = 1
+        buf(1:10) = 'xxxxxxxxx,'
+        ic = 11
         do j = 1, maxcol
             write(*,*)'in j loop',j, ic
             if (x(i,j) /= 0.0) then

@@ -73,7 +73,7 @@ module diagnostic_routines
     
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
-    real(eb) :: issx(2, 300), ossx(2, 300), tmpx(6001, 300)
+    real(eb) :: issx(2, 300), ossx(2, 300), tmpx(6001, 300), tcol(6001)
     character :: issc(2, 300)*(128), ossc(2, 300)*(128), tmpc(6001, 300)*(128)
     
     integer :: i, j, ierr, ioerr, ios

@@ -1521,7 +1521,7 @@
     real(eb) :: criterion, cutoffs(2)
     character(128) :: id 
     character(len=256) :: type, test, zero_exceptions(2), first_field(3), &
-        second_field(3) , test_column, column_headers(5)
+        second_field(3), test_column, column_headers(5)
 
     namelist /MDIA/ id, type, first_field, second_field, zero_exceptions, &
             test, criterion, column_output, cutoffs, test_column, &
@@ -1544,6 +1544,7 @@
         read(lu,MDIA,iostat=ios)
         n_diag = n_diag + 1
         if (ios>0) then
+            write(*,*) 'ios = ', ios
             write(errormessage,'(a,i3)') '***Error in &MDIA: Invalid variable in specification for inputs.',n_diag
             call cfastexit('read_mdia',1)
         end if

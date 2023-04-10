@@ -1544,12 +1544,10 @@
         read(lu,MDIA,iostat=ios)
         n_diag = n_diag + 1
         if (ios>0) then
-            write(*,*) 'ios = ', ios
             write(errormessage,'(a,i3)') '***Error in &MDIA: Invalid variable in specification for inputs.',n_diag
             call cfastexit('read_mdia',1)
         end if
     end do mdia_loop
-    write(*,*)'read_mdia: after mdia_loop, n_diag = ',n_diag
 
     ! we found one. read it (only the first one counts; others are ignored)
     mdia_flag: if (mdiaflag) then

@@ -163,7 +163,7 @@ module diagnostic_routines
             ossx(1,i+iskip) = 0.0_eb
         end do
     end if
-    ! open(newunit = iunit2, file = obuf, iostat=ios)
+    open(newunit = iunit2, file = obuf, iostat=ios)
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
     end if

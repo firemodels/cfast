@@ -110,6 +110,7 @@ module diagnostic_routines
     if (trim(parameterfile) == 'NULL') then
         parameterfile = ' '
         parameterfile = trim(project) // '_accumulate.csv'
+        write(*,*) parameterfile
     end if 
     if (trim(outpath) == 'NULL') then
         outpath = ' '
@@ -124,6 +125,7 @@ module diagnostic_routines
     obuf = trim(outpath) // trim(outfile)
     open(newunit = iunit, file = trim(lbuf))
     open(newunit = iunit2, file = trim(obuf))
+    write(*,*) 'After opens'
     
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')
@@ -136,7 +138,9 @@ module diagnostic_routines
     nend = 1
     lend = .false. 
     header = .true. 
+    write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
+    write(*,*)'after first readcsvformat lend = ', lend
     find_col: do i = 1, maxcolio
         ossx(1,i) = issx(1,i)
         ossc(1,i) = trim(issc(1,i))
@@ -147,6 +151,7 @@ module diagnostic_routines
             rcol = i
         end if
     end do find_col
+    write(*,*)'After find_col loop'
     
     if(icol < maxcolio)then
         do i = icol + 1, icol + iskip
@@ -158,17 +163,19 @@ module diagnostic_routines
             ossx(1,i+iskip) = 0.0_eb
         end do
     end if
-    open(newunit = iunit2, file = obuf, iostat=ios)
+    ! open(newunit = iunit2, file = obuf, iostat=ios)
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
     end if
-    write(iunit2,*)'test write'
+    write(*,*)'test write'
     close(iunit2)
     open(newunit = iunit2, file = obuf, status='old', iostat=ios)
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
     end if
+    write(*,*) 'Before writecsv'
     call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
+    write(*,*) 'After writecsv'
     close(iunit2)
     
     do while(.not.lend)
@@ -188,6 +195,7 @@ module diagnostic_routines
     end do 
     
     close(ioerr)
+    write(*,*) 'Before return'
     return
     
     contains

@@ -183,19 +183,22 @@ module accumulator_routines
     character, intent(inout) :: c(numr,numc)*(128)
 
     character :: buf*10000
-    integer :: i, j, ic, ie
+    integer :: i, j, ic, ie, d1
     
     write(*,*)'begining of writecsvformat x(1), c(1)',x(1,1), trim(c(1,1))
     write(*,*)nstart, maxrow
     do i = nstart, maxrow
-        write(*,*)'first line in loop writecsvformat'
+        write(*,*)'first line in loop writecsvformat',i
         buf = '                    '
         ic = 1
         do j = 1, maxcol
+            write(*,*)'in j loop',j, ic, ie
             if (x(i,j) /= 0.0) then
                 write(c(i,j),'(e16.9)') x(i,j)
             end if
+            d1 = len_trim(c(1,j))
             ie = ic + len_trim(c(i,j))
+            write(*,*)'i,j,ic,ie,d1',i,j,ic,ie,d1
             buf(ic:ie) = trim(c(i,j))
             ic = ie+1
             buf(ic:ic) = ','

@@ -173,8 +173,10 @@ module diagnostic_routines
     close(iunit2)
     
     lend = .false.
+    i = 0
     do while(.not.lend)
-        write(*,*)
+        i = i + 1
+        write(*,*)'lend = ',lend, i, nstart
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then

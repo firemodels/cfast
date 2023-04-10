@@ -110,7 +110,7 @@ module diagnostic_routines
     if (trim(parameterfile) == 'NULL') then
         parameterfile = ' '
         parameterfile = trim(project) // '_accumulate.csv'
-        write(*,*) parameterfile
+        write(*,*) 'parameterfile = ', trim(parameterfile)
     end if 
     if (trim(outpath) == 'NULL') then
         outpath = ' '
@@ -125,7 +125,7 @@ module diagnostic_routines
     obuf = trim(outpath) // trim(outfile)
     open(newunit = iunit, file = trim(lbuf))
     open(newunit = iunit2, file = trim(obuf))
-    write(*,*) 'After opens'
+    write(*,*) 'After opens n_diag = ', n_diag
     
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')

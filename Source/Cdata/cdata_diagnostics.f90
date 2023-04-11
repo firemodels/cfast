@@ -66,18 +66,21 @@ module diagnostic_routines
     integer :: numr
     integer :: numc
     
-    integer :: iunit, maxrowio, maxcolio, nstart, iunit2, maxrowtmp, maxcoltmp
-    integer :: nend, maxcolout, icol, iunit3, iunit4, rcol, iskip
-    integer nfiles
+    integer :: maxrowio, maxcolio, nstart, maxrowtmp, maxcoltmp
+    integer :: iunit, iunit2, iunitc, iunitd
+    integer :: nend, maxcolout, icol, rcol, iskip
+    integer :: nfiles
     logical :: lend, tmplend, header
     
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
-    real(eb) :: issx(2, 300), ossx(2, 300), tmpx(6001, 300), tcol(6001)
-    character :: issc(2, 300)*(128), ossc(2, 300)*(128), tmpc(6001, 300)*(128)
+    real(eb) :: issx(2, 300), ossx(2, 300)
+    real(eb) :: compx(6001, 300), devx(6001,300), tcol(6001)
+    character :: issc(2, 300)*(128), ossc(2, 300)*(128)
+    character :: compc(6001, 300)*(128), devpc(6001, 300)*(128)
     
     integer :: i, j, ierr, ioerr, ios
-    character(len=256) :: outfile
+    character(len=256) :: outfile, compfile, devfile
     character(len=512) :: lbuf, obuf, ebuf, buf
     
 ! Body of GetData
@@ -236,6 +239,23 @@ module diagnostic_routines
     end subroutine copyrow
     
     subroutine do_test
+    
+    integer :: i, ibeg, iend, ilen
+    character :: buf1*(512), buf2*(512)
+    
+    ibeg = 0
+    iend = 0
+    ilen = len_trim(ossc(1,1))
+    find_beg:do i = 1, ilen
+        if (ossc(1,1)(i:i) /= ' ') then
+            buf1 = trim(datapath) // trim(ossc(1,1)(i:ilen))
+            exit find_beg
+        end if    
+    end do find_beg
+    buf2 = trim(buf2) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
+    buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
+    write(*,*)'buf1 = ',trim(buf1)
+    write(*,*)'buf2 = ',trim(buf2)
     
     end subroutine do_test
     

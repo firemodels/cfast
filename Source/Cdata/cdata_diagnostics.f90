@@ -239,9 +239,10 @@ module diagnostic_routines
     
     subroutine do_test
     
-    integer :: i, j, ilen, ihrr, iflux
+    integer :: i, j, ilen, ihrr, iflux, n
     integer :: maxrowc, maxcolc, maxrowd, maxcold
     character :: buf1*(512), buf2*(512)
+    real(eb) :: tott, tott2
     
     ilen = len_trim(ossc(1,1))
     find_beg:do i = 1, ilen
@@ -281,6 +282,27 @@ module diagnostic_routines
         end if
     end do find_flux
     write(*,*)'End find_flux', iflux
+    n = 0
+    tcol(1:5) = 0.0_eb
+    tott = 0.0_eb
+    tott2 = 0.0_eb
+    do i = 5, maxrowc
+        if (compx(i,ihrr) >= diagptr%cutoffs(1)) then
+            tcol(i) = devx(i,iflux)/compx(i,ihrr)
+            tott = tott + tcol(i)
+            tott2 = tott2 + tcol(i)**2
+            n = n + 1
+        else
+            tcol(i) = 0.0_eb
+        end if 
+    end do 
+    tott = tott/n
+    tott2 = sqrt(tott2/n - tott**2)
+    do i = 1, maxrowc
+        if (tcol(i)>0.0_eb) then
+            tcol(i) = (tcol(i) - tott)/tott2
+        end if
+    end do
     close(iunitc)
     close(iunitd)
     write(*,*)'returning to main diagnostics'
@@ -301,13 +323,15 @@ module diagnostic_routines
     diaginfo(1:mxdiags)%test = 'NULL'
     diaginfo(1:mxdiags)%test_column = 'NULL'
     diaginfo(1:mxdiags)%n_col = 0
-    do i = 1, 3
-        diaginfo(1:mxdiags)%fst_fld(i) = 'NULL' 
-        diaginfo(1:mxdiags)%sec_fld(i) = 'NULL'
-        if (i < 3) then
-            diaginfo(1:mxdiags)%zero_except(i) = 'NULL'
-            diaginfo(1:mxdiags)%cutoffs(i) = -1001.0_eb
+    do i = 1, 5
+        if (i <= 3) then
+            diaginfo(1:mxdiags)%fst_fld(i) = 'NULL' 
+            diaginfo(1:mxdiags)%sec_fld(i) = 'NULL'
+            if (i < 3) then
+                diaginfo(1:mxdiags)%zero_except(i) = 'NULL'
+            end if
         end if
+        diaginfo(1:mxdiags)%cutoffs(i) = -1001.0_eb
     end do
     diaginfo(1:mxdiags)%mx_hdrs = 5
     do i = 1, 5

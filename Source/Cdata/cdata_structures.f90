@@ -1472,7 +1472,7 @@ module preprocessor_types
         integer            :: funit, sunit
         integer            :: fcol, scol
         character(len=256) :: zero_except(2)
-        real(eb)           :: cutoffs(2)
+        real(eb)           :: cutoffs(5)
         logical            :: column_file
         integer            :: column_skip
         integer            :: n_col

@@ -75,9 +75,9 @@ module diagnostic_routines
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
     real(eb) :: issx(2, 300), ossx(2, 300)
-    real(eb) :: compx(6005, 300), devx(6005,300), tcol(6001)
-    character :: issc(2, 300)*(128), ossc(2, 300)*(128)
-    character :: compc(6005, 300)*(128), devc(6005, 300)*(128)
+    real(eb) :: compx(6010, 400), devx(6010,400), tcol(6010)
+    character :: issc(2, 400)*(128), ossc(2, 400)*(128)
+    character :: compc(6010, 400)*(128), devc(6010, 400)*(128)
     
     integer :: i, j, ierr, ioerr, ios
     character(len=256) :: outfile, compfile, devfile
@@ -96,8 +96,8 @@ module diagnostic_routines
 
     diagptr => diaginfo(1)
     iskip = diagptr%column_skip
-    numr = 6005
-    numc = 300
+    numr = 6010
+    numc = 400
     !allocate(issx(2, numc), ossx(2, numc + iskip), tmpx(numr, numc))
     !allocate(issc(2, numc), ossx(2, numc + iskip), tmpc(numr, numc))
     !allocate(issx(2, numc), ossx(2, numc + iskip))

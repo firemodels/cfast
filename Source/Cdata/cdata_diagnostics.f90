@@ -139,9 +139,9 @@ module diagnostic_routines
     nend = 1
     lend = .false. 
     header = .true. 
-    write(*,*)'before first readcsvformat'
+    !write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
-    write(*,*)'after first readcsvformat lend = ', lend
+    !write(*,*)'after first readcsvformat lend = ', lend
     find_col: do i = 1, maxcolio
         ossx(1,i) = issx(1,i)
         ossc(1,i) = trim(issc(1,i))
@@ -239,12 +239,10 @@ module diagnostic_routines
     
     subroutine do_test
     
-    integer :: i, ibeg, iend, ilen
+    integer :: i, j, ilen, ihrr, iflux
     integer :: maxrowc, maxcolc, maxrowd, maxcold
     character :: buf1*(512), buf2*(512)
     
-    ibeg = 0
-    iend = 0
     ilen = len_trim(ossc(1,1))
     find_beg:do i = 1, ilen
         if (ossc(1,1)(i:i) /= ' ') then
@@ -254,13 +252,35 @@ module diagnostic_routines
     end do find_beg
     buf2 = trim(buf1) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
     buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
-    write(*,*)'buf1 = ',trim(buf1)
-    write(*,*)'buf2 = ',trim(buf2)
+    !write(*,*)'buf1 = ',trim(buf1)
+    !write(*,*)'buf2 = ',trim(buf2)
     open(newunit=iunitc, file=buf1)
     open(newunit=iunitd, file=buf2)
     call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, lend)
     call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, lend)
-    write(*,*)'cr, cc, dr, dc', maxrowc, maxcolc, maxrowd, maxcold
+    write(*,*)'End reads'
+    find_fire:do i = 2, maxcolc
+        if (trim(compc(3,i)) == trim(diagptr%fst_fld(2))) then
+            do j = i, maxcolc
+                if (trim(compc(2,j)) == trim(diagptr%fst_fld(3))) then
+                    ihrr = j
+                    exit find_fire
+                end if
+            end do
+        end if
+    end do find_fire
+    write(*,*)'End find_fire', ihrr
+    find_flux:do i = 2, maxcolc
+        if (trim(devc(3,i)) == trim(diagptr%sec_fld(2))) then
+            do j = i, maxcolc
+                if (trim(devc(2,j)) == trim(diagptr%sec_fld(3))) then
+                    iflux = j
+                    exit find_flux
+                end if
+            end do
+        end if
+    end do find_flux
+    write(*,*)'End find_flux', iflux
     close(iunitc)
     close(iunitd)
     write(*,*)'returning to main diagnostics'

@@ -185,7 +185,7 @@ module diagnostic_routines
             else 
                 ossx(1, icol + 1) = -1
                 ossc(1,icol + 1) = ' '
-                ossx(1, icol + 2) = -1
+                ossx(1, icol + 2) = time_end
                 ossc(1,icol + 2) = ' '
                 ossx(1, icol + 3) = -1
                 ossc(1,icol + 3) = ' '

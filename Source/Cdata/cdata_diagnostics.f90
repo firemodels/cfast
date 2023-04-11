@@ -74,7 +74,7 @@ module diagnostic_routines
     
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
-    real(eb) :: issx(2, 300), ossx(2, 300)
+    real(eb) :: issx(2, 400), ossx(2, 400)
     real(eb) :: compx(6010, 400), devx(6010,400), tcol(6010)
     character :: issc(2, 400)*(128), ossc(2, 400)*(128)
     character :: compc(6010, 400)*(128), devc(6010, 400)*(128)
@@ -139,9 +139,9 @@ module diagnostic_routines
     nend = 1
     lend = .false. 
     header = .true. 
-    !write(*,*)'before first readcsvformat'
+    write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
-    !write(*,*)'after first readcsvformat lend = ', lend
+    write(*,*)'after first readcsvformat lend = ', lend
     find_col: do i = 1, maxcolio
         ossx(1,i) = issx(1,i)
         ossc(1,i) = trim(issc(1,i))

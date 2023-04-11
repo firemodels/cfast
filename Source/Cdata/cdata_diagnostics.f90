@@ -75,9 +75,9 @@ module diagnostic_routines
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
     real(eb) :: issx(2, 300), ossx(2, 300)
-    real(eb) :: compx(6001, 300), devx(6001,300), tcol(6001)
+    real(eb) :: compx(6005, 300), devx(6005,300), tcol(6001)
     character :: issc(2, 300)*(128), ossc(2, 300)*(128)
-    character :: compc(6001, 300)*(128), devpc(6001, 300)*(128)
+    character :: compc(6005, 300)*(128), devc(6005, 300)*(128)
     
     integer :: i, j, ierr, ioerr, ios
     character(len=256) :: outfile, compfile, devfile
@@ -96,7 +96,7 @@ module diagnostic_routines
 
     diagptr => diaginfo(1)
     iskip = diagptr%column_skip
-    numr = int(time_end/ss_out_interval)+1
+    numr = 6005
     numc = 300
     !allocate(issx(2, numc), ossx(2, numc + iskip), tmpx(numr, numc))
     !allocate(issc(2, numc), ossx(2, numc + iskip), tmpc(numr, numc))
@@ -113,7 +113,6 @@ module diagnostic_routines
     if (trim(parameterfile) == 'NULL') then
         parameterfile = ' '
         parameterfile = trim(project) // '_accumulate.csv'
-        write(*,*) 'parameterfile = ', trim(parameterfile)
     end if 
     if (trim(outpath) == 'NULL') then
         outpath = ' '
@@ -128,7 +127,6 @@ module diagnostic_routines
     obuf = trim(outpath) // trim(outfile)
     open(newunit = iunit, file = trim(lbuf))
     open(newunit = iunit2, file = trim(obuf))
-    write(*,*) 'After opens n_diag = ', n_diag
     
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')
@@ -242,6 +240,7 @@ module diagnostic_routines
     subroutine do_test
     
     integer :: i, ibeg, iend, ilen
+    integer :: maxrowc, maxcolc, maxrowd, maxcold
     character :: buf1*(512), buf2*(512)
     
     ibeg = 0
@@ -257,7 +256,14 @@ module diagnostic_routines
     buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
     write(*,*)'buf1 = ',trim(buf1)
     write(*,*)'buf2 = ',trim(buf2)
-    
+    open(newunit=iunitc, file=buf1)
+    open(newunit=iunitd, file=buf2)
+    call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, lend)
+    call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, lend)
+    write(*,*)'cr, cc, dr, dc', maxrowc, maxcolc, maxrowd, maxcold
+    close(iunitc)
+    close(iunitd)
+    write(*,*)'returning to main diagnostics'
     end subroutine do_test
     
     end subroutine diagnostics

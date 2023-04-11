@@ -132,11 +132,8 @@
     close(iofili)
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
     if (ios == 0) then
-        write(*,*)'namelist_diag_input: before read_time '
         call read_time(iofili)
-        write(*,*)'namelist_diag_input: before read_mdia '
         call read_mdia(iofili)
-        write(*,*)'namelist_diag_input: after read_mdia '
         close (iofili)
     elseif(ios == 29) then
         write(errormessage,'(3a)') 'Error***, CData input file, ', trim(inputfile), ', not found'

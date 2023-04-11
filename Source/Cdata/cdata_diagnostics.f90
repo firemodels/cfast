@@ -184,6 +184,7 @@ module diagnostic_routines
         call copyrow
         if (issx(1, rcol) == time_end) then
             if (issx(1, icol) > 0 .and. issx(1, icol) < time_end) then
+                write(*,*)'Do_test call'
                 call do_test    
             else 
                 ossx(1, icol + 1) = -1
@@ -198,7 +199,7 @@ module diagnostic_routines
         if (ios /= 0) then
             call cfastexit('diagnostics',2)
         end if
-        write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
+        !write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
         call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
         close(iunit2)
     end do 

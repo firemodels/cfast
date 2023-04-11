@@ -185,10 +185,10 @@ module accumulator_routines
     character :: buf*10000
     integer :: i, j, ic, ie, d1
     
-    write(*,*)'begining of writecsvformat x(1), c(1)',x(1,1), trim(c(1,1))
-    write(*,*)nstart, maxrow
+    !write(*,*)'begining of writecsvformat x(1), c(1)',x(1,1), trim(c(1,1))
+    !write(*,*)nstart, maxrow
     do i = nstart, maxrow
-        write(*,*)'first line in loop writecsvformat',i,maxcol
+        !write(*,*)'first line in loop writecsvformat',i,maxcol
         buf = '                    '
         buf(1:10) = 'xxxxxxxxx,'
         ic = 11
@@ -209,7 +209,7 @@ module accumulator_routines
                 call cfastexit('WRITECSVFORMAT', 1)
             end if
         end do
-        write(*,*)'buf = ',buf(1:80)
+        !write(*,*)'buf = ',buf(1:80)
         write(iunit,'(A10000)') buf(1:ic)
     end do
     

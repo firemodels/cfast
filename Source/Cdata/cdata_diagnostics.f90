@@ -141,9 +141,9 @@ module diagnostic_routines
     nend = 1
     lend = .false. 
     header = .true. 
-    write(*,*)'before first readcsvformat'
+    !write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
-    write(*,*)'after first readcsvformat lend = ', lend
+    !write(*,*)'after first readcsvformat lend = ', lend
     find_col: do i = 1, maxcolio
         ossx(1,i) = issx(1,i)
         ossc(1,i) = trim(issc(1,i))
@@ -154,7 +154,7 @@ module diagnostic_routines
             rcol = i
         end if
     end do find_col
-    write(*,*)'After find_col loop, icol, rcol', icol, rcol
+    !write(*,*)'After find_col loop, icol, rcol', icol, rcol
     
     if(icol < maxcolio)then
         do i = icol + 1, icol + iskip
@@ -170,16 +170,16 @@ module diagnostic_routines
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
     end if
-    write(*,*) 'Before writecsv'
+    !write(*,*) 'Before writecsv'
     call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
-    write(*,*) 'After writecsv'
+    !write(*,*) 'After writecsv'
     close(iunit2)
     
     lend = .false.
     i = 0
     do while(.not.lend)
         i = i + 1
-        write(*,*)'lend = ',lend, i
+        !write(*,*)'lend = ',lend, i
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then
@@ -248,11 +248,11 @@ module diagnostic_routines
     ilen = len_trim(ossc(1,1))
     find_beg:do i = 1, ilen
         if (ossc(1,1)(i:i) /= ' ') then
-            buf1 = trim(datapath) // trim(ossc(1,1)(i:ilen))
+            buf1 = trim(datapath) // trim(ossc(1,1)(i:ilen-3))
             exit find_beg
         end if    
     end do find_beg
-    buf2 = trim(buf2) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
+    buf2 = trim(buf1) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
     buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
     write(*,*)'buf1 = ',trim(buf1)
     write(*,*)'buf2 = ',trim(buf2)

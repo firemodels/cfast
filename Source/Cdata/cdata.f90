@@ -58,7 +58,7 @@
         call statistics
     elseif (cdata_diagnostics) then
         call output_version(0,program_name,program_version)
-        write(*,'(a)') 'Diagnostics'
+        !write(*,'(a)') 'Diagnostics'
         call diagnostics
     else
         call cfastexit('CData Main', 2)

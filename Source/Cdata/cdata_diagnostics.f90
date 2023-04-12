@@ -78,6 +78,7 @@ module diagnostic_routines
     real(eb) :: compx(6010, 400), devx(6010,400), tcol(6010)
     character :: issc(2, 400)*(128), ossc(2, 400)*(128)
     character :: compc(6010, 400)*(128), devc(6010, 400)*(128)
+    logical :: test_read
     
     integer :: i, j, ierr, ioerr, ios
     character(len=256) :: outfile, compfile, devfile
@@ -257,8 +258,8 @@ module diagnostic_routines
     write(*,*)'buf2 = ',trim(buf2)
     open(newunit=iunitc, file=buf1)
     open(newunit=iunitd, file=buf2)
-    call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, lend)
-    call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, lend)
+    call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, test_read)
+    call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, test_read)
     write(*,*)'End reads'
     find_fire:do i = 2, maxcolc
         if (trim(compc(3,i)) == trim(diagptr%fst_fld(2))) then

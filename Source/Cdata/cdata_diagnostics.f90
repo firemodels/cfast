@@ -177,7 +177,7 @@ module diagnostic_routines
     i = 0
     do while(.not.lend)
         i = i + 1
-        !write(*,*)'lend = ',lend, i
+        write(*,*)'lend = ',lend, i
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then
@@ -334,7 +334,7 @@ module diagnostic_routines
                     ossx(1, icol + 1) = 2.0_eb
                     ossx(1, icol + 2) = devx(i,1)
                     write(*,*)'devx(1,i) = ', devx(i,1),i
-                    ossx(1, icol + 3) = tcol(i)
+                    ossx(1, icol + 3)  = tcol(i)
                     write(*,*)'tcol(i) = ',tcol(i)
                     exit find_new
                 end if

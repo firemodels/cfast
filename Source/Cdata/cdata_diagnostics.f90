@@ -319,10 +319,23 @@ module diagnostic_routines
     else
         ossx(1, icol + 1) = 1.0_eb
         ossc(1,icol + 1) = ' '
-        ossx(1, icol + 2) = -1001.0_eb
+        ossx(1, icol + 2) = time_end
         ossc(1,icol + 2) = ' '
         ossx(1, icol + 3) = tcol(itime)
         ossc(1,icol + 3) = ' '
+        find_new:do i = itime + 10, maxrowc
+            if (devx(icol,i) > diagptr%criterion) then
+                if(tcol(i) < diagptr%cutoffs(2)) then
+                    ossx(1, icol + 1) = 2.0_eb
+                    ossc(1,icol + 1) = ' '
+                    ossx(1, icol + 2) = devx(1,i)
+                    ossc(1,icol + 2) = ' '
+                    ossx(1, icol + 3) = tcol(itime)
+                    ossc(1,icol + 3) = ' '
+                    exit find_new
+                end if
+            end if
+        end do find_new
     end if
     close(iunitc)
     close(iunitd)

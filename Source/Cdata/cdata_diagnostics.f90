@@ -273,8 +273,12 @@ module diagnostic_routines
     write(*,*)'End find_fire', ihrr
     find_flux:do i = 2, maxcolc
         if (trim(devc(3,i)) == trim(diagptr%sec_fld(2))) then
+            write(*,*)'devc(3,i) = ',trim(devc(3,i)),i
+            write(*,*)'sec_fld(2) = ',trim(diagptr%sec_fld(2))
             do j = i, maxcolc
                 if (trim(devc(2,j)) == trim(diagptr%sec_fld(3))) then
+                    write(*,*)'devc(2,j) = ',trim(devc(2,j)),j
+                    write(*,*)'sec_fld(3) = ',trim(diagptr%sec_fld(3))
                     iflux = j
                     exit find_flux
                 end if

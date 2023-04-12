@@ -239,7 +239,7 @@ module diagnostic_routines
     
     subroutine do_test
     
-    integer :: i, j, ilen, ihrr, iflux, n
+    integer :: i, j, ilen, ihrr, iflux, n, itime
     integer :: maxrowc, maxcolc, maxrowd, maxcold
     character :: buf1*(512), buf2*(512)
     real(eb) :: tott, tott2
@@ -298,11 +298,32 @@ module diagnostic_routines
     end do 
     tott = tott/n
     tott2 = sqrt(tott2/n - tott**2)
-    do i = 1, maxrowc
+    do i = 5, maxrowc
         if (tcol(i)>0.0_eb) then
             tcol(i) = (tcol(i) - tott)/tott2
         end if
     end do
+    find_time:do i = 10, maxrowc
+        if (compx(i,1) >= issx(1,icol)) then
+            itime = i
+            exit find_time
+        end if
+    end do find_time
+    if (tcol(itime) < diagptr%cutoffs(2)) then
+        ossx(1, icol + 1) = 0.0_eb
+        ossc(1,icol + 1) = '0.0'
+        ossx(1, icol + 2) = issx(1,icol)
+        ossc(1,icol + 2) = ' '
+        ossx(1, icol + 3) = tcol(itime)
+        ossc(1,icol + 3) = ' '
+    else
+        ossx(1, icol + 1) = 1.0_eb
+        ossc(1,icol + 1) = ' '
+        ossx(1, icol + 2) = -1001.0_eb
+        ossc(1,icol + 2) = ' '
+        ossx(1, icol + 3) = tcol(itime)
+        ossc(1,icol + 3) = ' '
+    end if
     close(iunitc)
     close(iunitd)
     write(*,*)'returning to main diagnostics'

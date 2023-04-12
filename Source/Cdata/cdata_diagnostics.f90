@@ -325,6 +325,7 @@ module diagnostic_routines
         ossc(1,icol + 3) = ' '
         find_new:do i = itime + 10, maxrowc
             if (devx(icol,i) > diagptr%criterion) then
+                write(*,*)'devx(icol,i) = ',devx(icol,i),icol,i
                 if(tcol(i) < diagptr%cutoffs(2)) then
                     ossx(1, icol + 1) = 2.0_eb
                     ossx(1, icol + 2) = devx(i,1)

@@ -253,8 +253,8 @@ module diagnostic_routines
     end do find_beg
     buf2 = trim(buf1) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
     buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
-    !write(*,*)'buf1 = ',trim(buf1)
-    !write(*,*)'buf2 = ',trim(buf2)
+    write(*,*)'buf1 = ',trim(buf1)
+    write(*,*)'buf2 = ',trim(buf2)
     open(newunit=iunitc, file=buf1)
     open(newunit=iunitd, file=buf2)
     call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, lend)

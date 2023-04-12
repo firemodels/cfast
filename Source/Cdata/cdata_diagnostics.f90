@@ -327,8 +327,8 @@ module diagnostic_routines
             if (devx(icol,i) > diagptr%criterion) then
                 if(tcol(i) < diagptr%cutoffs(2)) then
                     ossx(1, icol + 1) = 2.0_eb
-                    ossx(1, icol + 2) = devx(1,i)
-                    write(*,*)'devx(1,i) = ', devx(1,i),i
+                    ossx(1, icol + 2) = devx(i,1)
+                    write(*,*)'devx(1,i) = ', devx(i,1),i
                     ossx(1, icol + 3) = tcol(i)
                     write(*,*)'tcol(i) = ',tcol(i)
                     exit find_new

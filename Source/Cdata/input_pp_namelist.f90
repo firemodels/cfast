@@ -1614,6 +1614,9 @@
                     diagptr%column_skip = diagptr%column_skip + 1
                 end if
             end do col_loop
+            if (diagptr%column_skip < 3) then
+                call cfastexit('read_mdia',14)
+            end if
         end do read_mdia_loop
     end if mdia_flag
     

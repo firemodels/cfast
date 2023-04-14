@@ -272,6 +272,7 @@ module diagnostic_routines
         end if
     end do find_fire
     !write(*,*)'End find_fire', ihrr
+    iflux = 0
     find_flux:do i = 2, maxcolc
         if (trim(devc(3,i)) == trim(diagptr%sec_fld(2))) then
             !write(*,*)'devc(3,i) = ',trim(devc(3,i)),i
@@ -287,6 +288,10 @@ module diagnostic_routines
         end if
     end do find_flux
     !write(*,*)'End find_flux', iflux
+    if (iflux == 0) then
+        write(*,*)trim(diagptr%sec_fld(2)),' ',trim(diagptr%sec_fld(3))
+        call cfastexit('diagnostics:do_test',1)
+    end if
     n = 0
     tcol(1:5) = 0.0_eb
     tott = 0.0_eb

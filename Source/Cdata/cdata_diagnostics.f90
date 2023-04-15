@@ -275,11 +275,11 @@ module diagnostic_routines
     end do find_fire
     !write(*,*)'End find_fire', ihrr
     iflux = 0
-    find_flux:do i = 2, maxcolc
+    find_flux:do i = 2, maxcold
         !write(*,*)'devc(3,i) = ',trim(devc(3,i)),i
         !write(*,*)'sec_fld(2) = ',trim(diagptr%sec_fld(2))
         if (trim(devc(3,i)) == trim(diagptr%sec_fld(2))) then
-            do j = i, maxcolc
+            do j = i, maxcold
                 !write(*,*)'devc(2,j) = ',trim(devc(2,j)),j
                 !write(*,*)'sec_fld(3) = ',trim(diagptr%sec_fld(3))
                 if (trim(devc(2,j)) == trim(diagptr%sec_fld(3))) then
@@ -298,7 +298,7 @@ module diagnostic_routines
     tcol(1:5) = 0.0_eb
     tott = 0.0_eb
     tott2 = 0.0_eb
-    do i = 5, maxrowd
+    do i = 5, maxrowc
         if (compx(i,ihrr) >= diagptr%cutoffs(1)) then
             tcol(i) = devx(i,iflux)/compx(i,ihrr)
             tott = tott + tcol(i)

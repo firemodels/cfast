@@ -260,7 +260,9 @@ module diagnostic_routines
     open(newunit=iunitd, file=buf2)
     call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, test_read)
     call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, test_read)
-    !write(*,*)'End reads'
+    write(*,*)'End reads'
+    write(*,*)'numr,maxrowc,maxrowd',numr,maxrowc,maxrowd
+    write(*,*)'numc,maxcolc,maxcold',numc,maxcolc,maxcold
     find_fire:do i = 2, maxcolc
         if (trim(compc(3,i)) == trim(diagptr%fst_fld(2))) then
             do j = i, maxcolc

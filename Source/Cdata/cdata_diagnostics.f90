@@ -74,10 +74,10 @@ module diagnostic_routines
     
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
-    real(eb) :: issx(2, 400), ossx(2, 400)
-    real(eb) :: compx(6010, 400), devx(6010,400), tcol(6010)
-    character :: issc(2, 400)*(128), ossc(2, 400)*(128)
-    character :: compc(6010, 400)*(128), devc(6010, 400)*(128)
+    real(eb) :: issx(2, 600), ossx(2, 600)
+    real(eb) :: compx(6010, 600), devx(6010,600), tcol(6010)
+    character :: issc(2, 600)*(128), ossc(2, 600)*(128)
+    character :: compc(6010, 600)*(128), devc(6010, 600)*(128)
     logical :: test_read
     
     integer :: i, j, ierr, ioerr, ios
@@ -98,7 +98,7 @@ module diagnostic_routines
     diagptr => diaginfo(1)
     iskip = diagptr%column_skip
     numr = 6010
-    numc = 400
+    numc = 600
     !allocate(issx(2, numc), ossx(2, numc + iskip), tmpx(numr, numc))
     !allocate(issc(2, numc), ossx(2, numc + iskip), tmpc(numr, numc))
     !allocate(issx(2, numc), ossx(2, numc + iskip))
@@ -260,9 +260,9 @@ module diagnostic_routines
     open(newunit=iunitd, file=buf2)
     call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, test_read)
     call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, test_read)
-    write(*,*)'End reads'
-    write(*,*)'numr,maxrowc,maxrowd',numr,maxrowc,maxrowd
-    write(*,*)'numc,maxcolc,maxcold',numc,maxcolc,maxcold
+    !write(*,*)'End reads'
+    !write(*,*)'numr,maxrowc,maxrowd',numr,maxrowc,maxrowd
+    !write(*,*)'numc,maxcolc,maxcold',numc,maxcolc,maxcold
     find_fire:do i = 2, maxcolc
         if (trim(compc(3,i)) == trim(diagptr%fst_fld(2))) then
             do j = i, maxcolc

@@ -149,9 +149,6 @@ module diagnostic_routines
             write(*,*)'ios = ',ios
             call cfastexit('cdata_diagnostic',3)
         end if
-    else
-        write(*,*) 'In return that should not be here'
-        return
     end if 
     write(*,*)'after '
     

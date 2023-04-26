@@ -133,18 +133,25 @@ module diagnostic_routines
         call cfastexit('cdata_diagnostic',1)
     end if
     open(newunit = iunit2, file = trim(obuf))
+    write(*,*)'test that I am using the correct CData'
     write(*,*)'ios 2 = ',ios, iunit2
     if (ios /= 0) then
         write(*,*)'ios 1 = ',ios
         call cfastexit('cdata_diagnostic',2)
     end if
     
+    write(*,*)'Before if n_diag>0'
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')
-        open(newunit = ioerr, file = ebuf)
+        open(newunit = ioerr, file = ebuf, iostat = ios)
+        if (ios/=0) then
+            write(*,*)'ios = ',ios
+            call cfastexit('cdata_diagnostic',3)
+        end if
     else
         return
     end if 
+    write(*,*)'after '
     
     nstart = 1
     nend = 1
@@ -179,7 +186,7 @@ module diagnostic_routines
     end if
     open(newunit = iunit2, file = obuf, status='old', iostat=ios)
     if (ios /= 0) then
-        call cfastexit('diagnostics',3)
+        call cfastexit('diagnostics',4)
     end if
     write(*,*) 'Before writecsv'
     call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)

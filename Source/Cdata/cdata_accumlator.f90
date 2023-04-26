@@ -205,6 +205,8 @@ module accumulator_routines
             end if
         end do
         write(iunit,'(A10000)') buf(1:ic)
+        write(*,*)'buf(1:80) = ',buf(1:80)
+        write(*,*)'ic = ', ic
     end do
     
     return

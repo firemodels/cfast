@@ -99,6 +99,8 @@ module diagnostic_routines
     iskip = diagptr%column_skip
     numr = 6010
     numc = 600
+    rcol = 0
+    icol = 0
     
     workpath = 'NULL'
     parameterfile = 'NULL'
@@ -167,6 +169,7 @@ module diagnostic_routines
             exit find_col
         elseif ('Max Time Run' == trim(issc(1,i))) then
             rcol = i
+            write(*,*) 'rcol = ', rcol
         end if
     end do find_col
     write(*,*)'After find_col loop, icol, rcol', icol, rcol

@@ -12,8 +12,6 @@ module radiation_routines
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data, only: n_rooms, roominfo
     use setup_data, only: iofill
-    
-    use exit_routines, only: cfastexit
 
     implicit none
 
@@ -316,12 +314,6 @@ module radiation_routines
     qlay(u) = qulay
     qlay(l) = qllay
     qlay(l) = factor_l*qlay(l)
-    if( use_correction == 1 .and. hlay<0.1_eb) then
-      if (factor_l > 0) then
-        write(*,*) 'Error: factor_l not equal to 0'
-        call cfastexit('rad4', 1)
-      end if
-    endif
 
     return
     end subroutine rad4

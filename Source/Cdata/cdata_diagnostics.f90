@@ -110,6 +110,7 @@ module diagnostic_routines
     if (trim(parameterfile) == 'NULL') then
         parameterfile = ' '
         parameterfile = trim(project) // '_accumulate.csv'
+        write(*,*)'parameterfile = ',trim(parameterfile)
     end if 
     if (trim(outpath) == 'NULL') then
         outpath = ' '
@@ -117,13 +118,26 @@ module diagnostic_routines
     end if
     outfile = ' '
     outfile = trim(project) // '_diagnostic.csv'
+    write(*,*)'outfile = ',trim(outfile)
+    write(*,*)'workpath = ',trim(workpath)
+    write(*,*)'outpath = ',trim(outpath)
     
     lbuf = ' '
     lbuf = trim(workpath) // trim(parameterfile)
     obuf = ' '
     obuf = trim(outpath) // trim(outfile)
-    open(newunit = iunit, file = trim(lbuf))
+    open(newunit = iunit, file = trim(lbuf),iostat = ios)
+    write(*,*)'ios 1 = ',ios, iunit
+    if (ios /= 0) then
+        write(*,*)'ios 1 = ',ios
+        call cfastexit('cdata_diagnostic',1)
+    end if
     open(newunit = iunit2, file = trim(obuf))
+    write(*,*)'ios 2 = ',ios, iunit
+    if (ios /= 0) then
+        write(*,*)'ios 1 = ',ios
+        call cfastexit('cdata_diagnostic',1)
+    end if
     
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')

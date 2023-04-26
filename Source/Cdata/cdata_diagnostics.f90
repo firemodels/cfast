@@ -140,15 +140,17 @@ module diagnostic_routines
         call cfastexit('cdata_diagnostic',2)
     end if
     
-    write(*,*)'Before if n_diag>0'
+    write(*,*)'Before if n_diag>0', n_diag
     if (n_diag>0) then
         ebuf = trim(outpath) // trim('cdata_diagnostics.log')
+        write(*,*)'ebuf = ',trim(ebuf)
         open(newunit = ioerr, file = ebuf, iostat = ios)
         if (ios/=0) then
             write(*,*)'ios = ',ios
             call cfastexit('cdata_diagnostic',3)
         end if
     else
+        write(*,*) 'In return that should not be here'
         return
     end if 
     write(*,*)'after '

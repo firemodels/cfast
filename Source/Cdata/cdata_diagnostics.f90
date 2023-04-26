@@ -166,21 +166,21 @@ module diagnostic_routines
     if (ios /= 0) then
         call cfastexit('diagnostics',1)
     end if
-    !write(*,*) 'Before writecsv'
+    write(*,*) 'Before writecsv'
     call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
-    !write(*,*) 'After writecsv'
+    write(*,*) 'After writecsv'
     close(iunit2)
     
     lend = .false.
     i = 0
     do while(.not.lend)
         i = i + 1
-        !write(*,*)'lend = ',lend, i
+        write(*,*)'lend = ',lend, i
         call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
         call copyrow
         if (issx(1, rcol) == time_end) then
             if (issx(1, icol) > 0 .and. issx(1, icol) < time_end) then
-                !write(*,*)'Do_test call'
+                write(*,*)'Do_test call'
                 call do_test    
             else 
                 ossx(1, icol + 1) = -1
@@ -195,13 +195,13 @@ module diagnostic_routines
         if (ios /= 0) then
             call cfastexit('diagnostics',2)
         end if
-        !write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
+        write(*,*) 'Before writecsvformat in do while(.not.lend) loop', trim(ossc(1,1))
         call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)
         close(iunit2)
     end do 
     
     close(ioerr)
-    !write(*,*) 'Before return'
+    write(*,*) 'Before return'
     return
     
     contains
@@ -251,15 +251,15 @@ module diagnostic_routines
     end do find_beg
     buf2 = trim(buf1) // '_' // trim(diagptr%sec_fld(1)) // '.csv'
     buf1 = trim(buf1) // '_' // trim(diagptr%fst_fld(1)) // '.csv'
-    !write(*,*)'buf1 = ',trim(buf1)
-    !write(*,*)'buf2 = ',trim(buf2)
+    write(*,*)'buf1 = ',trim(buf1)
+    write(*,*)'buf2 = ',trim(buf2)
     open(newunit=iunitc, file=buf1)
     open(newunit=iunitd, file=buf2)
     call readcsvformat(iunitc, compx, compc, numr, numc, nstart, -1, maxrowc, maxcolc, test_read)
     call readcsvformat(iunitd, devx, devc, numr, numc, nstart, -1, maxrowd, maxcold, test_read)
-    !write(*,*)'End reads'
-    !write(*,*)'numr,maxrowc,maxrowd',numr,maxrowc,maxrowd
-    !write(*,*)'numc,maxcolc,maxcold',numc,maxcolc,maxcold
+    write(*,*)'End reads'
+    write(*,*)'numr,maxrowc,maxrowd',numr,maxrowc,maxrowd
+    write(*,*)'numc,maxcolc,maxcold',numc,maxcolc,maxcold
     find_fire:do i = 2, maxcolc
         if (trim(compc(3,i)) == trim(diagptr%fst_fld(2))) then
             do j = i, maxcolc
@@ -270,15 +270,15 @@ module diagnostic_routines
             end do
         end if
     end do find_fire
-    !write(*,*)'End find_fire', ihrr
+    write(*,*)'End find_fire', ihrr
     iflux = 0
     find_flux:do i = 2, maxcold
-        !write(*,*)'devc(3,i) = ',trim(devc(3,i)),i
-        !write(*,*)'sec_fld(2) = ',trim(diagptr%sec_fld(2))
+        write(*,*)'devc(3,i) = ',trim(devc(3,i)),i
+        write(*,*)'sec_fld(2) = ',trim(diagptr%sec_fld(2))
         if (trim(devc(3,i)) == trim(diagptr%sec_fld(2))) then
             do j = i, maxcold
-                !write(*,*)'devc(2,j) = ',trim(devc(2,j)),j
-                !write(*,*)'sec_fld(3) = ',trim(diagptr%sec_fld(3))
+                write(*,*)'devc(2,j) = ',trim(devc(2,j)),j
+                write(*,*)'sec_fld(3) = ',trim(diagptr%sec_fld(3))
                 if (trim(devc(2,j)) == trim(diagptr%sec_fld(3))) then
                     iflux = j
                     exit find_flux
@@ -286,7 +286,7 @@ module diagnostic_routines
             end do
         end if
     end do find_flux
-    !write(*,*)'End find_flux', iflux
+    write(*,*)'End find_flux', iflux
     if (iflux == 0) then
         write(*,*)trim(diagptr%sec_fld(2)),' ',trim(diagptr%sec_fld(3))
         call cfastexit('diagnostics:do_test',1)
@@ -334,13 +334,13 @@ module diagnostic_routines
         ossc(1,icol + 3) = ' '
         find_new:do i = itime + 10, maxrowc
             if (devx(i,icol) > diagptr%criterion) then
-                !write(*,*)'devx(i,icol) = ',devx(i,icol),icol,i
+                write(*,*)'devx(i,icol) = ',devx(i,icol),icol,i
                 if(tcol(i) < diagptr%cutoffs(2)) then
                     ossx(1, icol + 1) = 2.0_eb
                     ossx(1, icol + 2) = devx(i,1)
-                    !write(*,*)'devx(1,i) = ', devx(i,1),i
+                    write(*,*)'devx(1,i) = ', devx(i,1),i
                     ossx(1, icol + 3)  = tcol(i)
-                    !write(*,*)'tcol(i) = ',tcol(i)
+                    write(*,*)'tcol(i) = ',tcol(i)
                     exit find_new
                 end if
             end if
@@ -348,7 +348,7 @@ module diagnostic_routines
     end if
     close(iunitc)
     close(iunitd)
-    !write(*,*)'returning to main diagnostics'
+    write(*,*)'returning to main diagnostics'
     end subroutine do_test
     
     end subroutine diagnostics

@@ -133,10 +133,10 @@ module diagnostic_routines
         call cfastexit('cdata_diagnostic',1)
     end if
     open(newunit = iunit2, file = trim(obuf))
-    write(*,*)'ios 2 = ',ios, iunit
+    write(*,*)'ios 2 = ',ios, iunit2
     if (ios /= 0) then
         write(*,*)'ios 1 = ',ios
-        call cfastexit('cdata_diagnostic',1)
+        call cfastexit('cdata_diagnostic',2)
     end if
     
     if (n_diag>0) then
@@ -170,6 +170,7 @@ module diagnostic_routines
         do i = icol + 1, icol + iskip
             ossc(1,i) = trim(diagptr%col_hdrs(i-icol))
             ossx(1,i) = 0.0_eb
+            write(*,*)'ossc(1,',i,') = ',trim(ossc(1,i))
         end do
         do i = icol+1, maxcolio
             ossc(1,i+iskip) = trim(issc(1,i))
@@ -178,7 +179,7 @@ module diagnostic_routines
     end if
     open(newunit = iunit2, file = obuf, status='old', iostat=ios)
     if (ios /= 0) then
-        call cfastexit('diagnostics',1)
+        call cfastexit('diagnostics',3)
     end if
     write(*,*) 'Before writecsv'
     call writecsvformat(iunit2, ossx, ossc, 2, numc, 1, 1, maxcolio, iofill)

@@ -7,7 +7,7 @@ module radiation_routines
 
     use cfast_types, only: fire_type, room_type
 
-    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot
+    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot, radiation_fix, vminfrac
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data, only: n_rooms, roominfo
@@ -27,8 +27,7 @@ module radiation_routines
 
     subroutine radiation(flows_radiation,fluxes_radiation)
 
-    ! interface between calculate_residuals and RAD2 or RAD4.  Loops over rooms setting up varibles to pass.  If one or more fires
-    !     are in a room calls RAD4 otherwise RAD2.
+    ! interface between calculate_residuals and RAD4.  Loops over rooms setting up varibles to pass.
     !     arguments: flows_radiation  net enthalphy into each layer
     !                fluxes_radiation net enthalphy flux into surface
 
@@ -42,7 +41,7 @@ module radiation_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    ! work and dummy arrays passed to rad2 and rad4
+    ! work and dummy arrays passed to rad4
 
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
     real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)
@@ -113,7 +112,7 @@ module radiation_routines
 
 ! --------------------------- rad4 -------------------------------------------
 
-    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
+    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay_arg,qfire,xfire,yfire,zfire,nfire,&
        qflux,qlay,mxfires,taufl,taufu,firang,qout,black)
 
     ! computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
@@ -141,7 +140,8 @@ module radiation_routines
     integer, parameter :: u = 1, l = 2, mxroom = 100
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
 
-    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay_arg
+    real(eb), intent(in) :: qfire(*), xfire(*), yfire(*), zfire(*)
     real(eb), intent(out) :: taufl(mxfires,*), taufu(mxfires,*), firang(4,mxfires)
 
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
@@ -149,20 +149,20 @@ module radiation_routines
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
     real(eb) :: f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ff14
-    real(eb) :: factor_l
-    integer  :: use_correction    
+    real(eb) :: hlay, factor_l
 
     logical black
 
     data iflag /mxroom*0/
 
+    ! this correction turns off radiation to the lower layer when the lower layer reaches minimum volume
+    hlay = hlay_arg
     factor_l = 1.0_eb
-    ! this correction turns off radiation to the lower layer when the lower layer < 0.1 m
-    use_correction = 1  ! to turn off correction set to 0
-    if( use_correction == 1 .and. hlay<0.1_eb) then
-      factor_l = hlay/0.1_eb
+    if (radiation_fix == 1 .and. hlay_arg/zroom<=vminfrac) then
+      hlay = vminfrac/zroom
       factor_l = 0.0_eb
     endif
+    
     if (iflag(iroom)==0) then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1

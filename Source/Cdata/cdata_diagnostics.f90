@@ -181,6 +181,7 @@ module diagnostic_routines
         do i = icol+1, maxcolio
             ossc(1,i+iskip) = trim(issc(1,i))
             ossx(1,i+iskip) = 0.0_eb
+            write(*,*)'ossc(1,',i,') = ',trim(ossc(1,i))
         end do
     end if
     open(newunit = iunit2, file = obuf, status='old', iostat=ios)

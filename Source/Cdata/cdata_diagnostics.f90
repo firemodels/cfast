@@ -99,10 +99,6 @@ module diagnostic_routines
     iskip = diagptr%column_skip
     numr = 6010
     numc = 600
-    !allocate(issx(2, numc), ossx(2, numc + iskip), tmpx(numr, numc))
-    !allocate(issc(2, numc), ossx(2, numc + iskip), tmpc(numr, numc))
-    !allocate(issx(2, numc), ossx(2, numc + iskip))
-    !allocate(issc(2, numc), ossx(2, numc + iskip))
     
     workpath = 'NULL'
     parameterfile = 'NULL'
@@ -140,9 +136,9 @@ module diagnostic_routines
     nend = 1
     lend = .false. 
     header = .true. 
-    !write(*,*)'before first readcsvformat'
+    write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
-    !write(*,*)'after first readcsvformat lend = ', lend
+    write(*,*)'after first readcsvformat lend = ', lend
     find_col: do i = 1, maxcolio
         ossx(1,i) = issx(1,i)
         ossc(1,i) = trim(issc(1,i))
@@ -153,7 +149,8 @@ module diagnostic_routines
             rcol = i
         end if
     end do find_col
-    !write(*,*)'After find_col loop, icol, rcol', icol, rcol
+    write(*,*)'After find_col loop, icol, rcol', icol, rcol
+    write(*,*)'diagptr%test_column = ', trim(diagptr%test_column)
     
     if(icol < maxcolio)then
         do i = icol + 1, icol + iskip

@@ -682,8 +682,8 @@
     !     arguments: iunit    = logical unit, already open to .csv file
     !                x        = array of dimension (numr,numc) for values in spreadsheet
     !                c        = character array of same dimenaion as x for character values in spreadsheet
-    !                numr     = # of rows of array x
-    !                numc     = # of columns of array x
+    !                numr     = # of rows of array x and c
+    !                numc     = # of columns of array x and c
     !                nstart   = starting row of spreadsheet to read
     !                nend     = stopping row, nend < 0 means read to the end 
     !                maxrow   = actual number of rows read

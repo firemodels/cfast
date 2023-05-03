@@ -110,11 +110,11 @@ module accumulator_routines
             call writecsvformat(iunit2, iossx, iossc, numr, numc, 1, 2, maxcolout, iofill)
             close(iunit2) 
         else
-            write(*,*) 'Accumulator:First case does not open'
+            !write(*,*) 'Accumulator:First case does not open'
             call cfastexit('accumulator', 1)
         end if
     else
-        write(*,*) 'Accumulator:Unit 1 could not read iofile'
+        !write(*,*) 'Accumulator:Unit 1 could not read iofile'
         call cfastexit('acumulator', 2)
     end if
     
@@ -205,8 +205,8 @@ module accumulator_routines
             end if
         end do
         write(iunit,'(A10000)') buf(1:ic)
-        write(*,*)'buf(1:80) = ',buf(1:80)
-        write(*,*)'ic = ', ic
+        !write(*,*)'buf(1:80) = ',buf(1:80)
+        !write(*,*)'ic = ', ic
     end do
     
     return

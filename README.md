@@ -11,4 +11,3 @@ Here is a link to [contributing](https://github.com/firemodels/cfast/blob/master
 Here are some other links [Discussion forum](https://groups.google.com/forum/#!forum/cfast), [Issue tracker](https://github.com/firemodels/cfast/issues), [Full Downloads](https://github.com/firemodels/cfast/releases), [Smokeview Downloads](https://github.com/firemodels/smv/releases) .
 
 Pull requests welcome!
-

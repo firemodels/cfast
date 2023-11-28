@@ -83,7 +83,7 @@
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
 
-    call post_process
+    !call post_process
 
     call cfastexit ('CFAST', 0)
 
@@ -91,16 +91,4 @@
 5010 format ('Total time steps = ',i10)
 
     end program cfast
-    
-    subroutine post_process
-    
-    use spreadsheet_routines, only : output_spreadsheet_dump
-    use dump_data, only: n_dumps
-    use setup_data, only: ss_out_interval
-    
-    ! create the spreadsheet file of calculation results if necessary
-    if (n_dumps/=0.and.ss_out_interval/=0.) then
-        call output_spreadsheet_dump
-    end if
 
-    end subroutine  post_process

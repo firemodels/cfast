@@ -4,7 +4,9 @@ module exit_routines
     
     use namelist_data, only: input_file_line, input_file_line_number
     use setup_data, only: validation_flag, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, errormessage
+        ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, &
+        errormessage, stime
+    use option_data, only: total_steps
     
     implicit none
 
@@ -23,6 +25,7 @@ module exit_routines
     integer exitcode
 
     exitcode = errorcode
+    call post_process (name, errorcode)
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
             ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
@@ -177,5 +180,20 @@ module exit_routines
     end if 
     
     end subroutine closeoutputfiles
+        
+    subroutine post_process (name, errorcode)
+    
+    use spreadsheet_routines, only : output_spreadsheet_dump
+    use dump_data, only: n_dumps
+    
+    character(len=*), intent(in) :: name
+    integer, intent(in) :: errorcode
+    
+    ! create the spreadsheet file of calculation results if necessary
+    if (n_dumps/=0) then
+        call output_spreadsheet_dump (name, errorcode, stime, total_steps)
+    end if
+
+    end subroutine  post_process
     
 end module exit_routines

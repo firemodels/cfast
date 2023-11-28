@@ -8,7 +8,7 @@
     
     integer, parameter :: mxpntsarray = 200, mxranddists = 13, mxgenerators = 200, mxvaltypes = 4, mxseeds = 2
     integer, parameter :: mxrndfires = mxfires
-    integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100, mxiterations = 100000
+    integer, parameter :: mxfiresections = 50, mxrandfires = 5, mxfiregens = 100, mxiterations = 100000
     integer, parameter :: mxstats = 10, mxfirepnts = 20
     integer, parameter :: idx_uniform = 1, idx_triangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6

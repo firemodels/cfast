@@ -31,9 +31,6 @@
 
 \usepackage{tocbasic} % Fix table of contents sections from overlapping section titles
 
-\usepackage{datetime}
-\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
-
 \usepackage{listings}
 \usepackage{textcomp}
 \usepackage{footmisc}
@@ -216,7 +213,6 @@ National Institute of Standards and Technology \\
 \newcommand{\headerD}[1]{
 \begin{flushright}
 \fontsize{12}{14}\selectfont
-This publication is available free of charge from: \\
 http://dx.doi.org/10.6028/NIST.TN.#1
 \end{flushright}
 }
@@ -226,10 +222,9 @@ http://dx.doi.org/10.6028/NIST.TN.#1
 \begin{flushright}
 \fontsize{12}{14}\selectfont
 \textbf{National Institute of Standards and Technology Technical Note #1 \\
-Natl. Inst. Stand. Technol. Tech. Note #1, \pageref{last_page} pages (\mydate\today) \\
+Natl. Inst. Stand. Technol. Tech. Note #1, \pageref{last_page} pages (\today) \\
 CODEN: NTNOEF \\
 \vspace{\baselineskip}
-This publication is available free of charge from: \\
 http://dx.doi.org/10.6028/NIST.TN.#1}
 \end{flushright}
 }

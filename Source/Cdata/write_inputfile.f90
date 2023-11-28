@@ -231,7 +231,7 @@
     end if
     if (stpmax /= default_stpmax) then
         doline = .true.
-        call add_token_val(iounit, buf, 'MAC_TIME_STEP = ',stpmax)
+        call add_token_val(iounit, buf, 'MAX_TIME_STEP = ',stpmax)
     end if
     if (lower_o2_limit /= default_lower_oxygen_limit) then
         doline = .true.

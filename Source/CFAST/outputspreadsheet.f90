@@ -2,7 +2,7 @@ module spreadsheet_routines
 
     use precision_parameters
 
-    use exit_routines, only: cfastexit
+    !use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
@@ -1589,7 +1589,7 @@ module spreadsheet_routines
         ! output not found. this is an internal error and cause for alarm
     case default
         write(errormessage, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
-        call cfastexit('ssaddvaluetooutput',1)
+        !call cfastexit('ssaddvaluetooutput',1)
         stop
     end select
     
@@ -1805,16 +1805,18 @@ module spreadsheet_routines
     integer :: i, icount, mxcol
     
     if (n_dumps<=0) return
-    dumparray(1, 1:nc) = 0.0
+    dumparray(1, 1:nc) = 0
     dumparray(2, 2:nc) = -1001
     dumpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    dumparray(2,1) = 0.0
+    dumparray(2,1) = 0
     dumpcarray(1,1) = 'File Name'
     dumpcarray(2,1) = trim(project) // trim(extension)
     dumpcarray(1,2) = 'Exit Code'
     dumparray(2,2) = errorcode
+    dumpcarray(2,2) = '0'
     dumpcarray(1,3) = 'Exit Routine'
     dumpcarray(2,3) = trim(name)
+    dumparray(2,3) = 0
     dumpcarray(1,4) = 'Simulation Time Completed'
     dumparray(2,4) = stime
     dumpcarray(1,5) = 'Total Steps Completed'
@@ -2015,7 +2017,8 @@ module spreadsheet_routines
     
     if (mxr < 2) then
         write(errormessage,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
-        call cfastexit('fnd_col',1)
+        !call cfastexit('fnd_col',1)
+        stop
     end if
     do i = 1, mxc
         if (trim(instrument) == trim(c(instrumentRow,i))) then

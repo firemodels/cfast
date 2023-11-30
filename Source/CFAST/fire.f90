@@ -56,7 +56,7 @@ module fire_routines
     nfire = 0
 
     if (option(ffire)==off) return
-
+    
     do i = 1, n_fires
         fireptr => fireinfo(i)
         iroom = fireptr%room

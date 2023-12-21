@@ -419,6 +419,7 @@ module solver_data
     ! time step setup values
     real(eb) :: stpmax = default_stpmax         ! maximum solver time step, if negative, then solver will decide
     real(eb) :: stpfirst = 0.005_eb             ! first time step for DASSL
+    integer :: stp_cnt_max                      ! maximum numer of iterations for the solver to take before quitting
     logical :: stpminflag                       ! true if CFAST should check for too small time steps
     real(eb) :: stpmin                          ! minimum time step below which DASSL may be failing to find a solution.
     integer :: stpmin_cnt                       ! current count of time steps below stpmin

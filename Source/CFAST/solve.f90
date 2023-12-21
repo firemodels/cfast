@@ -42,7 +42,7 @@ module solve_routines
     use smkview_data, only: smv_room, smv_xfire, smv_yfire, smv_zfire, smv_relp, smv_zlay, smv_tu, smv_tl, smv_qdot, smv_height
     use solver_data, only: maxteq, rpar2, ipar2, p, pold, pdold, pinit, told, dt, aptol, atol, rtol, rptol, awtol, rwtol, algtol, &
         nofp, nequals, nofprd, nofwt, noftu, noftl, nofvu, nofoxyu, nofoxyl, ndisc, discon, stpmin, stpminflag, stpmin_cnt, &
-        stpmin_cnt_max, stpmax, stpfirst, jacdim, i_speciesmap, I_wallmap
+        stpmin_cnt_max, stpmax, stpfirst, jacdim, i_speciesmap, I_wallmap, stp_cnt_max
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
@@ -233,7 +233,7 @@ module solve_routines
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
     integer :: first_time
-    integer :: stopunit, stopiter, ios
+    integer :: stopunit, ios
     
     type(fire_type), pointer :: fireptr
 
@@ -373,17 +373,17 @@ module solve_routines
         ! The escape key returns a code of 1
         if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
         inquire (file=stopfile, exist =exists)
-        stopiter=-1
+        stp_cnt_max=-1
         if (exists) then
             stopunit = get_filenumber()
             open (stopunit,file=stopfile)
-            read (stopunit,*,iostat=ios) stopiter
-            if (ios.ne.0) stopiter=0
+            read (stopunit,*,iostat=ios) stp_cnt_max
+            if (ios.ne.0) stp_cnt_max=0
             close(unit=stopunit)
             icode = 1
         end if
         ! If the stop file exists or the esc key has been pressed, then quit
-        if (icode==1.and.stopiter.eq.0) then
+        if (icode==1.and.stp_cnt_max.eq.0) then
             call delete_output_files (stopfile)
             write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
             write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
@@ -657,7 +657,7 @@ module solve_routines
             if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
             numstep = numstep + 1
             total_steps = total_steps + 1
-            if (stopiter>=0.and.total_steps>stopiter) then
+            if (stp_cnt_max>=0.and.total_steps>stp_cnt_max) then
                 call delete_output_files (stopfile)
                 write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
                 call cfastexit ('solve_simulation', 5)

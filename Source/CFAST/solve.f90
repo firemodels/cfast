@@ -363,307 +363,307 @@ module solve_routines
     numstep = 0
     numresd = 0
 
-10  continue
+    do while (idid>=0 .and. t+0.0001_eb<=tstop)
 
-    ! DASSL equation with most error
-    ieqmax = 0
+        ! DASSL equation with most error
+        ieqmax = 0
 
-    ! Check for interactive commands
-    ! if a key has been pressed (and we are watching the keyboard) figure out what to do
-    ! The escape key returns a code of 1
-    if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
-    inquire (file=stopfile, exist =exists)
-    stopiter=-1
-    if (exists) then
-       stopunit = get_filenumber()
-       open (stopunit,file=stopfile)
-       read (stopunit,*,iostat=ios) stopiter
-       if (ios.ne.0) stopiter=0
-       close(unit=stopunit)
-       icode = 1
-    end if
-    ! If the stop file exists or the esc key has been pressed, then quit
-    if (icode==1.and.stopiter.eq.0) then
-        call delete_output_files (stopfile)
-        write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-        write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-        return
-    end if
-
-    ! Check the .query file. If it does not exist, do nothing. If if DOES exist, then
-    ! rewind/write the status file and delete the query file (in that order).
-    ! Ignore errors from deleting the file. It may not exist
-    inquire (file=queryfile, exist = exists)
-    if (exists) then
-        call output_status (t, dt)
-        call delete_output_files (queryfile)
-    end if
-
-    !Check to see if diagnostic files .resid and .jac exist. If they do exist
-    !set flags and open file, if needed, to print diagnositic information.
-    inquire (file=residfile, exist=exists)
-    if (exists .or. option(fresidprn) == on) then
-        residprn = .true.
-        if (residfirst) then
-            residfirst = .false.
-            ioresid = get_filenumber()
-            open (ioresid,file=residcsv)
-            ioslab = get_filenumber()
-            open (ioslab, file=slabcsv)
+        ! Check for interactive commands
+        ! if a key has been pressed (and we are watching the keyboard) figure out what to do
+        ! The escape key returns a code of 1
+        if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
+        inquire (file=stopfile, exist =exists)
+        stopiter=-1
+        if (exists) then
+            stopunit = get_filenumber()
+            open (stopunit,file=stopfile)
+            read (stopunit,*,iostat=ios) stopiter
+            if (ios.ne.0) stopiter=0
+            close(unit=stopunit)
+            icode = 1
         end if
-    else
-        residprn = .false.
-    end if
+        ! If the stop file exists or the esc key has been pressed, then quit
+        if (icode==1.and.stopiter.eq.0) then
+            call delete_output_files (stopfile)
+            write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            return
+        end if
 
-    ! now do normal output (printout, spreadsheets, ...)
-    if (idid>0) then
-
-        ! printed output
-        if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
-            i_time_step = tprint
-            call output_results (t)
+        ! Check the .query file. If it does not exist, do nothing. If if DOES exist, then
+        ! rewind/write the status file and delete the query file (in that order).
+        ! Ignore errors from deleting the file. It may not exist
+        inquire (file=queryfile, exist = exists)
+        if (exists) then
             call output_status (t, dt)
-            tprint = tprint + dprint
-            numjac = 0
-            numstep = 0
-            numresd = 0
-            prttime = 0.0_eb
+            call delete_output_files (queryfile)
         end if
 
-        ! smokeview output
-        if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
-            i_time_step = tsmv 
-            ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
-            call collect_fire_data_for_smokeview (nfires)
-            if (firstpassforsmokeview) then
-                firstpassforsmokeview = .false.
-                ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
-                ! can have the latest time step information.
-                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, n_rooms, &
-                    nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, t, i_time_step)
-                call output_smokeview_header (cfast_version,n_rooms,nfires)
+        !Check to see if diagnostic files .resid and .jac exist. If they do exist
+        !set flags and open file, if needed, to print diagnositic information.
+        inquire (file=residfile, exist=exists)
+        if (exists .or. option(fresidprn) == on) then
+            residprn = .true.
+            if (residfirst) then
+                residfirst = .false.
+                ioresid = get_filenumber()
+                open (ioresid,file=residcsv)
+                ioslab = get_filenumber()
+                open (ioslab, file=slabcsv)
             end if
-            ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to 
-            ! smokeview are what is expected. 
-            smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
-            smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
-            smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
-            smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
-            call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
-            call output_spreadsheet_smokeview(t)
-            tsmv = tsmv + dplot
-            call output_status (t, dt)
-            call output_slicedata(t,first_time)
-            call output_isodata(t,first_time)
-            first_time = 0
-        end if
-
-        ! spreadsheet output
-        if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
-            call output_spreadsheet(t)
-            i_time_step = tspread
-            tspread =tspread + dspread
-            call output_status (t, dt)
-            
-            ! reset incremental FED data
-            targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
-            targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
-        end if
-
-        ! diagnostic output
-        if (t+0.0001_eb>tpaws) then
-            i_time_step = tpaws
-            call output_results (t)
-            call output_debug (1,t,dt,ieqmax)
-            tpaws = tstop + 1.0_eb
-            call output_status (t, dt)
-        end if
-
-        ! find the interval next discontinuity is in
-        idisc = 0
-        do i = 1, ndisc
-            if (t>=discon(i-1).and.t<discon(i)) then
-                idisc = i
-                exit
-            end if
-        end do
-        tout = min(tprint, tsmv, tspread, tpaws, tstop)
-
-        ! if there is a discontinuity then tell DASSL
-        if (idisc/=0) then
-            tout = min(tout,discon(idisc))
-            rwork(1) = discon(idisc)
-            info(4) = 1
         else
-            info(4) = 0
-        end if
-    end if
-    
-    ! Special case for radiation verification
-    if (radi_verification_flag) then
-        t = tstop
-        call target (1,t)
-        call output_spreadsheet(t)
-        return
-    end if
-
-    if (t<tstop) then
-        idset = 0
-        ipar(2) = some
-        told = t
-        call setderv(-1)
-        call cptime(ton)
-        call ddassl (calculate_residuals,n_odes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
-        ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
-        call setderv(-2)
-        ieqmax = ipar(3)
-        if (option(fpdassl)==on) call output_debug (3,t,dt,ieqmax)
-        ostptime = ton - toff
-        call cptime(toff)
-        stime = t
-        stptime = toff - ton
-        prttime = prttime + stptime
-        tottime = tottime + stptime
-        ovtime = ovtime + ostptime
-        tovtime = tovtime + ostptime
-
-        ! make sure dassl is happy
-        if (idid<0) then
-            call write_error_component (ieqmax)
-            write (*,'(a,i0)') '***Error, dassl - idid = ', idid
-            write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-            call post_process
-            stop
+            residprn = .false.
         end if
 
-        dt = t - told
-        if (stpminflag) then
-            if (dt<stpmin) then
-                stpmin_cnt = stpmin_cnt + 1
-                if (stpmin_cnt>stpmin_cnt_max) then
-                    ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
-                    write (*,'(a,i0,a,e11.4,a,e11.4)') &
-                        '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
-                    write (iofill,'(a,i0,a,e11.4,a,e11.4)') &
-                        '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
-                    stop
-                end if
-            else
-                ! this time step is above the critical size so reset counter
-                stpmin_cnt = 0
-            end if
-        end if
+        ! now do normal output (printout, spreadsheets, ...)
+        if (idid>0) then
 
-        ipar(2) = all
-        call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
-
-        ! advance the detector temperature solutions and check for object ignition
-        idsave = 0
-        call get_detector_temp_and_velocity
-        call update_detectors (check_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-        call update_fire_ignition (check_state,told,dt,ifobj,tobj)
-        td = min(tdtect,tobj)
-
-        ! a detector is the first one that went off
-        if (ifdtect>0.and.tdtect<=td) then
-            call update_detectors (set_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-            idsave = ifobj
-            td = tobj
-            call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-            idset = 0
-        else
-            call update_detectors (update_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-        end if
-
-        ! object ignition is the first thing to happen
-        if (ifobj>0.and.ifobj <=n_fires.and.tobj<=td) then
-            fireptr => fireinfo(ifobj)
-            call update_fire_ignition (set_state,told,dt,ifobj,tobj)
-            idsave = idset
-            td = tdtect
-            fireptr%ignited = .true.
-            call set_info_flags(info,rwork)
-            ifobj = 0
-        else
-            call update_fire_ignition (update_state,told,dt,ifobj,tobj)
-        end if
-
-        if (idsave/=0) then
-
-            ! a detector has activated so call dassl to integrate backwards
-            ! in time to t=td.  this is better than using simple linear interpolation
-            ! because in general dassl could be taking very big time steps
-            if (told<=td.and.td<t) then
+            ! printed output
+            if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
+                i_time_step = tprint
                 call output_results (t)
-                ipar(2) = some
-                tdout = td
-                do i = 1, 11
-                    info2(i) = 0
-                end do
-                info2(2) = 1
-                told = t
-                call ddassl (calculate_residuals, &
-                    n_odes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+                call output_status (t, dt)
+                tprint = tprint + dprint
+                numjac = 0
+                numstep = 0
+                numresd = 0
+                prttime = 0.0_eb
+            end if
 
-                ! make sure dassl is happy (again)
-                if (idid<0) then
-                    call write_error_component (ipar(3))
-                    write (*,'(a,i0)') '***Error, dassl - idid = ', idid
-                    write (*,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
-                    write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-                    write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
-                    call post_process
-                    write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
-                    call cfastexit ('solve_simulation', 3)
-                    stop
+            ! smokeview output
+            if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
+                i_time_step = tsmv
+                ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
+                call collect_fire_data_for_smokeview (nfires)
+                if (firstpassforsmokeview) then
+                    firstpassforsmokeview = .false.
+                    ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
+                    ! can have the latest time step information.
+                    call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, n_rooms, &
+                        nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, t, i_time_step)
+                    call output_smokeview_header (cfast_version,n_rooms,nfires)
                 end if
+                ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
+                ! smokeview are what is expected.
+                smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
+                smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
+                smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
+                smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
+                call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
+                call output_spreadsheet_smokeview(t)
+                tsmv = tsmv + dplot
+                call output_status (t, dt)
+                call output_slicedata(t,first_time)
+                call output_isodata(t,first_time)
+                first_time = 0
+            end if
 
-                ! reset dassl flags to integrate forward from t=td and
-                ! call calculate_residuals to get product info at sprinkler activation time
-                if (ifdtect>0) idset = idsave
-                dt = t - told
-                ipar(2) = all
+            ! spreadsheet output
+            if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
+                call output_spreadsheet(t)
+                i_time_step = tspread
+                tspread =tspread + dspread
+                call output_status (t, dt)
 
-                ! call calculate_residuals to get product info at the correct time and
-                ! to save fire release rates in room where detector has
-                ! activated.  (this happens because idset /= 0)
-                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
-                call set_info_flags (info,rwork)
-            else if (td==t) then
-                call set_info_flags (info,rwork)
-                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
+                ! reset incremental FED data
+                targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
+                targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
+            end if
+
+            ! diagnostic output
+            if (t+0.0001_eb>tpaws) then
+                i_time_step = tpaws
+                call output_results (t)
+                call output_debug (1,t,dt,ieqmax)
+                tpaws = tstop + 1.0_eb
+                call output_status (t, dt)
+            end if
+
+            ! find the interval next discontinuity is in
+            idisc = 0
+            do i = 1, ndisc
+                if (t>=discon(i-1).and.t<discon(i)) then
+                    idisc = i
+                    exit
+                end if
+            end do
+            tout = min(tprint, tsmv, tspread, tpaws, tstop)
+
+            ! if there is a discontinuity then tell DASSL
+            if (idisc/=0) then
+                tout = min(tout,discon(idisc))
+                rwork(1) = discon(idisc)
+                info(4) = 1
             else
-                ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
-                    t,' Last time = ',told,' need to back step to ',td
-                write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
-                    t,' Last time = ',told,' need to back step to ',td
-                write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
-                call cfastexit ('solve_simulation', 4)
+                info(4) = 0
+            end if
+        end if
+
+        ! Special case for radiation verification
+        if (radi_verification_flag) then
+            t = tstop
+            call target (1,t)
+            call output_spreadsheet(t)
+            return
+        end if
+
+        if (t<tstop) then
+            idset = 0
+            ipar(2) = some
+            told = t
+            call setderv(-1)
+            call cptime(ton)
+            call ddassl (calculate_residuals,n_odes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+            ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
+            call setderv(-2)
+            ieqmax = ipar(3)
+            if (option(fpdassl)==on) call output_debug (3,t,dt,ieqmax)
+            ostptime = ton - toff
+            call cptime(toff)
+            stime = t
+            stptime = toff - ton
+            prttime = prttime + stptime
+            tottime = tottime + stptime
+            ovtime = ovtime + ostptime
+            tovtime = tovtime + ostptime
+
+            ! make sure dassl is happy
+            if (idid<0) then
+                call write_error_component (ieqmax)
+                write (*,'(a,i0)') '***Error, dassl - idid = ', idid
+                write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
+                call post_process
                 stop
             end if
+
+            dt = t - told
+            if (stpminflag) then
+                if (dt<stpmin) then
+                    stpmin_cnt = stpmin_cnt + 1
+                    if (stpmin_cnt>stpmin_cnt_max) then
+                        ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
+                        write (*,'(a,i0,a,e11.4,a,e11.4)') &
+                            '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
+                        write (iofill,'(a,i0,a,e11.4,a,e11.4)') &
+                            '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
+                        stop
+                    end if
+                else
+                    ! this time step is above the critical size so reset counter
+                    stpmin_cnt = 0
+                end if
+            end if
+
+            ipar(2) = all
+            call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
+            call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
+
+            ! advance the detector temperature solutions and check for object ignition
+            idsave = 0
+            call get_detector_temp_and_velocity
+            call update_detectors (check_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+            call update_fire_ignition (check_state,told,dt,ifobj,tobj)
+            td = min(tdtect,tobj)
+
+            ! a detector is the first one that went off
+            if (ifdtect>0.and.tdtect<=td) then
+                call update_detectors (set_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+                idsave = ifobj
+                td = tobj
+                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
+                idset = 0
+            else
+                call update_detectors (update_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+            end if
+
+            ! object ignition is the first thing to happen
+            if (ifobj>0.and.ifobj <=n_fires.and.tobj<=td) then
+                fireptr => fireinfo(ifobj)
+                call update_fire_ignition (set_state,told,dt,ifobj,tobj)
+                idsave = idset
+                td = tdtect
+                fireptr%ignited = .true.
+                call set_info_flags(info,rwork)
+                ifobj = 0
+            else
+                call update_fire_ignition (update_state,told,dt,ifobj,tobj)
+            end if
+
+            if (idsave/=0) then
+
+                ! a detector has activated so call dassl to integrate backwards
+                ! in time to t=td.  this is better than using simple linear interpolation
+                ! because in general dassl could be taking very big time steps
+                if (told<=td.and.td<t) then
+                    call output_results (t)
+                    ipar(2) = some
+                    tdout = td
+                    do i = 1, 11
+                        info2(i) = 0
+                    end do
+                    info2(2) = 1
+                    told = t
+                    call ddassl (calculate_residuals, &
+                        n_odes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+
+                    ! make sure dassl is happy (again)
+                    if (idid<0) then
+                        call write_error_component (ipar(3))
+                        write (*,'(a,i0)') '***Error, dassl - idid = ', idid
+                        write (*,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
+                        write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
+                        write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
+                        call post_process
+                        write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
+                        call cfastexit ('solve_simulation', 3)
+                        stop
+                    end if
+
+                    ! reset dassl flags to integrate forward from t=td and
+                    ! call calculate_residuals to get product info at sprinkler activation time
+                    if (ifdtect>0) idset = idsave
+                    dt = t - told
+                    ipar(2) = all
+
+                    ! call calculate_residuals to get product info at the correct time and
+                    ! to save fire release rates in room where detector has
+                    ! activated.  (this happens because idset /= 0)
+                    call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
+                    call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
+                    call set_info_flags (info,rwork)
+                else if (td==t) then
+                    call set_info_flags (info,rwork)
+                    call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
+                else
+                    ! update_detectors said that a sprinkler has gone off but the time is wrong!!
+                    write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
+                        t,' Last time = ',told,' need to back step to ',td
+                    write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
+                        t,' Last time = ',told,' need to back step to ',td
+                    write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
+                    call cfastexit ('solve_simulation', 4)
+                    stop
+                end if
+            end if
+
+            ! calculate the mass of objects that have been pyrolized
+            ! at the moment we do only the total and the radiological species
+            ! It is important to call the routine to integrate the mass before call the toxicology calculation
+            call integrate_mass (dt)
+
+            ! calculate gas dosage
+            call update_species (dt)
+
+            if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
+            numstep = numstep + 1
+            total_steps = total_steps + 1
+            if (stopiter>=0.and.total_steps>stopiter) then
+                call delete_output_files (stopfile)
+                write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
+                call cfastexit ('solve_simulation', 5)
+            end if
         end if
-
-        ! calculate the mass of objects that have been pyrolized
-        ! at the moment we do only the total and the radiological species
-        ! It is important to call the routine to integrate the mass before call the toxicology calculation
-        call integrate_mass (dt)
-
-        ! calculate gas dosage
-        call update_species (dt)
-
-        if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
-        numstep = numstep + 1
-        total_steps = total_steps + 1
-        if (stopiter>=0.and.total_steps>stopiter) then
-            call delete_output_files (stopfile)
-            write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
-            call cfastexit ('solve_simulation', 5)
-        end if
-        go to 10
-    end if
+    end do
 
     return
 

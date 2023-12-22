@@ -375,6 +375,7 @@ module solve_routines
 
         ! Check for stop file that overrides maximum iteration count
         inquire (file=stopfile, exist=exists)
+        icode = 0
         n = stp_cnt_max
         if (exists) then
             stopunit = get_filenumber()

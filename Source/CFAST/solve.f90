@@ -229,7 +229,7 @@ module solve_routines
     real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, ismv, exists, ispread,firstpassforsmokeview
-    integer :: idid, i, n_odes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj
+    integer :: idid, i, n_odes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, n
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
     integer :: first_time
@@ -363,7 +363,7 @@ module solve_routines
     numstep = 0
     numresd = 0
 
-    do while (idid>=0 .and. t+0.0001_eb<=tstop)
+    do while (idid>=0 .and. t+0.000001_eb<=tstop)
 
         ! DASSL equation with most error
         ieqmax = 0
@@ -372,16 +372,24 @@ module solve_routines
         ! if a key has been pressed (and we are watching the keyboard) figure out what to do
         ! The escape key returns a code of 1
         if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
-        inquire (file=stopfile, exist =exists)
-        stp_cnt_max=-1
+
+        ! Check for stop file that overrides maximum iteration count
+        inquire (file=stopfile, exist=exists)
+        icode = 0
+        n = stp_cnt_max
         if (exists) then
             stopunit = get_filenumber()
             open (stopunit,file=stopfile)
-            read (stopunit,*,iostat=ios) stp_cnt_max
-            if (ios.ne.0) stp_cnt_max=0
+            read (stopunit,*,iostat=ios) n
+            if (ios==0) then 
+                stp_cnt_max = n
+            else
+                stp_cnt_max = 0
+                icode = 1
+            end if
             close(unit=stopunit)
-            icode = 1
         end if
+        
         ! If the stop file exists or the esc key has been pressed, then quit
         if (icode==1.and.stp_cnt_max.eq.0) then
             call delete_output_files (stopfile)

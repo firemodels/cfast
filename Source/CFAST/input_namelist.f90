@@ -36,7 +36,7 @@
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, errormessage
-    use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
+    use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, init_vent
@@ -301,10 +301,10 @@
 
     integer :: ios
 
-    real(eb) :: max_time_step, lower_oxygen_limit
+    real(eb) :: max_time_step, max_iteration, lower_oxygen_limit
     real(eb), dimension(2) :: specific_extinction
     logical :: adiabatic, overwrite
-    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction, overwrite
+    namelist /MISC/ adiabatic, max_time_step, max_iteration, lower_oxygen_limit, specific_extinction, overwrite
 
     ios = 1
 
@@ -335,6 +335,7 @@
 
         adiabatic_walls=adiabatic
         stpmax = max_time_step
+        stp_cnt_max = max_iteration
         lower_o2_limit = lower_oxygen_limit
         sigma_s = specific_extinction
         overwrite_testcase = overwrite
@@ -350,6 +351,7 @@
     overwrite = .true.
     adiabatic = .false.
     max_time_step = stpmax
+    max_iteration = -1
     lower_oxygen_limit = default_lower_oxygen_limit
     specific_extinction = default_sigma_s
 

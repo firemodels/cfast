@@ -28,6 +28,7 @@ Public Class Environment
     Private aLowerOxygenLimit As Double             ' Oxygen concentration below which burning will not take place.  Default is 15 % by volume
     Private aIgnitionTemp As Double                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
     Private aMaximumTimeStep As Double              ' Maximum time step for model calculations
+    Private aMaximumIterations As Integer           ' Maximum total iterations for the simulations
     Private aInputFileName As String                ' Current input data file name
     Private aInputFilePath As String                ' Path to current input data file
     Private aAdiabaticWalls As Boolean              ' True if all walls are adiabatic
@@ -298,6 +299,19 @@ Public Class Environment
             If Value <> 0 Then
                 If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumTimeStep Then
                     aMaximumTimeStep = myUnits.Convert(UnitsNum.Time).ToSI(Value)
+                    aChanged = True
+                End If
+            End If
+        End Set
+    End Property
+    Friend Property MaximumIterations() As Integer
+        Get
+            Return aMaximumIterations
+        End Get
+        Set(ByVal Value As Integer)
+            If Value <> 0 Then
+                If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumIterations Then
+                    aMaximumIterations = Value
                     aChanged = True
                 End If
             End If

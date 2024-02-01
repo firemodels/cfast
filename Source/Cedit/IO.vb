@@ -2414,7 +2414,7 @@ Module IO
         If MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + MyEnvironment.MaximumTimeStep.ToString
         End If
-        If MyEnvironment.MaximumIterations > 0 And MyEnvironment.MaximumIterations > 0 Then
+        If MyEnvironment.MaximumIterations > 0 Then
             ln += " MAX_ITERATION = " + MyEnvironment.MaximumIterations.ToString
         End If
         If MyEnvironment.LowerOxygenLimit <> 0.15 Then

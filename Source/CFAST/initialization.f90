@@ -29,7 +29,7 @@ module initialization_routines
         slab_splits, alloc_room, init_room
     use setup_data, only: iofill, debugging, deltat, init_scalars, errormessage
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
-        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
+        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol, stp_cnt_max
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
         n_ssmass, ssmassinfo, n_ssvent, ssventinfo, alloc_ss, init_ss
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, alloc_vent, init_vent
@@ -308,6 +308,7 @@ module initialization_routines
         stpmin_cnt = 0
         stpmin_cnt_max = 100
         stpminflag = .true.
+        stp_cnt_max = -1
 
         ! define universal constants
 

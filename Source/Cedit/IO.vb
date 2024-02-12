@@ -133,13 +133,14 @@ Module IO
         someEnvironment.Changed = False
     End Sub
     Private Sub ReadInputFileNMLMisc(NMList As NameListFile, ByRef someEnvironment As Environment)
-        Dim i, j, max As Integer
+        Dim i, j, max, maxIterations As Integer
         Dim adiabatic, overwrite As Boolean
         Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Double
 
         adiabatic = False
         overwrite = True
         maxts = Environment.DefaultMaximumTimeStep
+        maxIterations = -1
         loxyl = 0.15
         extinctionFlaming = 8700
         extinctionSmoldering = 4400
@@ -156,6 +157,8 @@ Module IO
                         End If
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAX_TIME_STEP") Then
                         maxts = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAX_ITERATION") Then
+                        maxIterations = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "LOWER_OXYGEN_LIMIT") Then
                         loxyl = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SPECIFIC_EXTINCTION") Then
@@ -183,6 +186,7 @@ Module IO
 
         someEnvironment.AdiabaticWalls = adiabatic
         someEnvironment.MaximumTimeStep = maxts
+        If maxIterations >= 0 Then someEnvironment.MaximumIterations = maxIterations
         someEnvironment.LowerOxygenLimit = loxyl
         someEnvironment.FlamingExtinctionCoefficient = extinctionFlaming
         someEnvironment.SmolderingExtinctionCoefficient = extinctionSmoldering
@@ -2399,7 +2403,7 @@ Module IO
 
         'Writing MISC namelist
         ln = "&MISC "
-        If MyEnvironment.AdiabaticWalls Or (MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0.0) Or MyEnvironment.LowerOxygenLimit <> 0.15 Or MyEnvironment.FlamingExtinctionCoefficient <> 8700 Or MyEnvironment.SmolderingExtinctionCoefficient <> 4400 Or MyEnvironment.Overwrite <> True Then
+        If MyEnvironment.AdiabaticWalls Or (MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0.0) Or MyEnvironment.MaximumIterations >= 0 Or MyEnvironment.LowerOxygenLimit <> 0.15 Or MyEnvironment.FlamingExtinctionCoefficient <> 8700 Or MyEnvironment.SmolderingExtinctionCoefficient <> 4400 Or MyEnvironment.Overwrite <> True Then
             aFlag = True
         Else
             aFlag = False
@@ -2409,6 +2413,9 @@ Module IO
         End If
         If MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + MyEnvironment.MaximumTimeStep.ToString
+        End If
+        If MyEnvironment.MaximumIterations > 0 Then
+            ln += " MAX_ITERATION = " + MyEnvironment.MaximumIterations.ToString
         End If
         If MyEnvironment.LowerOxygenLimit <> 0.15 Then
             ln += " LOWER_OXYGEN_LIMIT = " + MyEnvironment.LowerOxygenLimit.ToString

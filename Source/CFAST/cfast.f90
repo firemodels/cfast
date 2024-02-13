@@ -83,7 +83,7 @@
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
 
-    call post_process
+    call post_process('CFAST',0)
 
     call cfastexit ('CFAST', 0)
 
@@ -92,15 +92,20 @@
 
     end program cfast
     
-    subroutine post_process
+    subroutine post_process (name, errorcode)
     
     use spreadsheet_routines, only : output_spreadsheet_dump
     use dump_data, only: n_dumps
-    use setup_data, only: ss_out_interval
+    use option_data, only: total_steps
+    use setup_data, only: stime
+    
+    character(len=*), intent(in) :: name
+    integer, intent(in) :: errorcode
     
     ! create the spreadsheet file of calculation results if necessary
-    if (n_dumps/=0.and.ss_out_interval/=0.) then
-        call output_spreadsheet_dump
+    if (n_dumps/=0) then
+        call output_spreadsheet_dump (name, errorcode, stime, total_steps)
     end if
 
     end subroutine  post_process
+

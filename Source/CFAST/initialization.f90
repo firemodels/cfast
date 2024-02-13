@@ -1044,13 +1044,13 @@ module initialization_routines
         w = 1.0_eb/xxnsplit
         do i = 1, nsplit + 1
             xxim1 = i - 1
-            xwall(i) = xb*(xxim1*w)**2
+            xwall(i) = xb*(xxim1*w)**4
         end do
         w = 1.0_eb/(xxnx-(xxnsplit+1.0_eb))
         do i = nsplit +2, nx
             ii = nx + 1 - i
             xxiim1 = ii - 1
-            xwall(i) = wall_thickness - (wall_thickness-xb)*(xxiim1*w)**2
+            xwall(i) = wall_thickness - (wall_thickness-xb)*(xxiim1*w)**4
         end do
         n_nodes(1+nslab) = nintx
     else

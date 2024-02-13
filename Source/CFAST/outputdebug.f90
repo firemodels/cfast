@@ -7,7 +7,7 @@ module debug_routines
 
     use cfast_types, only: room_type, vent_type
     
-    use cparams, only: u, l, mxrooms, mxfslab, ns
+    use cparams, only: u, l, mxrooms, mxfslab, ns, nwal
     use diag_data, only: nwline, ioslab, ioresid
     use room_data, only: n_rooms, roominfo
     use spreadsheet_output_data, only: outarray
@@ -92,7 +92,8 @@ module debug_routines
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
 
     subroutine output_spreadsheet_residuals (time, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
-        filtered, flows_doorjets, flows_convection_layers, flows_convection, flows_radiation)
+        filtered, flows_doorjets, flows_convection_layers, flows_convection, flows_radiation, fluxes_convection, &
+        fluxes_radiation)
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
@@ -106,8 +107,8 @@ module debug_routines
     real(eb), intent(in) :: flows_fires(mxrooms,ns+2,2)
 
     ! data structures for convection and radiation
-    real(eb), intent(in) :: flows_convection(mxrooms,2)
-    real(eb), intent(in) :: flows_radiation(mxrooms,2)
+    real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
+    real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
 
     ! data structures for mechanical vents
     real(eb), intent(in) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
@@ -161,6 +162,14 @@ module debug_routines
             call ssaddtolist (position,flows_convection(i,j),outarray)
             call ssaddtolist (position,flows_radiation(i,j),outarray)
         end do
+        call ssaddtolist (position,fluxes_convection(i,1),outarray)
+        call ssaddtolist (position,fluxes_convection(i,3),outarray)
+        call ssaddtolist (position,fluxes_convection(i,4),outarray)
+        call ssaddtolist (position,fluxes_convection(i,2),outarray)
+        call ssaddtolist (position,fluxes_radiation(i,1),outarray)
+        call ssaddtolist (position,fluxes_radiation(i,3),outarray)
+        call ssaddtolist (position,fluxes_radiation(i,4),outarray)
+        call ssaddtolist (position,fluxes_radiation(i,2),outarray)
     end do
     ! species mass flow
     do i = 1, n_rooms

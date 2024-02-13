@@ -99,7 +99,7 @@
         if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
             write (errormessage,5022) interior_ambient_temperature
             if (.not.radi_verification_flag) then
-                call cfastexit('readinputfile',2)
+                call cfastexit('readinputfile',3)
             end if
         end if
     end if
@@ -153,13 +153,13 @@
         if (zbot<0.0_eb.or.zbot>roomptr%cheight.or.ztop<0.0_eb.or.ztop>roomptr%cheight.or.ztop<zbot) then
             write (errormessage,'(a,2e11.4,a)') '***Error, Invalid HVENT specification. sill and/or soffit height =', &
                 zbot, ztop,' out of bounds'
-                call cfastexit('readinputfile',4)
+                call cfastexit('readinputfile',5)
             stop
         end if
         ! outside must always be second compartment
         if (ventptr%room1==n_rooms+1) then
             write (errormessage,'(a)') '***Error, Compartment order is incorrect. Outside must always be second compartment.'
-            call cfastexit('readinputfile',5)
+            call cfastexit('readinputfile',6)
             stop
         end if
     end do

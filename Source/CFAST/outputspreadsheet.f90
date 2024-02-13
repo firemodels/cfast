@@ -2,7 +2,7 @@ module spreadsheet_routines
 
     use precision_parameters
 
-    use exit_routines, only: cfastexit
+    !use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
@@ -1589,7 +1589,7 @@ module spreadsheet_routines
         ! output not found. this is an internal error and cause for alarm
     case default
         write(errormessage, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
-        call cfastexit('ssaddvaluetooutput',1)
+        !call cfastexit('ssaddvaluetooutput',1)
         stop
     end select
     
@@ -1793,40 +1793,59 @@ module spreadsheet_routines
     
     !--------------------------output_spreadsheet_dump-----------------------------------------------------------
     
-    subroutine output_spreadsheet_dump 
+    subroutine output_spreadsheet_dump (name, errorcode, stime, total_steps)
     
-    integer, parameter :: nr = 2, nc = mx_dumps+1
+    character(len=*), intent(in) :: name
+    integer, intent(in) :: errorcode, total_steps
+    real(eb) :: stime
+    
+    integer, parameter :: nr = 2, ipad = 5, nc = mx_dumps + ipad
     real(eb) :: dumparray(nr, nc)
     character(len=128) :: dumpcarray(nr, nc)
     integer :: i, icount, mxcol
     
-    dumparray(1, 1:nc) = 0.0
+    if (n_dumps<=0) return
+    dumparray(1, 1:nc) = 0
     dumparray(2, 2:nc) = -1001
     dumpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    dumparray(2,1) = 0.0
+    dumparray(2,1) = 0
     dumpcarray(1,1) = 'File Name'
     dumpcarray(2,1) = trim(project) // trim(extension)
+    dumpcarray(1,2) = 'Exit Code'
+    dumparray(2,2) = errorcode
+    dumpcarray(2,2) = '0'
+    dumpcarray(1,3) = 'Exit Routine'
+    dumpcarray(2,3) = trim(name)
+    dumparray(2,3) = 0
+    dumpcarray(1,4) = 'Simulation Time Completed'
+    dumparray(2,4) = stime
+    dumpcarray(1,5) = 'Total Steps Completed'
+    dumparray(2,5) = total_steps
     mxcol = 0 
-    if (ss_out_interval>0 .and. n_dumps > 0) then 
+    if (ss_out_interval>0 .and. n_dumps > 0 .and. errorcode == 0) then 
         icount = n_dumps
         do i = 1, num_csvfiles
             if (icount>0) then
-                call do_csvfile(nr, nc, dumparray, dumpcarray, i, icount, mxcol)
+                call do_csvfile(nr, nc, dumparray, dumpcarray, ipad, i, icount, mxcol)
             else 
                 exit
             end if
         end do
-        call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
+    else if (n_dumps > 0) then
+        do i = 1, n_dumps
+            dumpcarray(1, ipad + i) = trim(dumpinfo(i)%id)
+        end do
     end if      
+    call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
     
     return
     end subroutine output_spreadsheet_dump
     
     !--------------------do_csvfile---------------------------------------
     
-    subroutine do_csvfile(nr, nc, dumparray, dumpcarray, idx, icount, mxcol)
+    subroutine do_csvfile(nr, nc, dumparray, dumpcarray, ipad, idx, icount, mxcol)
     
-    integer, intent(in) :: nr, nc, idx
+    integer, intent(in) :: nr, nc, idx, ipad
     integer, intent(inout) :: mxcol, icount
     real(eb), intent(inout) :: dumparray(nr, nc)
     character(len=*), intent(inout) :: dumpcarray(nr, nc)
@@ -1862,7 +1881,7 @@ module spreadsheet_routines
             dumpptr%found = .false.
             if (dumpptr%file==csvnames(idx)) then
                 num_entries = num_entries + 1
-                relcol = dumpptr%relative_column + 1
+                relcol = dumpptr%relative_column + ipad
                 icount = icount - 1
                 icol = icol + 1
                 cols(icol) = i
@@ -1912,7 +1931,7 @@ module spreadsheet_routines
         do i = 1, icol
             dumpptr => dumpinfo(cols(i))
             if (dumpptr%found) then
-                relcol = dumpptr%relative_column + 1
+                relcol = dumpptr%relative_column + ipad
                 if (dumpptr%type(1:1) == 'M') then
                     dumparray(2,relcol) = x(1, primecol(cols(i)))
                 else if (dumpptr%type(1:8) == 'TRIGGER_') then
@@ -1941,7 +1960,7 @@ module spreadsheet_routines
             do i = 1, icol
                 dumpptr => dumpinfo(cols(i))
                 if (dumpptr%found) then
-                    relcol = dumpptr%relative_column + 1
+                    relcol = dumpptr%relative_column + ipad
                     if (dumpptr%type(1:3) == 'MAX') then
                         dumparray(2,relcol) = max(dumparray(2,relcol),x(1, primecol(cols(i))))
                     else if (dumpptr%type(1:3) == 'MIN') then
@@ -1998,7 +2017,8 @@ module spreadsheet_routines
     
     if (mxr < 2) then
         write(errormessage,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
-        call cfastexit('fnd_col',1)
+        !call cfastexit('fnd_col',1)
+        stop
     end if
     do i = 1, mxc
         if (trim(instrument) == trim(c(instrumentRow,i))) then

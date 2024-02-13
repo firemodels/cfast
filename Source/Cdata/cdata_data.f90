@@ -62,3 +62,23 @@ module ppfilehandeling
     character(len=256) :: outpath
     
     end module analysis_data
+    
+    !-------------------------------------------diagnostic_data--------------------------------------------    
+    module diagnostic_data
+    
+    use precision_parameters
+    
+    use preprocessor_types, only: preprocessor_type
+    use diagnostic_types, only: diagnostic_type
+    
+    implicit none
+    save
+    
+    integer :: n_diag
+    type(diagnostic_type), allocatable, dimension(:), target :: diaginfo
+    
+    character(len=256) :: outpath
+    
+    type(diagnostic_type), pointer :: diagptr
+    
+    end module diagnostic_data

@@ -7,7 +7,8 @@
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
-        netheatflux, ssoutoptions, cdata_accumulator, cdata_preprocessor, cdata_statistics, errormessage
+        netheatflux, ssoutoptions, cdata_accumulator, cdata_preprocessor, cdata_statistics, cdata_diagnostics, &
+        errormessage 
 
     implicit none
 
@@ -496,6 +497,7 @@
     !     a = run cdata accumulator on the specified input file
     !     d to turn on debugging writes
     !     f/c = printed output options, full/compact. default is full
+    !     g = run cdata diagnositic on the specified input file
     !	  i = do initialization only
     !     k = do not access keyboard
     !     n = output just target fluxes relative to ambient (like -v but smoke still in od)
@@ -540,7 +542,9 @@
         end do
     end if
     if (cmdflag('P',iopt)/=0) cdata_preprocessor = .true.
+    cdata_statistics = .false.
     if (cmdflag('S',iopt)/=0) cdata_statistics = .true.
+    if (cmdflag('G',iopt)/=0) cdata_diagnostics = .true.
 
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
         write (errormessage,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
@@ -678,8 +682,8 @@
     !     arguments: iunit    = logical unit, already open to .csv file
     !                x        = array of dimension (numr,numc) for values in spreadsheet
     !                c        = character array of same dimenaion as x for character values in spreadsheet
-    !                numr     = # of rows of array x
-    !                numc     = # of columns of array x
+    !                numr     = # of rows of array x and c
+    !                numc     = # of columns of array x and c
     !                nstart   = starting row of spreadsheet to read
     !                nend     = stopping row, nend < 0 means read to the end 
     !                maxrow   = actual number of rows read

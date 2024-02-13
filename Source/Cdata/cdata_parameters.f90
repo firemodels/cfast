@@ -8,7 +8,7 @@
     
     integer, parameter :: mxpntsarray = 200, mxranddists = 13, mxgenerators = 200, mxvaltypes = 4, mxseeds = 2
     integer, parameter :: mxrndfires = mxfires
-    integer, parameter :: mxfiresections = 50, mxrandfires = 50, mxfiregens = 100, mxiterations = 100000
+    integer, parameter :: mxfiresections = 50, mxrandfires = 5, mxfiregens = 100, mxiterations = 100000
     integer, parameter :: mxstats = 10, mxfirepnts = 20
     integer, parameter :: idx_uniform = 1, idx_triangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6
@@ -49,6 +49,8 @@
     integer, parameter :: mximgformats = 5, default_img = 5
     character(len=3), parameter :: imgformatext_list(mximgformats) = (/'jpg', 'svg', 'tif', 'pdf', 'png'/)
     character(len=5), parameter :: imgformat_list(mximgformats) = (/'jpeg', 'svg ', 'tiff', 'pdf ', 'png '/)
+    
+    integer, parameter :: mxdiags = 20, mxdiagcols = 1000
     
     end module pp_params
     

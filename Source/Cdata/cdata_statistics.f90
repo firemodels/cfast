@@ -72,7 +72,7 @@ module statistics_routines
             statinfo(i)%logfile = trim(statinfo(i)%outfile) // '.log'
         endif 
         buf = trim(buf) // '" >' // trim(statinfo(i)%logfile)
-        write(*,*) buf
+        !write(*,*) buf
         write(ioerr,'(a)') buf
         call execute_command_line(buf)
     end do 

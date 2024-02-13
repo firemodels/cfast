@@ -174,7 +174,7 @@
         ventptr => vventinfo(i)
         if (ventptr%room1==ventptr%room2) then
             write (errormessage,'(a)') '***Error, A room can not be connected to itself with a vertical vent'
-            call cfastexit('readinputfile',6)
+            call cfastexit('readinputfile',7)
             stop
         end if
         itop = ventptr%room1
@@ -183,7 +183,7 @@
         if (itop/=n_rooms+1.and.ibot/=n_rooms+1.and.abs(deps1)>=mx_vsep) then
             write (errormessage,'(a,i0,a,i0,a)') '***Error, Vertical vent from ', itop,' to ', ibot, &
                 'Separation between floor and ceiling too large.'
-            call cfastexit('readinputfile',7)
+            call cfastexit('readinputfile',8)
             stop
         end if
     end do
@@ -207,7 +207,7 @@
         if (iroom1<1.or.iroom2<1.or.iroom1>n_rooms+1.or.iroom2>n_rooms+1) then
             write (errormessage,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
                 iroom1,'-',iroom2,' do not exist'
-            call cfastexit('readinputfile',8)
+            call cfastexit('readinputfile',9)
             stop
         end if
 
@@ -239,7 +239,7 @@
         else
             write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
                 iroom1,'-',iroom2,' are not connected'
-                call cfastexit('readinputfile',9)
+                call cfastexit('readinputfile',10)
             stop
         end if
 
@@ -255,7 +255,7 @@
                 write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
                     iroom2,' is adiabatic'
             end if
-            call cfastexit('readinputfile',10)
+            call cfastexit('readinputfile',11)
             stop
         end if
     end do
@@ -339,7 +339,7 @@
         if (iroom<1.or.iroom>n_rooms) then
             write (errormessage,110) iroom
 110         format('***Error, Invalid TARGET specification. Room ',i0, ' is not a valid')
-            call cfastexit('readinputfile',11)
+            call cfastexit('readinputfile',12)
             stop
         end if
         roomptr => roominfo(iroom)
@@ -356,7 +356,7 @@
         if (iroom<1.or.iroom>n_rooms) then
             write (errormessage,104) 
 104         format('***Error, Invalid DETECTOR specification. Room ',i3, ' is not a valid')
-            call cfastexit('readinputfile',12)
+            call cfastexit('readinputfile',13)
             stop
         end if
         roomptr => roominfo(iroom)
@@ -366,7 +366,7 @@
         if (rti<=0.0_eb.and.itype/=smoked) then
             write (errormessage,101) rti
 101         format('***Error, Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
-            call cfastexit('readinputfile',13)
+            call cfastexit('readinputfile',14)
             stop
         end if
 
@@ -376,7 +376,7 @@
         if (xloc<0.0_eb.or.xloc>roomptr%cwidth.or.yloc<0.0_eb.or.yloc>roomptr%cdepth.or.zloc<0.0_eb.or.zloc>roomptr%cheight) then
             write (errormessage,102) xloc, yloc, zloc
 102         format('***Error, Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
-            call cfastexit('readinputfile',14)
+            call cfastexit('readinputfile',15)
             stop
         end if
 
@@ -384,7 +384,7 @@
         if (itype<1.or.itype>3) then
             write (errormessage,103) itype
 103         format('***Error, Invalid DETECTOR specification - type= ',i0,' is not a valid')
-            call cfastexit('readinputfile',15)
+            call cfastexit('readinputfile',16)
             stop
         end if
     end do
@@ -622,7 +622,7 @@
             if (pathcount>255.or.ln(i)>64) then
                 write (errormessage,'(2a)') 'Total file name length including path must be less than 256 characters. ', &
                     'Individual filenames must be less than 64 characters.'
-                call cfastexit('exehandle',3)
+                call cfastexit('exehandle',2)
             end if
         end if
     end do
@@ -648,7 +648,7 @@
         end if
     else
         write (errormessage,*) ' Input file does not exist: ', trim(buf)
-        call cfastexit('exehandle',4)
+        call cfastexit('exehandle',3)
         stop
     end if
     

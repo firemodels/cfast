@@ -1,9 +1,8 @@
-&HEAD VERSION = 7700, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 3200 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 32 EXTERIOR_TEMPERATURE = 32 /
-&MISC  MAX_TIME_STEP = 0.01 / 
  
 !! Material Properties 
 &MATL ID = 'Concrete' MATERIAL = 'Concrete (NBS88-3752)', 
@@ -31,15 +30,15 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'West Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
-      CRITERION = 'TIME' T = 0, 175, 176, 1164, 1165, 1345, 1346, 2330, 2331, 2632, 2633 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1  FACE = 'RIGHT'  OFFSET = 2.15 /
+  CRITERION = 'TIME' T = 0, 175, 176, 1164, 1165, 1345, 1346, 2330, 2331, 2632, 2633 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.15 /
 &VENT TYPE = 'WALL' ID = 'East Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
-      CRITERION = 'TIME' T = 0, 361, 362, 1148, 1149, 1524, 1525, 2311, 2312, 2730, 2731 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1  FACE = 'RIGHT'  OFFSET = 3.05 /
+  CRITERION = 'TIME' T = 0, 361, 362, 1148, 1149, 1524, 1525, 2311, 2312, 2730, 2731 F = 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.05 /
 &VENT TYPE = 'WALL' ID = 'South Door' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
-      CRITERION = 'TIME' T = 0, 3200 F = 0, 0  FACE = 'LEFT'  OFFSET = 2.6 /
+  CRITERION = 'TIME' T = 0, 3200 F = 0, 0 FACE = 'LEFT' OFFSET = 2.6 /
 &VENT TYPE = 'WALL' ID = 'North East Door' COMP_IDS = 'Comp 2', 'Comp 3', BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
-      FACE = 'RIGHT'  OFFSET = 1.075 /
+  FACE = 'RIGHT' OFFSET = 1.075 /
 &VENT TYPE = 'WALL' ID = 'South East Door' COMP_IDS = 'Comp 1', 'Comp 2', BOTTOM = 0 HEIGHT = 2, WIDTH = 0.9
-      FACE = 'RIGHT'  OFFSET = 4.125 /
+  FACE = 'RIGHT' OFFSET = 4.125 /
  
 !! Ceiling and Floor Vents 
 &VENT TYPE = 'CEILING' ID = 'Roof Vent' COMP_IDS = 'OUTSIDE', 'Comp 2' AREA = 1.44, SHAPE = 'SQUARE' 

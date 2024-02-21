@@ -56,7 +56,7 @@ module fire_routines
     nfire = 0
 
     if (option(ffire)==off) return
-    
+
     do i = 1, n_fires
         fireptr => fireinfo(i)
         iroom = fireptr%room
@@ -837,14 +837,19 @@ module fire_routines
 
     real(eb) :: d
 
-    if (fire_area<=0._eb) then
-        d = pio4*0.2_eb**2
+    if (hrr <= 0._eb) then
+        flame_height = 0.0_eb
     else
-        d = sqrt(4.0_eb*fire_area/pi)
+        if (fire_area<=0._eb) then
+            d = pio4*0.2_eb**2
+        else
+            d = sqrt(4.0_eb*fire_area/pi)
+        end if
+        f_height = -1.02_eb*d + 0.235_eb*(hrr/1.0e3_eb)**0.4_eb
+        f_height = max (0.01_eb, f_height)
+        flame_height = f_height
     end if
-    f_height = -1.02_eb*d + 0.235_eb*(hrr/1.0e3_eb)**0.4_eb
-    f_height = max (0.0_eb, f_height)
-    flame_height = f_height
+    
     return
     end function flame_height
 

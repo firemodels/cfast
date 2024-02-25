@@ -118,9 +118,9 @@ gnu_linux_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
+intel_linux_64 : FFLAGS = -m64 -O1 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
-intel_linux_64 : FCOMPL = ifort
+intel_linux_64 : FCOMPL = ifx
 intel_linux_64 : obj = cfast7_linux_64
 intel_linux_64 : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
@@ -128,7 +128,7 @@ intel_linux_64 : $(objf)
 #intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fp-model strict -debug full
 intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict -stand:f08 $(GITINFO)
 intel_linux_64_db : LFLAGS = -static-intel
-intel_linux_64_db : FCOMPL = ifort
+intel_linux_64_db : FCOMPL = ifx
 intel_linux_64_db : obj = cfast7_linux_64_db
 intel_linux_64_db : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)

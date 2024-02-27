@@ -118,7 +118,7 @@ gnu_linux_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O1 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
+intel_linux_64 : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifx
 intel_linux_64 : obj = cfast7_linux_64

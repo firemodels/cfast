@@ -43,7 +43,7 @@ module preprocessor_types
         logical :: temp_flag, kilo_flag, press_flag
     contains
         procedure :: add_header
-        procedure :: write_value
+        !procedure :: write_value
     end type value_wrapper_type
     
     type, extends(value_wrapper_type) :: random_char_type
@@ -544,87 +544,8 @@ module preprocessor_types
     end subroutine add_header
     
     !
-    !--------write_value---------
+    !------do_rand--------------
     !
-    
-    subroutine write_value(me)
-    
-        class(value_wrapper_type), intent(inout) :: me
-        
-        integer :: i
-        real(eb) :: tmp
-    
-        if (me%add_to_parameters .and. me%parameter_field_set) then
-            select type (me)
-            type is (value_wrapper_type)
-                write(me%paramptr,'(a)') 'Values not set'
-            type is (random_real_type)
-                if (me%temp_flag) then 
-                    tmp = me%val - kelvin_c_offset
-                else if (me%kilo_flag) then
-                    tmp = me%val/1000.0_eb
-                else 
-                    tmp = me%val
-                end if 
-                write(me%paramptr,'(e13.6)') tmp
-            type is (random_int_type)
-                write(me%paramptr,'(i10)') me%val
-            type is (random_char_type)
-                write(me%paramptr,'(a)') me%val
-            type is (random_logic_type)
-                if (me%val) then
-                    write(me%paramptr,'(a)') '.TRUE.'
-                else
-                     write(me%paramptr,'(a)') '.FALSE.'
-                end if
-            type is (field_pointer)
-                if (trim(me%field_type) == trim(me%fld_types(me%idx_label))) then
-                    write(me%paramptr, '(a)') me%char_array(floor(me%rand_value))
-                else
-                    select case (me%value_type)
-                    case ('NULL')
-                        call me%errorcall('write_value',1)
-                    case (val_types(idx_real))
-                        if (me%temp_flag) then 
-                            tmp = me%realval%val - kelvin_c_offset
-                        else if (me%kilo_flag) then
-                            tmp = me%realval%val/1000.0_eb
-                        else 
-                            tmp = me%realval%val
-                        end if 
-                        write(me%paramptr,'(e13.6)') tmp
-                    case (val_types(idx_int))
-                        write(me%paramptr,'(i10)') me%intval%val
-                    case (val_types(idx_char))
-                        write(me%paramptr,'(a)') me%charval%val
-                    case (val_types(idx_logic))
-                        if (me%logicval%val) then
-                            write(me%paramptr,'(a)') '.TRUE.'
-                        else
-                            write(me%paramptr,'(a)') '.FALSE.'
-                        end if
-                    case default
-                        call me%errorcall('write_value',2)
-                    end select
-                end if
-            type is (fire_generator_type)
-                if (me%hrrscaleval%add_to_parameters) then
-                    write(me%hrrscaleval%paramptr,'(e13.6)') me%hrrscaleval%val
-                end if
-                if (me%timescaleval%add_to_parameters) then
-                    write(me%timescaleval%paramptr,'(e13.6)') me%timescaleval%val
-                end if
-                call me%fire_label%write_value
-                call me%fs_fire_ptr%write_value
-                do i = 1, me%n_firepoints
-                    call me%firegenerators(2,i)%write_value
-                    call me%firegenerators(1,i)%write_value
-                end do
-            class default
-                call me%errorcall('write_value',3)
-            end select
-        end if
-    end subroutine write_value
     
     subroutine do_rand(me, iteration)
     

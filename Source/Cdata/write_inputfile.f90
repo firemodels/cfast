@@ -521,7 +521,7 @@
     character :: charvals(maxlbls)*(15)
     integer :: imaplbls(maxlbls), iflglbls(maxlbls)
     logical :: dup, tablflgs(mxtabls)
-    real(eb) :: vals(maxlbls)
+    real(eb) :: vals(maxlbls), tmp
     
     do k = 1, n_tabls
         tablflgs(k) = .true.
@@ -552,8 +552,8 @@
                     call add_token_val(iounit, buf, 'CHLORINE = ', fireptr%n_Cl)
                 end if
                 if (fireptr%hoc(1) /= 5.0e7) then
-                   ! call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1)/1000.0_eb)
-                    call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1))
+                    call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1)/1000.0_eb)
+                    !call add_token_val(iounit, buf, 'HEAT_OF_COMBUSTION = ',fireptr%hoc(1))
                 end if 
                 call add_token_val(iounit, buf, 'RADIATIVE_FRACTION = ', fireptr%chirad)
                 if (fireptr%flaming_transition_time > 0._eb) then
@@ -598,7 +598,11 @@
                         j = 1
                         vals(j) = fireptr%t_qdot(k)
                         j = j + 1
-                        vals(j) = fireptr%qdot(k)/1000._eb
+                        ! The two step seems to be required for some reason. 
+                        tmp = fireptr%qdot(k)
+                        vals(j) = tmp/1000._eb
+                        ! Below version would not do the division. 
+                        !vals(j) = fireptr%qdot(k)/1000._eb
                         j = j + 1
                         vals(j) = fireptr%height(k)
                         j = j + 1

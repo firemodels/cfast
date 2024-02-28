@@ -8,7 +8,10 @@ module preprocessor_routines
     use namelist_data, only: convert_negative_distances
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly, debugging
+        ss_out_interval, inputfile, datapath, project, extension, iofili, initializeonly, debugging, outputfile, &
+        smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
+        queryfile, statusfile
+    use diag_data, only: residcsv, slabcsv
     
     !-----------------------CFAST routines-----------------------------------------
     use exit_routines, only: cfastexit, delete_output_files, closeoutputfiles
@@ -217,11 +220,11 @@ module preprocessor_routines
     call add_filename_to_parameters(filename)
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)
-        call randfireinfo(i)%write_value
+        !call randfireinfo(i)%write_value
     end do 
     do i = 1, n_fields
         call fieldinfo(fieldptr(i))%do_rand(iteration)
-        call fieldinfo(fieldptr(i))%write_value
+        !call fieldinfo(fieldptr(i))%write_value
     end do 
     
     end subroutine create_case

@@ -84,14 +84,16 @@
     real(eb), intent(out) :: pdif(*)
 
     real(eb) :: factor(mxrooms,2), smoke(mxrooms,2)
-    integer :: iroom, isof, iprod
+    integer :: iroom, isof, iprod, ii
 
     factor(1:n_rooms,u) = 0.0_eb
     factor(1:n_rooms,l) = 0.0_eb
     smoke(1:n_rooms,1:2) = 0.0_eb
 
-    isof = ibeg + 2*n_rooms
-    do iprod = 2, ns_mass
+    isof = ibeg
+    ii = 1
+    
+    do iprod = ii, ns_mass
         do iroom = 1, n_rooms
             if (pdif(isof) >= 0.0_eb) then
                 factor(iroom,u) = factor(iroom,u) + pdif(isof)
@@ -107,7 +109,7 @@
             isof = isof + 1
         end do
     end do
-
+    
     do iprod = 1, 2
         do iroom = 1, n_rooms
             if (pdif(isof) >= 0.0_eb) then
@@ -125,15 +127,29 @@
         end do
     end do
 
-    isof = ibeg
     do iroom = 1, n_rooms
-        pdif(isof) = roominfo(iroom)%mass(u) - factor(iroom,u)
-        isof = isof + 1
-        pdif(isof) = roominfo(iroom)%mass(l) - factor(iroom,l)
-        isof = isof + 1
+        if (factor(iroom,u)>0._eb) then
+            factor(iroom, u) = roominfo(iroom)%mass(u)/factor(iroom,u)
+        else
+            factor(iroom, u) = 1._eb
+        end if 
+        if (factor(iroom,l)>0._eb) then
+            factor(iroom, l) = roominfo(iroom)%mass(l)/factor(iroom,l)
+        else
+            factor(iroom,l) = 1._eb
+        end if 
+    end do
+    isof = ibeg
+    do iprod = 1, ns_mass
+        do iroom = 1, n_rooms
+            pdif(isof) = factor(iroom,u)*pdif(isof)
+            isof = isof + 1
+            pdif(isof) = factor(iroom,l)*pdif(isof)
+            isof = isof + 1
+        end do
     end do
 
-    isof = ibeg + 2*(ns_mass - 1)*n_rooms
+    isof = ibeg + 2*(ns_mass-1)*n_rooms
     do iroom = 1, n_rooms
         if (smoke(iroom,u) > 0.0_eb) then
             smoke(iroom,u) = pdif(isof)/smoke(iroom,u)

@@ -88,10 +88,9 @@
 
     real(eb), intent(in) :: x, xmax, xmin, ymax, ymin
     real(eb) :: f
-    f = min(max(0.5_eb + tanh(8.0_eb/(xmax-xmin)*(x-xmin)-4.0_eb)/2.0_eb,0.0_eb),1.0_eb)
-    if (f<1.0d-6) f = 0.0_eb
+    
+    f = min(max(0.5_eb + 0.5025_eb*tanh(6.0_eb/(xmax-xmin)*(x-xmin)-3.0_eb),0.0_eb),1.0_eb)
     tanhsmooth = f*(ymax-ymin)+ymin
-
 
     return
     end function tanhsmooth

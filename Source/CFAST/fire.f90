@@ -924,6 +924,7 @@ module fire_routines
                 end if
             else
                 hall_width = 0.0_eb
+                distance = r
             end if
             ! first calculate plume temperature at desired location
             call get_plume_temp_and_velocity (hrr, chirad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)

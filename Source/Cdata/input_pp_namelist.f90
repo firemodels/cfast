@@ -2053,15 +2053,21 @@
             fldptr%value_type = val_types(idx_char)
             fldptr%valptr => fldptr%charval
         else if (trim(fieldid(1:8)) == 'SETPOINT') then
-            if (item%ignition_type == 2) then
+            if (item%ignition_type == trigger_by_time) then
+                found = .true. 
+                fldptr%realval%val => item%ignition_time
+                fldptr%value_type = val_types(idx_real)
+                fldptr%valptr => fldptr%realval
+            else if (item%ignition_type == trigger_by_temp) then
                 found = .true. 
                 fldptr%realval%val => item%ignition_criterion
                 fldptr%temp_flag = .true.
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
-            else if (item%ignition_type == 3) then
+            else if (item%ignition_type == trigger_by_flux) then
                 found = .true. 
                 fldptr%realval%val => item%ignition_criterion
+                fldptr%kilo_flag = .true.
                 fldptr%value_type = val_types(idx_real)
                 fldptr%valptr => fldptr%realval
             else

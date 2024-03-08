@@ -24,7 +24,7 @@ module preprocessor_types
     !
     
     type preprocessor_type                              !Base type all other types extend 
-        character(len=128) :: id = 'NULL'               ! Name of a particulear intant of an object
+        character(len=128) :: id = 'NULL'               ! Name of a particulear instant of an object
         character(len=128) :: fyi = 'NULL'              ! line available for comments or extra input
     contains
         procedure errorcall
@@ -40,10 +40,9 @@ module preprocessor_types
         character(len=128) :: parameter_column_label
         character(len=128), pointer :: paramptr
         logical :: pointer_set = .false.
-        logical :: temp_flag, kilo_flag, press_flag
+        logical :: temp_flag = .false., kilo_flag = .false., press_flag = .false.
     contains
         procedure :: add_header
-        !procedure :: write_value
     end type value_wrapper_type
     
     type, extends(value_wrapper_type) :: random_char_type

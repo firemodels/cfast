@@ -20,7 +20,7 @@
     Public Sub New(ByVal Type As Integer, ByVal Axis As Integer, ByVal Value As Double, ByVal Compartment As Integer)
         aType = Type
         aAxis = Axis
-        aValue = Value
+        aValue = myUnits.Convert(UnitsNum.Length).ToSI(Value)
         aCompartment = Compartment
     End Sub
     Property Compartment() As Integer

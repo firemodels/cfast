@@ -68,6 +68,11 @@ Public Class NameListFile
                     'Do While (str.IndexOf("/", 0) < 0)
                     Do While (FindEndOfNameList(nmlst) < 0)
                         str = LineInput(io)
+                        If str.IndexOf("&", 0) >= 0 Then
+                            myErrors.Add("Found '&' for new namelist before termination of current namelist, possible missing '/'. Input file read may be incomplete.", ErrorMessages.TypeFatal)
+                            flag = False
+                            Exit Do
+                        End If
                         nmlst = nmlst + str + " "
                     Loop
                     Exit Do

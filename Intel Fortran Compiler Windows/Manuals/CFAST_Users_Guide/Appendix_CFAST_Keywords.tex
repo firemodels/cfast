@@ -1,0 +1,1048 @@
+\chapter{CFAST Text-based Input File}
+
+The operation of CFAST is based on a single ASCII\footnote{ASCII -- American Standard Code for Information Interchange. There are 256 characters that make up the standard ASCII text.} text file containing parameters organized into {\em namelist}\footnote{A {\em namelist} is a Fortran input record.} groups.
+The input file provides CFAST  with all of the necessary information to describe the scenario. The graphical user interface, CEdit, writes this file. This appendix details all the parameters, which are organized into groups that roughly coincide with the tabs in the graphical user interface.
+
+\section{Naming the Input File}
+
+The input file is saved with a name such as {\ct job\_name.in}, where {\ct job\_name} is any character string that helps to identify the simulation. All of the output files associated with the calculation will then have this common prefix name.
+
+There should be no blank spaces in the job name. Instead use the underscore character to represent a space.
+
+Be aware that CFAST will simply over-write the output files of a given case if its assigned name is the same. This is convenient when developing an input file because you save on disk space. Just be careful not to overwrite a calculation that you want to keep.
+
+\section{Namelist Formatting}
+
+Parameters are specified within the input file by using {\em namelist} formatted records. Each namelist record begins with the ampersand character, {\ct \&}, followed immediately by the name of the namelist group, then a comma-delimited list of the input parameters, and finally a forward slash, {\ct /}. For example, the line
+\begin{lstlisting}
+&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
+\end{lstlisting}
+sets various values of parameters contained in the {\ct TIME} namelist group. The meanings of these various parameters is explained in this guide. The namelist records can span multiple lines in the input file, but just be sure to end the record with a slash or else the data will not be understood. Do not add anything to a namelist line other than the parameters and values appropriate for that group. Otherwise, CFAST will stop immediately upon execution.
+
+Parameters within a namelist record can be separated by either commas, spaces, or line breaks. It is recommended that you use commas or line breaks, and never use tab stops because they are not explicitly defined in the namelist data structure. CFAST and CEdit expect the first character of the file to be an ampersand, {\ct \&}, and by convention the first namelist is the {\ct HEAD} namelist but any namelist can be the first. Comments and notes can be written into the file between namelists so long as nothing comes before the ampersand except a space and nothing comes between the ampersand and the slash except appropriate parameters corresponding to that particular namelist group. However, it is important to note that any comments in an  input file that is opened by CEdit and saved will be lost.
+
+The parameters in the input file can be integers, reals, character strings, or logical parameters. A logical parameter is either {\ct .TRUE.} or {\ct .FALSE.} -- the periods are a Fortran convention. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
+
+Most of the input parameters are simply real or integer scalars, like {\ct PRINT = 50.}, but sometimes the inputs can be arrays.
+
+Note that character strings can be enclosed either by single or double quotation marks, however CEdit only recognizes the single quotation mark. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or Mac OS~X because of the difference in line endings between Windows and Unix/Linux operating systems. The editor Wordpad typically works better, but try a simple case first.
+
+
+\section{Input File Structure}
+
+In general, the namelist records can be entered in any order in the input file, but it is a good idea to organize them in some systematic way. Typically, general information is listed near the top of the input file, and detailed information, like obstructions, devices, and so on, are listed below. CFAST scans the entire input file each time it processes a particular namelist group. With some text editors, it has been noticed that the last line of the file is often not read by CFAST because of the presence of an ``end of file'' character. To ensure that CFAST reads the entire input file, add
+\begin{lstlisting}
+&TAIL /
+\end{lstlisting}
+as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the ``end of file'' character past relevant input.
+
+The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
+
+%\clearpage
+\begin{lstlisting}[basicstyle=\tiny]
+&HEAD VERSION = 7300, TITLE = 'Users Guide Example Case' /
+!! Scenario Configuration
+&TIME SIMULATION = 3600 PRINT = 50 SMOKEVIEW = 50 SPREADSHEET = 50 /
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.1 /
+!! Material Properties
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)',
+      CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
+!! Comparments
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'CONCRETE' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+!! Devices
+&DEVC ID = 'HeatDetector_3' COMP_ID = 'Comp 1' LOCATION = 2, 2, 2.97 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1
+      FACE = 'FRONT' OFFSET = 2 /
+!! Fires
+&FIRE ID = 'Wood_Wall' COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'  LOCATION = 2.5, 5 /
+&CHEM ID = 'Wood_Wall_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 18100 RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood_Wall_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.006171682, 0.015, 0, 0, 0 /
+&TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.006171682, 0.015, 0, 0, 0 /
+!! Surface Connections
+&CONN TYPE = 'FLOOR' COMP_ID = 'Comp 3' COMP_IDS = 'Comp 2' /
+!! Visualizations
+&SLCF DOMAIN = '2-D'  POSITION = 2.5, PLANE = 'X' /
+&TAIL /
+
+\end{lstlisting}
+It is recommended that when looking at a new scenario, first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
+
+Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters and where you can find the reference to where it is introduced in the document and the table containing all of the keywords for each group.
+
+
+\begin{table}[ht]
+\begin{center}
+\caption{CFAST Input File Keywords}
+\label{tbl:namelistgroups}
+\begin{tabular}{|c|l|c|c|}
+\hline
+Group Name   & Namelist Group Description     & Reference Section & Parameter Table  \\ \hline
+{\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
+{\ct CHEM}   & Fire Chemistry                 & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
+{\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
+{\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
+{\ct DIAG}   & Diagnostics                    &                   & \ref{tbl:DIAG}   \\ \hline
+{\ct FIRE}   & Fires Placement                & \ref{info:FIRE2}  & \ref{tbl:FIRE2}  \\ \hline
+{\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
+{\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
+{\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
+{\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
+{\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
+{\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
+{\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
+{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:FIRE3}  & \ref{tbl:FIRE3}  \\ \hline
+{\ct TIME}   & Simulation Time                & \ref{info:TIME}   & \ref{tbl:TIME}   \\ \hline
+{\ct VENT}   & Vents                          & \ref{info:VENT}   & \ref{tbl:WVENT}  \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.in} included with the CFAST distribution. Following are some general rules about the CFAST input file:
+
+\begin{itemize}
+\item The {\ct HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use {\ct \&TAIL} as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
+\item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
+\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct .TRUE.} triggers the code to treat all compartment surfaces to be perfectly insulated.
+\item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, {\ct TEMPERATURES}, within the namelist group, {\ct INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
+\item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the {\ct LOWER\_OXYGEN\_LIMIT} has a default value of {\ct 0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
+\end{itemize}
+
+
+\clearpage
+
+\section{Simulation Environment, Namelist Groups \texorpdfstring{{\tt HEAD}}{HEAD}, \texorpdfstring{{\tt TIME}}{TIME}, \texorpdfstring{{\tt INIT}}{INIT}, and  \texorpdfstring{{\tt MISC}}{MISC}}
+
+\noindent
+\renewcommand{\tabcolsep}{.1in}
+\begin{longtable}{|l|l|l|l|l|}
+\caption[Header Parameters ({\ct HEAD} namelist group)]{For more information see Section~\ref{info:HEAD}.}
+\label{tbl:HEAD} \\
+\hline
+\multicolumn{5}{|c|}{{\ct HEAD} (Header Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct HEAD} (Header Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct VERSION}         & Integer                 & Section \ref{info:HEAD}      &         	     &                   \\ \hline
+{\ct TITLE}           & Character               & Section \ref{info:HEAD}      &       		     &                 	 \\ \hline
+\end{longtable}
+
+
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Time Parameters ({\ct TIME} namelist group)]{For more information see Section~\ref{info:TIME}.}
+\label{tbl:TIME} \\
+\hline
+\multicolumn{5}{|c|}{{\ct TIME} (Time Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct TIME} (Time Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct PRINT}             & Integer   & Section \ref{info:TIME}                 & s         & 60              \\ \hline
+{\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         & 3600            \\ \hline
+{\ct SMOKEVIEW}         & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
+{\ct SPREADSHEET}       & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
+\end{longtable}
+
+
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Initial Conditions ({\ct INIT} namelist group)]{For more information see Section~\ref{info:INIT}.}
+\label{tbl:INIT} \\
+\hline
+\multicolumn{5}{|c|}{{\ct INIT} (Initial Conditions)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct INIT} (Initial Conditions)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct PRESSURE}                   & Real   		   & Section \ref{info:INIT}      & Pa       		     & 101325     		       \\ \hline
+{\ct RELATIVE\_HUMIDITY}         & Real   		   & Section \ref{info:INIT}      & \%      		     & 50       		       \\ \hline
+{\ct INTERIOR\_TEMPERATURE}       & Real  	       & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+{\ct EXTERIOR\_TEMPERATURE}       & Real            & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+\end{longtable}
+
+
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Miscellaneous Parameters ({\ct MISC} namelist group)]{For more information see Section~\ref{info:MISC}.}
+\label{tbl:MISC} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MISC} (Miscellaneous Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MISC} (Miscellaneous Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct ADIABATIC}            & Logical     & Section \ref{info:MISC}                 &           & {\ct .FALSE.}   \\ \hline
+{\ct LOWER\_OXYGEN\_LIMIT} & Real        & Section \ref{info:MISC}                 &           &   0.15          \\ \hline
+{\ct MAX\_TIME\_STEP}      & Real        & Section \ref{info:MISC}                 & s         &   1             \\ \hline
+{\ct MAX\_ITERATION}      & Real         & Section \ref{info:MISC}                 &           &   Unlimited     \\ \hline
+{\ct OVERWRITE}            & Logical     & Section \ref{info:MISC}                 &           & {\ct .TRUE.}    \\ \hline
+{\ct SPECIFIC\_EXTINCTION} & Real Doublet        & Section \ref{info:MISC}         &           &   8700,4400     \\ \hline
+\end{longtable}
+
+\noindent Examples:
+\begin{lstlisting}
+&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
+&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
+&INIT  INTERIOR_TEMPERATURE = 20., EXTERIOR_TEMPERATURE = 20. /
+&MISC  LOWER_OXYGEN_LIMIT = 0.10 /
+\end{lstlisting}
+
+
+\clearpage
+
+\section{Thermal Properties, Namelist Group \texorpdfstring{{\tt MATL}}{MATL}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Thermal Properties ({\ct MATL} namelist group)]{For more information see Section~\ref{info:MATL}.}
+\label{tbl:MATL} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MATL} (Material Properties)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct MATL} (Material Properties)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CONDUCTIVITY}*\footnote{ * indicates a required input for each {\ct MATL} input included in the input file.}       & Real 	 & Section \ref{info:MATL}                 & kW/(m$\cdot$K)  	&                 \\ \hline
+{\ct DENSITY}*            & Real 	 & Section \ref{info:MATL}                 & kg/m$^3$ 		&                 \\ \hline
+{\ct EMISSIVITY}          & Real	 & Section \ref{info:MATL}                 &         		&   0.9           \\ \hline
+{\ct ID}*                 & Character    & Section \ref{info:MATL}                 &                    &                 \\ \hline
+{\ct MATERIAL}*           & Character    & Section \ref{info:MATL}                 &                    &                 \\ \hline
+{\ct SPECIFIC\_HEAT}*     & Real	 & Section \ref{info:MATL}                 & kJ/(kg$\cdot$K)    &                 \\ \hline
+{\ct THICKNESS}*\footnote{ THICKNESS provides a default value for the material. It can be overridden for a specific compartment surface. For targets, the default value is used.}          & Real  	 & Section \ref{info:MATL}                 & m     	        &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&MATL ID = 'CONCRETE', MATERIAL = 'Light weight concrete',
+      CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1.,
+      DENSITY = 2200., EMISSIVITY = 0.94, THICKNESS = 0.15 /
+\end{lstlisting}
+
+
+\clearpage
+\section{Compartments, Namelist Group \texorpdfstring{{\tt COMP}}{COMP}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+%\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{longtable}{|l|l|l|l|l@{\extracolsep{\fill}}|}
+\caption[Compartment parameters ({\ct COMP} namelist group)]{For more information see Section~\ref{info:COMP}.}
+\label{tbl:COMP} \\
+\hline
+\multicolumn{5}{|c|}{{\ct COMP} (Compartment Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct COMP} (Compartment Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CEILING\_MATL\_ID}\footnote{ If included, from 1 to 3 material ids can each be input for the ceiling, floor, and walls.}     & Character Triplet		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct CEILING\_THICKNESS}\footnote{ If included, from 1 to 3 material thicknesses can each be input for the ceiling, floor, and walls. If a zero value is input, the default thickness for the material is used.}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct CROSS\_SECT\_AREAS}
+\footnote{For compartments where the cross-sectional area varies with height, the inputs, {\ct CROSS\_SECT\_AREAS} and {\ct CROSS\_SECT\_HEIGHTS} can be used.}
+                            & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
+{\ct CROSS\_SECT\_HEIGHTS}  & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
+{\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least one {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
+{\ct FLOOR\_MATL\_ID}       & Character Triplet		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct FLOOR\_THICKNESS}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct GRID}             & Integer Triplet& Section \ref{info:SLCF2}               &           & 50,50,50                \\ \hline
+{\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
+{\ct HEIGHT}*                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
+{\ct ID}*                    & Character		 & Section \ref{info:COMP}                &           &          \\ \hline
+{\ct LEAK\_AREA}               & Real Doublet      & Section \ref{info:COMP}                & m$^2$/m$^2$          &          \\ \hline
+{\ct ORIGIN}           & Real Triplet   & Section \ref{info:COMP}                & m         & 0,0,0                \\ \hline
+{\ct SHAFT}                 & Logical  		 & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
+{\ct TYPE}                  & Character      & Section \ref{info:COMP}                &           &          \\ \hline
+{\ct WALL\_MATL\_ID}        & Character Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct WALL\_THICKNESS}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct WIDTH}*                 & Real               & Section \ref{info:COMP}                  & m         &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&COMP ID = 'Comp 1'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.025
+      WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
+      WALL_THICKNESS = 0.013, 0.03, 0.61
+      FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
+      FLOOR_THICKNESS = 0.013, 0.03, 0.61
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0005 /
+\end{lstlisting}
+
+
+
+
+\clearpage
+\section{Vents, Namelist Group \texorpdfstring{{\tt VENT}}{VENT}}
+\label{info:VENT6}
+
+\subsection{Wall Vents\texorpdfstring{{\tt ,TYPE='WALL'}}{, TYPE='WALL'}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Wall Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
+\label{tbl:WVENT} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='WALL'} (Wall Vent Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='WALL'} (Wall Vent Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct BOTTOM}\footnote{ * indicates a required input for each wall {\ct VENT} input included in the input file.} *               & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct COMP\_IDS}*     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}              &                             &                 \\ \hline
+{\ct HEIGHT}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct OFFSET}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      0        \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline               &                             &                 \\ \hline
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct WALL} to specify a wall vent. } *
+                                                                 & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
+{\ct WIDTH}*                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\graybox{Wall vents ({\ct TYPE='WALL'}) are defined by {\ct BOTTOM}, {\ct TOP}, and {\ct WIDTH}. Location of the vent for visualization is defined by {\ct FACE}, and {\ct OFFSET}. \\
+}
+
+\noindent Example:
+\begin{lstlisting}
+&VENT TYPE = 'WALL', ID = 'HVENT 1', COMP_IDS = 'Comp 1', 'OUTSIDE',
+      WIDTH = 1., TOP = 2., BOTTOM = 0.,
+      OFFSET = 2., FACE = 'FRONT' /
+
+\end{lstlisting}
+
+\subsection{Ceiling / Floor Vents\texorpdfstring{{\tt ,TYPE='CEILING'} or {\tt TYPE='FLOOR'}}{{, TYPE='CEILING'} or {\tt TYPE='FLOOR'}}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Ceiling/Floor Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
+\label{tbl:CFVENT} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='CEILING'} or {\ct TYPE='FLOOR'} (Ceiling/Floor Vent Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='CEILING'} or {\ct TYPE='FLOOR'} (Ceiling/Floor Vent Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct AREA}\footnote{ * indicates a required input for each ceiling/floor {\ct VENT} input included in the input file.} *      	 & Real  	          & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
+{\ct COMP\_IDS}*     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include T.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct SHAPE}*\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
+                                                                 & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING} or {\ct FLOOR} for ceiling and floor vents. These may be used interchangeably. The order of {\ct COMP\_IDS} specifies the location of the vent with {\ct COMP\_IDS(1)} specifying the top compartment and {\ct COMP\_IDS(2)} specifying the bottom compartment.} *
+                                                                 & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\graybox {Ceiling and floor vents ({\ct TYPE='CEILING'} or {\ct TYPE='FLOOR'}) are defined by {\ct AREA} and {\ct SHAPE}. Location of the vent for visualization is defined by {\ct OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction. It is visualized on the floor of {\ct COMP\_IDS(1)}. \\
+}
+
+\noindent Example:
+\begin{lstlisting}
+&VENT TYPE = 'CEILING', ID = 'VVENT 1', COMP_IDS = 'Comp 3', 'Comp 2',
+      AREA = 1., SHAPE = 'ROUND', CRITERION= 'TIME',
+      T = 0., 100., 500.,
+      F = 0., 0.5, 1. /
+
+\end{lstlisting}
+
+\subsection{Mechanical Vents\texorpdfstring{{\tt ,TYPE='MECHANICAL'}}{, TYPE='MECHANICAL'}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Mechanical Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
+\label{tbl:MVENT} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='MECHANICAL'} (Mechanical Vent Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct VENT, TYPE='MECHANICAL'} (Mechanical Vent Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct AREAS}\footnote{ * indicates a required input for each mechanical {\ct VENT} input included in the input file.} *       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
+{\ct COMP\_IDS}*    	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CUTOFFS}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200.,300.     \\ \hline
+{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct FILTER\_TIME}    					 & Real  		  & Section \ref{info:VENT}      & s                            &  0               \\ \hline
+{\ct FILTER\_EFFICIENCY}    					 & Real  		  & Section \ref{info:VENT}      & \% removed                            &  0.0               \\ \hline
+{\ct FLOW}*      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
+{\ct HEIGHTS}*      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
+{\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0.,0.        \\ \hline
+{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:VENT}      &                             & {\tiny VERTICAL,VERTICAL}                \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct MECHANICAL} for mechanical vents.} *
+                                                                 & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\graybox{Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS}, {\ct CUTOFFS}, {\ct FLOW}, and {\ct HEIGHTS}. Location of the vent for visualization is defined by {\ct ORIENTATION} and {\ct OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction and by {\ct HEIGHTS(1)} in the z direction. \\
+}
+
+\noindent Example:
+\begin{lstlisting}
+&VENT TYPE = 'MECHANICAL', ID = 'MVENT_1',
+      COMP_IDS = 'OUTSIDE', 'Comp 1', AREAS = 0.25, 0.25,
+      HEIGHTS = 2.75, 2.75, FLOW = 0.02,
+      CUTOFFS = 200., 300., ORIENTATION='VERTICAL', OFFSETS = 0., 4. /
+
+\end{lstlisting}
+
+
+
+
+\clearpage
+\section{Fires, Namelist Groups \texorpdfstring{{\tt FIRE}}{FIRE}, \texorpdfstring{{\tt CHEM}}{CHEM},  and  \texorpdfstring{{\tt TABL}}{TABL}}
+\label{info:FIRE3}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE2} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instance of a Fire Object)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instance of a Fire Object)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct FIRE\_ID}* & Character        & Section \ref{info:FIRE}                 &                        &            \\ \hline
+{\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct IGNITION\_CRITERION}\footnote{for {\ct IGNITION\_CRITERION} inputs must be{\ct TIME},{\ct TEMPERTURE}, or {\ct FLUX}}   & Selection List   & Section \ref{info:FIRE}                 &                             & {\ct TIME}                \\ \hline
+{\ct LOCATION}*             & Real Pair        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
+{\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct CHEM} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE} \\
+\hline
+\multicolumn{5}{|c|}{{\ct CHEM} (Fire Chemistry Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct CHEM} (Fire Chemistry Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
+{\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct FLAMING\_TRANSITION\_TIME} & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
+{\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct CHEM} input included in the input file.} *                  & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct TABL} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE3} \\
+\hline
+\multicolumn{5}{|c|}{{\ct TABL} (Time-Based Fire Chemistry Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Time-Based Fire Chemistry Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct LABELS}               & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct TABL} input included in the input file.} *                    & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct DATA}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\clearpage
+\noindent Example:
+\begin{lstlisting}
+&FIRE ID = 'Wood_Wall'
+ COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
+ LOCATION = 2.5, 5 /
+&CHEM ID = 'Wood_Wall_Fire'
+ CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
+ HEAT_OF_COMBUSTION = 18100,  RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', DATA =    0,      0,     0,        0.05,   0.00617,    0.015 /
+&TABL ID = 'Wood_Wall_Fire', DATA =    8000,   1000,  3,        9,      0.00617,    0.015 /
+\end{lstlisting}
+
+
+
+
+\clearpage
+\section{Devices, Namelist Group \texorpdfstring{{\tt DEVC}}{DEVC}}
+
+\label{info:DEVC3}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Device Parameters ({\ct DEVC} namelist group)]{For more information see Section~\ref{info:DEVC}.}
+\label{tbl:DEVC} \\
+\hline
+\multicolumn{5}{|c|}{{\ct DEVC} (Device Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct DEVC} (Device Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct ADIABATIC\_TARGET}\footnote{If included, inputs for {\ct CONVECTION\_COEFFICENTS} are required.}           					 & Logical  		  & Section \ref{info:DEVC}      &                             &  {\ct .FALSE.}     \\ \hline
+{\ct CONVECTION\_COEFFICENTS}  & Real Doublet        & Section \ref{info:DEVC}     &   kW/(m$^2$$\cdot$K)      &       0, 0       \\ \hline
+{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct DEVC} input included in the input file. Additional inputs may be required depending on the type of device.}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct SURFACE\_ORIENTATION}      		  & Selection List   & Section \ref{info:DEVC}     &  see footnote\footnote{Indicates where the front surface of the target is facing. Allowable input are CEILING, FLOOR, FRONT WALL, BACK WALL, LEFT WALL, RIGHT WALL to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.}                 &                 \\ \hline
+{\ct SURFACE\_TEMPERATURE}               & Real   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct ID}*      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct DEPTH\_UNITS}  & Character     & Section \ref{info:DEVC}     &  none or m                 &       {\ct FRACTION}       \\ \hline
+{\ct LOCATION}*       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
+{\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct NORMAL}         & Real Triplet  & Section \ref{info:DEVC}     &                   & 0,0,1                \\ \hline
+{\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   & 130  \\ \hline
+{\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
+{\ct SETPOINTS}            & Real Doublet       & Section \ref{info:DEVC}     & \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft) for both smoldering and flaming smoke.}  \\ \hline
+{\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}    & m/s               &                 \\ \hline
+{\ct TEMPERATURE\_DEPTH}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
+{\ct THICKNESS}           & Real        & Section \ref{info:DEVC}     &                   & material thickness       \\ \hline
+{\ct TYPE}*               & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct TEMPERATURE\_DEPTH}, {\ct DEPTH\_UNITS}and {\ct NORMAL}. \\
+
+A sprinkler is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
+
+A smoke detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, and {\ct SETPOINT} or {\ct SETPOINTS}. The latter tracks smoulder smoke and flaming smoke separately. \\
+
+A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, and {\ct SETPOINT}.
+}
+
+\vspace{\baselineskip}
+\noindent Examples:
+\begin{lstlisting}
+&DEVC ID = 'Targ 1', COMP_ID = 'Comp 1', TYPE = 'PLATE',
+      LOCATION = 2.2, 1.88, 2.34., NORMAL = 0., 0., 1.,
+      MATL_ID = 'CONCRETE', TEMPERATURE_DEPTH = 0.1, DEPTH_UNITS = 'M' /
+
+&DEVC ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
+      TYPE = 'SPRINKLER',
+      LOCATION = 3., 3., 2.97,
+      SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
+
+&DEVC ID = 'Adiabatic Targ', COMP_ID = 'Comp 1', TYPE = 'PLATE',
+      LOCATION = 2.2, 1.88, 2.34., NORMAL = 0., 0., 1.,
+      MATL_ID = 'CONCRETE',
+      ADIABATIC_TARGET = 'TRUE', CONVECTION_COEFFICIENTS = 3.E-3, 5.E-3 /
+\end{lstlisting}
+
+
+
+\clearpage
+\section{Compartment Connections, Namelist Group \texorpdfstring{{\tt CONN}}{CONN}}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Connection Parameters ({\ct CONN} namelist group)]{For more information see Section~\ref{info:CONN}.}
+\label{tbl:CONN} \\
+\hline
+\multicolumn{5}{|c|}{{\ct CONN} (Connection Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct CONN} (Connection Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct CONN} input included in the input file.}             & Character           & Section \ref{info:CONN}                 &           &  	      \\ \hline
+{\ct COMP\_IDS}*            & Character Array     & Section \ref{info:CONN}                 &           &  	      \\ \hline
+{\ct F}                    & Real Array          & Section \ref{info:CONN}                 &           &              \\ \hline
+{\ct TYPE}* \footnote{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, or {\ct WALL}}        	
+                           & Selection List           & Section \ref{info:CONN}                 &           &              \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
+\end{lstlisting}
+
+
+
+
+\clearpage
+\section{Visualization, Namelist Groups \texorpdfstring{{\tt ISOF}}{ISOF}, \texorpdfstring{{\tt SLCF}}{SLCF}}
+
+\subsection{\texorpdfstring{{\tt ISOF}}{ISOF} (Isosurface Parameters)}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Isosurface parameters ({\ct ISOF} namelist group)]{For more information see Section~\ref{info:ISOF}.}
+\label{tbl:ISOF} \\
+\hline
+\multicolumn{5}{|c|}{{\ct ISOF} (Isosurface Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct ISOF} (Isosurface Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct ISOF} input included in the input file.}          & Character   & Section \ref{info:ISOF}                 &           &                 \\ \hline
+{\ct VALUE}*             & Real        & Section \ref{info:ISOF}                 & $^\circ$C &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+
+\noindent Example:
+\begin{lstlisting}
+&ISOF COMP_ID = 'COMP_1', VALUE = 100. /
+\end{lstlisting}
+
+
+
+
+\subsection{\texorpdfstring{{\tt SLCF}}{SLCF} (Slice File Parameters)}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Slice File parameters ({\ct SLCF} namelist group)]{For more information see Section~\ref{info:SLCF}.}
+\label{tbl:SLCF} \\
+\hline
+\multicolumn{5}{|c|}{{\ct SLCF} (Slice File Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct SLCF} (Slice File Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct SLCF} input included in the input file. All inputs are required for a 2-D domain slice file.} *         & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct DOMAIN}*\footnote{{\ct DOMAIN} must be 2-D or 3-D. If 2-D, {\ct PLANE} specifies the orientation of the slice in the X, Y, or Z direction and {\ct POSITION} specifies the offset from the origin of the specified plane.}            & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct PLANE}             & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct POSITION}          & Real        & Section \ref{info:SLCF}                 &           &                 \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
+\end{lstlisting}
+
+\clearpage
+
+
+
+
+\section{\texorpdfstring{{\tt DIAG}}{DIAG} (Diagnostic Parameters)}
+
+These inputs are for internal diagnostic purposes used to test and verify specific model functions.  They are included in this appendix for completeness but are never used in typical CFAST scenarios.
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Diagnostic parameters ({\ct DIAG} namelist group)]{}
+\label{tbl:DIAG} \\
+\hline
+\multicolumn{5}{|c|}{{\ct DIAG} (Diagnostic Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct DIAG} (Diagnostic Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct ADIABATIC\_TARGET\_VERIFICATION}\footnote{If included, must be either {\ct ON} or {\ct OFF} \label{DIAGonoff}} \footnote{If {\ct ON}, {\ct RADIATIVE\_INCIDIENT\_FLUX} is required.}     & Selection List   &          &         &  {\ct OFF}      \\ \hline
+{\ct CEILING\_JET\_SUB\_MODEL}\footref{DIAGonoff}    & Selection List   &          &         &  {\ct ON}      \\ \hline
+{\ct CONDUCTION\_SUB\_MODEL}\footref{DIAGonoff}     & Selection List   &          &         &  {\ct ON}      \\ \hline
+{\ct CONVECTION\_SUB\_MODEL}\footref{DIAGonoff}      & Selection List   &          &         & {\ct ON}      \\ \hline
+{\ct DASSL\_DEBUG\_PRINT}\footref{DIAGonoff}            & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DEBUG\_PRINT}\footref{DIAGonoff}                          & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DOOR\_JET\_FIRE\_SUB\_MODEL}\footref{DIAGonoff}  & Selection List &        &         & {\ct ON}       \\ \hline
+{\ct ENTRAINMENT\_SUB\_MODEL }\footref{DIAGonoff}   & Selection List    &         &          & {\ct ON}       \\ \hline
+{\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.\label{DIAGft}}          & Real Array       &                  &  \degc         &                 \\ \hline
+{\ct FIRE\_SUB\_MODEL}\footref{DIAGonoff}                     & Selection List   &          &          & {\ct ON}       \\ \hline
+{\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.\label{DIAGgpp}}             & Real   &                  &  \degc         &                 \\ \hline
+{\ct GAS\_ABSORPTION\_SUB\_MODEL}\footnote{{\ct GAS\_ABSORPTION}, if included, must be either {\ct CALCULATED} or {\ct CONSTANT}} & Selection List &  &  & {\ct CALCULATED}  \\ \hline
+{\ct HORIZONTAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &     &           & {\ct ON}       \\ \hline
+{\ct KEYBOARD\_INPUT}\footref{DIAGonoff}                    & Selection List    &          &           & {\ct ON}      \\ \hline
+{\ct LAYER\_MIXING\_SUB\_MODEL}\footref{DIAGonoff}  & Selection List   &          &           & {\ct ON}      \\  \hline
+{\ct MECHANICAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &      &           & {\ct ON}      \\ \hline
+{\ct OXYGEN\_TRACKING}\footref{DIAGonoff}                  & Selection List    &         &            & {\ct OFF}    \\ \hline
+{\ct PARTIAL\_PRESSURE\_CO}\footref{DIAGgpp}             & Real   &                  &    Pa       &                 \\ \hline
+{\ct PARTIAL\_PRESSURE\_H2O}\footref{DIAGgpp}             & Real   &                  &   Pa        &                 \\ \hline
+{\ct RADIATIVE\_INCIDIENT\_FLUX}           & Real    &         & kW/m$^2$           & 0      \\ \hline
+{\ct RADIATION\_SUB\_MODEL}\footref{DIAGonoff}           & Selection List    &         &            & {\ct ON}      \\ \hline
+{\ct RADSOLVER}\footnote{{\ct RADSOLVER}, if included, must be either {\ct DEFAULT} or {\ct RADNET}.}            & Selection List   &                  &           &  {\ct DEFAULT}               \\ \hline
+{\ct RESIDUAL\_DEBUG\_PRINT}\footref{DIAGonoff}           & Selection List    &         &            & {\ct OFF}      \\ \hline
+{\ct STEADY\_STATE\_INTIAL\_CONDITIONS}\footref{DIAGonoff} & Selection List &     &     & {\ct OFF}     \\ \hline
+{\ct T}\footref{DIAGft}          & Real Array       &                  & s          &                 \\ \hline
+{\ct VERTICAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &            &             & {\ct ON}      \\ \hline
+\end{longtable}
+\end{minipage}
+
+\clearpage
+
+\section{Custom Output and Post-run Calculations}
+
+CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and write in CEdit.
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Output and Post-Run Calculation parameters ({\ct OUTP} namelist group)]{}
+\label{tbl:OUTP} \\
+\hline
+\multicolumn{5}{|c|}{{\ct OUTP} (Output and Post-Run Calculation Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct OUTP} (CALCULATION Parameters)} \\
+\hline \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+\endhead
+{\ct ID}                    & Character        &          &         &        \\ \hline
+{\ct FILE\_TYPE} \footnote{{\ct FILE\_TYPE} must be one of the CFAST spreadsheet outputs: {\ct NORMAL}, {\ct FLOW}, {\ct MASS}, {\ct SPECIES}, or {\ct WALL}.}
+
+                            & Selection List   &          &         &        \\ \hline
+{\ct TYPE} \footnote{{\ct TYPE} must be {\ct TRIGGER\_GREATER}, {\ct TRIGGER\_LESSER}, {\ct MINIMUM}, {\ct MAXIMUM}, {\ct INTEGRATE}, or {\ct CHECK\_TOTAL\_HRR}}
+                            & Selection List   &          &         &        \\ \hline
+{\ct CRITERIA}              & Real             &          &         &        \\ \hline
+{\ct FIRST\_DEVICE}         & Character        &          &         &        \\ \hline
+{\ct FIRST\_MEASUREMENT}    & Character        &          &         &        \\ \hline
+{\ct SECOND\_DEVICE}        & Character        &          &         &        \\ \hline
+{\ct SECOND\_MEASUREMENT}   & Character        &          &         &        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}
+&OUTP ID = 'Total Time Completed'
+     FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
+&OUTP ID = 'Fire Room Ion Detector'
+     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
+     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
+\end{lstlisting}
+
+\clearpage
+
+
+
+\chapter{CFAST Spreadsheet Outputs}
+
+At the user's option, CFAST outputs simulation results to one or more comma-delimited spreadsheets for further analysis by the user. The following table details all the possible outputs categorized by the physical object that is being represented in the model (here termed measurement `devices') and one or more measurements associated with that device.
+
+\clearpage
+
+\begin{landscape}
+\noindent
+\setlength\LTleft{0.5in}
+\setlength\LTright{0.5in}
+\begin{longtable}{|l|l|p{2.0in}|l|}
+\caption[Spreadsheet Outputs ({\ct OUTP} namelist group)]{}
+\label{tbl:custom_outputs} \\
+\hline
+\multicolumn{4}{|c|}{{\ct OUTP} (Spreadsheet Outputs)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct OUTP} (Spreadsheet Outputs)} \\
+\hline \hline
+\endhead
+{\bf Device}    & {\bf Measurement}  & {\bf Notes}  & {\bf Default Spreadsheet} \\ \hline
+Compartments     & Upper Layer Temperature   & Device is identified by user-specified compartment ID    & \_compartments.csv         \\ \hline
+& Lower Layer Temperature   &     &          \\ \hline
+& Layer Height   &     &          \\ \hline
+& Upper Layer Volume   &     &          \\ \hline
+& Lower Layer Volume   &     &          \\ \hline
+& Pressure   &     &          \\ \hline
+& Ceiling Temperature   &     &          \\ \hline
+& Upper Wall Temperature   &     &          \\ \hline
+& Lower Wall Temperature   &     &          \\ \hline
+& Floor Temperature   &     &          \\ \hline
+& CO2 Upper Layer   &     &          \\ \hline
+& CO2 Lower Layer   &     &          \\ \hline
+& CO Upper Layer  &     &          \\ \hline
+& CO Lower Layer   &     &          \\ \hline
+& HCN Upper Layer   &     &          \\ \hline
+& HCN Lower Layer   &     &          \\ \hline
+& HCL Upper Layer   &     &          \\ \hline
+& HCL Lower Layer   &     &          \\ \hline
+& Unburned Fuel Upper Layer   &     &          \\ \hline
+& Unburned Fuel Lower Layer   &     &          \\ \hline
+& H2O Upper Layer   &     &          \\ \hline
+& H2O Lower Layer   &     &          \\ \hline
+& Optical Density Upper Layer   &     &          \\ \hline
+& Optical Density Lower Layer   &     &          \\ \hline
+& OD from Flaming Upper Layer   &     &          \\ \hline
+& OD from Flaming Lower Layer   &     &          \\ \hline
+& OD from Smoldering Upper Layer   &     &          \\ \hline
+& OD from Smoldering Lower Layer   &     &          \\ \hline \hline
+
+& CO2 Upper Layer Mass  &     &          \\ \hline
+& CO2 Lower Layer Mass   &     &          \\ \hline
+& CO Upper Layer Mass  &     &          \\ \hline
+& CO Lower Layer Mass   &     &          \\ \hline
+& HCN Upper Layer Mass   &     &          \\ \hline
+& HCN Lower Layer Mass   &     &          \\ \hline
+& HCL Upper Layer Mass   &     &          \\ \hline
+& HCL Lower Layer Mass   &     &          \\ \hline
+& Unburned Fuel Upper Layer Mass   &     &          \\ \hline
+& Unburned Fuel Lower Layer Mass   &     &          \\ \hline
+& H2O Upper Layer Mass   &     &          \\ \hline
+& H2O Lower Layer Mass   &     &          \\ \hline
+& Soot Upper Layer Mass   &     &          \\ \hline
+& Soot Lower Layer Mass   &     &          \\ \hline
+& Soot from Flaming Upper Layer Mass   &     &          \\ \hline
+& Soot from Flaming Lower Layer Mass   &     &          \\ \hline
+& Soot from Smoldering Upper Layer Mass   &     &          \\ \hline
+& Soot from Smoldering Lower Layer Mass   &     &          \\ \hline \hline
+
+& Potential Total Heat Upper Layer   & -V option only    &          \\ \hline
+& Potential Total Heat Lower Layer   & -V option only    &          \\ \hline
+& Potential CO2 Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential CO2 Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential CO Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential CO Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Total Heat Upper Layer   & -V option only    &          \\ \hline
+& Potential Total Heat Lower Layer   & -V option only    &          \\ \hline
+& Potential HCN Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential HCN Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential HCL Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential HCL Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential H2O Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential H2O Lower Layer Mass  & -V option only    &          \\ \hline
+& Potential Soot Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Flaming Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Flaming Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Smoldering Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Smoldering Lower Layer Mass   & -V option only    &          \\  \hline
+
+\newpage
+
+Vents& Net Inflow   &     & \_vents         \\ \hline
+& Total Inflow Upper  &     &          \\ \hline
+& Total Inflow Lower  &     &          \\ \hline
+& Total Outflow Upper  &     &          \\ \hline
+& Total Outflow Lower  &     &          \\ \hline
+& Opening Fraction  &     &          \\ \hline
+& Trace Species Flow  &     &          \\ \hline
+& Trace Species Filtered  &     &          \\ \hline
+
+\newpage
+
+Fires& Ignition   & Device is identified by user-specified fire ID    & \_fires         \\ \hline
+&Plume Entrainment Rate & & \\ \hline
+&Pyrolysis Rate & & \\ \hline
+&HRR Expected & & \\ \hline
+&HRR Actual & & \\ \hline
+&HRR Convective Actual & & \\ \hline
+&HRR Upper Actual & & \\ \hline
+&HRR Lower Actual & & \\ \hline
+&Flame Height & & \\ \hline
+&HRR Door Jet Fires & & \\ \hline
+&Total Pyrolysate Released & & \\ \hline
+&Total Trace Species Released & & \\ \hline
+
+\newpage
+
+Targets& Target Surrounding Gas Temperature   & Device is identified by user-specified target ID    & \_devices         \\ \hline
+&Target Surface Temperature & & \\ \hline
+&Target Internal Temperature & & \\ \hline
+&Target Incident Flux & & \\ \hline
+&Back Target Incident Flux & & \\ \hline
+&Target Net Flux & & \\ \hline
+&Back Target Net Flux & & \\ \hline
+&Target Gas FED & & \\ \hline
+&Target Gas FED Increment & & \\ \hline
+&Target Heat FED & & \\ \hline
+&Target Heat FED Increment & & \\ \hline
+&Target Obscuration & & \\ \hline
+&Target Radiative Flux & -V option only & \\ \hline
+&Back Target Radiative Flux & -V option only & \\ \hline
+&Target Convective Flux & -V option only & \\ \hline
+&Back Target Convective Flux & -V option only & \\ \hline
+&Target Radiative Fire Flux & -V option only & \\ \hline
+&Back Target Radiative Fire Flux & -V option only & \\ \hline
+&Target Surface Radiative Flux & -V option only & \\ \hline
+&Back Target Surface Radiative Flux & -V option only & \\ \hline
+&Target Gas Radiative Flux & -V option only & \\ \hline
+&Back Gas Target Radiative Flux & -V option only & \\ \hline
+&Target Radiative Loss Flux & -V option only & \\ \hline
+&Back Target Radiative Loss Flux & -V option only & \\ \hline
+&Target Total Gauge Flux & -V option only & \\ \hline
+&Back Target Total Gauge Flux & -V option only & \\ \hline
+&Target Radiative Gauge Flux & -V option only & \\ \hline
+&Back Target Radiative Gauge Flux & -V option only & \\ \hline
+&Target Convective Gauge Flux & -V option only & \\ \hline
+&Back Target Convective Gauge Flux & -V option only & \\ \hline
+&Target Radiative Loss Gauge Flux & -V option only & \\ \hline
+&Back Target Radiative Loss Gauge Flux & -V option only & \\ \hline \\ \\ \hline
+
+Detectors& Sensor Surrounding Gas Temperature   & Device is identified by user-specified detector ID    & \_devices         \\ \hline
+&Sensor Surrounding Gas Velocity & & \\ \hline
+&Sensor Obscuration & & \\ \hline
+&Sensor Temperature & & \\ \hline
+&Sensor Activation & & \\ \hline
+
+
+\end{longtable}
+\end{landscape}
+
+
+\clearpage
+
+
+
+\chapter{Running CFAST from a Command Prompt}
+
+The model CFAST can also be run from a Windows command prompt.  CFAST can be run from any folder, and refer to a data file in any other folder.
+
+\begin{lstlisting}
+[drive1:\][folder1\]cfast [drive2:\][folder2\]project
+\end{lstlisting}
+
+The project name will have extensions appended as needed (see below). For example, to run a test case when the CFAST executable is located in c:$\backslash$firemodels$\backslash$cfast7 and the input data file is located in c:$\backslash$data, the following command could be used:
+
+\begin{lstlisting}
+c:\firemodels\cfast7\cfast c:\data\testfire0   <<< note that the extension is optional.
+\end{lstlisting}
+
+One or more command line options can follow the name of the file to be run as follows:
+
+\begin{itemize}
+\item -k - no interactive keyboard access
+\item -i - initialization only
+\item -c - compact output
+\item -f - full output (c and f are exclusive). Note the interaction of the f and c option. The default for the console output is -c. The default for the file output is /f. This default action can be overwritten by explicitly including the /f or /c option.
+\item -n - net heat flux option
+\item -o: - limit spreadsheet output to the files specified: C for \_compartments.csv, D for \_devices.csv, M for \_masses.csv, V for \_vents.csv, and W for \_walls.csv. Default is -S:CDMVW for output of all spreadsheet files.
+\item -v - validation output (outputs a modified set of spreadsheet files with different column headers designed to facilitate automated analysis of the output)
+\end{itemize}
+
+
+\label{last_page}
+
+
+
+

@@ -1,0 +1,25 @@
+Number of Floors,15,15,15,15,15
+Number of Occupants,24,24,24,24,24
+Freaction of Occupants that Use Elevators,0.5,0.5,0.5,0.5,0.5
+Use building data file [True/False],FALSE,FALSE,FALSE,FALSE,FALSE
+Hall length [m],41.1,41.1,41.1,41.1,41.1
+Hall width [m],2.3,2.3,2.3,2.3,2.3
+Max rate occupants can enter hallway [p/s],1,1,1,1,1
+Number of stairwells,2,3,4,5,6
+Occupants on First floor use stairways,FALSE,FALSE,FALSE,FALSE,FALSE
+Stair width [m],1.27,1.27,1.27,1.27,1.27
+Flights per floor,2,2,2,2,2
+Stairs per flight,9,9,9,9,9
+Riser Height [mm],178,178,178,178,178
+Tread depth [mm],279,279,279,279,279
+Maximum Rate Occupants can enter Stairwell [p/s],1,1,1,1,1
+Maximum Rate Occupants can leave Stairwell [p/s],1.46965,1.46965,1.46965,1.46965,1.46965
+Distance to Exit Discharge [m],2,2,2,2,2
+Exit Width [m],2,2,2,2,2
+Maximum Rate Occupants can leave Exit Discharge [p/s],1.25,1.25,1.25,1.25,1.25
+Num of elevators,2,2,2,2,2
+Max elevator Car capacity [persons],12,12,12,12,12
+Elevator door type [index 1 to 12],7,7,7,7,7
+Elevator velocity [m/s],3,3,3,3,3
+Elevator acceleration [m/s2],3,3,3,3,3
+Elevator startup time [s],42.5,42.5,42.5,42.5,42.5

@@ -1,0 +1,87 @@
+&HEAD VERSION = 7600, TITLE = 'Trash Fire in Cable Spreading Room' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 3600 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+ 
+!! Material Properties 
+&MATL ID = 'CSRConcrete' MATERIAL = 'CSR Concrete (user''s guide)' 
+      CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75, THICKNESS = 0.5 EMISSIVITY = 0.9 /
+&MATL ID = 'THIEF' MATERIAL = 'Thief Cable (per NUREG CR 6931)', 
+      CONDUCTIVITY = 0.2 DENSITY = 2264 SPECIFIC_HEAT = 1.5, THICKNESS = 0.015 EMISSIVITY = 0.8 /
+ 
+!! Compartments 
+&COMP ID = 'Cable Spreading Room'
+      DEPTH = 18.5 HEIGHT = 4 WIDTH = 40
+      CEILING_MATL_ID = 'CSRConcrete' CEILING_THICKNESS = 0.5 WALL_MATL_ID = 'CSRConcrete' WALL_THICKNESS = 0.5 FLOOR_MATL_ID = 'CSRConcrete' FLOOR_THICKNESS = 0.5
+      CROSS_SECT_AREAS = 700.04, 700.04, 635.74, 635.74, 483.74, 483.74, 514.89, 514.89, 634.74, 634.74, 699.04, 699.04, 291.46, 291.46
+      CROSS_SECT_HEIGHTS = 0, 1.799, 1.8, 2.199, 2.2, 2.399, 2.4, 2.799, 2.8, 3.199, 3.2, 3.599, 3.6, 4
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.01, WIDTH = 2
+  FACE = 'FRONT' OFFSET = 5 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.01, WIDTH = 2
+  FACE = 'FRONT' OFFSET = 33 /
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cable Spreading Room' 'OUTSIDE' , BOTTOM = 0.01 HEIGHT = 1.99, WIDTH = 2
+  CRITERION = 'TIME' T = 0, 770, 771 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 33 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Cable Spreading Room'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.43, 2.43 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.7 CUTOFFS = 200, 300 OFFSETS = 10.25, 3.25
+      CRITERION = 'TIME' T = 170, 171 F = 1, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'OUTSIDE', 'Cable Spreading Room'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.43, 2.43 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.7 CUTOFFS = 200, 300 OFFSETS = 29.75, 3.25
+      CRITERION = 'TIME' T = 280.1, 281.1 F = 1, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_3' COMP_IDS = 'Cable Spreading Room', 'OUTSIDE'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.43, 2.43 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.7 CUTOFFS = 200, 300 OFFSETS = 10.25, 15.25
+      CRITERION = 'TIME' T = 280.1, 281.1 F = 1, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_4' COMP_IDS = 'Cable Spreading Room', 'OUTSIDE'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.43, 2.43 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.7 CUTOFFS = 200, 300 OFFSETS = 29.75, 15.25
+      CRITERION = 'TIME' T = 280.1, 281.1 F = 1, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+ 
+!! Fires 
+&FIRE ID = 'Transient Combustibles'  COMP_ID = 'Cable Spreading Room', FIRE_ID = 'Transient Combustibles_Fire'  LOCATION = 33, 16.3 / 
+&CHEM ID = 'Transient Combustibles_Fire' CARBON = 4 CHLORINE = 0 HYDROGEN = 7 NITROGEN = 0 OXYGEN = 2.5 HEAT_OF_COMBUSTION = 30400 RADIATIVE_FRACTION = 0.4 / 
+&TABL ID = 'Transient Combustibles_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 0, 0, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 48, 3.17, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 96, 12.68, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 144, 28.53, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 192, 50.72, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 240, 79.25, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 288, 114.12, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 336, 155.33, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 384, 202.88, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 432, 256.77, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 480, 317, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 799, 317, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 800, 0, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+&TABL ID = 'Transient Combustibles_Fire', DATA = 3600, 0, 0.8, 0.282743, 0.014, 0.038, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Cable Spreading Room' LOCATION = 33, 16.3, 1.8 TYPE = 'CYLINDER' MATL_ID = 'THIEF' SURFACE_ORIENTATION = 'CEILING'
+     TEMPERATURE_DEPTH = 0.0001125 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 2' COMP_ID = 'Cable Spreading Room' LOCATION = 33, 16.3, 2.3 TYPE = 'CYLINDER' MATL_ID = 'THIEF' SURFACE_ORIENTATION = 'CEILING'
+     TEMPERATURE_DEPTH = 0.0001125 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ 3' COMP_ID = 'Cable Spreading Room' LOCATION = 33, 16.3, 3.1 TYPE = 'CYLINDER' MATL_ID = 'THIEF' SURFACE_ORIENTATION = 'CEILING'
+     TEMPERATURE_DEPTH = 0.0001125 DEPTH_UNITS = 'M' /
+&DEVC ID = 'HeatDetector_1' COMP_ID = 'Cable Spreading Room' LOCATION = 4, 15.5, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_2' COMP_ID = 'Cable Spreading Room' LOCATION = 11.9, 15.5, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_3' COMP_ID = 'Cable Spreading Room' LOCATION = 19.8, 15.5, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_4' COMP_ID = 'Cable Spreading Room' LOCATION = 27.7, 15.5, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_5' COMP_ID = 'Cable Spreading Room' LOCATION = 35.7, 15.5, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_6' COMP_ID = 'Cable Spreading Room' LOCATION = 4, 9.4, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_7' COMP_ID = 'Cable Spreading Room' LOCATION = 11.9, 9.4, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_8' COMP_ID = 'Cable Spreading Room' LOCATION = 27.7, 9.4, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_9' COMP_ID = 'Cable Spreading Room' LOCATION = 35.7, 9.4, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_10' COMP_ID = 'Cable Spreading Room' LOCATION = 4, 3.3, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_11' COMP_ID = 'Cable Spreading Room' LOCATION = 11.9, 3.3, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_12' COMP_ID = 'Cable Spreading Room' LOCATION = 19.8, 3.3, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_13' COMP_ID = 'Cable Spreading Room' LOCATION = 27.7, 3.3, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+&DEVC ID = 'HeatDetector_14' COMP_ID = 'Cable Spreading Room' LOCATION = 35.7, 3.3, 3.96 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+ 
+!! Visualizations
+&ISOF VALUE = 305 /
+ 
+&TAIL /

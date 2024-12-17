@@ -1,0 +1,65 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 700 PRINT = 1 SMOKEVIEW = 10 SPREADSHEET = 1 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+ 
+!! Material Properties 
+&MATL ID = 'HARDWOOD' MATERIAL = '"Wood, Hardwoods (oak, maple) (3/4 in)"', 
+      CONDUCTIVITY = 0.16 DENSITY = 720 SPECIFIC_HEAT = 1.255, THICKNESS = 0.019 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 2, WIDTH = 1
+  FACE = 'FRONT' OFFSET = 2 /
+ 
+!! Fires 
+&FIRE ID = 'Initial Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Initial Fire_Fire'  LOCATION = 2.5, 2.5 / 
+&FIRE ID = 'Second Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Second Fire_Fire'  LOCATION = 2.5, 3.5 IGNITION_CRITERION = 'FLUX', DEVC_ID = 'Targ F2', SETPOINT = 6 / 
+&FIRE ID = 'Third Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Third Fire_Fire'  LOCATION = 2.5, 3.5 IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = 'Targ F3', SETPOINT = 200 / 
+&CHEM ID = 'Initial Fire_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 14000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Initial Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Initial Fire_Fire', DATA = 0, 0, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 30, 10, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 60, 40, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 90, 90, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 120, 160, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 150, 250, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 180, 360, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 210, 490, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 240, 640, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 270, 810, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 300, 999.9999, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 600, 1000, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 601, 810, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 602, 640, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 603, 490, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 604, 360, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 605, 250, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 606, 160, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 607, 90, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 608, 40, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 609, 10, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 610, 0, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&TABL ID = 'Initial Fire_Fire', DATA = 620, 0, 0, 0.3, 0.008021683, 0.02, 0, 0, 0 /
+&CHEM ID = 'Second Fire_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Second Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Second Fire_Fire', DATA = 0, 0, 0, 0.09, 0.004747221, 0.01, 0, 0, 0 /
+&TABL ID = 'Second Fire_Fire', DATA = 100, 2, 0, 0.09, 0.004747221, 0.01, 0, 0, 0 /
+&CHEM ID = 'Third Fire_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Third Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Third Fire_Fire', DATA = 0, 0, 0, 0.09, 0.004747221, 0.01, 0, 0, 0 /
+&TABL ID = 'Third Fire_Fire', DATA = 100, 2, 0, 0.09, 0.004747221, 0.01, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ F2' COMP_ID = 'Comp 1' LOCATION = 2.5, 3.5, 1 TYPE = 'PLATE' MATL_ID = 'HARDWOOD' SURFACE_ORIENTATION = 'LEFT WALL'
+     TEMPERATURE_DEPTH = 0.0095 DEPTH_UNITS = 'M' /
+&DEVC ID = 'Targ F3' COMP_ID = 'Comp 1' LOCATION = 2.5, 4.5, 1 TYPE = 'PLATE' MATL_ID = 'HARDWOOD' SURFACE_ORIENTATION = 'LEFT WALL'
+     TEMPERATURE_DEPTH = 0.0095 DEPTH_UNITS = 'M' /
+ 
+&TAIL /

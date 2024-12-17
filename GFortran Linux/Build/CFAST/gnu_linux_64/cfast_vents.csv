@@ -1,0 +1,5 @@
+Time,W_1_Outside_1,WF_Outside_1_1,W_2_Outside_2,WF_Outside_2_2,W_3_Outside_3,WF_Outside_3_3,W_1_2_4,WF_2_1_4,W_1_3_5,WF_3_1_5,W_2_3_6,WF_3_2_6,W_2_Outside_7,WF_Outside_2_7
+Simulation Time,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction,Net Inflow,Opening Fraction
+Time,w1,w1,w3,w3,w6,w6,d2,d2,d4,d4,d5,d5,d7,d7
+s,kg/s,,kg/s,,kg/s,,kg/s,,kg/s,,kg/s,,kg/s,
+ 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.000000E+00, 0.100000E+01, 0.000000E+00, 0.100000E+01, 0.000000E+00, 0.000000E+00                      

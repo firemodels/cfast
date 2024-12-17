@@ -1,0 +1,47 @@
+&HEAD VERSION = 7600, TITLE = 'Default example fire for user guide' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 10000 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  MAX_TIME_STEP = 0.1 / 
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 4, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 4, 0, 4 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 4'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 4 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2', BOTTOM = 0 HEIGHT = 4, WIDTH = 4
+  CRITERION = 'TIME' T = 1000, 1001 F = 0, 1 FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 3', 'Comp 4', BOTTOM = 0 HEIGHT = 4, WIDTH = 4
+  CRITERION = 'TIME' T = 5000, 5001 F = 0, 1 FACE = 'LEFT' OFFSET = 0 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Comp 3', 'Comp 2' AREA = 16, SHAPE = 'SQUARE' 
+      CRITERION = 'TIME' T = 2500, 2501 F = 0, 1 OFFSETS = 2, 2 /
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_2' COMP_IDS = 'OUTSIDE', 'Comp 4' AREA = 16, SHAPE = 'SQUARE' 
+      CRITERION = 'TIME' T = 7500, 7501 F = 0, 1 OFFSETS = 2, 2 /
+ 
+!! Fires 
+&FIRE ID = 'simple burner'  COMP_ID = 'Comp 1', FIRE_ID = 'simple burner_Fire'  LOCATION = 2, 2 / 
+&CHEM ID = 'simple burner_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0 / 
+&TABL ID = 'simple burner_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'simple burner_Fire', DATA = 0, 0, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 30, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 330, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 360, 0, 0, 0.07069, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

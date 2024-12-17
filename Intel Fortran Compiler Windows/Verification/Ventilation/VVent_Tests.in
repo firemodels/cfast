@@ -1,0 +1,85 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+ 
+!! Compartments 
+&COMP ID = 'Comp 1 Up'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2 Up'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 5 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3 Up'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 10 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 1 Down'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 7, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2 Down'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 7, 0, 5 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3 Down'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 7, 0, 10 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 1 Both'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 14, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2 Both'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 14, 0, 5 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3 Both'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 14, 0, 10 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 1 All Vents'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 21, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2 All Vents'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 21, 0, 5 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3 All Vents'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 21, 0, 10 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 3 All Vents' 'OUTSIDE' , BOTTOM = 2.25 HEIGHT = 0.5, WIDTH = 0.5
+  CRITERION = 'TIME' T = 0, 0 F = 1, 1 FACE = 'FRONT' OFFSET = 2.25 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_1' COMP_IDS = 'OUTSIDE', 'Comp 3 Up' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_2' COMP_IDS = 'Comp 3 Up', 'Comp 2 Up' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_3' COMP_IDS = 'Comp 2 Up', 'Comp 1 Up' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_4' COMP_IDS = 'Comp 3 Down', 'Comp 2 Down' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_5' COMP_IDS = 'Comp 2 Down', 'Comp 1 Down' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_6' COMP_IDS = 'Comp 1 Down', 'OUTSIDE' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_7' COMP_IDS = 'OUTSIDE', 'Comp 3 Both' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_8' COMP_IDS = 'Comp 3 Both', 'Comp 2 Both' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_9' COMP_IDS = 'Comp 2 Both', 'Comp 1 Both' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_10' COMP_IDS = 'Comp 1 Both', 'OUTSIDE' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_11' COMP_IDS = 'Comp 3 All Vents', 'Comp 2 All Vents' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_12' COMP_IDS = 'Comp 2 All Vents', 'Comp 1 All Vents' AREA = 0.25, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1 Up'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.5, 2.5 FLOW = 0.1 OFFSETS = 0, 2.5 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'OUTSIDE', 'Comp 3 Down'
+      AREAS = 0.25, 0.25 HEIGHTS = 12.5, 2.5 FLOW = 0.1 OFFSETS = 2.5, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_3' COMP_IDS = 'OUTSIDE', 'Comp 2 Both'
+      AREAS = 0.25, 0.25 HEIGHTS = 7.5, 2.5 FLOW = 0.1 OFFSETS = 2.5, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_4' COMP_IDS = 'OUTSIDE', 'Comp 1 All Vents'
+      AREAS = 0.25, 0.25 HEIGHTS = 2.5, 2.5 FLOW = 0.1 OFFSETS = 2.5, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+ 
+&TAIL /

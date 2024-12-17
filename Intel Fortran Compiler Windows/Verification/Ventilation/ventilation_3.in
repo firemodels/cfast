@@ -1,0 +1,46 @@
+&HEAD VERSION = 7600, TITLE = 'Default example fire for user guide' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1500 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  MAX_TIME_STEP = 0.1 / 
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 4, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 4, 0, 4 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 4'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 4 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2', BOTTOM = 0 HEIGHT = 2, WIDTH = 1
+  CRITERION = 'TIME' T = 200, 201 F = 0, 1 FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 3', 'Comp 4', BOTTOM = 0 HEIGHT = 3, WIDTH = 1
+  CRITERION = 'TIME' T = 700, 701 F = 0, 1 FACE = 'LEFT' OFFSET = 1 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Comp 3', 'Comp 2' AREA = 3, SHAPE = 'ROUND' 
+      CRITERION = 'TIME' T = 500, 501 F = 0, 1 OFFSETS = 2, 2 /
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_2' COMP_IDS = 'OUTSIDE', 'Comp 4' AREA = 4, SHAPE = 'ROUND' 
+      CRITERION = 'TIME' T = 1000, 1001 F = 0, 1 OFFSETS = 2, 2 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
+      AREAS = 1, 1 HEIGHTS = 2, 2 FLOW = 1 CUTOFFS = 999999, 1000000 OFFSETS = 0, 2
+      CRITERION = 'TIME' T = 15, 16 F = 1, 0 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+ 
+!! Visualizations
+&SLCF COMP_ID = 'Comp 1' DOMAIN = '3-D' / 
+ 
+&TAIL /

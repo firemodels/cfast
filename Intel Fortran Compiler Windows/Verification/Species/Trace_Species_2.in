@@ -1,0 +1,35 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 80000 PRINT = 80000 SMOKEVIEW = 0 SPREADSHEET = 100 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  ADIABATIC = .TRUE.  MAX_TIME_STEP = 1.9 / 
+ 
+!! Compartments 
+&COMP ID = 'Room_1'
+      DEPTH = 10 HEIGHT = 2 WIDTH = 10 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Room_2'
+      DEPTH = 10 HEIGHT = 2 WIDTH = 10 SHAFT = .TRUE.
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 10, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'Room_1', 'Room_2'
+      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 OFFSETS = 0, 5
+      CRITERION = 'TIME' T = 100, 101 F = 0, 1 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'Room_2', 'Room_1'
+      AREAS = 1, 1 HEIGHTS = 1, 1 FLOW = 0.01 OFFSETS = 0, 5
+      CRITERION = 'TIME' T = 100, 101 F = 0, 1 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
+ 
+!! Fires 
+&FIRE ID = 'Methane_Fire'  COMP_ID = 'Room_1', FIRE_ID = 'Methane_Fire'  LOCATION = 5, 5 / 
+&CHEM ID = 'Methane_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Methane_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Methane_Fire', DATA = 0, 0, 0, 0.09, 0, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 1, 5, 0, 0.09, 0, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 100, 5, 0, 0.09, 0, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 101, 0, 0, 0.09, 0, 0, 0, 0, 0.001 /
+ 
+&TAIL /

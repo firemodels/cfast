@@ -1,0 +1,151 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 360 PRINT = 50 SMOKEVIEW = 1 SPREADSHEET = 1 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 22 EXTERIOR_TEMPERATURE = 22 /
+&MISC  MAX_TIME_STEP = 0.01 / 
+ 
+!! Material Properties 
+&MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)', 
+      CONDUCTIVITY = 0.48 DENSITY = 1440 SPECIFIC_HEAT = 0.84, THICKNESS = 0.012 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'Bedroom 2'
+      DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 3.38
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Bath'
+      DEPTH = 2.13 HEIGHT = 2.4 WIDTH = 2.16
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 3.38, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Kitchen'
+      DEPTH = 1.83 HEIGHT = 2.4 WIDTH = 2.16
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 3.38, 2.13, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Living Room'
+      DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 7.26
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 5.54, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Bedroom 3'
+      DEPTH = 3.05 HEIGHT = 2.4 WIDTH = 2.34
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 12.8, 0.91, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Closet for 3'
+      DEPTH = 1.47 HEIGHT = 2.4 WIDTH = 1.68
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 15.14, 2.49, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Hallway'
+      DEPTH = 0.81 HEIGHT = 2.4 WIDTH = 4.02
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 12.8, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Bedroom 1'
+      DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 2.59
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 16.82, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Closet for 1'
+      DEPTH = 1.47 HEIGHT = 2.4 WIDTH = 1.68
+      CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 15.14, 0.91, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Bedroom 2', 'Kitchen', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
+  FACE = 'RIGHT' OFFSET = 2.2 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Bath', 'Kitchen', BOTTOM = 0 HEIGHT = 0.0254, WIDTH = 0.61
+  FACE = 'REAR' OFFSET = 0.8 /
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Bath' 'OUTSIDE' , BOTTOM = 1 HEIGHT = 0.1, WIDTH = 0.6
+  FACE = 'FRONT' OFFSET = 0.8 /
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Kitchen', 'Living Room', BOTTOM = 0 HEIGHT = 2.4, WIDTH = 1.83
+  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Living Room', 'Hallway', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
+  FACE = 'RIGHT' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Hallway', 'Bedroom 1', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
+  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Bedroom 1', 'Closet for 1', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
+  FACE = 'LEFT' OFFSET = 1.3 /
+&VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Bedroom 3', 'Closet for 3', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
+  FACE = 'RIGHT' OFFSET = 2 /
+&VENT TYPE = 'WALL' ID = 'WallVent_9' COMP_IDS = 'Bedroom 3', 'Hallway', BOTTOM = 0 HEIGHT = 0.0254, WIDTH = 0.61
+  FACE = 'FRONT' OFFSET = 1 /
+&VENT TYPE = 'WALL' ID = 'WallVent_10' COMP_IDS = 'Bedroom 2' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 0.1, WIDTH = 0.1
+  FACE = 'FRONT' OFFSET = 0 /
+ 
+!! Fires 
+&FIRE ID = 'Dunes 2000 Mattress'  COMP_ID = 'Bedroom 1', FIRE_ID = 'Dunes 2000 Mattress_Fire'  LOCATION = 1.3, 3.1 / 
+&CHEM ID = 'Dunes 2000 Mattress_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 16090 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Dunes 2000 Mattress_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 0, 0, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 3, 0, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 6, 7, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 9, 7, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 12, 7, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 15, 7, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 18, 7, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 21, 7.01, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 24, 7.1, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 27, 7.31, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 30, 7.64, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 33, 8.08, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 36, 8.64, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 39, 9.31, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 42, 10.09, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 45, 10.99, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 48, 12.01, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 51, 13.14, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 54, 14.39, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 57, 15.75, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 60, 17.22, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 63, 18.81, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 66, 20.52, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 69, 22.34, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 72, 24.28, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 75, 26.33, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 78, 28.49, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 81, 30.77, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 84, 33.17, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 87, 35.68, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 90, 38.31, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 93, 41.05, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 96, 43.9, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 99, 46.87, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 102, 49.96, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 105, 53.16, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 108, 56.48, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 111, 59.91, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 114, 63.45, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 117, 67.11, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 120, 70.89, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 123, 74.78, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 126, 78.79, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 129, 82.91, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 132, 87.14, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 135, 91.49, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 138, 95.96, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 141, 100.54, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 144, 105.24, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 147, 110.05, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 150, 114.97, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 153, 120.01, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 156, 125.17, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 159, 130.44, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 162, 135.83, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 165, 141.33, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 168, 146.94, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 171, 152.67, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 174, 158.52, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 177, 164.48, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 180, 170.56, 0.3, 0.33, 0.05057168, 0.135, 0, 0, 0 /
+&TABL ID = 'Dunes 2000 Mattress_Fire', DATA = 190, 0, 0.3, 0.33, 0.0506, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'HeatDetector_1' COMP_ID = 'Bedroom 2' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'HeatDetector_2' COMP_ID = 'Bedroom 1' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'HeatDetector_3' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'HeatDetector_4' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'HeatDetector_5' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'SmokeDetector_6' COMP_ID = 'Bedroom 2' LOCATION = 0.38, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+&DEVC ID = 'SmokeDetector_7' COMP_ID = 'Bedroom 1' LOCATION = 0.38, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+&DEVC ID = 'SmokeDetector_8' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+&DEVC ID = 'SmokeDetector_9' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+&DEVC ID = 'SmokeDetector_10' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+ 
+&TAIL /

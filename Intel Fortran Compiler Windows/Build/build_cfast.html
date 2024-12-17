@@ -1,0 +1,100 @@
+<html>
+<head>
+<TITLE>cfast</TITLE>
+<script type="text/javascript">
+// for debugging:
+//document.getElementById("demo").innerHTML = fullcommand;
+
+MyObject = new ActiveXObject("WScript.Shell")
+function get_fullpath(command,platform){
+  var location = window.location.pathname;
+  var directoryPath = location.substring(1, location.lastIndexOf("/")+1);
+  var fullpath = directoryPath.concat(command).concat(platform);
+  return fullpath;
+}
+function run_script(script){
+  MyObject.Run(get_fullpath("scripts/webRUN_script.bat ",script));
+}
+</script>
+</HEAD>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" >
+
+<hr size="1">
+
+<h3>Preliminaries</h3>
+<p>
+<button onclick="run_script('\\Build\\scripts\\webEDIT_setup.bat')">Update configuration file</button><br>
+<button onclick="run_script('\\Build\\scripts\\webUpdate_windows_repos_git.bat')">Update windows repo</button><br>
+<button onclick="run_script('\\Build\\scripts\\webUpdate_repos_git.bat.bat')">Update all repos</button> <br>
+<button onclick="run_script('\\Build\\scripts\\webGET_cfast_version.bat')">Get cfast version</button><br>
+<button onclick="run_script('\\Build\\scripts\\webGET_revision.bat')">Get  repo revision</button>
+
+<h3>cfast</h3>
+
+<p><table border=on>
+<tr><th colspan=3>Debug</th></tr>
+<tr>
+<th>Windows</th><th>Linux</th><th>OSX</th>
+</tr>
+<tr>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastwin64db.bat')">Build</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastlinux64db.bat')">Build</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastosx64db.bat')">Build</button></td>
+</tr>
+</table>
+
+<p><table border=on>
+<tr><th colspan=3>Release</th></tr>
+<tr>
+<th>Windows</th><th>Linux</th><th>OSX</th>
+</tr>
+<tr>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastwin64.bat')">Build</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastlinux64.bat')">Build</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webBUILDcfastosx64.bat')">Build</button></td>
+</tr>
+<tr>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webPACKAGEcfastwin64.bat')">Package</button></td>
+<td align=center></td>
+<td align=center></td>
+</tr>
+<tr>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webINSTALLcfastwin64.bat')">Install</button></td>
+<td align=center></td>
+<td align=center></td>
+</tr>
+<tr>
+<td align=center colspan=3><button onclick="run_script('\\Build\\scripts\\webUPLOADcfast.bat')">Upload</button></td>
+</tr>
+</table>
+
+<h3>Verification</h3>
+<p><table border=on>
+<tr><th colspan=3>cfastbot</th></tr>
+<tr>
+<th>Windows</th><th>Linux</th><th>OSX</th>
+</tr>
+<tr>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webRUNwincfastbot.bat')">Run</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webRUNlinuxcfastbot.bat')">Run</button></td>
+<td align=center><button onclick="run_script('\\Build\\scripts\\webRUNosxcfastbot.bat')">Run</button></td>
+</tr>
+</table>
+
+
+<h3>Other</h3>
+<ul>
+<li><button onclick="run_script('\\Build\\scripts\\webEDIT_setup.bat')">Edit this page</button>
+<li><button onclick="run_script('\\Build\\scripts\\webCOPYhome2config.bat')">configuration file ===>> repo</button>
+<li><button onclick="run_script('\\Build\\scripts\\webCOPYconfig2home.bat')">configuration file <<=== repo</button>
+<li><a href="scripts/getting_started.html">setting up web scripts</button>
+<li><button onclick="run_script('\\Build\\scripts\\webTEST_setup.bat')">test web script setup</button>
+</ul>
+
+<p><hr>
+
+
+
+</BODY>
+</HTML>

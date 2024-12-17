@@ -1,0 +1,1583 @@
+\documentclass[12pt,twoside]{book}
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 5: CFAST Fire Data Generator (CData) \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+}
+
+\vfill
+
+\headerD{1889v5}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 5: CFAST Fire Data Generator (CData) \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Thomas G. Cleary \\
+
+{\em Fire Research Division, Engineering Laboratory, Gaithersburg, Maryland} \\
+
+Stanley W. Gilbert\\
+
+{\em Office of Economics, Engeneering Laboratory, Gaithersburg, Maryland}\\
+}
+
+\headerD{1889v5}
+
+\headerC{
+\flushright{\today\\
+Revision:~\gitrevision}
+}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+%
+% -------------------  Preface ------------------------
+%
+
+\chapter{Preface}
+
+This document provides documentation for creating and running Monte Carlo simulations with the Consolidated Fire And Smoke Transport (CFAST) model using the CFAST Fire Data Generator (CData). The method follows the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+
+%
+% -------------------  Disclaimer ------------------------
+%
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by the National Institute of Standards and Technology, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+\coden{1889v5}
+
+%
+% -------------------  Acknowledgments ------------------------
+%
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+We also thank Dr. Wai Cheong Tam, Dr. Justin Williamson, and Nelson Bryner for their reviews and corrections. Any remaining errors are ours.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+\listoftables
+
+
+\mainmatter
+
+%
+% -------------------  Getting Started ------------------------
+%
+
+\chapter{Getting Started}
+
+The Monte Carlo method is "a broad class of computational algorithms that use repeated random sampling to obtain numerical results." \cite{wikipedia_montecarlo} Stanislaw Ulam is credited with inventing the modern version of the Markov Chain Monte Carlo method while working on nuclear weapons projects in the 1940s \cite{Metropolis:1987}. Its application in fire safety dates to at least the 1980s with research ongoing to better understand equivalence between the then current standard prescriptive designs and more performance-based designs. Bukowski \cite{Bukowski_1985} suggested using the Monte Carlo method as a means of demonstrating when alternative designs were as safe or safer than prescriptive code compliant designs. The basic idea was to take a design made to meet code and compare its fire safety performance to an alternative design using a set of scenarios with a range of fires appropriate for the occupancy. If the relative performance of the alternative design was as good or better than the code compliant design, that would be justification for having the alternative design approved. Clarke et al. \cite{Clarke_1990}, as part of demonstrating the viability of using a computer model to predict fire safety, used a Monte Carlo analysis using the Consolidated Fire and Smoke Transport (CFAST) model to predict fire statistics for a residential application. The process continued and now building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a legal and technical structure for a fire performance-based analysis using, in part, Monte Carlo methods to characterize the relative fire hazard performance of designs.
+
+Work continued to better characterize the Monte Carlo method in its use in fire safety research and design. Notarianni \cite{Notarianni:2000} used Monte Carlo methods to characterize and quantify uncertainty in performance-based designs for fire safety. Bruns \cite{bruns_tn_2016}, in a study using Monte Carlo methods to assess the impact of inner liners in residential upholstered furniture, formalized the mathematics for applying the Monte Carlo method to fire hazard analysis as a means to further incorporate the method in regular performance-based designs.
+
+Monte Carlo methods and systematic variation of modeling variables are already used in the fire protection industry. The US nuclear power industry makes use of Monte Carlo and other methods with large numbers of model runs to generate statistics to quantify risk. Some examples include NUREG/CR-6850 Volume 2 Appendix L \cite{NRCNUREGCR6850V2}, NUREG-2178 Volume 1 \cite{NRCNUREG2178V1} Chapter 5, obstructed plumes,  NUREG-2178 Volume 2 \cite{NRCNUREG2178V2} Chapter2 2 and 3, obstructed radiation, Chapter 5, Motors and transformers, Chapter 6, wall and corner effects, and chapter 7, main control boards.
+
+At one time issues of both insufficient computational power and a lack of tools designed to do the analysis were obstacles to using Monte Carlo methods. However, it is now relatively easy to obtain the computational power and storage to generate and analyze huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end, the Fire Research Division at the National Institute of Standards and Technology (NIST) has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo fire hazard analysis a more widely used form of analysis using the Consolidated Fire And Smoke Transport (CFAST) model. The result of this effort is the CFAST Fire Data Generator (CData), documented in this report.
+
+The fire model being used, CFAST, is documented by four publications, a user's guide~\cite{CFAST_Users_Guide_7}, a technical reference guide~\cite{CFAST_Tech_Guide_7} a verification and validation guide \cite{CFAST_Valid_Guide_7}, and a configuration management guide~\cite{CFAST_Config_Guide_7}. The user's guide describes how to use the model and the input editor CEdit. The technical reference guide describes the underlying physical principles, provides a comparison with other models, and includes an evaluation of the model following the guidelines of ASTM~E1355~\cite{CFAST:ASTM:E1355}. The model verification and validation guide documents verification and validation efforts for the model. The configuration management guide documents the processes used during the development and validation of the model. This guide is a companion to the CFAST software and describes the use of the program CData to generate, summarize, and analyze numerous CFAST simulations.
+
+\section{Installation}
+
+The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks you through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder ({\ct C:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder. CData is installed as part of the CFAST distribution.
+
+CData also makes use of the statistical software, R, for selected analyses of the data generated for multiple CFAST runs. R can be downloaded from \url{https://www.r-project.org/}.
+
+%
+% -------------------  Defining the Analysis ------------------------
+%
+
+\section{Defining the Question and the Analysis}
+
+As briefly discussed in the introduction significant research has gone into understanding the basic requirements for a Monte Carlo analysis in a fire safety analysis \cite{Bukowski_1985,Clarke_1990,NFPA_5000,Hurley_2016,bruns_tn_2016}. Several key areas that need to be addressed in the analysis include definition of:
+
+\begin{enumerate}
+  \item Community / Building / Occupant characteristics
+  \item Fire scenarios
+  \item Analysis variables / Criteria for comparisons
+  \item Statistical analysis of calculation results
+\end{enumerate}
+
+Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between different compartments and compartments to the outside, and the range and position of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to characterize tenability along egress paths, fire severity, or building structural integrity, for example). For the most part, community and occupant characteristics are outside the scope of this report which focuses on developing the range of CFAST model inputs needed to run the desired set of simulations. These may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining ranges of compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
+
+\subsection{Building Characteristics}
+
+In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Sample_Visualization.png}
+\caption{Sample CFAST visualization of a single structure subject to a fire.}
+\label{sample_visualization}
+\end{figure}
+
+Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
+
+The set of buildings for study can also be chosen from distributions of building and room characteristics. For example Figure \ref{sample_room_distribution} shows the distribution of the total floor area in a residence, the number of bedrooms in a residence depending on the total floor area, the total number of rooms given a certain number of bedrooms (here shown for residences from 1000~ft$^2$ to 1500~ft$^2$)\footnote{NIST uses SI units but in this case English units are used to be consistent with the units used in the U.S. Housing Survey}, all taken from the 2015 U.S. Housing Survey \cite{AHS2015}. Creating a compartment geometry from these data can be thought of as a six step process:
+
+\begin{enumerate}
+    \item randomly select the total floor area of the structure, Fig. \ref{sample_room_distribution}(a);
+    \item randomly select the total number of bedrooms for a structure of the size chosen in step 1, Fig. \ref{sample_room_distribution}(b);
+    \item randomly select the total number of rooms in the structure of the chosen size and number of bedrooms (Fig. \ref{sample_room_distribution}(c) shows a sample distribution for homes ranging from 1000~ft$^2$ to 1500~ft$^2$. Distributions for other home sizes are available in ref. \cite{AHS2015});
+    \item determine room sizes based on a distribution of bedroom sizes, allocating left over space to the other rooms;
+    \item connect compartments as desired (for example by randomly setting vents as open or closed between compartment pairs); and
+    \item ensure that the resulting structure is realizable (This random approach to generating connections has a probability of resulting in a floorplan that cannot be instantiated in a single story. More technically, if the floorplan is thought of as a graph with the rooms as vertices and the connections as edges, some of the randomly generated graphs will be nonplanar for cases with more than four rooms. A planar graph is one that can be drawn on a piece of paper and none of the edges cross. The probability of generating a nonplanar floorplan increases as the number of rooms increases. In order to eliminate such nonphysical cases from the analysis, any randomly generated floorplan can be checked for planarity and rejected if necessary and replaced by a new randomly generated floorplan).
+\end{enumerate}
+
+\begin{figure}[p]
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=2.5in]{FIGURES/Total_Floor_Area} \\
+(a) Total Floor Area in a Residence \\
+\includegraphics[height=2.5in]{FIGURES/Number_of_Bedrooms} \\
+(b) Number of Bedrooms in a Residence as a Function of Total Floor Area \\
+\includegraphics[height=2.5in]{FIGURES/Total_Rooms} \\
+(c) Total Number of Rooms (excluding Bathrooms) as a Function of the Number of Bedrooms  \\
+in a Residence with 1000 ft$^2$ to 1500 ft$^2$ of Total Floor Area  \\
+\end{tabular*}
+\caption[Cumulative Probability Distributions for Home Size, Number of Bedrooms and Total Number of Rooms]
+{Example Cumulative Probability Distributions for Home Size (a), Number of Bedrooms (b) and Total Number of Rooms (excluding Bathrooms) (c) taken from the 2015 U.S. Housing Survey \cite{AHS2015}}
+\label{sample_room_distribution}
+\end{figure}
+
+Other characteristics of the structure such as materials of construction, vent openings, fire definitions, measurement targets, sprinklers, and detection devices can be varied as desired for the problem being studied. Table \ref{tbl:distributable_variables} shows variables in the modeling that can be varied based on user-defined distributions \footnote{The content of this table follows the form of that used in B-Risk \cite{BranzFire}, adapted to be applicable to the calculational capabilities of the CFAST model.}.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Inputs That Can be Varied Based on User-Defined Distributions}
+\label{tbl:distributable_variables} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
+Ambient Conditions      & Interior Temperature          & \degc                     \\
+                        & Exterior Temperature          & \degc                     \\
+                        & Relative Humidity             & \%                        \\ \hline
+Thermal Properties      & Thermal Conductivity          & kW/(m~\degc)              \\
+                        & Specific Heat                 & kJ/(kg~\degc)             \\
+                        & Density                       & kg/m$^3$                  \\
+                        & Default Thickness             & m                         \\
+                        & Emissivity                    &                           \\ \hline
+Compartments            & Width                         & m                         \\
+                        & Depth                         & m                         \\
+                        & Height                        & m                         \\
+                        & Wall Leak Area Ratio          & m$^2$/m$^2$               \\
+                        & Floor Leak Area Ratio         & m$^2$/m$^2$               \\
+                        & Compartment Materials         &                           \\ \hline
+ Wall Vents             & Sill                          & m                         \\
+                        & Soffit                        & m                         \\
+                        & Width                         & m                         \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\ \hline
+ Ceiling / Floor Vents  & Cross-Sectional Area          & m$^2$                     \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\ \hline
+ Mechanical Vents       & From Compartment Area         & m$^2$                     \\
+                        & From Compartment Height       & m                         \\
+                        & To Compartment Area           & m$^2$                     \\
+                        & To Compartment Height         & m                         \\
+                        & Flow Rate                     & m$^3$/s                   \\
+                        & Begin Dropoff                 & Pa                        \\
+                        & End Dropoff                   & Pa                        \\
+                        & Open/Close Times              & s                         \\
+                        & Open/Close Fractions          & 0-1                       \\
+                        & Initial Opening Fraction      & 0-1                       \\
+                        & Open/Close Time               & s                         \\
+                        & Final Opening Fraction        & 0-1                       \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$     \\
+                        & Pre-Activation Fraction       & 0-1                       \\
+                        & Post-Activation Fraction      & 0-1                       \\
+                        & Filter Efficiency             & \%                        \\
+                        & Begin Filtering Time          & s                         \\ \hline
+Fires                   & \multicolumn{2}{|c|}{See Section \ref{Fire_Scenarios}}    \\ \hline
+Targets                 & Width Target Position         & m                         \\
+                        & Depth Target Position         & m                         \\
+                        & Height Target Position        & m                         \\
+                        & Width Normal Vector           & 0-1                       \\
+                        & Depth Normal Vector           & 0-1                       \\
+                        & Height Normal Vector          & 0-1                       \\
+                        & Target Points To              & Selection List            \\
+                        & Thickness                     & m                         \\
+                        & Internal Temperature Location & m                         \\ \hline
+Detection / Suppression & Width Position                & m                         \\
+                        & Depth Position                & m                         \\
+                        & Height Position               & m                         \\
+                        & Activation Temperature        & \degc                     \\
+                        & Activation Obscuration        & \%/m                      \\
+                        & RTI                           & (m~s)$^{1/2}$             \\
+                        & Spray Density                 & m/s                       \\ \hline
+\end{longtable}
+
+\clearpage
+
+\subsection{Fire Scenarios}
+\label{Fire_Scenarios}
+
+\subsubsection{Individual Variables}
+
+The quantitative definition of fires is arguably the most important \cite{Babrauskas:1992} and complex of all the inputs in any fire modeling scenario. It includes specification of the fire location, fuel composition, and ignition criterion. Heat release rate, burning area, and species yields, which can vary with time over the course of the fire are covered in the next section.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions]{CFAST Fire Inputs That Can be Varied Based on User-Defined Distributions}
+                                                                                   \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
+Fire Location           & Compartment                   & Selection List                \\
+                        & Width Position                & m                             \\
+                        & Depth Position                & m                             \\ \hline
+Fuel Composition        & Carbon Molecules              & $\geq$ 0                      \\
+                        & Hydrogen Molecules            & $\geq$ 0                      \\
+                        & Oxygen Molecules              & $\geq$ 0                      \\
+                        & Nitrogen Molecules            & $\geq$ 0                      \\
+                        & Chlorine Molecules            & $\geq$ 0                      \\
+                        & Heat of Combustion            & kJ/kg                         \\
+                        & Radiative Fraction            & 0 - 1                         \\ \hline
+Ignition Criteria       & Ignition Criterion            & Selection List                \\
+                        & Setpoint                      & s, \degc, or kW/m$^2$         \\ \hline
+Time Histories          & \multicolumn{2}{|c|}{See Table \ref{tbl:fire_variables}}   \\ \hline
+\end{longtable}
+
+\subsubsection{Time Histories}
+\label{Fire_Time_Histories}
+
+Key to the fire definition are the time histories of heat release rate, burning area, and species yields of important combustion products. In some scenarios, these may be constants, but in others, they can vary with time.
+
+\noindent
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|}
+\caption[CFAST Fire Time Histories That Can be Varied Based on One or More User-Defined Distributions]{CFAST Fire Time Histories That Can be Varied Based on One or More User-Defined Distributions}
+\label{tbl:fire_variables} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endfirsthead
+\caption[]{Continued} \\ \hline
+\parbox{2in}{\bf Category}    & \parbox{2in}{\bf Input}  & \parbox{2in}{\bf Units} \\ \hline
+\endhead
+Time Histories    & Time                         & s                           \\
+						& HRR                           & kW                        \\
+                        & Fire Height                   & m                         \\
+                        & Fire Area                     & m$^2$, >0                 \\
+                        & CO Yield                      & kg CO/kg fuel             \\
+                        & Soot Yield                    & kg Soot/kg fuel           \\
+                        & HCN Yield                     & kg HCN/kg fuel            \\ \hline
+\end{longtable}
+
+\chapter{Defining Data for Analysis, CData Inputs}
+\label{commands_section}
+
+This chapter describes the inputs that are used to define a set of scenarios for analysis. The inputs allow the user to define one or more distributions that are then used to vary individual variables within a CFAST input file. Each subsection will discuss one set of namelist inputs and what each of the parameters does. All the inputs are combined in Appendix \ref{preprocessor_reference} to serve as a reference for commands. Examples are included in with each section to
+
+Section \ref{preprocessor} has additional details on how to run CData. One example of running CData from a command line is the following
+
+\vspace{\baselineskip}
+{\ct cdata Simple.in -P}
+\vspace{\baselineskip}
+
+In this case the base file name of the CData/CFAST input file, {\ct Simple}, is referred to as the {\ct <project>} and that name is used as part of the name of a number of different files for the series of calculations.
+
+\section{Namelist MHDR}
+\label{info:MHDR}
+
+The {\ct \&MHDR} inputs specify general inputs of the scenarios to be generated including the total number of cases to be generated, seeds for the random number generator, and locations for input and output files.
+
+\begin{description}
+  \item[NUMBER\_OF\_CASES] (default value 1): specifies the number of cases that the preprocessor will generate.
+  \item[SEEDS] (default value, software chosen random integer pair): defines an integer pair used to determine random number seeds for distributions. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Including random seeds here will ensure that the same cases will be generated each time the preprocessor is run for a given input file. Changing the random seeds (or other inputs) will result in a different set of input files.  All seeds are written in the {\ct <project>\_seeds.csv} file, if specified. Note that if you do not include {\ct SEEDS} in the input file everytime the file is run a different set of cases will be created.
+  \item[WRITE\_SEEDS] (default value, .TRUE.): if .TRUE., all random number seeds are saved in the file {\ct <project>\_seeds.csv}.
+  \item[PARAMETER\_FILE] (default value, {\ct <project>\_parameters.csv}: Summary output file from the preprocessor that list the CFAST file names and parameter values for inputs varied for each CFAST scenario in the set of generated CFAST cases. This file is combined with the summary statistics generated by the accumulator module.
+  \item[WORK\_FOLDER] (default value, current folder): folder where the preprocessor creates its set of CFAST inputs file and where the accumulator looks for CFAST output files to be processed.
+  \item[OUTPUT\_FOLDER] (default value, current folder): folder where the accumulator or statistics modules put their output files of analysis results.
+  \item[WRITE\_VALIDATION\_OUTPUT] (default value, .FALSE.): If true the batch and script files include the -v option for CFAST to printout extra information that is not generally of value. 
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Examples:
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MHDR NUMBER_OF_CASES = 10000 /
+&MHDR NUMBER_OF_CASES = 20000 WRITE_SEEDS = .TRUE.
+	PARAMETER_FILE = 'ParameterFile' OUTPUT_FOLDER = '..\project' /
+\end{lstlisting}
+
+
+\section{Namelist MRND}
+\label{info:MRND}
+
+The {\ct \&MRND} input defines a random number generator that uses a number of inputs to specify distributions for variation. A generator specifies a single random variable for each case so that every input using a particular generator will get the same value for each case. {\ct \&MRND} always returns a real value. In the simplest cases every field that a user wants to vary will require a separate random generator. However, if the desire is to have all the rooms have the same height ceiling, then all the fields can use the same random number generator.
+
+\begin{description}
+  \item[ID] Distributions are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the distribution. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[DISTRIBUTION\_TYPE] identifies the type of distribution. Additional required inputs depend of the type of distribution defined. Allowed distributions are
+      \begin{description}
+        \item[CONSTANT] requires additional inputs {\ct CONSTANT}. Returns a real number with a value of {\ct CONSTANT}.
+        \item[LINEAR] requires additional inputs {\ct MINIMUM} and {\ct MAXIMUM}. Returns real values from the {\ct MINIMUM} value to {\ct MAXIMUM} incremented by 1/{\ct NUMBER\_OF\_CASES}.
+        \item[UNIFORM] requires additional inputs {\ct MINIMUM} and {\ct MAXIMUM}. Returns real values.
+        \item[TRIANGLE] requires additional inputs {\ct MINIMUM}, {\ct MAXIMUM}, and {\ct PEAK}. Returns real values.
+        \item[NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}. Returns real values.
+        \item[TRUNCATED\_NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}, and also {\ct MINIMUM}, and {\ct MAXIMUM}. The {\ct NORMAL} distribution type returns values from $-\infty$ to $+\infty$. The \\
+            {\ct TRUNCATED\_NORMAL} distribution type allows the user to limit the values returned to a specified range. Returns real values.
+        \item[LOG\_NORMAL] requires additional inputs {\ct MEAN} and {\ct STDEV}. Returns real values.
+        \item[TRUNCATED\_LOG\_NORMAL] {\ct MEAN} and {\ct STDEV}, {\ct MINIMUM}, and {\ct MAXIMUM}. The \\
+        {\ct LOG\_NORMAL} distribution type returns values from $-\infty$ to $+\infty$. The \\
+            {\ct TRUNCATED\_LOG\_NORMAL} distribution type allows the user to limit the values returned to a specified range. Returns real values.
+        \item[BETA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. Returns real values.
+        \item[GAMMA] requires additional inputs {\ct ALPHA} and {\ct BETA}. Returns real values.
+        \item[TRUNCATED\_GAMMA] requires additional inputs {\ct ALPHA}, {\ct BETA}, {\ct MINIMUM}, and {\ct MAXIMUM}. The {\ct GAMMA} distribution type returns values from $0$ to $+\infty$. The \\
+            {\ct TRUNCATED\_GAMMA} distribution type allows the user to limit the values returned to a specified range. Returns real values.
+        \item[USER\_DEFINED\_CONTINUOUS] requires additional inputs {\ct PROBABILITIES}, and
+{\ct VALUES}. The number of {\ct PROBABILITIES} inputs must be one less than then number of {\ct VALUES} inputs. Returns real values. Endpoints of each interval are inclusive and interior points are continuous. For example, if you have {\ct VALUES} = 1.,3.,8. and {\ct PROBABILITIES} = 0.3,0.7, there is then a 30\% probability of getting a real number between 1.0 and 3.0 and a 70\% probability of getting a real number between 3.0 and 8.0.
+        \item[USER\_DEFINED\_DISCRETE] requires additional inputs {\ct PROBABILITIES}, and
+{\ct VALUES}. The number of {\ct PROBABILITIES} inputs must match the number of \\
+{\ct VALUES} inputs. Returns real values.
+      \end{description}
+  \item[RANDOM\_SEEDS] like {\ct RANDOM\_SEEDS} in {\ct \&MHDR}, an integer pair specifies initial seeds for the random number generator, but applies only to the specific distribution. Any two integers (excluding -1001 which is used internally to indicate default values) may be specified. Providing a specific pair of integer values ensures the distribution returns the same set of integers each time cases are created from the input file. By default (i.e., not including this input) will results in a different set of integer values for this distribution each time cases are created.  All seeds are written in the {\ct <project>\_seeds.csv} file, if specified.
+  \item[CONSTANT] is a single real value. It is the value that is returned by the {\ct CONSTANT} distribution.
+  \item[VALUES] a set of real numbers for the {\ct USER\_DEFINED\_...} distribution types. Inputs are input as real constants. Values for an individual scenario are chosen randomly from the list of values provided.
+  \item[PROBABILITIES] a set of probabilities values for the {\ct USER\_DEFINED\...} distribution types. These are not cumulative probabilities and the total of all values must add to 1.0
+  \item[MINIMUM] minimum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
+      {\ct TRUNCATED\_LOG\_NORMAL}, {\ct TRUNCATED\_GAMMA}, and {\ct LINEAR} distribution types.
+  \item[MAXIMUM] maximum value for the {\ct UNIFORM}, {\ct TRIANGLE}, {\ct TRUNCATED\_NORMAL}, \\
+      {\ct TRUNCATED\_LOG\_NORMAL}, {\ct TRUNCATED\_GAMMA}, and {\ct LINEAR} distribution types.
+  \item[PEAK] peak value for the {\ct TRIANGLE} distribution type.
+  \item[ALPHA] alpha value for the {\ct BETA} and {\ct GAMMA} distribution types.
+  \item[BETA] beta value for the {\ct BETA} and {\ct GAMMA} distribution types.
+  \item[MEAN] mean value for the {\ct NORMAL}; geometric mean value for the {\ct LOG\_NORMAL} distribution type.
+  \item[STDEV] standard deviation value for the {\ct NORMAL}; geometric standard deviation value for the {\ct LOG\_NORMAL} distribution type.
+  \item[MINIMUM\_FIELD] specifies the ID of the specific \&MFLD within the input whose value is to be taken as the minimum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MINIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the vent height input such as {\ct MINIMUM\_FIELD="Vent 1", "TOP"} to limit how low the height of the compartment is set.
+  \item[MAXIMUM\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be taken as the maximum value of the distribution returned. It allows the range to be defined by another input. For example, if the {\ct \&MRND} input is used to vary the ceiling height the top of a vent can be used as the lowest value for the ceiling height by including a {\ct MAXIMUM\_FIELD} input with the {\ct ID} for the {\ct FIELD} that sets the ceiling height input such as {\ct MAXIMUM\_FIELD="Comp 1", "HEIGHT"} to limit how high the top of the vent is set.
+  \item[MINIMUM\_OFFSET] is a value added to {\ct MINIMUM} value (or value returned from a {\ct MINIMUM\_FIELD}. It is typically used to bound the value to allowable values in a compartment geometry (for example, to ensure a vent bottom is above the floor of a compartment).
+  \item[MAXIMUM\_OFFSET] is a value added to {\ct MAXIMUM} value (or value returned from a {\ct MAXIMUM\_FIELD}. It is typically used to bound the value to allowable values in a compartment geometry (for example, to ensure a vent top is below the ceiling of a compartment).
+  \item[ADD\_FIELD] specifies the  ID of the specific \&MFLD  within the input whose value is to be added to the value generated by the current random generator. Suppose that a vent is to be closed at a random time, then a second random generator can be set as a constant 1 s and have the first \&MFLD as the ADD\_FIELD  to have the time the vent finishes closing to be 1 s after the start.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Example rand generator', TYPE = 'UNIFORM',  MINIMUM = 10, MAXIMUM = 50 /
+&MRND ID ='Second rand generator', TYPE = 'NORMAL', MEAN = 0, STDEV = 1 /
+&MRND ID = 'Property Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+    VALUES = 1, 2 PROBABILITIES = 0.5, 0.5/
+&MRND ID = 'Flaming Ignition Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+    MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
+\end{lstlisting}
+
+\section{Namelist MFLD}
+\label{info:MFLD}
+
+The basic structure in CData to change values of a CFAST input file is the { \ct \&MFLD} input. Its basic function is to marry a random generator given in a { \ct \&MRND} namelist to a particular value in a CFAST input file. Depending on how many fields are to be changed in a single Monte Carlo analysis there could be a very large number of { \ct \&MFLD} inputs and unlike { \ct \&MRND } inputs, there is a one to one match between { \ct \&MFLD} inputs and CFAST entries to be changed.
+
+\begin{description}
+  \item[ID] Varied input fields are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 128 characters.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[RAND\_ID] specifies the ID of associated {\ct \&MRND} input used to provide random inputs for the field. These may be unique to each field input or more than one field input may use the same {\ct \&MRND} input to coordinate values for multiple input fields. The number of inputs in the {\ct \&MRND} input must match those for the field type.
+  \item[FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be varied. For example, {\ct FIELD='Comp 1','HEIGHT'} would vary the height of the compartment named {\ct Comp 1}. There is a special case for the CFAST namelist {\ct \&INIT}. Because there is only one initialization of ambient conditions, there isn't an associated {\ct ID} field. Instead of the {\ct ID} name, use {\ct INIT}. For example to specify the ambient pressure would be {\ct FIELD='INIT','PRESSURE'}.
+  \item[FIELD\_TYPE] specifies the type of field data used to fill in values in the specified field. Additional inputs depend on the type of field specified. Allowed field types are {\ct VALUE}, {\ct SCALING}, {\ct LABEL}, and {\ct INDEX}. {\ct VALUE} simply takes the value returned from the specified random generator and places it directly in the specified field. {\ct SCALING} takes the returned value and multiplies by the {\ct BASE\_SCALING\_VALUE} and puts that value in the field. {\ct INDEX} requires the random generator to return integers as an index into the {\ct VALUES} input (starting at 1 to the number of inputs in the {\ct VALUES} input for the current {\ct \&MFLD} input). The value in the {\ct INDEX\_TYPE}, {\ct REAL}, {\ct INTEGER}, {\ct STRING}, or {\ct LOGICAL}, array at the index is placed in the field.
+  \item[PARAMETER\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included CData will use a combination of the {\ct FIELD} inputs to create a column label.
+  \item[ADD\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+ \item[REAL\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[INTEGER\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[STRING\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[LOGICAL\_VALUES] a set of values for the {\ct INDEX} field type. Values for an individual scenario are chosen randomly from the list of values provided. The type of the inputs is determined by the type of value needed from the {\ct FIELD} input but all inputs in the {\ct VALUES} inputs are specified in a character array input.
+  \item[SCENARIO\_TITLES] an optional set of character strings that describe each of the different fields in an {\ct INDEX} set of values.
+  \item[BASE\_SCALING\_VALUE] Initial value of the field for the {\ct SCALING} type field. Defaults to the value in the base input file if not included.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Examples:
+
+The following example shows the height of the bedroom varying uniformly from 2.44 m to 3.66 m.
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Room height generator', TYPE = 'UNIFORM',  MINIMUM = 2.44, MAXIMUM = 3.66 /
+&MFLD ID = 'Height bedroom' FIELD = 'Bedroom', 'HEIGHT' RAND_ID = 'Room height generator' PARAMETER_COLUMN_LABEL = 'Bedroom height' /
+\end{lstlisting}
+
+The following example shows the height of a door to the bedroom in the above example varying from a minimum of 2 m to a maximum 0.15 m below the ceiling of the varying height of the bedroom ceiling.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Door Top Generator' DISTRIBUTION_TYPE = 'UNIFORM' VALUE_TYPE = 'REAL'
+     MINIMUM = 2.0 MAXIMUM_FIELD = 'Height bedroom' MAXIMUM_OFFSET = -0.15 /
+&MFLD ID = 'Door Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Door Top Generator'
+     FIELD = 'Wall Vent' 'TOP' /
+\end{lstlisting}
+
+The next example is of both {\ct FIELD\_TYPE = INDEX} and {\ct FIELD\_TYPE = LABEL}. A door has 5 postions, fully open, three quaters open, half open, one quater open, and closed. The close position is represented with the vent having the full width but the top of the vent only being 2.5~cm above the floor. The other four positions are determined by the width of the door with the top at full height. Because two parameters are being coordinated and more could be included a {\ct LABEL} column is included to provide a single place to determine the state of the door. For more about this example look at section \ref{Detectors}
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+	VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX'
+	RAND_ID = 'Generator for DR LR 1'  REAL_VALUES = 2.4, 2.4, 2.4, 2.4 0.025
+	FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX'
+	RAND_ID = 'Generator for DR LR 1'  REAL_VALUES = 0.96 0.72 0.48 0.24 0.96
+	FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL'
+	RAND_ID = 'Generator for DR LR 1'
+	STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed'
+	ADD_TO_PARAMETERS = .TRUE.
+	PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
+\end{lstlisting}
+
+The last example is for {\ct FIELD\_TYPE = SCALING}. Section \ref{chapter:Sensitivity} is a sensitivity analysis. In it a number of compartments are connected in such a way that their hieghts need to be the same. The example shows how three of the compartments are set to scale the their heights together.
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling height',
+	FYI = 'Scaling for everything that has the same max height',
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
+    RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE.
+    PARAMETER_COLUMN_LABEL = 'Foyer_and_Halls_height' /
+&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT' RAND_ID = 'Scaling height' /
+\end{lstlisting}
+
+\clearpage
+
+\section{Namelist MFIR}
+\label{info:MFIR}
+
+Automatically-generated fires are created for an individual test case by modifying an existing fire input in the input file. The {\ct \&MFIR} input allows the user to either scale the HRR curve (multiplying the time and/or HRR values by a constant defined by a user-specified distribution), to define a power law fire based on several inputs, or to modify individual time points from a constant defined by a user-specified distribution.
+
+\begin{description}
+  \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FIRE\_ID] Specifies the associated fire in the data file that is used as a template to be modified by this {\ct \&MFIR} input. All inputs in the current {\ct \&MFIR} namelist will modify this fire.
+  \item[MODIFY\_FIRE\_AREA\_TO\_MATCH\_HRR] IF set to {\ct .TRUE.}, the fire area is calculated from the heat release rate values for the time curve from the formula. Values are calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dQ^*$, is defined as $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}.
+  \item[FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID] A random generator that returns an index to pick the compartment the fire is located. Usually uses \\
+      {\ct USER\_DEFINED\_DISCRETE\_DISTRIBUTION}.
+  \item[FIRE\_COMPARTMENT\_IDS] A list of compartment names that have a chance of having the fire in them. This matches the index chosen by {\ct FIRE\_COMPARTMENT\_RANDOM\_GENERATOR\_ID} to actual compartment names in the input file.
+  \item[ADD\_FIRE\_COMPARTMENT\_ID\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[FIRE\_COMPARTMENT\_ID\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+Fires can be defined by either scaling time and/or HRR values from a base fire or by defining a power law fire growth / decay with a peak plateau period. Either fire can be proceeded by an optional period of incipient fire growth period. Firstly, the inputs for the incipient fire are described.
+
+ \begin{description}
+  \item[FLAMING\_SMOLDERING\_INCIPIENT\_RANDOM\_GENERATOR\_ID] This and the two entries {\ct INCIPIENT\_FIRE\_TYPES} and {\ct TYPE\_OF\_INCIPIENT\_GROWTH} work together. This random generator, if included, switches the incipient fire between flaming and smoldering. This is an {\ct INDEX} field type. The types being switched through are listed in \\
+   { \ct INCIPIENT\_FIRE\_TYPES}. {\ct TYPE\_OF\_INCIPIENT\_GROWTH} has to be set to {\ct RANDOM}.
+  \item[INCIPIENT\_FIRE\_TYPES] A list made up of 'FLAMING' and 'SMOLDERING'. This allows users to coordinate the incipient beginning of the fire with other inputs in the scenario.
+  \item[TYPE\_OF\_INCIPIENT\_GROWTH] Defaults to {\ct NONE} but can be {\ct FLAMING}, {\ct SMOLDERING}, and {\ct RANDOM}
+  \item[FLAMING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the first of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the length of the incipient flaming fire burning period. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both \\
+      {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and \\
+      {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined.
+  \item[FLAMING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] This is the second of the flaming set of generators and defines an associated {\ct \&MRND} ID that defines the final HRR for the incipient flaming fire ramp. If you do not want the value to change you can set it up to a {\ct CONSTANT} random generator. If included, both \\
+      {\ct FLAMING\_IGNITION\_DELAY\_RANDOM\_GENERATOR\_ID} and \\
+      {\ct PEAK\_FLAMING\_IGNITION\_RANDOM\_GENERATOR\_ID} must be defined. This one determines the final HRR for the flaming fire ramp. It is important to understand that using this means the first two HRR points will be overwritten and all times for all entries in the fire will be set to the same.
+  \item[SMOLDERING\_INCIPIENT\_DELAY\_RANDOM\_GENERATOR\_ID] This is the smoldering pair that match the above.
+  \item[SMOLDERING\_INCIPIENT\_PEAK\_RANDOM\_GENERATOR\_ID] Same as above for smoldering fire.
+  \item[ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS] set to .TRUE. to include a label of the type of incipient fire in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE. Column displays 'FLAMING' or 'SMOLDERING' depending on which type of incipient fire in the case.
+  \item[INCIPIENT\_TYPE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included and \\
+{\ct ADD\_INCIPIENT\_TYPE\_TO\_PARAMETERS} is .TRUE. the column label will be filled in by CData with {\ct <FIRE\_ID>\_INCIPIENT\_FIRE\_TYPE}.
+ \end{description}
+Secondly, inputs for the scaling fire are described.
+
+\begin{description}
+  \item[BASE\_FIRE\_ID] For scaling fires only. This provides internal temporary storage for all the base values for a fire to be scaled. Typically, it will just be a copy of the corresponding {\ct FIRE\_ID} input.
+  \item[SCALING\_FIRE\_HRR\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the scaling factor that is applied to all the HRR values in a fire. This is done before the incipient fire model is calculated so it does not impact the delay or HRR value for the incipient fire portion of the fire curve.
+  \item[SCALING\_FIRE\_TIME\_RANDOM\_GENERATOR\_ID] an associated {\ct \&MRND} ID that defines the  scaling value that is applied to all the TIME values in a fire. This is done before the Incipient fire model is calculated so it wonâ€™t impact the delay or HRR value for the incipient portion of the fire curve.
+  \item[ADD\_HRR\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[HRR\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \item[ADD\_TIME\_SCALE\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_SCALE\_COLUMN\_LABEL] specifies the column title for this input field in the parameters file, {\ct <project>\_parameters.csv}. If it is not included, it will be filled in by the code.
+  \end{description}
+  Finally, the inputs for a general power law fire are described. The calculation of the growth and decay points is straightforward enough. The inputs are $t_0$, $t_1$, $\dQ_0$, $\dQ_1$, and the exponential growth $r$. The variables $t_0$ and $t_1$ are the beginning and ending time points and $\dQ_0$ and $\dQ_1$ are the HRR at the beginning and end and $r$ is already defined. For growth $\hat{t} = t + t_0$ where $0<t<t_1 - t_0$ and for decay $\hat{t} = t_1 - t$ where $0<t<t_1 - t_0$. The equation for the HRR at time $t$ in the growth phase is $\dQ(\hat{t}) = ((\dQ_1 - \dQ_0)/(t_1-t_0)^r)\hat{t} + \dQ_0$ and for decay is $\dQ(\hat{t}) = ((\dQ_0 - \dQ_1)/(t_1-t_0)^r)\hat{t} + \dQ_1$. It can be done based on which, $\dQ_0$ or $\dQ_1$, are larger.
+
+\begin{description}
+  \item[FIRE\_TIME\_GENERATOR\_IDS] a set of up to 100 associated {\ct \&MRND} inputs that define the time intervals for fire growth If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator. The first point is always at $t=0$ and $\dQ = 0$. If there is an incipient fire defined, that is point two. If there is a power law growth defined (by {\ct GROWTH\_EXPONENT} and {\ct GROWTH\_EXPONENT}, these follow the first or second time point (depending on whether there is an incipient fire defined). If a power law decay is defined (by {\ct DECAY\_EXPONENT} and {\ct DECAY\_EXPONENT}, these are defined by the next to last and last generators defined.
+  \item[FIRE\_HRR\_GENERATOR\_IDS] a set of up to 100 associated {\ct \&MRND} inputs that define the HRR values corresponding with each defined time generator. If you do not want the values to change you can set any of the {\ct \&MRND} inputs to a {\ct CONSTANT} random generator.
+  \item[NUMBER\_OF\_GROWTH\_POINTS] specifies the number of data points included in the growth phase of the fire.
+  \item[NUMBER\_OF\_DECAY\_POINTS] specifies the number of data points included in the decay phase of the fire.
+  \item[GROWTH\_EXPONENT] specifies the exponent of the power law for the growth phase of the fire. Must be a positive number.
+  \item[GENERATOR\_IS\_TIME\_TO\_1054\_KW] Is a logical. If {\ct .TRUE.} then the first generator returns the time the fires growth will reach 1054 KW and the HRR is determined by combining this value with the corresponding value in the {\ct FIRE\_TIME\_GENERATORS} list.
+  \item[GENERATOR\_IS\_TIME\_TO\_PEAK] Is a logical and defaults to {\ct .TRUE.}. If {\ct .TRUE.}, the first generator in the {\ct FIRE\_HRR\_GENERATORS} list returns the HRR for that point.
+  \item[DECAY\_EXPONENT] specifies the exponent of the power law for the decay phase of the fire. Must be a positive number. Only one of {\ct DECAY\_EXPONENT} or {\ct TIME\_TO\_0\_KW} can be included in an {\ct \&MFIR} input.
+  \item[ADD\_HRR\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[ADD\_TIME\_TO\_PARAMETERS] set to .TRUE. to include the value of the field in the parameters file, {\ct <project>\_parameters.csv}. Default value is .TRUE.
+  \item[TIME\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less than or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}. If it is not included or set to {\ct NULL}, it will be filled in by the code.
+  \item[HRR\_COLUMN\_LABELS] specifies the column titles for this input field in the parameters file, {\ct <project>\_parameters.csv}. The labels are input as an array of names that can be less than or equal to the total number of {\ct FIRE\_TIME\_GENERATORS} or {\ct FIRE\_HRR\_GENERATORS}.If it is not included or set to {\ct NULL}, it will be filled in by the code.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Examples:
+
+The following example shows a fire that varies $\pm$~10~\% from a base fire defined in the input file.  Note that the base fire definition is not shown in the example. See the sensitivity analysis example in section \ref{chapter:Sensitivity} for details of the complete fire definition.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling HRR', DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MRND ID = 'Scaling Time', DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Base Fire'
+     SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
+     SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time' /
+\end{lstlisting}
+
+The following example shows a fire with a peak HRR ranging from 500~kW to 3000~kW that grows linearly to the peak in 10~s, stays at the peak value for 900~s and decays linearly back to 0~kW in~10 s.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 500 MAXIMUM = 3000 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 900 /
+&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire'
+     FIRE_TIME_GENERATORS = 'Fire Time Interval' 'Peak HRR Time Interval' 'Fire Time Interval'
+     FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
+\end{lstlisting}
+
+The following example defines a t-squared growth rate fire with a peak HRR ranging from 150~kW to 1600~kW with a time to peak HRR ranging from 75~s to 1000~s. The fire stays at the peak value for 10~s and decays linearly back to 0~kW in 10~s.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' \\
+    MINIMUM = 75 MAXIMUM = 1000 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 150 MAXIMUM = 1600/
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1'
+	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time'
+	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR'
+	NUMBER_OF_GROWTH_POINTS = 20 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+This final example defines a fire in one of three positions in one of five fire rooms. The fire begins with an incipient flaming ignition growing from 0~kW to from 10~kW (normally distributed with a mean of 23~kW and a standard deviation of 7~kW) to 30~kW in from 150~s to 1200~s (normally distributed with a mean of 207~kW and a standard deviation of 46~kW). The ignition period is followed by a t-squared growth to a peak of 130~kW to 4620~kW with a time to 1054~kW of 50~s to 330~s. The fire stays at the peak value for 10~s and decays linearly back to 0~kW in 10~s.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+!! This determines the fire position, (2,2), (0,2) (0,-0.001).
+!! The last one is 1 mm from back wall
+&MRND ID = 'Fire Position Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+   VALUES = 1 2 3 PROBABILITIES = 0.3333 0.3333 0.3334/
+&MFLD ID = 'Random x-pos' FIELD_TYPE = 'INDEX' RAND_ID = 'Fire Position Generator'
+    FIELD = 'Random' 'X_POSITION' REAL_VALUES = 2.0 0.0 0.0
+    ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Random y-pos' FIELD_TYPE = 'INDEX' RAND_ID = 'Fire Position Generator'
+    FIELD = 'Random' 'Y_POSITION' REAL_VALUES = 2.0 2.0 -0.001
+    ADD_TO_PARAMETERS = .TRUE. /
+
+!! This one sets the fire room randomly
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+    VALUES = 1, 2, 3, 4, 5, 6 PROBABILITIES = 0.16666 0.16666 0.16666 0.16666 0.16666 0.1667/
+	
+!! These define the fire HRR curve as a flaming ignition (growing from 0 kW to 10 kW - 30 kW
+!! in from 150 s to 1200 s, both as truncated normal distributions
+!! consistent with data from Cleary, T.G., "Improving Smoke Alarm Performance - Justification for
+!! New Smoldering and Flaming Test Criteria", in Technical Note 1837.
+!! 2014, Natl. Inst. Stand. Technol. p. 27 pp.
+&MRND ID = 'Flaming Ignition Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+   MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
+&MRND ID = 'Flaming Ignition Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+    MEAN = 207 STDEV = 46 MINIMUM = 150 MAXIMUM = 1200/
+!! The ignition period is followed by a t^2 fire growth to peak HRR (130 kW to 4620 kW)
+!! with t^2 growth to 1054 kW in 50 s to 330 s
+&MRND ID = 'Growth Time Generator', DISTRIBUTION_TYPE = 'UNIFORM'
+    MINIMUM = 50 MAXIMUM = 330 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM'
+    MINIMUM = 130 MAXIMUM = 4620 /
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT'CONSTANT = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Fire End HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+
+&MFIR ID = 'Compartment_generator' FIRE_ID = 'Random'
+    FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
+    FIRE_COMPARTMENT_IDS = 'Living Room' 'Kitchen' 'Bedroom 1' 'Bedroom 2' 'Bedroom 3'
+        'Dining Room'
+    ADD_FIRE_COMPARTMENT_TO_PARAMETERS = .TRUE.
+    FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Ignition Peak Generator'
+    FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Flaming Ignition Time Generator'
+	TIME_TO_1054_KW=.TRUE.
+    FIRE_TIME_GENERATORS = 'Growth Time Generator' 'Plateau End Time' 'Fire End Time'
+    FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'Fire End HRR'
+    NUMBER_OF_GROWTH_POINTS = 20
+    GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+\section{Namelist MSTT}
+\label{info:MSTT}
+
+CData has a limited number of analysis tools built into it. These tools are activated when CData is called as
+
+{\ct CData <project>.in -S}
+
+Control of what tools are used and what data it is run on is determined with the {\ct \&MSTT} namelist inputs. The {\ct \&MSTT} namelist is the only namelist that can be added or changed and used on the Monte Carlo data without having to rerun the entire analysis.
+
+
+\begin{description}
+ \item[ID] All inputs are defined by a unique alphanumeric name. This may be as simple as a single character or number, or a description of the field. All IDs must be unique throughout an input file. The { \ct ID} can be any ASCII string up to 128 characters.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+ \item[ANALYSIS\_TYPE] Describes the type of analysis to be done. The allowed types are {\ct HISTOGRAM}, {\ct EMPERICAL\_PDF}, {\ct CONVERGENCE\_OF\_MEAN}, and {\ct DECISION\_TREES}.
+ \item[INPUT\_FILENAME] Comma delimited file that contains the data. The default is the \\
+     {\ct <project>\_accumulate.csv}.
+ \item[OUTPUT\_FILENAME] The filename for the finished graphic is a required input. The extension is required as that is the method of determine the format of the file. The accepted formats are {\ct *.jpg}, {\ct *.svg}, {\ct *.tif}, {\ct *.pdf}, {\ct *.png}.
+ \item[ERROR\_FILENAME] Error filename defaults to {\ct OUTPUT\_FILENAME} with {\ct err} extension by default
+ \item[LOG\_FILENAME] Log filename defaults to {\ct OUTPUT\_FILENAME} with {\ct log} extension by default
+ \item[COLUMN\_LABEL] The name in the first row for the column to use for the analysis.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
+	COLUMN_LABEL = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
+	COLUMN_LABEL = 'Wall Vent_TOP' /
+\end{lstlisting}
+
+
+
+\section{Namelist OUTP}
+
+When cases are run in CFAST, a number of summary values for the case such as maximum temperature in a compartment or the time to temperature reaching 600 \degc can be output. These values are defined with the {\ct \&OUTP} namelist input.
+
+\begin{description}
+  \item[ID] Summary outputs are defined by a unique alphanumeric name. The ID is not only used to identify the output but is also the column label for the output. This may be as simple as a single character or number, or a description of the output. All IDs must be unique throughout an input file.  The { \ct ID} can be any ASCII string up to 64 characters.
+  \item[FYI] A user defined comment that can provide additional information about the input.
+  \item[FILE] specifies which of the CFAST output files are used for the summary output. Allowable inputs are {\ct COMPARTMENTS}, {\ct DEVICES}, {\ct FIRES}, {\ct MASSES}, or {\ct WALLS}.
+  \item[TYPE] specifies the type of summary data to calculate. Allowable input are {\ct MIN}, {\ct MAX}, \\
+      {\ct TRIGGER\_LESSER}, {\ct TRIGGER\_GREATER}, {\ct INTEGRATE}, {\ct TOTAL\_HRR}. For {\ct MIN} or {\ct MAX}, only the {\ct FIRST\_FIELD} input is required. For {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER}, the value the of first device when the second device passes the value in {\ct CRITERION}. For {\ct INTEGRATE}, {\ct FIRST\_FIELD} must be {\ct "Time", "Simulation Time"}. {\ct INTEGRATE} integrates the values of {\ct SECOND\_FIELD} over the entire simulation time.
+  \item[FIRST\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the first input in a calculation. For example, {\ct FIELD="Time","Simulation Time"} would specify the simulation time.
+  \item[SECOND\_FIELD] specifies the name of the specific input (i.e., the name of a compartment, vent, etc.) and the specific field within that input that is to be used for the second input in a calculation, if required. For example, {\ct FIELD="Comp 1","Upper Layer Temperature"} would specify the upper layer temperature in compartment named {\ct Comp 1}.
+  \item[CRITERION] Specifies the value to be evaluated in a {\ct TRIGGER\_LESSER} or {\ct TRIGGER\_GREATER} calculation.
+\end{description}
+
+\vspace{\baselineskip}
+\noindent Example:
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&OUTP ID = 'Total Time Completed'
+     FILE = 'DEVICES'  TYPE = 'MAXIMUM'
+     FIRST_FIELD = 'Time', 'Simulation Time' /
+&OUTP ID = 'Fire Room Ion Detector'
+     FILE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
+     FIRST_FIELD = 'Time', 'Simulation Time'
+     SECOND_FIELD = 'Ionization Detector Room 1', 'Sensor Activation' /
+\end{lstlisting}
+
+\clearpage
+
+%%%%%%%%%%
+%
+% chapter creating multiple CFAST runs
+%
+%%%%%%%%%%
+
+
+\chapter{Creating Multiple CFAST Runs}
+The CData program has several functions, 1) a preprocessor function that generates individual CFAST input files from a user-specified distribution and range for one or more inputs, 2) an accumulator function that collects  data of user-specified variables and creates a spreadsheet of summary data for all the individual runs, and 3) a statistical function that creates several different statistical outputs of the summary data to facilitate further analysis.  Section \ref{commands_section} discusses all the namelist commands for CData. The final section discusses the significant issue of storage, which can limit on the size of the analysis that can be done.
+
+All inputs for generating a set of multiple CFAST runs are contained within a single CFAST input file with inputs that define the base case for analysis, and Monte Carlo-related inputs that define how those inputs will be varied to create multiple individual CFAST input files. In addition, the file may contain a series of specific inputs to generate summary outputs for statistical analysis of the results and a series of inputs that define simple statistical analyses on the summary data.  This chapter presents a simple example from start to finish.
+
+The base case, {\ct Simple.in}, defines a single compartment 3 m x 3 m x 3 m with a single door to the outside.  Compartment surface are constructed of 0.15 m thick concrete. For the example, the width and height of the door will be varied\footnote{In this simple example, we have taken care to ensure that the width and height of the door are within the limits of the varying compartment size. In some cases, it would be desirable to vary inputs that could create invalid geometries such as a door height higher than the compartment ceiling height. For cases like this, it is possible to set the values so that they are constrained based on another variable using the {\ct MAXIMUM\_FIELD} and {\ct MINIMUM\_FIELD} inputs in the \&MRND inputs. See the examples is sections \ref{info:MRND} and \ref{info:MFLD} and the flashover example in section \ref{info:Flashover}\label{footnote_limits}} along with the peak heat release rate of the fire, assumed to be a simple fire that grows to its maximum in 10 s, burns at a specified constant heat release rate for 900 s and decays back to a zero heat release rate in 10 s. For the simple analysis, we will look at the maximum upper layer temperature and time for the upper layer to descend to a height of 1.5 m, both indicators of increasing hazard within the compartment.
+
+\section{PreProcessor}
+\label{preprocessor}
+
+To create the varying door size inputs, the vent is defined in the input file and specifications for varying the width and height are included. Varying specific CFAST input requires two inputs, one that defines the distribution of values for the input (the {\ct \&MRND} inputs below), and one or more that define the variables in the CFAST input file that depend on the specified distribution ({\ct \&MFLD} inputs below).
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+!! Wall Vents
+&MRND ID = 'Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 0.25 MAXIMUM = 2.0/
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Width Generator'
+  VALUE_TYPE = `REAL' FIELD = 'Wall Vent' 'WIDTH' /
+
+&MRND ID = 'Vent Height Generator' DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 1.5 MAXIMUM = 2.5/
+&MFLD ID = 'Wall Vent Height' FIELD_TYPE = 'VALUE' RAND_ID = 'Vent Height Generator'
+  VALUE_TYPE = `REAL' FIELD = 'Wall Vent' 'TOP' /
+
+&VENT TYPE = 'WALL' ID = 'Wall Vent' COMP_IDS = 'Comp 1' 'OUTSIDE' , BOTTOM = 0 TOP = 2,
+  WIDTH = 1 FACE = 'FRONT' OFFSET = 1 /
+\end{lstlisting}
+
+The first two inputs define the distribution for the door width, a uniform distribution from 0.25~m to 2.0~m. The second two input define the distribution for the height of the door, a uniform distribution from 1.5~m to 2.5~m. The last input defines the normal CFAST input defining the base values for the door. The {\ct WIDTH} and {\ct HEIGHT} inputs are replaced with random values for each individual CFAST input file generated$^{\ref{footnote_limits}}$. All other values in the {\ct \&VENT} input remain at the base values.
+
+To define the fire, the {\ct \&MRND} input defines the peak heat release rate and the time intervals for the fire curve. The {\ct \&MFIR} input combines these with the rest of the fire definition included in the input file to create individual fire inputs for each generated CFAST input file.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Peak HRR', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 500000 MAXIMUM = 3000000 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+&MRND ID = 'Peak HRR Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 900 /
+&MRND ID = 'Fire Time Interval' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'Fire'
+	FIRE_TIME_GENERATORS = 'Fire Time Interval'  'Peak HRR Time Interval' 'Fire Time Interval'
+	FIRE_HRR_GENERATORS = 'Peak HRR' 'Peak HRR' 'End of Fire HRR' /
+
+&FIRE ID = 'Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Constant Fire'  LOCATION = 1.5, 1.5 /
+&CHEM ID = 'Constant Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0
+  HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 /
+&TABL ID = 'Constant Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' ,
+  'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Constant Fire', DATA = 0, 0, 0, 0, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 10, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 990, 100, 0, 0.113798159261744, 0, 0, 0, 0, 0 /
+&TABL ID = 'Constant Fire', DATA = 1000, 0, 0, 0, 0, 0, 0, 0, 0 /
+\end{lstlisting}
+
+Here, we define the peak heat release rate as a uniform distribution from 500~kW to 3000~kW, with a 10~s ramp from zero HRR (by default, the first time point is defined at zero time and zero HRR), a 900 s constant fire at the peak heat release rate, and a 10 s decay back to zero.
+
+As part of the base input file used to generate the set of individual CFAST inputs files to be run, one or more {\ct \&OUTP} inputs can be included to specify summary outputs for each CFAST simulation. This can include maximum/minimum values, time to chosen trigger values (for example, time to peak heat release rate or time to a chosen upper layer temperature), or trigger values based on other inputs (for example, heat release rate when upper layer temperature reaches a chosen value).
+
+For the example in this chapter, inputs are included to determine the peak heat release rate, maximum upper layer temperature, minimum height of the layer interface, the time for the layer interface to descend to 1.5 m from the floor, the time for the upper layer temperature to reach 600~\degc. and the heat release rate when the upper layer temperature reaches 600 \degc.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&OUTP ID = 'Maximum Actual HRR' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Fire' 'HRR Actual' /
+&OUTP ID = 'Maximum Upper Layer Temp' FILE = 'COMPARTMENTS' TYPE = 'MAXIMUM'
+    FIRST_FIELD = 'Comp 1' 'Upper Layer Temperature' /
+&OUTP ID = 'Minimum Layer Height' FILE = 'COMPARTMENTS' TYPE = 'MINIMUM'
+    FIRST_FIELD = 'Comp 1' 'Layer Height' /
+&OUTP ID = 'Time to Layer Height 1.5 m' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_LESSER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Layer Height'
+    CRITERION = 1.5 /
+&OUTP ID = 'Time to Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Time' 'Simulation Time' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature'
+    CRITERION = 600 /
+&OUTP ID = 'Actual HRR at Upper Layer 600 C' FILE = 'COMPARTMENTS' TYPE = 'TRIGGER_GREATER'
+    FIRST_FIELD = 'Fire' 'HRR Actual' SECOND_FIELD = 'Comp 1' 'Upper Layer Temperature'
+    CRITERION = 600 /
+\end{lstlisting}
+
+With the rest of the input file defining the base input file, creating a set of CFAST input files requires running CData from a command prompt with the {\ct -P} option as
+
+{\ct cdata Simple.in -P}
+
+This creates all the individual input files, batch scripts to run the file on either Windows or Linux (with minor editing to define the locations of the required executables), and a summary spreadsheet of all in varied input values.
+
+\section{Running CFAST}
+
+
+As part of the process of creating the individual CFAST inputs files, CData creates batch scripts for both windows and Linux operating systems. Each batch script depends on external software to support running multiple CFAST jobs in parallel\footnote{For Windows, a program, {\ct background.exe} is used and is included in the CFAST software distribution. For Linux, the batch script depends on a script developed for running multiple FDS runs, {\ct qfds.sh}, is used. If running on Linux, FDS must also be installed and configured to run qfds.sh. Details are available at {\ct https://pages.nist.gov/fds-smv/}\emph{}}. Both of these scripts include information on the locations of these external files (plus the location of the CFAST executable which may need to be modified to suit a particular computer hardware. Default examples are shown below. Once configured, running the set of CFAST simulations is accomplished by running the appropriate script for Windows or Linux. By default, a maximum of 100 000 iterations are set for each run to ensure that jobs which take an extremely long time to run do not prevent the rest from running.  This value can be changed in both of the batch scripts.
+
+\vspace{\baselineskip}
+\noindent \textbf{Default Windows Batch Script for Simple.in:}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+echo off
+rem change the path to background.exe and cfast.exe as appropriate.
+rem Here we just assume it is in the path
+set bgexe=background.exe
+set CFAST_EXE=cfast.exe
+set MAX_ITER=100000
+
+rem you should not need to change anything from here on
+set bg=%bgexe% -u 6
+set CFAST=%bg% %CFAST_EXE%
+echo %MAX_ITER% > Simple-1.stop
+%CFAST% Simple-1.in -v
+echo %MAX_ITER% > Simple-2.stop
+%CFAST% Simple-2.in -v
+echo %MAX_ITER% > Simple-3.stop
+%CFAST% Simple-3.in -v
+
+:loop1
+tasklist | find /i /c "CFAST" > temp.out
+set /p numexe=<temp.out
+echo waiting for %numexe% jobs to finish
+if %numexe% == 0 goto finished
+Timeout /t 30 >nul
+goto loop1
+:finished
+\end{lstlisting}
+
+\vspace{\baselineskip}
+\noindent \textbf{Default Linux Batch Script for Simple.in:}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+#/bin/bash
+CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
+MAX_PROCESSORS=30
+BATCH=batch
+
+export STOPFDSMAXITER=100000
+
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-1.in
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-2.in
+qfds.sh -U $MAX_PROCESSORS -e $CFAST -q $BATCH Simple-3.in
+\end{lstlisting}
+
+\section{Generating Statistics}
+
+From these summary values defined in the last section with the {\ct \&OUTP} inputs, selected statistical analyses are available in CData. This section describes how to create a spreadsheet of summary values (the Accumulate function in CData), and how to generate several statistical analyses from those data (the Statistics function in CData).
+
+\subsection{Accumulator}
+
+In order to allow CFAST cases to be run efficiently in parallel on systems with that capability, each simulation independently creates a file, the {\ct <project>\_nn\_calculations.csv} file where {\ct nn} is the number of the file. This file has the summary values specified in the {\ct \&OUTP} inputs for that case. To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -A} option,
+
+\vspace{\baselineskip}
+{\ct cdata Simple.in -A}
+
+There is a reason for separating the accumulation of data from the generation of data. It allows for greater flexiablity in running cases. We have run sets of data on 256 8 core processors. Some cases run a lot longer then others so it is not always easy to determine if all the cases or even a particular case is complete. So for the time being the safest way to ensure every case is run to completion and to not crash cases that are still running is to let the user make sure all the cases are run before attempting the accumulation of data.
+
+\subsection{Statistics}
+
+The base input file used to generate the set of individual CFAST input files may also contain specifications to generate summary statistics of the collected data. Unlike the {\ct \&OUTP} inputs, this can be added after all the runs are completed to do new statistics. However, it is important to keep in mind that analysis can only be done on data that was generated during the CFAST runs. So it is important to include {\ct \&OUTP} inputs for everything that might be of interest to avoid having to rerun all the cases.
+
+The summary statistics can include histograms of input or output data (often used to verify that the range of input values match expectations), convergence of mean value (used to determine if sufficient runs have been made, below), probability density plots, and correlation tress of the relative importance of selected inputs to the calculated outputs. For the simple example in this chapter, several of these are included.
+
+\begin{lstlisting}[language=cdata, basicstyle=\scriptsize]
+&MSTT ID = 'Width of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_width.jpg'
+	COLUMN_TITLE = 'Wall Vent_WIDTH' /
+&MSTT ID = 'Top of Vent' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_top.jpg'
+	COLUMN_TITLE = 'Wall Vent_TOP' /
+&MSTT ID = 'Peak HRR' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'simple_peak_hrr.jpg'
+	COLUMN_TITLE = 'Fire_HRR_PT  2' /
+&MSTT ID = 'Time to FO' ANALYSIS_TYPE = 'HISTOGRAM' OUTPUT_FILENAME = 'Simple_Time_to_FO.jpg'
+	COLUMN_TITLE = 'Time to Upper Layer 600 C' /
+&MSTT ID = 'Max Upper Temp' ANALYSIS_TYPE = 'HISTOGRAM'
+	OUTPUT_FILENAME = 'Simple_MaxUpperTemp.jpg' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+
+&MSTT ID = 'Convergence of Layer Height Reaching 1.5' OUTPUT_FILENAME = 'Simple_time_to_1p5.jpg'
+	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Time to Layer Height 1.5 m' /
+&MSTT ID = 'Convergence of Max Temp' OUTPUT_FILENAME = 'Simple_max_temp.jpg'
+	ANALYSIS_TYPE = 'CONVERGENCE_OF_MEAN' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+
+&MSTT ID = 'Decision Tree on Temp' OUTPUT_FILENAME = 'Simple_tree_temp.pdf'
+	ANALYSIS_TYPE = 'DECISION_TREES' COLUMN_TITLE = 'Maximum Upper Layer Temp' /
+\end{lstlisting}
+
+To create the spreadsheet file of summary values after all of the CFAST cases have been run, CData is run with the {\ct -S} option,
+
+\vspace{\baselineskip}
+{\ct cdata Simple.in -S}
+\vspace{\baselineskip}
+
+When a {\ct \&MSTT} namelist is processed, it generates a number of files. These include an error file (*.err) if there is an error in the analysis, a log file (*.log) that documents the steps that are taken in the analysis and the graphic file in the format requested. For {\ct 'HISTOGRAM'}, {\ct 'EMPERICAL\_PDF'}, {\ct 'CONVERGENCE\_OF\_MEAN'} there is also a final *.csv file. This allows users to use their preferred graphics packages to create the graphics. There is no extra output for the {\ct 'DECISION\_TREES'} because there is not a standard simple method of documenting a tree graph.
+
+\subsubsection{Histograms}
+
+The result of the first {\ct \&MSTT} is shown in Fig. \ref{simple_width_hist}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_width.jpeg}
+\caption{Sample of Histogram generated for the 'Width of Vent' column}
+\label{simple_width_hist}
+\end{figure}
+
+There is clearly some noise in the data and all the columns are not the same height as would be expected in theoretical uniform distribution. However, there really is only one column, the first one, that is significantly out of line with the others. One way of trying to understand why that column is so much smaller is to go into the {\ct simple\_width.csv} file. In that file the first bar is for the range 0.2 m to 0.3 m but the random generator had a lower bounds of 0.25 m. Doubling the 134 count  puts it right in the middle of the values for the other bars. With that question answered the chart seems to be a reasonable representation of a uniform distribution.
+
+In this automatic analysis the number of bins used here is automatically selected using Sturges rule \cite{Sturges_1926} which chooses the number of bins according to the rule:
+
+\be
+k = \lceil \log_2 n \rceil + 1,
+\ee
+
+where  $\lceil \log_2 n \rceil$ represents the ceiling function for $ \log_2 n$.
+
+\subsubsection{Empirical Probability Density Function}
+
+The post-processor is also capable of generating an empirical probability density function. It does so using the techniques of Kernel Density Estimation \cite{Haste_2009}. To determine the probability density at a point $x$ it associates a weight with each point in the data set. The weight is a function of the distance between the point in the data set and $x$. The probability density is then the sum of those weights.
+
+Typically the Gaussian function is used as the Kernel (i.e., the weighting function), although other Kernels are also commonly used. For the Gaussian Kernel (which is used here) the estimated probability density at a point $x$ is:
+
+\be
+(x) = \frac{1}{Nb}\sum_{j=1}^{N} \phi\left(\frac{x - x_j}{b} \right)
+\ee
+
+where $N$ is the number of data points, $x_j$ is an individual data point, $\phi$ is the standard normal density function, and $b$ is the "bandwidth." The bandwidth determines the width of the window within which the data points contribute significantly to the density estimate. In this implementation, the bandwidth is determined automatically.
+
+\subsubsection{Determining If Enough Runs Have Been Made}
+
+Monte Carlo analysis is fundamentally grounded in The Law of Large Numbers, which states that for a large-enough number of independent samples, the average converges to the expected value. For example, if we want to know what the probability of flashover is in the kitchen for a certain class of fires, the Law of Large Numbers assures us that the percentage of Monte Carlo runs where flashover occurs converges to the probability as the number of runs becomes large.
+
+The problem here is determining how many runs is enough. Put differently, how many runs does it take to guarantee a result that is "close enough" to be useful? Two strategies are used here; the first is graphing the evolution of the mean versus number of runs, the second is to graph the standard deviation of the mean versus the number of runs. The first strategy should show decreasing variation as the number of runs increases and should converge on a point. The second strategy should show the variance decreasing with the number of runs and approaching zero. The determination of whether the estimates are "close enough" is a judgment of the analyst and will depend on what level of accuracy is needed.
+
+In this simple example the mean of two outputs {\ct 'Time to Layer Height 1.5 m'} and {\ct 'Maximum Upper Layer Temp'} are generated. Figure \ref{simple_max_temp_mean} shows the convergence of the mean. From this graph it seems clear that the mean has converged and that fewer cases could have been used.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_max_temp_mean.jpeg}
+\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\label{simple_max_temp_mean}
+\end{figure}
+
+Figure \ref{simple_max_temp_sd} shows the standard deviation, which clearly is tending toward zero.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/simple_max_temp_sd.jpeg}
+\caption{Sample of Convergence of mean for maximum upper layer temperature}
+\label{simple_max_temp_sd}
+\end{figure}
+
+\subsubsection{Decision Trees}
+
+There are many ways of estimating relationships, but one of the most intuitive is that of Decision Trees. The approach implemented here is closely related to that of Classification and Regression Trees \cite{Haste_2009}. The output of the algorithm is a binary tree. Each node splits the data into two, until the tree arrives at the leaf nodes. For variables that are discreet, (for example if a detector has activated or not), each leaf node is associated with the best-fit category or most likely. For continuous variables, each leaf node is associated with the average of the data that arrives at that node.
+
+Decision trees have the advantage of being very easy to interpret. Their interpretability is one reason for their popularity. Trees have a couple of drawbacks as well. The most noticeable is that their predictions are not smooth. In addition, trees can be highly unstable. That is, small changes in the data can produce large changes in the estimated tree. In addition, there are cases where the same data can be represented by very different trees.
+
+One of the {\ct \&MSTT} namelists for Simple.in creates a decision tree for maximum layer temperature. Figure \ref{simple_tree_temp} shows the tree. The top node or root node says that if the second HRR point (the start of the plateau) is less than 1585~kW, which is the left branch, the average maximum upper temperature is 407~\degc and about 48~\% of cases fall into this category. This temperature is well less than typically reported for flashover. However if the HRR at the second point is greater than 2305~kW, taking the right branch from the root and than the right branch again, the average maximum upper layer temperature is significantly above flashover, although with a vent that is both wide enough and high enough the average is close to 600~\degc, meaning that likely some cases do not flashover. Also note that the first two levels of the tree at the top of the figure, are about the size of the fire. The third level is about the width of the vent and the top of the vent only has significant impact in cases with high HRR and wide wall vents. If this were an actual project, it would suggest that factors impacting flashover are, in order of most important first, size of the fire, width of the wall vent, and finally the top of the wall vent.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=6.5in]{FIGURES/simple_tree_temp.jpeg}
+\caption{Sample of Decision Tree for maximum upper layer temperature}
+\label{simple_tree_temp}
+\end{figure}
+
+%%%%%%%%
+%
+% chapter Examples
+%
+%%%%%%%%%
+
+\chapter{Examples}
+
+%%%%%%%%%
+%
+% Example 1
+%
+%%%%%%%%
+
+\section{Example 1: Flashover in a compartment}
+\label{info:Flashover}
+The occurrence of flashover within a room is of considerable interest since it is perhaps the ultimate signal of untenable conditions within the room of fire origin and a sign of greatly increased risk to other rooms within the building. Many experimental studies of full-scale fires have been performed that quantify the onset of flashover in terms of measurable physical properties. Several approaches have been taken to estimate the onset of flashover within a room. These methods are typically based on simplified mass and energy balances on a single-compartment fire along with correlations to fire experiments. Walton, Thomas, and Ohmiya \cite{Walton:2016} provide a review of available methods for calculating temperatures in fires in a single compartment with an open door. Three methods are identified from the works of Babrauskas \cite{Babrauskas:1980}, McCaffrey et al. \cite{McCaffrey:1981uq} and Thomas \cite{Thomas:1981fk}. Additional correlations by Babrauskas \cite{Babrauskas:1980} and H\"ugglund \cite{Hagglund:1980} are available. This example uses the Monte Carlo capabilities in CData to generate a set of data to compare these correlations to a range of CFAST simulations. Figure \ref{flashover_geometry} shows the compartment geometry for the simulations.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Flashover.png}
+\caption{Sample CFAST visualization of a single compartment structure used for example 1.}
+\label{flashover_geometry}
+\end{figure}
+
+\subsection{CData Inputs}
+A single compartment with gypsum ceiling and walls and a concrete floor includes a single vent. For this example, the room dimensions, vent dimensions, and fire growth rate are varied as follows:
+
+\begin{description}
+\item[Compartment dimensions:] Compartment sizes varied with a uniform distribution scaling all compartment dimensions from 2 m x 2 m x 2 m to 20 m x 20 m x 20 m.
+\item[Vent dimensions:] Vent sizes varied with a uniform distribution scaling vent bottom from 0 m to 1.5 m, a uniform distribution scaling vent top from 1.65 m to 19.85 m limited to 0.15 m below the compartment height, and a uniform distribution scaling vent width from 0.25 m to 19 m limited to 1.0 m less than the compartment width.
+\item[Fire growth rate:] Fire growth is varied with a uniform distribution ranging from 75 s to 1000 s to the peak heat release rate. Peak heat release rate set to 160 MW to ensure flashover in the largest compartments when there is sufficient oxygen. Figure \ref{flashover_fires} includes a few of the sampled HRR curves showing a range of peak HRR and time to peak which were varied independently.
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Flashover_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a compartment structure used for example 1.}
+\label{flashover_fires}
+\end{figure}
+
+For the analysis, we will look at the minimum heat release rate necessary to achieve flashover in the compartment defined by a typically-used metrics of 600 \degc upper layer temperature \cite{Valid:Peacock_Flashover_1} \cite{Valid:Peacock_Flashover_2}.
+
+The example below shows how to vary the width uniformly over the range of 2.0 m to 20.0 m. Other dimensions are handled in a similar fashion.
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Comp 1 Width Generator' DISTRIBUTION_TYPE = 'UNIFORM'
+	MINIMUM = 2.0 MAXIMUM = 20.0/
+&MFLD ID = 'Comp 1 Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Comp 1 Width Generator'
+	FIELD = 'Comp 1' 'WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+The vent height and width also vary randomly, but must be limited to the compartment height and width. Here, the maximum value for the top of the vent is defined as 0.15 m below the compartment ceiling (specified by the {\ct MAXIMUM\_OFFSET} of -0.15 m, with the negative number indicating an offset relative to the top of the compartment) and the vent width maximum is defined as 1 m less than the vent width (specified by the {\ct MAXIMUM\_OFFSET} of -1.0 m).
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Wall Vent Bottom Generator' DISTRIBUTION_TYPE = 'UNIFORM'
+	MINIMUM = 0.0 MAXIMUM = 1.5/
+&MFLD ID = 'Wall Vent Bottom' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Bottom Generator'
+	FIELD = 'Wall Vent' 'BOTTOM' ADD_TO_PARAMETERS = .TRUE. /
+
+&MRND ID = 'Wall Vent Top Generator' DISTRIBUTION_TYPE = 'UNIFORM'
+	MINIMUM = 1.65 MAXIMUM_FIELD = 'Comp 1' 'Height' MAXIMUM_OFFSET = -0.15/
+&MFLD ID = 'Wall Vent Top' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Top Generator'
+	FIELD = 'Wall Vent' 'TOP' ADD_TO_PARAMETERS = .TRUE. /
+
+&MRND ID = 'Wall Vent Width Generator' DISTRIBUTION_TYPE = 'UNIFORM'
+    MINIMUM = 0.25 MAXIMUM_FIELD = 'Comp 1' 'Width' MAXIMUM_OFFSET = -1.0/
+&MFLD ID = 'Wall Vent Width' FIELD_TYPE = 'VALUE' RAND_ID = 'Wall Vent Width Generator'
+	FIELD = 'Wall Vent' 'WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+The fire specification is naturally the most complex. For this example, we use a t-squared growth rate fire that grows to a peak value in a time period from 75 s to 1000 s, followed by a 10 s plateau and 10 s decay back to 0~kW. Since both the plateau and decay are set to 10 s, the same generator input can be used for both time points.
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'UNIFORM' MINIMUM = 75 MAXIMUM = 1000 /
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'UNIFORM'
+	MINIMUM = 1500 MAXIMUM = 160000/
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+
+&MFIR ID = 'Fire_generator' FIRE_ID = 'New Fire 1'
+	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time'
+	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR'
+	NUMBER_OF_GROWTH_POINTS = 20 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+\subsection{Results}
+
+Flashover is a term describing the transition of a relatively localized interior fire to one engulfing the entire compartment. It is of interest to the fire service because of the danger to fire fighters and to building designers because of life safety and the attendant impact on occupants. Several papers have looked at the capability of CFAST to predict the conditions under which flashover can occur \cite{Valid:Chow_Flashover, Valid:Luo_Flashover, Valid:Collier, Valid:White}. In addition, a comparison of CFAST with a number of simple correlations was used by Peacock and Babrauskas \cite{Valid:Peacock_Flashover_1,Valid:Peacock_Flashover_2} to simulate a range of geometries and fire conditions to predict the development of the fire up to the point of flashover. The important test of  these prediction methods is in the comparison of the predictions with actual fire observations. Figure \ref{figValidFlashover} (reference \cite{Valid:Peacock_Flashover_2}) presents estimates of the energy required to achieve flashover for a range of room and vent sizes from the CFAST runs above. This figure is an extension of the earlier work of Babrauskas  \cite{Valid:Babrauskas_Flashover} and includes additional experimental measurements from a variety of sources, most notably the work of Deal and Beyler \cite{Valid:DealandBeyler}. For a number of the experimental observations, values are included that were not explicitly identified as being a minimum value at flashover.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.0000in]{../CFAST_Validation_Guide/FIGURES/flashover.pdf}\\
+\end{center}
+\caption{Comparison of correlations, CFAST predictions, and experimental data for the prediction of flashover in a compartment fire.}
+ \label{figValidFlashover}
+\end{figure}
+
+%%%%%%%%%
+%
+%  Example 2
+%
+%%%%%%%%%%
+
+\section{Example 2: Impact of smoke detector interconnection}
+\label{Detectors}
+
+Battery-powered smoke alarms with wireless interconnect signal transmission allow for retrofitting of homes with interconnected smoke alarms up to the current code-required installation locations without hardwiring. However, wireless communication draws additional current beyond basic smoke alarm operation and will affect battery life. To receive an interconnect signal, wireless smoke alarms must periodically power up the transceiver and listen for a transmitted signal from another alarm that initially responds to smoke. Naturally a question arises: what is an acceptable maximum delay time for wireless interconnected smoke alarms given the desire to extend battery life?
+
+The script that was written to do the extra analysis in the following subsections for this example is listed in Appendix \ref{rscript-interconnect}.
+
+\subsection{CData Inputs}
+In this simplified example based on earlier work \cite{Cleary_2019}, we look at the impact of a periodic activation of wireless communications in detectors. We will use a fixed single-story residential structure for the simulations \cite{Madrzykowski:2019}, varying the fire placement and size, the doors being fully open, partionally open, and closed within the structure, and the properties of the smoke detectors placed in each compartment. Figure \ref{detector_geometry} shows the compartment geometry for the simulations.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[width=6.0in]{FIGURES/Detectors.png} \\
+\includegraphics[width=6.0in]{FIGURES/Detectors_Running.png}
+\end{tabular*}
+\caption{Sample CFAST visualization of a single story residential structure used for example 2.}
+\label{detector_geometry}
+\end{figure}
+
+For this example, the fire location, fire growth, fire peak heat release rate, vent opening/closing for all interior vents, and smoke detector sensitivity will be varied as follows:
+
+\begin{description}
+\item[Interior doors:] Doors between all interior compartments are each randomly set to be initially fully open or with a 2.5~cm undercut the full width of the door. These openings remain unchanged throughout a simulation.
+\item[Smoke detectors:] Smoke detectors follow a statistical smoke alarm activation model developed for upholstered furniture containing polyurethane foam \cite{Cleary:2017}. For this simple example,we use only one detector who activation varies with a log-normal distribution with a geometric mean of 9.5 \%/m $\pm$ of 4.2\footnote{Throughout, variation / uncertainty is represented by the standard deviation.} \%/m (3.0~\%/ft $\pm$ 1.3 \%/ft) for flaming fires and geometric mean 15.5 \%/m geometric standard deviation 4.2 \%/m (5.0~\%/ft $\pm$ 1.3 \%/ft) for smoldering fires.
+    \item[Fire location:] Fire is placed in a fixed location in a randomly chosen compartment in the structure and is equally split between flaming and smoldering fires.
+\item[Initial fire growth rate:] Flaming fires grow from zero to a mean of 23~kW $\pm$ 7~kW in a mean of 207~s $\pm$ 46~s using normal distributions, followed by a t$^2$ growth to 1054~kW in a mean of 222~s $\pm$ 47~s, again using a normal distribution. Smoldering fires grow from zero to a mean of 11~ kW $\pm$ 3~kW in a mean of 6863~s $\pm$ 1812~s using normal distributions, followed by a t$^2$ growth to 1054~kW in a mean of 189~s $\pm$ 48~s again using a normal distribution. Figure \ref{detector_fires} shows a few of the sampled HRR curves.
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Detector_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a single story residential structure used for example 2.}
+\label{detector_fires}
+\end{figure}
+
+The full file for this case is in Detectors.in. Here are some examples of the inputs. The following gives the full specification of the fire.
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Generator for fire rooms' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+	VALUES = 1, 2, 3 PROBABILITIES = 0.3333 0.3333 0.3334 /
+&MRND ID = 'Flaming Smoldering Generator' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+	VALUES = 1 2 PROBABILITIES = 0.5 0.5 /
+&MRND ID = 'Flaming Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	 MEAN = 23 STDEV = 7 MINIMUM = 10.0 MAXIMUM = 30.0/
+&MRND ID = 'Flaming Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	MEAN = 207 STDEV = 46 MINIMUM = 150 MAXIMUM = 1200/
+&MRND ID = 'Smoldering Peak Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	MEAN = 11 STDEV = 3 MINIMUM = 10.0 MAXIMUM = 20.0/
+&MRND ID = 'Smoldering Time Generator' DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	MEAN = 6863 STDEV = 1812 MINIMUM = 4840 MAXIMUM = 10910/
+&MRND ID = 'End of Time Growth Generator', DISTRIBUTION_TYPE = 'TRUNCATED_NORMAL'
+	MEAN = 205, STDEV = 65 MINIMUM = 75 MAXIMUM = 500 /
+&MRND ID = 'Peak HRR Generator', DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 1054 /
+&MRND ID = 'Plateau End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'Fire End Time' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 10 /
+&MRND ID = 'End of Fire HRR' DISTRIBUTION_TYPE = 'CONSTANT' CONSTANT = 0 /
+
+&MFIR ID = 'Compartment_generator' FIRE_ID = 'Random'
+	FIRE_COMPARTMENT_RANDOM_GENERATOR_ID = 'Generator for fire rooms'
+    FIRE_COMPARTMENT_IDS = 'Dining Room', 'Kitchen', 'Living Room'
+    FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID = 'Flaming Smoldering Generator'
+	NUMBER_OF_INCIPIENT_FIRE_TYPES = 2
+    INCIPIENT_FIRE_TYPES = 'FLAMING' 'SMOLDERING'
+	TYPE_OF_INCIPIENT_GROWTH = 'RANDOM'
+	FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Flaming Peak Generator'
+    FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Flaming Time Generator'
+    SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID = 'Smoldering Peak Generator'
+    SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID = 'Smoldering Time Generator'
+	FIRE_TIME_GENERATORS = 'End of Time Growth Generator' 'Plateau End Time' 'Fire End Time'
+	FIRE_HRR_GENERATORS = 'Peak HRR Generator' 'Peak HRR Generator' 'End of Fire HRR'
+    NUMBER_OF_GROWTH_POINTS = 10 GROWTH_EXPONENT = 2 /
+\end{lstlisting}
+
+The doors all follow the same pattern. As an example here is the specification for the DR LR 1 door.
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Generator for DR LR 1' DISTRIBUTION_TYPE = 'USER_DEFINED_DISCRETE'
+	VALUES = 1, 2, 3, 4, 5 PROBABILITIES = 0.2, 0.2, 0.2, 0.2 0.2 /
+
+&MFLD ID = 'Height DR LR 1' FIELD_TYPE = 'INDEX' RAND_ID = 'Generator for DR LR 1'
+	VALUES = 2.4, 2.4, 2.4, 2.4 0.025 FIELD = 'DR LR 1','TOP' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Width DR LR 1' FIELD_TYPE = 'INDEX'  RAND_ID = 'Generator for DR LR 1'
+	VALUES = 0.96 0.72 0.48 0.24 0.96 FIELD = 'DR LR 1','WIDTH' ADD_TO_PARAMETERS = .TRUE. /
+&MFLD ID = 'Label DR LR 1' FIELD_TYPE = 'LABEL' RAND_ID = 'Generator for DR LR 1'
+	STRING_VALUES = 'open' 'three-fourth' 'one-half' 'one-fourth' 'closed'
+	ADD_TO_PARAMETERS = .TRUE. PARAMETER_COLUMN_LABEL = 'DR LR 1 Opening Status'/
+\end{lstlisting}
+
+Notice that the first two  {\ct \&MFLD} entries of  {\ct FIELD\_TYPE = 'INDEX'}. They are for the height and width of the door the first 4 of 5 indexes are for the door being 'open', 'three-fourth', 'one-half', and  'one-fourth' open. For these indexes only the width of the door is changed and the height is the full 2.4 m. The fifth index is for the 'closed' door and has the width the full 0.96 m but the height is only 0.025 m to represent the crack under the door. To simplify modeling the data it would be helpful to have a single column that represents the state of the door. This is why the third {\ct \&MFLD} entry of {\ct FIELD\_TYPE = 'LABEL'} is included.
+
+Like the doors, all the detectors follow the same pattern. All the detectors could have been set up with the same sensitivity for each case but for this example, it was decided that the sensitivity of the detectors would be independent. An example of the CData specification for one detector follows
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'UL Alarm Living Room Trigger Generator'
+	DISTRIBUTION_TYPE = 'TRUNCATED_LOG_NORMAL' MEAN =  9.5 STDEV = 1.3
+	MINIMUM = 1.6 MAXIMUM = 41.3/
+	
+&MFLD ID = 'UL Alarm Living Room Trigger' FIELD_TYPE = 'VALUE'
+	RAND_ID = 'UL Alarm Living Room Trigger Generator'
+    FIELD = 'UL Alarm Living Room','TRIGGER' /
+\end{lstlisting}
+
+In the analysis, we will look at the impact of delays in triggering of secondary, interconnected smoke detectors on the overall tenability for a range of fires.
+
+\hypertarget{number-of-cases}{%
+\subsection{Number of Cases}\label{number-of-cases}}
+
+As a first step, we do a preliminary check to see if we have enough cases, Figs. \ref{Ex_2-convergence_of_mean} and \ref{Ex_2-standard_error}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/converg-1.pdf}
+\caption{Mean percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
+\label{Ex_2-convergence_of_mean}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/converg-2.pdf}
+\caption{Standard deviation of percent activation and time to activation for the bedroom 1 alarm as a function of the number of cases. This is a split between flaming (left column) and smoldering (right column) fires showing precent of cases where detector activated (top row) and time to activation (bottom row) }
+\label{Ex_2-standard_error}
+\end{figure}
+
+To be meaningful we have to look at one of the output columns; here we look at the Bedroom 1 Alarm data. Looking at the data it is apparent that the results for Flaming type fires and Smoldering type fires are very different. Also, nearly half the cases have no activation within the simulation time. So, the evaluation of convergence is evaluated separately for flaming type fires and smoldering type fires. Then the time to activation for cases where activation occurs is evaluated separately from the percent of cases where activation occurs. If any of these do not converge, then we do not have enough cases.
+
+The preliminary results suggest that we have enough cases. The averages all appear to have converged, and the standard errors are small.
+
+\hypertarget{analysis}{%
+\subsection{Analysis}\label{analysis}}
+
+The question explored here is the benefit gained by connecting alarms. The effect of interconnecting alarms is to reduce the amount of time before people in the house are notified of a fire even though they may be far away from the location of the fire. In this example, there are fires in the dining room, kitchen, or living room, and we will assume that people are in the bedrooms. Further assume for the sake of this example that the people in the bedrooms will not hear an alarm unless it is the one in the bedroom. Thus, the effect of interconnecting alarms is to notify people to a fire when the alarm in one of the front rooms goes off rather than waiting until one of the bedroom alarms sounds.
+
+Assume for this example that there is one alarm in the Living Room and one alarm in Bedroom 1 (which will proxy for all the bedroom alarms). This example, then, examines the difference in activation times between the Living Room Alarm and the Bedroom 1 Alarm.
+
+Exploratory analysis of the data is an important part of any analysis. Here, initial exploration indicated that in a substantial number of cases one or more of the alarms never activated.
+
+\noindent
+\begin{table}[ht]
+\begin{center}
+\caption[Number of cases by alarm activation status.]{Number of cases by alarm activation status.}
+\label{tbl:Ex_2-1}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\hline
+\parbox{1.5in}{ }    & \parbox{1in}{\bf Bedroom 1}  & \parbox{1in}{\bf No} & \parbox{1in}{\bf Yes}  & \parbox{1in}{\bf NA}  \\ \hline
+Living Room &  &   &   &   \\
+No &  & 410 & 0 & 0 \\
+Yes &  & 2021 & 7566 & 0 \\
+NA &  & 0 & 0 & 3 \\ \hline
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
+
+Table \ref{tbl:Ex_2-1} displays the number of cases where each of the alarms activated. Cases marked NA, are cases where the model itself did not converge. That was a very small number of cases for this example.
+
+For more than half the cases, both alarms activated. For most of the remaining cases the Living Room alarm activated but the Bedroom alarm did not. For less than 10~\% of the cases neither alarm activated. There were no cases where the bedroom alarm activated but the Living Room alarm did not.
+
+To better understand the cases where the bedroom alarm fails to sound, a decision tree was generated for the bedroom alarm sounding shown in  Fig \ref{Ex_2-decision_tree}. The paths to the three leaf nodes with the highest percentages of occurrence are given as follows. Starting at the top of the tree note that if the LR to BR Hall door is closed, the left branch, than the Bedroom 1 alarm doesn't sound and this occurs roughly 20~\% of the time. This means that the LR to BR Hall door being only partially open doesn't stop the alarm from sounding but it may delay activation. If the LR to BR Hall door is open any amount but the Bedroom 1 door is closed the alarm will not sound and this happens approximately 16~\% of the time. Starting at the top and going down the right branch every time, meaning that the four doors referenced are all open, than Bedroom 1 alarm is activated and this occurs about 41~\% of the time. Also note that because of rounding errors adding up the percentages in all the leaf nodes equals 101~\%.
+
+It is unusual for a tree to produce results as stark as this one. What becomes clear on looking at the tree is that the state of the intervening doors and the type of fire determines whether the bedroom alarm sounds. If the fire is smoldering and is isolated from the bedroom by closed doors then the alarm will not sound. If the fire is flaming, it must either be in the dining room or kitchen with at least one door closed between the fire and the alarm or if it is in the living room, there must be two closed doors between it and the alarm. Otherwise the alarm will go off.
+
+Interconnected alarms do not monitor continuously. Rather they check periodically to see if some other alarm has sounded. For this example, we will assume they check every 60 s. The effect is that there is a random delay, with the delay drawn from a uniform random distribution of between 0 s and 60 s. Adding the random delay is not done in CFAST but in R during the analysis. A Kernal Density estimate of the distribution of time savings is shown in Fig \ref{Ex_2-distributions}, with fire type on separate charts. Any negative ``time delay'' means that the bedroom alarm sounds on its own before it gets notification from the Living Room alarm.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/cart-1.pdf}
+\caption{Decision tree separating cases where the bedroom alarm sounded from those where it did not.}
+\label{Ex_2-decision_tree}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/kde-1.pdf}
+\caption{Kernel Density estimate of the time savings for interconnected alarms by fire type.}
+\label{Ex_2-distributions}
+\end{figure}
+
+With 10~000 data points we can empirically estimate the average time savings that interconnected alarms would provide, as well as median time savings and various quantiles. We are interested in the quantiles because adverse outcomes, like death or injury, are tail events. So we also look at the tails of the distribution. Here the ``1~\% Quantile'' means that 1~\% of alarms saved more time than this (see Table \ref{tbl:Ex_2-2}.
+
+\noindent
+\begin{table}[ht]
+\begin{center}
+\caption[Quantiles of delay time for bedroom alarm activation]{Quantiles of delay time for bedroom alarm activation}
+\label{tbl:Ex_2-2}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|}
+\hline
+\parbox{1.5in}{\bf Result}    & \parbox{0.75in}{\bf Flaming}  & \parbox{1in}{\bf Smoldering}  \\ \hline
+Mean & 101.7 & 1821.8 \\
+Median & 96.0 & 1597.7 \\
+25 \% Quantile & 136.3 & 2936.7 \\
+10 \% Quantile & 176.4 & 4139.8 \\
+5 \% Quantile & 199.5 & 4792.5 \\
+1 \% Quantile & 238.3 & 6109.8 \\ \hline
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
+
+This looks only at cases where the Bedroom 1 alarm sounded. For a more detailed analysis to identify the effect of interconnected alarms, the percent of non-activations would need to be taken into account.
+
+\subsection{Number of Cases - Revisited}\label{number-of-cases---revisited}
+
+The preliminary analysis above suggested that we appeared to have enough cases. However, the values of interest here are complex manipulations of the data. Even though the average of the Bedroom activation time has converged, it is possible that the results of interest to us have not. To finally determine if we have enough cases we look at how the outcomes we analyze change with the number of cases (Fig \ref{Ex_3-quintiles}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/cvg_plot-1.pdf}
+\caption{Quantiles of the time savings as a function of the number of cases.}
+\label{Ex_3-quintiles}
+\end{figure}
+
+While the preliminary results look settled down within a couple of thousand cases, these results take longer. In particular the extreme quantiles take somewhat longer to converge. In particular, the 5 \% quantile value doesn't really settle down until we have 7500 cases or so. However, looking at the results it looks like our results have settled down sufficiently by the 10~000 cases we actually use to have reasonable confidence in our results.
+
+
+\subsection{Discussion}\label{discussion}
+
+For a study like this it is important to get the distribution of fire parameters correct. For example, if the proportion of fires starting in the Kitchen were low compared to the real world then all of the time-delay values would be underestimated. If the likelihood of closed doors were overestimated, then there would be far fewer cases of alarm failure for the bedroom alarms, and the benefit of interconnection would be lower.
+
+%%%%%%%%%%
+%
+% Example 3
+%
+%%%%%%%%%%
+
+\section{Example 3: Model Sensitivity}
+\label{chapter:Sensitivity}
+
+In this example, we look at a simple fire model sensitivity analysis, which ASTM E 1355 defines as a study of how changes in model parameters affect the results \cite{CFAST:ASTM:E1355}. In other words, sensitivity refers to the rate of change of the model output with respect to input variations. The standard also indicates that model predictions may be sensitive to (1) uncertainties in input data, (2) the level of rigor employed in modeling the relevant physics and chemistry, and (3) the accuracy of numerical treatments. Thus, the purpose of a sensitivity analysis is to assess the extent to which uncertainty in the model inputs is manifested as uncertainty in the model results of interest. For this simple example, we will use a single office building and look at the impact of changing important model inputs by $\pm 10$ \%. Figure \ref{sensitivity_geometry} shows the compartment geometry for the example.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[width=6.0in]{FIGURES/Sensitivity.png} \\
+\includegraphics[width=6.0in]{FIGURES/Sensitivity_Running.png}
+\end{tabular*}
+\caption{Sample CFAST visualization of a single story commercial structure used for example 3.}
+\label{sensitivity_geometry}
+\end{figure}
+
+A sensitivity analysis involves defining a base case scenario, and varying selected input parameters. The resultant variations in the model output are then measured with respect to the base case scenario in order to consider the extent to which uncertainty in model inputs influences model output. Therefore, a sensitivity analysis of CFAST should account for variations in the extensive number of input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires.
+
+The script that was written to do the extra analysis in the following subsections for this example is listed in Appendix \ref{rscript-sensitivity}.
+
+\subsection{CData Inputs}
+For this example, we will independently vary the following inputs by $\pm$~10~\%, recognizing that these are not an exhaustive list of input variables, but which should represent the major model inputs to a simulation:
+
+\begin{description}
+\item[Compartment geometry:] Compartment size will be scaled to $\pm$ 10~\% of base size in all dimensions.
+\item[Compartment materials:] Thermal properties for all materials will be varied by $\pm$ 10~\% of base values for thermal conductivity, density, and specific heat. Thickness will be  varied by $\pm$ 10~\% of base values.
+\item[Compartment doors:] The size of compartment doors, both interior and exterior, will be  varied by $\pm$ 10~\% of base values for height and width. All interior vents will be open for this example.
+\item[Mechanical ventilation:] For mechanical ventilation, the height of each vent, area of each vent, and fan flowrate will each be varied by $\pm$ 10~\% of base values.
+\item[Detectors:] Sensitivity of heat detectors will be varied by $\pm$ 10~\% of base values for activation temperature and RTI. Smoke detector activation obscuration will be varied by $\pm$ 10~\% of base values.
+\item[Fire:] Fire is in one of the rooms. Peak heat release rate of the fire and time of the peak will be varied by $\pm$ 10~\% of base value. Yields of carbon monoxide and soot will each be varied by $\pm$ 10~\% of base value. Position of the fire is varied by $\pm$ 10~\% of base values in width and depth, and height. Figure \ref{detector_fires} shows a few of the sampled HRR curves.
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/Sensitivity_HRR_Samples.jpg}
+\caption{Sample HRR inputs for fires in a single story commercial structure used for example 3.}
+\label{Sensitivity_fires}
+\end{figure}
+
+In the analysis, we will look at typically-used outputs to determine those which are more sensitive (a 10 ~\% change in an input value leads to more than a 10~\% change in an output) and less sensitive (a 10 ~\% change in an input value leads to less than a 10~\% change in an output) to a change in selected model inputs to identify the relative importance of selected model inputs to the results of a simulation.
+
+Since this case is looking at varying almost everything that can be varied, it is the largest file of the three examples. It is possible to actually vary the generators over the range that the variable can take but that means a lot of data entry that could easily lead to errors that would be difficult to find. One FIELD\_TYPE is the SCALING type. Using this greatly increases the speed of creating the input file.
+
+As part of the inputs one of the things to keep in mind is that the foyer and halls should be the same height because they are all essentially the same space even though in CFAST they are modeled as a number of compartments and connections. The result is that there is a single random generator that is used by all the rooms and connections making up the halls of the structure as can be seen in the following input snippet.
+
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling height', FYI = 'Scaling for everything that has the same max height',
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFLD ID = 'Foryer height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer'  'HEIGHT'
+    RAND_ID = 'Scaling height' ADD_TO_PARAMETERS = .TRUE.
+    PARAMETER_COLUMN_LABEL = 'Foyer_and_Halls_height' /
+&MFLD ID = 'Even Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Even Hallway'  'HEIGHT'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Odd Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Odd Hallway'  'HEIGHT'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Front Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Front Hall'  'HEIGHT'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Back Hall height' FIELD_TYPE = 'SCALING' FIELD = 'Back Hall'  'HEIGHT'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Bathroom Hallway height' FIELD_TYPE = 'SCALING' FIELD = 'Bathroom Hall'  'HEIGHT'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2FrontHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2FrontHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2EvenHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'Foyer2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'Foyer2OddHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2EvenHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'FrontHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'FrontHall2OddHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2EvenHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2EvenHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+&MFLD ID = 'BackHall2OddHall height' FIELD_TYPE = 'SCALING' FIELD = 'BackHall2OddHall'  'TOP'
+	RAND_ID = 'Scaling height' /
+\end{lstlisting}
+
+After all the fields that are to be varied are set up there is also the fire to vary. Instead of varying the fire we will scale the HRR and time with single independent scaling factors. This requires only two random generators and is implemented as follows.
+
+\vspace{\baselineskip}
+\begin{lstlisting} [language=cdata, basicstyle=\scriptsize]
+&MRND ID = 'Scaling HRR', FYI = 'Just making sure it works',
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MRND ID = 'Scaling Time', FYI = 'Just making sure it works',
+	DISTRIBUTION_TYPE = 'UNIFORM', MINIMUM = 0.9 MAXIMUM = 1.1 /
+&MFIR ID ='Scale fire' FIRE_ID = 'Fire' BASE_FIRE_ID = 'Back Fire'
+	SCALING_FIRE_HRR_RANDOM_GENERATOR_ID = 'Scaling HRR'
+    SCALING_FIRE_TIME_RANDOM_GENERATOR_ID = 'Scaling Time'
+    ADD_HRR_SCALE_TO_PARAMETERS = .TRUE.
+    ADD_TIME_SCALE_TO_PARAMETERS = .TRUE. /
+\end{lstlisting}
+
+The other advantage, besides ease of implementation, is that it eliminates the possibility of variation of individual time points reducing the impact of the variability. For example if one point has the HRR increasing by some amount but the next HHR value decreases it won't completely average out but it could reduce the impact on the overall scenario.
+
+\hypertarget{approach}{%
+\subsection{Approach}\label{approach}}
+
+For this example it is assumed that the output variables of interest are `Foyer Max Heat FED' and `Foyer Heat FED'. Notionally, we might say that we are interested in the amount of time people have to escape (represented by the time during which they foyer--through which they must evacuate--remains viable) and the worst temperature they might have to face in the foyer during the evacuation.
+
+Sensitivity analysis is interested in the sensitivity the output has to each input. This is typically expressed in terms of the percent variation in output produced by a one percent variation in each input. As it turns out, simple linear regression of the \emph{log} of the inputs against the \emph{log} of the output will give exactly that value.
+
+The second target variable--Foyer Heat FED--was selected to illustrate an additional complication in the analysis. This variable expresses the time till the FED reaches the value of 1, the point where only 50~\% of people survive. The complication is that in a number of cases non-viability does not occur within the time of the simulation; here some 89.7~\% of cases do not result in non-viability. That presents a problem because analyzing the data without taking that into account will result in incorrect estimates of the sensitivity.
+
+In this case what is run is a `Tobit' analysis\cite{Tobin:1958} which properly accounts for the effect of the cases where non-viability did not occur. The `Tobit' analysis is also performed on a log-log transformation of the data.
+
+
+\subsection{Number of Cases}\label{number-of-cases_3}
+
+An initial run of 1000 cases was evaluated. Figure \ref{Ex_3-convergence_of_mean} shows the coefficient for \texttt{Lab\_depth} for the first model as a function of the number of cases. Examination of the chart shows that the value for the coefficient is still changing substantially at the end of 1000 cases. When the number of cases were increased to 2500 the results still did not seem very stable. When the cases increased again to 5000 there was a noticeable trend over the last thousand or so cases. When the cases were increased to 10~000, the estimated value over the last couple of thousand cases seems to have settled down. So these results are based on 10~000 cases.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=4.5in]{FIGURES/ex2_cvg_plot-1.pdf}
+\caption{Convergence by the number of runs.}
+\label{Ex_3-convergence_of_mean}
+\end{figure}
+
+
+\subsection{Discussion}\label{discussion_3}
+
+First we look at the sensitivity of maximum heat FED in the Foyer. Selected results are displayed in Table \ref{tbl:Ex_3-1}. In the column listed Value, the number shows what a one-percent change in the variable does to maximum heat FED in the Foyer. For example the single most significant factor is the depth of the compartment where the fire occurred, the lab space.  A 1~\% increase in lab depth will produces a 0.53~\% decrease in the maximum heat FED for the Foyer. Similarly a 1~\% change in the height of the Foyer and halls produces a 0.47~\% decrease in the heat FED for the Foyer. At the other end of the scale changes in the Foyer width or the depth of Office 1 produce minimal changes to the heat FED for the Foyer
+
+In two following tables there are four other columns. The first, Std. Error, is closely related to a confidence interval. Typically (and this is probably close enough for our purposes) $\pm$ 2 times the standard error gives a 95~\% confidence limit. So, for lab depth, a 95~\% confidence interval would be -0.53 $\pm$ 0.17 or -0.53 $\pm$ 2*0.16*0.53. The t value is an intermediate step to getting the confidence levels for each variable. The larger the absolute value is the smaller the confidence interval will be and the t value always has the same sign as the value. The next column is the confidence value, smaller is better. A 1\% value (0.01) for confidence value means that there is only a 1\% chance of the actual value being zero. Meaning we can be pretty confident that this number is not zero. The last column is just a visual que to which are the significant variables. The more * in the column the better the confidence. The pattern is * means the confidence value is <0.1, ** means the value is < 0.05, and finally *** means the value is < 0.01.
+
+\noindent
+\begin{table}[ht]
+\begin{center}
+\caption[Selected result for sensitivity of maximum heat FED.]{Selected result for sensitivity of maximum heat FED.}
+\label{tbl:Ex_3-1}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+log({\ct Lab\_depth}) & -0.5328 & 0.16 & -3.33 & 0.0009 & *** \\
+log({\ct Front\_Hall\_depth}) & 0.1206 & 0.16 & 0.75 & 0.4551 & \\
+log({\ct Foyer\_width}) & 0.0053 & 0.16 & 0.03 & 0.9735 & \\
+log({\ct Office\_\#1\_depth}) & -0.0042 & 0.16 & -0.03 & 0.9791 & \\
+log({\ct Office\_\#2\_height}) & 0.4525 & 0.16 & 2.84 & 0.0045 & ** \\
+log({\ct Foyer\_and\_Halls\_height}) & -0.4661 & 0.16 & -2.94 & 0.0033 & ** \\
+log({\ct FrontHall2EvenHall\_width}) & -0.0054 & 0.16 & -0.03 & 0.9727 & \\
+log({\ct Gyp\_Emissivity.1}) & 0.1223 & 0.16 & 0.76 & 0.4458 & \\
+log({\ct Office\_\#4\_\_Door\_Height}) & -0.0029 & 0.16 & -0.02 & 0.9856 & \\
+log({\ct Office\_\#6\_\_Door\_Height}) & 0.1209 & 0.16 & 0.75 & 0.4512 & \\
+log({\ct Fire\_HRR\_scaling\_factor}) & 0.0398 & 0.16 & 0.25 & 0.8051 & \\
+log({\ct Fire\_time\_scaling\_factor}) & -0.3920 & 0.16 & -2.45 & 0.0141 & * \\ \hline
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
+
+In Table  \ref{tbl:Ex_3-2}, we look at just those variables for which a one-percent change produces a change of greater than 0.2~\% in the time to non-viability for the Foyer, plus the scaling factors for the fire. Those variables include variables related to the room of fire origin (Lab\_depth), factors related to the space itself (Foyer\_width, Front\_Door\_Width), factors related to the spaces through which the fire must travel (Even\_Hallway\_depth, Odd\_Hallway\_width, Front\_Hall\_depth) and some additional miscellaneous factors (Office\_.2\_height Office\_.5\_height Gyp\_Conductivity.1 Gyp\_Density.1).
+
+\noindent
+\begin{table}[ht]
+\begin{center}
+\caption[Selected results for sensitivity of time to non-viability for Foyer Heat FED.]{Selected results for sensitivity of time to non-viability for Foyer Heat FED.}
+\label{tbl:Ex_3-2}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{\extracolsep{\fill}}|l|l|l|l|l|l|}
+\hline
+\parbox{1.5in}{\bf Variable}    & \parbox{0.75in}{\bf Value}  & \parbox{0.75in}{\bf Std. Error} & \parbox{0.75in}{\bf t value} & \parbox{0.75in}{\bf Pr(\textgreater\textbar t\textbar)} & \parbox{0.75in}{ } \\ \hline
+log(Lab\_depth) & 0.3460 & 0.14 & 2.40 & 0.0162 & * \\
+log(Even\_Hallway\_depth) & 0.3043 & 0.14 & 2.12 & 0.0341 & * \\
+log(Odd\_Hallway\_width) & 0.2359 & 0.14 & 1.64 & 0.1011 & \\
+log(Front\_Hall\_depth) & -0.2318 & 0.15 & -1.59 & 0.1116 & \\
+log(Foyer\_width) & -0.2778 & 0.15 & -1.91 & 0.0555 & . \\
+log(\texttt{Office\_\#2\_height}) & -0.2103 & 0.14 & -1.46 & 0.1431 & \\
+log(\texttt{Office\_\#5\_height}) & 0.2564 & 0.14 & 1.78 & 0.0753 & . \\
+log(Gyp\_Conductivity.1) & 0.2454 & 0.14 & 1.70 & 0.0889 & . \\
+log(Gyp\_Density.1) & 0.2217 & 0.14 & 1.54 & 0.1233 & \\
+log(Front\_Door\_Width) & 0.3057 & 0.14 & 2.13 & 0.0333 & * \\
+log(Fire\_HRR\_scaling\_factor) & -0.0462 & 0.15 & -0.32 & 0.7510 & \\
+log(Fire\_time\_scaling\_factor) & 0.1927 & 0.14 & 1.34 & 0.1790 & \\ \hline
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
+
+%
+% -------------------  Summary ------------------------
+%
+
+\chapter{Summary}
+
+This publication introduces the CFAST Fire Data Generator, CData, that has been developed as a tool to help users do Monte Carlo analyses. The various parts of CData are described and then a very simple analysis is first presented to demonstrate the different parts of the analysis that CData can assist in preforming. This is followed by three slightly more complex analyses to further demonstrate the uses of CData.
+
+CData supports several statistical analyses with the statistical software R to provide several built-in tools to analyze the data. Three of the tools are useful in determining that enough cases have been run to draw justifiable conclusions from the analysis. The first, convergence of the mean, allows the user to make a determination if enough cases have been run. Two other tools, the histogram generator and the empirical probability density function, allow users to look at the distributions of input variables to determine that distributions are as expected. Both can also be used to look at the distributions of output variables. Finally, the decision trees model can be used to look for the most important variables in determining the value of a particular output variable. These tools as well as the R software distributed with CData will allow users to do a significant amount of analysis of data that is generated.
+
+Three simple examples were also explored using CData. While these examples do not demonstrate all the capability of CData it is hoped that they do give a flavor of the kinds of problems that can be addressed as well as examples of some of the basic analysis that should always be done. It is important to always check that enough runs have been done so that some confidence can be had in the results.
+
+The plan with CData moving forward is to provide support and address bugs as they arise while monitoring the kinds of problems users use the program to solve as well as note other comments about the software. Once a picture of how people are using CData and what needs they have emerges, a plan for a next version of the tool will be made.
+
+
+%\backmatter
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+%
+% -------------------  Nomenclature ------------------------
+%
+
+\chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
+
+\begin{center}
+\begin{longtable}{p{1in}  p{5.5 in}}
+
+$A$                 & area, vent area, m$^2$ \\
+$A_T$               & total surface area of a compartment, m$^2$ \\ \\
+$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\ \\
+$D$                 & fire diameter, m \\ \\
+$g$                 & gravitational constant, 9.8 m/s$^2$ \\ \\
+$h$                 & vent height, m \\ \\
+$\dQ$               & total heat release rate of the fire, kW \\
+$\dQ^*$             & Fire Froude Number,  $\dQ^* = \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$ \\ \\
+$T$                 & temperature, K \\
+$T_\infty$          & ambient gas temperature, K \\ \\
+$\rho$              & density, kg/m$^3$ \\
+$\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
+\end{longtable}
+
+\end{center}
+
+
+\include{Appendix_CData_Keywords}
+
+\include{Appendix_R_Scripts}
+
+\label{last_page}
+
+\end{document}

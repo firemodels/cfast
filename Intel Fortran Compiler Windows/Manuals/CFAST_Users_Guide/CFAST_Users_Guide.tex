@@ -1,0 +1,150 @@
+\documentclass[12pt]{book}
+
+% Test
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v2\\}
+
+\headerB{
+CFAST -- Consolidated Model of Fire \\
+ Growth and Smoke Transport \\
+ (Version 7) \\
+ Volume 2: User's Guide \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+   Paul A. Reneke \\
+   Glenn P. Forney \\
+}
+
+\vfill
+
+\headerD{1889v2}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v2\\}
+
+\headerB{
+CFAST -- Consolidated Model of Fire \\
+ Growth and Smoke Transport \\
+ (Version 7) \\
+ Volume 2: User's Guide \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+   Paul A. Reneke \\
+   Glenn P. Forney \\
+}
+
+\headerD{1889v2}
+
+\headerC{
+\flushright{\today\\
+Revision:~\gitrevision}
+}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+\input{../Bibliography/authors}
+
+\chapter{Disclaimer}
+
+The U. S. Department of Commerce makes no warranty, expressed or implied, to users of
+CFAST and associated computer programs, and accepts no responsibility for its use.  Users of
+CFAST assume sole responsibility under Federal law for determining the appropriateness of its
+use in any particular application; for any conclusions drawn from the results of its use; and for
+any actions taken or not taken as a result of analyses performed using these tools.
+CFAST is intended for use only by those competent in the field of fire safety and is intended
+only to supplement the informed judgment of a qualified user. The software package is a
+computer model which may or may not have predictive value when applied to a specific set of
+factual circumstances. Lack of accurate predictions by the model could lead to erroneous
+conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+\coden{1889v2}
+
+\chapter{Intent and Use}
+
+The algorithms, procedures, and computer programs described in this report constitute a
+methodology for predicting some of the consequences resulting from a prescribed fire.  They
+have been compiled from the best knowledge and understanding currently available, but have
+important limitations that must be understood and considered by the user.  The program is
+intended for use by persons competent in the field of fire safety and with some familiarity with
+personal computers. It is intended as an aid in the fire safety decision-making process.
+
+\chapter{Abstract}
+
+CFAST is a two-zone fire model capable of predicting the environment in a multi-compartment structure subjected to a fire. It calculates the time-evolving distribution of smoke and gaseous combustion products as well as the temperature throughout a building during a user-prescribed fire. This report describes the use of the model, including installing and running the software, the computer platforms upon which it is supported and examples to verify correct installation.
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission Office of Nuclear Regulatory Research and the U.S. Department of Energy. The U.S. NRC Office of Nuclear Regulatory Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their efforts and support.
+
+Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged. Thanks are also due to Allan Coutts, Washington Safety Management Solutions for his insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+\mainmatter
+
+\include{Getting_Started_Chapter}
+\include{Input_File_Chapter}
+\include{Output_Chapter}
+
+%\backmatter
+
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+\include{Limits_Chapter}
+\include{Appendix_CFAST_Keywords}
+
+\end{document}

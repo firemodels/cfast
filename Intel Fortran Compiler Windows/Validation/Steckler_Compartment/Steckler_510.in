@@ -1,0 +1,28 @@
+&HEAD VERSION = 7600, TITLE = 'Steckler Compartment Test 510' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 23 EXTERIOR_TEMPERATURE = 23 /
+ 
+!! Material Properties 
+&MATL ID = 'Fiberboard' MATERIAL = 'Fiber Board', 
+      CONDUCTIVITY = 1 DENSITY = 200 SPECIFIC_HEAT = 1, THICKNESS = 0.013 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'Compartment 1'
+      DEPTH = 2.8 HEIGHT = 2.13 WIDTH = 2.8
+      CEILING_MATL_ID = 'Fiberboard' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'Fiberboard' WALL_THICKNESS = 0.013 FLOOR_MATL_ID = 'Fiberboard' FLOOR_THICKNESS = 0.013
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE' , BOTTOM = 0 HEIGHT = 1.83, WIDTH = 0.74
+  FACE = 'FRONT' OFFSET = 1.28 /
+ 
+!! Fires 
+&FIRE ID = 'Steckler 62 kW'  COMP_ID = 'Compartment 1', FIRE_ID = 'Steckler 62 kW_Fire'  LOCATION = 1.4, 2.8 / 
+&CHEM ID = 'Steckler 62 kW_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.2 / 
+&TABL ID = 'Steckler 62 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Steckler 62 kW_Fire', DATA = 0, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'Steckler 62 kW_Fire', DATA = 1800, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

@@ -1,0 +1,5 @@
+Time,CEILT_1,UWALLT_1,LWALLT_1,FLOORT_1,CEILT_2,UWALLT_2,LWALLT_2,FLOORT_2,CEILT_3,UWALLT_3,LWALLT_3,FLOORT_3
+Simulation Time,Ceiling Temperature,Upper Wall Temperature,Lower Wall Temperature,Floor Temperature,Ceiling Temperature,Upper Wall Temperature,Lower Wall Temperature,Floor Temperature,Ceiling Temperature,Upper Wall Temperature,Lower Wall Temperature,Floor Temperature
+Time,r1,r1,r1,r1,c2,c2,c2,c2,r3,r3,r3,r3
+s,C,C,C,C,C,C,C,C,C,C,C,C
+ 0.000000E+00, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02, 0.217800E+02                      

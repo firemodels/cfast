@@ -1,0 +1,22 @@
+&HEAD VERSION = 7600, TITLE = 'Default example fire for user guide' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 2000 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 30 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 6 WIDTH = 3
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Fires 
+&FIRE ID = 'simple burner'  COMP_ID = 'Comp 1', FIRE_ID = 'simple burner_Fire'  LOCATION = 1.5, 2.5 / 
+&CHEM ID = 'simple burner_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0 / 
+&TABL ID = 'simple burner_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'simple burner_Fire', DATA = 0, 0, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 30, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 330, 1, 0, 0.07069, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple burner_Fire', DATA = 360, 0, 0, 0.07069, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

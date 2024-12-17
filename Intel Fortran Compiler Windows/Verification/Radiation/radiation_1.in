@@ -1,0 +1,31 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 10000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+ 
+!! Material Properties 
+&MATL ID = 'STEELSHT' MATERIAL = '"Steel, Plain Carbon (1/16 in)"', 
+      CONDUCTIVITY = 48 DENSITY = 7854 SPECIFIC_HEAT = 0.559, THICKNESS = 0.0015 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 99 HEIGHT = 99 WIDTH = 99
+      CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1' AREA = 20, SHAPE = 'SQUARE'  OFFSETS = 49.5, 49.5 /
+ 
+!! Fires 
+&FIRE ID = 'New Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'New Fire_Fire'  LOCATION = 7.5, 7.5 / 
+&CHEM ID = 'New Fire_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'New Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'New Fire_Fire', DATA = 0, 10, 0, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'New Fire_Fire', DATA = 5000, 10, 0, 0.09, 0, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp 1' LOCATION = 9.5, 7.5, 0 TYPE = 'PLATE' MATL_ID = 'STEELSHT' SURFACE_ORIENTATION = 'BACK WALL'
+     TEMPERATURE_DEPTH = 0.00075 DEPTH_UNITS = 'M' /
+ 
+&TAIL /

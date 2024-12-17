@@ -1,0 +1,1326 @@
+\documentclass[12pt,twoside]{book}
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v1\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 1: Technical Reference Guide \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+   Kevin B. McGrattan \\
+   Glenn P. Forney \\
+   Paul A. Reneke \\
+}
+
+\vfill
+
+\headerD{1889v1}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v1\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 1: Technical Reference Guide \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+   Kevin B. McGrattan \\
+   Glenn P. Forney \\
+   Paul A. Reneke \\
+}
+
+\headerD{1889v1}
+
+\headerC{
+\flushright{\today\\
+Revision:~\gitrevision}
+}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+\input{../Bibliography/authors}
+
+%
+% -------------------  Preface ------------------------
+%
+
+\chapter{Preface}
+
+This document provides the theoretical basis for the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+
+%
+% -------------------  Disclaimer ------------------------
+%
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by the National Institute of Standards and Technology, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+\coden{1889v1}
+
+%
+% -------------------  Acknowledgments ------------------------
+%
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous corrections, clarifications, and updates to the guides and the model through his detailed review of the model and documentation. Allan Coutts, Washington Safety Management Solutions, provided insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
+
+Colleen Wade of the Building Research Association of New Zealand (BRANZ), Fred Mowrer of the California Polytechnic State University, and David Sheppard of the U.S. Bureau of Alcohol, Tobacco and Firearms (ATF) provided useful comments on the development of CFAST version 7.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+
+\mainmatter
+
+%
+% -------------------  Overview ------------------------
+%
+
+\chapter{Overview}
+
+This chapter provides a general description of the Consolidated Fire And Smoke Transport (CFAST) model following the general guidance put forth in ASTM E1355~\cite{CFAST:ASTM:E1355}.
+
+\IfFileExists{../Bibliography/model_description.tex}{\input{../Bibliography/model_description.tex}}{\typeout{Error: Missing file ../Bibliography/model_description.tex}}
+
+\section{Organization of this Document}
+
+The rest of this document is broken into several chapters as follows:
+
+\begin{description}
+\item[Chapter 2] presents the basic transport equations used by CFAST derived from the conservation laws of mass and energy, along with the ideal gas law.
+\item[Chapter 3] describes the algorithms and empirical correlations used to represent fires in the model, including combustion chemistry and heat release rate, plume entrainment, plume temperature, and plume velocity.
+\item[Chapter 4] includes the empirical correlations used to estimate natural flow through doors and windows (vertically-oriented vents), floor and ceiling vents (horizontally-oriented vents), and mechanical ventilation systems.
+\item[Chapter 5] documents the calculation of heat transfer including radiation exchange between fires, walls, gas layers, and objects within compartments, convection between gases and compartment bounding surfaces or objects within compartments, and conduction in compartment bounding surfaces and object within compartments.
+\item[Chapter 6] details calculations for fire sprinkler and heat detector activation, smoke detection, fire suppression, and visibility through smoke.
+\end{description}
+
+%
+% -------------------  The Basic Transport Equations ------------------------
+%
+
+\chapter{The Basic Transport Equations}
+\label{sec:Theory_Chapter}
+
+The equations used to model pressure, layer height and temperatures in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the principles of conservation of mass and energy using the ideal gas law as an equation of state to relate temperature and density. These equations predict the evolution in time of the compartment pressure (at the floor), upper layer volume, and layer temperatures due to the net gain or loss of mass and energy in these layers. The primary assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived~\cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
+
+The exchange of mass and energy or heat between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and heat between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and heat from the lower to the upper layer, and convection transfers heat from the gas layers to the surrounding walls.  The momentum within any one zone is assumed to be zero. Momentum exchange between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law).
+
+\section{Model Equations}
+\label{sect:equations}
+
+Each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. All thermodynamic parameters are assumed to be constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
+\be
+   R = \frac{\gamma-1}{\gamma} \, \cp \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
+\ee
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{FIGURES/Control_Volumes}
+\caption{Schematic of control volumes in a two-layer zone model.}
+ \label{fig:Control_Volumes}
+\end{figure}
+
+The mass conservation equation simply asserts that the rate of change of the mass of layer $i$ is equal to the sum of mass source terms, $\dmi$:
+\be
+   \dbydt{\mi} = \dmi  \label{mass_con}
+\ee
+Mass source terms include plume mass entrainment and supply/exhaust ventilation. Next, the first law of thermodynamics states that the rate of change in the layer's internal energy, $\cv \mi \Ti$, is equal to the sum of heat source terms, $\dqi$, minus the work associated with expansion or contraction of the layer, $P \, {\rm d} \Vi / {\rm d} t$:
+\be
+   \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
+\ee
+Included in $\dqi$ are the fire's heat release rate, convective losses to walls, and radiation exchange.
+
+The layer's temperature, mass and volume are related to the compartment pressure by the ideal gas law:
+\begin{equation}
+  P\,\Vi = \mi\,R \, \Ti \label{EoS}
+\end{equation}
+A system of ordinary differential equations for the compartment pressure, upper layer volume, and upper and lower layer temperature can be derived using Eqs.~\ref{mass_con}--\ref{EoS} (for details see Appendix~\ref{chap:derivation}):
+\begin{eqnarray}
+\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dql + \dqu \right)  \label{eq1} \\[.1in]
+\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dqu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
+\dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
+\dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
+\end{eqnarray}
+
+An algebraic equation for each wall surface temperature (ceiling, upper wall, lower wall and floor) is also solved:
+\be
+   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x}=0   \label{bc}
+\ee
+
+\noindent where $\partial\Tw(0,t)/\partial x$ is the temperature gradient at the wall surface, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term)
+and for brevity the temperature wall profiles are referred to collectively as $\Tw(x,t)$.
+The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq. (\ref{bc}) is evaluated by advancing a known temperature profile from $t_{\rm old}$ to $t$ using the heat conduction equation
+
+\begin{equation}
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2}
+\end{equation}
+with a constant temperature boundary condition
+\begin{equation}
+\Tw(0,t)=T_{\rm w}
+\end{equation}
+where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
+
+
+\section{Solution Procedure}
+\label{sect:solution}
+
+\renewcommand{\arraystretch}{1.5}
+This section give  a brief discussion of the procedure CFAST uses to solve the zone fire modeling equations given in the previous section (for more details see Appendix \ref{chap:heatsolution}).
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_{\rm w}$.
+DASSL solves these equations by formulating a root finding problem
+\begin{equation}
+\vecF\brackets{t,\vecy,\vecy'}=0
+\end{equation}
+where $\vecF$ is a vector valued function of residuals given by
+\begin{equation}
+\vecF(t,\vecy,\vecy')=\left\{
+\begin{array}{ll}
+  \vecy'-\mathbf{f}(t,\vecy) & {\rm gas~ode's} \\
+  \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
+\end{array}
+\right.
+\end{equation}
+and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
+$\vecy$ is the solution vector containing the quantities $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_{\rm w}$  at time $t$ and $\vecy'$ is the derivative of these quantities at time $t$.
+
+To start the solution process, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and the derivative components of $\vecy'$ are set to zero. For more complex cases, an initial $\vecy$ and $\vecy'$ at $t=0$ is calculated and supplied to DASSL.
+
+One step in the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})=0$ given that the solution for
+$\vecF(t_{n},\vecy_{n},\vecy'_{n})=0$ is known.
+The solver estimates values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}$. CFAST uses this information to
+compute the residual $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$.
+Based upon these residual values, DASSL generates new values of $\vecy_{n+1}$ and $\vecy'_{n+1}$ until $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$ is zero
+within a specified tolerance.
+DASSL performs these iterations using an extension of
+Newton's method using derivatives that are approximated with backward differentiation formulae of orders one
+through five~\cite{DASSL:1982,DASSL:1989}.
+
+The unknown wall surface temperatures, $T_{\rm w}$ are iterated until the $\dq''$ flux term from the gas layers matches the temperature gradient
+ $\partial\Tw(0,t)/\partial{\rm x}$ at the wall surface according to Eq. (\ref{bc}).  The $\partial\Tw(0,t)/\partial{\rm x}$ term is determined by advancing the temperature profile from $t_{n}$ to $t_{n+1}$ using a value of $T_{\rm w}$ supplied by DASSL as a boundary condition for the heat conduction problem:
+\begin{eqnarray}
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier2}\\
+\Tw(0,t)&=&T_{\rm w}
+\end{eqnarray}
+
+\noindent where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
+
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
+
+
+
+\section{Species Transport}
+
+The equation of state, Eq. (\ref{EoS}), assumes that the molecular weight of the gaseous mixture throughout the domain is approximately that of air, 29~g/mol. However, CFAST does track the products of combustion and the depletion of oxygen in each zone. At the start of the simulation, the composition of each layer is set to ambient conditions. The initial temperature is specified by the user. The oxygen mass fraction is 23~\% (21~\% volume fraction) and the nitrogen mass fraction is 77~\% (79~\% volume fraction). The mass fraction of water vapor is specified by the user in terms of a relative humidity and the oxygen and nitrogen mass fractions are adjusted accordingly. All other gas species are initially zero.  As fuel is burned, product species are produced in direct proportion to the rate of fuel consumption (the major products of combustion are determined from the specified fuel molecule and the minor species yields are specified by the user). The mass fraction of oxygen can limit the combustion rate as discussed in Section~\ref{section:HRR}. Two special separate species are included in the model -- a generic toxic species and an arbitrary trace species. Both are excluded from the overall mass balance, but they are generated by the fire and transported in a manner identical to the other species.
+
+Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers. The species mass divided by the layer volume is the mass concentration. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. See Ref.~\cite{Jones:2008} for an example on the use of filtering.
+
+The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations performed by CFAST. The first is for thermal radiation as part of the overall heat transfer calculation, discussed in Section~\ref{sec:Radiation}. The second is for visible light extinction to determine visibility, discussed in Section~\ref{Visibility}.
+
+%
+% -------------------  The Fire Plume ------------------------
+%
+
+\chapter{The Fire Plume}
+\label{sec:TheFire}
+
+Fires in CFAST are specified by the user in terms of a time-dependent heat release rate (HRR), an effective fuel molecule, and the yields of the products of incomplete combustion like soot and CO. Fires can be specified in multiple compartments and are treated as totally separate entities, with no interaction of the plumes. These fires are generally referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
+
+CFAST does not include a pyrolysis model to {\em predict}, as opposed to specify, the growth and spread of the fire. Rather, the transient pyrolysis rates for each fire are prescribed by the user. Whereas this approach does not directly calculate the increased pyrolysis due to radiative feedback from the flame or compartment, in theory these effects could be prescribed by the user. For larger fires, this can be an important consideration, and the specification used should reflect the actual conditions as closely as possible.
+
+\section{Combustion Chemistry}
+
+ The HRR of the fire is specified by the user, but it may be constrained by the availability of oxygen in the compartment. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
+\begin{eqnarray}
+  \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow \nu_\COTWO \, \mathrm{CO_2} \; + \; \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \nonumber \\[.1in]
+  &+& \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} + \nu_\NTWO N_2 \label{stoich}
+\end{eqnarray}
+The user specifies the composition of the fuel molecule and the yields of soot and CO, $y_\So$ and $y_\CO$, which are related to their stoichiometric coefficients as follows:
+\begin{eqnarray}
+  \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \\[.1in]
+  \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield} \\[.1in]
+  \nu_\HCN   &=& \min{\brackets{\mathrm{n_{N},\frac{M_\F}{M_\HCN} \; y_\HCN}}}
+\end{eqnarray}
+Under the assumption that all of the chlorine in the fuel is converted to HCl, the other stoichiometric coefficients are:
+\begin{eqnarray}
+  \nu_\COTWO &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So} \\[.1in]
+  \nu_\HTWOO &=& \frac{\mathrm{n_\Hy} - \brackets{\nu_\HCl + \nu_\HCN}}{2} \\[.1in]
+  \nu_\OTWO  &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\Oh}}{2} \label{Oxygen_yield} \\[.1in]
+  \nu_\HCl   &=& \mathrm{n_{Cl}} \\[.1in]
+  \nu_\NTWO  &=& \frac{\mathrm{n_N} - \nu_\HCN}{2}
+\end{eqnarray}
+Note that the nitrogen in the air acts only as a diluent. The yield of hydrogen chloride is based solely on the composition of the fuel molecule. The yield of hydrogen cyanide is limited by the nitrogen in the fuel molecule and any excess nitrogen in the fuel that is not converted to HCN reverts back to elemental nitrogen. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
+
+
+
+\section{Heat Release Rate}
+\label{section:HRR}
+
+As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected heat:
+\begin{eqnarray}
+   \dQr &=& \chir \, \dQ \\[.1in]
+   \dQc &=& (1-\chir) \, \dQ \\
+\end{eqnarray}
+where $\dQ$ is the heat released by the fire. The parameters $\dQr$ and $\dQc$ are the heat released by radiation and convection, respectively, and $\chir$ is the fraction of the fire's heat release rate emitted as radiation.
+
+The user specifies the heat release rate, $\dQ$, as the actual heat released, accounting for combustion efficiency, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The combustion efficiency, $\chia$, is the fraction of the theoretical energy that is actually released during combustion \cite{Hamins:1996}. $\chia$ is a function of fuel type, scale, and vitiation. For small fires, Tewarson provides measured values for specific fuels \cite{Tewarson:2003}. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. The assumed and constant values for the combustion efficiency and radiative fraction may add uncertainty to the calculated results, so the heat release rate and radiative fraction should be chosen carefully to best model the scenario of interest.
+
+Using the specified heat release rate of the fire, $\dQ$, and a user-specified the heat of combustion, $\Dh$,  the model calculates the pyrolysis rate of fuel, $\dmf$:
+\be
+   \dmf = \frac{\dQ}{\Dh}
+\ee
+
+In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
+\be
+   \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
+\ee
+where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen in the layer containing the fire, $\DhO$ is the heat of combustion based on oxygen consumption\footnote{The heat of combustion based on oxygen consumption is taken to be 13.1~MJ/kg, representative of typical hydrocarbon fuels~\cite{Huggett:1980}.}, and $C_{\rm LOL}$ (Lower Oxygen Limit) is the smoothing function ranging from 0 to 1:
+\be
+   C_{\rm LOL} \approx \frac{\tanh \Big( 800 (Y_\OTWO - Y_{\OTWO,{\rm l}}) - 4 \Big) + 1}{2}
+\ee
+The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.15, by default. This value is not a function of temperature.
+
+Any unburned fuel is tracked by the model, and transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Unburned fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available.
+
+
+
+\section{Plume Entrainment}
+
+A fire pumps mass and energy from the lower layer into the upper layer. The vertical flow of mass through a horizontal plane at height $z$ above the base of the fire is called the mass entrainment rate, $\dme(z)$. The vertical flow of energy through this horizontal plane is given by $\dQ_{\rm c} + \dme(z) \, \cp \, \Tl$. The empirical correlation for the mass entrainment rate depends on whether the plume is unobstructed, against a wall, or in a corner.
+
+\subsection{Unobstructed Plumes}
+
+The plume mass entrainment, $\dme(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlation~\cite{Heskestad:2002}:
+\be
+   \dme(z) = 0.196 \, \left( \frac{g \, \rho_\infty^2}{\cp \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \;
+   \left( 1 + \frac{2.9 \, \dQ_{\rm c}^{2/3}}{ \left( \sqrt{g} \, \cp \, \rho_\infty \, T_\infty \right)^{2/3} \, (z-z_0)^{5/3}} \right) \label{mdot_e}
+\ee
+where $z_0$ is a virtual origin defined as
+\be
+   \frac{z_0}{D} = -1.02 + 1.4 \, \dQ^{* \, 2/5} \quad ; \quad \dQ^* = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g \, D} \, D^2} \label{virtual_origin}
+\ee
+Note that the virtual origin is defined in terms of the total heat release rate of the fire, $\dQ$. Equation~(\ref{mdot_e}) is recommended above the mean flame height, $L$. Below the flame height, Heskestad~\cite{Heskestad:2002} recommends the following:
+\be
+  \dme(z) = \dme(L) \, \frac{z}{L} \quad ; \quad \frac{L}{D} = -1.02 + 3.7 \, \dQ^{* \, 2/5} \label{flame_height}
+\ee
+where the mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
+
+\subsection{Wall and Corner Plumes}
+
+If the fire is located in a corner or against a wall\footnote{CFAST assumes that the fire is in a corner or against a wall {\em only} when the user specifies the {\em exact} coordinates of the corner or wall.}, the unobstructed plume entrainment correlation, Eq.~(\ref{mdot_e}), is modified. For a corner, it is assumed that the fire is mirrored in each wall face, quadrupling the convective HRR, $\dQ_{\rm c}$, and doubling the base diameter, $D$. The entrainment rate, $\dme(z)$, of this hypothetical larger fire is then divided by a factor of 4. The effective entrainment rate is approximately $4^{1/3}/4 \approx 0.40$ of its unobstructed value. Of course, the virtual origin, $z_0$, in Eq.~(\ref{mdot_e}) is affected by the change in effective diameter as well.
+
+If the fire is against a wall, the convective HRR is doubled, the diameter is multiplied by $\sqrt{2}$, and the result of Eq.~(\ref{mdot_e}) is divided by 2. The effective entrainment rate is $2^{1/3}/2 \approx 0.63$ of its unobstructed value.
+
+\subsection{Weak Plumes}
+
+In CFAST, there is a constraint on the mass entrainment rate because the plume can rise only so high for a given HRR.  Early in a fire, the plume may not have sufficient energy to reach the compartment ceiling. Therefore, a limit is placed on the entrainment rate. For the plume to be able to penetrate the hot upper layer, the density of the gas in the plume must be less than the density of the gas in the upper layer. This implies that the upper layer temperature must be less than the plume temperature:
+\be
+   \Tu < \Tp \approx \frac{ \dQc + \dme \, \cp \, \Tl }{ \dme \, \cp}
+\ee
+Rearranging terms yields a limit on the mass entrainment:
+\be
+   \dm_e < \frac{\dQc}{\cp (\Tu - \Tl)}
+\ee
+
+
+\section{Plume Temperature and Velocity}
+\label{sec:Plume_Temp_Velocity}
+
+The centerline plume temperature rise, $\Delta T_0(z)$, and velocity, $u_0(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlations~\cite{Heskestad:2002}:
+\be
+   \Delta T_0(z) = \min \left[ 900 \; \mathrm{K} \; , \; 9.1 \, \left( \frac{T_\infty}{g \, \cp^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3} \right]  \label{plume_temperature}
+\ee
+\be
+   u_0(z) = \min \left[ u_{0,\max} \; , \; 3.4 \, \left( \frac{g}{\cp \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3} \right]  \label{plume_velocity}
+\ee
+where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature and velocity decrease following a Gaussian profile about the centerline:
+\be
+   \Delta T(r,z) = \Delta T_0(z) \, \exp \left[ -\left( \frac{r}{\sigma_{\Delta T}} \right)^2 \right] \quad ; \quad \sigma_{\Delta T} = 0.14 \, \left( \frac{T_0(z)}{T_\infty} \right)^{1/2} \, (z-z_0) \label{plume_temperature2}
+\ee
+\be
+   u(r,z) = u_0(z) \, \exp \left[ -\left( \frac{r}{\sigma_u} \right)^2 \right] \quad ; \quad \sigma_u \approx 1.1 \, \sigma_{\Delta T} \label{plume_velocity2}
+\ee
+Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite{Heskestad:2002}. It is also suggested that the maximum centerline plume velocity is reached when the plume temperature rise is 650~K, and is a weak function of the convective HRR:
+\be
+   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (\cp \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5}
+\ee
+Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
+
+Above the interface between the hot upper layer and the cooler lower layer, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation~\cite{Heskestad:2002} is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
+\be
+   \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, \cp^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
+\ee
+where the modified virtual origin is given by:
+\be
+   z_0' = z_{\rm I} - \left( \frac{\Tu}{\Tl} \right)^{3/5} \, (z_{\rm I}-z_0)  \label{virtual_origin_modified}
+\ee
+Equations~(\ref{plume_temperature_upper}) and (\ref{virtual_origin_modified}) are obtained by asserting that $\Delta T_0$ is continuous across the layer interface and that $\Tu \rho_{\rm u} \approx \Tl \rho_{\rm l}$.
+
+The mass entrainment correlation, Eq.~(\ref{mdot_e}), is modified the same way above the layer interface.
+
+\section{Ceiling Jet}
+\label{sec:Ceiling_Jet}
+
+The temperature and velocity just below the ceiling is typically greater than that of the upper layer due to the presence of a ceiling jet. From the work of Alpert and Heskestad~\cite{Alpert:SFPE}, the temperature of an unconfined ceiling jet is given by:
+
+\be
+   T_{\rm cj}(r) - T_\infty = T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
+   6.3                                       & ; \quad r/H\le 0.2 \\[0.1in]
+   \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
+    \end{array} \right.
+\ee
+To be consistent with the calculated plume temperature, this is adjusted so that the calculated plume and ceiling jet temperatures are the same for $r/H \le 0.2$:
+\be
+   T_{\rm cj}(r) - T_\infty = \left\{ \begin{array}{l@{\quad}l}
+   \Delta T_0(H)                                                       & ; \quad r/H\le 0.2 \\[0.1in]
+   0.182 \; \Delta T_0(H) \, \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
+    \end{array} \right. \label{Tcj}
+\ee
+where $\Delta T_0(H)$ is the calculated centerline plume temperature rise at the compartment ceiling from  Eq.~(\ref{plume_temperature}) and the constant 0.182 is $\left({0.225 + 0.27 \cdot 0.2} \right)^{4/3}$.
+
+The radial velocity is given by:
+\be
+   v_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
+   3.61                               & ; \quad r/H \le 0.17 \\[0.1in]
+   1.06 \, \left( r/H \right)^{-0.69} & ; \quad 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
+\ee
+where the heat release rate of the fire is contained within the non-dimensional expression:
+\be
+\dQ^*_H = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
+\ee
+To account for the presence of an upper layer, the background temperature, $T_\infty$, in Eq.~(\ref{Tcj}) is replaced with the upper layer temperature, $\Tu$. No adjustment need be made to Eq.~(\ref{QsH}) because $\rho_\infty \, T_\infty$ is assumed constant.
+
+An estimate of the ceiling jet thickness, $\delta$, where the excess temperature drops to 1/e of its maximum value, is given by Motevalli and Marks~\cite{Alpert:SFPE}:
+\be
+   \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad ; \quad 0.26 \le \frac{r}{H} \le 2.0
+\ee
+
+In a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
+\begin{eqnarray}
+   \frac{\Delta T_{\rm cj}(x)}{\Delta \Tp} &=& 0.37 \, \left( \frac{H}{W} \right)^{1/3} \, \exp \left[ -0.16 \, \left( \frac{x}{H} \right) \left( \frac{W}{H} \right)^{1/3} \right]  \\[0.1in]
+   v_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
+\end{eqnarray}
+where $\Delta \Tp$ is the excess plume temperature at the ceiling. This correlation is applicable once the plume has reached the full width of the corridor and the ceiling jet flow is parallel to the corridor walls so that $x>W/2$. For $x<W/2$, the normal correlations apply.
+
+
+%
+% -------------------  Ventilation ------------------------
+%
+
+\chapter{Ventilation}
+
+CFAST models three types of vent flow: natural flow through vertical vents (such as doors or windows),  natural flow through horizontal vents (such as ceiling holes or hatches), and forced flow via mechanical ventilation. Forced flow can occur through either vertical or horizontal vents.
+
+
+\section{Wall Vents (Doors, Windows, Leakage)}
+
+Natural flow through windows and doors is governed by the vertical stratification of the pressure difference across the opening~\cite{Emmons:SFPE}. The mass flow is calculated by dividing the opening into discrete horizontal segments, each of which is bounded by the top or bottom of the opening, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. This is shown schematically in Fig.~\ref{fig:Flow_Patterns}.
+
+\begin{figure}[t]
+\setlength{\unitlength}{1in}
+\begin{picture}(6.5,4)
+\thicklines
+\put(0,0){\line(1,0){6.5}}
+\put(0,4){\line(1,0){6.5}}
+\put(3.25,4){\line(0,-1){1}}
+\thinlines
+\put(0,1.5){\line(1,0){3.25}}
+\put(3.25,2.5){\line(1,0){3.25}}
+\put(0,2.0){\line(1,0){6.5}}
+\put(3.5,0.75){\vector(-1,0){0.5}}
+\qbezier(3.5,1.75)(3.25,1.75)(3.0,1.5)
+\put(3.0,1.5){\vector(-1,-1){0.2}}
+\qbezier(3,2.25)(3.25,2.25)(3.5,2.5)
+\put(3.5,2.5){\vector(1,1){0.2}}
+\put(3,2.75){\vector(1,0){0.5}}
+
+\put(1.625,3.8){\makebox(0,0){Compartment 1}}
+\put(4.875,3.8){\makebox(0,0){Compartment 2}}
+\put(6,1.85){\makebox(0,0){Neutral Plane}}
+\put(5.95,2.35){\makebox(0,0){Layer Interface}}
+\put(0,1.35){Layer Interface}
+\put(3.75,0.75){\makebox(0,0){$\dm_{\rm l \to l}$}}
+\put(3.75,1.75){\makebox(0,0){$\dm_{\rm l \to u}$}}
+\put(2.75,2.25){\makebox(0,0){$\dm_{\rm u \to l}$}}
+\put(2.75,2.75){\makebox(0,0){$\dm_{\rm u \to u}$}}
+
+\end{picture}
+\caption{Flow patterns for horizontal flow through a vertical vent.}
+\label{fig:Flow_Patterns}
+\end{figure}
+
+\subsection{Calculating Flow Through Wall Vents}
+
+Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at these heights.  Because a given segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating Bernoulli's equation from $b$ to $t$:
+\begin{eqnarray}
+\dm &=& \int_b^t C \sqrt{2 \rho \, \Delta P(z)} \, w \; \rd z  \\[.1in]
+    &=& C\sqrt{2\rho} \, w \int_b^t\sqrt{\frac{|(t-z) \, \Delta P_b + (z-b) \, \Delta P_t|}{t-b}} \; \rd z \\[.1in]
+    &=& \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
+\label{eq:massflowone}
+\end{eqnarray}
+Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, $w$ is the width of the opening, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note the use of the integral formula
+\begin{eqnarray}
+\int \sqrt{A+Bz} \; \rd z = \frac{2}{3B}(A+Bz)^{3/2}+\mbox{constant}
+\end{eqnarray}
+where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$. Equation~\ref{eq:massflowone} can be written:
+\be
+   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} }
+\ee
+This is the way it is written in Ref.~\cite{Emmons:SFPE}.
+
+Figure~\ref{fig:Flow_Patterns} indicates schematically how the various mass flows through the opening are distributed. For the flow originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$, or the flow from the lower layer to the lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the downstream layer.
+
+The mass flow from the upper layer of the upstream compartment to the lower layer of the downstream, $\dm_{\rm u \to l}$, is assumed to rise into the upper layer via a spill plume. The heat flow rate of the plume is:
+\be
+   \doh_{\rm u \to l} = \cp \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
+\ee
+Assuming that $T_{\rm u,1} > T_{\rm l,2}$, the mass entrainment of the spill plume is given by Poreh {\em et al.}~\cite{Poreh:1998}:
+\be
+   \dm_{\rm e,p} = \dm_{\rm u \to l} \, + \, C_{\rm m} \, \left( \frac{T_{\rm l,2}}{T_{\rm u,1}} \right)^{2/3} \, \left( \frac{ g \, \rho_{\rm l,2}^2}{\cp \, T_{\rm l,2}} \right)^{1/3} \, \doh_{\rm u \to l}^{1/3} \; w^{2/3} \;
+   (z_{\rm I}-z_{\rm N})
+\ee
+where $C_{\rm m}$ is an empirical constant equal to 0.44, $w$ is the width of the opening, $z_{\rm I}$ is the height of the layer interface, and $z_{\rm N}$ is the height of the neutral plane. Suggested values for $C_{\rm m}$ vary between 0.44 and 0.66, all of which were determined empirically in a number of different experimental configurations.
+
+For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright vent mixing, above.
+
+%For leakage, the flow coefficient is taken to be 0.68, consistent with a wide range of experimental leakage tests compiled in the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
+
+\section{Ceiling and Floor Vents}
+
+Cooper~\cite{Cooper:1989} developed a semi-empirical correlation for ceiling vents in which the volumetric flow rates upwards and downwards are functions of both pressure and density differences:
+\begin{eqnarray}
+   \dot{V}_{\rm up}   &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\max(\Delta P,0)|/\rho_{\rm bot} } + \dot{V}_{\rm ex}  \\[.1in]
+   \dot{V}_{\rm down} &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\min(\Delta P,0)|/\rho_{\rm top} } + \dot{V}_{\rm ex}
+\end{eqnarray}
+Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\rm v}$ is the area of the vent, and $\rho_{\rm top}$ and $\rho_{\rm bot}$ are the {\em layer} densities adjacent to the vent. The term, $\dot{V}_{\rm ex}$, represents the density-driven {\em exchange} flow; that is, when $\Delta \rho=\rho_{\rm top}-\rho_{\rm bot}>0$ and $|\Delta P|$ is relatively small, there is an exchange of mass and heat at the vent interface where hot gas from below mixes with cooler gases above:
+\be
+   \dot{V}_{\rm ex} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad
+   |\Delta P| < |\Delta P_{\rm \tiny flood}| \equiv \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
+\ee
+Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,   $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor, $C_{\rm s}$, is 0.754 for round and 0.942 for square openings.
+
+As with wall vents, mass and heat are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and heat extracted from the layers of the lower compartment, and then consider where this mass and heat are deposited in the upper compartment. First, the mass and heat are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
+\begin{eqnarray}
+  \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \\[.1in]
+  \doh_{\rm up} &=& \alpha \; \cp \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; \cp \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
+\end{eqnarray}
+where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment.
+
+The weighting factor, $\alpha$, indicates the relative amounts of mass extracted from the upper and lower layers of the lower compartment. If the hot gas layer of the lower compartment is sufficiently deep, all of the gas passing into the upper compartment is extracted from the upper layer. If the layer is not sufficiently deep, gases from the lower layer are also drawn through the vent, which reduces the amount of smoke that is exhausted from the compartment. This phenomenon is referred to as plug-holing. Cooper~\cite{Cooper:SFPE} suggests that the degree of plug-holing is a function of the following form of the Froude number:
+\be
+   {\rm Fr} = \dot{V} \; \left[ g \, (H-z_{\rm I})^5 \, \left( \frac{\Tu-T_\infty}{T_\infty}\right) \right]^{-1/2}
+\ee
+where $\dot{V}$ is the volume flow through the vent and $(H-z_{\rm I})$ is the depth of the hot gas layer. Using the CFD model Fire Dynamics Simulator (FDS), a correlation was developed that defines $\alpha$ as a function of Fr:
+ \begin{equation}
+ \label{equation1}
+  \alpha =  {\rm e}^{-( {\rm Fr}/2 )^2}
+\end{equation}
+Figure~\ref{fig:correlation} displays the FDS results and correlation.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=5.0in]{FIGURES/Vent_Mass_Fraction}
+\caption[Relative fraction of upper layer gases extracted via a ceiling vent]{Relative fraction of upper layer gases extracted via a ceiling vent.}
+\label{fig:correlation}
+\end{figure}
+
+The previous paragraph explains from where the gas flowing through the vent is extracted. Where the gas goes is more simple. If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and heat are deposited into the upper layer of the upper compartment. Otherwise, the mass and heat are deposited into the lower layer of the upper compartment.
+
+
+\section{Forced Flow}
+
+CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
+
+The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks the flow of these two species.
+
+\section{Leakage}
+
+CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as either
+
+\begin {enumerate}
+    \item A total leakage area over the wall surfaces or leakage area per unit wall area for wall leakage. For wall leakage, the model creates a vent on the wall with a sill height of 5 \% of the compartment ceiling height and a soffit of 95 \% of the compartment ceiling height.  The width of the vent is determined from a calculated vent area (the specified area or the specified leakage area ratio times the total wall area of the compartment) divided by the vent height (90 \% of the compartment ceiling height).
+
+    \item A total leakage area over the floor surface or leakage area per unit floor area for floor leaks.  For floor leakage, the model creates a vent on the wall with a width of 90 \% of the average wall width (the sum of the compartment width and the compartment depth divided by two) with the sill at the floor and the soffit height from a calculated vent area (the specified area or the specified leakage area ratio times the total floor area of the compartment) divided by the vent width (90 \% of the average compartment wall width).
+\end{enumerate}
+
+Flow is calculated from Equation \ref{eq:massflowone}. CFAST assumes a vent flow coefficient of 0.7.
+
+%
+% -------------------  Heat Transfer ------------------------
+%
+
+\chapter{Heat Transfer}
+\label{chap:heat_transfer}
+
+This section discusses thermal radiation, convection, and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls. Hot gases exchange heat with solid surfaces via convection and radiation. Heat is transferred through solids via conduction. Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, each surface can be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant. Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.
+
+\section{Radiation}
+\label{sec:Radiation}
+
+Radiation heat transfer is calculated between the ceiling, floor, wall layers, and fire, with the inclusion of emission and absorption by the hot gas layer~\cite{Forney_radiation}. The following assumptions are made:
+\begin{itemize}
+\item Each gas layer and each wall segment is assumed to be at a uniform temperature.
+\item The wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the governing equations.
+\item The fire is assumed to radiate uniformly in all directions emitting a fraction, $\chi_{\rm r}$, of the total heat release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
+\item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. At a solid surface, the emittance, $\epsilon$, absorptance, $\alpha$, and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. In the gas phase, the emittance, $\epsilon$, absorptance, $\alpha$, and transmittance, $\tau$, are related via $\epsilon = \alpha = 1 - \tau$.
+\item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
+\end{itemize}
+
+% define commands for qin and qout to make it easier to change/improve notation
+\newcommand{\qout}[1]{q_{{\rm out},#1}''}
+\newcommand{\qin}{q_{{\rm in},i}''}
+
+The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $i$ consists of an emissive power and reflectance term given by
+\be
+\qout{i}=\sigma\epsilon_i \Ti^4+\left(1-\epsilon_i\right)\qin
+\label{eq:qout}
+\ee
+where $\qin$ is a weighted average of all outgoing radiant fluxes from sources such as wall segments, gas layers and fires.  This incoming radiant flux is given by
+\be
+\qin=\left(\frac{1}{A_i}\sum_{j=1}^4A_j\qout{j} \, F_{j-i} \, \tau_{j-i}\right)+c''_i
+\ee
+which simplifies to
+\be
+\qin=\left(\sum_{j=1}^4\qout{j} \, F_{i-j} \, \tau_{j-i}\right)+c''_i
+\label{eq:qin}
+\ee
+after noting that $A_iF_{i-j}=A_jF_{j-i}$.
+The term $F_{j-i}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $i$), $\tau_{j-i}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_i$ is the emissivity, $\Ti$ is the temperature  and $c_i''$ is the radiative flux from gas layers and fire of surface $i$ .
+
+The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$, at each of these surfaces.  This flux is defined as the difference between the incoming and outgoing radiative flux\footnote{The sign for the net radiative flux, $\dot{q}_{{\rm r},i}''$, is defined so that positive radiant fluxes heat up wall segments, consistent with how convective fluxes are defined.  Note that this is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}.}:
+\be
+\dot{q}_{{\rm r},i}'' = \qin - \qout{i}
+\label{eq:raddiff}
+\ee
+Following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}, Eq.~(\ref{eq:raddiff}) is written as a system of four linear equations (after using Eqs.~(\ref{eq:qout}) and (\ref{eq:qin}) to eliminate $\qout{i}$ and $\qin$):
+\be
+   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{j-i} \; \dot{q}_{{\rm r},j}'' = \sigma \Ti^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{j-i} \; \sigma T_j^4 \, } - c''_i \label{RTE}
+\ee
+The radiation from the gases in the upper and lower layers and the fire is included in the last term:
+\be
+   c''_i = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{i-j} \, \sigma \, T_j^4 + \frac{\omega_{i-{\rm f}}}{A_i} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
+\ee
+where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{i-j}$ is the view factor between the layer and solid surface, $\omega_{i-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $i$ shrinks to zero, $\omega_{i-{\rm f}}/A_i \to 1/R^2$, yielding the classic point source radiation model.}, and $\dQ$ is the heat release rate of the fire\footnote{The location of the fire is taken to be a point located at a height of 1/3 of the height of the fire calculated from Heskestad's flame height calculation, Eq.~(\ref{flame_height})}. If the solid surface, $i$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{i-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. Eq.~(\ref{RTE}) is a set of linear equations (4 equations and 4 unknowns) whose solution is discussed in the next section.
+
+The net radiative flux, $\dq_{{\rm r},i}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{i}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It may be rewritten in terms of known quantities, in particular the net radiative flux found in Eq. (\ref{RTE}), by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
+\be
+\qout{i}=\sigma \Ti^4+\frac{1-\epsilon_i}{\epsilon_i}\dq_{{\rm r},i}''
+\label{eq:qoutb}
+\ee
+
+%%
+
+\subsection{Solving the Radiation Equations}
+
+Equation~(\ref{RTE}) is a system of linear equations of the form
+\begin{equation}
+   \mathbf{A \, q} = \mathbf{B \, e - c}
+\label{eq:linearsystem}
+\end{equation}
+where $\mathbf A$ and $\mathbf B$ are $4\times 4$ matrices, $\mathbf q$ is the unknown vector of net radiative fluxes, and $\mathbf e$ is the vector of emission terms:
+\begin{eqnarray}
+a_{ij}  &=& \delta_{ij} - F_{i-j} \, \tau_{i-j} \, (1-\epsilon_j) \\
+b_{ij}  &=& \delta_{ij} - F_{i-j} \, \tau_{i-j} \\
+q_j     &=& -\dot{q}_{{\rm r},j}''/\epsilon_j \\
+e_j     &=& \sigma \, T_j^4
+\end{eqnarray}
+The components of the source term vector, $c_j$, are given by Eq.~(\ref{ckeq}).  The term $\delta_{ij}$ is the usual Kronecker delta function:
+\begin{eqnarray*}
+\delta_{ij}=\left\{
+\begin{array}{cc}
+1&i=j\\
+0&i\ne j
+\end{array}
+\right.
+\end{eqnarray*}
+
+
+
+\subsection{Configuration Factors}
+
+The configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by surface $j$.  Sixteen configuration factors are required for each compartment. Figure~\ref{configfactorsetup} depicts the system of indices for the wall surfaces and layer interface. In general, these factors may be computed using
+\be
+   F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, dA_j \, dA_i \label{eq:config_factor}
+\ee
+where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta_j$ are the angles for surface $i$ and $j$ between the respective normal vectors and the line of integration, and $A_i$ and $A_j$ are the areas of the two surfaces.
+
+\begin{figure}[!ht]
+\centering
+\setlength{\unitlength}{1in}
+\begin{picture}(3,2)
+\thicklines
+\put(0,0){\framebox(3,2){ }}
+\thinlines
+\put(0,1.5){\dashbox{0.1}(3,.5){ }}
+\put(1.5,0.1){\makebox(0,0){4 - Floor}}
+\put(1.5,1.35){\makebox(0,0){d - Layer Interface}}
+\put(1.5,1.85){\makebox(0,0){1 - Ceiling}}
+\put(0.1,0.7){\makebox(0,0)[l]{3 - Lower Wall}}
+\put(0.1,1.7){\makebox(0,0)[l]{2 - Upper Wall}}
+\end{picture}
+\caption{Schematic diagram of a compartment with indices for computing configuration factors.}
+\label{configfactorsetup}
+\end{figure}
+
+A more efficient procedure is to compute configuration factors between the ceiling and floor, $F_{1-4}$, between the ceiling and layer interface, $F_{1-d}$, and between the floor and layer interface, $F_{4-d}$, using a formula for the configuration factor between parallel plates (Appendix~C of Ref.~\cite{SiegelandHowell:1981}):
+\begin{eqnarray}
+\lefteqn{F_{i-j} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
+& \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
+\label{eq:configrect}
+\end{eqnarray}
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation,
+\begin{equation}
+   A_i \, F_{i-j}=A_j \, F_{j-i}
+   \label{symrel}
+\end{equation}
+follows from Eq.~(\ref{eq:config_factor}). Second, configuration factors for surfaces forming an enclosure satisfy
+\begin{equation}
+   \sum_{j=1}^4F_{i-j}=1
+   \label{eq:factorsum}
+\end{equation}
+The configuration factor $F_{1-4}$ does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration factors $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each time the radiation exchange is calculated.
+
+$F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using Eq.~(\ref{eq:configrect}). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other 14 configuration factors can be calculated using simple algebraic formulas.
+Since the floor and the ceiling are assumed to be flat rectangular surfaces, it follows that $F_{1-1}=F_{4-4}=0$. From Eq.~(\ref{eq:factorsum}) and the symmetry condition, $F_{2-1}=F_{2-d}$, it follows that
+\begin{eqnarray}
+\label{eq:config1}
+   F_{1-2} + F_{1-d} &=& 1\\
+   F_{2-1}+F_{2-2} + F_{2-d} &=& 2 \, F_{2-1}+F_{2-2}=2 \, \frac{A_1}{A_2} \, F_{1-2}+F_{2-2}=1
+   \label{eq:config2}
+\end{eqnarray}
+Solving equations (\ref{eq:config1}) and (\ref{eq:config2}) for $F_{1-2}$ and $F_{2-2}$ gives
+\begin{eqnarray*}
+F_{1-2}&=&1-F_{1-d}\\
+F_{2-2}&=&1-2 \, F_{2-1}
+\end{eqnarray*}
+Similarly,
+\begin{eqnarray*}
+F_{4-3}&=&1-F_{4-d}\\
+F_{3-3}&=&1-2 \, F_{3-4}
+\end{eqnarray*}
+Using the above configuration factors and Eq.~(\ref{eq:factorsum}), it follows that
+\begin{eqnarray*}
+F_{1-3}&=&1-F_{1-4} - F_{1-2} \\
+F_{3-2}&=&1-F_{3-1} - F_{3-3} - F_{3-4} \\
+F_{2-4}&=&1-F_{2-1} - F_{2-2} - F_{2-3}
+\end{eqnarray*}
+
+\subsection{Solid Angles}
+
+The normalized solid angle $\omega$ in Eq.~(\ref{ckeq}) is the view factor between a given point, say the fire, and a solid wall. In other words, it is the fraction of radiant energy emitted by the fire that is intercepted by a particular wall surface. Normalized solid angles are also used to determine the fraction of radiation from each wall surface that strikes a target as in Eq.~(\ref{target_rad}).
+
+\begin{figure}[!ht]
+\centering
+\setlength{\unitlength}{1in}
+\begin{picture}(3,2)
+\thicklines
+\put(0,.5){\framebox(3,1.5){ }}
+\put(1,0){\vector(-2,1){1}}
+\put(1,0){\vector(-1,2){1}}
+\put(1,0){\vector(1,1){2}}
+\put(0.4,0.2){\makebox(0,0){$\mathbf{v}_1$}}
+\put(0.4,1.0){\makebox(0,0){$\mathbf{v}_2$}}
+\put(2.4,1.2){\makebox(0,0){$\mathbf{v}_3$}}
+\end{picture}
+\caption{Solid angle formed by the vectors $\mathbf{v}_1$, $\mathbf{v}_2$, and $\mathbf{v}_3$.}
+\label{solidanglesetup}
+\end{figure}
+
+To compute a solid angle, consider the triangle defined by the vertices $\mathbf{v}_1$, $\mathbf{v}_2$, and $\mathbf{v}_3$ as illustrated in Fig.~\ref{solidanglesetup}. The solid angle of this triangle with respect to the origin is computed
+\begin{eqnarray*}
+\omega = \frac{1}{2\pi} \; \tan^{-1} \left( \frac{|\hat{\mathbf v}_1\times \hat{\mathbf v}_2\cdot \hat{\mathbf v}_3|}
+   {1+\hat{\mathbf v}_1\cdot \hat{\mathbf v}_2+\hat{\mathbf v}_1\cdot \hat{\mathbf v}_3+\hat{\mathbf v}_2\cdot \hat{\mathbf v}_3} \right)
+\end{eqnarray*}
+where $\hat{\mathbf v}$ denotes the normalized vector~\cite{vanOosterom:1983}. The normalized solid angle for a rectangular wall surface is computed by splitting the surface into two triangles, computing the solid angle for each triangle and summing.
+
+\subsection{Transmittance and Absorptance}
+
+The transmittance is the fraction of radiant energy that will pass through a volume filled with an absorbing medium. It is usually expressed in the form:
+\be
+   \tau = {\rm e}^{-a L}
+\ee
+where $a$ is the absorption coefficient and $L$ is the path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
+
+In general, the transmittance and absorptance are functions of wavelength. This is an important factor to consider for the major gaseous products, $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$. However, soot has a continuous absorption spectrum that allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum. The total transmittance over a path length $L$ through a volume of combustion products is taken as the product of the transmittance of the soot and major gas phase products:
+\be
+   \tau = e^{-a_{\rm s}L} \brackets{1 - \alpha_{\rm H_2O} - 0.5 \, \alpha_{\rm CO_2}}
+\ee
+The factor of 0.5 applied to the absorptance of CO$_2$ accounts for the overlap of the wavelength bands of the two gases. Tien~et~al.~\cite{Tien:2002} suggest that the absorption coefficient for soot may be approximated as $a_{\rm s} = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction, and $T$ is the (absolute) temperature. Values of $k$ have been found to be about constant for a wide range of fuels~\cite{Tien:1978}.
+
+Absorptance data for $\textnormal{H}_2 \textnormal{O}$ and $\textnormal{CO}_2$ are reported in Ref.~\cite{Edwards:1985}. For each gas, these data are tabulated and implemented as a two-dimensional array based on temperature and gas concentration.
+
+The effective path length, $L$, is calculated between the center-points of the exchanging surfaces ({\em i.e.}, from the center height of a fire to the center of a wall surface or between the center points of two compartment surfaces). Path lengths are calculated separately for the upper and lower layers in a compartment.
+
+\subsection{Radiation Heat Flux to a Target}
+\label{section:target}
+
+Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. Radiation from the fire is taken to be from a point source located at a height of 1/3 of the height of the fire calculated from Heskestad's flame height calculation, Eq.~(\ref{flame_height}).  The net radiative heat flux to a target is given by:
+
+\be \label{target_rad}
+\begin{split}
+   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}}^{{\rm fires}}
+   \frac{\cos(\theta_{\rm f})}{4 \pi R_{\rm f}^2} \tau_u \tau_l \; \chi_{\rm r} \, \dQ_{\rm f} +
+   \displaystyle\sum_{w}^{\rm walls} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
+    & \left. \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_u \alpha_l \sigma T_l^4  + \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_l \alpha_u\sigma \Tu^4 - \sigma T_t^4 \right)
+\end{split}
+\ee
+
+where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm w}$ is the emissivity of the wall surface, $\theta_{\rm f}$ is the angle formed by the line of sight segment (between the fire $\rm f$ and the target) of length $R_{\rm f}$ and the normal direction to the target surface, $F_{\rm w}$ is the view factor for the wall surface, $\tau_{\rm u}$ and $\tau_{\rm l}$ are the values of transmittance for the path between the target and the fires or walls in the upper and lower layers, $\alpha_{\rm u}$ and $\alpha_{\rm l}$ are $\left( 1-\tau_{\rm u} \right)$ and $\left( 1-\tau_{\rm l} \right)$, and $T_{\rm t}$ is the temperature of the target\footnote{In the limit where $R_{\rm f}$ approaches zero, $\frac{\cos(\theta_{\rm f})}{4 \pi R_{\rm f}^2}$ reduces to $\frac{\cos(\theta_{\rm f})}{2}$.}. The term $\qout{\rm w}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $\rm w$'th wall surface.
+
+
+
+\section{Convection}
+\label{section:convection}
+
+The transfer of heat between the gas and solid surfaces is handled slightly differently at the ceiling, floor and walls, due to the difference in orientation and the presence of a relatively thin hot flow near the ceiling known as the ceiling jet. The following two sections describe how the convective heat transfer is done for these different surfaces.
+
+\subsection{Walls and Floor}
+
+In general, the convective heat flux to a solid surface is given by:
+\be
+   \dqc'' = h \, \brackets{\Tg - \Ts}  \label{convective_heat_flux}
+\ee
+The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used, since the gas velocity is unknown:
+\be
+   h = C {|\Tg - \Ts|}^{1/3}
+\ee
+where $C$ is an empirical coefficient (1.52 for the floor and ceiling (in the absence of a ceiling jet) and 1.31 for the walls~\cite{Holman:1990}), $\Tg$ is the average gas layer temperature adjacent to the surface, and $\Ts$ is the surface temperature.
+
+\subsection{Ceiling}
+
+During the early stage of a fire before a hot gas layer has formed, the convective heat transfer to the ceiling is governed by the temperature and velocity of the ceiling jet. Alpert's chapter in the {\em SFPE Handbook}~\cite{Alpert:SFPE} presents an empirical correlation for the convective heat flux from the ceiling jet to a relatively cool surface:
+\be
+   \dqc'' = 1.323 \, f \, \frac{\dQ_{\rm c}}{H^2} \, \left( \frac{r}{H} \right)^{-1.36}  \label{eq:cjflux}
+\ee
+where $f$ is a friction factor estimated to be 0.03, $r$ is the radial distance to the plume centerline, $H$ is the ceiling height, and $\dQ_{\rm c}$ is the convective fraction of the heat release rate. The average convective heat flux to the ceiling can be obtained by integrating this expression over the entire ceiling:
+\be
+   \dq_{\rm c,avg}'' = \frac{1}{LW} \int_0^{2\pi} \int_0^R \dqc'' \, r \, dr \, d\theta = \frac{0.27 \, \dQ_{\rm c}}{(LW)^{0.68} \, H^{0.64}} \label{eq:cjfluxavg}
+\ee
+Note that the integration is carried out over a circle whose area, $\pi R^2$, is taken as equal to the area of the ceiling, $LW$.
+
+Equation~(\ref{eq:cjfluxavg}) applies to the early stage of the fire; thus, a modified heat transfer coefficient is used so that there is a transition from the early to later stages when a layer has formed:
+\be
+   h = \max \left( \frac{\dq_{\rm c,avg}''}{\Tu-\Ts} \, , \, C {|\Tu - \Ts|}^{1/3} \right)
+\ee
+Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceiling surface temperature. Notice that the rightmost term is simply the correlation used for the walls and floor.
+
+
+
+\section{Heat Conduction within Solid Walls or Targets}
+
+The heat conduction equation is solved in the direction normal to solid targets or wall surfaces using non-uniformly spaced nodes and a second-order accurate central difference scheme for the spatial derivatives.
+
+Wall surface temperatures are updated in time implicitly using the solver DASSL which couples wall surface temperatures with gas solution variables (pressures, layer volumes and temperatures).   Target temperatures on the other hand are updated in time using a semi-implicit time marching scheme.  Since they do not affect compartment conditions significantly, there is no need to couple them with other solution variables as is done with wall temperatures.
+
+At each time step, the wall temperature profiles are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
+\be
+   \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{dT}{dx} \Big|_{x=0} \label{eq:net_fluxes}
+\ee
+where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.
+
+Wall and target temperature profiles are advanced in time using the heat equation.
+The heat conduction equation normal to the solid surface is:
+\be \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2}
+\label{eq:Target_PDE} \ee
+where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target or wall material. The boundary condition used at the front wall surface is :
+\be
+   \Tw(0,t)=T_{\rm w}
+\ee
+The boundary condition used at the target surface is:
+\be
+   \dq''=-k\frac{dT}{dx} \label{eq:Target_Fourier}
+\ee
+where $\dq''$ is the net convective and radiative heat flux.
+
+A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surface. Define a penetration depth of
+\be
+   x_p = 2 \sqrt{\alpha \, t_{\rm end}} \; \hbox{erfc}^{-1} \brackets{0.05}
+\ee
+where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function. The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{\rm end}$ seconds. Eighty percent of the nodes are placed on the interior side of $x_p$ and the remaining 20~\% are placed on the exterior side.
+
+
+\newcommand{\Dt}{\Delta t}
+\newcommand{\Dr}{\Delta r}
+\newcommand{\Tipo}{T_{i+1}^{n+1}}
+\newcommand{\TTi}{T_{i}^{n+1}}
+\newcommand{\Timo}{T_{i-1}^{n+1}}
+
+The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates:
+\be
+  \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
+\ee
+Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form:
+\begin{eqnarray}
+\TTi-\Ti^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
+\left[
+\left(\frac{\Tipo-\TTi}{\Dr}\right)
+\frac{r_i}{r_{i-1/2}}-
+\left(\frac{\TTi-\Timo}{\Dr}\right)
+\frac{r_{i-1}}{r_{i-1/2}}
+\right]
+\nonumber\\[0.2in]
+&=&\frac{\Dt \, \alpha}{\Dr^2}
+\left[
+\left(\Tipo-\TTi\right)
+\left(\frac{i}{i-0.5}\right)-
+\left(\TTi-\Timo\right)
+\left(\frac{i-1}{i-0.5}\right)
+\right]
+\label{eq:cylheat6}
+\end{eqnarray}
+where $\alpha=k/(\rho c)$. Defining $C_i$ and $D_i$ as
+\be
+C_i = \frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right) \quad ; \quad D_i = \frac{\alpha\Dt}{\Dr^2}\left(\frac{i}{i-0.5}\right)
+\ee
+Equation~(\ref{eq:cylheat6}) can be written:
+\be
+-C_i \, \Timo + \left( 1+2\frac{\alpha\Dt}{\Dr^2} \right) \, \TTi - D_i \, \Tipo = \Ti^n  \quad \quad i=1...N-1
+\label{eq:cylheat8}
+\ee
+The boundary condition is applied at control volume $N$:
+\begin{eqnarray*}
+T_N^{n+1}-T_N^n=\frac{\alpha\Dt}{\Dr^2}
+\left[\frac{\Dr \, \dq''}{k} \frac{N}{N-0.5} -(T_N^{n+1}-T_{N-1}^{n+1}) \frac{N-1}{N-0.5} \right]
+\end{eqnarray*}
+or
+\be
+-C_N \, T_{N-1}^{n+1}+ \left( 1+C_N \right) T_N^{n+1} = T_N^n+D_N\frac{\Dr}{k} \dq''
+\label{eq:cylheat10}
+\ee
+The internal temperature profile, $\Ti$, is then obtained with a tri-diagonal linear solver.
+
+
+
+
+\section{Coupling the Gas and Solid Phase Calculations}
+
+To illustrate the method, consider a one room case with one active wall.  There are four gas phase equations (pressure, upper layer volume, upper and lower layer temperatures) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profiles at the current time step, $t$, and at the next time step, $t + \Delta t$.  Given the profile at time $t$ and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time $t$ to $t + \Delta t$.  The temperature gradient at the wall surface is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
+
+Heat transfer between connected compartments is modeled by merging the back surfaces of the connected ceiling and floor of the compartments or the back wall surfaces of the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
+
+For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiation configuration factors. For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 0.5. Once these fractions are determined, an average flux, $\dq_{\rm avg}''$, is calculated using
+\be
+   \dq_{\rm avg}'' = \sum_{\rm walls} \, F_{i-j} \, \dq_j''
+\ee
+where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $\dq_j''$ is the flux striking wall $j$.
+
+%
+% -------------------  Fire Protection Devices ------------------------
+%
+
+\chapter{Fire Protection Calculations}
+
+
+
+\section{Sprinkler and Heat Detector Activation}
+
+The link temperature of a sprinkler or heat detector is modeled using the differential equation~\cite{Schifiliti:2002}:
+\be
+   \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
+\ee
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and speed are obtained from the plume algorithm (Section~\ref{sec:Plume_Temp_Velocity}) and the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed speed of 0.1~m/s. This value is simply an order of magnitude estimate. The link and gas temperatures and the speed are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+\be
+   \frac{\TL^{n+1}-\TL^n}{\Delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
+\ee
+where the superscript $n$ denotes the value at the current time, and $\Delta t$ is the time step.
+
+The gas temperature is estimated at the detector or sprinkler location. If the detector or sprinkler is located within the plume, the gas temperature and velocity are estimated from section \ref{sec:Plume_Temp_Velocity}. If the detector or sprinkler is located within the ceiling jet, the gas temperature and velocity are estimated from section \ref{sec:Ceiling_Jet}.  If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the gas temperature is taken to be the appropriate layer temperature with a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
+
+\section{Visibility}
+\label{Visibility}
+
+The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density per unit distance, $D_u$, is given by the expression:
+\be
+   D_u = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
+\ee
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as
+\be
+    D_u = \frac{1}{d}log_{10}\brackets{\frac{I_0}{I}}, O_u = 100 \brackets{1-\brackets{\frac{I}{I_0}}^{{\frac{1}{d}}}} \implies O_u = 100 \frac{10^{D_u}-1}{10^{D_u}}
+\ee
+which is used to determine smoke detector activation, below.
+
+\section{Smoke Detection}
+
+CFAST estimates the activation of smoke detectors based on either the smoke concentration or temperature at the detector location.
+
+\begin{itemize}
+\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24 \%/m (8~\%/ft) obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
+\item CFAST can also a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
+\end{itemize}
+Users are cautioned that both these models are very crude and the uncertainty in predictions are substantial. Consult the CFAST Validation Guide for more details on its validation.
+
+
+\section{Fire Suppression} \label{sec:suppression}
+
+Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the heat release rate is assumed to decrease exponentially:
+\be
+   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
+\ee
+where $u_{\rm w}$ is the water spray density, expressed in units\footnote{Note the CFAST graphical interface might use other units, but the program does convert the user-specified value into mm/s.} of mm/s.  The product species mass production rates are reduced by the same amount as the heat release rate.
+
+There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
+
+\section{Tenability} \label{sec:Tenability}
+
+The International Organization for Standardization (ISO) standard 13571 \cite{ISO:13571} provides methods to estimate the time to untenable conditions that may result from a fire.  This includes effects from asphyxiant gases, radiant heat, and convected heat. CFAST includes tenability estimates as part of its target calculations so that tenability is determined for user-selected locations within one or more compartments. All of these are expressed as a fractional effective dose (FED) which is an integrated area under a time-concentration curve for the chosen quantity. The time at which the FED exceeds a chosen threshold value represents the time to compromised tenability \cite{ISO:13571}
+
+For asphyxiant gases, this is a function of the CO and HCN concentration,
+\be
+    \chi_{\FED} = \sum\limits_{t_1}^{t_2} \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t + \sum\limits_{t_1}^{t_2} \frac{{\brackets{\varphi_{\HCN} \cdot \nu_{\COTWO}}}^{2.36}}{1.2 \times 10^6} \, \Delta t
+\ee
+where $\varphi_{\rm CO}$ is the average concentration of CO over the time increment $\Delta t$ in $\SI{}{\micro\liter/\liter}$, $\varphi_{\rm HCN}$ is the average concentration of HCN over the time increment $\Delta t$ in $\SI{}{\micro\liter/\liter}$, and $\nu_{\rm CO_2} = e^{\varphi_{\rm CO_2} \, / \, 5}$ is used to account for an increased rate of asphyxiant gases due to hyperventilation where $\varphi_{\rm CO_2}$ is the average molar concentration of $\rm CO_2$ over the time increment $\Delta t$.
+
+For radiant and convected heat, the FED is given by
+\be
+    \chi_{\FED} = \sum\limits_{t_1}^{t_2} \frac{1}{{4.2 \, \dq''}^{-1.9}} \, \Delta t + \frac{1}{4.1 \times 10^8 \, T^{-3.61}} \, \Delta t
+\ee
+where $\dq''$ ia the radiant heat flux in kW/m$^2$ and $T$ is the temperature in \degc. For target locations where the radiant flux is less than 2.5 kW/m$^2$, the radiant heat term is taken to be zero consistent with ISO 13571.
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+%
+% -------------------  Nomenclature ------------------------
+%
+
+\chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
+
+\begin{center}
+\begin{longtable}{p{1in}  p{5.5 in}}
+
+$A$                 & area, m$^2$ \\
+$A_{\rm v}$         & cross-sectional area of a vent, m$^2$ \\
+$a$                 & absorption coefficient, m$^{-1}$ \\
+$C$                 & vent constriction (or flow) coefficient, dimensionless \\
+$C_{\rm LOL}$       & lower oxygen limit coefficient, dimensionless \\
+$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$\cv$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
+$D$                 & fire diameter, m \\
+$D_u$               & optical density per unit distance, m$^{-1}$ \\
+$D^*$               & characteristic fire diameter, m \\
+$F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $j$, dimensionless \\
+$f_v$               & soot volume fraction, dimensionless \\
+$g$                 & gravitational constant, 9.8 m/s$^2$ \\
+$h$                 & convective heat transfer coefficient, W/(m$^2\cdot$K) \\
+$H$                 & height of a compartment, m \\
+$k$                 & thermal conductivity of air, W/(m$\cdot$K) \\
+$L$                 & length of a compartment, m \\
+                    & mean flame height, m \\
+                    & characteristic length for radiation calculation, m \\
+$M_\alpha$          & molar mass of gas species $\alpha$, g/mol \\
+$\mi$               & total mass in gas layer $i$, kg \\
+$\dmi$              & rate of mass addition, gas layer $i$, kg \\
+$\dme$              & plume mass entrainment rate, kg/s \\
+$\dmf$              & pyrolysis rate, kg/s \\
+n$_\alpha$          & number of atoms of element $\alpha$ \\
+$O_u$               & Obscuration per unit distance, \%/m \\
+$P$                 & pressure at floor level of a compartment, Pa \\
+$\dqi$              & rate of addition of heat into layer $i$, kW \\
+$\dQ$               & total heat release rate of the fire, kW \\
+$\dQc$              & heat release rate of the fire released as convective energy, kW \\
+$\dq''$             & heat flux, kW/m$^2$ \\
+$R$                 & specific gas constant, J/(kg$\cdot$K) \\
+RTI                 & response time index of a sprinkler or heat detector, (m$\cdot$s)$^{1/2}$ \\
+$r$                 & radial distance from the fire, m \\
+                    & radial coordinate of cylindrical solid, m \\
+$S$                 & vent coefficient for vertical flow vents, dimensionless \\
+$T_\infty$          & ambient gas temperature, K \\
+$\Ti$               & gas temperature of layer $i$, K \\
+$\Tp$               & gas temperature in the plume, K \\
+$t$                 & time, s \\
+$u_{\rm w}$         & water spray density, m/s \\
+$V$                 & total volume of a compartment, m$^3$ \\
+$\dV$               & volumetric flowrate, m$^3$/s \\
+$\Vl$               & total volume of lower layer in a compartment, m$^3$ \\
+$\Vu$               & total volume of upper layer in a compartment, m$^3$ \\
+$v$                 & gas velocity, m/s \\
+$W$                 & width of a compartment, m; wall thickness, m \\
+$w$                 & door or window width, m \\
+$x$                 & length variable, m \\
+$Y_{\rm LOL}$       & lower oxygen limit, by mass, dimensionless \\
+$Y_\OTWO$           & mass fraction of oxygen in a gas layer, dimensionless \\
+$y_{\CO}$           & carbon monoxide yield, kg/kg \\
+$y_{\rm s}$         & soot yield, kg/kg \\
+$z$                 & height variable, m \\
+$\bar{z}$           & mid-range height of a vertical vent segment, m \\
+$z_0$               & height of the virtual origin of fire, m \\
+  \\
+$\alpha$            & gas absorptance, dimensionless \\
+                    & thermal diffusivity in conduction, (m$^2$/s) \\
+$\gamma$            & ratio of specific heats, 1.4, dimensionless \\
+$\Dh$               & heat of combustion of the fuel, kJ/kg \\
+$\DhO$              & energy released per unit mass of oxygen consumed, kJ/kg \\
+$\Delta T$          & temperature rise, K \\
+$\epsilon$          & emissivity \\
+$\nu$               & stoichiometric coefficient, dimensionless \\
+                    & kinematic viscosity, m$^2$/s \\
+$\rho$              & density, kg/m$^3$ \\
+$\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
+$\sigma$            & Stefan-Boltzman constant ($5.67 \times 10^{-8}$ W/(m$^2\cdot$K$^4$) \\
+$\tau$              & transmittance, dimensionless \\
+$\chi_{\rm r}$      & radiative fraction, dimensionless \\
+\end{longtable}
+
+\end{center}
+
+%
+% -------------------  Equation Derivation ------------------------
+%
+
+\chapter{Modeling Equation Derivations}
+\label{chap:derivation}
+
+For convenience, Eq. (\ref{eq:first_law}) (conservation of energy) and Eq. (\ref{EoS}) (ideal gas law) from Section \ref{sect:equations} used in the following derivations are re-written here:
+\be
+   \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:afirst_law}
+\ee
+\be
+  P\,\Vi = \mi\,R \, \Ti \label{eq:ideal_gas_law}
+\ee
+
+\section{Pressure Equation}
+
+
+To derive a differential equation for compartment pressure, rewrite Eq. (\ref{eq:afirst_law}) for the upper and lower layer to obtain
+\begin{eqnarray}
+   \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\[.1in]
+   \cv\ddt\left( \mmu \Tu\right)  &=  &\dqu -  P \dbydt{\Vu}\label{eq:upper}
+\end{eqnarray}
+From Eq. (\ref{eq:ideal_gas_law})
+\begin{equation}
+\ml \Tl+\mmu \Tu=P\Vl/R+P\Vu/R=PV/R
+\end{equation}
+Therefore summing Eqs. (\ref{eq:lower}) and (\ref{eq:upper}) gives
+\be
+   \frac{c_v \, V}{R}\dbydt{P}  =  \dql + \dqu
+\ee
+since $\dbydt{\Vu}=-\dbydt{\Vl}$.  Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
+\begin{eqnarray}
+   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dql + \dqu\right)
+   \label{eq:ODE_P}
+\end{eqnarray}
+the pressure differential equation.
+
+\section{Upper Layer Volume Equation}
+
+To derive the upper layer volume differential equation, first note from Eq. (\ref{eq:ideal_gas_law}) that
+\begin{equation}
+c_v \mmu\Tu= c_v \Vu \frac{P}{R} = \frac{c_v}{c_p-c_v}\Vu P=\frac{1}{\gamma-1}\Vu P
+\label{eq:vua}
+\end{equation}
+Substituting Eq. (\ref{eq:vua}) into the upper layer form of Eq. (\ref{eq:afirst_law}) (${\rm i}={\rm u}$) gives
+\begin{eqnarray}
+\dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\[.1in]
+&=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\[.1in]
+&=&\frac{\gamma}{\gamma-1}P\dbydt{\Vu} + \frac{\Vu}{\gamma-1}\dbydt{P}
+\end{eqnarray}
+Multiplying both sides by $(\gamma-1)/(\gamma P)$ gives
+\begin{equation}
+\frac{\gamma-1}{\gamma P}\dqu=\dbydt{\Vu} + \frac{\Vu}{\gamma P}\dbydt{P}\label{eq:vub}
+\end{equation}
+Finally, rearranging terms yields
+\begin{equation}
+\dbydt{\Vu} = \frac{1}{P\gamma}\left((\gamma-1)\dqu - \Vu\dbydt{P}\right)
+\label{eq:ODE_VU}
+\end{equation}
+the upper layer volume differential equation.
+
+
+\section{Temperature Equations}
+
+To derive the upper layer temperature differential equation note that
+\begin{equation}
+\ddt(c_v \mmu\Tu)=c_v \dmu\Tu+ c_v \mmu\dbydt{\Tu}
+\end{equation}
+and from Eq. (\ref{eq:ODE_VU}) that
+\begin{equation}
+P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}
+\label{eq:pvu}
+\end{equation}
+Substituting these two expressions into the upper layer form of Eq. (\ref{eq:afirst_law}) (again $i=u$) gives
+\begin{eqnarray}
+   \ddt\left(c_v \mmu \Tu\right) +  P \dbydt{\Vu} &=  &\dqu\\[.1in]
+c_v \dmu\Tu+c_v \mmu\dbydt{\Tu}+\frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}&=&\dqu
+\label{eq:tua}
+\end{eqnarray}
+Multiplying Eq. (\ref{eq:tua}) by $\gamma$ gives
+\begin{equation}
+\cp\dmu\Tu+\cp \mmu\dbydt{\Tu} - \Vu\dbydt{P}=\dqu
+\end{equation}
+Finally, solving for $\dbydt{\Tu}$ gives
+\begin{equation}
+\dbydt{\Tu}=\frac{1}{\cp \mmu}\left( \dqu-\cp\dmu\Tu+ \Vu\dbydt{P}\right)
+\label{eq:ODE_TU}
+\end{equation}
+the upper layer temperature differential equation.  A differential equation for lower layer temperature
+\begin{equation}
+\dbydt{\Tl}=\frac{1}{\cp\ml}\left( \dql-\cp\dml\Tl+ \Vl\dbydt{P}\right)
+\label{eq:ODE_TL}
+\end{equation}
+ may be derived similarly.
+
+%
+% -------------------  Equation Solution ------------------------
+%
+
+\chapter{Solving the Modeling Equations}
+\label{chap:heatsolution}
+
+As stated in Section \ref{sect:solution}, CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the zone fire modeling equations Eqs. (\ref{eq1}) through Eq. (\ref{bc}).
+DASSL solves these equations by formulating a root finding problem
+\begin{equation}
+\vecF\brackets{t,\vecy,\vecy'}=0
+\end{equation}
+where $\vecF$ is given by
+\begin{equation}
+\vecF(t,\vecy,\vecy')=\left\{
+\begin{array}{ll}
+  \vecy'-f(t,\vecy) & {\rm gas~ode's} \\
+  \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
+\end{array}
+\right.
+\end{equation}
+and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
+$\vecy$ is the solution vector containing pressures, upper layer volumes, layer temperatures and wall surface temperatures  and $\vecy'$ is the solution vector derivative of these quantities at time $t$.
+The solution vector, $\vecy$  is defined as follows
+\begin{center}
+\begin{tabular}{r l l}
+$\boldsymbol{\vecy} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each compartment  \\
+               &  $T_{u_1}, T_{u_2}, ..., T_{u_{n-1}}, T_{u_n}$ & upper layer temperatures for each compartment  \\
+               &  $V_{u_1}, V_{u_2}, ..., V_{u_{n-1}}, V_{u_n}$ & upper layer volumes for each compartment  \\
+               &  $T_{l_1}, T_{l_2}, ..., T_{l_{n-1}}, T_{l_n}$ & lower layer temperatures for each compartment  \\
+               &  $T_{w_1}, T_{w_2}, ..., T_{w_{k-1}}, T_{w_k} )$ & temperatures on each surface of each compartment \\
+\end{tabular}
+\end{center}
+where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).
+The components of $\vecy'$ and the residual function $\vecF$ are arranged analogously.  The first $n$ components of $\vecF$ correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $\vecF$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $\vecF$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
+
+\begin{equation}
+F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt
+\label{eq:Fp1}
+\end{equation}
+DASSL then determines values for $\vecy$ and $\vecy'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $\vecF$ are sufficiently close to zero as determined by a user defined error criteria.
+
+In more detail, $\vecF$ for all components is given by
+\begin{equation}
+F_i(t,\vecy,\vecy')=\left\{
+\begin{array}{ll}
+  y'_i-\dbydt{P_i} & 1\le i \le n \\
+  y'_i-\dbydt{T_{i,u}} & n+1\le i \le 2 n \\
+  y'_i-\dbydt{V_{i,u}} & 2n+1\le i \le 3n \\
+  y'_i-\dbydt{T_{i,l}} & 3n+1\le i \le 4n \\
+  q''(\vecy)+k\dbydx{\Tw}(0,t) & 4n+1\le i \le 4n +k
+\end{array}
+\right.\label{eq:resid2}
+\end{equation}
+
+The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
+\begin{equation}
+q''=-k\dbydx{T}
+\end{equation}
+
+It is implemented as an algebraic equation by discretizing the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using the heat conduction equation
+\begin{eqnarray}
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fouriera}
+\end{eqnarray}
+
+\noindent and the boundary condition $\Tw(0,t)=T_{\rm w}$ at the surface provided by DASSL.
+An outline of the solution procedure is as follows:
+
+\begin{enumerate}
+\item Assume that $\vecy_n$ and $\vecy'_n$ are known at time $t=t_n$\
+\label{step:first}
+\item For some $\Delta t$ guess values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}=t+\Delta t$
+\label{step:second}
+\label{step:init}
+\item Using the guessed solution $\vecy_{n+1}$, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$
+\label{step:flow}
+\item Using the guessed solution $\vecy_{n+1}$ and the mass and heat flow rates computed in step \ref{step:flow}, compute
+the right hands side of Eqs. (\ref{eq1}) through (\ref{eq4}).  Denote these computations $\hat{\vecy}'$
+\label{step:rhs}
+\item Compute the gas equation residuals, $\vecy'_{n+1}-\hat{\vecy}'_{n+1}$, using $\vecy'_{n+1}$ given in step \ref{step:init} and $\hat{\vecy}'_{n+1}$
+computed in step \ref{step:rhs}.
+\label{step:residode}
+\item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid2})):
+\label{step:residfourier}
+\begin{enumerate}
+\item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fouriera})
+\label{step:profile}
+\item Compute the temperature gradient, $\partial\Tw/\partial x(0,t_{n+1})$, at the wall surface using the temperature profile computed in step \ref{step:profile}
+\label{step:gradient}
+\item Compute the residual $q''+k\dbydx{\Tw}$ using heat flow rates computed in step \ref{step:flow} and temperature gradients computed in step \ref{step:gradient}
+\end{enumerate}
+\item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
+If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
+\end{enumerate}
+
+
+\label{last_page}
+
+\end{document}

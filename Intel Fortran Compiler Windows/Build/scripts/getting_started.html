@@ -1,0 +1,55 @@
+<html>
+<head>
+<TITLE>Getting Started using cfast Build Scripts</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" >
+<h2>Getting Started using cfast Build Scripts</h2>
+<hr size="1">
+
+<h3>Initial Setup</h3>
+
+<ol>
+<li>Defining environment variables used by the scripts
+<ol>
+<li>Open the <tt>Build\scripts</tt> directory and double-click on the file <tt>COPYconfig2home.bat</tt>. 
+This copies the configuration file <tt>cfast_env.bat</tt> to your home directory.
+<li><a href="EDIT_setup.bat">Click here</a> to update the <tt>cfast_env.bat</tt> configuration file.
+(Define your cfast repository location.)
+</ol>
+
+<p><li>Building software
+<ol>
+<li>Install Intel Fortran.  
+</ol>
+
+<p><li>Connecting to other Computers
+<ul>
+<li>Install putty.  
+<li>Set up ssh keys. (optional - to avoid typing passwords)
+<ol>
+<li>run puttygen
+<li>click on the <tt>SSH-2 RSA</tt> radio button
+<li>click on the <tt>Generate</tt> button.  Pick a <em>pass-phrase</em>.
+<li>Save the private key on your local computer.
+<li>Save the public key and copy it to the Linux cluster.  Put the key at the end of the file <tt>authorized_key2</tt> which
+is located in the <tt>.ssh</tt> directory in your home directory.
+</ol>
+<li>Add putty location to system PATH variable
+</ul>
+<p><li>Creating Bundles
+<ol>
+<li>Install Winzip
+<li>Install Winzip command line tool
+<li>Install Winzip self extractor.  
+<li>Add Winzip and Winzip self extractor locations to system PATH variable
+</ol>
+</ol>
+
+<p><hr>
+<p><a href="EDIT_getting_started.bat">Edit this web page</a>
+
+
+
+
+</BODY>
+</HTML>

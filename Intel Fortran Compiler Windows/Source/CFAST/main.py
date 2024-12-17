@@ -42,10 +42,12 @@ def start_server():
     number_of_iterations = 10
     filename = 'doors_opening_level_frame.txt'
 
+    with open(filename, 'a+'):
+        pass
+
     for time in range(number_of_iterations-1):
 
         msg = input("Server msg: ")
-
 
         with open(filename, 'r+') as file:
             file.seek(0)

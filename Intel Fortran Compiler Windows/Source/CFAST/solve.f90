@@ -76,7 +76,7 @@ module solve_routines
         
         CHARACTER(len=100) :: cfastSocketPortFilename
         
-        CHARACTER(len=200) :: cfastSocketPortPath
+        CHARACTER(len=400) :: cfastSocketPortPath
         
         CHARACTER(len=100) line
         
@@ -368,7 +368,7 @@ module solve_routines
     integer, parameter :: lrwork = 40+(maxord+4)*maxeq+maxeq**2
     integer, parameter :: liw = 20+maxeq
     integer, parameter :: all = 1, some = 0
-    character(len=80), parameter :: filename = 'times.txt'
+    ! character(len=80), parameter :: filename = 'times.txt'
     character(len=2), parameter :: valid_ids(3) = (/"d2", "d4", "d5"/)
     logical :: is_valid
     integer :: unit_number
@@ -423,7 +423,7 @@ module solve_routines
     character(len=3072) :: key, value
     type(vent_type), pointer :: ventptr
     character(len=100) :: doorsOpeningLevelFileName
-    character(len=200) :: doorsOpeningLevelFile
+    character(len=400) :: doorsOpeningLevelFile
     character(len=3072) message
     character(len=100) line
     num_entries = 0
@@ -659,25 +659,25 @@ module solve_routines
                 
                 
                 
-        unit_number = 10
-        open(unit=unit_number, file=filename, status='old', position='append', action='write')
-        write(unit_number, '(E24.16, A)') t, ' :timeeeee'
+        !unit_number = 10
+        !open(unit=unit_number, file=filename, status='old', position='append', action='write')
+        !write(unit_number, '(E24.16, A)') t, ' :timeeeee'
 
 
-        do i = 1, n_hvents
-            ventptr=>hventinfo(i)
-            is_valid = any(ventptr%CFAST_TYPE%ID == valid_ids)
+        !do i = 1, n_hvents
+        !    ventptr=>hventinfo(i)
+        !    is_valid = any(ventptr%CFAST_TYPE%ID == valid_ids)
 
-            if (is_valid) then
-                write(unit_number, '(A, A)') ventptr%id, ' :ventptr%id'
-                do ipts = 1,30
-                    write(unit_number, '(E24.16, A)') ventptr%t(ipts), ' :time'
-                    write(unit_number, '(E24.16, A)') ventptr%f(ipts), ' :fraction'
-                end do
-            end if
-        end do
+        !    if (is_valid) then
+        !        write(unit_number, '(A, A)') ventptr%id, ' :ventptr%id'
+        !        do ipts = 1,30
+        !            write(unit_number, '(E24.16, A)') ventptr%t(ipts), ' :time'
+        !            write(unit_number, '(E24.16, A)') ventptr%f(ipts), ' :fraction'
+        !        end do
+        !    end if
+        !end do
 
-        close(unit_number)
+        !close(unit_number)
 
         
         ! DASSL equation with most error

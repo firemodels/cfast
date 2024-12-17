@@ -3,11 +3,8 @@
 ._*
 
 # visual studio files
-*.sln
 *.suo
 *.u2d
-*.vfproj*
-*.vbproj*
 C1*.dll
 C1*.xml
 CEdit.application

@@ -19,7 +19,7 @@
     integer, parameter :: mxss = 32767          ! maximum number of spreadsheet columns for output
 
     ! fire related input parameters
-    integer, parameter :: mxpts = 3600               ! maximum number of data points in a input curve/ramp
+    integer, parameter :: mxpts = 800               ! maximum number of data points in a input curve/ramp
     integer, parameter :: ns = 23                   ! number of species
     integer, parameter :: ns_mass = 9               ! number of species that count toward total mass
     integer, parameter :: mxfires = mxitems         ! maximum number of fires

@@ -1,11 +1,11 @@
 import socket
 
-
 def find_free_port():
+    # Create temporary socket
     temp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    temp_socket.bind(('localhost', 0))
-    _, port = temp_socket.getsockname() 
-    temp_socket.close() 
+    temp_socket.bind(('localhost', 0))  # Assigns any available port
+    _, port = temp_socket.getsockname()  # Gets the assigned port
+    temp_socket.close()  # Closes the temporary socket
 
     return port
 
@@ -17,9 +17,9 @@ def save_port(free_port):
     except Exception as e:
         print("Error occurred while saving port:", e)
 
+def start_server():
 
-def start_server():    
-
+    # Use the function to find a free port
     free_port = find_free_port()
     save_port(free_port)
 
@@ -32,19 +32,32 @@ def start_server():
     connection, address = server_socket.accept()
     print(f"Connection established with {address}")
 
+    #number_of_iterations value must be set each time and must be equal to the &TIME SIMULATION
+    #value divided by the &TIME SPREADSHEET value defined in the cfast.in file
+
+
     message_from_client = connection.recv(1024).decode()
     print(f"Received from client: {message_from_client}")
-    
-    loop_repetition_number = 10
-    for time in range(loop_repetition_number-1):
+
+    number_of_iterations = 10
+    filename = 'doors_opening_level_frame.txt'
+
+    for time in range(number_of_iterations-1):
 
         msg = input("Server msg: ")
+
+
+        with open(filename, 'r+') as file:
+            file.seek(0)
+            file.truncate(0)
+            file.write(msg)
+
         connection.send(msg.encode())
-        
+
         message_from_client = connection.recv(1024).decode()
         print(f"Received from client: {message_from_client}")
 
-
     server_socket.close()
+
 if __name__ == "__main__":
     start_server()

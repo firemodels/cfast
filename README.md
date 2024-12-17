@@ -62,8 +62,8 @@ Files changed or added that differ from the original CFAST code:
 
 1. cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/solve.f90
 2. cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/cfast_parameters.f90
-3. cfast4aamks/Intel Fortran Compiler Windows/Build/CFAST/gnu_linux_64/main.py  (for testing)
-4. cfast4aamks/Intel Fortran Compiler Windows/Build/CFAST/gnu_linux_64/cfast.in (cfast.in file for testing)
+3. cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/main.py  (for testing)
+4. cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/cfast.in (cfast.in file for testing)
 
 Intel Fortran Windows socket communication was made using:
 https://github.com/lassytouton/LittleDemos/tree/master/Intel%20Visual%20FORTRAN%20TCP%20IP%20Sockets%20Based%20Client%20Server
@@ -73,12 +73,10 @@ How to use instruction:
 1. Run the batch file restore_vs_config.bat from the folder Utilities\Visual_Studio within the cfast repository to create the Visual Studio solution.
 2. Open the solution, cfast.sln, in the root of the repository.
 3. Set CFAST (IFORT) project as Startup project.
-4. Move cfast.in and main.py files to Source\CFAST folder.
-5. In Visual Studio right click on CFAST (IFORT) project, click "properties", open "Debugging" option in "Configuration Properties" and write cfast.in in Command Arguments.
-6. Make sure the solve.f90 and cfast_parameters.f90 files are changed to cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/solve.f90 file.
-7. Run main.py for example using PyCharm IDE.
-8. Run CFAST in Visual Studio (first rebuild CFAST (IFORT) project, then run with or without debuging).
-9. In the console of the main.py process, we enter the degrees of opening of the door in the following format: `d2=1,d4=0,d5=0.4,d7=1`. IDs entered in the main.py process console input must match the IDs presented in the cfast.in input file.
+4. In Visual Studio right click on CFAST (IFORT) project, click "properties", open "Debugging" option in "Configuration Properties" and write cfast.in in Command Arguments.
+5. Run cfast4aamks/Intel Fortran Compiler Windows/Source/CFAST/main.py for example using PyCharm IDE.
+6. Run CFAST in Visual Studio (first rebuild CFAST (IFORT) project, then run with or without debuging).
+7. In the console of the main.py process, we enter the degrees of opening of the door in the following format: `d2=1,d4=0,d5=0.4,d7=1`. IDs entered in the main.py process console input must match the IDs presented in the cfast.in input file.
 
 
 This application is operational as of December 17, 2024. Changes to the https://github.com/firemodels/cfast project may require modifications to our repository.

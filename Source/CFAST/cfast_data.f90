@@ -335,6 +335,7 @@ module setup_data
     integer :: cfast_version = 7705     ! current cfast version
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
+    logical :: listoutput=.false.
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
     logical :: cdata_accumulator = .false., cdata_preprocessor = .false., cdata_statistics = .true.
     logical :: cdata_diagnostics = .false.

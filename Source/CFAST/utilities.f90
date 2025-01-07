@@ -8,7 +8,7 @@
     use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
         netheatflux, ssoutoptions, cdata_accumulator, cdata_preprocessor, cdata_statistics, cdata_diagnostics, &
-        errormessage 
+        errormessage, listoutput 
 
     implicit none
 
@@ -499,6 +499,7 @@
     !     g = run cdata diagnositic on the specified input file
     !	  i = do initialization only
     !     k = do not access keyboard
+    !     l = list interim output to the screen
     !     n = output just target fluxes relative to ambient (like -v but smoke still in od)
     !     o = output "solver.ini" options into the file solve.ini
     !     p = run cdata preprocessor on the specified input file
@@ -525,6 +526,7 @@
 
     if (cmdflag('A',iopt)/=0) cdata_accumulator = .true.
     if (cmdflag('K',iopt)/=0) nokbd = .true.
+    if (cmdflag('L',iopt)/=0) listoutput = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
     if (cmdflag('D',iopt)/=0) debugging = .true.
     if (cmdflag('V',iopt)/=0) validation_flag = .true.

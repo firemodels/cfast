@@ -20,7 +20,7 @@ module output_routines
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssdiag, inputfile, iofilcalc, &
+        iofilssdiag, inputfile, iofilcalc, listoutput, &
         outputfile, statusfile, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
@@ -142,7 +142,16 @@ module output_routines
     !       results_vent_flows  wall, ceiling/floor, and mechanical vents
 
     real(eb), intent(in) :: time
+    integer :: i
 
+    if (listoutput) then
+      write (6,'("time: ", f8.1)') time
+      if (n_fires > 0) then
+        write (6,'("fire hrr: ", 10(1x,1pg10.3))') (fireinfo(i)%qdot_actual, i=1,MIN(n_fires,10))
+      endif
+      write (6,'("ul temps: ", 10(1x,f6.1))') (roominfo(i)%temp(u)-kelvin_c_offset, i=1,MIN(n_rooms,10))
+      write (6,'("")')
+    endif
     write (iofilo,4090)
     write (iofilo,5000) time
     write (iofilo,5010)

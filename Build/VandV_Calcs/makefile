@@ -59,7 +59,7 @@ gnu_linux_64 : $(objf)
 # 64 bit
 intel_linux_64 : FFLAGS = -m64 -O2 -save -zero -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
-intel_linux_64 : FCOMPL = ifort
+intel_linux_64 : FCOMPL = ifx
 intel_linux_64 : obj = VandV_Calcs_linux_64
 intel_linux_64 : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)

@@ -41,7 +41,7 @@ setup_win:
 
 # 64 bit
 intel_win_64 : FFLAGS = /O2 /Qsave /Qinit:zero /fp:strict /fp:except /traceback /stand:f08  $(GITINFO)
-intel_win_64 : FCOMPL = ifort
+intel_win_64 : FCOMPL = ifx
 intel_win_64 : obj = VandV_Calcs_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 

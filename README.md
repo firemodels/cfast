@@ -8,6 +8,6 @@ For more information, including a link to our discussion forum, please visit the
 
 Here is a link to [contributing](https://github.com/firemodels/cfast/blob/master/CONTRIBUTING.md) to the CFAST project. Areas of particular interest for contributions are [here](https://github.com/firemodels/cfast/wiki/Potential-Research-Topics).
 
-Here are some other links [Discussion forum](https://groups.google.com/forum/#!forum/cfast), [Issue tracker](https://github.com/firemodels/cfast/issues), [Full Downloads](https://github.com/firemodels/cfast/releases), [Smokeview Downloads](https://github.com/firemodels/smv/releases) .
+Here are some other links [Discussion forum](https://github.com/firemodels/cfast/discussions), [Issue tracker](https://github.com/firemodels/cfast/issues), [Full Downloads](https://github.com/firemodels/cfast/releases), [Smokeview Downloads](https://github.com/firemodels/smv/releases) .
 
 Pull requests welcome!

@@ -332,7 +332,7 @@
         else
             iroom1 = ventptr%room2
             iroom2 = ventptr%room1
-            roomptr => roominfo(iroom2)
+            roomptr => roominfo(iroom1)
         end if
 
         vheight = ventptr%height(1)

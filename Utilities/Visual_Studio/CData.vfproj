@@ -2,93 +2,106 @@
 <VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{4C291A69-DF7B-4FF7-8C9B-4A441109AD0C}">
 	<Platforms>
 		<Platform Name="Win32"/>
-		<Platform Name="x64"/></Platforms>
+		<Platform Name="x64"/>
+	</Platforms>
 	<Configurations>
-		<Configuration Name="Debug|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="Temp">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" RuntimeLibrary="rtMultiThreadedDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Debug|x64" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="Temp">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" DebugParameter="debugParameterUsed" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|x64">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" RuntimeLibrary="rtMultiThreadedDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+		<Configuration Name="Debug|Win32" UseCompiler="ifortCompiler" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp">
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
+		<Configuration Name="Release|Win32" UseCompiler="ifortCompiler" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="Temp">
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" RuntimeLibrary="rtMultiThreadedDLL"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
+		<Configuration Name="Debug|x64" UseCompiler="ifxCompiler" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="Temp">
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" DebugParameter="debugParameterUsed" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
+		<Configuration Name="Release|x64" UseCompiler="ifortCompiler">
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Preprocess="preprocessYes" StandardWarnings="standardWarningsF18" RuntimeLibrary="rtMultiThreadedDLL"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
+	</Configurations>
 	<Files>
 		<Filter Name="CFAST Files">
-		<Filter Name="Header  Files">
-		<File RelativePath="..\CFAST\cfast_data.f90"/>
-		<File RelativePath="..\CFAST\cfast_interfaces.f90"/>
-		<File RelativePath="..\CFAST\cfast_parameters.f90"/>
-		<File RelativePath="..\CFAST\cfast_structures.f90"/>
-		<File RelativePath="..\CFAST\prec.f90"/></Filter>
-		<Filter Name="Source Files">
-		<File RelativePath="..\CFAST\cfastexit.f90"/>
-		<File RelativePath="..\CFAST\compartments.f90"/>
-		<File RelativePath="..\CFAST\conduction.f90"/>
-		<File RelativePath="..\CFAST\convection.f90"/>
-		<File RelativePath="..\CFAST\fire.f90"/>
-		<File RelativePath="..\CFAST\flowfan.f90"/>
-		<File RelativePath="..\CFAST\flowhorizontal.f90"/>
-		<File RelativePath="..\CFAST\flowvertical.f90"/>
-		<File RelativePath="..\CFAST\initialization.f90"/>
-		<File RelativePath="..\CFAST\input.f90"/>
-		<File RelativePath="..\CFAST\input_namelist.f90"/>
-		<File RelativePath="..\CFAST\keyboard_int.f90"/>
-		<File RelativePath="..\CFAST\numerics.f90"/>
-		<File RelativePath="..\CFAST\output.f90"/>
-		<File RelativePath="..\CFAST\outputdebug.f90"/>
-		<File RelativePath="..\CFAST\outputsmv.f90"/>
-		<File RelativePath="..\CFAST\outputspreadsheet.f90"/>
-		<File RelativePath="..\CFAST\radiation.f90"/>
-		<File RelativePath="..\CFAST\solve.f90"/>
-		<File RelativePath="..\CFAST\srev.f90"/>
-		<File RelativePath="..\CFAST\ssHeaders.f90"/>
-		<File RelativePath="..\CFAST\target.f90"/>
-		<File RelativePath="..\CFAST\utilities.f90"/></Filter></Filter>
+			<Filter Name="Header  Files">
+				<File RelativePath="..\CFAST\cfast_data.f90"/>
+				<File RelativePath="..\CFAST\cfast_interfaces.f90"/>
+				<File RelativePath="..\CFAST\cfast_parameters.f90"/>
+				<File RelativePath="..\CFAST\cfast_structures.f90"/>
+				<File RelativePath="..\CFAST\prec.f90"/>
+			</Filter>
+			<Filter Name="Source Files">
+				<File RelativePath="..\CFAST\cfastexit.f90"/>
+				<File RelativePath="..\CFAST\compartments.f90"/>
+				<File RelativePath="..\CFAST\conduction.f90"/>
+				<File RelativePath="..\CFAST\convection.f90"/>
+				<File RelativePath="..\CFAST\fire.f90"/>
+				<File RelativePath="..\CFAST\flowfan.f90"/>
+				<File RelativePath="..\CFAST\flowhorizontal.f90"/>
+				<File RelativePath="..\CFAST\flowvertical.f90"/>
+				<File RelativePath="..\CFAST\initialization.f90"/>
+				<File RelativePath="..\CFAST\input.f90"/>
+				<File RelativePath="..\CFAST\input_namelist.f90"/>
+				<File RelativePath="..\CFAST\keyboard_int.f90"/>
+				<File RelativePath="..\CFAST\numerics.f90"/>
+				<File RelativePath="..\CFAST\output.f90"/>
+				<File RelativePath="..\CFAST\outputdebug.f90"/>
+				<File RelativePath="..\CFAST\outputsmv.f90"/>
+				<File RelativePath="..\CFAST\outputspreadsheet.f90"/>
+				<File RelativePath="..\CFAST\radiation.f90"/>
+				<File RelativePath="..\CFAST\solve.f90"/>
+				<File RelativePath="..\CFAST\srev.f90"/>
+				<File RelativePath="..\CFAST\ssHeaders.f90"/>
+				<File RelativePath="..\CFAST\target.f90"/>
+				<File RelativePath="..\CFAST\utilities.f90"/>
+			</Filter>
+		</Filter>
 		<Filter Name="Header Files" Filter="fi;fd;h;inc">
-		<File RelativePath=".\cdata_data.f90"/>
-		<File RelativePath=".\cdata_parameters.f90"/>
-		<File RelativePath=".\cdata_structures.f90"/></Filter>
+			<File RelativePath=".\cdata_data.f90"/>
+			<File RelativePath=".\cdata_parameters.f90"/>
+			<File RelativePath=".\cdata_structures.f90"/>
+		</Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
-		<File RelativePath=".\cdata.f90"/>
-		<File RelativePath=".\cdata_accumlator.f90"/>
-		<File RelativePath=".\cdata_output.f90"/>
-		<File RelativePath=".\cdata_preprocessor.f90"/>
-		<File RelativePath=".\cdata_statistics.f90"/>
-		<File RelativePath=".\input_pp_namelist.f90"/>
-		<File RelativePath=".\montecarlo.f90"/>
-		<File RelativePath=".\random.f90"/>
-		<File RelativePath=".\write_inputfile.f90"/></Filter></Files>
-	<Globals/></VisualStudioProject>
+			<File RelativePath=".\cdata.f90"/>
+			<File RelativePath=".\cdata_accumlator.f90"/>
+			<File RelativePath=".\cdata_output.f90"/>
+			<File RelativePath=".\cdata_preprocessor.f90"/>
+			<File RelativePath=".\cdata_statistics.f90"/>
+			<File RelativePath=".\input_pp_namelist.f90"/>
+			<File RelativePath=".\montecarlo.f90"/>
+			<File RelativePath=".\random.f90"/>
+			<File RelativePath=".\write_inputfile.f90"/>
+		</Filter>
+	</Files>
+	<Globals/>
+</VisualStudioProject>

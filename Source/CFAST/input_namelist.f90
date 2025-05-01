@@ -610,9 +610,9 @@
 
     subroutine set_defaults
 
-    ceiling_matl_id         = 'NULL'
-    wall_matl_id            = 'NULL'
-    floor_matl_id           = 'NULL'
+    ceiling_matl_id         = 'OFF'
+    wall_matl_id            = 'OFF'
+    floor_matl_id           = 'OFF'
     ceiling_thickness       = 0.0_eb
     wall_thickness          = 0.0_eb
     floor_thickness         = 0.0_eb

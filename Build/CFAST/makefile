@@ -17,14 +17,16 @@ ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_HASH := $(shell ..\..\scripts\githash)
   GIT_DATE := $(shell ..\..\scripts\gitlog)
   BUILD_DATE := $(shell date /t) $(shell time /t)
+  GIT_BRANCH := $(shell ..\..\scripts\gitbranch)
 else
 # linux/osx
   GIT_HASH := $(shell git describe --long --dirty)
   GIT_DATE := $(shell git log -1 --format=%cd)
   BUILD_DATE := $(shell date "+%b %d, %Y  %T")
+  GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 endif
 
-GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""  -DVERSION_PP=\""$(VERSION)\""
+GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)-$(GIT_BRANCH)\" -DGITDATE_PP=\""$(GIT_DATE)\""  -DVERSION_PP=\""$(VERSION)\""
 GITINFO=-fpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 

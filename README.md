@@ -8,9 +8,10 @@ Smokeview ([SMV](https://github.com/firemodels/smv)) is a visualization program 
 For more information, including a link to our discussion forum, please visit the [CFAST website](https://pages.nist.gov/cfast/).
 -->
 
-Guidelines for contributing to the CFAST project are given [here.](https://github.com/firemodels/cfast/blob/master/CONTRIBUTING.md) Contributions of particular interest are given [here](https://github.com/firemodels/cfast/wiki/Potential-Research-Topics).
+Contributions of particular interest are given [here](https://github.com/firemodels/cfast/wiki/Potential-Research-Topics).
+Guidelines for making these contributions are given [here.](https://github.com/firemodels/cfast/blob/master/CONTRIBUTING.md) 
 
-Here are some useful links 
+Here are some other useful links:
 
 [Discussion forum](https://github.com/firemodels/cfast/discussions)
 

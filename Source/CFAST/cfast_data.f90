@@ -332,7 +332,7 @@ module setup_data
     real(eb) :: stime, deltat
     character(len=128) :: title
     
-    integer :: cfast_version = 7706     ! current cfast version
+    integer :: cfast_version = 7705     ! current cfast version
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: listoutput=.false.

@@ -203,70 +203,18 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
 \dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
-
 An algebraic equation for each wall surface temperature (ceiling, upper wall, lower wall and floor) is also solved:
 \be
-   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x}=0   \label{bc}
+   \dq'' +k \, \frac{\partial T_{\rm w}(0,t)}{\partial x}=0   \label{bc}
 \ee
-
-\noindent where $\partial\Tw(0,t)/\partial x$ is the temperature gradient at the wall surface, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term)
-and for brevity the temperature wall profiles are referred to collectively as $\Tw(x,t)$.
-The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq. (\ref{bc}) is evaluated by advancing a known temperature profile from $t_{\rm old}$ to $t$ using the heat conduction equation
-
+where $\partial T_{\rm w}(0,t)/\partial x$ is the temperature gradient at the wall surface, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term) and for brevity the temperature wall profiles are referred to collectively as $T_{\rm w}(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq.~(\ref{bc}) is determined by first updating the temperature profile by solving the heat conduction equation 
 \begin{equation}
    \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2}
-\end{equation}
-with a constant temperature boundary condition
-\begin{equation}
-\Tw(0,t)=T_{\rm w}
-\end{equation}
-where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
+\end{equation} 
+where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material. Further details of the solution procedure are included Appendix~\ref{chap:heatsolution}.
 
 
-\section{Solution Procedure}
-\label{sect:solution}
 
-\renewcommand{\arraystretch}{1.5}
-This section give  a brief discussion of the procedure CFAST uses to solve the zone fire modeling equations given in the previous section (for more details see Appendix \ref{chap:heatsolution}).
-CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_{\rm w}$.
-DASSL solves these equations by formulating a root finding problem
-\begin{equation}
-\vecF\brackets{t,\vecy,\vecy'}=0
-\end{equation}
-where $\vecF$ is a vector valued function of residuals given by
-\begin{equation}
-\vecF(t,\vecy,\vecy')=\left\{
-\begin{array}{ll}
-  \vecy'-\mathbf{f}(t,\vecy) & {\rm gas~ode's} \\
-  \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
-\end{array}
-\right.
-\end{equation}
-and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
-$\vecy$ is the solution vector containing the quantities $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_{\rm w}$  at time $t$ and $\vecy'$ is the derivative of these quantities at time $t$.
-
-To start the solution process, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and the derivative components of $\vecy'$ are set to zero. For more complex cases, an initial $\vecy$ and $\vecy'$ at $t=0$ is calculated and supplied to DASSL.
-
-One step in the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})=0$ given that the solution for
-$\vecF(t_{n},\vecy_{n},\vecy'_{n})=0$ is known.
-The solver estimates values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}$. CFAST uses this information to
-compute the residual $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$.
-Based upon these residual values, DASSL generates new values of $\vecy_{n+1}$ and $\vecy'_{n+1}$ until $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$ is zero
-within a specified tolerance.
-DASSL performs these iterations using an extension of
-Newton's method using derivatives that are approximated with backward differentiation formulae of orders one
-through five~\cite{DASSL:1982,DASSL:1989}.
-
-The unknown wall surface temperatures, $T_{\rm w}$ are iterated until the $\dq''$ flux term from the gas layers matches the temperature gradient
- $\partial\Tw(0,t)/\partial{\rm x}$ at the wall surface according to Eq. (\ref{bc}).  The $\partial\Tw(0,t)/\partial{\rm x}$ term is determined by advancing the temperature profile from $t_{n}$ to $t_{n+1}$ using a value of $T_{\rm w}$ supplied by DASSL as a boundary condition for the heat conduction problem:
-\begin{eqnarray}
-   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier2}\\
-\Tw(0,t)&=&T_{\rm w}
-\end{eqnarray}
-
-\noindent where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
-
-As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
 
 
 
@@ -1232,8 +1180,10 @@ the upper layer temperature differential equation.  A differential equation for 
 \chapter{Solving the Modeling Equations}
 \label{chap:heatsolution}
 
-As stated in Section \ref{sect:solution}, CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the zone fire modeling equations Eqs. (\ref{eq1}) through Eq. (\ref{bc}).
-DASSL solves these equations by formulating a root finding problem
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the zone fire modeling equations Eqs.~(\ref{eq1}) through Eq.~(\ref{bc}).
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
+
+The equations are written in the form of a root finding problem
 \begin{equation}
 \vecF\brackets{t,\vecy,\vecy'}=0
 \end{equation}
@@ -1241,83 +1191,27 @@ where $\vecF$ is given by
 \begin{equation}
 \vecF(t,\vecy,\vecy')=\left\{
 \begin{array}{ll}
-  \vecy'-f(t,\vecy) & {\rm gas~ode's} \\
-  \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
+  \vecy'-\mathbf{f}(t,\vecy) & \hbox{gas phase} \\
+  \dq''(\vecy) +k \, \frac{\partial T_{\rm w}(0,t)}{\partial x} & \hbox{gas/solid interface} \label{eq:resid}
 \end{array}
 \right.
 \end{equation}
-and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
-$\vecy$ is the solution vector containing pressures, upper layer volumes, layer temperatures and wall surface temperatures  and $\vecy'$ is the solution vector derivative of these quantities at time $t$.
-The solution vector, $\vecy$  is defined as follows
-\begin{center}
-\begin{tabular}{r l l}
-$\boldsymbol{\vecy} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each compartment  \\
-               &  $T_{u_1}, T_{u_2}, ..., T_{u_{n-1}}, T_{u_n}$ & upper layer temperatures for each compartment  \\
-               &  $V_{u_1}, V_{u_2}, ..., V_{u_{n-1}}, V_{u_n}$ & upper layer volumes for each compartment  \\
-               &  $T_{l_1}, T_{l_2}, ..., T_{l_{n-1}}, T_{l_n}$ & lower layer temperatures for each compartment  \\
-               &  $T_{w_1}, T_{w_2}, ..., T_{w_{k-1}}, T_{w_k} )$ & temperatures on each surface of each compartment \\
-\end{tabular}
-\end{center}
-where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).
-The components of $\vecy'$ and the residual function $\vecF$ are arranged analogously.  The first $n$ components of $\vecF$ correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $\vecF$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $\vecF$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
-
+$\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time, $\vecy$ is the solution vector consisting of the pressure, upper layer volume, upper and lower layer temperature, and the ceiling, upper wall, lower wall, and floor surface temperatures, $T_{\rm w}(0,t)$, of each compartment. $\vecy'$ is the derivative of these quantities with time. The second equation is used to couple the gas with the solid phase by requiring that the convective and radiative heat flux, $\dq''(\vecy)$, equal the temperature gradient at the wall surface, $\partial T_{\rm w} / \partial x$, where $x$ is the one-dimensional spatial coordinate pointing into the solid. The solid phase temperature profile satisfies the PDE
 \begin{equation}
-F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt
-\label{eq:Fp1}
+   \frac{\partial T_{\rm w}}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 T_{\rm w}}{\partial x^2} \label{eq:fouriera}
 \end{equation}
-DASSL then determines values for $\vecy$ and $\vecy'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $\vecF$ are sufficiently close to zero as determined by a user defined error criteria.
-
-In more detail, $\vecF$ for all components is given by
-\begin{equation}
-F_i(t,\vecy,\vecy')=\left\{
-\begin{array}{ll}
-  y'_i-\dbydt{P_i} & 1\le i \le n \\
-  y'_i-\dbydt{T_{i,u}} & n+1\le i \le 2 n \\
-  y'_i-\dbydt{V_{i,u}} & 2n+1\le i \le 3n \\
-  y'_i-\dbydt{T_{i,l}} & 3n+1\le i \le 4n \\
-  q''(\vecy)+k\dbydx{\Tw}(0,t) & 4n+1\le i \le 4n +k
-\end{array}
-\right.\label{eq:resid2}
-\end{equation}
-
-The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
-\begin{equation}
-q''=-k\dbydx{T}
-\end{equation}
-
-It is implemented as an algebraic equation by discretizing the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using the heat conduction equation
-\begin{eqnarray}
-   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fouriera}
-\end{eqnarray}
-
-\noindent and the boundary condition $\Tw(0,t)=T_{\rm w}$ at the surface provided by DASSL.
-An outline of the solution procedure is as follows:
+with the surface temperature, $T_{\rm w}(0,t)$, provided by DASSL. An outline of the solution procedure is as follows:
 
 \begin{enumerate}
-\item Assume that $\vecy_n$ and $\vecy'_n$ are known at time $t=t_n$\
+\item Assuming that $\vecy_n$ and $\vecy'_n$ are known at time $t=t_n$, advance the solution for a time step, $\Delta t$, using a backward differential formula chosen by the DASSL solver.
 \label{step:first}
-\item For some $\Delta t$ guess values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}=t+\Delta t$
-\label{step:second}
-\label{step:init}
-\item Using the guessed solution $\vecy_{n+1}$, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$
-\label{step:flow}
-\item Using the guessed solution $\vecy_{n+1}$ and the mass and heat flow rates computed in step \ref{step:flow}, compute
-the right hands side of Eqs. (\ref{eq1}) through (\ref{eq4}).  Denote these computations $\hat{\vecy}'$
+\item Using the estimated solution, $\vecy_{n+1}$, compute mass flow rates, $\dml$ and $\dmu$, and heat flow rates, $\dql$ and $\dqu$, required to compute the right hand sides of Eqs.~(\ref{eq1}) through (\ref{eq4}), $\mathbf{f}(t_{n+1},\vecy_{n+1})$
 \label{step:rhs}
-\item Compute the gas equation residuals, $\vecy'_{n+1}-\hat{\vecy}'_{n+1}$, using $\vecy'_{n+1}$ given in step \ref{step:init} and $\hat{\vecy}'_{n+1}$
-computed in step \ref{step:rhs}.
+\item Compute the gas phase residuals, $\vecy'_{n+1}-\mathbf{f}(t_{n+1},\vecy_{n+1})$, using the finite difference approximation of $\vecy'_{n+1}$ computed in step~\ref{step:first} and the right hand side of the gas phase equations computed in step~\ref{step:rhs}.
 \label{step:residode}
-\item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid2})):
-\label{step:residfourier}
-\begin{enumerate}
-\item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fouriera})
-\label{step:profile}
-\item Compute the temperature gradient, $\partial\Tw/\partial x(0,t_{n+1})$, at the wall surface using the temperature profile computed in step \ref{step:profile}
-\label{step:gradient}
-\item Compute the residual $q''+k\dbydx{\Tw}$ using heat flow rates computed in step \ref{step:flow} and temperature gradients computed in step \ref{step:gradient}
-\end{enumerate}
-\item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
-If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
+\item Using the updated wall surface temperatures estimated in step~\ref{step:first} as a boundary condition, advance the temperature profile $T_{\rm w}(x,t)$ from $t=t_n$ to $t=t_{n+1}$ using an implicit time update of Eq.~(\ref{eq:fouriera}).
+\item Compute the residual $q''+k\dbydx{T_{\rm w}}$ using the heat flows computed in step \ref{step:rhs} and the surface temperature gradients computed in step~\ref{eq:fouriera}.
+\item Check if all the residuals are within a specified error tolerance. If not, reduce the time step and repeat the procedure.
 \end{enumerate}
 
 

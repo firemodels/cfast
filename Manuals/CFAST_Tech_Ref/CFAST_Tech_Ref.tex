@@ -205,12 +205,12 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \end{eqnarray}
 An algebraic equation for each wall surface temperature (ceiling, upper wall, lower wall and floor) is also solved:
 \be
-   \dq'' +k \, \frac{\partial T_{\rm w}(0,t)}{\partial x}=0   \label{bc}
+   \dq'' +k \, \frac{\partial \Ts(0,t)}{\partial x}=0   \quad ; \quad  \Tw(t) \equiv \Ts(0,t) \label{bc}
 \ee
-where $\partial T_{\rm w}(0,t)/\partial x$ is the temperature gradient at the wall surface, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term) and for brevity the temperature wall profiles are referred to collectively as $T_{\rm w}(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq.~(\ref{bc}) is determined by first updating the temperature profile by solving the heat conduction equation 
+where $\partial \Ts(0,t)/\partial x$ is the temperature gradient at the wall surface, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term) and for brevity the temperature wall profiles are referred to collectively as $\Ts(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq.~(\ref{bc}) is determined by first updating the temperature profile by solving the heat conduction equation
 \begin{equation}
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2}
-\end{equation} 
+   \frac{\partial \Ts}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Ts}{\partial x^2}
+\end{equation}
 where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material. Further details of the solution procedure are included Appendix~\ref{chap:heatsolution}.
 
 
@@ -786,13 +786,13 @@ The transfer of heat between the gas and solid surfaces is handled slightly diff
 
 In general, the convective heat flux to a solid surface is given by:
 \be
-   \dqc'' = h \, \brackets{\Tg - \Ts}  \label{convective_heat_flux}
+   \dqc'' = h \, \brackets{\Tg - \Tw}  \label{convective_heat_flux}
 \ee
 The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used, since the gas velocity is unknown:
 \be
-   h = C {|\Tg - \Ts|}^{1/3}
+   h = C {|\Tg - \Tw|}^{1/3}
 \ee
-where $C$ is an empirical coefficient (1.52 for the floor and ceiling (in the absence of a ceiling jet) and 1.31 for the walls~\cite{Holman:1990}), $\Tg$ is the average gas layer temperature adjacent to the surface, and $\Ts$ is the surface temperature.
+where $C$ is an empirical coefficient (1.52 for the floor and ceiling (in the absence of a ceiling jet) and 1.31 for the walls~\cite{Holman:1990}), $\Tg$ is the average gas layer temperature adjacent to the surface, and $\Tw$ is the surface, or \underline{w}all, temperature.
 
 \subsection{Ceiling}
 
@@ -808,7 +808,7 @@ Note that the integration is carried out over a circle whose area, $\pi R^2$, is
 
 Equation~(\ref{eq:cjfluxavg}) applies to the early stage of the fire; thus, a modified heat transfer coefficient is used so that there is a transition from the early to later stages when a layer has formed:
 \be
-   h = \max \left( \frac{\dq_{\rm c,avg}''}{\Tu-\Ts} \, , \, C {|\Tu - \Ts|}^{1/3} \right)
+   h = \max \left( \frac{\dq_{\rm c,avg}''}{\Tu-\Ts} \, , \, C {|\Tu - \Tw|}^{1/3} \right)
 \ee
 Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceiling surface temperature. Notice that the rightmost term is simply the correlation used for the walls and floor.
 
@@ -822,24 +822,17 @@ Wall surface temperatures are updated in time implicitly using the solver DASSL 
 
 At each time step, the wall temperature profiles are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be
-   \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{dT}{dx} \Big|_{x=0} \label{eq:net_fluxes}
+   \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{\partial \Ts}{\partial x} \Big|_{x=0} \label{eq:net_fluxes}
 \ee
 where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.
 
-Wall and target temperature profiles are advanced in time using the heat equation.
-The heat conduction equation normal to the solid surface is:
-\be \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2}
+Wall and target temperature profiles are advanced in time using the heat equation. The heat conduction equation normal to the solid surface is:
+\be \frac{\partial \Ts}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 \Ts}{\partial x^2}
 \label{eq:Target_PDE} \ee
 where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target or wall material. The boundary condition used at the front wall surface is :
 \be
-   \Tw(0,t)=T_{\rm w}
+   \Ts(0,t) \equiv \Tw(t)
 \ee
-The boundary condition used at the target surface is:
-\be
-   \dq''=-k\frac{dT}{dx} \label{eq:Target_Fourier}
-\ee
-where $\dq''$ is the net convective and radiative heat flux.
-
 A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surface. Define a penetration depth of
 \be
    x_p = 2 \sqrt{\alpha \, t_{\rm end}} \; \hbox{erfc}^{-1} \brackets{0.05}
@@ -855,9 +848,9 @@ where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function
 
 The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates:
 \be
-  \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
+  \frac{\partial \Ts}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial \Ts}{\partial r} \right)
 \ee
-Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form:
+Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form, where $T_i^n \equiv \Ts(x_i,t_n)$:
 \begin{eqnarray}
 \TTi-\Ti^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
 \left[
@@ -1039,8 +1032,11 @@ $r$                 & radial distance from the fire, m \\
                     & radial coordinate of cylindrical solid, m \\
 $S$                 & vent coefficient for vertical flow vents, dimensionless \\
 $T_\infty$          & ambient gas temperature, K \\
-$\Ti$               & gas temperature of layer $i$, K \\
-$\Tp$               & gas temperature in the plume, K \\
+$\Tl$               & \underline{l}ower layer gas temperature, K \\
+$\Tp$               & \underline{p}lume temperature, K \\
+$\Ts$               & \underline{s}olid internal temperature, K \\
+$\Tu$               & \underline{u}pper layer gas temperature, K \\
+$\Tw$               & \underline{w}all (ceiling, upper wall, lower wall, floor) surface temperature, K \\
 $t$                 & time, s \\
 $u_{\rm w}$         & water spray density, m/s \\
 $V$                 & total volume of a compartment, m$^3$ \\
@@ -1185,33 +1181,38 @@ As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations a
 
 The equations are written in the form of a root finding problem
 \begin{equation}
-\vecF\brackets{t,\vecy,\vecy'}=0
+\vecF\brackets{t,\vecy,\vecy'}=0 \quad ; \quad \vecy' = \frac{ d\vecy}{dt}
 \end{equation}
 where $\vecF$ is given by
 \begin{equation}
 \vecF(t,\vecy,\vecy')=\left\{
 \begin{array}{ll}
-  \vecy'-\mathbf{f}(t,\vecy) & \hbox{gas phase} \\
-  \dq''(\vecy) +k \, \frac{\partial T_{\rm w}(0,t)}{\partial x} & \hbox{gas/solid interface} \label{eq:resid}
+  \vecy'-\mathbf{f}(t,\vecy) & \hbox{gas phase} \\[.1in]
+  \dq''(\vecy) +k \, \frac{\partial T_{\rm s}(0,t)}{\partial x} & \hbox{gas/solid interface} \label{eq:resid}
 \end{array}
 \right.
 \end{equation}
-$\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time, $\vecy$ is the solution vector consisting of the pressure, upper layer volume, upper and lower layer temperature, and the ceiling, upper wall, lower wall, and floor surface temperatures, $T_{\rm w}(0,t)$, of each compartment. $\vecy'$ is the derivative of these quantities with time. The second equation is used to couple the gas with the solid phase by requiring that the convective and radiative heat flux, $\dq''(\vecy)$, equal the temperature gradient at the wall surface, $\partial T_{\rm w} / \partial x$, where $x$ is the one-dimensional spatial coordinate pointing into the solid. The solid phase temperature profile satisfies the PDE
+$\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time, $\vecy$ is the solution vector consisting of the compartment pressures, $P_i$, upper layer temperatures, $T_{{\rm u},i}$, upper layer volumes, $V_{{\rm u},i}$, lower layer temperatures, $T_{{\rm l},i}$, and the ceiling, upper wall, lower wall, and floor surface temperatures, $T_{{\rm w},i}$
 \begin{equation}
-   \frac{\partial T_{\rm w}}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 T_{\rm w}}{\partial x^2} \label{eq:fouriera}
+   \vecy = (P_1, ... , P_n, T_{{\rm u},1}, ... , T_{{\rm u},n} , V_{{\rm u},1}, ... , V_{{\rm u},n}, T_{{\rm l},1}, ... ,T_{{\rm l},n}, T_{{\rm w},1}, ..., T_{{\rm w},4n} )
 \end{equation}
-with the surface temperature, $T_{\rm w}(0,t)$, provided by DASSL. An outline of the solution procedure is as follows:
+The wall surface temperatures, $T_{{\rm w},i}$, are components of the solution vector, $\vecy$, but also serve as boundary conditions for the solid phase temperature equation
+\begin{equation}
+   \frac{\partial T_{\rm s}}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 T_{\rm s}}{\partial x^2} \quad ; \quad T_{\rm s}(0,t) \equiv T_{\rm w}(t) \label{eq:fouriera}
+\end{equation}
+The coupling of gas and solid phase requires that the convective and radiative heat flux, $\dq''(\vecy)$, equal the temperature gradient at the wall surface, $\partial T_{\rm s} / \partial x$, where $x$ is the one-dimensional spatial coordinate pointing into the solid. The expression for the heat flux is derived in Chapter~\ref{chap:heat_transfer}.
 
+An outline of the solution procedure within DASSL is as follows:
 \begin{enumerate}
 \item Assuming that $\vecy_n$ and $\vecy'_n$ are known at time $t=t_n$, advance the solution for a time step, $\Delta t$, using a backward differential formula chosen by the DASSL solver.
 \label{step:first}
-\item Using the estimated solution, $\vecy_{n+1}$, compute mass flow rates, $\dml$ and $\dmu$, and heat flow rates, $\dql$ and $\dqu$, required to compute the right hand sides of Eqs.~(\ref{eq1}) through (\ref{eq4}), $\mathbf{f}(t_{n+1},\vecy_{n+1})$
+\item Using the estimated solution, $\vecy_{n+1}$, compute the right hand sides of Eqs.~(\ref{eq1}) through (\ref{eq4}), $\mathbf{f}(t_{n+1},\vecy_{n+1})$
 \label{step:rhs}
 \item Compute the gas phase residuals, $\vecy'_{n+1}-\mathbf{f}(t_{n+1},\vecy_{n+1})$, using the finite difference approximation of $\vecy'_{n+1}$ computed in step~\ref{step:first} and the right hand side of the gas phase equations computed in step~\ref{step:rhs}.
 \label{step:residode}
-\item Using the updated wall surface temperatures estimated in step~\ref{step:first} as a boundary condition, advance the temperature profile $T_{\rm w}(x,t)$ from $t=t_n$ to $t=t_{n+1}$ using an implicit time update of Eq.~(\ref{eq:fouriera}).
-\item Compute the residual $q''+k\dbydx{T_{\rm w}}$ using the heat flows computed in step \ref{step:rhs} and the surface temperature gradients computed in step~\ref{eq:fouriera}.
-\item Check if all the residuals are within a specified error tolerance. If not, reduce the time step and repeat the procedure.
+\item Using the updated wall surface temperatures, $T_{{\rm w},i}$, estimated in step~\ref{step:first} as a boundary conditions, advance the temperature profiles, $T_{{\rm s},i}(x,t)$, from $t=t_n$ to $t=t_{n+1}$ using an implicit time update of Eq.~(\ref{eq:fouriera}).
+\item Compute the residuals $q_i''+k\dbydx{T_{{\rm s},i}}$ using the heat flows computed in step \ref{step:rhs} and the surface temperature gradients computed in step~\ref{eq:fouriera}.
+\item Check if all the residuals are within a specified error tolerance. If not, continue the root finding procedure until convergence is achieved.
 \end{enumerate}
 
 

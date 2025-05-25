@@ -91,10 +91,10 @@ module fire_routines
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         q_entrained = cp*fireptr%mdot_entrained*t_lower
 
-  ! mdot_plume contains pyrolysis_burned (not pyrosis_unburned) and entrainment components
-  ! since q_firemass is defined using mdot_pyrolysis which consists of both burned and unburned phyrolsis components
+  ! mdot_plume contains pyrolysis_burned (not pyrolysis_unburned) and entrainment components
+  ! since q_firemass is defined using mdot_pyrolysis which consists of both burned and unburned yrolysis components
   ! an unburned component of pyrolysis needs to be added to flows_fires(iroom,m,u)
-  ! this is only an issue in oxygen limited fires
+  ! this is only an issue when fires are oxygen limited
         flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume + mdot_pyrolysis_unburned
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained

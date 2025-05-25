@@ -47,6 +47,7 @@ module fire_routines
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
         q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
+    real(eb) :: mdot_pyrolysis_burned, mdot_pyrolysis_unburned
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -84,10 +85,14 @@ module fire_routines
 
         ! sum the flows for return to the source routine
         t_lower = roomptr%temp(l)
-        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
-        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
+
+        mdot_pyrolysis_burned   = fireptr%mdot_plume     - fireptr%mdot_entrained
+        mdot_pyrolysis_unburned = fireptr%mdot_pyrolysis - mdot_pyrolysis_burned
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         q_entrained = cp*fireptr%mdot_entrained*t_lower
+
+        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume + mdot_pyrolysis_unburned
+        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
         flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + species_mass_rate(u,1:ns)
@@ -683,6 +688,7 @@ module fire_routines
     flows_doorjets(1:n_rooms+1,1:ns+2,u) = 0.0_eb
     roominfo(1:n_rooms+1)%qdot_doorjet = 0.0_eb
     djetflg = .false.
+  !  return
     if (option(fdfire)/=on.or.n_fires<=0) return
 
     ! if no vents have a vent jet fire then exit

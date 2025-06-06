@@ -47,7 +47,6 @@ module fire_routines
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
         q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
-    real(eb) :: mdot_pyrolysis_burned, mdot_pyrolysis_unburned
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -86,8 +85,6 @@ module fire_routines
         ! sum the flows for return to the source routine
         t_lower = roomptr%temp(l)
 
-        mdot_pyrolysis_burned   = fireptr%mdot_plume     - fireptr%mdot_entrained
-        mdot_pyrolysis_unburned = fireptr%mdot_pyrolysis - mdot_pyrolysis_burned
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         q_entrained = cp*fireptr%mdot_entrained*t_lower
 
@@ -95,7 +92,7 @@ module fire_routines
   ! since q_firemass is defined using mdot_pyrolysis which consists of both burned and unburned yrolysis components
   ! an unburned component of pyrolysis needs to be added to flows_fires(iroom,m,u)
   ! this is only an issue when fires are oxygen limited
-        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume + mdot_pyrolysis_unburned
+        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
@@ -320,8 +317,10 @@ module fire_routines
     species_mass_rate(u,ts) = pyrolysis_rate*y_trace
     
     ! fuel released by pyrolysis is put into the upper layer. The fuel that burns in the plume is calculated
-    ! in the chemistry routine and then removed from the upper layer
+    ! in the chemistry routine and then removed from the upper layer. Total mass and species masses are calculated 
+    ! seperately and so we do the same thing with plume_flow_rate. 
     species_mass_rate(u,fuel) = pyrolysis_rate
+    plume_flow_rate = pyrolysis_rate
 
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment

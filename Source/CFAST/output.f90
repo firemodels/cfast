@@ -228,8 +228,13 @@ module output_routines
             fireptr => fireinfo(i)
             if (fireptr%ignited) then
                 f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
+#ifdef pp_FIRE
+                write (iofilo,5010) trim(fireptr%id), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis_burned, fireptr%qdot_actual,&
+                    f_height, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
+#else
                 write (iofilo,5010) trim(fireptr%id), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
                     f_height, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
+#endif
             else
                 write (iofilo,5010) trim(fireptr%id), 'N'
             end if
@@ -250,7 +255,11 @@ module output_routines
                 fireptr => fireinfo(i)
                 if (icomp==fireptr%room) then
                     xems = xems + fireptr%mdot_plume
+#ifdef pp_FIRE
+                    pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis_burned
+#else
                     pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis
+#endif
                     xqf = xqf + fireptr%qdot_actual
                     xqupr = xqupr + fireptr%qdot_layers(u)
                     xqlow = xqlow + fireptr%qdot_layers(l)
@@ -526,7 +535,11 @@ module output_routines
             do i = 1, n_fires
                 fireptr => fireinfo(i)
                 if (ir==fireptr%room) then
+#ifdef pp_FIRE
+                    pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis_burned
+#else
                     pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis
+#endif
                     xqf = xqf + fireptr%qdot_actual
                 end if
             end do

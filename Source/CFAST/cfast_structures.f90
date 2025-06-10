@@ -104,7 +104,11 @@ module cfast_types
         ! These are calculated results for the current time step
         real(eb) :: firearea                            ! area of the base of the fire
         real(eb) :: mdot_trace                          ! trace species production rate
+#ifdef pp_FIRE
+        real(eb) :: mdot_pyrolysis_burned               ! mass pyrolysis rate of the fire
+#else
         real(eb) :: mdot_pyrolysis                      ! mass pyrolysis rate of the fire
+#endif
         real(eb) :: mdot_entrained                      ! mass entrainment rate into the plume
         real(eb) :: mdot_plume                          ! mass rate from plume into upper layer = pyrolysis + entrained
 

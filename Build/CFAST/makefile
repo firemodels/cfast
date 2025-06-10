@@ -29,7 +29,7 @@ endif
 GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)-$(GIT_BRANCH)\" -DGITDATE_PP=\""$(GIT_DATE)\""  -DVERSION_PP=\""$(VERSION)\""
 GITINFO=-fpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
-
+PREPROCESS=
 
 
 # Definition of the object variables
@@ -74,7 +74,7 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_win_64 : FCOMPL = gfortran
 gnu_win_64 : LFLAGS = 
 gnu_win_64 : obj = cfast7_win_64
@@ -82,7 +82,7 @@ gnu_win_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu windows debug
-gnu_win_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_win_64_db : FCOMPL = gfortran
 gnu_win_64_db : LFLAGS = 
 gnu_win_64_db : obj = cfast7_win_64_db
@@ -90,13 +90,13 @@ gnu_win_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_win_64 : FFLAGS = /O2 /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO)
+intel_win_64 : FFLAGS = /O2 /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO) $(PREPROCESS)
 intel_win_64 : FCOMPL = ifx
 intel_win_64 : obj = cfast7_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f18 $(GITINFO)
+intel_win_64_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f18 $(GITINFO) $(PREPROCESS)
 intel_win_64_db : FCOMPL = ifx
 intel_win_64_db : obj = cfast7_win_64_db
 intel_win_64_db : setup_win $(objwin)
@@ -104,7 +104,7 @@ intel_win_64_db : setup_win $(objwin)
 
 # gnu linux_64
 
-gnu_linux_64 : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_64 : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_linux_64 : FCOMPL = gfortran
 gnu_linux_64 : LFLAGS = 
 gnu_linux_64 : obj = cfast7_linux_64
@@ -112,7 +112,7 @@ gnu_linux_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu linux debug
-gnu_linux_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_linux_64_db : FCOMPL = gfortran
 gnu_linux_64_db : LFLAGS = 
 gnu_linux_64_db : obj = cfast7_linux_64_db
@@ -120,7 +120,7 @@ gnu_linux_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
+intel_linux_64 : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO) $(PREPROCESS)
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifx
 intel_linux_64 : obj = cfast7_linux_64
@@ -128,7 +128,7 @@ intel_linux_64 : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
 #intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fp-model strict -debug full
-intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict $(GITINFO)
+intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict $(GITINFO) $(PREPROCESS)
 intel_linux_64_db : LFLAGS = -static-intel
 intel_linux_64_db : FCOMPL = ifx
 intel_linux_64_db : obj = cfast7_linux_64_db
@@ -138,7 +138,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_osx_64: FCOMPL = gfortran
 gnu_osx_64 : LFLAGS = 
 gnu_osx_64 : obj = cfast7_osx_64
@@ -146,7 +146,7 @@ gnu_osx_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_osx_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_osx_64_db : FCOMPL = gfortran
 gnu_osx_64_db : LFLAGS = 
 gnu_osx_64_db : obj = cfast7_osx_64_db
@@ -154,13 +154,13 @@ gnu_osx_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -traceback -heap-arrays -static-intel -fp-model strict $(GITINFO)
+intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -traceback -heap-arrays -static-intel -fp-model strict $(GITINFO) $(PREPROCESS)
 intel_osx_64 : FCOMPL = ifx
 intel_osx_64 : obj = cfast7_osx_64
 intel_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.7 -o $(obj) $(objf)
 
-intel_osx_64_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fp-model strict -fp-stack-check -FR -WB $(GITINFO)
+intel_osx_64_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fp-model strict -fp-stack-check -FR -WB $(GITINFO) $(PREPROCESS)
 intel_osx_64_db : FCOMPL = ifx
 intel_osx_64_db : obj = cfast7_osx_64_db
 intel_osx_64_db : $(objf)

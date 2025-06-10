@@ -84,24 +84,21 @@ module fire_routines
             y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, area_t, fireptr%mdot_entrained, &
             fireptr%mdot_plume, qdot_t, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
+        mdot_pyrolysis_unburned = mdot_t - fireptr%mdot_pyrolysis_burned
+        fireptr%firearea = area_t
+        fireptr%mdot_trace = fireptr%mdot_pyrolysis_burned*y_trace
 #else
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, hoc_t, y_soot, &
             y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, area_t, fireptr%mdot_entrained, &
             fireptr%mdot_plume, qdot_t, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
-#endif
         fireptr%firearea = area_t
-#ifdef pp_FIRE
-        mdot_pyrolysis_unburned = mdot_t - fireptr%mdot_pyrolysis_burned
-        fireptr%mdot_trace = fireptr%mdot_pyrolysis_burned*y_trace
-#else
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
 #endif
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
         fireptr%qdot_convective = hrr_c
         fireptr%qdot_radiative = hrr_r
 
-        ! sum the flows for return to the source routine
         t_lower = roomptr%temp(l)
 
 #ifdef pp_FIRE
@@ -111,9 +108,14 @@ module fire_routines
 #endif
         q_entrained = cp*fireptr%mdot_entrained*t_lower
 
-#ifdef pp_FIRE
-        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_entrained + mdot_t
-        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
+        ! sum the flows for return to the source routine
+
+        #ifdef pp_FIRE
+! hrr_c mass flow into upper layer - mdot_pyrolysis_burned
+! q_firemass flow into upper layer - mdot_pyrolysis_unburned
+! so total mass flow into upper layer is mdot_pyrolysis_burned + mdot_pyrolysis_unburned = mdot_t
+        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + mdot_t             + fireptr%mdot_entrained
+        flows_fires(iroom,m,l) = flows_fires(iroom,m,l)                      - fireptr%mdot_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l)                      - q_entrained
 #else
@@ -124,6 +126,8 @@ module fire_routines
 #endif
         flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + species_mass_rate(u,1:ns)
         flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + species_mass_rate(l,1:ns)
+!        write(6,10)tsec,flows_fires(iroom,q,u)+flows_fires(iroom,q,l)
+!10 format(e13.6,1x,e13.6)
     end do
 
     return

@@ -1241,7 +1241,11 @@ module spreadsheet_routines
         do i = 1,n_fires
             fireptr => fireinfo(i)
             if (fireptr%id==device) then
+#ifdef pp_FIRE
+                call ssaddtolist (position,fireptr%mdot_pyrolysis_burned,outarray)
+#else
                 call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
+#endif
             end if
         end do
     case ('HRR Expected')

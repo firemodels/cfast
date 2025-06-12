@@ -79,12 +79,17 @@ module fire_routines
             y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, area_t, fireptr%mdot_entrained, &
             fireptr%mdot_plume, qdot_t, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
-#ifdef pp_FIRE
-        mdot_pyrolysis_unburned = mdot_t - fireptr%mdot_pyrolysis
-#endif
         fireptr%firearea = area_t
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
+#ifdef pp_FIRE
+        if ( hoc_t > 0.0 ) then 
+           fireptr%mdot_actual = fireptr%qdot_actual/hoc_t
+        else
+           fireptr%mdot_actual = 0.0_EB
+        endif
+        mdot_pyrolysis_unburned = fireptr%mdot_pyrolysis - fireptr%mdot_actual
+#endif
         fireptr%qdot_convective = hrr_c
         fireptr%qdot_radiative = hrr_r
 

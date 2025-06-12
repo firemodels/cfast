@@ -113,6 +113,9 @@ module cfast_types
 
         real(eb) :: qdot_theoretical                    ! HRR as input by the user, unmodified by available oxygen or sprinklers
         real(eb) :: qdot_actual                         ! actual HRR (limited by available oxygen)
+#ifdef pp_FIRE
+        real(eb) :: mdot_actual                         ! actual mdot corresponding to qdot_actual
+#endif
         real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
         real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)
         real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)

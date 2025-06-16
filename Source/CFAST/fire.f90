@@ -49,6 +49,7 @@ module fire_routines
         q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
 #ifdef pp_FIRE
     real(eb) :: mdot_pyrolysis_unburned
+    real(eb) :: m_entrained, factor, delta, FIRE_EPS
 #endif
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -97,28 +98,36 @@ module fire_routines
 
 #ifdef pp_FIRE
         q_firemass = cp*mdot_pyrolysis_unburned*interior_ambient_temperature
+        factor = 1.0
+! smoothly set entrainment to 0 as layer approaches within FIRE_EPS of fire height
+        delta = roomptr%depth(l)-(fireptr%z_position+fireptr%z_offset)
+        FIRE_EPS = 0.25
+        if(delta.gt.0.0 .and. delta.lt.FIRE_EPS)factor = delta/FIRE_EPS
+        m_entrained = factor*fireptr%mdot_entrained
+        q_entrained = cp*fireptr%mdot_entrained*t_lower
 #else
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
+        m_entrained = fireptr%mdot_entrained
+        q_entrained = cp*m_entrained*t_lower
 #endif
-        q_entrained = cp*fireptr%mdot_entrained*t_lower
 
         ! sum the flows for return to the source routine
 
-        #ifdef pp_FIRE
+#ifdef pp_FIRE
 ! hrr_c mass flow into upper layer - mdot_pyrolysis
 ! q_firemass flow into upper layer - mdot_pyrolysis_unburned
 ! so total mass flow into upper layer is mdot_pyrolysis + mdot_pyrolysis_unburned = mdot_t
-        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + mdot_t             + fireptr%mdot_entrained
+        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + mdot_t             + m_entrained
 #else
         flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
 #endif
-        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
+        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - m_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
         flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + species_mass_rate(u,1:ns)
         flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + species_mass_rate(l,1:ns)
-!        write(6,10)tsec,flows_fires(iroom,q,u)+flows_fires(iroom,q,l)
-!10 format(e13.6,1x,e13.6)
+!        write(6,10)tsec,roomptr%depth(l),m_entrained,q_entrained,factor,fireptr%z_position+fireptr%z_offset
+!10      format(e13.6,1x,e15.8,1x,e15.8,1x,e15.8,1x,e15.8,1x,e15.8)
     end do
 
     return

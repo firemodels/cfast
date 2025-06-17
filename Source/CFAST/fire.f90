@@ -47,9 +47,14 @@ module fire_routines
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
         q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
+! uncomment following line to turn on entrainment smoothing
+!#define pp_SMOOTH
 #ifdef pp_FIRE
     real(eb) :: mdot_pyrolysis_unburned
-    real(eb) :: m_entrained, factor, delta, FIRE_EPS
+    real(eb) :: m_entrained, factor
+#ifdef pp_SMOOTH
+    real(eb) :: delta, FIRE_EPS
+#endif
 #endif
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -100,9 +105,11 @@ module fire_routines
         q_firemass = cp*mdot_pyrolysis_unburned*interior_ambient_temperature
         factor = 1.0
 ! smoothly set entrainment to 0 as layer approaches within FIRE_EPS of fire height
+#ifdef pp_SMOOTH
         delta = roomptr%depth(l)-(fireptr%z_position+fireptr%z_offset)
         FIRE_EPS = 0.25
         if(delta.gt.0.0 .and. delta.lt.FIRE_EPS)factor = delta/FIRE_EPS
+#endif
         m_entrained = factor*fireptr%mdot_entrained
         q_entrained = cp*fireptr%mdot_entrained*t_lower
 #else

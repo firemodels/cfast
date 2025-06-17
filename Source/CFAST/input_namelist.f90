@@ -1642,6 +1642,74 @@ continue
 
     end subroutine read_chem
 
+    ! --------------------------- check_vent -------------------------------------------
+    
+    integer function check_vent(line_number,ivent,sill, soffit, from_room, to_room)
+    integer, intent(in)      :: line_number,ivent, from_room, to_room
+    real(eb), intent(in)     :: sill, soffit
+    type(room_type), pointer :: from_roomptr, to_roomptr
+
+    check_vent = 1
+    from_roomptr => roominfo(from_room)
+    if(to_room .ne. n_rooms + 1)to_roomptr => roominfo(to_room)
+
+    if (sill > soffit) then
+       write(6,100)line_number,soffit,ivent,sill
+100    format("***fatal error: input line number(",i5,&
+              "), soffit(",e13.6,") of vent ",i4," is below sill(",e13.6,")")
+       check_vent = 0
+    endif
+    if(soffit<from_roomptr%z0) then
+       write(6,102)line_number,soffit,ivent,from_roomptr%z0,from_room
+102    format("***fatal error: input line number ",i5,&
+              ", soffit(",e13.6,") of vent ",i4," is below the bottom(",e13.6,") of room ",i4)
+       check_vent = 0
+    endif
+    if(sill<from_roomptr%z0) then
+       write(6,103)line_number,sill,ivent,from_roomptr%z0,from_room
+103    format("***fatal error: input line number",i5,&
+              ", sill(",e13.6,") of vent ",i4," is below the bottom(",e13.6,") of room ",i4)
+       check_vent = 0
+    endif
+    if(soffit>from_roomptr%z0+from_roomptr%cheight) then
+       write(6,104)line_number,soffit,ivent,+from_roomptr%cheight,from_room
+104    format("***fatal error: input line number",i5,&
+               ", soffit(",e13.6,") of vent ",i4," is above the top(",e13.6,") of room ",i4)
+       check_vent = 0
+    endif
+    if(sill>from_roomptr%z0+from_roomptr%cheight) then
+       write(6,105)line_number,sill,ivent,+from_roomptr%cheight,from_room
+105    format("***fatal error: input line number",i5,&
+              ", sill(",e13.6,") of vent ",i4," is above the top(",e13.6,") of room ",i4)
+       check_vent = 0
+    endif
+    if (to_room .ne. n_rooms + 1) then
+       if(soffit<to_roomptr%z0) then
+          write(6,106)line_number,soffit,ivent,to_roomptr%z0,to_room
+106       format("***fatal error: input line number",i5,&
+                 ", soffit(",e13.6,") of vent ",i4," is below the bottom(",e13.6,") of room ",i4)
+          check_vent = 0
+       endif
+       if(sill<to_roomptr%z0) then
+          write(6,107)line_number,sill,ivent,to_roomptr%z0,to_room
+107       format("***fatal error: input line number",i5,&
+                 ", sill(",e13.6,") of vent ",i4," is below the bottom(",e13.6,") of room ",i4)
+          check_vent = 0
+       endif
+       if(soffit>to_roomptr%z0+to_roomptr%cheight) then
+          write(6,108)line_number,soffit,ivent,to_roomptr%z0+to_roomptr%cheight,to_room
+108       format("***fatal error: input line number",i5,&
+                 ", soffit(",e13.6,") of vent ",i4," is above the top(",e13.6,") of room ",i4)
+          check_vent = 0
+       endif
+       if(sill>to_roomptr%z0+to_roomptr%cheight) then
+          write(6,109)line_number,sill,ivent,to_roomptr%z0+to_roomptr%cheight,to_room
+109       format("***fatal error: input line number",i5,&
+                 ", sill(",e13.6,") of vent ",i4," is above the top(",e13.6,") of room ",i4)
+          check_vent = 0
+       endif
+    endif
+    end function check_vent
 
     ! --------------------------- read_vent -------------------------------------------
     
@@ -1654,10 +1722,10 @@ continue
     integer, intent(in) :: lu
 
     integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts, ic
-    integer :: ios
+    integer :: ios, abort_vent, from_room, to_room
     character(len=64) :: compartment_id
 
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: from_roomptr, to_roomptr
     type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
 
@@ -1723,6 +1791,7 @@ continue
         counter3=0
 
         ! Assign value to CFAST variables for further calculations
+        abort_vent = 0
         read_vent_loop: do ii=1,n_hvents+n_mvents+n_vvents
 
             call checkread('VENT',lu,ios)
@@ -1765,12 +1834,15 @@ continue
 
                 ! absolute positions are always relative to the floor of the "inside" room
                 if (imin == n_rooms+1) then
-                    roomptr => roominfo(jmax)
+                    from_roomptr => roominfo(jmax)
+                    from_room    = jmax
+                    to_room      = n_rooms + 1
                 else
-                    roomptr => roominfo(imin)
+                    from_roomptr => roominfo(imin)
+                    to_roomptr   => roominfo(jmax)
+                    from_room     = imin
+                    to_room       = jmax
                 end if
-                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
-                ventptr%absolute_sill = ventptr%sill + roomptr%z0
 
                 ventptr%cvent = flow_coefficient
 
@@ -1778,26 +1850,31 @@ continue
                     write (errormessage,5081) i, j, k
                     call cfastexit('read_vent',7)
                 end if
-                
+
                 ! position
                 ventptr%width  = width
                 if (convert_negative_distances) then
-                    roomptr => roominfo(ventptr%room1)
-                    if (top<0._eb) top = roomptr%cheight + top
-                    if (bottom<0._eb) bottom = roomptr%cheight + bottom
+                    from_roomptr => roominfo(ventptr%room1)
+                    if (top<0._eb) top = from_roomptr%cheight + top
+                    if (bottom<0._eb) bottom = from_roomptr%cheight + bottom
                 end if
                 ventptr%sill   = bottom
                 ventptr%soffit = top
                 if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
+                ventptr%absolute_soffit = ventptr%soffit + from_roomptr%z0
+                ventptr%absolute_sill   = ventptr%sill   + from_roomptr%z0
+                if (check_vent(input_file_line_number,ii,ventptr%absolute_sill,ventptr%absolute_soffit,from_room,to_room) == 0) then
+                   abort_vent = 1
+                endif
 
                 if (trim(face) == 'FRONT') ventptr%face=1
                 if (trim(face) == 'RIGHT') ventptr%face=2
                 if (trim(face) == 'REAR') ventptr%face=3
                 if (trim(face) == 'LEFT') ventptr%face=4
-                
+
                 ventptr%offset(1) = offset
                 ventptr%offset(2) = 0._eb
-                
+
                 call set_criterion
 
                 ! Mechanical vent
@@ -1840,12 +1917,12 @@ continue
                 ! diffuser locations
                 if (convert_negative_distances) then
                     if (ventptr%room1<n_rooms) then
-                        roomptr => roominfo(ventptr%room1)
-                        if (heights(1)<0._eb) heights(1) = roomptr%cheight + heights(1)
+                        from_roomptr => roominfo(ventptr%room1)
+                        if (heights(1)<0._eb) heights(1) = from_roomptr%cheight + heights(1)
                     end if
                     if (ventptr%room2<n_rooms) then
-                        roomptr => roominfo(ventptr%room2)
-                        if (heights(2)<0._eb) heights(2) = roomptr%cheight + heights(2)
+                        from_roomptr => roominfo(ventptr%room2)
+                        if (heights(2)<0._eb) heights(2) = from_roomptr%cheight + heights(2)
                     end if
                 end if
                 ventptr%height(1) = heights(1)
@@ -1862,7 +1939,7 @@ continue
 
                 ventptr%xoffset = offsets(1)
                 ventptr%yoffset = offsets(2)
-                
+
                 if (trim(criterion) /= 'NULL') then
                     call set_criterion
                 end if
@@ -1911,7 +1988,7 @@ continue
 
                 ventptr%xoffset = offsets(1)
                 ventptr%yoffset = offsets(2)
-                
+
                 if (trim(criterion) /='NULL') then
                     call set_criterion 
                 end if
@@ -1920,6 +1997,7 @@ continue
         end do read_vent_loop
 
     end if vent_flag
+    if(abort_vent==1)call cfastexit('read_vent', 13)
 
 5070 format ('***Error, Bad VENT input. Parameter(s) outside of allowable range',2I4)
 5080 format ('***Error, Bad VENT input. Too many pairwise horizontal connections',3I5)
@@ -2023,13 +2101,13 @@ continue
         compartment_id=trim(comp_ids(mm))
 
         searching: do jj=1,n_rooms
-            roomptr => roominfo(jj)
+            from_roomptr => roominfo(jj)
             if (trim(compartment_id) == 'OUTSIDE') then
                 iroom = n_rooms+1
                 exit searching
             end if
-            if (trim(compartment_id) == trim(roomptr%id)) then
-                iroom = roomptr%compartment
+            if (trim(compartment_id) == trim(from_roomptr%id)) then
+                iroom = from_roomptr%compartment
                 exit searching
             end if
         end do searching

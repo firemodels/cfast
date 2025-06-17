@@ -104,11 +104,7 @@ module cfast_types
         ! These are calculated results for the current time step
         real(eb) :: firearea                            ! area of the base of the fire
         real(eb) :: mdot_trace                          ! trace species production rate
-#ifdef pp_FIRE
-        real(eb) :: mdot_pyrolysis_burned               ! mass pyrolysis rate of the fire
-#else
         real(eb) :: mdot_pyrolysis                      ! mass pyrolysis rate of the fire
-#endif
         real(eb) :: mdot_entrained                      ! mass entrainment rate into the plume
         real(eb) :: mdot_plume                          ! mass rate from plume into upper layer = pyrolysis + entrained
 
@@ -117,6 +113,9 @@ module cfast_types
 
         real(eb) :: qdot_theoretical                    ! HRR as input by the user, unmodified by available oxygen or sprinklers
         real(eb) :: qdot_actual                         ! actual HRR (limited by available oxygen)
+#ifdef pp_FIRE
+        real(eb) :: mdot_actual                         ! actual mdot corresponding to qdot_actual
+#endif
         real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
         real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)
         real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)

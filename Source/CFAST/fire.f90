@@ -50,12 +50,12 @@ module fire_routines
 ! uncomment following line to turn on entrainment smoothing
 !#define pp_SMOOTH
 #ifdef pp_FIRE
-    real(eb) :: mdot_pyrolysis_unburned
-    real(eb) :: m_entrained, factor
+    real(eb) :: mdot_pyrolysis_unburned, factor
 #ifdef pp_SMOOTH
     real(eb) :: delta, FIRE_EPS
 #endif
 #endif
+    real(eb) :: m_entrained
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -111,12 +111,11 @@ module fire_routines
         if(delta.gt.0.0 .and. delta.lt.FIRE_EPS)factor = delta/FIRE_EPS
 #endif
         m_entrained = factor*fireptr%mdot_entrained
-        q_entrained = cp*fireptr%mdot_entrained*t_lower
 #else
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         m_entrained = fireptr%mdot_entrained
-        q_entrained = cp*m_entrained*t_lower
 #endif
+        q_entrained = cp*m_entrained*t_lower
 
         ! sum the flows for return to the source routine
 

@@ -1642,6 +1642,7 @@ continue
 
     end subroutine read_chem
 
+#ifdef pp_CHECKVENT
     ! --------------------------- check_vent -------------------------------------------
     
     integer function check_vent(line_number,ivent,sill, soffit, from_room, to_room)
@@ -1710,6 +1711,7 @@ continue
        endif
     endif
     end function check_vent
+#endif
 
     ! --------------------------- read_vent -------------------------------------------
     
@@ -1863,9 +1865,11 @@ continue
                 if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
                 ventptr%absolute_soffit = ventptr%soffit + from_roomptr%z0
                 ventptr%absolute_sill   = ventptr%sill   + from_roomptr%z0
+#ifdef pp_CHECKVENT
                 if (check_vent(input_file_line_number,ii,ventptr%absolute_sill,ventptr%absolute_soffit,from_room,to_room) == 0) then
                    abort_vent = 1
                 endif
+#endif
 
                 if (trim(face) == 'FRONT') ventptr%face=1
                 if (trim(face) == 'RIGHT') ventptr%face=2

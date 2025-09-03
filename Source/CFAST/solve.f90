@@ -1173,7 +1173,6 @@ module solve_routines
 
     if (n_furn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,n_furn,stime,1,wtemp)
-        wtemp = wtemp + kelvin_c_offset
         qfurnout=sigma*wtemp**4
     end if
 

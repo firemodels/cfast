@@ -26,7 +26,8 @@ module initialization_routines
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
         pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, &
-        slab_splits, alloc_room, init_room
+        slab_splits, alloc_room, init_room, &
+        interior_ambient_o2, exterior_ambient_o2, interior_ambient_n2, exterior_ambient_n2
     use setup_data, only: iofill, debugging, deltat, init_scalars, errormessage
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol, stp_cnt_max
@@ -203,8 +204,8 @@ module initialization_routines
     if (option(foxygen)==on) then
         do iroom = 1, n_rooms
             roomptr => roominfo(iroom)
-            p(iroom+nofoxyu)=0.23_eb*roomptr%mass(u)
-            p(iroom+nofoxyl)=0.23_eb*roomptr%mass(l)
+            p(iroom+nofoxyu)=interior_ambient_o2*roomptr%mass(u)
+            p(iroom+nofoxyl)=interior_ambient_o2*roomptr%mass(l)
         end do
     end if
 
@@ -676,8 +677,8 @@ module initialization_routines
     initial_mass_fraction(1:ns) = 0.0_eb
 
     ! normal air
-    initial_mass_fraction(1) = 0.770_eb
-    initial_mass_fraction(2) = 0.230_eb
+    initial_mass_fraction(1) = interior_ambient_n2
+    initial_mass_fraction(2) = interior_ambient_o2
     
     do i = 1, n_rooms
         roomptr => roominfo(i)

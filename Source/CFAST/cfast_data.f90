@@ -283,8 +283,9 @@ module room_data
     ! compartment variables
 
     real(eb), target :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, &
-        t_ref, initial_mass_fraction(ns), interior_rho, exterior_rho, interior_ambient_temperature, &
-        exterior_ambient_temperature
+        t_ref, initial_mass_fraction(ns), interior_rho, exterior_rho, &
+        interior_ambient_temperature, exterior_ambient_temperature, &
+        interior_ambient_o2, exterior_ambient_o2, interior_ambient_n2, exterior_ambient_n2
     
     integer :: n_rooms
     type(room_type), allocatable, dimension(:), target :: roominfo

@@ -1,3 +1,4 @@
+
 \chapter{CFAST Text-based Input File}
 
 The operation of CFAST is based on a single ASCII\footnote{ASCII -- American Standard Code for Information Interchange. There are 256 characters that make up the standard ASCII text.} text file containing parameters organized into {\em namelist}\footnote{A {\em namelist} is a Fortran input record.} groups.
@@ -176,8 +177,10 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRESSURE}                   & Real   		   & Section \ref{info:INIT}      & Pa       		     & 101325     		       \\ \hline
 {\ct RELATIVE\_HUMIDITY}         & Real   		   & Section \ref{info:INIT}      & \%      		     & 50       		       \\ \hline
-{\ct INTERIOR\_TEMPERATURE}       & Real  	       & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
-{\ct EXTERIOR\_TEMPERATURE}       & Real            & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+{\ct INTERIOR\_TEMPERATURE}      & Real  	       & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+{\ct EXTERIOR\_TEMPERATURE}      & Real            & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+{\ct INTERIOR\_O2\_CONC}         & Real  	       & Section \ref{info:INIT}      & kg/kg                & 0.23        \\ \hline
+{\ct EXTERIOR\_O2\_CONC}         & Real            & Section \ref{info:INIT}      & kg/kg	    	     & 0.23        \\ \hline
 \end{longtable}
 
 

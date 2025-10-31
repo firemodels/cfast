@@ -177,6 +177,7 @@
     real(eb), parameter :: default_temperature = 293.15_eb
     real(eb), parameter :: default_pressure = 101325._eb
     real(eb), parameter :: default_relative_humidity = 0.5_eb
+    real(eb), parameter :: default_o2_conc = 0.23_eb
     
     ! fire-related default values
     real(eb), parameter :: default_lower_oxygen_limit = 0.15_eb

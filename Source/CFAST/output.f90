@@ -17,7 +17,8 @@ module output_routines
     use option_data, only: on, option, total_steps, foxygen
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
+        interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections, &
+        interior_ambient_o2, exterior_ambient_o2
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, listoutput, &
@@ -703,14 +704,15 @@ module output_routines
     subroutine output_initial_ambient_conditions
 
     write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
-       exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
+       exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset, &
+       interior_ambient_o2, exterior_ambient_o2
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
-    'Interior       Interior       Exterior       Exterior',/, &
-    'Temperature    Pressure       Temperature    Pressure',/, &
-    '  (C)            (Pa)           (C)            (Pa)', &
-    /,53('-'),/,2(f7.0,8x,f9.0,6x))
+    'Interior       Interior       Exterior       Exterior       Interior       Exterior',/, &
+    'Temperature    Pressure       Temperature    Pressure       O2 conc        O2 conc',/, &
+    '  (C)            (Pa)           (C)            (Pa)         (kg/kg)        (kg/kg)', &
+    /,83('-'),/,f7.0,8x,f9.0,6x,f7.0,8x,f9.0,3x,f7.2,8x,f7.2)
 
     end subroutine output_initial_ambient_conditions
 

@@ -18,7 +18,7 @@ module output_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections, &
-        interior_ambient_o2, exterior_ambient_o2
+        interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, listoutput, &
@@ -705,7 +705,7 @@ module output_routines
 
     write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
        exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset, &
-       interior_ambient_o2, exterior_ambient_o2
+       interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &

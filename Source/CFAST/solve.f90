@@ -37,7 +37,8 @@ module solve_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, n_vcons, vertical_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
-        interior_ambient_o2, exterior_ambient_o2, interior_ambient_n2, exterior_ambient_n2
+        interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
+        interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofilo, iofill, initializeonly, stime, i_time_step, time_end, deltat, print_out_interval, &
         smv_out_interval, ss_out_interval, nokbd, stopfile, queryfile, cfast_version, errormessage
     use smkview_data, only: smv_room, smv_xfire, smv_yfire, smv_zfire, smv_relp, smv_zlay, smv_tu, smv_tl, smv_qdot, smv_height
@@ -1257,10 +1258,10 @@ module solve_routines
         roomptr%species_fraction(l,3:ns) = 0.0_eb
         roomptr%species_mass(l,3:ns) = 0.0_eb
         roomptr%species_mass(u,3:ns) = 0.0_eb
-        roomptr%species_fraction(u,n2) = exterior_ambient_n2
-        roomptr%species_fraction(l,n2) = exterior_ambient_n2
-        roomptr%species_fraction(u,o2) = exterior_ambient_o2
-        roomptr%species_fraction(l,o2) = exterior_ambient_o2
+        roomptr%species_fraction(u,n2) = exterior_ambient_n2_mass_fraction
+        roomptr%species_fraction(l,n2) = exterior_ambient_n2_mass_fraction
+        roomptr%species_fraction(u,o2) = exterior_ambient_o2_mass_fraction
+        roomptr%species_fraction(l,o2) = exterior_ambient_o2_mass_fraction
 
         ! set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam

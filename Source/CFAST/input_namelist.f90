@@ -16,7 +16,7 @@
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
-        default_min_cutoff_relp, default_max_cutoff_relp, default_o2_conc
+        default_min_cutoff_relp, default_max_cutoff_relp, default_o2_mass_fraction
     
     use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo, init_devc
     use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
@@ -34,7 +34,8 @@
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls, &
-        interior_ambient_o2, exterior_ambient_o2, interior_ambient_n2, exterior_ambient_n2
+        interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
+        interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, errormessage
     use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
@@ -236,8 +237,9 @@
     integer, intent(in) :: lu
 
     real(eb) :: pressure
-    real(eb) :: interior_temperature, exterior_temperature, interior_o2_conc, exterior_o2_conc
-    namelist /INIT/ pressure, relative_humidity, interior_temperature, exterior_temperature, interior_o2_conc, exterior_o2_conc
+    real(eb) :: interior_temperature, exterior_temperature, interior_o2_mass_fraction, exterior_o2_mass_fraction
+    namelist /INIT/ pressure, relative_humidity, interior_temperature, exterior_temperature, &
+                    interior_o2_mass_fraction, exterior_o2_mass_fraction
 
     ios = 1
 
@@ -269,14 +271,14 @@
 
         exterior_ambient_temperature  = exterior_temperature + kelvin_c_offset
         interior_ambient_temperature  = interior_temperature + kelvin_c_offset
-        interior_o2_conc = MAX(0.0_eb, interior_o2_conc)
-        interior_o2_conc = MIN(1.0_eb, interior_o2_conc)
-        exterior_o2_conc = MAX(0.0_eb, exterior_o2_conc)
-        exterior_o2_conc = MIN(1.0_eb, exterior_o2_conc)
-        interior_ambient_o2           = interior_o2_conc
-        exterior_ambient_o2           = exterior_o2_conc
-        interior_ambient_n2           = 1.0_eb - interior_ambient_o2
-        exterior_ambient_n2           = 1.0_eb - exterior_ambient_o2
+        interior_o2_mass_fraction = MAX(0.0_eb, interior_o2_mass_fraction)
+        interior_o2_mass_fraction = MIN(1.0_eb, interior_o2_mass_fraction)
+        exterior_o2_mass_fraction = MAX(0.0_eb, exterior_o2_mass_fraction)
+        exterior_o2_mass_fraction = MIN(1.0_eb, exterior_o2_mass_fraction)
+        interior_ambient_o2_mass_fraction       = interior_o2_mass_fraction
+        exterior_ambient_o2_mass_fraction       = exterior_o2_mass_fraction
+        interior_ambient_n2_mass_fraction       = 1.0_eb - interior_ambient_o2_mass_fraction
+        exterior_ambient_n2_mass_fraction       = 1.0_eb - exterior_ambient_o2_mass_fraction
         exterior_abs_pressure = pressure
         relative_humidity     = relative_humidity*0.01_eb
 
@@ -288,12 +290,12 @@
 
     subroutine set_defaults
 
-    exterior_temperature     = default_temperature - kelvin_c_offset    ! C
-    interior_temperature     = default_temperature - kelvin_c_offset    ! C
-    interior_o2_conc         = default_o2_conc                          ! kg/kg
-    exterior_o2_conc         = default_o2_conc                          ! kg/kg
-    pressure                 = default_pressure                         ! Pa
-    relative_humidity        = default_relative_humidity*100._eb        ! %
+    exterior_temperature      = default_temperature - kelvin_c_offset    ! C
+    interior_temperature      = default_temperature - kelvin_c_offset    ! C
+    interior_o2_mass_fraction = default_o2_mass_fraction                 ! kg/kg
+    exterior_o2_mass_fraction = default_o2_mass_fraction                 ! kg/kg
+    pressure                  = default_pressure                         ! Pa
+    relative_humidity         = default_relative_humidity*100._eb        ! %
 
     end subroutine set_defaults
 

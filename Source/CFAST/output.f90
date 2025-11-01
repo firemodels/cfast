@@ -710,7 +710,7 @@ module output_routines
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
     'Interior       Interior       Exterior       Exterior       Interior       Exterior',/, &
-    'Temperature    Pressure       Temperature    Pressure       O2 conc        O2 conc',/, &
+    'Temperature    Pressure       Temperature    Pressure       O2 mass frac   O2 mass frac',/, &
     '  (C)            (Pa)           (C)            (Pa)         (kg/kg)        (kg/kg)', &
     /,83('-'),/,f7.0,8x,f9.0,6x,f7.0,8x,f9.0,3x,f7.2,8x,f7.2)
 
@@ -1053,7 +1053,7 @@ module output_routines
 
 5000 format (//,'All compartment surfaces are adiabatic.')
      5010 format (//,'THERMAL PROPERTIES',//,'Name',4X,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
-          5X,'Emissivity',/,8x, '(kW/(m �C))       (kJ/(m �C))       (kg/m^3)       (m)',/,83('-'))
+          5X,'Emissivity',/,8x, '(kW/(m  C))       (kJ/(m  C))       (kg/m^3)       (m)',/,83('-'))
 5040 format (a8,5(1pg13.3,3x),5e10.2)
 5050 format (8x,4(1pg13.3,3x))
 5060 format (' ')

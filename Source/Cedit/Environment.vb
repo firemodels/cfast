@@ -21,6 +21,8 @@ Public Class Environment
     Private aIntAmbRH As Double                     ' Ambient relative humidity inside the structure at t=0
     Private aExtAmbTemperature As Double            ' Ambient temperature outside the structure at t=0
     Private aExtAmbPressure As Double               ' Ambient pressure outside the structure at t=0
+    Private aIntAmbO2MassFraction As Double         ' Ambient oxygen mass fraction inside the structure at t=0
+    Private aExtAmbO2MassFraction As Double         ' Ambient oxygen mass fraction outside the structure at t=0
     Private aExtAmbElevation As Double              ' Reference elevation for measurement of ambients outside the structure
     Private aExtWindSpeed As Double                 ' Ambient wind speed outside the structure
     Private aExtScaleHeight As Double               ' Height at which wind speed is measured
@@ -79,6 +81,8 @@ Public Class Environment
         aIntAmbPressure = 101325.0
         aIntAmbElevation = 0.0
         aIntAmbRH = 50.0
+        aIntAmbO2MassFraction = 0.23
+        aExtAmbO2MassFraction = 0.23
         aExtAmbTemperature = 293.15
         aExtAmbPressure = 101325.0
         aExtAmbElevation = 0.0
@@ -211,6 +215,28 @@ Public Class Environment
             If Value <> IntAmbRH Then
                 aChanged = True
                 aIntAmbRH = Value
+            End If
+        End Set
+    End Property
+    Friend Property IntAmbO2MassFraction() As Double
+        Get
+            Return aIntAmbO2MassFraction
+        End Get
+        Set(ByVal Value As Double)
+            If Value <> IntAmbO2MassFraction Then
+                aChanged = True
+                aIntAmbO2MassFraction = Value
+            End If
+        End Set
+    End Property
+    Friend Property ExtAmbO2MassFraction() As Double
+        Get
+            Return aExtAmbO2MassFraction
+        End Get
+        Set(ByVal Value As Double)
+            If Value <> ExtAmbO2MassFraction Then
+                aChanged = True
+                aExtAmbO2MassFraction = Value
             End If
         End Set
     End Property

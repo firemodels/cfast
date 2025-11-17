@@ -103,12 +103,14 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLInit(NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
-        Dim pressure, rh, intemp, extemp As Double
+        Dim pressure, rh, intemp, extemp, intO2, extO2 As Double
 
         pressure = 101325
         rh = 50
         intemp = 20
         extemp = 20
+        intO2 = 0.23
+        extO2 = 0.23
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "INIT") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
@@ -120,6 +122,10 @@ Module IO
                         intemp = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "EXTERIOR_TEMPERATURE") Then
                         extemp = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTERIOR_O2_MASS_FRACTION") Then
+                        intO2 = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "EXTERIOR_O2_MASS_FRACTION") Then
+                        extO2 = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
                         myErrors.Add("In INIT namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -130,6 +136,8 @@ Module IO
         someEnvironment.ExtAmbTemperature = extemp + 273.15
         someEnvironment.ExtAmbPressure = pressure
         someEnvironment.IntAmbRH = rh
+        someEnvironment.IntAmbO2MassFraction = intO2
+        someEnvironment.ExtAmbO2MassFraction = extO2
         someEnvironment.Changed = False
     End Sub
     Private Sub ReadInputFileNMLMisc(NMList As NameListFile, ByRef someEnvironment As Environment)
@@ -2395,7 +2403,11 @@ Module IO
         'Writing INIT namelist
         ln = "&INIT " + "PRESSURE = " + MyEnvironment.ExtAmbPressure.ToString + " RELATIVE_HUMIDITY = " + MyEnvironment.IntAmbRH.ToString
         ln += " INTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.IntAmbTemperature - 273.15), 2).ToString
-        ln += " EXTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.ExtAmbTemperature - 273.15), 2).ToString + " /"
+        ln += " EXTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.ExtAmbTemperature - 273.15), 2).ToString
+        PrintLine(IO, ln)
+        ln = "      INTERIOR_O2_MASS_FRACTION = " + MyEnvironment.IntAmbO2MassFraction.ToString
+        ln += " EXTERIOR_O2_MASS_FRACTION = " + MyEnvironment.ExtAmbO2MassFraction.ToString
+        ln += " /"
         PrintLine(IO, ln)
     End Sub
     Private Sub WriteOutputFileNMLMisc(IO As Integer, ByRef MyEnvironment As Environment)
@@ -2409,7 +2421,7 @@ Module IO
             aFlag = False
         End If
         If MyEnvironment.AdiabaticWalls <> False Then
-            ln += " ADIABATIC = .TRUE. "
+            ln += " ADIABATIC = .True. "
         End If
         If MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + MyEnvironment.MaximumTimeStep.ToString
@@ -2424,7 +2436,7 @@ Module IO
             ln += " SPECIFIC_EXTINCTION = " + MyEnvironment.FlamingExtinctionCoefficient.ToString + ", " + MyEnvironment.SmolderingExtinctionCoefficient.ToString
         End If
         If MyEnvironment.Overwrite <> True Then
-            ln += " OVERWRITE = .FALSE."
+            ln += " OVERWRITE = .False."
         End If
         If aFlag Then
             ln += " / "
@@ -2438,7 +2450,7 @@ Module IO
         Dim x(0), f(0) As Double, i As Integer
 
         'Writing Diagnostics 
-        If Myenvironment.DIAGRadSolver = "DEFAULT" Then
+        If Myenvironment.DIAGRadSolver = "Default" Then
             wrtDIAG = True
             wrtSlash = False
         Else

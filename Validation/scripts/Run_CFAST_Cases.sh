@@ -12,9 +12,6 @@ echo "-m max_iterations - stop cfast runs after a specifed number of iterations 
 echo "     example: an option of 10 would cause cfast to stop after 10 iterations"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
-echo "-p size - platform size"
-echo "     default: 64"
-echo "     other options: 32"
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
 echo "-s - stop CFAST runs"
@@ -24,7 +21,6 @@ exit
 }
 STOPFDS=
 queue=
-size=64
 DEBUG=
 JOBPREFIX=
 use_installed=
@@ -54,9 +50,6 @@ case $OPTION in
   m)
    export STOPFDSMAXITER="$OPTARG"
    ;;
-  p)
-   size="$OPTARG"
-   ;;
   q)
    queue="$OPTARG"
    ;;
@@ -78,9 +71,9 @@ done
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx_${size}
+  PLATFORM=osx_64
 else
-  PLATFORM=linux_${size}
+  PLATFORM=linux_64
 fi
 PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG

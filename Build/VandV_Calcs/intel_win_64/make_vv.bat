@@ -8,7 +8,7 @@ call ..\..\scripts\setup_intel_compilers.bat intel64
 
 Title VV app for 64 bit Windows
 
-make SHELL="%ComSpec%" -f ..\makefile intel_win_64
+make SHELL="%ComSpec%" -f ..\makefile intel_win
 if x%arg1% == xbot goto skip2
 pause
 :skip2

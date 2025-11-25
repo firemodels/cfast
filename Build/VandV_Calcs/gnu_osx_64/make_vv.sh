@@ -1,5 +1,5 @@
 #!/bin/bash
-platform=gnu_osx_64
+platform=gnu_osx
 dir=`pwd`
 target=${dir##*/}
 

@@ -3,4 +3,4 @@ platform=intel64
 dir=`pwd`
 target=${dir##*/}
 
-make -f ../makefile intel_osx_64
+make -f ../makefile intel_osx

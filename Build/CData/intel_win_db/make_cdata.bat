@@ -14,7 +14,7 @@ if "x%arg2%" == "xrelease" (
 
 Title Building cdata for 64 bit Windows
 
-make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win_64_db
+make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win_db
 if x%arg1% == xbot goto skip2
 pause
 :skip2

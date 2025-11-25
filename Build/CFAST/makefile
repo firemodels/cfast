@@ -3,7 +3,7 @@
 # To use this makefile, select the appropriate compiler and OS from the list below. For example, to
 # compile the 64 bit version of CFAST under Linux using the Intel compilers type:
 #
-# make intel_linux_64
+# make intel_linux
 
 # A make utility for windows may be downloaded from http://gnuwin32.sourceforge.net/packages/make.htm
 
@@ -74,96 +74,96 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_win_64 : FCOMPL = gfortran
-gnu_win_64 : LFLAGS = 
-gnu_win_64 : obj = cfast7_win_64
-gnu_win_64 : $(objfgnu)
+gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_win : FCOMPL = gfortran
+gnu_win : LFLAGS = 
+gnu_win : obj = cfast7_win
+gnu_win : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu windows debug
-gnu_win_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_win_64_db : FCOMPL = gfortran
-gnu_win_64_db : LFLAGS = 
-gnu_win_64_db : obj = cfast7_win_64_db
-gnu_win_64_db : $(objfgnu)
+gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_win_db : FCOMPL = gfortran
+gnu_win_db : LFLAGS = 
+gnu_win_db : obj = cfast7_win_db
+gnu_win_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_win_64 : FFLAGS = /O2 /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO) $(PREPROCESS)
-intel_win_64 : FCOMPL = ifx
-intel_win_64 : obj = cfast7_win_64
-intel_win_64 : setup_win $(objwin)
+intel_win : FFLAGS = /O2 /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO) $(PREPROCESS)
+intel_win : FCOMPL = ifx
+intel_win : obj = cfast7_win
+intel_win : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f18 $(GITINFO) $(PREPROCESS)
-intel_win_64_db : FCOMPL = ifx
-intel_win_64_db : obj = cfast7_win_64_db
-intel_win_64_db : setup_win $(objwin)
+intel_win_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f18 $(GITINFO) $(PREPROCESS)
+intel_win_db : FCOMPL = ifx
+intel_win_db : obj = cfast7_win_db
+intel_win_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin)  	
 
-# gnu linux_64
+# gnu linux
 
-gnu_linux_64 : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_linux_64 : FCOMPL = gfortran
-gnu_linux_64 : LFLAGS = 
-gnu_linux_64 : obj = cfast7_linux_64
-gnu_linux_64 : $(objfgnu)
+gnu_linux : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_linux : FCOMPL = gfortran
+gnu_linux : LFLAGS = 
+gnu_linux : obj = cfast7_linux
+gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu linux debug
-gnu_linux_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_linux_64_db : FCOMPL = gfortran
-gnu_linux_64_db : LFLAGS = 
-gnu_linux_64_db : obj = cfast7_linux_64_db
-gnu_linux_64_db : $(objfgnu)
+gnu_linux_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_linux_db : FCOMPL = gfortran
+gnu_linux_db : LFLAGS = 
+gnu_linux_db : obj = cfast7_linux_db
+gnu_linux_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO) $(PREPROCESS)
-intel_linux_64 : LFLAGS = -static-intel
-intel_linux_64 : FCOMPL = ifx
-intel_linux_64 : obj = cfast7_linux_64
-intel_linux_64 : $(objf)
+intel_linux : FFLAGS = -m64 -O0 -static -gen-interfaces -warn interfaces -traceback $(GITINFO) $(PREPROCESS)
+intel_linux : LFLAGS = -static-intel
+intel_linux : FCOMPL = ifx
+intel_linux : obj = cfast7_linux
+intel_linux : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
-#intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fp-model strict -debug full
-intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict $(GITINFO) $(PREPROCESS)
-intel_linux_64_db : LFLAGS = -static-intel
-intel_linux_64_db : FCOMPL = ifx
-intel_linux_64_db : obj = cfast7_linux_64_db
-intel_linux_64_db : $(objf)
+#intel_linux_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fp-model strict -debug full
+intel_linux_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict $(GITINFO) $(PREPROCESS)
+intel_linux_db : LFLAGS = -static-intel
+intel_linux_db : FCOMPL = ifx
+intel_linux_db : obj = cfast7_linux_db
+intel_linux_db : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_osx_64: FCOMPL = gfortran
-gnu_osx_64 : LFLAGS = 
-gnu_osx_64 : obj = cfast7_osx_64
-gnu_osx_64 : $(objfgnu)
+gnu_osx : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_osx: FCOMPL = gfortran
+gnu_osx : LFLAGS = 
+gnu_osx : obj = cfast7_osx
+gnu_osx : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
-gnu_osx_64_db : FCOMPL = gfortran
-gnu_osx_64_db : LFLAGS = 
-gnu_osx_64_db : obj = cfast7_osx_64_db
-gnu_osx_64_db : $(objfgnu)
+gnu_osx_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_osx_db : FCOMPL = gfortran
+gnu_osx_db : LFLAGS = 
+gnu_osx_db : obj = cfast7_osx_db
+gnu_osx_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -traceback -heap-arrays -static-intel -fp-model strict $(GITINFO) $(PREPROCESS)
-intel_osx_64 : FCOMPL = ifx
-intel_osx_64 : obj = cfast7_osx_64
-intel_osx_64 : $(objf)
+intel_osx : FFLAGS = -fpp -O2 -save -zero -m64 -traceback -heap-arrays -static-intel -fp-model strict $(GITINFO) $(PREPROCESS)
+intel_osx : FCOMPL = ifx
+intel_osx : obj = cfast7_osx
+intel_osx : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.7 -o $(obj) $(objf)
 
-intel_osx_64_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fp-model strict -fp-stack-check -FR -WB $(GITINFO) $(PREPROCESS)
-intel_osx_64_db : FCOMPL = ifx
-intel_osx_64_db : obj = cfast7_osx_64_db
-intel_osx_64_db : $(objf)
+intel_osx_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fp-model strict -fp-stack-check -FR -WB $(GITINFO) $(PREPROCESS)
+intel_osx_db : FCOMPL = ifx
+intel_osx_db : obj = cfast7_osx_db
+intel_osx_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.7 -o $(obj) $(objf)
 #*** End Compiler Specific Rules ***
 

@@ -5,4 +5,4 @@ target=${dir##*/}
 
 echo Building $target
 make -f ../makefile $target
-../../../Utilities/scripts/md5hash.sh cfast7_linux_64_db
+../../../Utilities/scripts/md5hash.sh cfast7_osx

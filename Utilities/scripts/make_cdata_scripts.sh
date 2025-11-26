@@ -8,7 +8,7 @@ EXT=.in
 export STOPFDSMAXITER=100000
 cat << EOF > $OUTFILE
 #!/bin/bash
-CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
+CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux/cfast7_linux
 
 EOF
 

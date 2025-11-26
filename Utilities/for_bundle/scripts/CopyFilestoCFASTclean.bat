@@ -22,20 +22,20 @@ copy %cfast_root%\Source\Cedit\obj\Release\CEdit.exe %cfast_root%\Utilities\for_
 
 @echo ***     Create CFAST
 call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
-cd %cfast_root%\Build\CFAST\intel_win_64
+cd %cfast_root%\Build\CFAST\intel_win
 call make_cfast.bat bot release
-copy cfast7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cfast.exe /Y
+copy cfast7_win.exe %cfast_root%\Utilities\for_bundle\Bin\cfast.exe /Y
 
 @echo ***     Create CData
 call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
-cd %cfast_root%\Build\Cdata\intel_win_64
+cd %cfast_root%\Build\Cdata\intel_win
 call make_cdata.bat bot release
-copy cdata7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cdata.exe /Y
+copy cdata7_win.exe %cfast_root%\Utilities\for_bundle\Bin\cdata.exe /Y
 
 @echo ***     Create VandVCalcs
-cd %cfast_root%\Build\VandV_Calcs\intel_win_64
+cd %cfast_root%\Build\VandV_Calcs\intel_win
 call make_vv.bat bot release
-copy VandV_Calcs_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\VandV_Calcs.exe /Y
+copy VandV_Calcs_win.exe %cfast_root%\Utilities\for_bundle\Bin\VandV_Calcs.exe /Y
 
 cd %cfast_root%\Utilities\for_bundle\scripts
 

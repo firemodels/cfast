@@ -1,7 +1,7 @@
-cd ..\Build\VandV_Calcs\intel_win_64
+cd ..\Build\VandV_Calcs\intel_win
 del *.obj *.mod *.exe /q >nul
 call make_vv.bat bot
-copy VandV_Calcs_win_64.exe ..\..\..\Validation\VandV_Calcs.exe
+copy VandV_Calcs_win.exe ..\..\..\Validation\VandV_Calcs.exe
 cd ..\..\..\Validation
 
 VandV_Calcs.exe CFAST_Pressure_Correction_Inputs.csv

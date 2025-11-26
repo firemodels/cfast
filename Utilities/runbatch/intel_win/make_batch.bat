@@ -11,6 +11,6 @@ if "%1" NEQ "-t" goto endif
 :endif
 
 erase *.obj
-icl -o runbatch_win_64.exe ..\main.c
+icl -o runbatch_win.exe ..\main.c
 
 

@@ -38,11 +38,11 @@ if "%installed_smokeview%" == "1" goto installed_smokeview
 
   cd %SCRIPT_DIR%
 
-  set SMOKEVIEW=%SMVROOT%\Build\smokeview\intel_win_64\smokeview_win_64.exe
+  set SMOKEVIEW=%SMVROOT%\Build\smokeview\intel_win\smokeview_win.exe
   call :does_cfile_exist %SMOKEVIEW% || exit /b 1
   echo %SMOKEVIEW% found
 
-  set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win_64\sh2bat_win_64.exe
+  set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win\sh2bat_win.exe
   call :does_cfile_exist %SH2BAT% || exit /b 1
   echo %SH2BAT% found
 :installed_smokeview

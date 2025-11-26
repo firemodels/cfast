@@ -71,9 +71,9 @@ done
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx_64
+  PLATFORM=osx
 else
-  PLATFORM=linux_64
+  PLATFORM=linux
 fi
 PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG

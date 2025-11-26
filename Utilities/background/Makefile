@@ -38,49 +38,12 @@ no_target:
 # ------------- Win 64 ----------------
 #  64 bit windows
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : exe       = background.exe
+intel_win : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO)
+intel_win : CC        = icl
+intel_win : exe       = background.exe
 
-intel_win_64 : $(objwin)
+intel_win : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) 
-
-# ------------- Linux 64 ----------------
-#  64 bit linux
-
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO)
-intel_linux_64 : CC        = icc
-intel_linux_64 : exe       = background
-
-intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) 
-
-# ------------- gnu Linux 64 ----------------
-
-gnu_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO)
-gnu_linux_64 : CC        = gcc
-gnu_linux_64 : exe       = background
-
-gnu_linux_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
-
-# ------------- OSX 64 ----------------
-#  64 bit osx
-
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO)
-intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = background
-
-intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) 
-
-# ------------- gcc OSX 64 ----------------
-gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO)
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : exe       = background
-
-gnu_osx_64 : $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj)  -lm
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 

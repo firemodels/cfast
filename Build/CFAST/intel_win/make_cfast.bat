@@ -1,6 +1,7 @@
 @echo off
 set arg1=%1
 set arg2=%2
+set md5hash=..\..\..\Utilities\scripts\md5hash.bat
 
 :: setup compiler environment
 if x%arg1% == xbot goto skip1
@@ -14,7 +15,8 @@ if "x%arg2%" == "xrelease" (
 
 Title Building cfast for 64 bit Windows
 
-make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win_db
+make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win
+%md5hash% cfast7_win.exe
 if x%arg1% == xbot goto skip2
 pause
 :skip2

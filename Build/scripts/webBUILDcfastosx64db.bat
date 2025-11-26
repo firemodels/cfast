@@ -21,7 +21,7 @@ call %envfile%
 
 %git_drive%
 
-plink %osx_logon% %osx_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_osx_64_db make_cfast.sh 
+plink %osx_logon% %osx_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_osx_db make_cfast.sh 
 
 echo.
 echo compilation complete

@@ -12,7 +12,7 @@ if "x%arg2%" == "xrelease" (
   set version=Release Version  :
 )
 
-Title Building cfast for 64 bit Windows
+Title Building cdata for 64 bit Windows
 
 make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win_db
 if x%arg1% == xbot goto skip2

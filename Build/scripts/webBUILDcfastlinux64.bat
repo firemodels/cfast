@@ -21,7 +21,7 @@ call %envfile%
 
 %git_drive%
 
-plink %linux_logon% %linux_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_linux_64 make_cfast.sh 
+plink %linux_logon% %linux_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_linux make_cfast.sh 
 
 echo.
 echo compilation complete

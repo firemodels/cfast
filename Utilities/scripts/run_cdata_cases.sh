@@ -1,6 +1,6 @@
 #!/bin/bash
 QCFAST="$FIREMODELS/cfast/Utilities/scripts/qcfast.sh"
-CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64
+CFAST=$FIREMODELS/cfast/Build/CFAST/intel_linux/cfast7_linux
 GROUP=group
 NCASES_PER_GROUP=30
 NGROUPS=

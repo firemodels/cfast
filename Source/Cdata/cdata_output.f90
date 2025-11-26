@@ -216,7 +216,7 @@ module preprocessor_output_routines
         write(iobat,'(a)') 'set CFAST=%bg% %CFAST_EXE%'
         
         write(iounix,'(a)')'#/bin/bash'
-        write(iounix,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64'
+        write(iounix,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux/cfast7_linux'
         write(iounix,'(a)') 'MAX_PROCESSORS=30'
         write(iounix,'(a)') 'BATCH=batch'
         write(iounix,'(a)') ''

@@ -53,7 +53,7 @@
         stop
     end if
     write (iofillinux,'(a)') '#/bin/bash'
-    write (iofillinux,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux_64/cfast7_linux_64'
+    write (iofillinux,'(a)') 'CFAST=~/firemodels/cfast/Build/CFAST/intel_linux/cfast7_linux'
     write (iofillinux,'(a)') 'DELAY=3'
     write (iofillinux,'(a)') 'BATCH=batch3'
     write (iofillinux,'(a)') ''

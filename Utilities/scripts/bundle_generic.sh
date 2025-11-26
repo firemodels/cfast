@@ -1,6 +1,5 @@
 #!/bin/bash
 
-size=_64
 OS=_linux
 bundlebase=
 cfastrepo=cfast
@@ -58,17 +57,17 @@ fi
 # this script is called by bundle_platform.sh
 # where platform may be linux or osx
 
-smokeviewdir=intel$OS$size
-smokeview=smokeview$OS$size
-smokeviewout=smokeview$OS$size
+smokeviewdir=intel$OS
+smokeview=smokeview$OS
+smokeviewout=smokeview$OS
 
-backgrounddir=intel$OS$size
+backgrounddir=intel$OS
 background=background
 backgroundout=background
 
-cfastdir=intel$OS$size
-cfast=cfast7_intel$OS$size
-cfastout=cfast7$OS$size
+cfastdir=intel$OS
+cfast=cfast7_intel$OS
+cfastout=cfast7$OS
 
 scp_fds_smvroot=\~$fdsrepo
 fds_smvroot=$fdsrepo

@@ -8,7 +8,6 @@ if exist .valscriptdir goto in_right_dir
 set rundebug=0
 set installed_cfast=0
 set installed_smokeview=0
-set size=_64
 set DEBUG=
 set check=
 
@@ -49,7 +48,7 @@ if "%installed_smokeview%" == "0" goto skip_not_installed_smokeview
 if "%installed_cfast%" == "1" goto skip_installed_cfast
   cd %SCRIPT_DIR%
 
-  set CFAST_EXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%.exe
+  set CFAST_EXE=%SVNROOT%\Build\CFAST\intel_win%DEBUG%\cfast7_win%DEBUG%.exe
   call :does_fortfile_exist %CFAST_EXE% || exit /b 1
   echo %CFAST_EXE% found
 :skip_installed_cfast
@@ -63,11 +62,11 @@ if "%installed_smokeview%" == "1" goto skip_installed_smokeview
 
   cd %SCRIPT_DIR%
 
-  set bgexe=%SMVROOT%\Build\background\intel_win%size%\background.exe
+  set bgexe=%SMVROOT%\Build\background\intel_win\background.exe
   call :does_cfile_exist %bgexe% || exit /b 1
   echo %bgexe% found
 
-  set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win%size%\sh2bat_win%size%.exe
+  set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win\sh2bat_win.exe
   call :does_cfile_exist %SH2BAT% || exit /b 1
   echo %SH2BAT% found
 :skip_installed_smokeview

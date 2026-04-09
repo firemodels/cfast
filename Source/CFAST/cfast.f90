@@ -24,7 +24,6 @@
     !     from, out of or in connection with the software or the use or
     !     other dealings in the software.
 
-
     use precision_parameters
 
     use exit_routines, only: cfastexit

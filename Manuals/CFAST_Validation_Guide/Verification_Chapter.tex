@@ -123,7 +123,7 @@ in Eqs.~(\ref{eq:soleq1}) and (\ref{eq:soleq2}).
 \end{figure}
 
 \subsection{A Fire in a Single, Sealed Compartment with Two Zones}
-\label{sealed_test_2_layers}
+\label{sealed_test_2}
 
 Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature as seen in Fig.~\ref{fig:Analytical_Closed_Compartment2}.
 \begin{figure}[!ht]
@@ -235,7 +235,8 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \end{figure}
 
 \subsection{Product Yields}
-\label{methane_flame}
+\label{methane_flame_simple}
+\label{species_test}
 
 A simple 5 kW methane flame is burned inside a closed 5~m x 5~m x 5~m compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of carbon dioxide and water produced is calculated. The combustion of a methane is described by the following single-step reaction:
 \be
@@ -261,6 +262,7 @@ For a more complex test, we add non-zero yields of CO, soot, HCN, and HCl to the
 \end{figure}
 
 \subsection{Trace Species}
+\label{Trace_Species_1}
 
 With the same 5 kW methane flame as in the previous section, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
 
@@ -387,7 +389,7 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \FloatBarrier
 
 \subsection{Surface Opening Fraction for Vents}
-\label{Surface_Opening_Fraction}
+\label{surface_opened_fraction_1}
 
 This case tests the computation of the surface opening fraction. A three-compartment geometry is shown in Figure~\ref{SOF_GEO}. Different horizontal, vertical, and/or mechanical vents are included in each compartment. Given with the dimensions of the compartments, the upper layer thickness of each compartment, and the locations and dimensions of each vent, the surface opening fraction for a surface, $\chi$, can be approximated using the following expression
 \begin{equation}
@@ -418,7 +420,8 @@ For this verification case, the upper layer thickness for each compartment is se
 \FloatBarrier
 
 \subsection{Leakage}
-\label{Leakage}
+\label{Leakage_1}
+\label{Leakage_2}
 
 Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_7} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ or $\Delta P = \rho/2 \times \left( \dV/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 \times 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
 
@@ -518,7 +521,8 @@ Consider a 2~m by 2~m by 4~m enclosure with black walls as shown in Figure~\ref{
 \end{figure}
 
 \subsection{Total Emissivity and Hemispherical Absorptivitiy}
-\label{radiation_4and5}
+\label{radiation_4}
+\label{radiation_5}
 
 Consider the identical case being described in Section~\ref{radiation_3}. For black surfaces, the total emissivity of the gas medium, radiating to surface $A_{\rm i}$, can be simplified to the following form \cite{Yuen:2014}
 \begin{equation}
@@ -621,8 +625,9 @@ Two small fires are located in a single compartment some distance away from a la
 \section{Tenability}
 
 \subsection{Gas Tenability}
+\label{gas_tenability}
 
-For the same scenario as the example in section \ref{methane_flame}, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
+For the same scenario as the example in section \ref{methane_flame_simple}, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
 
 \begin{eqnarray}
     \nu_{\rm CO_2} &=& e^{\varphi_{\rm CO_2} \, / \, 5} = e^{0.0223 \, / \, 5} \approx 1 \\[.1in]
@@ -638,6 +643,7 @@ for a 1 s increment. The following figure compares the calculated FED to its exp
 \end{figure}
 
 \subsection{Heat Tenability}
+\label{heat_tenability}
 
 A compartment is maintained at a constant 100 \degc and a target is placed in the center of the compartment. Heat flux to the target is less than 2.5 kW/m$^2$.  Heat tenability can be calculated by
 

@@ -74,7 +74,7 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
+gnu_win : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU) $(PREPROCESS)
 gnu_win : FCOMPL = gfortran
 gnu_win : LFLAGS = 
 gnu_win : obj = cfast7_win

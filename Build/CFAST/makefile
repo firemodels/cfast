@@ -178,7 +178,7 @@ cfast.obj : utilities.obj cfastexit.obj initialization.obj input_namelist.o inpu
               compartments.obj conduction.obj convection.obj radiation.obj target.obj \
               fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj solve.o
 
-#-------------- force compilation of srev.c -----------
+#-------------- force compilation of srev.90 -----------
 
 srev.o:	.FORCE
 srev.obj:	.FORCE

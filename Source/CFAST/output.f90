@@ -65,10 +65,6 @@ module output_routines
     call splitversion(program_version,imajor,iminor,iminorrev)
 
     write (iunit,'(/a/)') program_name
-#ifndef VERSION_PP
-#define VERSION_PP "Test Version     :"
-#endif
-    write (iunit,'(a,1x,a,1x,i0,".",i0,".",i0)')     TRIM(VERSION_PP),program_name,imajor, iminor, iminorrev
     write (iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
     write (iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
     write (iunit,'(A,A)')                    'Compiler         : ',TRIM(COMPILER_VERSION())

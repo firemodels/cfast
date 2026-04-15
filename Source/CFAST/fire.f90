@@ -47,14 +47,7 @@ module fire_routines
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
         q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
-! uncomment following line to turn on entrainment smoothing
-!#define pp_SMOOTH
-#ifdef pp_FIRE
     real(eb) :: mdot_pyrolysis_unburned, factor
-#ifdef pp_SMOOTH
-    real(eb) :: delta, FIRE_EPS
-#endif
-#endif
     real(eb) :: m_entrained
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -88,45 +81,28 @@ module fire_routines
         fireptr%firearea = area_t
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
-#ifdef pp_FIRE
         if ( hoc_t > 0.0 ) then 
            fireptr%mdot_actual = fireptr%qdot_actual/hoc_t
         else
            fireptr%mdot_actual = 0.0_EB
         endif
         mdot_pyrolysis_unburned = fireptr%mdot_pyrolysis - fireptr%mdot_actual
-#endif
         fireptr%qdot_convective = hrr_c
         fireptr%qdot_radiative = hrr_r
 
         t_lower = roomptr%temp(l)
 
-#ifdef pp_FIRE
         q_firemass = cp*mdot_pyrolysis_unburned*interior_ambient_temperature
         factor = 1.0
-! smoothly set entrainment to 0 as layer approaches within FIRE_EPS of fire height
-#ifdef pp_SMOOTH
-        delta = roomptr%depth(l)-(fireptr%z_position+fireptr%z_offset)
-        FIRE_EPS = 0.25
-        if(delta.gt.0.0 .and. delta.lt.FIRE_EPS)factor = delta/FIRE_EPS
-#endif
         m_entrained = factor*fireptr%mdot_entrained
-#else
-        q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
-        m_entrained = fireptr%mdot_entrained
-#endif
         q_entrained = cp*m_entrained*t_lower
 
         ! sum the flows for return to the source routine
 
-#ifdef pp_FIRE
 ! hrr_c mass flow into upper layer - mdot_pyrolysis
 ! q_firemass flow into upper layer - mdot_pyrolysis_unburned
 ! so total mass flow into upper layer is mdot_pyrolysis + mdot_pyrolysis_unburned = mdot_t
         flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + mdot_t             + m_entrained
-#else
-        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
-#endif
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - m_entrained
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained

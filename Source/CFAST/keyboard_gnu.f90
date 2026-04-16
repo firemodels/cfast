@@ -19,7 +19,7 @@
     character*(*), intent(IN) :: path
     character*(*), intent(out) :: drive, dir, name, ext
 
-    character*1 dirsep
+    character(1) :: dirsep
     integer :: i, len, first, next
 
     dirsep = '/'

@@ -808,7 +808,6 @@ module radiation_routines
     integer, intent(in) :: cmpt, layer
 
     ! declare parameters
-    integer, parameter :: noerr=0, hierr=+1, loerr=-1
     integer, parameter :: co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12
 
     !  declare internal variables

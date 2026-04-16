@@ -346,7 +346,7 @@ module conduction_routines
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     if (dt_iter.gt.0.0_eb) then
-       niter = dt/dt_iter + 0.5_eb
+       niter = int(dt/dt_iter + 0.5_eb)
        dt_iter=dt/niter
        factor = 2.0_eb*alpha*dt_iter/dr**2
     else
@@ -424,45 +424,5 @@ module conduction_routines
     return
 
     end subroutine cylindrical_conductive_flux
-
-! --------------------------- get_cylinder_temperature -------------------------------------------
-
-    subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
-    
-!> \brief   determines interior temperature of cylindrical target at specified depth
-    
-!> \param   x (input): desired depth for internal temperature
-!> \param   wtemp (input):temperatures at nx points over radius of cylinder
-!> \param   nx (input):number of data points
-!> \param   rad (input):radius of cylinder
-!> \param   tempx (output): internal temperature
-
-    real(eb), intent(in) :: x, rad
-    integer, intent(in) :: nx
-    real(eb), intent(in), dimension(nx) :: wtemp
-    real(eb), intent(out) :: tempx
-
-    real(eb) :: dr, r, rint, factor
-    integer :: left, right
-
-    dr = rad/nx
-    r = rad-x
-    if (r<=dr/2.0_eb) then
-        tempx = wtemp(1)
-        return
-    end if
-    if (r>=rad-dr/2.0_eb) then
-        tempx = wtemp(nx)
-        return
-    end if
-    rint = r/dr-0.5_eb
-    left = int(rint)+1
-    left=max(min(left,nx),1)
-    right = left + 1
-    right=max(min(right,nx),1)
-    factor = (rint-int(rint))
-    tempx = factor*wtemp(right) + (1.0_eb-factor)*wtemp(left)
-
-    end subroutine get_cylinder_temperature
 
 end module conduction_routines

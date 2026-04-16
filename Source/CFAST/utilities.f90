@@ -533,7 +533,7 @@
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
     if (cmdflag('O',iopt)/=0) then
         ssoutoptions = 0
-        ssselected = strs(cmdflag('O',iopt))
+        ssselected(1:26) = trim(strs(cmdflag('O',iopt)))
         do i = 1,len(trim(ssselected))
             if (ssselected(i:i)>='A'.and.ssselected(i:i)<='Z') then
                 ssoutoptions(ichar(ssselected(i:i))-ichar('A')+1) = i

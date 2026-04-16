@@ -818,7 +818,7 @@ module initialization_routines
         end if
 
         ! set up target thermal properties
-        tcname = targptr%material
+        tcname = targptr%material(1:len(tcname))
         if (tcname==' ') then
             tcname = 'DEFAULT'
             targptr%material = tcname
@@ -938,8 +938,8 @@ module initialization_routines
         to_roomptr%nodes_w(1,itow) = nptsf + nptst - 1
         from_roomptr%nodes_w(1,ifromw) = nptsf + nptst - 1
 
-        wfrom = from_roomptr%total_thick_w(ifromw)
-        wto = to_roomptr%total_thick_w(itow)
+        wfrom = int(from_roomptr%total_thick_w(ifromw))
+        wto = int(to_roomptr%total_thick_w(itow))
         from_roomptr%total_thick_w(ifromw) = wfrom + wto
         to_roomptr%total_thick_w(itow) = wfrom + wto
 
@@ -1020,9 +1020,9 @@ module initialization_routines
 
     nintx = nx - (nslab+1)
     if (nslab<=2) then
-        nsplit = (slab_splits(1)+slab_splits(2))*xxnx
+        nsplit = int((slab_splits(1)+slab_splits(2))*xxnx)
     else
-        nsplit = slab_splits(1)*xxnx
+        nsplit = int(slab_splits(1)*xxnx)
     end if
 
     ! calculate total walldepth
@@ -1062,15 +1062,15 @@ module initialization_routines
 
         ! calculate number of points interior to each slab
         xxnintx = nintx
-        numpts(1) = slab_splits(1)*xxnintx*min(xb,slab_thickness(1))/wall_thickness
+        numpts(1) = int(slab_splits(1)*xxnintx*min(xb,slab_thickness(1))/wall_thickness)
         if (numpts(1)<1) numpts(1) = 1
         wmxb = wall_thickness - xb
-        numpts(nslab) = slab_splits(3)*xxnintx*min(wmxb,slab_thickness(nslab))/ wall_thickness
+        numpts(nslab) = int(slab_splits(3)*xxnintx*min(wmxb,slab_thickness(nslab))/ wall_thickness)
         if (numpts(nslab)<1) numpts(nslab) = 1
         isum = nintx - numpts(1) - numpts(nslab)
         xxnslabm2 = nslab - 2
         do i = 2, nslab - 1
-            numpts(i) = xxnx*slab_splits(2)*slab_thickness(nslab)/xxnslabm2/wall_thickness
+            numpts(i) = int(xxnx*slab_splits(2)*slab_thickness(nslab)/xxnslabm2/wall_thickness)
             if (numpts(i)<1) numpts(i) = 1
             isum = isum - numpts(i)
         end do

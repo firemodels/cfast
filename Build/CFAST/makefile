@@ -96,14 +96,14 @@ intel_win_db : setup_win $(objwin)
 
 # ------------- Linux -------------------
  
-gnu_linux : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux : FFLAGS = -O0 $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
 gnu_linux : obj = cfast7_linux
 gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
-gnu_linux_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
 gnu_linux_db : obj = cfast7_linux_db

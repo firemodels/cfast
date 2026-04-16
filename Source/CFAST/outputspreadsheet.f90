@@ -472,7 +472,8 @@ module spreadsheet_routines
     
     logical :: firstc = .true.
     integer :: position, i, ifrom, ito, counter
-    character(len=35) :: cifrom, cito, clfrom, clto, cvent
+    character(len=35) :: cifrom, cito, cvent
+    character(len=40) :: clto, clfrom
     type(vent_type), pointer :: ventptr
     type(ssout_type), pointer :: ssptr
     
@@ -595,8 +596,8 @@ module spreadsheet_routines
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
             if (ifrom==n_rooms+1) cifrom = 'Outside'
-            cifrom = 'Room_' //cifrom
-            if (ifrom==n_rooms+1) cifrom = 'Outside'
+            clfrom = 'Room_' //cifrom
+            if (ifrom==n_rooms+1) clfrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
@@ -607,7 +608,7 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow', &
+            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(clfrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow', &
                 ventptr%id,'kg/s')
         end do       
 
@@ -734,8 +735,8 @@ module spreadsheet_routines
     type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
 
-    measurement = ssptr%measurement
-    device = ssptr%device
+    measurement = ssptr%measurement(1:len(measurement))
+    device = ssptr%device(1:len(device))
     
     select case (measurement)
     case ('Simulation Time')

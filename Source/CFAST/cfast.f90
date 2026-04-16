@@ -67,7 +67,7 @@
 
     i_time_step = 1
     xdelt = time_end/deltat
-    i_time_end = xdelt + 1
+    i_time_end = int(xdelt + 1.0)
     tstop = i_time_end - 1
 
     call initialize_walls

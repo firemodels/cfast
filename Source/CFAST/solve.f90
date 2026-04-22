@@ -430,7 +430,7 @@ module solve_routines
 
             ! printed output
             if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
-                i_time_step = tprint
+                i_time_step = int(tprint)
                 call output_results (t)
                 call output_status (t, dt)
                 tprint = tprint + dprint
@@ -442,7 +442,7 @@ module solve_routines
 
             ! smokeview output
             if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
-                i_time_step = tsmv
+                i_time_step = int(tsmv)
                 ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
                 call collect_fire_data_for_smokeview (nfires)
                 if (firstpassforsmokeview) then
@@ -471,7 +471,7 @@ module solve_routines
             ! spreadsheet output
             if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
                 call output_spreadsheet(t)
-                i_time_step = tspread
+                i_time_step = int(tspread)
                 tspread =tspread + dspread
                 call output_status (t, dt)
 
@@ -482,7 +482,7 @@ module solve_routines
 
             ! diagnostic output
             if (t+0.0001_eb>tpaws) then
-                i_time_step = tpaws
+                i_time_step = int(tpaws)
                 call output_results (t)
                 call output_debug (1,t,dt,ieqmax)
                 tpaws = tstop + 1.0_eb
@@ -1277,7 +1277,7 @@ module solve_routines
 
         ! define discontinuity array.  first we look at vent openings
         xdelt = time_end/deltat
-        itstop = xdelt + 1
+        itstop = int(xdelt + 1.0)
         tstop = itstop - 1
 
         discon = 0.0_eb

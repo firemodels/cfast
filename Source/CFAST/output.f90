@@ -37,7 +37,7 @@ module output_routines
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
-    character(len=lbufln) :: lbuf, cbuf
+    character(len=lbufln) :: cbuf
 
     private
 
@@ -188,7 +188,7 @@ module output_routines
     write (iofilo,5040)
     do icomp = 1, n_rooms
         roomptr =>roominfo(icomp)
-        ivolpercent = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
+        ivolpercent = int(roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb)
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%id, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
                 roomptr%absorb(u),roomptr%relp - roomptr%interior_relp_initial
@@ -272,7 +272,6 @@ module output_routines
          '                                   (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)       ', &
          '(W)       (W)        (kg)        (kg)' ,/,' ',146('-'))
 5010 format (14x,a12,4x,a,3x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
-5020 format (13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5030 format (a14,20x,3(1pg10.3),10x,3(1pg10.3))
 5040 format ('Outside',87x,1pg10.3)
     end subroutine results_fires
@@ -487,7 +486,6 @@ module output_routines
 5030 format (//,'TOTAL MASS FLOW THROUGH MECHANICAL VENTS (kg)',//, &
     'To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
     'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))
-5040 format (' ')
 5050 format (a14,1x,a12,1x,a)
 5060 format (//,'LEAKAGE (kg/s)',//, &
     '                                                    Flow relative to ''From''', &
@@ -1213,19 +1211,19 @@ module output_routines
     integer :: i
 
     outbuf = ' '
-    flow(1) = flow1
-    flow(2) = flow2
-    flow(3) = flow3
-    flow(4) = flow4
-    flow(5) = flow5
-    flow(6) = flow6
-    flow(7) = flow7
-    flow(8) = flow8
-    x1000 = 1000.0_eb
-    x100 = 100.0_eb
-    x10 = 10.0_eb
-    x1 = 1.0_eb
-    x01 = 0.1_eb
+    flow(1) = real(flow1)
+    flow(2) = real(flow2)
+    flow(3) = real(flow3)
+    flow(4) = real(flow4)
+    flow(5) = real(flow5)
+    flow(6) = real(flow6)
+    flow(7) = real(flow7)
+    flow(8) = real(flow8)
+    x1000 = 1000.0
+    x100 = 100.0
+    x10 = 10.0
+    x1 = 1.0
+    x01 = 0.1
     do i = 1, 8
         if (flow(i)>=x1000) then
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
@@ -1425,14 +1423,9 @@ module output_routines
 5050 format ('  Floor   temp(K) ',f12.2)
 5060 format ('  Up wall temp(K) ',f12.2)
 5070 format (' Low wall temp(K) ',e12.2)
-5080 format (' from ',I2,' pressure ',e10.3,' to ',i2,' pressure ',g10.3,' mass flow is ',g10.3,' temp ',g10.3)
 5090 format (' Returned from dassl at T = ',1pg14.6,',  dt = ',1pg12.4)
 6000 format (1x,i3,1x,6e13.6)
-6010 format (' HVAC pressures:',4e13.6)
-6020 format (' HVAC temperatues:',4E13.6)
 6030 format (t2,'Room',t9,'Pressure',t20,'Layer height',t35,'L. temp',t48,'U. temp',t62,'L. oxy',t75,'U. oxy')
-6040 format (t3,'Nodes',t12,'Delta p',t23,'P at first node',t39,'P at 2nd node',t57,'Height')
-6050 format (1x,2i3,1x,4(e13.6,2x))
 6060 format (1x,i3,1x,5e13.6)
 6070 format (t2,'Room',t11,'Ceiling',t21,'Upper Wall',t36,'Lower Wall',t49,'Floor',t61,'Fire Size')
 6080 format (t2,'Object',t11,'Heat in lower ',t26,'Heat in upper')
@@ -1490,7 +1483,7 @@ module output_routines
 
     ! the status files
     iofilstat = get_filenumber()
-    open (iofilstat,file=statusfile,access='append',err=81,iostat=ios)
+    open (iofilstat,file=statusfile,position='append',err=81,iostat=ios)
 
     ! the smokeview files
     if (smv_out_interval>0) then

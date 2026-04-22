@@ -71,7 +71,7 @@ module exit_routines
     integer, parameter :: nr = 2, ipad = 5, nc = mx_dumps + ipad
     real(eb) :: dumparray(nr, nc)
     character(len=128) :: dumpcarray(nr, nc)
-    integer :: i, icount, mxcol
+    integer :: i, mxcol
     
     if (n_dumps<=0) return
     dumparray(1, 1:nc) = 0

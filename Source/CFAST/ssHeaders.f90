@@ -247,75 +247,75 @@ module spreadsheet_header_routines
         roomptr => roominfo(j)
         position = position + 1
         headertext(1,position) = trim(Labels(2))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(2)
         position = position + 1
         headertext(1,position) = trim(Labels(3))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(3)
         position = position + 1
         headertext(1,position) = trim(Labels(4))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(4)
         position = position + 1
         headertext(1,position) = trim(Labels(5))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(6))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(7))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(8))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(9))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(10))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(11))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(12))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         position = position + 1
         headertext(1,position) = trim(Labels(13))
-        headertext(2,position) = roomptr%id
+        headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
         headertext(3,position) = LabelUnits(5)
         do i = 1, 2
             do k = 1, 2
                 do l = 2, 9
                     position = position + 1
                     headertext(1,position) = trim(Labels(l+12))//' '//trim(Layers(i))
-                    headertext(2,position) = roomptr%id
+                    headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
                     headertext(3,position) = LabelUnits(k+5)
                 end do
             end do
             position = position + 1
             headertext(1,position) = trim(Labels(22))//' '//trim(Layers(i))
-            headertext(2,position) = roomptr%id
+            headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
             headertext(3,position) = LabelUnits(7)
             position = position + 1
             headertext(1,position) = trim(Labels(23))//' '//trim(Layers(i))
-            headertext(2,position) = roomptr%id
+            headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
             headertext(3,position) = LabelUnits(7)
         end do
         do i = 1, 2
             do k = 1, 4
                 position = position + 1
                 headertext(1,position) = trim(Labels(23+i))//' '//trim(Layers(2+k))
-                headertext(2,position) = roomptr%id
+                headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
                 headertext(3,position) = LabelUnits(7)
             end do
         end do
@@ -328,7 +328,7 @@ module spreadsheet_header_routines
             do k = 1, 9
                 position = position + 1
                 headertext(1,position) = trim(Species(k))//' '//trim(Layers(i))
-                headertext(2,position) = roomptr%id
+                headertext(2,position) = roomptr%id(1:len(headertext(2,position)))
                 headertext(3,position) = LabelUnits(8)
             end do
         end do
@@ -417,7 +417,7 @@ module spreadsheet_header_routines
             call toIntString(j,cRoom)
             headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
             headertext(2,position) = Labels(i+1)
-            headertext(3,position) = roomptr%id
+            headertext(3,position) = roomptr%id(1:len(headertext(3,position)))
             headertext(4,position) = LabelUnits(i+1)
         end do
     end do

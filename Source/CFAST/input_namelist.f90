@@ -82,7 +82,6 @@
     return
 
     ! read format list
-5050 format ('***Error, Error opening the input file = ',I6)
 
 
     end subroutine namelist_input
@@ -348,7 +347,7 @@
 
         adiabatic_walls=adiabatic
         stpmax = max_time_step
-        stp_cnt_max = max_iteration
+        stp_cnt_max = int(max_iteration)
         lower_o2_limit = lower_oxygen_limit
         sigma_s = specific_extinction
         overwrite_testcase = overwrite
@@ -1342,17 +1341,10 @@ continue
     end if insf_flag
 
 5320 format ('***Error, Bad FIRE input. Fire specification error, compartment ',i0,' out of range')
-5321 format ('***Error, Bad FIRE input. Fire specification error, not an allowed fire type',i0)
 5322 format ('***Error, Bad FIRE input. Fire specification is outdated and must include target for ignition')
 5323 format ('***Error, Bad FIRE input. Fire location ',i0,' is outside its compartment')
 5324 format ('***Error, Bad FIRE input. Target specified for fire ',i0, ' does not exist')
 5358 format ('***Error, Bad FIRE input. Not a valid ignition criterion ',i0)
-
-5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)
-5002 format ('***Error, invalid fire area. all input values must be greater than zero')
-5106 format ('***Error, object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
-5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
-5000 format ('***Error, the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
 
     contains
 
@@ -1579,17 +1571,10 @@ continue
 
 5320 format ('***Error, Bad FIRE input. Fire specification error, fire ',i0,' is not referenced')
 5321 format ('***Error, Bad FIRE input. Fire specification error, not an allowed fire type',i0)
-5322 format ('***Error, Bad FIRE input. Fire specification is outdated and must include target for ignition')
-5323 format ('***Error, Bad FIRE input. Fire location ',i0,' is outside its compartment')
-5324 format ('***Error, Bad FIRE input. Target specified for fire ',i0, ' does not exist')
-5325 format ('***Error, Bad FIRE input. Fire ID ',a,' has not been found')
-5358 format ('***Error, Bad FIRE input. Not a valid ignition criterion ',i0)
 
 5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)
 5002 format ('***Error, invalid fire area. all input values must be greater than zero')
 5106 format ('***Error, object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
-5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
-5000 format ('***Error, the key word ',a,' is not part of a fire definition. fire keywords are likely out of order')
 
     contains
 
@@ -1873,8 +1858,8 @@ continue
 
                 ventptr%n_coeffs = 1
                 ventptr%coeff = 0.0_eb
-                ventptr%coeff(1) = flow
-                ventptr%maxflow = flow
+                ventptr%coeff(1) = real(flow)
+                ventptr%maxflow = real(flow)
                 ventptr%min_cutoff_relp = cutoffs(1)
                 ventptr%max_cutoff_relp = cutoffs(2)
 
@@ -1941,7 +1926,6 @@ continue
     if(abort_vent==1)call cfastexit('read_vent', 13)
 
 5070 format ('***Error, Bad VENT input. Parameter(s) outside of allowable range',2I4)
-5080 format ('***Error, Bad VENT input. Too many pairwise horizontal connections',3I5)
 5081 format ('***Error, Too many horizontal connections ',3i5)
 
 5191 format ('***Error, Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
@@ -2853,7 +2837,7 @@ continue
             dumpptr%fyi = fyi
             if (type(1:15) == 'CHECK_TOTAL_HRR') then
                 dumpptr%file = 'NORMAL'
-                dumpptr%type = type
+                dumpptr%type = type(1:len(dumpptr%type))
                 dumpptr%first_field(1) = 'Time'
                 dumpptr%first_field(2) = 'Simulation Time'
                 dumpptr%second_field = first_field
@@ -2861,8 +2845,8 @@ continue
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
             else
-                dumpptr%file = file
-                dumpptr%type = type
+                dumpptr%file = file(1:len(dumpptr%file))
+                dumpptr%type = type(1:len(dumpptr%type))
                 dumpptr%first_field(1) = first_field(1)
                 dumpptr%first_field(2) = first_field(2)
                 dumpptr%second_field(1) = second_field(1)

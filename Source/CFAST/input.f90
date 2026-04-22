@@ -508,7 +508,7 @@
             end if
         end if
     else
-        input_file_line = buf
+        input_file_line = buf(1:len(input_file_line))
         write (errormessage,'(a)') &
             '***Error, Input file format not recognized. CFAST onlly reads namelist input files. Check first line of input file.'
         call cfastexit('openfiles',2)

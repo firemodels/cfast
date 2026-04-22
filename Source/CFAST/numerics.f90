@@ -749,8 +749,8 @@
     integer :: idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
-    integer, parameter :: lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, letf=14, lctf=15, lnpd=16
-    integer, parameter :: lipvt=21, ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1
+    integer, parameter :: lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, lnpd=16
+    integer, parameter :: ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1
     !
     !     set relative offset into rwork
     integer, parameter :: npd=1
@@ -2078,7 +2078,7 @@
     !     consider the corrector iteration to have failed.
 375 if (nonneg == 0) go to 390
     do i = 1,neq
-        delta(i) = min1(y(i),0.0d0)
+        delta(i) = min(y(i),0.0_8)
     end do
     delnrm = ddanrm(neq,delta,wt,ipar)
     if (delnrm > 0.33d0) go to 380

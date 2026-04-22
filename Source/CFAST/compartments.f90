@@ -190,7 +190,6 @@
 
     real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
-    integer, parameter :: toprm = 1, botrm = 2
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr

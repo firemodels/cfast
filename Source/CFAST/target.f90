@@ -392,15 +392,16 @@ module target_routines
 
         real(eb), intent(out) :: x_node(nnodes_trg)
 
-        integer :: i
+        integer :: i, nd2
         real(eb) :: sum
 
         x_node(1:nnodes_trg) = 1.0_eb
-        do i = 2, (nnodes_trg-1)/2
+        do i = 2, int(real(nnodes_trg-1)/real(2))
             x_node(i) = x_node(i-1)*1.50_eb
             x_node(nnodes_trg-i) = x_node(i)
         end do
-        if (modulo((nnodes_trg-1),2)==1) x_node((nnodes_trg-1)/2+1) = x_node((nnodes_trg-1)/2)*1.50_eb
+        nd2 = int(real(nnodes_trg-1)/real(2))
+        if (modulo((nnodes_trg-1),2)==1) x_node(nd2+1) = x_node(nd2)*1.50_eb
         sum = 0.0_eb
         do i = 1, nnodes_trg-1
             sum = sum + x_node(i)
@@ -432,7 +433,6 @@ module target_routines
     real(eb) :: x0,x1,y0,y1,z0,z1
 
     integer :: nsolid_front_verts, nsolid_back_verts
-    integer, parameter :: front=1, back=2
     integer :: i, iwall, ivert, skiptagr
 
  ! vertices

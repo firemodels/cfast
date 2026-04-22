@@ -16,14 +16,12 @@ echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
 echo "-s - stop CFAST runs"
 echo "-t - output run times to a history file"
-echo "-u - use installed versions of utilities background and wind2fds"
 exit
 }
 STOPFDS=
 queue=
 DEBUG=
 JOBPREFIX=
-use_installed=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
@@ -31,7 +29,7 @@ smvrepo=
 compiler=intel
 TIME=
 
-while getopts 'dhI:j:m:p:q:sS:tu' OPTION
+while getopts 'dhI:j:m:p:q:sS:t' OPTION
 do
 case $OPTION in
   d)
@@ -62,9 +60,6 @@ case $OPTION in
   t)
   TIME=1
   ;;
-  u)
-   use_installed="1"
-   ;;
 esac
 #shift
 done
@@ -77,13 +72,6 @@ else
 fi
 PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG
-
-if [ "$use_installed" == "1" ] ; then
-  BACKGROUND=background
-else
-  BACKGROUND=$smvrepo/Build/background/${compiler}_${PLATFORM2}/background
-fi
-export BACKGROUND
 
 export CFAST="$SVNROOT/Build/CFAST/${compiler}_${PLATFORM}/cfast7_$PLATFORM"
 

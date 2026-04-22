@@ -13,7 +13,7 @@ Smoke Concentration,1,14,0.19,0.65,2.92
 Compartment Over-Pressure,4,62,0.23,0.42,1.24
 Target Temperature,4,423,0.07,0.49,1.26
 Surface Temperature,6,395,0.07,0.21,0.99
-Target Heat Flux,3,241,0.11,0.56,0.83
+Target Heat Flux,3,241,0.11,0.57,0.86
 Surface Heat Flux,7,241,0.11,0.23,0.90
 Smoke Alarm Activation Time (Temperature Surrogate),1,127,0.34,0.34,1.10
 Smoke Alarm Activation Time (Smoke Obscuration),1,139,0.34,0.49,0.57

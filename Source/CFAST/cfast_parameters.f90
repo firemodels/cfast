@@ -46,7 +46,7 @@
     integer, parameter :: mxvvents=mxitems          ! maximum number of vertical flow vents
 
     integer, parameter :: mxmvents=mxitems          ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = mxmvents/2        ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxfan = int(real(mxmvents,eb)/2._eb)     ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system

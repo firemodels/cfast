@@ -400,20 +400,20 @@
 
     integer :: i
 
-    xxtime = time
+    xxtime = real(time)
     write (iofilsmvplt) xxtime
 
     do i = 1, nrm
-        xxpr = pr(i)
-        xxylay = zlay(i)
-        xxtl = tl(i)
-        xxtu = tu(i)
+        xxpr = real(pr(i))
+        xxylay = real(zlay(i))
+        xxtl = real(tl(i))
+        xxtu = real(tu(i))
         write (iofilsmvplt) xxpr, xxylay, xxtl, xxtu
     end do
 
     do i = 1, nfires
-        xxheight = height(i)
-        xxqdot = qdot(i)
+        xxheight = real(height(i))
+        xxqdot = real(qdot(i))
         write (iofilsmvplt) xxheight, xxqdot
     end do
 
@@ -679,7 +679,7 @@ module isosurface
     do i = 1, n_iso
         isoptr => isoinfo(i)
 
-        levelsf(1) = isoptr%value-273.15_eb
+        levelsf(1) = real(isoptr%value-273.15_eb,fb)
         roomnum = isoptr%roomnum
         roomptr => roominfo(roomnum)
         ibar = roomptr%ibar

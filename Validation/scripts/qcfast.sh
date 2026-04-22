@@ -9,7 +9,6 @@ then
   echo "$prog runs a program specified with the -e option."
   echo ""
   echo " -b     - use debug"
-  echo " -B     - location of background program"
   echo " -c     - strip extension"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -e exe - full path of FDS used to run case"
@@ -68,14 +67,11 @@ fi
 
 # read in parameters from command line
 
-while getopts 'bB:cd:Ee:j:q:sw:vV' OPTION
+while getopts 'bcd:Ee:j:q:sw:vV' OPTION
 do
 case $OPTION  in
   b)
    DB=_db
-   ;;
-  B)
-   BACKGROUND="$OPTARG"
    ;;
   c)
    strip_extension=1
@@ -183,25 +179,6 @@ fi
 
 if [ "$queue" == "terminal" ] ; then
   QSUB=
-fi
-
-if [ "$queue" == "none" ]; then
-  if [ "$errfileoption" == "1" ]; then
-     errfileoption=" 2> $outerr"
-  fi
-  if [ "$BACKGROUND" == "" ]; then
-    BACKGROUND=background
-  fi
-  notfound=`$BACKGROUND -help 2>&1 | tail -1 | grep "not found" | wc -l`
-  if [ "$showinput" == "0" ]; then
-    if [ $notfound -eq 1 ];  then
-      echo "The program $BACKGROUND was not found."
-      echo "Install FDS which has the background utility."
-      echo "Run aborted"
-      exit
-    fi
-  fi
-  QSUB="$BACKGROUND -u 75 -d 1 "
 fi
 
 # create a random script file for submitting jobs

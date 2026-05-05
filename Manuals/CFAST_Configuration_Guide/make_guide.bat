@@ -6,7 +6,7 @@ set /p gitrevision=<gitinfo.txt
 echo \newcommand^{\gitrevision^}^{%gitrevision%^} > ..\Bibliography\gitrevision.tex
 
 pdflatex -interaction nonstopmode %paper% > %paper%.err
-bibtex %paper% > %paper%.err
+biber %paper% > %paper%.err
 pdflatex -interaction nonstopmode %paper% > %paper%.err
 pdflatex -interaction nonstopmode %paper% > %paper%.err
 

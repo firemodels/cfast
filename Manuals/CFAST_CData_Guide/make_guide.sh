@@ -12,7 +12,7 @@ rm -f $docpdf
 gitrevision=`git describe --long --dirty`
 echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
 pdflatex -interaction nonstopmode $doc &> $doc.err
-bibtex $doc &> $doc.err
+biber $doc &> $doc.err
 pdflatex -interaction nonstopmode $doc &> $doc.err
 pdflatex -interaction nonstopmode $doc &> $doc.err
 

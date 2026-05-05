@@ -28,6 +28,10 @@
 \usepackage{moreverb}
 \usepackage{morefloats}
 \usepackage[section]{placeins}
+\usepackage[backend=biber, style=phys, sorting=none, backref=true, giveninits=true, maxbibnames=99]{biblatex}
+\ExecuteBibliographyOptions[report]{doi=true, url=true}
+\renewbibmacro{in:}{}
+\DeclareFieldFormat{titlecase}{#1}
 
 \usepackage{tocbasic} % Fix table of contents sections from overlapping section titles
 
@@ -97,8 +101,6 @@ morestring=[b]', }
 
 \usepackage{changepage}
 
-\renewcommand{\bibname}{References}
-
 % dummy change to force revision update
 
 %\usepackage{eso-pic}
@@ -128,7 +130,6 @@ morestring=[b]', }
         citecolor=linkred,     % citation number colors
         linkcolor=linknavy,    % \ref{...} and \pageref{...}
         pdfproducer={pdflatex},
-        pagebackref,
         pdfpagemode=UseNone,
         bookmarksopen=true,
         plainpages=false,

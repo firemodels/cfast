@@ -4,9 +4,9 @@
 
 \input{../Bibliography/commoncommands}
 
-\begin{document}
+\addbibresource{../Bibliography/CFAST_refs.bib}
 
-\bibliographystyle{unsrt}
+\begin{document}
 
 \frontmatter
 
@@ -125,9 +125,13 @@ Continuing support for CFAST is via internal funding at NIST. In addition, suppo
 Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged. Thanks are also due to Allan Coutts, Washington Safety Management Solutions for his insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
 
 \cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
 \tableofcontents
 
-\clearpage
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 \mainmatter
@@ -139,7 +143,7 @@ Support to refine the software development and quality assurance process for CFA
 %\backmatter
 
 
-\bibliography{../Bibliography/CFAST_refs}
+\printbibliography[heading=bibintoc,title={References}]
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendices}

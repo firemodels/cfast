@@ -2,9 +2,9 @@
 
 \input{../Bibliography/commoncommands}
 
-\begin{document}
+\addbibresource{../Bibliography/CFAST_refs.bib}
 
-\bibliographystyle{unsrt}
+\begin{document}
 
 \frontmatter
 
@@ -127,9 +127,13 @@ Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous co
 Colleen Wade of the Building Research Association of New Zealand (BRANZ), Fred Mowrer of the California Polytechnic State University, and David Sheppard of the U.S. Bureau of Alcohol, Tobacco and Firearms (ATF) provided useful comments on the development of CFAST version 7.
 
 \cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
 \tableofcontents
 
-\clearpage
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 
@@ -289,7 +293,7 @@ where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen i
 \ee
 The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.15, by default. This value is not a function of temperature.
 
-Any unburned fuel is tracked by the model, and transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Unburned fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available.
+Unburned fuel is transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Unburned fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available. If there are multiple fuel species from multiple fires, the surrogate excess fuel gas molecule is assumed to be formed by the respective amounts of carbon, hydrogen, oxygen, and nitrogen of the unburned fuels.
 
 
 
@@ -977,7 +981,7 @@ For radiant and convected heat, the FED is given by
 \ee
 where $\dq''$ ia the radiant heat flux in kW/m$^2$ and $T$ is the temperature in \degc. For target locations where the radiant flux is less than 2.5 kW/m$^2$, the radiant heat term is taken to be zero consistent with ISO 13571.
 
-\bibliography{../Bibliography/CFAST_refs}
+\printbibliography[heading=bibintoc,title={References}]
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendices}

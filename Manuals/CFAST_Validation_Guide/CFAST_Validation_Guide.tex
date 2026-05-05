@@ -2,9 +2,9 @@
 
 \input{../Bibliography/commoncommands}
 
-\begin{document}
+\addbibresource{../Bibliography/CFAST_refs.bib}
 
-\bibliographystyle{unsrt}
+\begin{document}
 
 \frontmatter
 
@@ -159,9 +159,13 @@ The following individuals and organizations played a role in the validation proc
 \end{itemize}
 
 \cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
 \tableofcontents
 
-\clearpage
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 \listoftables
@@ -185,7 +189,7 @@ The following individuals and organizations played a role in the validation proc
 %\backmatter
 
 
-\bibliography{../Bibliography/CFAST_refs}
+\printbibliography[heading=bibintoc,title={References}]
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendices}

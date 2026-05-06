@@ -52,8 +52,8 @@
 &TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 1', DATA = 5, 441.5558, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 961, 441.5558, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 960, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 960, 441.5558, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 961, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /

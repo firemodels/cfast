@@ -243,14 +243,14 @@ CFAST does not include a pyrolysis model to {\em predict}, as opposed to specify
 
 \section{Combustion Chemistry}
 
- The HRR of the fire is specified by the user, but it may be constrained by the availability of oxygen in the compartment. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
+The HRR of the fire is specified by the user, but it may be constrained by the availability of oxygen in the compartment. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
 \begin{eqnarray}
   \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow \nu_\COTWO \, \mathrm{CO_2} \; + \; \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \nonumber \\[.1in]
-  &+& \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} + \nu_\NTWO N_2 \label{stoich}
+  &+& \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} + \nu_\NTWO \mathrm{N}_2 \label{stoich}
 \end{eqnarray}
 The user specifies the composition of the fuel molecule and the yields of soot and CO, $y_\So$ and $y_\CO$, which are related to their stoichiometric coefficients as follows:
 \begin{eqnarray}
-  \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \\[.1in]
+  \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \label{nu_s} \\[.1in]
   \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield} \\[.1in]
   \nu_\HCN   &=& \min{\brackets{\mathrm{n_{N},\frac{M_\F}{M_\HCN} \; y_\HCN}}}
 \end{eqnarray}
@@ -260,7 +260,7 @@ Under the assumption that all of the chlorine in the fuel is converted to HCl, t
   \nu_\HTWOO &=& \frac{\mathrm{n_\Hy} - \brackets{\nu_\HCl + \nu_\HCN}}{2} \\[.1in]
   \nu_\OTWO  &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\Oh}}{2} \label{Oxygen_yield} \\[.1in]
   \nu_\HCl   &=& \mathrm{n_{Cl}} \\[.1in]
-  \nu_\NTWO  &=& \frac{\mathrm{n_N} - \nu_\HCN}{2}
+  \nu_\NTWO  &=& \frac{\mathrm{n_N} - \nu_\HCN}{2} \label{nu_N2}
 \end{eqnarray}
 Note that the nitrogen in the air acts only as a diluent. The yield of hydrogen chloride is based solely on the composition of the fuel molecule. The yield of hydrogen cyanide is limited by the nitrogen in the fuel molecule and any excess nitrogen in the fuel that is not converted to HCN reverts back to elemental nitrogen. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
@@ -282,8 +282,7 @@ Using the specified heat release rate of the fire, $\dQ$, and a user-specified t
 \be
    \dmf = \frac{\dQ}{\Dh}
 \ee
-
-In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
+In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change, but that only part of the pyrolyzed fuel burns and the HRR becomes:
 \be
    \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
 \ee
@@ -293,8 +292,11 @@ where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen i
 \ee
 The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.15, by default. This value is not a function of temperature.
 
-Unburned fuel is transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Unburned fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available. If there are multiple fuel species from multiple fires, the surrogate excess fuel gas molecule is assumed to be formed by the respective amounts of carbon, hydrogen, oxygen, and nitrogen of the unburned fuels.
-
+The potential combustion products, CO$_2$, CO, H$_2$O, soot, HCN, and HCl, of the unburned hydrocarbons (UHC) are transported to the upper layer via entrainment. This is done for numerical convenience to limit the amount of storage required to track the potentially large number of fuel gases specified by the user. Should sufficient oxygen become available in the upper layer, or some of the upper layer gases spill over into another compartment, the stoichiometric coefficients of a surrogate fuel reaction are calculated, as here for CO$_2$:
+\begin{equation}
+   \nu_\COTWO = \frac{m_\COTWO}{m_\UHC} \frac{M_\UHC}{M_\COTWO}
+\end{equation}
+The molecular formula of the surrogate fuel is found by solving Eqs.~(\ref{nu_s}) through (\ref{nu_N2}) inversely to obtain the atom counts of the fuel molecule. Combustion is computed using the same procedure that is used for the original fires. The heat of combustion of the surrogate fuel reaction is the mass-weighted average of the unburned hydrocarbons.
 
 
 \section{Plume Entrainment}

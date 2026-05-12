@@ -1,4 +1,4 @@
-&HEAD VERSION = 7600, TITLE = 'HawaiiTest 5' /
+&HEAD VERSION = 7600, TITLE = 'HawaiiTest 11' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 700 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 

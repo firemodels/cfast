@@ -1,4 +1,4 @@
-&HEAD VERSION = 7600, TITLE = 'radiation_4' /
+&HEAD VERSION = 7600, TITLE = 'radiation_5' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1 PRINT = 1 SMOKEVIEW = 1 SPREADSHEET = 1 / 

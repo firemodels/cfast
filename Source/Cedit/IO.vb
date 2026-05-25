@@ -2450,7 +2450,7 @@ Module IO
         Dim x(0), f(0) As Double, i As Integer
 
         'Writing Diagnostics 
-        If Myenvironment.DIAGRadSolver = "Default" Then
+        If Myenvironment.DIAGRadSolver = "DEFAULT" Then
             wrtDIAG = True
             wrtSlash = False
         Else

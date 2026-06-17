@@ -494,23 +494,67 @@
 
     iofili = get_filenumber()
     open (iofili, file=inputfile, action='read', status='old', iostat=ios)
-    read (unit=iofili,fmt='(a)') buf
+
+    if (ios/=0) then
+        input_file_line = ' '
+        write (errormessage,'(a,i0)') &
+            '***Error opening input file while checking format. IOSTAT = ', ios
+        call cfastexit('openfiles',1)
+        stop
+    end if
+
+    ! Determine whether this is a namelist input file.
+    ! This check ignores leading blank lines and leading comment lines.
+    ! The input file is rewound before the actual namelist processing.
+
+    do
+        read (unit=iofili,fmt='(a)',iostat=ios) buf
+
+        if (ios<0) then
+            input_file_line = ' '
+            write (errormessage,'(a)') &
+                '***Error, Input file format not recognized. CFAST only reads namelist input files. ' // &
+                'Input file is empty or contains only comments.'
+            call cfastexit('openfiles',2)
+            stop
+        end if
+
+        if (ios>0) then
+            input_file_line = ' '
+            write (errormessage,'(a,i0)') &
+                '***Error reading input file while checking format. IOSTAT = ', ios
+            call cfastexit('openfiles',2)
+            stop
+        end if
+
+        buf = adjustl(buf)
+
+        if (len_trim(buf)==0) cycle
+        if (buf(1:1)=='!') cycle
+
+        exit
+    end do
+
     rewind (unit=iofili)
+
     if (buf(1:1)=='&') then
-        rewind (unit=iofili)
         call read_misc (iofili)
         if (.not.overwrite_testcase) then
             inquire (file=outputfile,exist=ex)
             if (ex) then
-                write (errormessage,'(3a)') '***Error in &MISC, OVERWRITE=.FALSE. and the file ',trim(outputfile),' exists.'
+                write (errormessage,'(a,a,a)') &
+                    '***Error in &MISC, OVERWRITE=.FALSE. and the file ', &
+                    trim(outputfile), &
+                    ' exists.'
                 call cfastexit('openfiles',1)
                 stop
             end if
         end if
     else
-        input_file_line = buf(1:len(input_file_line))
+        input_file_line = buf
         write (errormessage,'(a)') &
-            '***Error, Input file format not recognized. CFAST onlly reads namelist input files. Check first line of input file.'
+            '***Error, Input file format not recognized. CFAST only reads namelist input files. ' // &
+            'Check first nonblank, noncomment line of input file.'
         call cfastexit('openfiles',2)
         stop
     end if

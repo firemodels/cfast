@@ -21,6 +21,7 @@ from cfast_writer import write_cfast_input
 from tabs.fires_tab import FiresTab
 from tabs.placeholder_tab import PlaceholderTab
 from tabs.simulation_tab import SimulationTab
+from tabs.thermal_properties_tab import ThermalPropertiesTab
 
 
 class CeditMainWindow(QMainWindow):
@@ -37,6 +38,7 @@ class CeditMainWindow(QMainWindow):
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
 
         self.simulation_tab = SimulationTab()
+        self.thermal_properties_tab = ThermalPropertiesTab()
         self.fires_tab = FiresTab()
         self.tabs = None
 
@@ -123,10 +125,7 @@ class CeditMainWindow(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.simulation_tab, "Simulation")
-        self.tabs.addTab(
-            PlaceholderTab("Thermal Properties page coming soon"),
-            "Thermal Properties",
-        )
+        self.tabs.addTab(self.thermal_properties_tab, "Thermal Properties")
         self.tabs.addTab(
             PlaceholderTab("Compartments page coming soon"),
             "Compartments",
@@ -191,6 +190,7 @@ class CeditMainWindow(QMainWindow):
     def build_cfast_case(self):
         case = CfastCase()
         self.simulation_tab.add_to_case(case)
+        self.thermal_properties_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
         return case
 

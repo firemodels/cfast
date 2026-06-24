@@ -2,6 +2,18 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class MaterialProperty:
+    id: str
+    material: str
+    conductivity: float
+    specific_heat: float
+    density: float
+    thickness: float
+    emissivity: float = 0.9
+    fyi: str = ""
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -32,6 +44,8 @@ class CfastCase:
 
     adiabatic_surfaces: bool = False
     lower_oxygen_limit: float = 0.1
+
+    materials: list[MaterialProperty] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
     comp_width: float = 5.0

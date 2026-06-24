@@ -1,23 +1,35 @@
-# CEdit Qt Prototype
+# CEdit Qt
 
-Experimental Python/PySide6 prototype for a new CEdit front end for CFAST.
+Python/PySide6 prototype for a CFAST input-file editor.
 
-This prototype assumes it is run from the existing FDS/CFAST Python development environment.
+## Running
 
-Run with:
+No compilation step is required. Run the GUI from this directory:
 
+    cd Source/CeditQt
     python cedit_qt.py
 
-Current status:
+The Python environment must provide PySide6 and matplotlib.
 
-- Main CEdit-style window
-- Model object dock
-- Placeholder tabs for Model, Compartments, Vents, Targets, and Thermal Properties
-- Working Fires tab
-- Editable HRR ramp table
-- Live HRR ramp preview plot
+## Running CFAST from CEdit Qt
 
-Near-term goal:
+By default, CEdit Qt runs:
 
-Build a vertical slice that exports a valid CFAST input file, `casename.in`, from the GUI.
+    cfast
 
+so the CFAST executable must be available on your PATH.
+
+To use a specific executable, for example a local development build, choose:
+
+    File > Set CFAST Executable...
+
+To return to the PATH-based default, choose:
+
+    File > Use CFAST from PATH
+
+## Optional syntax check
+
+To check the Python files without launching the GUI:
+
+    cd Source/CeditQt
+    python -m py_compile cedit_qt.py main_window.py cfast_case.py cfast_writer.py tabs/*.py widgets/*.py

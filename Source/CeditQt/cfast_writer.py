@@ -107,6 +107,27 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")
 
+    if case.materials:
+        lines.append("!! Thermal Properties")
+
+        for material in case.materials:
+            fields = [
+                f"ID = {cfast_string(material.id)}",
+                f"MATERIAL = {cfast_string(material.material)}",
+                f"CONDUCTIVITY = {cfast_number(material.conductivity)}",
+                f"SPECIFIC_HEAT = {cfast_number(material.specific_heat)}",
+                f"DENSITY = {cfast_number(material.density)}",
+                f"THICKNESS = {cfast_number(material.thickness)}",
+                f"EMISSIVITY = {cfast_number(material.emissivity)}",
+            ]
+
+            if material.fyi:
+                fields.append(f"FYI = {cfast_string(material.fyi)}")
+
+            add_wrapped_namelist(lines, "MATL", fields)
+
+        lines.append("")
+
     lines.append("!! Compartments")
     add_wrapped_namelist(
         lines,

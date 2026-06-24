@@ -62,3 +62,9 @@ cfast7_intel_*
 # misc
 fort.3
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# CEditQt generated test files
+Source/CeditQt/cedit_qt_test*

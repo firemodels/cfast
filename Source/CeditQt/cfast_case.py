@@ -23,17 +23,31 @@ class Compartment:
     origin_y: float = 0.0
     origin_z: float = 0.0
 
-    ceiling_matl_id: str = "OFF"
-    ceiling_thickness: float = 0.0
-    wall_matl_id: str = "OFF"
-    wall_thickness: float = 0.0
-    floor_matl_id: str = "OFF"
-    floor_thickness: float = 0.0
+    ceiling_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    ceiling_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    wall_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    wall_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    floor_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    floor_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
     grid: tuple[int, int, int] = (50, 50, 50)
     hall: bool = False
     shaft: bool = False
+    flow_coefficient: float = 0.07
+    wall_leak_area_ratio: float = 0.00017
+    floor_leak_area_ratio: float = 5.2e-5
+    wall_leak_area: float = 0.0
+    floor_leak_area: float = 0.0
+    cross_section_heights: list[float] = field(default_factory=list)
+    cross_section_areas: list[float] = field(default_factory=list)
     fyi: str = ""
+
+    fire_count: int = 0
+    hvent_count: int = 0
+    vent_count: int = 0
+    mechanical_count: int = 0
+    detector_count: int = 0
+    target_count: int = 0
 
 
 @dataclass

@@ -28,6 +28,10 @@ def cfast_vector(values) -> str:
     return ", ".join(cfast_number(value) for value in values)
 
 
+def cfast_string_vector(values) -> str:
+    return ", ".join(cfast_string(value) for value in values)
+
+
 def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None:
     max_len = 120
     indent = "      "
@@ -57,6 +61,9 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             raise ValueError("Fire ramp times must be non-negative.")
         if point.hrr < 0.0:
             raise ValueError("Fire ramp HRR values must be non-negative.")
+
+    if not case.compartments:
+        raise ValueError("At least one compartment is required.")
 
     path = Path(path)
     lines: list[str] = []
@@ -136,17 +143,28 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             f"DEPTH = {cfast_number(compartment.depth)}",
             f"HEIGHT = {cfast_number(compartment.height)}",
             f"WIDTH = {cfast_number(compartment.width)}",
-            f"CEILING_MATL_ID = {cfast_string(compartment.ceiling_matl_id)}",
-            f"CEILING_THICKNESS = {cfast_number(compartment.ceiling_thickness)}",
-            f"WALL_MATL_ID = {cfast_string(compartment.wall_matl_id)}",
-            f"WALL_THICKNESS = {cfast_number(compartment.wall_thickness)}",
-            f"FLOOR_MATL_ID = {cfast_string(compartment.floor_matl_id)}",
-            f"FLOOR_THICKNESS = {cfast_number(compartment.floor_thickness)}",
             f"ORIGIN = {cfast_vector((compartment.origin_x, compartment.origin_y, compartment.origin_z))}",
             f"GRID = {cfast_vector(compartment.grid)}",
+            f"CEILING_MATL_ID = {cfast_string_vector(compartment.ceiling_matl_id)}",
+            f"CEILING_THICKNESS = {cfast_vector(compartment.ceiling_thickness)}",
+            f"WALL_MATL_ID = {cfast_string_vector(compartment.wall_matl_id)}",
+            f"WALL_THICKNESS = {cfast_vector(compartment.wall_thickness)}",
+            f"FLOOR_MATL_ID = {cfast_string_vector(compartment.floor_matl_id)}",
+            f"FLOOR_THICKNESS = {cfast_vector(compartment.floor_thickness)}",
             f"HALL = {cfast_logical(compartment.hall)}",
             f"SHAFT = {cfast_logical(compartment.shaft)}",
+            f"LEAK_AREA_RATIO = {cfast_vector((compartment.wall_leak_area_ratio, compartment.floor_leak_area_ratio))}",
+            f"LEAK_AREA = {cfast_vector((compartment.wall_leak_area, compartment.floor_leak_area))}",
+            f"FLOW_COEFFICIENT = {cfast_number(compartment.flow_coefficient)}",
         ]
+
+        if compartment.cross_section_heights and compartment.cross_section_areas:
+            fields.append(
+                f"CROSS_SECT_HEIGHTS = {cfast_vector(compartment.cross_section_heights)}"
+            )
+            fields.append(
+                f"CROSS_SECT_AREAS = {cfast_vector(compartment.cross_section_areas)}"
+            )
 
         if compartment.fyi:
             fields.append(f"FYI = {cfast_string(compartment.fyi)}")

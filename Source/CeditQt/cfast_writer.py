@@ -75,6 +75,31 @@ def wall_vent_schedule(vent) -> tuple[list[float], list[float]]:
     return t_values, f_values
 
 
+def validate_fire_property(prop) -> None:
+    if prop.heat_of_combustion <= 0.0:
+        raise ValueError(
+            f"Fire properties {prop.id!r}: heat of combustion must be positive."
+        )
+
+    if not 0.0 <= prop.radiative_fraction <= 1.0:
+        raise ValueError(
+            f"Fire properties {prop.id!r}: radiative fraction must be 0 to 1."
+        )
+
+    if not prop.ramp:
+        raise ValueError(f"Fire properties {prop.id!r}: HRR table is empty.")
+
+    for point in prop.ramp:
+        if point.time < 0.0:
+            raise ValueError(f"Fire properties {prop.id!r}: time must be non-negative.")
+        if point.hrr < 0.0:
+            raise ValueError(f"Fire properties {prop.id!r}: HRR must be non-negative.")
+        if point.area < 0.0:
+            raise ValueError(f"Fire properties {prop.id!r}: area must be non-negative.")
+        if point.height < 0.0:
+            raise ValueError(f"Fire properties {prop.id!r}: height must be non-negative.")
+
+
 def validate_case(case: CfastCase) -> None:
     if not case.compartments:
         raise ValueError("At least one compartment is required.")
@@ -126,19 +151,38 @@ def validate_case(case: CfastCase) -> None:
 
         scheduled_values(vent)
 
+    if not case.fires:
+        raise ValueError("At least one fire is required.")
+
+    property_ids = {prop.id for prop in case.fire_properties}
+
+    if not property_ids:
+        raise ValueError("At least one fire property definition is required.")
+
+    for prop in case.fire_properties:
+        validate_fire_property(prop)
+
+    for fire in case.fires:
+        if fire.comp_id not in compartment_ids:
+            raise ValueError(
+                f"Fire {fire.id!r}: compartment {fire.comp_id!r} does not exist."
+            )
+
+        if fire.fire_property_id not in property_ids:
+            raise ValueError(
+                f"Fire {fire.id!r}: fire properties ID "
+                f"{fire.fire_property_id!r} does not exist."
+            )
+
+        ignition = fire.ignition_criterion.upper()
+        if ignition not in {"TIME", "TEMPERATURE", "FLUX"}:
+            raise ValueError(
+                f"Fire {fire.id!r}: ignition criterion must be TIME, TEMPERATURE, "
+                "or FLUX."
+            )
+
 
 def write_cfast_input(case: CfastCase, path: str | Path) -> None:
-    ramp = case.sorted_fire_ramp()
-
-    if not ramp:
-        raise ValueError("Cannot export CFAST input because the fire ramp is empty.")
-
-    for point in ramp:
-        if point.time < 0.0:
-            raise ValueError("Fire ramp times must be non-negative.")
-        if point.hrr < 0.0:
-            raise ValueError("Fire ramp HRR values must be non-negative.")
-
     validate_case(case)
 
     path = Path(path)
@@ -353,61 +397,70 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         lines.append("")
 
     lines.append("!! Fires")
-    add_wrapped_namelist(
-        lines,
-        "FIRE",
-        [
-            f"ID = {cfast_string(case.fire_id)}",
-            f"COMP_ID = {cfast_string(case.comp_id)}",
-            f"FIRE_ID = {cfast_string(case.fire_chem_id)}",
-            f"LOCATION = {cfast_vector((case.fire_location_x, case.fire_location_y))}",
-        ],
-    )
 
-    add_wrapped_namelist(
-        lines,
-        "CHEM",
-        [
-            f"ID = {cfast_string(case.fire_chem_id)}",
-            f"CARBON = {case.carbon}",
-            f"CHLORINE = {case.chlorine}",
-            f"HYDROGEN = {case.hydrogen}",
-            f"NITROGEN = {case.nitrogen}",
-            f"OXYGEN = {case.oxygen}",
-            f"HEAT_OF_COMBUSTION = {cfast_number(case.heat_of_combustion)}",
-            f"RADIATIVE_FRACTION = {cfast_number(case.radiative_fraction)}",
-        ],
-    )
+    for fire in case.fires:
+        fields = [
+            f"ID = {cfast_string(fire.id)}",
+            f"COMP_ID = {cfast_string(fire.comp_id)}",
+            f"FIRE_ID = {cfast_string(fire.fire_property_id)}",
+            f"IGNITION_CRITERION = {cfast_string(fire.ignition_criterion.upper())}",
+            f"SETPOINT = {cfast_number(fire.setpoint)}",
+            f"LOCATION = {cfast_vector((fire.x_position, fire.y_position))}",
+        ]
 
-    lines.append(
-        f"&TABL ID = {cfast_string(case.fire_chem_id)}, "
-        "LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD',"
-    )
-    lines.append(
-        "      'SOOT_YIELD', 'HCN_YIELD', 'HCL_YIELD', 'TRACE_YIELD' /"
-    )
+        if fire.target:
+            fields.append(f"DEVC_ID = {cfast_string(fire.target)}")
 
-    for point in ramp:
-        data = (
-            point.time,
-            point.hrr,
-            point.height,
-            point.area,
-            point.co_yield,
-            point.soot_yield,
-            point.hcn_yield,
-            point.hcl_yield,
-            point.trace_yield,
-        )
+        if fire.fyi:
+            fields.append(f"FYI = {cfast_string(fire.fyi)}")
 
+        add_wrapped_namelist(lines, "FIRE", fields)
+
+    lines.append("")
+    lines.append("!! Fire Properties")
+
+    for prop in case.fire_properties:
         add_wrapped_namelist(
             lines,
-            "TABL",
+            "CHEM",
             [
-                f"ID = {cfast_string(case.fire_chem_id)}",
-                f"DATA = {cfast_vector(data)}",
+                f"ID = {cfast_string(prop.id)}",
+                f"CARBON = {prop.carbon}",
+                f"CHLORINE = {prop.chlorine}",
+                f"HYDROGEN = {prop.hydrogen}",
+                f"NITROGEN = {prop.nitrogen}",
+                f"OXYGEN = {prop.oxygen}",
+                f"HEAT_OF_COMBUSTION = {cfast_number(prop.heat_of_combustion)}",
+                f"RADIATIVE_FRACTION = {cfast_number(prop.radiative_fraction)}",
             ],
         )
+
+        lines.append(
+            f"&TABL ID = {cfast_string(prop.id)}, "
+            "LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD',"
+        )
+        lines.append("      'SOOT_YIELD', 'HCN_YIELD', 'TRACE_YIELD' /")
+
+        for point in prop.sorted_ramp():
+            data = (
+                point.time,
+                point.hrr,
+                point.height,
+                point.area,
+                point.co_yield,
+                point.soot_yield,
+                point.hcn_yield,
+                point.trace_yield,
+            )
+
+            add_wrapped_namelist(
+                lines,
+                "TABL",
+                [
+                    f"ID = {cfast_string(prop.id)}",
+                    f"DATA = {cfast_vector(data)}",
+                ],
+            )
 
     lines.append("")
     lines.append("&TAIL /")

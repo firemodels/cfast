@@ -14,6 +14,29 @@ class MaterialProperty:
 
 
 @dataclass
+class Compartment:
+    id: str
+    width: float
+    depth: float
+    height: float
+    origin_x: float = 0.0
+    origin_y: float = 0.0
+    origin_z: float = 0.0
+
+    ceiling_matl_id: str = "OFF"
+    ceiling_thickness: float = 0.0
+    wall_matl_id: str = "OFF"
+    wall_thickness: float = 0.0
+    floor_matl_id: str = "OFF"
+    floor_thickness: float = 0.0
+
+    grid: tuple[int, int, int] = (50, 50, 50)
+    hall: bool = False
+    shaft: bool = False
+    fyi: str = ""
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -46,15 +69,9 @@ class CfastCase:
     lower_oxygen_limit: float = 0.1
 
     materials: list[MaterialProperty] = field(default_factory=list)
+    compartments: list[Compartment] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
-    comp_width: float = 5.0
-    comp_depth: float = 5.0
-    comp_height: float = 5.0
-    comp_origin_x: float = 0.0
-    comp_origin_y: float = 0.0
-    comp_origin_z: float = 0.0
-    comp_grid: tuple[int, int, int] = (50, 50, 50)
 
     wall_vent_id: str = "WallVent_1"
     wall_vent_bottom: float = 0.0

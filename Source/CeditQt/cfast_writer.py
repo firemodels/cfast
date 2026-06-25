@@ -129,21 +129,30 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         lines.append("")
 
     lines.append("!! Compartments")
-    add_wrapped_namelist(
-        lines,
-        "COMP",
-        [
-            f"ID = {cfast_string(case.comp_id)}",
-            f"DEPTH = {cfast_number(case.comp_depth)}",
-            f"HEIGHT = {cfast_number(case.comp_height)}",
-            f"WIDTH = {cfast_number(case.comp_width)}",
-            "CEILING_MATL_ID = 'OFF'",
-            "WALL_MATL_ID = 'OFF'",
-            "FLOOR_MATL_ID = 'OFF'",
-            f"ORIGIN = {cfast_vector((case.comp_origin_x, case.comp_origin_y, case.comp_origin_z))}",
-            f"GRID = {cfast_vector(case.comp_grid)}",
-        ],
-    )
+
+    for compartment in case.compartments:
+        fields = [
+            f"ID = {cfast_string(compartment.id)}",
+            f"DEPTH = {cfast_number(compartment.depth)}",
+            f"HEIGHT = {cfast_number(compartment.height)}",
+            f"WIDTH = {cfast_number(compartment.width)}",
+            f"CEILING_MATL_ID = {cfast_string(compartment.ceiling_matl_id)}",
+            f"CEILING_THICKNESS = {cfast_number(compartment.ceiling_thickness)}",
+            f"WALL_MATL_ID = {cfast_string(compartment.wall_matl_id)}",
+            f"WALL_THICKNESS = {cfast_number(compartment.wall_thickness)}",
+            f"FLOOR_MATL_ID = {cfast_string(compartment.floor_matl_id)}",
+            f"FLOOR_THICKNESS = {cfast_number(compartment.floor_thickness)}",
+            f"ORIGIN = {cfast_vector((compartment.origin_x, compartment.origin_y, compartment.origin_z))}",
+            f"GRID = {cfast_vector(compartment.grid)}",
+            f"HALL = {cfast_logical(compartment.hall)}",
+            f"SHAFT = {cfast_logical(compartment.shaft)}",
+        ]
+
+        if compartment.fyi:
+            fields.append(f"FYI = {cfast_string(compartment.fyi)}")
+
+        add_wrapped_namelist(lines, "COMP", fields)
+
     lines.append("")
 
     lines.append("!! Wall Vents")

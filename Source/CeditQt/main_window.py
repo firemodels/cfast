@@ -22,6 +22,7 @@ from tabs.compartments_tab import CompartmentsTab
 from tabs.fires_tab import FiresTab
 from tabs.mechanical_vents_tab import MechanicalVentsTab
 from tabs.placeholder_tab import PlaceholderTab
+from tabs.targets_tab import TargetsTab
 from tabs.simulation_tab import SimulationTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
@@ -54,6 +55,7 @@ class CeditMainWindow(QMainWindow):
         )
         self.mechanical_vents_tab = MechanicalVentsTab()
         self.fires_tab = FiresTab()
+        self.targets_tab = TargetsTab()
         self.tabs = None
 
         self.build_menu()
@@ -153,7 +155,7 @@ class CeditMainWindow(QMainWindow):
 
         self.tabs.addTab(self.mechanical_vents_tab, "Mechanical Ventilation")
         self.tabs.addTab(self.fires_tab, "Fires")
-        self.tabs.addTab(PlaceholderTab("Targets page coming soon"), "Targets")
+        self.tabs.addTab(self.targets_tab, "Targets")
         self.tabs.addTab(
             PlaceholderTab("Detection / Suppression page coming soon"),
             "Detection / Suppression",
@@ -209,6 +211,7 @@ class CeditMainWindow(QMainWindow):
 
         self.mechanical_vents_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
+        self.targets_tab.add_to_case(case)
         return case
 
     def save_cfast_input(self):

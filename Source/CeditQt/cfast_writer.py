@@ -50,13 +50,13 @@ def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None
     lines.append(current.rstrip())
 
 
-def wall_vent_schedule(vent) -> tuple[list[float], list[float]]:
+def vent_schedule(vent, simulation_time: float) -> tuple[list[float], list[float]]:
     t_values = list(vent.t_values)
     f_values = list(vent.f_values)
 
     if not t_values:
         if abs(vent.initial_open - 1.0) > 1.0e-12:
-            return [0.0], [vent.initial_open]
+            return [0.0, simulation_time], [vent.initial_open, vent.initial_open]
         return [], []
 
     if abs(t_values[0]) > 1.0e-12:
@@ -88,6 +88,25 @@ def validate_case(case: CfastCase) -> None:
         if len(vent.t_values) != len(vent.f_values):
             raise ValueError(
                 f"Wall vent {vent.id!r}: T and F schedules must have the same length."
+            )
+
+    for vent in case.ceiling_floor_vents:
+        if vent.first_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: first compartment "
+                f"{vent.first_comp_id!r} does not exist."
+            )
+
+        if vent.second_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: second compartment "
+                f"{vent.second_comp_id!r} does not exist."
+            )
+
+        if len(vent.t_values) != len(vent.f_values):
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: T and F schedules must have "
+                "the same length."
             )
 
 
@@ -226,7 +245,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"WIDTH = {cfast_number(vent.width)}",
             ]
 
-            t_values, f_values = wall_vent_schedule(vent)
+            t_values, f_values = vent_schedule(vent, case.simulation_time)
 
             if t_values and f_values:
                 fields.extend(
@@ -243,6 +262,37 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                     f"OFFSET = {cfast_number(vent.offset)}",
                 ]
             )
+
+            if vent.fyi:
+                fields.append(f"FYI = {cfast_string(vent.fyi)}")
+
+            add_wrapped_namelist(lines, "VENT", fields)
+
+        lines.append("")
+
+    if case.ceiling_floor_vents:
+        lines.append("!! Ceiling/Floor Vents")
+
+        for vent in case.ceiling_floor_vents:
+            fields = [
+                f"TYPE = {cfast_string(vent.vent_type)}",
+                f"ID = {cfast_string(vent.id)}",
+                f"COMP_IDS = {cfast_string(vent.first_comp_id)} {cfast_string(vent.second_comp_id)}",
+                f"AREA = {cfast_number(vent.area)}",
+                f"SHAPE = {cfast_string(vent.shape)}",
+                f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
+            ]
+
+            t_values, f_values = vent_schedule(vent, case.simulation_time)
+
+            if t_values and f_values:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(vent.criterion)}",
+                        f"T = {cfast_vector(t_values)}",
+                        f"F = {cfast_vector(f_values)}",
+                    ]
+                )
 
             if vent.fyi:
                 fields.append(f"FYI = {cfast_string(vent.fyi)}")

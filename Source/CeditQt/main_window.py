@@ -24,6 +24,7 @@ from tabs.placeholder_tab import PlaceholderTab
 from tabs.simulation_tab import SimulationTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
+from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 
 
 class CeditMainWindow(QMainWindow):
@@ -43,6 +44,7 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab = ThermalPropertiesTab()
         self.compartments_tab = CompartmentsTab()
         self.wall_vents_tab = WallVentsTab()
+        self.ceiling_floor_vents_tab = CeilingFloorVentsTab()
         self.fires_tab = FiresTab()
         self.tabs = None
 
@@ -132,10 +134,7 @@ class CeditMainWindow(QMainWindow):
         self.tabs.addTab(self.thermal_properties_tab, "Thermal Properties")
         self.tabs.addTab(self.compartments_tab, "Compartments")
         self.tabs.addTab(self.wall_vents_tab, "Wall Vents")
-        self.tabs.addTab(
-            PlaceholderTab("Ceiling/Floor Vents page coming soon"),
-            "Ceiling/Floor Vents",
-        )
+        self.tabs.addTab(self.ceiling_floor_vents_tab, "Ceiling/Floor Vents")
         self.tabs.addTab(
             PlaceholderTab("Mechanical Ventilation page coming soon"),
             "Mechanical Ventilation",
@@ -191,6 +190,7 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab.add_to_case(case)
         self.compartments_tab.add_to_case(case)
         self.wall_vents_tab.add_to_case(case)
+        self.ceiling_floor_vents_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
         return case
 

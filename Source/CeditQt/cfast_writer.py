@@ -202,6 +202,27 @@ def validate_case(case: CfastCase) -> None:
                 f"{conn.bottom_comp_id!r} does not exist."
             )
 
+    for vis in getattr(case, "output_visualizations", []):
+        comp_id = vis.comp_id.strip()
+        if comp_id.upper() not in {"ALL", "NULL", ""} and comp_id not in compartment_ids:
+            raise ValueError(
+                f"Visualization output: compartment {comp_id!r} does not exist."
+            )
+
+        vis_type = vis.visualization_type.upper()
+        if vis_type not in {"2-D", "3-D"}:
+            raise ValueError(
+                f"Visualization output: type must be 2-D or 3-D, got "
+                f"{vis.visualization_type!r}."
+            )
+
+        axis = vis.axis.upper()[0:1]
+        if vis_type == "2-D" and axis not in {"X", "Y", "Z"}:
+            raise ValueError(
+                f"Visualization output: 2-D axis must be X, Y, or Z, got "
+                f"{vis.axis!r}."
+            )
+
     if not case.fires:
         raise ValueError("At least one fire is required.")
 
@@ -283,6 +304,17 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")
+
+    if getattr(case, "debug_output", False):
+        add_wrapped_namelist(
+            lines,
+            "DIAG",
+            [
+                "DEBUG_PRINT = 'ON'",
+                "RESIDUAL_DEBUG_PRINT = 'ON'",
+            ],
+        )
+        lines.append("")
 
     if case.materials:
         lines.append("!! Thermal Properties")
@@ -609,6 +641,39 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             )
 
     lines.append("")
+
+    if getattr(case, "output_visualizations", []):
+        lines.append("!! Visualizations")
+
+        for vis in case.output_visualizations:
+            vis_type = vis.visualization_type.upper()
+            comp_id = vis.comp_id.strip()
+            comp_value = "NULL" if comp_id.upper() in {"ALL", "NULL", ""} else comp_id
+
+            if vis_type == "2-D":
+                axis = vis.axis.upper()[0:1]
+                add_wrapped_namelist(
+                    lines,
+                    "SLCF",
+                    [
+                        "DOMAIN = '2-D'",
+                        f"COMP_ID = {cfast_string(comp_value)}",
+                        f"PLANE = {cfast_string(axis)}",
+                        f"POSITION = {cfast_number(vis.value)}",
+                    ],
+                )
+            else:
+                add_wrapped_namelist(
+                    lines,
+                    "SLCF",
+                    [
+                        "DOMAIN = '3-D'",
+                        f"COMP_ID = {cfast_string(comp_value)}",
+                    ],
+                )
+
+        lines.append("")
+
     lines.append("&TAIL /")
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

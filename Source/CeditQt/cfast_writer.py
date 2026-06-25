@@ -50,13 +50,22 @@ def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None
     lines.append(current.rstrip())
 
 
-def vent_schedule(vent, simulation_time: float) -> tuple[list[float], list[float]]:
+def scheduled_values(vent) -> tuple[list[float], list[float]]:
     t_values = list(vent.t_values)
     f_values = list(vent.f_values)
 
+    if len(t_values) != len(f_values):
+        raise ValueError(f"Vent {vent.id!r}: T and F schedules must match.")
+
+    return t_values, f_values
+
+
+def wall_vent_schedule(vent) -> tuple[list[float], list[float]]:
+    t_values, f_values = scheduled_values(vent)
+
     if not t_values:
         if abs(vent.initial_open - 1.0) > 1.0e-12:
-            return [0.0, simulation_time], [vent.initial_open, vent.initial_open]
+            return [0.0], [vent.initial_open]
         return [], []
 
     if abs(t_values[0]) > 1.0e-12:
@@ -85,29 +94,37 @@ def validate_case(case: CfastCase) -> None:
                 f"{vent.second_comp_id!r} does not exist."
             )
 
-        if len(vent.t_values) != len(vent.f_values):
+        scheduled_values(vent)
+
+    for vent in getattr(case, "ceiling_floor_vents", []):
+        if vent.top_comp_id not in compartment_ids:
             raise ValueError(
-                f"Wall vent {vent.id!r}: T and F schedules must have the same length."
+                f"Ceiling/floor vent {vent.id!r}: top compartment "
+                f"{vent.top_comp_id!r} does not exist."
             )
 
-    for vent in case.ceiling_floor_vents:
-        if vent.first_comp_id not in compartment_ids:
+        if vent.bottom_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: first compartment "
-                f"{vent.first_comp_id!r} does not exist."
+                f"Ceiling/floor vent {vent.id!r}: bottom compartment "
+                f"{vent.bottom_comp_id!r} does not exist."
             )
 
-        if vent.second_comp_id not in compartment_ids:
+        scheduled_values(vent)
+
+    for vent in getattr(case, "mechanical_vents", []):
+        if vent.from_comp_id != "OUTSIDE" and vent.from_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: second compartment "
-                f"{vent.second_comp_id!r} does not exist."
+                f"Mechanical vent {vent.id!r}: from compartment "
+                f"{vent.from_comp_id!r} does not exist."
             )
 
-        if len(vent.t_values) != len(vent.f_values):
+        if vent.to_comp_id != "OUTSIDE" and vent.to_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: T and F schedules must have "
-                "the same length."
+                f"Mechanical vent {vent.id!r}: to compartment "
+                f"{vent.to_comp_id!r} does not exist."
             )
+
+        scheduled_values(vent)
 
 
 def write_cfast_input(case: CfastCase, path: str | Path) -> None:
@@ -245,7 +262,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"WIDTH = {cfast_number(vent.width)}",
             ]
 
-            t_values, f_values = vent_schedule(vent, case.simulation_time)
+            t_values, f_values = wall_vent_schedule(vent)
 
             if t_values and f_values:
                 fields.extend(
@@ -270,20 +287,54 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
         lines.append("")
 
-    if case.ceiling_floor_vents:
+    if getattr(case, "ceiling_floor_vents", []):
         lines.append("!! Ceiling/Floor Vents")
 
         for vent in case.ceiling_floor_vents:
+            t_values, f_values = scheduled_values(vent)
             fields = [
-                f"TYPE = {cfast_string(vent.vent_type)}",
+                "TYPE = 'CEILING'",
                 f"ID = {cfast_string(vent.id)}",
-                f"COMP_IDS = {cfast_string(vent.first_comp_id)} {cfast_string(vent.second_comp_id)}",
+                f"COMP_IDS = {cfast_string(vent.top_comp_id)} {cfast_string(vent.bottom_comp_id)}",
                 f"AREA = {cfast_number(vent.area)}",
                 f"SHAPE = {cfast_string(vent.shape)}",
                 f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
             ]
 
-            t_values, f_values = vent_schedule(vent, case.simulation_time)
+            if t_values and f_values:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(vent.criterion)}",
+                        f"T = {cfast_vector(t_values)}",
+                        f"F = {cfast_vector(f_values)}",
+                    ]
+                )
+
+            if vent.fyi:
+                fields.append(f"FYI = {cfast_string(vent.fyi)}")
+
+            add_wrapped_namelist(lines, "VENT", fields)
+
+        lines.append("")
+
+    if getattr(case, "mechanical_vents", []):
+        lines.append("!! Mechanical Ventilation")
+
+        for vent in case.mechanical_vents:
+            t_values, f_values = scheduled_values(vent)
+            fields = [
+                "TYPE = 'MECHANICAL'",
+                f"ID = {cfast_string(vent.id)}",
+                f"COMP_IDS = {cfast_string(vent.from_comp_id)} {cfast_string(vent.to_comp_id)}",
+                f"AREAS = {cfast_vector((vent.from_area, vent.to_area))}",
+                f"HEIGHTS = {cfast_vector((vent.from_height, vent.to_height))}",
+                f"ORIENTATIONS = {cfast_string_vector((vent.from_orientation, vent.to_orientation))}",
+                f"FLOW = {cfast_number(vent.flow)}",
+                f"CUTOFFS = {cfast_vector((vent.begin_dropoff, vent.zero_flow))}",
+                f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
+                f"FILTER_EFFICIENCY = {cfast_number(vent.filter_efficiency)}",
+                f"FILTER_TIME = {cfast_number(vent.filter_time)}",
+            ]
 
             if t_values and f_values:
                 fields.extend(

@@ -20,11 +20,16 @@ from cfast_case import CfastCase
 from cfast_writer import write_cfast_input
 from tabs.compartments_tab import CompartmentsTab
 from tabs.fires_tab import FiresTab
+from tabs.mechanical_vents_tab import MechanicalVentsTab
 from tabs.placeholder_tab import PlaceholderTab
 from tabs.simulation_tab import SimulationTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
-from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
+
+try:
+    from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
+except ImportError:
+    CeilingFloorVentsTab = None
 
 
 class CeditMainWindow(QMainWindow):
@@ -44,7 +49,10 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab = ThermalPropertiesTab()
         self.compartments_tab = CompartmentsTab()
         self.wall_vents_tab = WallVentsTab()
-        self.ceiling_floor_vents_tab = CeilingFloorVentsTab()
+        self.ceiling_floor_vents_tab = (
+            CeilingFloorVentsTab() if CeilingFloorVentsTab is not None else None
+        )
+        self.mechanical_vents_tab = MechanicalVentsTab()
         self.fires_tab = FiresTab()
         self.tabs = None
 
@@ -134,11 +142,16 @@ class CeditMainWindow(QMainWindow):
         self.tabs.addTab(self.thermal_properties_tab, "Thermal Properties")
         self.tabs.addTab(self.compartments_tab, "Compartments")
         self.tabs.addTab(self.wall_vents_tab, "Wall Vents")
-        self.tabs.addTab(self.ceiling_floor_vents_tab, "Ceiling/Floor Vents")
-        self.tabs.addTab(
-            PlaceholderTab("Mechanical Ventilation page coming soon"),
-            "Mechanical Ventilation",
-        )
+
+        if self.ceiling_floor_vents_tab is None:
+            self.tabs.addTab(
+                PlaceholderTab("Ceiling/Floor Vents page coming soon"),
+                "Ceiling/Floor Vents",
+            )
+        else:
+            self.tabs.addTab(self.ceiling_floor_vents_tab, "Ceiling/Floor Vents")
+
+        self.tabs.addTab(self.mechanical_vents_tab, "Mechanical Ventilation")
         self.tabs.addTab(self.fires_tab, "Fires")
         self.tabs.addTab(PlaceholderTab("Targets page coming soon"), "Targets")
         self.tabs.addTab(
@@ -190,7 +203,11 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab.add_to_case(case)
         self.compartments_tab.add_to_case(case)
         self.wall_vents_tab.add_to_case(case)
-        self.ceiling_floor_vents_tab.add_to_case(case)
+
+        if self.ceiling_floor_vents_tab is not None:
+            self.ceiling_floor_vents_tab.add_to_case(case)
+
+        self.mechanical_vents_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
         return case
 

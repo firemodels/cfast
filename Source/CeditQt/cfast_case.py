@@ -22,28 +22,23 @@ class Compartment:
     origin_x: float = 0.0
     origin_y: float = 0.0
     origin_z: float = 0.0
-
     ceiling_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
     ceiling_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
     wall_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
     wall_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
     floor_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
     floor_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
-
     grid: tuple[int, int, int] = (50, 50, 50)
     hall: bool = False
     shaft: bool = False
-
     flow_coefficient: float = 0.07
     wall_leak_area_ratio: float = 0.00017
     floor_leak_area_ratio: float = 5.2e-5
     wall_leak_area: float = 0.0
     floor_leak_area: float = 0.0
-
     cross_section_heights: list[float] = field(default_factory=list)
     cross_section_areas: list[float] = field(default_factory=list)
     fyi: str = ""
-
     fire_count: int = 0
     hvent_count: int = 0
     vent_count: int = 0
@@ -72,14 +67,36 @@ class WallVent:
 @dataclass
 class CeilingFloorVent:
     id: str
-    first_comp_id: str
-    second_comp_id: str
-    vent_type: str = "CEILING"
-    shape: str = "ROUND"
+    top_comp_id: str
+    bottom_comp_id: str
     area: float = 1.0
-    initial_open: float = 1.0
+    shape: str = "ROUND"
+    offset_x: float = 2.5
+    offset_y: float = 1.0
+    criterion: str = "TIME"
+    t_values: list[float] = field(default_factory=list)
+    f_values: list[float] = field(default_factory=list)
+    fyi: str = ""
+
+
+@dataclass
+class MechanicalVent:
+    id: str
+    from_comp_id: str
+    to_comp_id: str
+    from_area: float = 0.25
+    from_height: float = 2.75
+    from_orientation: str = "VERTICAL"
+    to_area: float = 0.25
+    to_height: float = 2.75
+    to_orientation: str = "VERTICAL"
+    flow: float = 0.02
+    begin_dropoff: float = 200.0
+    zero_flow: float = 300.0
     offset_x: float = 0.0
-    offset_y: float = 0.0
+    offset_y: float = 4.0
+    filter_efficiency: float = 0.0
+    filter_time: float = 0.0
     criterion: str = "TIME"
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
@@ -122,6 +139,7 @@ class CfastCase:
     compartments: list[Compartment] = field(default_factory=list)
     wall_vents: list[WallVent] = field(default_factory=list)
     ceiling_floor_vents: list[CeilingFloorVent] = field(default_factory=list)
+    mechanical_vents: list[MechanicalVent] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
 

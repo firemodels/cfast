@@ -108,12 +108,60 @@ class FireRampPoint:
     time: float
     hrr: float
     height: float = 0.0
-    area: float = 0.3
+    area: float = 0.1
     co_yield: float = 0.0
     soot_yield: float = 0.01
     hcn_yield: float = 0.0
-    hcl_yield: float = 0.0
     trace_yield: float = 0.0
+
+
+@dataclass
+class FireProperty:
+    id: str
+    carbon: int = 1
+    hydrogen: int = 4
+    oxygen: int = 0
+    nitrogen: int = 0
+    chlorine: int = 0
+    heat_of_combustion: float = 50000.0
+    radiative_fraction: float = 0.35
+    ramp: list[FireRampPoint] = field(default_factory=list)
+    fyi: str = ""
+
+    def sorted_ramp(self) -> list[FireRampPoint]:
+        return sorted(self.ramp, key=lambda point: point.time)
+
+    def peak_hrr(self) -> float:
+        if not self.ramp:
+            return 0.0
+        return max(point.hrr for point in self.ramp)
+
+    def fuel_formula(self) -> str:
+        parts = []
+        if self.carbon:
+            parts.append(f"C{self.carbon}")
+        if self.hydrogen:
+            parts.append(f"H{self.hydrogen}")
+        if self.oxygen:
+            parts.append(f"O{self.oxygen}")
+        if self.nitrogen:
+            parts.append(f"N{self.nitrogen}")
+        if self.chlorine:
+            parts.append(f"Cl{self.chlorine}")
+        return "".join(parts) if parts else "Unknown"
+
+
+@dataclass
+class FireDefinition:
+    id: str
+    comp_id: str
+    fire_property_id: str
+    ignition_criterion: str = "TIME"
+    setpoint: float = 0.0
+    target: str = ""
+    x_position: float = 2.5
+    y_position: float = 2.5
+    fyi: str = ""
 
 
 @dataclass
@@ -140,14 +188,15 @@ class CfastCase:
     wall_vents: list[WallVent] = field(default_factory=list)
     ceiling_floor_vents: list[CeilingFloorVent] = field(default_factory=list)
     mechanical_vents: list[MechanicalVent] = field(default_factory=list)
+    fires: list[FireDefinition] = field(default_factory=list)
+    fire_properties: list[FireProperty] = field(default_factory=list)
 
+    # Kept for compatibility with early prototype code paths.
     comp_id: str = "Comp 1"
-
     fire_id: str = "Initial Fire"
     fire_chem_id: str = "Initial Fire_Fire"
     fire_location_x: float = 2.5
     fire_location_y: float = 2.5
-
     carbon: int = 1
     chlorine: int = 0
     hydrogen: int = 4
@@ -155,7 +204,6 @@ class CfastCase:
     oxygen: int = 0
     heat_of_combustion: float = 50000.0
     radiative_fraction: float = 0.35
-
     fire_ramp: list[FireRampPoint] = field(default_factory=list)
 
     def sorted_fire_ramp(self) -> list[FireRampPoint]:

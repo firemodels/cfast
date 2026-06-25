@@ -14,6 +14,43 @@ class MaterialProperty:
 
 
 @dataclass
+class Compartment:
+    id: str
+    width: float
+    depth: float
+    height: float
+    origin_x: float = 0.0
+    origin_y: float = 0.0
+    origin_z: float = 0.0
+
+    ceiling_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    ceiling_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    wall_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    wall_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    floor_matl_id: tuple[str, str, str] = ("OFF", "OFF", "OFF")
+    floor_thickness: tuple[float, float, float] = (0.0, 0.0, 0.0)
+
+    grid: tuple[int, int, int] = (50, 50, 50)
+    hall: bool = False
+    shaft: bool = False
+    flow_coefficient: float = 0.07
+    wall_leak_area_ratio: float = 0.00017
+    floor_leak_area_ratio: float = 5.2e-5
+    wall_leak_area: float = 0.0
+    floor_leak_area: float = 0.0
+    cross_section_heights: list[float] = field(default_factory=list)
+    cross_section_areas: list[float] = field(default_factory=list)
+    fyi: str = ""
+
+    fire_count: int = 0
+    hvent_count: int = 0
+    vent_count: int = 0
+    mechanical_count: int = 0
+    detector_count: int = 0
+    target_count: int = 0
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -46,15 +83,9 @@ class CfastCase:
     lower_oxygen_limit: float = 0.1
 
     materials: list[MaterialProperty] = field(default_factory=list)
+    compartments: list[Compartment] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
-    comp_width: float = 5.0
-    comp_depth: float = 5.0
-    comp_height: float = 5.0
-    comp_origin_x: float = 0.0
-    comp_origin_y: float = 0.0
-    comp_origin_z: float = 0.0
-    comp_grid: tuple[int, int, int] = (50, 50, 50)
 
     wall_vent_id: str = "WallVent_1"
     wall_vent_bottom: float = 0.0

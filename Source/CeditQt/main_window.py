@@ -18,19 +18,16 @@ from PySide6.QtWidgets import (
 
 from cfast_case import CfastCase
 from cfast_writer import write_cfast_input
+from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 from tabs.compartments_tab import CompartmentsTab
+from tabs.detection_suppression_tab import DetectionSuppressionTab
 from tabs.fires_tab import FiresTab
 from tabs.mechanical_vents_tab import MechanicalVentsTab
 from tabs.placeholder_tab import PlaceholderTab
-from tabs.targets_tab import TargetsTab
 from tabs.simulation_tab import SimulationTab
+from tabs.targets_tab import TargetsTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
-
-try:
-    from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
-except ImportError:
-    CeilingFloorVentsTab = None
 
 
 class CeditMainWindow(QMainWindow):
@@ -50,12 +47,11 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab = ThermalPropertiesTab()
         self.compartments_tab = CompartmentsTab()
         self.wall_vents_tab = WallVentsTab()
-        self.ceiling_floor_vents_tab = (
-            CeilingFloorVentsTab() if CeilingFloorVentsTab is not None else None
-        )
+        self.ceiling_floor_vents_tab = CeilingFloorVentsTab()
         self.mechanical_vents_tab = MechanicalVentsTab()
         self.fires_tab = FiresTab()
         self.targets_tab = TargetsTab()
+        self.detection_suppression_tab = DetectionSuppressionTab()
         self.tabs = None
 
         self.build_menu()
@@ -144,22 +140,11 @@ class CeditMainWindow(QMainWindow):
         self.tabs.addTab(self.thermal_properties_tab, "Thermal Properties")
         self.tabs.addTab(self.compartments_tab, "Compartments")
         self.tabs.addTab(self.wall_vents_tab, "Wall Vents")
-
-        if self.ceiling_floor_vents_tab is None:
-            self.tabs.addTab(
-                PlaceholderTab("Ceiling/Floor Vents page coming soon"),
-                "Ceiling/Floor Vents",
-            )
-        else:
-            self.tabs.addTab(self.ceiling_floor_vents_tab, "Ceiling/Floor Vents")
-
+        self.tabs.addTab(self.ceiling_floor_vents_tab, "Ceiling/Floor Vents")
         self.tabs.addTab(self.mechanical_vents_tab, "Mechanical Ventilation")
         self.tabs.addTab(self.fires_tab, "Fires")
         self.tabs.addTab(self.targets_tab, "Targets")
-        self.tabs.addTab(
-            PlaceholderTab("Detection / Suppression page coming soon"),
-            "Detection / Suppression",
-        )
+        self.tabs.addTab(self.detection_suppression_tab, "Detection / Suppression")
         self.tabs.addTab(
             PlaceholderTab("Surface Connections page coming soon"),
             "Surface Connections",
@@ -205,13 +190,11 @@ class CeditMainWindow(QMainWindow):
         self.thermal_properties_tab.add_to_case(case)
         self.compartments_tab.add_to_case(case)
         self.wall_vents_tab.add_to_case(case)
-
-        if self.ceiling_floor_vents_tab is not None:
-            self.ceiling_floor_vents_tab.add_to_case(case)
-
+        self.ceiling_floor_vents_tab.add_to_case(case)
         self.mechanical_vents_tab.add_to_case(case)
-        self.fires_tab.add_to_case(case)
         self.targets_tab.add_to_case(case)
+        self.detection_suppression_tab.add_to_case(case)
+        self.fires_tab.add_to_case(case)
         return case
 
     def save_cfast_input(self):
@@ -357,9 +340,10 @@ class CeditMainWindow(QMainWindow):
         if self.cfast_process is None:
             return
 
-        text = bytes(
-            self.cfast_process.readAllStandardOutput()
-        ).decode("utf-8", errors="replace")
+        text = bytes(self.cfast_process.readAllStandardOutput()).decode(
+            "utf-8",
+            errors="replace",
+        )
 
         self.simulation_tab.append_message(text)
 
@@ -367,9 +351,10 @@ class CeditMainWindow(QMainWindow):
         if self.cfast_process is None:
             return
 
-        text = bytes(
-            self.cfast_process.readAllStandardError()
-        ).decode("utf-8", errors="replace")
+        text = bytes(self.cfast_process.readAllStandardError()).decode(
+            "utf-8",
+            errors="replace",
+        )
 
         self.simulation_tab.append_message(text)
 

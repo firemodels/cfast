@@ -64,19 +64,72 @@ class WallVent:
     fyi: str = ""
 
 
-@dataclass
+@dataclass(init=False)
 class CeilingFloorVent:
     id: str
-    top_comp_id: str
-    bottom_comp_id: str
+    first_comp_id: str
+    second_comp_id: str
+    vent_type: str = "CEILING"
     area: float = 1.0
     shape: str = "ROUND"
+    initial_open: float = 1.0
     offset_x: float = 2.5
     offset_y: float = 1.0
     criterion: str = "TIME"
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
     fyi: str = ""
+
+    def __init__(
+        self,
+        id: str,
+        first_comp_id: str | None = None,
+        second_comp_id: str | None = None,
+        vent_type: str = "CEILING",
+        area: float = 1.0,
+        shape: str = "ROUND",
+        initial_open: float = 1.0,
+        offset_x: float = 2.5,
+        offset_y: float = 1.0,
+        criterion: str = "TIME",
+        t_values: list[float] | None = None,
+        f_values: list[float] | None = None,
+        fyi: str = "",
+        top_comp_id: str | None = None,
+        bottom_comp_id: str | None = None,
+    ):
+        # The GUI uses first/second compartment naming to match CEdit.
+        # Earlier writer code used top/bottom naming. Accept both so the
+        # tab and writer stay compatible during this prototype phase.
+        self.id = id
+        self.first_comp_id = first_comp_id or top_comp_id or ""
+        self.second_comp_id = second_comp_id or bottom_comp_id or ""
+        self.vent_type = vent_type
+        self.area = area
+        self.shape = shape
+        self.initial_open = initial_open
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        self.criterion = criterion
+        self.t_values = list(t_values) if t_values is not None else []
+        self.f_values = list(f_values) if f_values is not None else []
+        self.fyi = fyi
+
+    @property
+    def top_comp_id(self) -> str:
+        return self.first_comp_id
+
+    @top_comp_id.setter
+    def top_comp_id(self, value: str) -> None:
+        self.first_comp_id = value
+
+    @property
+    def bottom_comp_id(self) -> str:
+        return self.second_comp_id
+
+    @bottom_comp_id.setter
+    def bottom_comp_id(self, value: str) -> None:
+        self.second_comp_id = value
 
 
 @dataclass
@@ -104,7 +157,7 @@ class MechanicalVent:
 
 
 @dataclass
-class Target: 
+class Target:
     id: str
     comp_id: str
     x_position: float = 0.0
@@ -124,6 +177,33 @@ class Target:
     convection_coefficient_front: float = 0.0
     convection_coefficient_back: float = 0.0
     fyi: str = ""
+
+
+@dataclass
+class DetectionDevice:
+    id: str
+    comp_id: str
+    device_type: str = "SPRINKLER"
+    x_position: float = 3.0
+    y_position: float = 3.0
+    z_position: float = 2.97
+    activation_temperature: float = 73.88998
+    activation_obscuration: float = 23.93346
+    rti: float = 100.0
+    spray_density: float = 7.0e-5
+    fyi: str = ""
+
+    def display_type(self) -> str:
+        normalized = self.device_type.upper()
+
+        if normalized == "SPRINKLER":
+            return "Sprinkler"
+        if normalized == "SMOKE_DETECTOR":
+            return "Smoke"
+        if normalized == "HEAT_DETECTOR":
+            return "Heat"
+
+        return self.device_type
 
 
 @dataclass
@@ -212,6 +292,7 @@ class CfastCase:
     ceiling_floor_vents: list[CeilingFloorVent] = field(default_factory=list)
     mechanical_vents: list[MechanicalVent] = field(default_factory=list)
     targets: list[Target] = field(default_factory=list)
+    detection_devices: list[DetectionDevice] = field(default_factory=list)
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)
 

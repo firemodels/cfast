@@ -80,12 +80,10 @@ def validate_fire_property(prop) -> None:
         raise ValueError(
             f"Fire properties {prop.id!r}: heat of combustion must be positive."
         )
-
     if not 0.0 <= prop.radiative_fraction <= 1.0:
         raise ValueError(
             f"Fire properties {prop.id!r}: radiative fraction must be 0 to 1."
         )
-
     if not prop.ramp:
         raise ValueError(f"Fire properties {prop.id!r}: HRR table is empty.")
 
@@ -112,28 +110,27 @@ def validate_case(case: CfastCase) -> None:
                 f"Wall vent {vent.id!r}: first compartment "
                 f"{vent.first_comp_id!r} does not exist."
             )
-
         if vent.second_comp_id != "OUTSIDE" and vent.second_comp_id not in compartment_ids:
             raise ValueError(
                 f"Wall vent {vent.id!r}: second compartment "
                 f"{vent.second_comp_id!r} does not exist."
             )
-
         scheduled_values(vent)
 
     for vent in getattr(case, "ceiling_floor_vents", []):
-        if vent.top_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: top compartment "
-                f"{vent.top_comp_id!r} does not exist."
-            )
+        first_comp_id = getattr(vent, "first_comp_id", vent.top_comp_id)
+        second_comp_id = getattr(vent, "second_comp_id", vent.bottom_comp_id)
 
-        if vent.bottom_comp_id not in compartment_ids:
+        if first_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: bottom compartment "
-                f"{vent.bottom_comp_id!r} does not exist."
+                f"Ceiling/floor vent {vent.id!r}: first compartment "
+                f"{first_comp_id!r} does not exist."
             )
-
+        if second_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: second compartment "
+                f"{second_comp_id!r} does not exist."
+            )
         scheduled_values(vent)
 
     for vent in getattr(case, "mechanical_vents", []):
@@ -142,13 +139,11 @@ def validate_case(case: CfastCase) -> None:
                 f"Mechanical vent {vent.id!r}: from compartment "
                 f"{vent.from_comp_id!r} does not exist."
             )
-
         if vent.to_comp_id != "OUTSIDE" and vent.to_comp_id not in compartment_ids:
             raise ValueError(
                 f"Mechanical vent {vent.id!r}: to compartment "
                 f"{vent.to_comp_id!r} does not exist."
             )
-
         scheduled_values(vent)
 
     for target in getattr(case, "targets", []):
@@ -156,18 +151,36 @@ def validate_case(case: CfastCase) -> None:
             raise ValueError(
                 f"Target {target.id!r}: compartment {target.comp_id!r} does not exist."
             )
-
         if target.target_type.upper() not in {"PLATE", "CYLINDER"}:
             raise ValueError(
                 f"Target {target.id!r}: target type must be PLATE or CYLINDER."
             )
-
         if target.thickness < 0.0:
             raise ValueError(f"Target {target.id!r}: thickness must be non-negative.")
-
         if target.temperature_depth < 0.0:
             raise ValueError(
                 f"Target {target.id!r}: internal temperature depth must be non-negative."
+            )
+
+    for device in getattr(case, "detection_devices", []):
+        if device.comp_id not in compartment_ids:
+            raise ValueError(
+                f"Detection device {device.id!r}: compartment "
+                f"{device.comp_id!r} does not exist."
+            )
+        if device.device_type.upper() not in {
+            "SPRINKLER",
+            "SMOKE_DETECTOR",
+            "HEAT_DETECTOR",
+        }:
+            raise ValueError(
+                f"Detection device {device.id!r}: invalid type {device.device_type!r}."
+            )
+        if device.rti < 0.0:
+            raise ValueError(f"Detection device {device.id!r}: RTI must be non-negative.")
+        if device.spray_density < 0.0:
+            raise ValueError(
+                f"Detection device {device.id!r}: spray density must be non-negative."
             )
 
     if not case.fires:
@@ -186,13 +199,11 @@ def validate_case(case: CfastCase) -> None:
             raise ValueError(
                 f"Fire {fire.id!r}: compartment {fire.comp_id!r} does not exist."
             )
-
         if fire.fire_property_id not in property_ids:
             raise ValueError(
                 f"Fire {fire.id!r}: fire properties ID "
                 f"{fire.fire_property_id!r} does not exist."
             )
-
         ignition = fire.ignition_criterion.upper()
         if ignition not in {"TIME", "TEMPERATURE", "FLUX"}:
             raise ValueError(
@@ -355,10 +366,20 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
         for vent in case.ceiling_floor_vents:
             t_values, f_values = scheduled_values(vent)
+            first_comp_id = getattr(vent, "first_comp_id", vent.top_comp_id)
+            second_comp_id = getattr(vent, "second_comp_id", vent.bottom_comp_id)
+            initial_open = getattr(vent, "initial_open", 1.0)
+            vent_type = getattr(vent, "vent_type", "CEILING").upper()
+
+            if not t_values and abs(initial_open - 1.0) > 1.0e-12:
+                t_values = [0.0]
+                f_values = [initial_open]
+
             fields = [
-                "TYPE = 'CEILING'",
+                f"TYPE = {cfast_string(vent_type)}",
                 f"ID = {cfast_string(vent.id)}",
-                f"COMP_IDS = {cfast_string(vent.top_comp_id)} {cfast_string(vent.bottom_comp_id)}",
+                f"COMP_IDS = {cfast_string(first_comp_id)} "
+                f"{cfast_string(second_comp_id)}",
                 f"AREA = {cfast_number(vent.area)}",
                 f"SHAPE = {cfast_string(vent.shape)}",
                 f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
@@ -445,6 +466,33 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
             if target.fyi:
                 fields.append(f"FYI = {cfast_string(target.fyi)}")
+
+            add_wrapped_namelist(lines, "DEVC", fields)
+
+        lines.append("")
+
+    if getattr(case, "detection_devices", []):
+        lines.append("!! Detection / Suppression")
+
+        for device in case.detection_devices:
+            fields = [
+                f"TYPE = {cfast_string(device.device_type.upper())}",
+                f"ID = {cfast_string(device.id)}",
+                f"COMP_ID = {cfast_string(device.comp_id)}",
+                f"LOCATION = {cfast_vector((device.x_position, device.y_position, device.z_position))}",
+                f"RTI = {cfast_number(device.rti)}",
+            ]
+
+            if device.device_type.upper() == "SMOKE_DETECTOR":
+                fields.append(f"SETPOINT = {cfast_number(device.activation_obscuration)}")
+            else:
+                fields.append(f"SETPOINT = {cfast_number(device.activation_temperature)}")
+
+            if device.device_type.upper() == "SPRINKLER":
+                fields.append(f"SPRAY_DENSITY = {cfast_number(device.spray_density)}")
+
+            if device.fyi:
+                fields.append(f"FYI = {cfast_string(device.fyi)}")
 
             add_wrapped_namelist(lines, "DEVC", fields)
 

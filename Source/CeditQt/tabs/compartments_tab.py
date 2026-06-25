@@ -98,7 +98,7 @@ class CompartmentsTab(QWidget):
 
         self.loading = False
         self.selected_index = 0
-        self.compartments = [self.default_compartment()]
+        self.compartments = self.default_compartments()
 
         self.summary_table = QTableWidget(0, len(SUMMARY_HEADERS))
         self.summary_table.setHorizontalHeaderLabels(SUMMARY_HEADERS)
@@ -197,16 +197,39 @@ class CompartmentsTab(QWidget):
         self.refresh_summary_table(select_row=0)
         self.load_detail_from_selected()
 
+    def default_compartments(self) -> list[Compartment]:
+        return [
+            Compartment(
+                id="Comp 1",
+                width=5.0,
+                depth=5.0,
+                height=3.0,
+                origin_x=0.0,
+                origin_y=0.0,
+                origin_z=0.0,
+            ),
+            Compartment(
+                id="Comp 2",
+                width=5.0,
+                depth=5.0,
+                height=3.0,
+                origin_x=5.0,
+                origin_y=0.0,
+                origin_z=0.0,
+            ),
+            Compartment(
+                id="Comp 3",
+                width=5.0,
+                depth=5.0,
+                height=3.0,
+                origin_x=5.0,
+                origin_y=0.0,
+                origin_z=3.0,
+            ),
+        ]
+
     def default_compartment(self) -> Compartment:
-        return Compartment(
-            id="Comp 1",
-            width=5.0,
-            depth=5.0,
-            height=3.0,
-            origin_x=0.0,
-            origin_y=0.0,
-            origin_z=0.0,
-        )
+        return self.default_compartments()[0]
 
     def build_detail_layout(self):
         group_layout = QVBoxLayout()

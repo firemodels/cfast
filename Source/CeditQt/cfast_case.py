@@ -219,6 +219,15 @@ class CeilingFloorSurfaceConnection:
 
 
 @dataclass
+class OutputVisualization:
+    visualization_type: str = "2-D"
+    comp_id: str = "All"
+    axis: str = "X"
+    value: float = 2.5
+    fyi: str = ""
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -307,6 +316,10 @@ class CfastCase:
     detection_devices: list[DetectionDevice] = field(default_factory=list)
     wall_surface_connections: list[WallSurfaceConnection] = field(default_factory=list)
     ceiling_floor_surface_connections: list[CeilingFloorSurfaceConnection] = field(default_factory=list)
+    output_visualizations: list[OutputVisualization] = field(default_factory=list)
+    validation_output: bool = False
+    debug_output: bool = False
+    show_cfast_window: bool = False
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)
 

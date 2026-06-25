@@ -25,6 +25,7 @@ from tabs.fires_tab import FiresTab
 from tabs.mechanical_vents_tab import MechanicalVentsTab
 from tabs.placeholder_tab import PlaceholderTab
 from tabs.simulation_tab import SimulationTab
+from tabs.surface_connections_tab import SurfaceConnectionsTab
 from tabs.targets_tab import TargetsTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
@@ -52,6 +53,7 @@ class CeditMainWindow(QMainWindow):
         self.fires_tab = FiresTab()
         self.targets_tab = TargetsTab()
         self.detection_suppression_tab = DetectionSuppressionTab()
+        self.surface_connections_tab = SurfaceConnectionsTab()
         self.tabs = None
 
         self.build_menu()
@@ -145,10 +147,7 @@ class CeditMainWindow(QMainWindow):
         self.tabs.addTab(self.fires_tab, "Fires")
         self.tabs.addTab(self.targets_tab, "Targets")
         self.tabs.addTab(self.detection_suppression_tab, "Detection / Suppression")
-        self.tabs.addTab(
-            PlaceholderTab("Surface Connections page coming soon"),
-            "Surface Connections",
-        )
+        self.tabs.addTab(self.surface_connections_tab, "Surface Connections")
         self.tabs.addTab(PlaceholderTab("Output page coming soon"), "Output")
 
         layout.addWidget(self.tabs, 1)
@@ -194,6 +193,7 @@ class CeditMainWindow(QMainWindow):
         self.mechanical_vents_tab.add_to_case(case)
         self.targets_tab.add_to_case(case)
         self.detection_suppression_tab.add_to_case(case)
+        self.surface_connections_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
         return case
 

@@ -98,9 +98,6 @@ class CeilingFloorVent:
         top_comp_id: str | None = None,
         bottom_comp_id: str | None = None,
     ):
-        # The GUI uses first/second compartment naming to match CEdit.
-        # Earlier writer code used top/bottom naming. Accept both so the
-        # tab and writer stay compatible during this prototype phase.
         self.id = id
         self.first_comp_id = first_comp_id or top_comp_id or ""
         self.second_comp_id = second_comp_id or bottom_comp_id or ""
@@ -194,16 +191,31 @@ class DetectionDevice:
     fyi: str = ""
 
     def display_type(self) -> str:
-        normalized = self.device_type.upper()
-
-        if normalized == "SPRINKLER":
+        value = self.device_type.upper()
+        if value == "SPRINKLER":
             return "Sprinkler"
-        if normalized == "SMOKE_DETECTOR":
+        if value == "SMOKE_DETECTOR":
             return "Smoke"
-        if normalized == "HEAT_DETECTOR":
+        if value == "HEAT_DETECTOR":
             return "Heat"
-
         return self.device_type
+
+
+@dataclass
+class WallSurfaceConnection:
+    first_comp_id: str
+    second_comp_id: str
+    fraction: float = 1.0
+    connection_type: str = "WALL"
+    fyi: str = ""
+
+
+@dataclass
+class CeilingFloorSurfaceConnection:
+    top_comp_id: str
+    bottom_comp_id: str
+    connection_type: str = "FLOOR"
+    fyi: str = ""
 
 
 @dataclass
@@ -293,6 +305,8 @@ class CfastCase:
     mechanical_vents: list[MechanicalVent] = field(default_factory=list)
     targets: list[Target] = field(default_factory=list)
     detection_devices: list[DetectionDevice] = field(default_factory=list)
+    wall_surface_connections: list[WallSurfaceConnection] = field(default_factory=list)
+    ceiling_floor_surface_connections: list[CeilingFloorSurfaceConnection] = field(default_factory=list)
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)
 

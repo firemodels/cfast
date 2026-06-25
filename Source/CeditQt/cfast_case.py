@@ -104,6 +104,29 @@ class MechanicalVent:
 
 
 @dataclass
+class Target: 
+    id: str
+    comp_id: str
+    x_position: float = 0.0
+    y_position: float = 0.0
+    z_position: float = 0.0
+    x_normal: float = 0.0
+    y_normal: float = 0.0
+    z_normal: float = 1.0
+    matl_id: str = "DEFAULT"
+    target_type: str = "PLATE"
+    thickness: float = 0.0
+    temperature_depth: float = 0.5
+    depth_units: str = "FRACTION"
+    surface_orientation: str = "USER SPECIFIED"
+    surface_temperature: float | None = None
+    adiabatic: bool = False
+    convection_coefficient_front: float = 0.0
+    convection_coefficient_back: float = 0.0
+    fyi: str = ""
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -188,6 +211,7 @@ class CfastCase:
     wall_vents: list[WallVent] = field(default_factory=list)
     ceiling_floor_vents: list[CeilingFloorVent] = field(default_factory=list)
     mechanical_vents: list[MechanicalVent] = field(default_factory=list)
+    targets: list[Target] = field(default_factory=list)
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)
 

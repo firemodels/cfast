@@ -43,7 +43,7 @@ def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None
 
         if len(current) + len(entry) + 1 > max_len:
             lines.append(current.rstrip())
-            current = indent + entry
+            current = indent + entry + " "
         else:
             current = current + entry + " "
 
@@ -150,6 +150,25 @@ def validate_case(case: CfastCase) -> None:
             )
 
         scheduled_values(vent)
+
+    for target in getattr(case, "targets", []):
+        if target.comp_id not in compartment_ids:
+            raise ValueError(
+                f"Target {target.id!r}: compartment {target.comp_id!r} does not exist."
+            )
+
+        if target.target_type.upper() not in {"PLATE", "CYLINDER"}:
+            raise ValueError(
+                f"Target {target.id!r}: target type must be PLATE or CYLINDER."
+            )
+
+        if target.thickness < 0.0:
+            raise ValueError(f"Target {target.id!r}: thickness must be non-negative.")
+
+        if target.temperature_depth < 0.0:
+            raise ValueError(
+                f"Target {target.id!r}: internal temperature depth must be non-negative."
+            )
 
     if not case.fires:
         raise ValueError("At least one fire is required.")
@@ -393,6 +412,41 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 fields.append(f"FYI = {cfast_string(vent.fyi)}")
 
             add_wrapped_namelist(lines, "VENT", fields)
+
+        lines.append("")
+
+    if getattr(case, "targets", []):
+        lines.append("!! Targets")
+
+        for target in case.targets:
+            fields = [
+                f"TYPE = {cfast_string(target.target_type.upper())}",
+                f"ID = {cfast_string(target.id)}",
+                f"COMP_ID = {cfast_string(target.comp_id)}",
+                f"LOCATION = {cfast_vector((target.x_position, target.y_position, target.z_position))}",
+                f"NORMAL = {cfast_vector((target.x_normal, target.y_normal, target.z_normal))}",
+                f"MATL_ID = {cfast_string(target.matl_id)}",
+                f"THICKNESS = {cfast_number(target.thickness)}",
+                f"TEMPERATURE_DEPTH = {cfast_number(target.temperature_depth)}",
+                f"DEPTH_UNITS = {cfast_string(target.depth_units.upper())}",
+                f"ADIABATIC_TARGET = {cfast_logical(target.adiabatic)}",
+                f"CONVECTION_COEFFICIENTS = {cfast_vector((target.convection_coefficient_front, target.convection_coefficient_back))}",
+            ]
+
+            if target.surface_orientation != "USER SPECIFIED":
+                fields.append(
+                    f"SURFACE_ORIENTATION = {cfast_string(target.surface_orientation)}"
+                )
+
+            if target.surface_temperature is not None:
+                fields.append(
+                    f"SURFACE_TEMPERATURE = {cfast_number(target.surface_temperature)}"
+                )
+
+            if target.fyi:
+                fields.append(f"FYI = {cfast_string(target.fyi)}")
+
+            add_wrapped_namelist(lines, "DEVC", fields)
 
         lines.append("")
 

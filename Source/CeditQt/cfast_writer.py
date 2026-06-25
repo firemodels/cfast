@@ -50,6 +50,47 @@ def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None
     lines.append(current.rstrip())
 
 
+def wall_vent_schedule(vent) -> tuple[list[float], list[float]]:
+    t_values = list(vent.t_values)
+    f_values = list(vent.f_values)
+
+    if not t_values:
+        if abs(vent.initial_open - 1.0) > 1.0e-12:
+            return [0.0], [vent.initial_open]
+        return [], []
+
+    if abs(t_values[0]) > 1.0e-12:
+        t_values.insert(0, 0.0)
+        f_values.insert(0, vent.initial_open)
+
+    return t_values, f_values
+
+
+def validate_case(case: CfastCase) -> None:
+    if not case.compartments:
+        raise ValueError("At least one compartment is required.")
+
+    compartment_ids = {compartment.id for compartment in case.compartments}
+
+    for vent in case.wall_vents:
+        if vent.first_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: first compartment "
+                f"{vent.first_comp_id!r} does not exist."
+            )
+
+        if vent.second_comp_id != "OUTSIDE" and vent.second_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: second compartment "
+                f"{vent.second_comp_id!r} does not exist."
+            )
+
+        if len(vent.t_values) != len(vent.f_values):
+            raise ValueError(
+                f"Wall vent {vent.id!r}: T and F schedules must have the same length."
+            )
+
+
 def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     ramp = case.sorted_fire_ramp()
 
@@ -62,8 +103,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         if point.hrr < 0.0:
             raise ValueError("Fire ramp HRR values must be non-negative.")
 
-    if not case.compartments:
-        raise ValueError("At least one compartment is required.")
+    validate_case(case)
 
     path = Path(path)
     lines: list[str] = []
@@ -173,22 +213,43 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     lines.append("")
 
-    lines.append("!! Wall Vents")
-    add_wrapped_namelist(
-        lines,
-        "VENT",
-        [
-            "TYPE = 'WALL'",
-            f"ID = {cfast_string(case.wall_vent_id)}",
-            f"COMP_IDS = {cfast_string(case.comp_id)} 'OUTSIDE'",
-            f"BOTTOM = {cfast_number(case.wall_vent_bottom)}",
-            f"HEIGHT = {cfast_number(case.wall_vent_height)}",
-            f"WIDTH = {cfast_number(case.wall_vent_width)}",
-            f"FACE = {cfast_string(case.wall_vent_face)}",
-            f"OFFSET = {cfast_number(case.wall_vent_offset)}",
-        ],
-    )
-    lines.append("")
+    if case.wall_vents:
+        lines.append("!! Wall Vents")
+
+        for vent in case.wall_vents:
+            fields = [
+                "TYPE = 'WALL'",
+                f"ID = {cfast_string(vent.id)}",
+                f"COMP_IDS = {cfast_string(vent.first_comp_id)} {cfast_string(vent.second_comp_id)}",
+                f"BOTTOM = {cfast_number(vent.bottom)}",
+                f"HEIGHT = {cfast_number(vent.height)}",
+                f"WIDTH = {cfast_number(vent.width)}",
+            ]
+
+            t_values, f_values = wall_vent_schedule(vent)
+
+            if t_values and f_values:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(vent.criterion)}",
+                        f"T = {cfast_vector(t_values)}",
+                        f"F = {cfast_vector(f_values)}",
+                    ]
+                )
+
+            fields.extend(
+                [
+                    f"FACE = {cfast_string(vent.face)}",
+                    f"OFFSET = {cfast_number(vent.offset)}",
+                ]
+            )
+
+            if vent.fyi:
+                fields.append(f"FYI = {cfast_string(vent.fyi)}")
+
+            add_wrapped_namelist(lines, "VENT", fields)
+
+        lines.append("")
 
     lines.append("!! Fires")
     add_wrapped_namelist(

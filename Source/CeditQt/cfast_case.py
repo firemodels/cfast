@@ -33,11 +33,13 @@ class Compartment:
     grid: tuple[int, int, int] = (50, 50, 50)
     hall: bool = False
     shaft: bool = False
+
     flow_coefficient: float = 0.07
     wall_leak_area_ratio: float = 0.00017
     floor_leak_area_ratio: float = 5.2e-5
     wall_leak_area: float = 0.0
     floor_leak_area: float = 0.0
+
     cross_section_heights: list[float] = field(default_factory=list)
     cross_section_areas: list[float] = field(default_factory=list)
     fyi: str = ""
@@ -61,6 +63,23 @@ class WallVent:
     initial_open: float = 1.0
     face: str = "FRONT"
     offset: float = 2.0
+    criterion: str = "TIME"
+    t_values: list[float] = field(default_factory=list)
+    f_values: list[float] = field(default_factory=list)
+    fyi: str = ""
+
+
+@dataclass
+class CeilingFloorVent:
+    id: str
+    first_comp_id: str
+    second_comp_id: str
+    vent_type: str = "CEILING"
+    shape: str = "ROUND"
+    area: float = 1.0
+    initial_open: float = 1.0
+    offset_x: float = 0.0
+    offset_y: float = 0.0
     criterion: str = "TIME"
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
@@ -102,6 +121,7 @@ class CfastCase:
     materials: list[MaterialProperty] = field(default_factory=list)
     compartments: list[Compartment] = field(default_factory=list)
     wall_vents: list[WallVent] = field(default_factory=list)
+    ceiling_floor_vents: list[CeilingFloorVent] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
 

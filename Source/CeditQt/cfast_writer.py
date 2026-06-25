@@ -80,10 +80,12 @@ def validate_fire_property(prop) -> None:
         raise ValueError(
             f"Fire properties {prop.id!r}: heat of combustion must be positive."
         )
+
     if not 0.0 <= prop.radiative_fraction <= 1.0:
         raise ValueError(
             f"Fire properties {prop.id!r}: radiative fraction must be 0 to 1."
         )
+
     if not prop.ramp:
         raise ValueError(f"Fire properties {prop.id!r}: HRR table is empty.")
 
@@ -118,18 +120,15 @@ def validate_case(case: CfastCase) -> None:
         scheduled_values(vent)
 
     for vent in getattr(case, "ceiling_floor_vents", []):
-        first_comp_id = getattr(vent, "first_comp_id", vent.top_comp_id)
-        second_comp_id = getattr(vent, "second_comp_id", vent.bottom_comp_id)
-
-        if first_comp_id not in compartment_ids:
+        if vent.top_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: first compartment "
-                f"{first_comp_id!r} does not exist."
+                f"Ceiling/floor vent {vent.id!r}: top compartment "
+                f"{vent.top_comp_id!r} does not exist."
             )
-        if second_comp_id not in compartment_ids:
+        if vent.bottom_comp_id not in compartment_ids:
             raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: second compartment "
-                f"{second_comp_id!r} does not exist."
+                f"Ceiling/floor vent {vent.id!r}: bottom compartment "
+                f"{vent.bottom_comp_id!r} does not exist."
             )
         scheduled_values(vent)
 
@@ -176,11 +175,31 @@ def validate_case(case: CfastCase) -> None:
             raise ValueError(
                 f"Detection device {device.id!r}: invalid type {device.device_type!r}."
             )
-        if device.rti < 0.0:
-            raise ValueError(f"Detection device {device.id!r}: RTI must be non-negative.")
-        if device.spray_density < 0.0:
+
+    for conn in getattr(case, "wall_surface_connections", []):
+        if conn.first_comp_id not in compartment_ids:
             raise ValueError(
-                f"Detection device {device.id!r}: spray density must be non-negative."
+                f"Wall surface connection: first compartment "
+                f"{conn.first_comp_id!r} does not exist."
+            )
+        if conn.second_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Wall surface connection: second compartment "
+                f"{conn.second_comp_id!r} does not exist."
+            )
+        if not 0.0 <= conn.fraction <= 1.0:
+            raise ValueError("Wall surface connection fraction must be 0 to 1.")
+
+    for conn in getattr(case, "ceiling_floor_surface_connections", []):
+        if conn.top_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Ceiling/floor surface connection: top compartment "
+                f"{conn.top_comp_id!r} does not exist."
+            )
+        if conn.bottom_comp_id not in compartment_ids:
+            raise ValueError(
+                f"Ceiling/floor surface connection: bottom compartment "
+                f"{conn.bottom_comp_id!r} does not exist."
             )
 
     if not case.fires:
@@ -204,6 +223,7 @@ def validate_case(case: CfastCase) -> None:
                 f"Fire {fire.id!r}: fire properties ID "
                 f"{fire.fire_property_id!r} does not exist."
             )
+
         ignition = fire.ignition_criterion.upper()
         if ignition not in {"TIME", "TEMPERATURE", "FLUX"}:
             raise ValueError(
@@ -266,7 +286,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if case.materials:
         lines.append("!! Thermal Properties")
-
         for material in case.materials:
             fields = [
                 f"ID = {cfast_string(material.id)}",
@@ -286,7 +305,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         lines.append("")
 
     lines.append("!! Compartments")
-
     for compartment in case.compartments:
         fields = [
             f"ID = {cfast_string(compartment.id)}",
@@ -325,7 +343,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if case.wall_vents:
         lines.append("!! Wall Vents")
-
         for vent in case.wall_vents:
             fields = [
                 "TYPE = 'WALL'",
@@ -337,7 +354,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             ]
 
             t_values, f_values = wall_vent_schedule(vent)
-
             if t_values and f_values:
                 fields.extend(
                     [
@@ -363,11 +379,8 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if getattr(case, "ceiling_floor_vents", []):
         lines.append("!! Ceiling/Floor Vents")
-
         for vent in case.ceiling_floor_vents:
             t_values, f_values = scheduled_values(vent)
-            first_comp_id = getattr(vent, "first_comp_id", vent.top_comp_id)
-            second_comp_id = getattr(vent, "second_comp_id", vent.bottom_comp_id)
             initial_open = getattr(vent, "initial_open", 1.0)
             vent_type = getattr(vent, "vent_type", "CEILING").upper()
 
@@ -378,8 +391,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             fields = [
                 f"TYPE = {cfast_string(vent_type)}",
                 f"ID = {cfast_string(vent.id)}",
-                f"COMP_IDS = {cfast_string(first_comp_id)} "
-                f"{cfast_string(second_comp_id)}",
+                f"COMP_IDS = {cfast_string(vent.top_comp_id)} {cfast_string(vent.bottom_comp_id)}",
                 f"AREA = {cfast_number(vent.area)}",
                 f"SHAPE = {cfast_string(vent.shape)}",
                 f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
@@ -403,7 +415,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if getattr(case, "mechanical_vents", []):
         lines.append("!! Mechanical Ventilation")
-
         for vent in case.mechanical_vents:
             t_values, f_values = scheduled_values(vent)
             fields = [
@@ -438,7 +449,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if getattr(case, "targets", []):
         lines.append("!! Targets")
-
         for target in case.targets:
             fields = [
                 f"TYPE = {cfast_string(target.target_type.upper())}",
@@ -473,14 +483,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     if getattr(case, "detection_devices", []):
         lines.append("!! Detection / Suppression")
-
         for device in case.detection_devices:
             fields = [
                 f"TYPE = {cfast_string(device.device_type.upper())}",
                 f"ID = {cfast_string(device.id)}",
                 f"COMP_ID = {cfast_string(device.comp_id)}",
                 f"LOCATION = {cfast_vector((device.x_position, device.y_position, device.z_position))}",
-                f"RTI = {cfast_number(device.rti)}",
             ]
 
             if device.device_type.upper() == "SMOKE_DETECTOR":
@@ -488,8 +496,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             else:
                 fields.append(f"SETPOINT = {cfast_number(device.activation_temperature)}")
 
-            if device.device_type.upper() == "SPRINKLER":
-                fields.append(f"SPRAY_DENSITY = {cfast_number(device.spray_density)}")
+            fields.extend(
+                [
+                    f"RTI = {cfast_number(device.rti)}",
+                    f"SPRAY_DENSITY = {cfast_number(device.spray_density)}",
+                ]
+            )
 
             if device.fyi:
                 fields.append(f"FYI = {cfast_string(device.fyi)}")
@@ -498,8 +510,41 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
         lines.append("")
 
-    lines.append("!! Fires")
+    if getattr(case, "wall_surface_connections", []) or getattr(
+        case,
+        "ceiling_floor_surface_connections",
+        [],
+    ):
+        lines.append("!! Surface Connections")
 
+        for conn in case.wall_surface_connections:
+            fields = [
+                "TYPE = 'WALL'",
+                f"COMP_ID = {cfast_string(conn.first_comp_id)}",
+                f"COMP_IDS = {cfast_string(conn.second_comp_id)}",
+                f"F = {cfast_number(conn.fraction)}",
+            ]
+
+            if conn.fyi:
+                fields.append(f"FYI = {cfast_string(conn.fyi)}")
+
+            add_wrapped_namelist(lines, "CONN", fields)
+
+        for conn in case.ceiling_floor_surface_connections:
+            fields = [
+                "TYPE = 'FLOOR'",
+                f"COMP_ID = {cfast_string(conn.top_comp_id)}",
+                f"COMP_IDS = {cfast_string(conn.bottom_comp_id)}",
+            ]
+
+            if conn.fyi:
+                fields.append(f"FYI = {cfast_string(conn.fyi)}")
+
+            add_wrapped_namelist(lines, "CONN", fields)
+
+        lines.append("")
+
+    lines.append("!! Fires")
     for fire in case.fires:
         fields = [
             f"ID = {cfast_string(fire.id)}",
@@ -520,7 +565,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     lines.append("")
     lines.append("!! Fire Properties")
-
     for prop in case.fire_properties:
         add_wrapped_namelist(
             lines,

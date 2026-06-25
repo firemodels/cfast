@@ -18,11 +18,12 @@ from PySide6.QtWidgets import (
 
 from cfast_case import CfastCase
 from cfast_writer import write_cfast_input
+from tabs.compartments_tab import CompartmentsTab
 from tabs.fires_tab import FiresTab
 from tabs.placeholder_tab import PlaceholderTab
 from tabs.simulation_tab import SimulationTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
-from tabs.compartments_tab import CompartmentsTab
+from tabs.wall_vents_tab import WallVentsTab
 
 
 class CeditMainWindow(QMainWindow):
@@ -41,6 +42,7 @@ class CeditMainWindow(QMainWindow):
         self.simulation_tab = SimulationTab()
         self.thermal_properties_tab = ThermalPropertiesTab()
         self.compartments_tab = CompartmentsTab()
+        self.wall_vents_tab = WallVentsTab()
         self.fires_tab = FiresTab()
         self.tabs = None
 
@@ -129,10 +131,7 @@ class CeditMainWindow(QMainWindow):
         self.tabs.addTab(self.simulation_tab, "Simulation")
         self.tabs.addTab(self.thermal_properties_tab, "Thermal Properties")
         self.tabs.addTab(self.compartments_tab, "Compartments")
-        self.tabs.addTab(
-            PlaceholderTab("Wall Vents page coming soon"),
-            "Wall Vents",
-        )
+        self.tabs.addTab(self.wall_vents_tab, "Wall Vents")
         self.tabs.addTab(
             PlaceholderTab("Ceiling/Floor Vents page coming soon"),
             "Ceiling/Floor Vents",
@@ -191,6 +190,7 @@ class CeditMainWindow(QMainWindow):
         self.simulation_tab.add_to_case(case)
         self.thermal_properties_tab.add_to_case(case)
         self.compartments_tab.add_to_case(case)
+        self.wall_vents_tab.add_to_case(case)
         self.fires_tab.add_to_case(case)
         return case
 

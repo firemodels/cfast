@@ -51,6 +51,23 @@ class Compartment:
 
 
 @dataclass
+class WallVent:
+    id: str
+    first_comp_id: str
+    second_comp_id: str = "OUTSIDE"
+    bottom: float = 0.0
+    height: float = 2.0
+    width: float = 1.0
+    initial_open: float = 1.0
+    face: str = "FRONT"
+    offset: float = 2.0
+    criterion: str = "TIME"
+    t_values: list[float] = field(default_factory=list)
+    f_values: list[float] = field(default_factory=list)
+    fyi: str = ""
+
+
+@dataclass
 class FireRampPoint:
     time: float
     hrr: float
@@ -84,15 +101,9 @@ class CfastCase:
 
     materials: list[MaterialProperty] = field(default_factory=list)
     compartments: list[Compartment] = field(default_factory=list)
+    wall_vents: list[WallVent] = field(default_factory=list)
 
     comp_id: str = "Comp 1"
-
-    wall_vent_id: str = "WallVent_1"
-    wall_vent_bottom: float = 0.0
-    wall_vent_height: float = 2.0
-    wall_vent_width: float = 1.0
-    wall_vent_face: str = "FRONT"
-    wall_vent_offset: float = 2.0
 
     fire_id: str = "Initial Fire"
     fire_chem_id: str = "Initial Fire_Fire"

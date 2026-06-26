@@ -4,7 +4,6 @@ from dataclasses import replace
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
-    QFrame,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -22,17 +21,11 @@ from cfast_case import CfastCase, Target
 
 
 MATERIAL_LIBRARY = {
-    "DEFAULT": {
-        "conductivity": "Default",
-        "specific_heat": "Default",
-        "density": "Default",
+    "OFF": {
+        "conductivity": "Off",
+        "specific_heat": "Off",
+        "density": "Off",
         "thickness": 0.0,
-    },
-    "CONCRETE": {
-        "conductivity": 0.00175,
-        "specific_heat": 1.0,
-        "density": 2200.0,
-        "thickness": 0.15,
     },
     "GYPSUM": {
         "conductivity": 0.00016,
@@ -40,8 +33,13 @@ MATERIAL_LIBRARY = {
         "density": 800.0,
         "thickness": 0.0127,
     },
+    "DEFAULT": {
+        "conductivity": "Undefined",
+        "specific_heat": "Undefined",
+        "density": "Undefined",
+        "thickness": 0.0,
+    },
 }
-
 
 TABLE_COLUMNS = [
     "Num",
@@ -123,17 +121,11 @@ class TargetsTab(QWidget):
         header.addWidget(QLabel("ID:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         header.addWidget(self.id_edit, 0, 1)
         header.addWidget(
-            QLabel("Compartment:"),
-            0,
-            2,
-            alignment=Qt.AlignmentFlag.AlignRight,
+            QLabel("Compartment:"), 0, 2, alignment=Qt.AlignmentFlag.AlignRight
         )
         header.addWidget(self.compartment_combo, 0, 3)
         header.addWidget(
-            QLabel("Target Type:"),
-            0,
-            4,
-            alignment=Qt.AlignmentFlag.AlignRight,
+            QLabel("Target Type:"), 0, 4, alignment=Qt.AlignmentFlag.AlignRight
         )
         header.addWidget(self.target_type_combo, 0, 5)
         header.setColumnStretch(1, 1)
@@ -163,22 +155,30 @@ class TargetsTab(QWidget):
 
         layout.addWidget(QLabel("Target Position"), 0, 1)
         layout.addWidget(QLabel("Normal Vector Points to"), 0, 3)
-
-        layout.addWidget(QLabel("Width (X):"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Width (X):"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.x_edit, 1, 1)
         layout.addWidget(self.normal_mode_combo, 1, 3)
-
-        layout.addWidget(QLabel("Depth (Y):"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Depth (Y):"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.y_edit, 2, 1)
-        layout.addWidget(QLabel("Normal (X):"), 2, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Normal (X):"), 2, 2, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.nx_edit, 2, 3)
-
-        layout.addWidget(QLabel("Height (Z):"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Height (Z):"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.z_edit, 3, 1)
-        layout.addWidget(QLabel("Normal (Y):"), 3, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Normal (Y):"), 3, 2, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.ny_edit, 3, 3)
-
-        layout.addWidget(QLabel("Normal (Z):"), 4, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Normal (Z):"), 4, 2, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.nz_edit, 4, 3)
 
         group.setLayout(layout)
@@ -190,7 +190,7 @@ class TargetsTab(QWidget):
 
         self.material_combo = QComboBox()
         self.material_combo.setEditable(True)
-        self.material_combo.addItems(["CONCRETE", "GYPSUM", "DEFAULT"])
+        self.material_combo.addItems(["OFF", "GYPSUM"])
 
         self.conductivity_label = QLabel("Conductivity: ")
         self.specific_heat_label = QLabel("Specific Heat: ")
@@ -198,7 +198,9 @@ class TargetsTab(QWidget):
         self.thickness_label = QLabel("Thickness: ")
         self.temperature_depth_edit = QLineEdit()
 
-        layout.addWidget(QLabel("Material:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(
+            QLabel("Material:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
         layout.addWidget(self.material_combo, 0, 1)
         layout.addWidget(self.conductivity_label, 1, 0, 1, 2)
         layout.addWidget(self.specific_heat_label, 2, 0, 1, 2)
@@ -216,25 +218,8 @@ class TargetsTab(QWidget):
         return group
 
     def load_demo_data(self):
-        self.targets = [
-            Target(
-                id="Targ 1",
-                comp_id="Comp 1",
-                x_position=2.2,
-                y_position=1.88,
-                z_position=2.34,
-                x_normal=0.0,
-                y_normal=0.0,
-                z_normal=1.0,
-                matl_id="CONCRETE",
-                target_type="PLATE",
-                thickness=0.15,
-                temperature_depth=0.075,
-                depth_units="DISTANCE",
-            )
-        ]
-
-        self.refresh_summary_table(select_row=0)
+        self.targets = []
+        self.refresh_summary_table()
 
     def refresh_summary_table(self, select_row: int | None = None):
         self.updating = True
@@ -276,7 +261,6 @@ class TargetsTab(QWidget):
             return
 
         indexes = self.summary_table.selectionModel().selectedRows()
-
         if not indexes:
             return
 
@@ -306,7 +290,9 @@ class TargetsTab(QWidget):
         self.ny_edit.setText(format_number(target.y_normal))
         self.nz_edit.setText(format_number(target.z_normal))
         set_combo_text(self.material_combo, target.matl_id)
-        self.temperature_depth_edit.setText(format_with_unit(target.temperature_depth, "m"))
+        self.temperature_depth_edit.setText(
+            format_with_unit(target.temperature_depth, "m")
+        )
         self.update_material_labels(target)
 
         self.updating = False
@@ -358,7 +344,7 @@ class TargetsTab(QWidget):
         self.refresh_summary_table(select_row=self.current_index)
 
     def target_from_editor(self) -> Target:
-        matl_id = self.material_combo.currentText().strip() or "DEFAULT"
+        matl_id = self.material_combo.currentText().strip() or "OFF"
         material = material_properties(matl_id)
         thickness = material.get("thickness", 0.0)
 
@@ -375,8 +361,7 @@ class TargetsTab(QWidget):
             target_type=self.target_type_combo.currentText().strip().upper(),
             thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
             temperature_depth=parse_float(
-                self.temperature_depth_edit.text(),
-                "Internal Temperature Depth",
+                self.temperature_depth_edit.text(), "Internal Temperature Depth"
             ),
             depth_units="DISTANCE",
         )
@@ -407,7 +392,14 @@ class TargetsTab(QWidget):
                 x_position=0.0,
                 y_position=0.0,
                 z_position=0.0,
-                matl_id="DEFAULT",
+                x_normal=0.0,
+                y_normal=0.0,
+                z_normal=1.0,
+                matl_id="OFF",
+                target_type="PLATE",
+                thickness=0.0,
+                temperature_depth=0.0,
+                depth_units="DISTANCE",
             )
         else:
             target = replace(base, id=f"Targ {next_number}")
@@ -451,6 +443,7 @@ class TargetsTab(QWidget):
             return
 
         del self.targets[self.current_index]
+
         if not self.targets:
             self.current_index = -1
             self.refresh_summary_table()
@@ -466,19 +459,14 @@ class TargetsTab(QWidget):
                 pass
 
         ids_seen: set[str] = set()
-
         for row, target in enumerate(self.targets):
             if not target.id:
                 raise ValueError(f"Targets row {row + 1}: ID is required.")
-
             if target.id in ids_seen:
                 raise ValueError(f"Targets row {row + 1}: duplicate ID {target.id!r}.")
-
             ids_seen.add(target.id)
-
             if not target.comp_id:
                 raise ValueError(f"Targets row {row + 1}: compartment is required.")
-
             if target.target_type.upper() not in {"PLATE", "CYLINDER"}:
                 raise ValueError(
                     f"Targets row {row + 1}: target type must be Plate or Cylinder."
@@ -536,7 +524,6 @@ def format_property(value) -> str:
 def unique_id(base: str, existing: set[str]) -> str:
     root = base.strip() or "Targ"
     index = 2
-
     while True:
         candidate = f"{root}_{index}"
         if candidate not in existing:

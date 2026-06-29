@@ -6,50 +6,30 @@ Python/PySide6 prototype for a CFAST input-file editor.
 
 No compilation step is required. Run the GUI from this directory:
 
-```bash
-cd Source/CeditQt
-python cedit_qt.py
-```
+    cd Source/CeditQt
+    python cedit_qt.py
 
-The Python environment must provide:
-
-- PySide6
-- matplotlib
-- f90nml
-
-For example:
-
-```bash
-python -m pip install PySide6 matplotlib f90nml
-```
+The Python environment must provide PySide6 and matplotlib.
 
 ## Running CFAST from CEdit Qt
 
 By default, CEdit Qt runs:
 
-```bash
-cfast
-```
+    cfast
 
-so the CFAST executable must be available on your `PATH`.
+so the CFAST executable must be available on your PATH.
 
 To use a specific executable, for example a local development build, choose:
 
-```text
-File > Set CFAST Executable...
-```
+    File > Set CFAST Executable...
 
 To return to the PATH-based default, choose:
 
-```text
-File > Use CFAST from PATH
-```
+    File > Use CFAST from PATH
 
 ## Optional syntax check
 
 To check the Python files without launching the GUI:
 
-```bash
-cd Source/CeditQt
-python -m py_compile cedit_qt.py main_window.py cfast_case.py cfast_reader.py cfast_writer.py tabs/*.py widgets/*.py
-```
+    cd Source/CeditQt
+    python -m py_compile cedit_qt.py main_window.py cfast_case.py cfast_writer.py tabs/*.py widgets/*.py

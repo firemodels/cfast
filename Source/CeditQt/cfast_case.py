@@ -320,6 +320,7 @@ class CfastCase:
     validation_output: bool = False
     debug_output: bool = False
     show_cfast_window: bool = False
+    extra_namelists: list[str] = field(default_factory=list)
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)
 

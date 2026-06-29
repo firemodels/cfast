@@ -59,7 +59,9 @@ class CeilingFloorVentsTab(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.current_row = -1
+        self.loading_editor = False
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
         self.summary_table = QTableWidget(8, len(self.SUMMARY_HEADERS))
@@ -95,8 +97,10 @@ class CeilingFloorVentsTab(QWidget):
         self.offset_x_edit = QLineEdit()
         self.offset_y_edit = QLineEdit()
         self.fyi_edit = QLineEdit()
+
         self.criterion_combo = QComboBox()
         self.criterion_combo.addItems(["TIME"])
+
         self.use_time_fraction_checkbox = QCheckBox("Use Time Opening Fraction")
         self.fraction_table = QTableWidget(5, 2)
         self.fraction_table.setHorizontalHeaderLabels(["Time", "Fraction"])
@@ -113,18 +117,51 @@ class CeilingFloorVentsTab(QWidget):
         )
         self.connect_editor_signals()
         self.load_demo_data()
+
         self.summary_table.currentCellChanged.connect(self.summary_selection_changed)
         self.summary_table.itemChanged.connect(self.summary_item_changed)
         self.summary_table.setCurrentCell(0, 0)
 
-    def build_layout(
-        self,
-        add_button,
-        duplicate_button,
-        move_up_button,
-        move_down_button,
-        remove_button,
-    ):
+    def load_case(self, case: CfastCase):
+        vents = list(case.ceiling_floor_vents)
+
+        self.summary_table.blockSignals(True)
+        self.summary_table.clearContents()
+        self.summary_table.setRowCount(max(8, len(vents)))
+        self.schedules = {}
+
+        for row, vent in enumerate(vents):
+            self.set_summary_row(
+                row,
+                [
+                    str(row + 1),
+                    vent.id,
+                    vent.first_comp_id,
+                    vent.second_comp_id,
+                    vent.vent_type,
+                    vent.shape,
+                    format_number(vent.area),
+                    format_number(vent.initial_open),
+                    format_number(vent.offset_x),
+                    format_number(vent.offset_y),
+                ],
+            )
+            self.schedules[row] = (list(vent.t_values), list(vent.f_values))
+
+        self.summary_table.blockSignals(False)
+        self.renumber_rows()
+
+        if vents:
+            self.summary_table.blockSignals(True)
+            self.summary_table.setCurrentCell(0, 0)
+            self.summary_table.blockSignals(False)
+            self.current_row = 0
+            self.load_editor_from_row(0)
+        else:
+            self.current_row = -1
+            self.clear_editor()
+
+    def build_layout(self, add_button, duplicate_button, move_up_button, move_down_button, remove_button):
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.summary_table, 2)
 
@@ -161,6 +198,7 @@ class CeilingFloorVentsTab(QWidget):
     def build_geometry_group(self):
         group = QGroupBox("Geometry")
         layout = QGridLayout()
+
         rows = [
             ("First Compartment:", self.first_comp_edit),
             ("Second Compartment:", self.second_comp_edit),
@@ -191,6 +229,7 @@ class CeilingFloorVentsTab(QWidget):
 
         layout.addWidget(self.use_time_fraction_checkbox)
         layout.addWidget(self.fraction_table)
+
         group.setLayout(layout)
         return group
 
@@ -214,8 +253,21 @@ class CeilingFloorVentsTab(QWidget):
 
     def load_demo_data(self):
         self.summary_table.blockSignals(True)
-        self.summary_table.clearContents()
-        self.schedules.clear()
+        self.set_summary_row(
+            0,
+            [
+                "1",
+                "CFVent_1",
+                "Comp 2",
+                "Comp 1",
+                "CEILING",
+                "ROUND",
+                "1",
+                "1",
+                "0",
+                "0",
+            ],
+        )
         self.summary_table.blockSignals(False)
 
     def set_summary_row(self, row: int, values: list[str]):
@@ -237,8 +289,8 @@ class CeilingFloorVentsTab(QWidget):
 
     def renumber_rows(self):
         self.summary_table.blockSignals(True)
-        count = 0
 
+        count = 0
         for row in range(self.summary_table.rowCount()):
             if self.row_has_data(row):
                 count += 1
@@ -247,41 +299,16 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.blockSignals(False)
 
     def row_has_data(self, row: int) -> bool:
-        """Return True only when the row contains user-entered vent data.
-
-        The Type and Shape columns have combo-box defaults in the detail editor.
-        Those defaults must not cause an otherwise empty row to be treated as a
-        real CFAST &VENT record.
-        """
-        meaningful_columns = [1, 2, 3, 6, 7, 8, 9]
-        if any(
+        return any(
             table_item_text(self.summary_table, row, col)
-            for col in meaningful_columns
-        ):
-            return True
-
-        t_values, f_values = self.schedules.get(row, ([], []))
-        return bool(t_values or f_values)
-
+            for col in range(1, self.summary_table.columnCount())
+        )
 
     def load_editor_from_row(self, row: int):
         if row < 0 or row >= self.summary_table.rowCount():
             return
 
-        widgets = [
-            self.id_edit,
-            self.first_comp_edit,
-            self.second_comp_edit,
-            self.type_combo,
-            self.shape_combo,
-            self.area_edit,
-            self.initial_open_edit,
-            self.offset_x_edit,
-            self.offset_y_edit,
-        ]
-        for widget in widgets:
-            widget.blockSignals(True)
-
+        self.loading_editor = True
         self.id_edit.setText(table_item_text(self.summary_table, row, 1))
         self.first_comp_edit.setText(table_item_text(self.summary_table, row, 2))
         self.second_comp_edit.setText(table_item_text(self.summary_table, row, 3))
@@ -292,11 +319,27 @@ class CeilingFloorVentsTab(QWidget):
         self.offset_x_edit.setText(table_item_text(self.summary_table, row, 8))
         self.offset_y_edit.setText(table_item_text(self.summary_table, row, 9))
 
-        for widget in widgets:
-            widget.blockSignals(False)
-
         self.load_schedule_for_row(row)
         self.update_detail_title(row)
+        self.loading_editor = False
+
+    def clear_editor(self):
+        self.loading_editor = True
+        for widget in [
+            self.id_edit,
+            self.first_comp_edit,
+            self.second_comp_edit,
+            self.area_edit,
+            self.initial_open_edit,
+            self.offset_x_edit,
+            self.offset_y_edit,
+            self.fyi_edit,
+        ]:
+            widget.clear()
+        self.fraction_table.clearContents()
+        self.use_time_fraction_checkbox.setChecked(False)
+        self.detail_group.setTitle("Vent 0 (of 0) Geometry")
+        self.loading_editor = False
 
     def update_detail_title(self, row: int):
         total = sum(self.row_has_data(r) for r in range(self.summary_table.rowCount()))
@@ -311,51 +354,14 @@ class CeilingFloorVentsTab(QWidget):
         self.detail_group.setTitle(f"Vent {index} (of {total}) Geometry")
 
     def save_current_editor(self):
+        if self.loading_editor:
+            return
+
         if self.current_row >= 0:
             self.save_editor_for_row(self.current_row)
 
-    def editor_has_meaningful_data(self) -> bool:
-        """Return True when the detail editor represents a real vent row.
-
-        Combo-box defaults such as CEILING/ROUND are intentionally ignored.
-        This prevents an empty selected row from being materialized during
-        Save/Run after loading an input file with no ceiling/floor vents.
-        """
-        text_fields = [
-            self.id_edit.text().strip(),
-            self.first_comp_edit.text().strip(),
-            self.second_comp_edit.text().strip(),
-            self.area_edit.text().strip(),
-            self.initial_open_edit.text().strip(),
-            self.offset_x_edit.text().strip(),
-            self.offset_y_edit.text().strip(),
-        ]
-        if any(text_fields):
-            return True
-
-        if self.use_time_fraction_checkbox.isChecked():
-            for table_row in range(self.fraction_table.rowCount()):
-                if table_item_text(self.fraction_table, table_row, 0):
-                    return True
-                if table_item_text(self.fraction_table, table_row, 1):
-                    return True
-
-        return False
-
-    def clear_summary_row(self, row: int):
-        self.summary_table.blockSignals(True)
-        for col in range(self.summary_table.columnCount()):
-            self.summary_table.setItem(row, col, QTableWidgetItem(""))
-        self.summary_table.blockSignals(False)
-        self.schedules.pop(row, None)
-
     def save_editor_for_row(self, row: int):
         if row < 0 or row >= self.summary_table.rowCount():
-            return
-
-        if not self.editor_has_meaningful_data():
-            self.clear_summary_row(row)
-            self.renumber_rows()
             return
 
         self.summary_table.blockSignals(True)
@@ -378,6 +384,7 @@ class CeilingFloorVentsTab(QWidget):
 
     def load_schedule_for_row(self, row: int):
         t_values, f_values = self.schedules.get(row, ([], []))
+
         self.fraction_table.blockSignals(True)
         self.fraction_table.clearContents()
 
@@ -418,8 +425,8 @@ class CeilingFloorVentsTab(QWidget):
 
     def add_vent(self):
         self.save_current_editor()
-        row = self.first_empty_row()
 
+        row = self.first_empty_row()
         if row is None:
             row = self.summary_table.rowCount()
             self.summary_table.insertRow(row)
@@ -430,8 +437,8 @@ class CeilingFloorVentsTab(QWidget):
             [
                 str(num),
                 f"CFVent_{num}",
-                "",
-                "",
+                "Comp 2",
+                "Comp 1",
                 "CEILING",
                 "ROUND",
                 "1",
@@ -445,18 +452,14 @@ class CeilingFloorVentsTab(QWidget):
 
     def duplicate_vent(self):
         row = self.current_row
-
         if row < 0 or not self.row_has_data(row):
             return
 
         self.save_current_editor()
-        values = [
-            table_item_text(self.summary_table, row, col)
-            for col in range(self.summary_table.columnCount())
-        ]
+        values = [table_item_text(self.summary_table, row, col) for col in range(self.summary_table.columnCount())]
         values[1] = f"{values[1]}_copy"
-        new_row = self.first_empty_row()
 
+        new_row = self.first_empty_row()
         if new_row is None:
             new_row = self.summary_table.rowCount()
             self.summary_table.insertRow(new_row)
@@ -491,6 +494,7 @@ class CeilingFloorVentsTab(QWidget):
             self.schedules.get(new_row, ([], [])),
             self.schedules.get(row, ([], [])),
         )
+
         self.summary_table.setCurrentCell(new_row, 0)
         self.renumber_rows()
 
@@ -521,13 +525,12 @@ class CeilingFloorVentsTab(QWidget):
         return None
 
     def next_vent_number(self) -> int:
-        count = sum(
-            self.row_has_data(row) for row in range(self.summary_table.rowCount())
-        )
+        count = sum(self.row_has_data(row) for row in range(self.summary_table.rowCount()))
         return count + 1
 
     def add_to_case(self, case: CfastCase):
         self.save_current_editor()
+
         vents: list[CeilingFloorVent] = []
         ids_seen: set[str] = set()
 
@@ -547,18 +550,10 @@ class CeilingFloorVentsTab(QWidget):
                     f"Ceiling/Floor Vents row {row + 1}: duplicate ID {vent_id!r}."
                 )
 
-            if not first_comp:
-                raise ValueError(
-                    f"Ceiling/Floor Vents row {row + 1}: first compartment is required."
-                )
-
-            if not second_comp:
-                raise ValueError(
-                    f"Ceiling/Floor Vents row {row + 1}: second compartment is required."
-                )
-
             ids_seen.add(vent_id)
+
             t_values, f_values = self.schedules.get(row, ([], []))
+
             vent = CeilingFloorVent(
                 id=vent_id,
                 first_comp_id=first_comp,
@@ -603,3 +598,13 @@ class CeilingFloorVentsTab(QWidget):
             vents.append(vent)
 
         case.ceiling_floor_vents = vents
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"

@@ -1,3 +1,4 @@
+import copy
 import re
 
 from PySide6.QtCore import Qt
@@ -109,6 +110,16 @@ class MechanicalVentsTab(QWidget):
         self.build_layout()
         self.connect_editor_signals()
         self.load_demo_data()
+
+    def load_case(self, case: CfastCase):
+        self.vents = copy.deepcopy(case.mechanical_vents)
+        self.refresh_summary_table()
+
+        if self.vents:
+            self.select_row(0)
+        else:
+            self.current_index = -1
+            self.clear_editor()
 
     def build_layout(self):
         layout = QVBoxLayout()
@@ -359,6 +370,29 @@ class MechanicalVentsTab(QWidget):
             self.schedule_table.setItem(row, 1, table_item(format_number(fraction_value)))
 
         self.schedule_table.blockSignals(False)
+        self.updating = False
+
+    def clear_editor(self):
+        self.updating = True
+        for widget in [
+            self.id_edit,
+            self.from_compartment_edit,
+            self.from_area_edit,
+            self.from_height_edit,
+            self.to_compartment_edit,
+            self.to_area_edit,
+            self.to_height_edit,
+            self.flow_edit,
+            self.begin_dropoff_edit,
+            self.zero_flow_edit,
+            self.offset_x_edit,
+            self.offset_y_edit,
+            self.filter_efficiency_edit,
+            self.filter_time_edit,
+        ]:
+            widget.clear()
+        self.schedule_table.clearContents()
+        self.editor_group.setTitle("Vent 0 (of 0) Geometry")
         self.updating = False
 
     def store_current_vent(self):

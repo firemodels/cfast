@@ -86,6 +86,22 @@ class SimulationTab(QWidget):
 
         self.setLayout(main_layout)
 
+    def load_case(self, case: CfastCase):
+        self.title_edit.setText(case.title)
+        self.simulation_time_edit.setText(format_number(case.simulation_time))
+        self.print_interval_edit.setText(format_number(case.print_interval))
+        self.spreadsheet_interval_edit.setText(format_number(case.spreadsheet_interval))
+        self.smokeview_interval_edit.setText(format_number(case.smokeview_interval))
+        self.max_time_step_edit.setText(
+            "Default" if case.max_time_step is None else format_number(case.max_time_step)
+        )
+        self.interior_temperature_edit.setText(format_number(case.interior_temperature))
+        self.relative_humidity_edit.setText(format_number(case.relative_humidity))
+        self.exterior_temperature_edit.setText(format_number(case.exterior_temperature))
+        self.pressure_edit.setText(format_number(case.pressure))
+        self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
+        self.lower_oxygen_limit_edit.setText(format_number(case.lower_oxygen_limit))
+
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
         layout = QGridLayout()
@@ -198,3 +214,13 @@ class SimulationTab(QWidget):
         self.message_panel.moveCursor(QTextCursor.MoveOperation.End)
         self.message_panel.insertPlainText(text)
         self.message_panel.ensureCursorVisible()
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"

@@ -71,6 +71,29 @@ class ThermalPropertiesTab(QWidget):
 
         self.load_demo_data()
 
+    def load_case(self, case: CfastCase):
+        rows = max(1, len(case.materials))
+        self.table.blockSignals(True)
+        self.table.clearContents()
+        self.table.setRowCount(rows)
+
+        for row, material in enumerate(case.materials):
+            values = [
+                material.id,
+                material.material,
+                format_number(material.conductivity),
+                format_number(material.specific_heat),
+                format_number(material.density),
+                format_number(material.thickness),
+                format_number(material.emissivity),
+                material.fyi,
+            ]
+
+            for col, value in enumerate(values):
+                self.table.setItem(row, col, QTableWidgetItem(value))
+
+        self.table.blockSignals(False)
+
     def load_demo_data(self):
         demo_rows = [
             [
@@ -181,3 +204,13 @@ class ThermalPropertiesTab(QWidget):
             materials.append(material)
 
         case.materials = materials
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"

@@ -149,6 +149,16 @@ class DetectionSuppressionTab(QWidget):
         self.rebuild_summary_table()
         self.select_device(0)
 
+    def load_case(self, case: CfastCase):
+        self.devices = copy.deepcopy(case.detection_devices)
+        self.update_compartment_choices()
+        self.rebuild_summary_table()
+
+        if self.devices:
+            self.select_device(0)
+        else:
+            self.select_device(-1)
+
     def build_layout(self):
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.summary_table, 3)

@@ -197,6 +197,12 @@ class CompartmentsTab(QWidget):
         self.refresh_summary_table(select_row=0)
         self.load_detail_from_selected()
 
+    def load_case(self, case: CfastCase):
+        self.compartments = copy.deepcopy(case.compartments) or [self.default_compartment()]
+        self.selected_index = 0
+        self.refresh_summary_table(select_row=0)
+        self.load_detail_from_selected()
+
     def default_compartments(self) -> list[Compartment]:
         return [
             Compartment(

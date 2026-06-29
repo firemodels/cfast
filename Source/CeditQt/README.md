@@ -33,3 +33,24 @@ To check the Python files without launching the GUI:
 
     cd Source/CeditQt
     python -m py_compile cedit_qt.py main_window.py cfast_case.py cfast_writer.py tabs/*.py widgets/*.py
+
+## Verification UI test harness
+
+To load verification cases through the Qt UI, write the CFAST input files,
+run CFAST, and leave generated CSV outputs ready for the official verification
+scripts:
+
+    cd Source/CeditQt
+    python run_verification_ui_tests.py --cfast-exe ../../Build/CFAST/gnu_osx/cfast7_osx
+
+To test only one case while developing:
+
+    cd Source/CeditQt
+    python run_verification_ui_tests.py --cfast-exe ../../Build/CFAST/gnu_osx/cfast7_osx --case basic_tempequilib --keep-work-dir
+
+The harness copies `Verification/` to a temporary work tree before running, so
+the checked-in verification input files are not modified.
+
+The optional `--compare-targets` flag runs an experimental built-in CSV
+comparison. Use `Utilities/Python/CFAST_verification_script.py` as the
+authoritative verification statistics check.

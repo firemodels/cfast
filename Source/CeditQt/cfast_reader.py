@@ -417,7 +417,7 @@ def compartment_from_fields(fields: dict[str, list[Any]]) -> Compartment:
     leak_area_ratio = number_vector(
         fields,
         "LEAK_AREA_RATIO",
-        [0.00017, 5.2e-5],
+        [0.0, 0.0],
         length=2,
     )
     leak_area = number_vector(fields, "LEAK_AREA", [0.0, 0.0], length=2)

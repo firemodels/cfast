@@ -32,8 +32,8 @@ class Compartment:
     hall: bool = False
     shaft: bool = False
     flow_coefficient: float = 0.07
-    wall_leak_area_ratio: float = 0.00017
-    floor_leak_area_ratio: float = 5.2e-5
+    wall_leak_area_ratio: float = 0.0
+    floor_leak_area_ratio: float = 0.0
     wall_leak_area: float = 0.0
     floor_leak_area: float = 0.0
     cross_section_heights: list[float] = field(default_factory=list)

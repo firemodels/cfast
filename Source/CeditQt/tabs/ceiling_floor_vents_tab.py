@@ -61,6 +61,7 @@ class CeilingFloorVentsTab(QWidget):
         super().__init__(parent)
 
         self.current_row = -1
+        self.loading_editor = False
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
         self.summary_table = QTableWidget(8, len(self.SUMMARY_HEADERS))
@@ -120,6 +121,45 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.currentCellChanged.connect(self.summary_selection_changed)
         self.summary_table.itemChanged.connect(self.summary_item_changed)
         self.summary_table.setCurrentCell(0, 0)
+
+    def load_case(self, case: CfastCase):
+        vents = list(case.ceiling_floor_vents)
+
+        self.summary_table.blockSignals(True)
+        self.summary_table.clearContents()
+        self.summary_table.setRowCount(max(8, len(vents)))
+        self.schedules = {}
+
+        for row, vent in enumerate(vents):
+            self.set_summary_row(
+                row,
+                [
+                    str(row + 1),
+                    vent.id,
+                    vent.first_comp_id,
+                    vent.second_comp_id,
+                    vent.vent_type,
+                    vent.shape,
+                    format_number(vent.area),
+                    format_number(vent.initial_open),
+                    format_number(vent.offset_x),
+                    format_number(vent.offset_y),
+                ],
+            )
+            self.schedules[row] = (list(vent.t_values), list(vent.f_values))
+
+        self.summary_table.blockSignals(False)
+        self.renumber_rows()
+
+        if vents:
+            self.summary_table.blockSignals(True)
+            self.summary_table.setCurrentCell(0, 0)
+            self.summary_table.blockSignals(False)
+            self.current_row = 0
+            self.load_editor_from_row(0)
+        else:
+            self.current_row = -1
+            self.clear_editor()
 
     def build_layout(self, add_button, duplicate_button, move_up_button, move_down_button, remove_button):
         main_layout = QVBoxLayout()
@@ -268,6 +308,7 @@ class CeilingFloorVentsTab(QWidget):
         if row < 0 or row >= self.summary_table.rowCount():
             return
 
+        self.loading_editor = True
         self.id_edit.setText(table_item_text(self.summary_table, row, 1))
         self.first_comp_edit.setText(table_item_text(self.summary_table, row, 2))
         self.second_comp_edit.setText(table_item_text(self.summary_table, row, 3))
@@ -280,6 +321,25 @@ class CeilingFloorVentsTab(QWidget):
 
         self.load_schedule_for_row(row)
         self.update_detail_title(row)
+        self.loading_editor = False
+
+    def clear_editor(self):
+        self.loading_editor = True
+        for widget in [
+            self.id_edit,
+            self.first_comp_edit,
+            self.second_comp_edit,
+            self.area_edit,
+            self.initial_open_edit,
+            self.offset_x_edit,
+            self.offset_y_edit,
+            self.fyi_edit,
+        ]:
+            widget.clear()
+        self.fraction_table.clearContents()
+        self.use_time_fraction_checkbox.setChecked(False)
+        self.detail_group.setTitle("Vent 0 (of 0) Geometry")
+        self.loading_editor = False
 
     def update_detail_title(self, row: int):
         total = sum(self.row_has_data(r) for r in range(self.summary_table.rowCount()))
@@ -294,6 +354,9 @@ class CeilingFloorVentsTab(QWidget):
         self.detail_group.setTitle(f"Vent {index} (of {total}) Geometry")
 
     def save_current_editor(self):
+        if self.loading_editor:
+            return
+
         if self.current_row >= 0:
             self.save_editor_for_row(self.current_row)
 
@@ -535,3 +598,13 @@ class CeilingFloorVentsTab(QWidget):
             vents.append(vent)
 
         case.ceiling_floor_vents = vents
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"

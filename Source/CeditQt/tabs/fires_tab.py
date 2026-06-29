@@ -1,3 +1,4 @@
+import copy
 import re
 
 from PySide6.QtCore import Qt
@@ -197,6 +198,20 @@ class FiresTab(QWidget):
         self.load_demo_data()
         self.rebuild_summary_table()
         self.select_fire(0)
+
+    def load_case(self, case: CfastCase):
+        self.fires = copy.deepcopy(case.fires)
+        self.fire_properties = copy.deepcopy(case.fire_properties)
+        self.update_compartment_choices()
+        self.update_property_choices()
+        self.rebuild_summary_table()
+
+        if self.fires:
+            self.select_fire(0)
+        else:
+            self.current_index = -1
+            self.clear_editor()
+            self.update_plot()
 
     def build_layout(self):
         main_layout = QVBoxLayout()

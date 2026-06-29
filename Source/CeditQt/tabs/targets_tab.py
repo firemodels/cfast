@@ -1,3 +1,4 @@
+import copy
 import re
 from dataclasses import replace
 
@@ -65,6 +66,7 @@ class TargetsTab(QWidget):
         self.targets: list[Target] = []
         self.current_index = -1
         self.updating = False
+        self.editor_connections_ready = False
 
         self.summary_table = QTableWidget(0, len(TABLE_COLUMNS))
         self.summary_table.setHorizontalHeaderLabels(TABLE_COLUMNS)
@@ -109,6 +111,13 @@ class TargetsTab(QWidget):
         self.setLayout(layout)
 
         self.load_demo_data()
+
+    def load_case(self, case: CfastCase):
+        self.targets = copy.deepcopy(case.targets)
+        self.current_index = 0 if self.targets else -1
+        self.refresh_summary_table(select_row=0 if self.targets else None)
+        if self.targets:
+            self.load_target_into_editor(self.targets[0])
 
     def build_editor_layout(self):
         layout = QVBoxLayout()
@@ -311,19 +320,19 @@ class TargetsTab(QWidget):
 
         self.updating = False
 
+        self.connect_editor_signals_once()
+
+    def connect_editor_signals_once(self):
+        if self.editor_connections_ready:
+            return
+
         for widget in self.editor_widgets():
-            try:
-                widget.textChanged.disconnect(self.editor_changed)
-            except (RuntimeError, TypeError):
-                pass
             widget.textChanged.connect(self.editor_changed)
 
         for combo in self.editor_combos():
-            try:
-                combo.currentTextChanged.disconnect(self.editor_changed)
-            except (RuntimeError, TypeError):
-                pass
             combo.currentTextChanged.connect(self.editor_changed)
+
+        self.editor_connections_ready = True
 
     def editor_widgets(self):
         return [
@@ -360,7 +369,11 @@ class TargetsTab(QWidget):
     def target_from_editor(self) -> Target:
         matl_id = self.material_combo.currentText().strip() or "DEFAULT"
         material = material_properties(matl_id)
-        thickness = material.get("thickness", 0.0)
+        existing = self.targets[self.current_index] if 0 <= self.current_index < len(self.targets) else None
+        if matl_id.strip().upper() in MATERIAL_LIBRARY:
+            thickness = material.get("thickness", 0.0)
+        else:
+            thickness = existing.thickness if existing is not None else 0.0
 
         return Target(
             id=self.id_edit.text().strip() or f"Targ {self.current_index + 1}",
@@ -378,7 +391,19 @@ class TargetsTab(QWidget):
                 self.temperature_depth_edit.text(),
                 "Internal Temperature Depth",
             ),
-            depth_units="DISTANCE",
+            depth_units=existing.depth_units if existing is not None else "DISTANCE",
+            surface_orientation=(
+                existing.surface_orientation if existing is not None else "USER SPECIFIED"
+            ),
+            surface_temperature=existing.surface_temperature if existing is not None else None,
+            adiabatic=existing.adiabatic if existing is not None else False,
+            convection_coefficient_front=(
+                existing.convection_coefficient_front if existing is not None else 0.0
+            ),
+            convection_coefficient_back=(
+                existing.convection_coefficient_back if existing is not None else 0.0
+            ),
+            fyi=existing.fyi if existing is not None else "",
         )
 
     def update_material_labels(self, target: Target):

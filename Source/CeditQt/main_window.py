@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase
+from cfast_reader import read_cfast_input_with_warnings
 from cfast_writer import write_cfast_input
 from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 from tabs.compartments_tab import CompartmentsTab
@@ -41,6 +42,7 @@ class CeditMainWindow(QMainWindow):
 
         self.current_path: Path | None = None
         self.cfast_process: QProcess | None = None
+        self.extra_namelists: list[str] = []
 
         self.settings = QSettings("FireModels", "CEditQt")
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
@@ -71,7 +73,7 @@ class CeditMainWindow(QMainWindow):
         file_menu = self.menuBar().addMenu("&File")
 
         open_action = QAction("&Open...", self)
-        open_action.triggered.connect(self.open_placeholder)
+        open_action.triggered.connect(self.open_cfast_input)
         file_menu.addAction(open_action)
 
         save_action = QAction("&Save", self)
@@ -168,7 +170,7 @@ class CeditMainWindow(QMainWindow):
         run_button = QPushButton("Run")
         view_button = QPushButton("View")
 
-        open_button.clicked.connect(self.open_placeholder)
+        open_button.clicked.connect(self.open_cfast_input)
         save_button.clicked.connect(self.save_cfast_input)
         geometry_button.clicked.connect(self.geometry_placeholder)
         run_button.clicked.connect(self.run_cfast)
@@ -187,6 +189,7 @@ class CeditMainWindow(QMainWindow):
 
     def build_cfast_case(self):
         case = CfastCase()
+        case.extra_namelists = list(self.extra_namelists)
         self.simulation_tab.add_to_case(case)
         self.thermal_properties_tab.add_to_case(case)
         self.compartments_tab.add_to_case(case)
@@ -236,6 +239,51 @@ class CeditMainWindow(QMainWindow):
         self.simulation_tab.set_message(message)
         self.statusBar().showMessage("No Errors")
         QMessageBox.information(self, "Export complete", message)
+
+    def open_cfast_input(self):
+        path_text, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open CFAST Input",
+            str(Path.cwd()),
+            "CFAST input files (*.in);;All files (*)",
+        )
+
+        if not path_text:
+            return
+
+        self.load_cfast_input(Path(path_text))
+
+    def load_cfast_input(self, path: Path):
+        try:
+            result = read_cfast_input_with_warnings(path)
+            self.load_case(result.case)
+        except Exception as exc:
+            self.simulation_tab.set_message(str(exc))
+            self.statusBar().showMessage("Errors")
+            QMessageBox.critical(self, "Open failed", str(exc))
+            return
+
+        self.current_path = path
+        message = f"Loaded CFAST input file:\n{path}"
+        if result.warnings:
+            message += "\n\nImport warnings:\n" + "\n".join(result.warnings)
+
+        self.simulation_tab.set_message(message)
+        self.statusBar().showMessage("No Errors")
+
+    def load_case(self, case: CfastCase):
+        self.extra_namelists = list(getattr(case, "extra_namelists", []))
+        self.simulation_tab.load_case(case)
+        self.thermal_properties_tab.load_case(case)
+        self.compartments_tab.load_case(case)
+        self.wall_vents_tab.load_case(case)
+        self.ceiling_floor_vents_tab.load_case(case)
+        self.mechanical_vents_tab.load_case(case)
+        self.targets_tab.load_case(case)
+        self.detection_suppression_tab.load_case(case)
+        self.surface_connections_tab.load_case(case)
+        self.output_tab.load_case(case)
+        self.fires_tab.load_case(case)
 
     def get_cfast_executable(self) -> str:
         if self.cfast_executable:
@@ -386,13 +434,6 @@ class CeditMainWindow(QMainWindow):
             "and select your built CFAST executable.\n"
         )
         self.statusBar().showMessage("Errors")
-
-    def open_placeholder(self):
-        QMessageBox.information(
-            self,
-            "Open",
-            "Open existing CFAST input is not implemented yet.",
-        )
 
     def geometry_placeholder(self):
         QMessageBox.information(

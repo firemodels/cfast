@@ -120,12 +120,12 @@ def validate_case(case: CfastCase) -> None:
         scheduled_values(vent)
 
     for vent in getattr(case, "ceiling_floor_vents", []):
-        if vent.top_comp_id not in compartment_ids:
+        if vent.top_comp_id != "OUTSIDE" and vent.top_comp_id not in compartment_ids:
             raise ValueError(
                 f"Ceiling/floor vent {vent.id!r}: top compartment "
                 f"{vent.top_comp_id!r} does not exist."
             )
-        if vent.bottom_comp_id not in compartment_ids:
+        if vent.bottom_comp_id != "OUTSIDE" and vent.bottom_comp_id not in compartment_ids:
             raise ValueError(
                 f"Ceiling/floor vent {vent.id!r}: bottom compartment "
                 f"{vent.bottom_comp_id!r} does not exist."
@@ -223,16 +223,13 @@ def validate_case(case: CfastCase) -> None:
                 f"{vis.axis!r}."
             )
 
-    if not case.fires:
-        raise ValueError("At least one fire is required.")
-
     property_ids = {prop.id for prop in case.fire_properties}
-
-    if not property_ids:
-        raise ValueError("At least one fire property definition is required.")
 
     for prop in case.fire_properties:
         validate_fire_property(prop)
+
+    if case.fires and not property_ids:
+        raise ValueError("At least one fire property definition is required.")
 
     for fire in case.fires:
         if fire.comp_id not in compartment_ids:
@@ -315,6 +312,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             ],
         )
         lines.append("")
+
+    for extra_namelist in getattr(case, "extra_namelists", []):
+        text = extra_namelist.strip()
+        if text:
+            lines.append(text)
+            lines.append("")
 
     if case.materials:
         lines.append("!! Thermal Properties")

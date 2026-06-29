@@ -92,6 +92,38 @@ class WallVentsTab(QWidget):
         self.connect_editor_signals()
         self.load_demo_data()
 
+    def load_case(self, case: CfastCase):
+        self.records = [self.record_from_vent(vent) for vent in case.wall_vents]
+        self.rebuild_summary_table()
+
+        if self.records:
+            self.summary_table.setCurrentCell(0, 0)
+            self.load_record_into_editor(0)
+        else:
+            self.clear_editor()
+
+    def record_from_vent(self, vent: WallVent) -> dict:
+        second_compartment = vent.second_comp_id
+        if second_compartment.upper() == "OUTSIDE":
+            second_compartment = "Outside"
+
+        return {
+            "id": vent.id,
+            "first_compartment": vent.first_comp_id,
+            "second_compartment": second_compartment,
+            "bottom": format_number(vent.bottom),
+            "height": format_number(vent.height),
+            "width": format_number(vent.width),
+            "initial_open": format_number(vent.initial_open),
+            "face": vent.face.strip().capitalize(),
+            "offset": format_number(vent.offset),
+            "criterion": vent.criterion.strip().capitalize(),
+            "schedule": [
+                (format_number(time_value), format_number(fraction_value))
+                for time_value, fraction_value in zip(vent.t_values, vent.f_values)
+            ],
+        }
+
     def build_layout(self):
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.summary_table, 2)
@@ -550,3 +582,13 @@ class WallVentsTab(QWidget):
             )
 
         case.wall_vents = vents
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"

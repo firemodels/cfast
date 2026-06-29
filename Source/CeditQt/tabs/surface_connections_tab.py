@@ -127,6 +127,17 @@ class SurfaceConnectionsTab(QWidget):
         self.select_wall_connection(0)
         self.select_floor_connection(0)
 
+    def load_case(self, case: CfastCase):
+        self.wall_connections = copy.deepcopy(case.wall_surface_connections)
+        self.ceiling_floor_connections = copy.deepcopy(
+            case.ceiling_floor_surface_connections
+        )
+        self.update_compartment_choices([compartment.id for compartment in case.compartments])
+        self.rebuild_wall_table()
+        self.rebuild_floor_table()
+        self.select_wall_connection(0 if self.wall_connections else -1)
+        self.select_floor_connection(0 if self.ceiling_floor_connections else -1)
+
     def build_layout(self):
         layout = QHBoxLayout()
         layout.addWidget(self.build_wall_panel(), 1)
@@ -220,8 +231,8 @@ class SurfaceConnectionsTab(QWidget):
             )
         ]
 
-    def update_compartment_choices(self):
-        choices = ["Comp 1", "Comp 2", "Comp 3"]
+    def update_compartment_choices(self, choices: list[str] | None = None):
+        choices = choices or ["Comp 1", "Comp 2", "Comp 3"]
 
         for combo in [
             self.wall_first_combo,

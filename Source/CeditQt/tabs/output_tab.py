@@ -110,6 +110,50 @@ class OutputTab(QWidget):
         self.refresh_resolution_numbers()
         self.select_first_rows()
 
+    def load_case(self, case: CfastCase):
+        self.updating = True
+
+        self.visual_table.clearContents()
+        self.visual_table.setRowCount(max(10, len(case.output_visualizations)))
+        for row, vis in enumerate(case.output_visualizations):
+            values = [
+                "",
+                vis.visualization_type,
+                display_compartment(vis.comp_id),
+                AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
+                format_number(vis.value),
+            ]
+            for col, value in enumerate(values):
+                self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
+
+        self.resolution_table.clearContents()
+        self.resolution_table.setRowCount(max(10, len(case.compartments)))
+        for row, compartment in enumerate(case.compartments):
+            values = [
+                compartment.id,
+                "",
+                str(compartment.grid[0]),
+                str(compartment.grid[1]),
+                str(compartment.grid[2]),
+            ]
+            for col, value in enumerate(values):
+                self.set_cell_text(
+                    self.resolution_table,
+                    row,
+                    col,
+                    value,
+                    editable=(col != 1),
+                )
+
+        self.validation_checkbox.setChecked(case.validation_output)
+        self.debug_checkbox.setChecked(case.debug_output)
+        self.show_cfast_window_checkbox.setChecked(case.show_cfast_window)
+
+        self.updating = False
+        self.refresh_visual_numbers()
+        self.refresh_resolution_numbers()
+        self.select_first_rows()
+
     def build_layout(self):
         main_layout = QHBoxLayout()
         left_layout = QVBoxLayout()
@@ -475,3 +519,19 @@ class OutputTab(QWidget):
         for compartment in case.compartments:
             if compartment.id in grid_by_compartment:
                 compartment.grid = grid_by_compartment[compartment.id]
+
+
+def format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+
+    value = float(value)
+    if abs(value - round(value)) < 1.0e-12:
+        return str(int(round(value)))
+    return f"{value:.6g}"
+
+
+def display_compartment(value: str) -> str:
+    if value.strip().upper() in {"NULL", "ALL", ""}:
+        return "All"
+    return value

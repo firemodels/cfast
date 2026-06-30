@@ -5,8 +5,14 @@ import fdsplotlib
 import matplotlib.pyplot as plt
 import importlib
 import runpy
+import sys
+from pathlib import Path
 importlib.reload(fdsplotlib) # use for development (while making changes to fdsplotlib.py)
 print("Using:", fdsplotlib.__file__)
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[1]
+VALIDATION_DIR = REPO_ROOT / 'Validation'
 
 # If there is an error in one of the sub-scripts, print the message but do not stop the main script.
 
@@ -18,9 +24,18 @@ def safe_run(script_path):
     except Exception as exc:
         print(f"Error in {script_path}: {exc}")
 
+def run_vandv_calcs(input_filename):
+    subprocess.run([sys.executable, 'VandV_Calcs.py', input_filename],
+                   cwd=str(VALIDATION_DIR),
+                   check=True)
+
 # Scripts to run prior to dataplot
 
 print("max_plume_temp...");        safe_run("./scripts/max_plume_temp.py")
+
+print("CFAST_Pressure_Correction_inputs...");           run_vandv_calcs("CFAST_Pressure_Correction_inputs.csv")
+print("CFAST_Temperature_Profile_inputs...");           run_vandv_calcs("CFAST_Temperature_Profile_inputs.csv")
+print("CFAST_Heat_Flux_Profile_inputs...");             run_vandv_calcs("CFAST_Heat_Flux_Profile_inputs.csv")
 
 # Dataplot and scatplot options
 
@@ -98,4 +113,3 @@ print("Python validation scripts completed successfully!")
 # - "start:" runs to the last row.
 # - Strings that are not ranges or "all" are matched to the Dataname column.
 # ------------------------------
-

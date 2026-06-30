@@ -5,7 +5,7 @@
     use exit_routines, only: cfastexit, delete_output_files
     use fire_routines, only: flame_height
     use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, initialize_solver_vector
-    use namelist_input_routines, only: namelist_input, read_misc
+    use namelist_input_routines, only: namelist_input, read_misc, read_output_options
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files
     use utility_routines, only: emix, get_filenumber
@@ -539,6 +539,7 @@
 
     if (buf(1:1)=='&') then
         call read_misc (iofili)
+        call read_output_options (iofili)
         if (.not.overwrite_testcase) then
             inquire (file=outputfile,exist=ex)
             if (ex) then

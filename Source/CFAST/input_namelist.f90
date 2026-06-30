@@ -47,7 +47,7 @@
     
     private
 
-    public namelist_input, read_misc, checkread, cdata_preprocessor_rereadinputfile, read_time
+    public namelist_input, read_misc, read_output_options, checkread, cdata_preprocessor_rereadinputfile, read_time
 
     contains
 
@@ -223,6 +223,70 @@
     end subroutine set_defaults
 
     end subroutine read_time
+
+    ! --------------------------- read_output_options -------------------------------------------
+
+!> \brief   pre-read output options needed before the full input file is processed
+
+!> \param   lu (input): logical input unit number for the open input file
+
+    subroutine read_output_options (lu)
+
+    integer, intent(in) :: lu
+
+    integer :: ios
+    real(eb) :: criterion
+    logical :: validation_output
+    character(len=25) :: file, type
+    character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
+    character(len=64), dimension(2) :: first_field, second_field
+    character(len=128) :: fyi
+
+    namelist /OUTP/ id, file, first_device, first_measurement, second_device, &
+                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output
+
+    ios = 1
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    outp_loop: do
+        call checkread ('OUTP',lu,ios)
+        if (ios==1) exit outp_loop
+
+        call set_defaults
+        read(lu,OUTP,iostat=ios)
+        if (ios>0) then
+            write(errormessage, '(a)') 'Error, Invalid specification in &OUTP inputs.'
+            call cfastexit('read_output_options',1)
+        end if
+
+        if (validation_output) validation_flag = .true.
+    end do outp_loop
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+    return
+
+    contains
+
+    subroutine set_defaults
+
+    id = ' '
+    fyi = ' '
+    file = ' '
+    first_field = ' '
+    second_field = (/' ', ' '/)
+    first_device = ' '
+    first_measurement = ' '
+    second_device = ' '
+    second_measurement = ' '
+    type = ' '
+    criterion = -1
+    validation_output = .false.
+
+    end subroutine set_defaults
+
+    end subroutine read_output_options
 
     ! --------------------------- read_init ------------------------------------------
     
@@ -2673,7 +2737,7 @@ continue
     
     integer :: ios, i, ii, counter
     type(dump_type), pointer :: dumpptr
-    logical :: found
+    logical :: found, validation_output
     
     real(eb) :: criterion
     character(len=4) :: dump_syntax
@@ -2685,7 +2749,7 @@ continue
     namelist /DUMP/ id, file, first_device, first_measurement, second_device, &
                     second_measurement, first_field, second_field, criterion, type, fyi
     namelist /OUTP/ id, file, first_device, first_measurement, second_device, &
-                    second_measurement, first_field, second_field, criterion, type, fyi
+                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output
 
 
     ios = 1
@@ -2700,6 +2764,7 @@ continue
         if (ios==0) then
             dumpflag=.true.
             dump_syntax = 'DUMP'
+            call set_defaults
             read(lu,DUMP,err=34,iostat=ios)
             counter = counter + 1
 34          if (ios>0) then
@@ -2719,21 +2784,22 @@ continue
         outp_loop: do
             call checkread ('OUTP',lu,ios)
             if (ios==0) then
-                dumpflag=.true.
                 dump_syntax = 'OUTP'
+                call set_defaults
                 read(lu,OUTP,err=35,iostat=ios)
                 counter = counter + 1
 35              if (ios>0) then
                     write(errormessage, '(a,i3)') 'Error, Invalid specification in &OUTP inputs. Check &OUTP number ' , counter+1
                     call cfastexit('read_dump',1)
                 end if
+                if (.not.output_options_only()) dumpflag=.true.
             else if (ios==1) then
                 exit outp_loop
             end if
         end do outp_loop
     end if
 
-    if (dumpflag) then
+    if (counter>0) then
 
         rewind (lu)
         input_file_line_number = 0
@@ -2745,6 +2811,9 @@ continue
             call set_defaults
             if (dump_syntax=='DUMP') read(lu,DUMP)
             if (dump_syntax=='OUTP') read(lu,OUTP)
+
+            if (validation_output) validation_flag = .true.
+            if (dump_syntax=='OUTP' .and. output_options_only()) cycle read_dump_loop
             
             if (first_field(1)==' ' .and. first_field(2)==' ' .and. first_device/=' ' .and. first_measurement/=' ') then
                 first_field(1) = first_device
@@ -2876,8 +2945,18 @@ continue
     second_measurement = ' '
     type = ' '
     criterion = -1
+    validation_output = .false.
     
     end subroutine set_defaults
+
+    logical function output_options_only()
+
+    output_options_only = id==' ' .and. file==' ' .and. first_device==' ' .and. &
+        first_measurement==' ' .and. second_device==' ' .and. second_measurement==' ' .and. &
+        first_field(1)==' ' .and. first_field(2)==' ' .and. second_field(1)==' ' .and. &
+        second_field(2)==' ' .and. type==' ' .and. criterion<0
+
+    end function output_options_only
 
     end subroutine read_dump
     

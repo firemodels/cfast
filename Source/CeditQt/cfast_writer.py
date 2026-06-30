@@ -315,6 +315,16 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         )
         lines.append("")
 
+    if getattr(case, "validation_output", False):
+        add_wrapped_namelist(
+            lines,
+            "OUTP",
+            [
+                f"VALIDATION_OUTPUT = {cfast_logical(True)}",
+            ],
+        )
+        lines.append("")
+
     for extra_namelist in getattr(case, "extra_namelists", []):
         text = extra_namelist.strip()
         if text:

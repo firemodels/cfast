@@ -367,6 +367,18 @@ def apply_record(
         warnings.append(
             f"Line {record.line}: &DIAG settings were preserved but are not editable yet."
         )
+    elif name == "OUTP":
+        if "VALIDATION_OUTPUT" in fields:
+            case.validation_output = bool_field(
+                fields,
+                "VALIDATION_OUTPUT",
+                case.validation_output,
+            )
+        if any(key != "VALIDATION_OUTPUT" for key in fields):
+            case.extra_namelists.append(record.raw.strip())
+            warnings.append(
+                f"Line {record.line}: &OUTP settings were preserved but are not editable yet."
+            )
     elif name == "MATL":
         case.materials.append(material_from_fields(fields))
     elif name == "COMP":

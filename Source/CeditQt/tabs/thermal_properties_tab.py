@@ -99,6 +99,16 @@ class ThermalPropertiesTab(QWidget):
     def load_demo_data(self):
         demo_rows = [
             [
+                "CONCRETE",
+                "Concrete Normal Weight (6 in)",
+                "1.75",
+                "1",
+                "2200",
+                "0.15",
+                "0.94",
+                "",
+            ],
+            [
                 "GYPSUM",
                 "Gypsum Wallboard",
                 "0.16",

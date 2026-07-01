@@ -32,13 +32,13 @@ MATERIAL_LIBRARY = {
         "thickness": 0.0,
     },
     "CONCRETE": {
-        "conductivity": 0.00175,
+        "conductivity": 1.75,
         "specific_heat": 1.0,
         "density": 2200.0,
         "thickness": 0.15,
     },
     "GYPSUM": {
-        "conductivity": 0.00016,
+        "conductivity": 0.16,
         "specific_heat": 1.09,
         "density": 800.0,
         "thickness": 0.0127,
@@ -411,7 +411,7 @@ class TargetsTab(QWidget):
     def update_material_labels(self, target: Target):
         material = material_properties(target.matl_id)
         self.conductivity_label.setText(
-            f"Conductivity: {format_property(material.get('conductivity'))} kW/(m °C)"
+            f"Conductivity: {format_property(material.get('conductivity'))} W/(m K)"
         )
         self.specific_heat_label.setText(
             f"Specific Heat: {format_property(material.get('specific_heat'))} kJ/(kg °C)"

@@ -123,6 +123,27 @@ def validate_case(case: CfastCase) -> None:
         raise ValueError("At least one compartment is required.")
 
     compartment_ids = {compartment.id for compartment in case.compartments}
+    material_ids = {material.id for material in case.materials}
+
+    def material_is_defined(material_id: str) -> bool:
+        material_id = material_id.strip()
+        if material_id.upper() in {"", "OFF", "NULL", "DEFAULT"}:
+            return True
+
+        return material_id in material_ids
+
+    for compartment in case.compartments:
+        for surface_name, material_values in (
+            ("ceiling", compartment.ceiling_matl_id),
+            ("wall", compartment.wall_matl_id),
+            ("floor", compartment.floor_matl_id),
+        ):
+            for material_id in material_values:
+                if not material_is_defined(material_id):
+                    raise ValueError(
+                        f"Compartment {compartment.id!r}: {surface_name} material "
+                        f"{material_id!r} is not defined in Thermal Properties."
+                    )
 
     for vent in case.wall_vents:
         if vent.first_comp_id not in compartment_ids:
@@ -167,6 +188,11 @@ def validate_case(case: CfastCase) -> None:
         if target.comp_id not in compartment_ids:
             raise ValueError(
                 f"Target {target.id!r}: compartment {target.comp_id!r} does not exist."
+            )
+        if not material_is_defined(target.matl_id):
+            raise ValueError(
+                f"Target {target.id!r}: material {target.matl_id!r} is not "
+                "defined in Thermal Properties."
             )
         if target.target_type.upper() not in {"PLATE", "CYLINDER"}:
             raise ValueError(
@@ -331,16 +357,19 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         )
         lines.append("")
 
-    add_wrapped_namelist(
-        lines,
-        "OUTP",
-        [
-            f"NET_HEAT_FLUX_OUTPUT = {cfast_logical(getattr(case, 'net_heat_flux_output', True))}",
-            f"VALIDATION_OUTPUT = {cfast_logical(getattr(case, 'validation_output', False))}",
-            f"SPREADSHEET_OUTPUT = {cfast_string(spreadsheet_output_code(case))}",
-        ],
-    )
-    lines.append("")
+    outp_fields = []
+    if getattr(case, "net_heat_flux_output", False):
+        outp_fields.append("NET_HEAT_FLUX_OUTPUT = .TRUE.")
+    if getattr(case, "validation_output", False):
+        outp_fields.append("VALIDATION_OUTPUT = .TRUE.")
+
+    spreadsheet_output = spreadsheet_output_code(case)
+    if spreadsheet_output != "CDMVW":
+        outp_fields.append(f"SPREADSHEET_OUTPUT = {cfast_string(spreadsheet_output)}")
+
+    if outp_fields:
+        add_wrapped_namelist(lines, "OUTP", outp_fields)
+        lines.append("")
 
     for extra_namelist in getattr(case, "extra_namelists", []):
         text = extra_namelist.strip()
@@ -708,4 +737,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     lines.append("&TAIL /")
 
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    text = "\n".join(lines) + "\n"
+    if path.exists():
+        try:
+            if path.read_text(encoding="utf-8") == text:
+                return
+        except UnicodeDecodeError:
+            pass
+
+    path.write_text(text, encoding="utf-8")

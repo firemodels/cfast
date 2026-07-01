@@ -44,10 +44,18 @@ class CeditMainWindow(QMainWindow):
 
         self.current_path: Path | None = None
         self.cfast_process: QProcess | None = None
+        self.cfast_process_context = ""
+        self.cfast_output_text = ""
+        self.launch_smokeview_after_cfast = False
         self.extra_namelists: list[str] = []
 
         self.settings = QSettings("FireModels", "CEditQt")
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
+        self.smokeview_executable = self.settings.value(
+            "smokeview_executable",
+            "",
+            type=str,
+        )
 
         self.simulation_tab = SimulationTab()
         self.thermal_properties_tab = ThermalPropertiesTab()
@@ -96,6 +104,14 @@ class CeditMainWindow(QMainWindow):
         clear_cfast_action.triggered.connect(self.clear_cfast_executable)
         file_menu.addAction(clear_cfast_action)
 
+        set_smokeview_action = QAction("Set S&mokeview Executable...", self)
+        set_smokeview_action.triggered.connect(self.set_smokeview_executable)
+        file_menu.addAction(set_smokeview_action)
+
+        clear_smokeview_action = QAction("Use Smokeview from PA&TH", self)
+        clear_smokeview_action.triggered.connect(self.clear_smokeview_executable)
+        file_menu.addAction(clear_smokeview_action)
+
         file_menu.addSeparator()
 
         exit_action = QAction("E&xit", self)
@@ -105,11 +121,11 @@ class CeditMainWindow(QMainWindow):
         view_menu = self.menuBar().addMenu("&View")
 
         geometry_action = QAction("&Geometry", self)
-        geometry_action.triggered.connect(self.geometry_placeholder)
+        geometry_action.triggered.connect(self.generate_smokeview_geometry)
         view_menu.addAction(geometry_action)
 
         results_action = QAction("&Results", self)
-        results_action.triggered.connect(self.view_placeholder)
+        results_action.triggered.connect(self.view_results)
         view_menu.addAction(results_action)
 
         help_menu = self.menuBar().addMenu("&Help")
@@ -123,6 +139,8 @@ class CeditMainWindow(QMainWindow):
         self.export_action = export_action
         self.set_cfast_action = set_cfast_action
         self.clear_cfast_action = clear_cfast_action
+        self.set_smokeview_action = set_smokeview_action
+        self.clear_smokeview_action = clear_smokeview_action
         self.exit_action = exit_action
         self.geometry_action = geometry_action
         self.results_action = results_action
@@ -174,9 +192,9 @@ class CeditMainWindow(QMainWindow):
 
         open_button.clicked.connect(self.open_cfast_input)
         save_button.clicked.connect(self.save_cfast_input)
-        geometry_button.clicked.connect(self.geometry_placeholder)
+        geometry_button.clicked.connect(self.generate_smokeview_geometry)
         run_button.clicked.connect(self.run_cfast)
-        view_button.clicked.connect(self.view_placeholder)
+        view_button.clicked.connect(self.view_results)
 
         row.addWidget(open_button)
         row.addWidget(save_button)
@@ -293,6 +311,12 @@ class CeditMainWindow(QMainWindow):
 
         return "cfast"
 
+    def get_smokeview_executable(self) -> str:
+        if self.smokeview_executable:
+            return self.smokeview_executable
+
+        return "smokeview"
+
     def set_cfast_executable(self):
         path_text, _ = QFileDialog.getOpenFileName(
             self,
@@ -332,30 +356,70 @@ class CeditMainWindow(QMainWindow):
         )
         self.statusBar().showMessage("No Errors")
 
-    def run_cfast(self):
-        if self.cfast_process is not None:
-            if self.cfast_process.state() != QProcess.ProcessState.NotRunning:
-                QMessageBox.information(
-                    self,
-                    "Run",
-                    "CFAST is already running.",
-                )
-                return
+    def set_smokeview_executable(self):
+        path_text, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select Smokeview Executable",
+            str(Path.home()),
+            "All files (*)",
+        )
 
-        if self.current_path is None:
+        if not path_text:
+            return
+
+        path = Path(path_text).expanduser()
+
+        if not path.is_file():
+            QMessageBox.critical(
+                self,
+                "Smokeview Executable",
+                f"Not a file:\n{path}",
+            )
+            return
+
+        self.smokeview_executable = str(path)
+        self.settings.setValue("smokeview_executable", self.smokeview_executable)
+
+        self.simulation_tab.set_message(
+            f"Smokeview executable set to:\n{self.smokeview_executable}"
+        )
+        self.statusBar().showMessage("No Errors")
+
+    def clear_smokeview_executable(self):
+        self.smokeview_executable = ""
+        self.settings.remove("smokeview_executable")
+
+        self.simulation_tab.set_message(
+            "Smokeview executable override cleared.\n"
+            "CEdit Qt will run 'smokeview' from PATH."
+        )
+        self.statusBar().showMessage("No Errors")
+
+    def cfast_is_running(self) -> bool:
+        return (
+            self.cfast_process is not None
+            and self.cfast_process.state() != QProcess.ProcessState.NotRunning
+        )
+
+    def prepare_case_for_execution(
+        self,
+        save_dialog_title: str,
+        error_title: str,
+    ) -> tuple[Path, CfastCase] | None:
+        path = self.current_path
+
+        if path is None:
             path_text, _ = QFileDialog.getSaveFileName(
                 self,
-                "Save CFAST Input Before Running",
+                save_dialog_title,
                 "cedit_qt_test.in",
                 "CFAST input files (*.in);;All files (*)",
             )
 
             if not path_text:
-                return
+                return None
 
-            self.current_path = Path(path_text)
-
-        path = self.current_path
+            path = Path(path_text)
 
         try:
             case = self.build_cfast_case()
@@ -363,8 +427,29 @@ class CeditMainWindow(QMainWindow):
         except Exception as exc:
             self.simulation_tab.set_message(str(exc))
             self.statusBar().showMessage("Errors")
-            QMessageBox.critical(self, "Run failed", str(exc))
+            QMessageBox.critical(self, error_title, str(exc))
+            return None
+
+        self.current_path = path
+        return path, case
+
+    def run_cfast(self):
+        if self.cfast_is_running():
+            QMessageBox.information(
+                self,
+                "Run",
+                "CFAST is already running.",
+            )
             return
+
+        prepared = self.prepare_case_for_execution(
+            "Save CFAST Input Before Running",
+            "Run failed",
+        )
+        if prepared is None:
+            return
+
+        path, case = prepared
 
         self.simulation_tab.set_message(
             f"Wrote CFAST input file:\n{path}\n\n"
@@ -372,8 +457,24 @@ class CeditMainWindow(QMainWindow):
         )
         self.statusBar().showMessage("Running CFAST")
 
+        cfast_args = [path.name]
+        if abs(case.simulation_time) < 1.0e-12:
+            cfast_args.append("-I")
+
+        self.start_cfast_process(path, cfast_args, "run")
+
+    def start_cfast_process(
+        self,
+        path: Path,
+        cfast_args: list[str],
+        context: str,
+        launch_smokeview_after_cfast: bool = False,
+    ):
         self.cfast_process = QProcess(self)
         self.cfast_process.setWorkingDirectory(str(path.parent))
+        self.cfast_process_context = context
+        self.cfast_output_text = ""
+        self.launch_smokeview_after_cfast = launch_smokeview_after_cfast
 
         self.cfast_process.readyReadStandardOutput.connect(
             self.cfast_ready_read_stdout
@@ -385,14 +486,18 @@ class CeditMainWindow(QMainWindow):
         self.cfast_process.errorOccurred.connect(self.cfast_error)
 
         cfast_exe = self.get_cfast_executable()
-        cfast_args = [path.name]
-        if abs(case.simulation_time) < 1.0e-12:
-            cfast_args.append("-I")
 
         self.simulation_tab.append_message(f"Executable: {cfast_exe}\n\n")
-        if "-I" in cfast_args:
+        self.simulation_tab.append_message(
+            f"Arguments: {' '.join(cfast_args)}\n\n"
+        )
+        if context == "run" and "-I" in cfast_args:
             self.simulation_tab.append_message(
                 "Simulation Time is 0; running initialization only (-I).\n\n"
+            )
+        elif context == "geometry":
+            self.simulation_tab.append_message(
+                "Running initialization only (-I) to generate Smokeview geometry.\n\n"
             )
         self.cfast_process.start(cfast_exe, cfast_args)
 
@@ -406,6 +511,7 @@ class CeditMainWindow(QMainWindow):
         )
 
         self.simulation_tab.append_message(text)
+        self.cfast_output_text += text
 
     def cfast_ready_read_stderr(self):
         if self.cfast_process is None:
@@ -417,20 +523,60 @@ class CeditMainWindow(QMainWindow):
         )
 
         self.simulation_tab.append_message(text)
+        self.cfast_output_text += text
 
     def cfast_finished(self, exit_code, exit_status):
+        context = self.cfast_process_context
+        launch_smokeview = self.launch_smokeview_after_cfast
+        path = self.current_path
+
         if exit_status == QProcess.ExitStatus.NormalExit and exit_code == 0:
-            self.simulation_tab.append_message(
-                f"\nCFAST completed successfully with exit code {exit_code}.\n"
-            )
+            if context == "geometry":
+                self.simulation_tab.append_message(
+                    f"\nSmokeview geometry generated with exit code {exit_code}.\n"
+                )
+            else:
+                self.simulation_tab.append_message(
+                    f"\nCFAST completed successfully with exit code {exit_code}.\n"
+                )
             self.statusBar().showMessage("No Errors")
         else:
             self.simulation_tab.append_message(
                 f"\nCFAST finished with exit code {exit_code}.\n"
             )
+            hint = self.cfast_output_compatibility_hint()
+            if hint:
+                self.simulation_tab.append_message(hint)
             self.statusBar().showMessage("Errors")
+            launch_smokeview = False
 
         self.cfast_process = None
+        self.cfast_process_context = ""
+        self.launch_smokeview_after_cfast = False
+
+        if launch_smokeview and path is not None:
+            self.launch_smokeview(path)
+
+    def cfast_output_compatibility_hint(self) -> str:
+        text = self.cfast_output_text.upper()
+        if "INVALID SPECIFICATION IN &OUTP" not in text:
+            return ""
+
+        if not any(
+            field in text
+            for field in (
+                "NET_HEAT_FLUX_OUTPUT",
+                "VALIDATION_OUTPUT",
+                "SPREADSHEET_OUTPUT",
+            )
+        ):
+            return ""
+
+        return (
+            "\nCEdit Qt wrote an &OUTP option that this CFAST executable "
+            "does not recognize. Rebuild CFAST from the current source, or "
+            "choose the current executable with File > Set CFAST Executable...\n"
+        )
 
     def cfast_error(self, error):
         executable = self.get_cfast_executable()
@@ -443,20 +589,110 @@ class CeditMainWindow(QMainWindow):
             "and select your built CFAST executable.\n"
         )
         self.statusBar().showMessage("Errors")
+        if error == QProcess.ProcessError.FailedToStart:
+            self.cfast_process = None
+            self.cfast_process_context = ""
+            self.launch_smokeview_after_cfast = False
 
-    def geometry_placeholder(self):
-        QMessageBox.information(
-            self,
-            "Geometry",
-            "Geometry preview is not implemented yet.",
-        )
+    def generate_smokeview_geometry(self):
+        if self.cfast_is_running():
+            QMessageBox.information(
+                self,
+                "Geometry",
+                "CFAST is already running.",
+            )
+            return
 
-    def view_placeholder(self):
-        QMessageBox.information(
-            self,
-            "View",
-            "Viewing results is not implemented yet.",
+        prepared = self.prepare_case_for_execution(
+            "Save CFAST Input Before Generating Geometry",
+            "Geometry failed",
         )
+        if prepared is None:
+            return
+
+        path, _case = prepared
+
+        self.simulation_tab.set_message(
+            f"Wrote CFAST input file:\n{path}\n\n"
+            "Generating Smokeview geometry...\n\n"
+        )
+        self.statusBar().showMessage("Generating Smokeview geometry")
+        self.start_cfast_process(path, [path.name, "-I"], "geometry")
+
+    def view_results(self):
+        if self.cfast_is_running():
+            QMessageBox.information(
+                self,
+                "View",
+                "CFAST is already running.",
+            )
+            return
+
+        prepared = self.prepare_case_for_execution(
+            "Save CFAST Input Before Viewing",
+            "View failed",
+        )
+        if prepared is None:
+            return
+
+        path, _case = prepared
+
+        if self.smokeview_geometry_needs_update(path):
+            self.simulation_tab.set_message(
+                f"Wrote CFAST input file:\n{path}\n\n"
+                "Smokeview geometry is missing or older than the input file.\n\n"
+                "Generating Smokeview geometry...\n\n"
+            )
+            self.statusBar().showMessage("Generating Smokeview geometry")
+            self.start_cfast_process(
+                path,
+                [path.name, "-I"],
+                "geometry",
+                launch_smokeview_after_cfast=True,
+            )
+            return
+
+        self.launch_smokeview(path)
+
+    def smokeview_geometry_needs_update(self, path: Path) -> bool:
+        smv_path = path.with_suffix(".smv")
+
+        if not smv_path.exists():
+            return True
+
+        try:
+            return smv_path.stat().st_mtime < path.stat().st_mtime
+        except OSError:
+            return True
+
+    def launch_smokeview(self, path: Path):
+        smokeview_exe = self.get_smokeview_executable()
+        smokeview_case = path.with_suffix("").name
+        result = QProcess.startDetached(
+            smokeview_exe,
+            [smokeview_case],
+            str(path.parent),
+        )
+        started = result[0] if isinstance(result, tuple) else result
+
+        if started:
+            self.simulation_tab.append_message(
+                f"\nStarted Smokeview:\n{smokeview_exe}\n\n"
+                f"Case: {smokeview_case}\n"
+            )
+            self.statusBar().showMessage("No Errors")
+            return
+
+        message = (
+            "Smokeview failed to start.\n\n"
+            f"Attempted executable:\n{smokeview_exe}\n\n"
+            "If this is a development build, use:\n"
+            "File > Set Smokeview Executable...\n"
+            "and select your Smokeview executable."
+        )
+        self.simulation_tab.append_message(f"\n{message}\n")
+        self.statusBar().showMessage("Errors")
+        QMessageBox.critical(self, "Smokeview", message)
 
     def about(self):
         QMessageBox.information(

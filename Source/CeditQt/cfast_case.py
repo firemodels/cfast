@@ -319,7 +319,7 @@ class CfastCase:
     wall_surface_connections: list[WallSurfaceConnection] = field(default_factory=list)
     ceiling_floor_surface_connections: list[CeilingFloorSurfaceConnection] = field(default_factory=list)
     output_visualizations: list[OutputVisualization] = field(default_factory=list)
-    net_heat_flux_output: bool = True
+    net_heat_flux_output: bool = False
     validation_output: bool = False
     debug_output: bool = False
     show_cfast_window: bool = False

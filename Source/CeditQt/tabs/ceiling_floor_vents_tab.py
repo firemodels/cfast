@@ -260,9 +260,9 @@ class CeilingFloorVentsTab(QWidget):
             [
                 "1",
                 "CFVent_1",
+                "Comp 3",
                 "Comp 2",
-                "Comp 1",
-                "CEILING",
+                "FLOOR",
                 "ROUND",
                 "1",
                 "1",
@@ -439,9 +439,9 @@ class CeilingFloorVentsTab(QWidget):
             [
                 str(num),
                 f"CFVent_{num}",
+                "Comp 3",
                 "Comp 2",
-                "Comp 1",
-                "CEILING",
+                "FLOOR",
                 "ROUND",
                 "1",
                 "1",

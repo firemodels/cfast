@@ -121,6 +121,7 @@ class OutputTab(QWidget):
 
         self.build_layout()
         self.load_demo_data()
+        self.load_output_option_defaults()
         self.connect_signals()
         self.refresh_visual_numbers()
         self.refresh_resolution_numbers()
@@ -353,6 +354,19 @@ class OutputTab(QWidget):
                 self.resolution_table.setItem(row, col, make_item(value, editable=(col != 1)))
 
         self.updating = False
+
+    def load_output_option_defaults(self):
+        self.updating = True
+
+        self.net_heat_flux_checkbox.setChecked(False)
+        self.validation_checkbox.setChecked(False)
+        self.debug_checkbox.setChecked(False)
+        self.show_cfast_window_checkbox.setChecked(False)
+        for checkbox in self.spreadsheet_checkboxes:
+            checkbox.setChecked(True)
+
+        self.updating = False
+        self.update_spreadsheet_select_all()
 
     def select_first_rows(self):
         if self.visual_table.rowCount() > 0:

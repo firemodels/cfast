@@ -371,12 +371,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         add_wrapped_namelist(lines, "OUTP", outp_fields)
         lines.append("")
 
-    for extra_namelist in getattr(case, "extra_namelists", []):
-        text = extra_namelist.strip()
-        if text:
-            lines.append(text)
-            lines.append("")
-
     if case.materials:
         lines.append("!! Thermal Properties")
         for material in case.materials:
@@ -734,6 +728,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 )
 
         lines.append("")
+
+    for extra_namelist in getattr(case, "extra_namelists", []):
+        text = extra_namelist.strip()
+        if text:
+            lines.append(text)
+            lines.append("")
 
     lines.append("&TAIL /")
 

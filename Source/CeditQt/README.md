@@ -27,6 +27,19 @@ To return to the PATH-based default, choose:
 
     File > Use CFAST from PATH
 
+The Geometry and View controls also use Smokeview. By default, CEdit Qt runs:
+
+    smokeview
+
+so the Smokeview executable must be available on your PATH. To use a specific
+executable, choose:
+
+    File > Set Smokeview Executable...
+
+To return to the PATH-based default, choose:
+
+    File > Use Smokeview from PATH
+
 ## Optional syntax check
 
 To check the Python files without launching the GUI:

@@ -206,6 +206,15 @@ class CompartmentsTab(QWidget):
         self.load_detail_from_selected()
 
     def default_compartments(self) -> list[Compartment]:
+        concrete_surface = {
+            "ceiling_matl_id": ("CONCRETE", "OFF", "OFF"),
+            "ceiling_thickness": (0.15, 0.0, 0.0),
+            "wall_matl_id": ("CONCRETE", "OFF", "OFF"),
+            "wall_thickness": (0.15, 0.0, 0.0),
+            "floor_matl_id": ("CONCRETE", "OFF", "OFF"),
+            "floor_thickness": (0.15, 0.0, 0.0),
+        }
+
         return [
             Compartment(
                 id="Comp 1",
@@ -215,6 +224,7 @@ class CompartmentsTab(QWidget):
                 origin_x=0.0,
                 origin_y=0.0,
                 origin_z=0.0,
+                **concrete_surface,
             ),
             Compartment(
                 id="Comp 2",
@@ -224,6 +234,7 @@ class CompartmentsTab(QWidget):
                 origin_x=5.0,
                 origin_y=0.0,
                 origin_z=0.0,
+                **concrete_surface,
             ),
             Compartment(
                 id="Comp 3",
@@ -233,6 +244,7 @@ class CompartmentsTab(QWidget):
                 origin_x=5.0,
                 origin_y=0.0,
                 origin_z=3.0,
+                **concrete_surface,
             ),
         ]
 

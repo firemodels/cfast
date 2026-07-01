@@ -27,6 +27,332 @@ _IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
 
 
+# Current executable namelists from Source/CFAST/input_namelist.f90.
+CFAST_NAMELIST_PARAMETERS: dict[str, set[str]] = {
+    "HEAD": {"VERSION", "TITLE"},
+    "TIME": {"PRINT", "SIMULATION", "SPREADSHEET", "SMOKEVIEW"},
+    "INIT": {
+        "PRESSURE",
+        "RELATIVE_HUMIDITY",
+        "INTERIOR_TEMPERATURE",
+        "EXTERIOR_TEMPERATURE",
+        "INTERIOR_O2_MASS_FRACTION",
+        "EXTERIOR_O2_MASS_FRACTION",
+    },
+    "MISC": {
+        "ADIABATIC",
+        "MAX_TIME_STEP",
+        "MAX_ITERATION",
+        "LOWER_OXYGEN_LIMIT",
+        "SPECIFIC_EXTINCTION",
+        "OVERWRITE",
+    },
+    "MATL": {
+        "CONDUCTIVITY",
+        "DENSITY",
+        "EMISSIVITY",
+        "ID",
+        "MATERIAL",
+        "SPECIFIC_HEAT",
+        "THICKNESS",
+        "FYI",
+    },
+    "COMP": {
+        "CROSS_SECT_AREAS",
+        "CROSS_SECT_HEIGHTS",
+        "DEPTH",
+        "GRID",
+        "HALL",
+        "HEIGHT",
+        "ID",
+        "FYI",
+        "CEILING_MATL_ID",
+        "FLOOR_MATL_ID",
+        "WALL_MATL_ID",
+        "CEILING_THICKNESS",
+        "FLOOR_THICKNESS",
+        "WALL_THICKNESS",
+        "ORIGIN",
+        "SHAFT",
+        "WIDTH",
+        "LEAK_AREA_RATIO",
+        "LEAK_AREA",
+        "FLOW_COEFFICIENT",
+    },
+    "DEVC": {
+        "COMP_ID",
+        "TYPE",
+        "ID",
+        "TEMPERATURE_DEPTH",
+        "DEPTH_UNITS",
+        "LOCATION",
+        "MATL_ID",
+        "NORMAL",
+        "SURFACE_ORIENTATION",
+        "SURFACE_TEMPERATURE",
+        "THICKNESS",
+        "RTI",
+        "SETPOINT",
+        "SPRAY_DENSITY",
+        "SETPOINTS",
+        "ADIABATIC_TARGET",
+        "CONVECTION_COEFFICIENTS",
+        "FYI",
+    },
+    "RAMP": {"F", "ID", "T", "Z", "TYPE", "COMP_IDS"},
+    "TABL": {"ID", "LABELS", "DATA"},
+    "FIRE": {
+        "COMP_ID",
+        "DEVC_ID",
+        "FIRE_ID",
+        "ID",
+        "IGNITION_CRITERION",
+        "LOCATION",
+        "SETPOINT",
+        "FYI",
+    },
+    "CHEM": {
+        "AREA",
+        "CARBON",
+        "CHLORINE",
+        "COMP_ID",
+        "CO_YIELD",
+        "HEAT_OF_COMBUSTION",
+        "HCN_YIELD",
+        "HRR",
+        "HYDROGEN",
+        "ID",
+        "NITROGEN",
+        "OXYGEN",
+        "RADIATIVE_FRACTION",
+        "SOOT_YIELD",
+        "TABLE_ID",
+        "TRACE_YIELD",
+        "FLAMING_TRANSITION_TIME",
+    },
+    "VENT": {
+        "AREA",
+        "AREAS",
+        "BOTTOM",
+        "COMP_IDS",
+        "CRITERION",
+        "CUTOFFS",
+        "DEVC_ID",
+        "F",
+        "FACE",
+        "FILTER_EFFICIENCY",
+        "FILTER_TIME",
+        "FLOW",
+        "HEIGHT",
+        "HEIGHTS",
+        "ID",
+        "OFFSET",
+        "OFFSETS",
+        "ORIENTATIONS",
+        "PRE_FRACTION",
+        "POST_FRACTION",
+        "SETPOINT",
+        "SHAPE",
+        "T",
+        "TOP",
+        "TYPE",
+        "WIDTH",
+        "FYI",
+        "FLOW_COEFFICIENT",
+    },
+    "CONN": {"COMP_ID", "COMP_IDS", "F", "TYPE"},
+    "ISOF": {"COMP_ID", "VALUE"},
+    "SLCF": {"DOMAIN", "PLANE", "POSITION", "COMP_ID"},
+    "DIAG": {
+        "MODE",
+        "RAD_SOLVER",
+        "PARTIAL_PRESSURE_H2O",
+        "PARTIAL_PRESSURE_CO2",
+        "GAS_TEMPERATURE",
+        "T",
+        "F",
+        "HORIZONTAL_FLOW_SUB_MODEL",
+        "FIRE_SUB_MODEL",
+        "ENTRAINMENT_SUB_MODEL",
+        "VERTICAL_FLOW_SUB_MODEL",
+        "CEILING_JET_SUB_MODEL",
+        "DOOR_JET_FIRE_SUB_MODEL",
+        "CONVECTION_SUB_MODEL",
+        "RADIATION_SUB_MODEL",
+        "CONDUCTION_SUB_MODEL",
+        "DEBUG_PRINT",
+        "MECHANICAL_FLOW_SUB_MODEL",
+        "KEYBOARD_INPUT",
+        "STEADY_STATE_INITIAL_CONDITIONS",
+        "DASSL_DEBUG_PRINT",
+        "OXYGEN_TRACKING",
+        "GAS_ABSORBTION_SUB_MODEL",
+        "RESIDUAL_DEBUG_PRINT",
+        "LAYER_MIXING_SUB_MODEL",
+        "ADIABATIC_TARGET_VERIFICATION",
+        "RADIATIVE_INCIDENT_FLUX",
+        "UPPER_LAYER_THICKNESS",
+        "VERIFICATION_TIME_STEP",
+        "VERIFICATION_FIRE_HEAT_FLUX",
+    },
+    "DUMP": {
+        "ID",
+        "FILE",
+        "FIRST_DEVICE",
+        "FIRST_MEASUREMENT",
+        "SECOND_DEVICE",
+        "SECOND_MEASUREMENT",
+        "FIRST_FIELD",
+        "SECOND_FIELD",
+        "CRITERION",
+        "TYPE",
+        "FYI",
+    },
+    "OUTP": {
+        "ID",
+        "FILE",
+        "FIRST_DEVICE",
+        "FIRST_MEASUREMENT",
+        "SECOND_DEVICE",
+        "SECOND_MEASUREMENT",
+        "FIRST_FIELD",
+        "SECOND_FIELD",
+        "CRITERION",
+        "TYPE",
+        "FYI",
+        "VALIDATION_OUTPUT",
+        "NET_HEAT_FLUX_OUTPUT",
+        "SPREADSHEET_OUTPUT",
+    },
+    "TAIL": set(),
+}
+
+
+# Current CData/preprocessor namelists from Source/Cdata/input_pp_namelist.f90.
+CDATA_NAMELIST_PARAMETERS: dict[str, set[str]] = {
+    "MHDR": {
+        "NUMBER_OF_CASES",
+        "SEEDS",
+        "WRITE_SEEDS",
+        "WORK_FOLDER",
+        "OUTPUT_FOLDER",
+        "PARAMETER_FILE",
+        "WRITE_VALIDATION_OUTPUT",
+    },
+    "MRND": {
+        "ID",
+        "FYI",
+        "DISTRIBUTION_TYPE",
+        "MINIMUM",
+        "MAXIMUM",
+        "MEAN",
+        "STDEV",
+        "ALPHA",
+        "BETA",
+        "PEAK",
+        "RANDOM_SEEDS",
+        "VALUES",
+        "PROBABILITIES",
+        "CONSTANT",
+        "MINIMUM_FIELD",
+        "MAXIMUM_FIELD",
+        "MINIMUM_OFFSET",
+        "MAXIMUM_OFFSET",
+        "ADD_FIELD",
+    },
+    "MFLD": {
+        "ID",
+        "FYI",
+        "FIELD_TYPE",
+        "FIELD",
+        "RAND_ID",
+        "PARAMETER_COLUMN_LABEL",
+        "ADD_TO_PARAMETERS",
+        "REAL_VALUES",
+        "INTEGER_VALUES",
+        "STRING_VALUES",
+        "LOGICAL_VALUES",
+        "SCENARIO_TITLES",
+        "BASE_SCALING_VALUE",
+        "POSITION",
+    },
+    "MSTT": {
+        "ID",
+        "FYI",
+        "ANALYSIS_TYPE",
+        "INPUT_FILENAME",
+        "OUTPUT_FILENAME",
+        "ERROR_FILENAME",
+        "LOG_FILENAME",
+        "COLUMN_LABEL",
+    },
+    "MFIR": {
+        "ID",
+        "FYI",
+        "FIRE_ID",
+        "BASE_FIRE_ID",
+        "SCALING_FIRE_HRR_RANDOM_GENERATOR_ID",
+        "SCALING_FIRE_TIME_RANDOM_GENERATOR_ID",
+        "MODIFY_FIRE_AREA_TO_MATCH_HRR",
+        "ADD_HRR_SCALE_TO_PARAMETERS",
+        "ADD_TIME_SCALE_TO_PARAMETERS",
+        "HRR_SCALE_COLUMN_LABEL",
+        "TIME_SCALE_COLUMN_LABEL",
+        "FIRE_COMPARTMENT_RANDOM_GENERATOR_ID",
+        "FIRE_COMPARTMENT_IDS",
+        "ADD_FIRE_COMPARTMENT_ID_TO_PARAMETERS",
+        "FIRE_COMPARTMENT_ID_COLUMN_LABEL",
+        "FLAMING_SMOLDERING_INCIPIENT_RANDOM_GENERATOR_ID",
+        "FLAMING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID",
+        "FIRE_LABEL_PARAMETER_COLUMN_LABEL",
+        "FLAMING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID",
+        "SMOLDERING_INCIPIENT_DELAY_RANDOM_GENERATOR_ID",
+        "SMOLDERING_INCIPIENT_PEAK_RANDOM_GENERATOR_ID",
+        "FIRE_HRR_GENERATOR_IDS",
+        "FIRE_TIME_GENERATOR_IDS",
+        "TYPE_OF_INCIPIENT_GROWTH",
+        "INCIPIENT_FIRE_TYPES",
+        "INCIPIENT_TYPE_COLUMN_LABEL",
+        "SMOLDERING_TIME_COLUMN_LABEL",
+        "SMOLDERING_HRR_PEAK_COLUMN_LABEL",
+        "FLAMING_TIME_COLUMN_LABEL",
+        "FLAMING_HRR_PEAK_COLUMN_LABEL",
+        "ADD_INCIPIENT_TYPE_TO_PARAMETERS",
+        "ADD_INCIPIENT_PEAK_HRR_TO_PARAMETERS",
+        "ADD_INCIPIENT_TIME_TO_PARAMETERS",
+        "NUMBER_OF_GROWTH_POINTS",
+        "NUMBER_OF_DECAY_POINTS",
+        "GROWTH_EXPONENT",
+        "DECAY_EXPONENT",
+        "ADD_HRR_TO_PARAMETERS",
+        "ADD_TIME_TO_PARAMETERS",
+        "HRR_LABELS",
+        "TIME_LABELS",
+        "ADD_FIRE_TO_PARAMETERS",
+        "GENERATOR_IS_TIME_TO_1054_KW",
+    },
+    "MDIA": {
+        "ID",
+        "TYPE",
+        "FIRST_FIELD",
+        "SECOND_FIELD",
+        "ZERO_EXCEPTIONS",
+        "TEST",
+        "CRITERION",
+        "COLUMN_OUTPUT",
+        "CUTOFFS",
+        "TEST_COLUMN",
+        "COLUMN_HEADERS",
+    },
+}
+
+
+VALID_NAMELIST_PARAMETERS: dict[str, set[str]] = {
+    **CFAST_NAMELIST_PARAMETERS,
+    **CDATA_NAMELIST_PARAMETERS,
+}
+
+
 @dataclass
 class NamelistRecord:
     name: str
@@ -122,16 +448,23 @@ def parse_namelists(text: str) -> list[NamelistRecord]:
         raw = stripped[index : end + 1]
         body = stripped[body_start:end]
         line = stripped.count("\n", 0, index) + 1
+        try:
+            fields = parse_fields(body)
+        except ValueError as exc:
+            raise ValueError(
+                f"Line {line}: could not parse &{name} namelist: {exc}"
+            ) from exc
         records.append(
             NamelistRecord(
                 name=name,
-                fields=parse_fields(body),
+                fields=fields,
                 line=line,
                 raw=raw,
             )
         )
         index = end + 1
 
+    validate_records_against_input_schema(records)
     return records
 
 
@@ -142,6 +475,7 @@ def validate_namelist_structure(text: str) -> None:
     for line_number, line in enumerate(text.splitlines(), start=1):
         namelist_name = line_start_namelist_name(line)
         if namelist_name is not None:
+            validate_namelist_name(namelist_name, line_number)
             if current_name is not None and current_line is not None:
                 raise ValueError(
                     f"Line {line_number}: &{namelist_name} starts before "
@@ -170,6 +504,37 @@ def line_start_namelist_name(line: str) -> str | None:
         return None
 
     return match.group(0).upper()
+
+
+def validate_records_against_input_schema(records: list[NamelistRecord]) -> None:
+    for record in records:
+        valid_parameters = VALID_NAMELIST_PARAMETERS[record.name]
+        unknown_parameters = sorted(
+            parameter for parameter in record.fields if parameter not in valid_parameters
+        )
+        if not unknown_parameters:
+            continue
+
+        if len(unknown_parameters) == 1:
+            raise ValueError(
+                f"Line {record.line}: {unknown_parameters[0]} is not a valid "
+                f"&{record.name} parameter for current CFAST or CData inputs."
+            )
+
+        raise ValueError(
+            f"Line {record.line}: {', '.join(unknown_parameters)} are not valid "
+            f"&{record.name} parameters for current CFAST or CData inputs."
+        )
+
+
+def validate_namelist_name(name: str, line: int) -> None:
+    if name in VALID_NAMELIST_PARAMETERS:
+        return
+
+    raise ValueError(
+        f"Line {line}: &{name} is not a valid CFAST or CData namelist "
+        "for the current version."
+    )
 
 
 def strip_comments(text: str) -> str:
@@ -406,7 +771,8 @@ def apply_record(
     elif name == "DIAG":
         case.extra_namelists.append(record.raw.strip())
         warnings.append(
-            f"Line {record.line}: &DIAG settings were preserved but are not editable yet."
+            f"Line {record.line}: &DIAG was preserved and will be written on save "
+            "but is not editable."
         )
     elif name == "OUTP":
         if "VALIDATION_OUTPUT" in fields:
@@ -434,7 +800,8 @@ def apply_record(
         if any(key not in known_outp_fields for key in fields):
             case.extra_namelists.append(record.raw.strip())
             warnings.append(
-                f"Line {record.line}: &OUTP settings were preserved but are not editable yet."
+                f"Line {record.line}: &OUTP was preserved and will be written on save "
+                "but is not editable."
             )
     elif name == "MATL":
         case.materials.append(material_from_fields(fields))
@@ -460,7 +827,8 @@ def apply_record(
     else:
         case.extra_namelists.append(record.raw.strip())
         warnings.append(
-            f"Line {record.line}: &{record.name} was preserved but is not editable yet."
+            f"Line {record.line}: &{record.name} was preserved and will be written "
+            "on save but is not editable."
         )
 
 

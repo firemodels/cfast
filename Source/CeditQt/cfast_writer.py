@@ -34,6 +34,22 @@ def cfast_string_vector(values) -> str:
     return ", ".join(cfast_string(value) for value in values)
 
 
+def spreadsheet_output_code(case: CfastCase) -> str:
+    codes = []
+    if getattr(case, "spreadsheet_output_compartments", True):
+        codes.append("C")
+    if getattr(case, "spreadsheet_output_devices", True):
+        codes.append("D")
+    if getattr(case, "spreadsheet_output_masses", True):
+        codes.append("M")
+    if getattr(case, "spreadsheet_output_vents", True):
+        codes.append("V")
+    if getattr(case, "spreadsheet_output_walls", True):
+        codes.append("W")
+
+    return "".join(codes) if codes else "NONE"
+
+
 def add_wrapped_namelist(lines: list[str], name: str, fields: list[str]) -> None:
     max_len = 120
     indent = "      "
@@ -315,15 +331,16 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         )
         lines.append("")
 
-    if getattr(case, "validation_output", False):
-        add_wrapped_namelist(
-            lines,
-            "OUTP",
-            [
-                f"VALIDATION_OUTPUT = {cfast_logical(True)}",
-            ],
-        )
-        lines.append("")
+    add_wrapped_namelist(
+        lines,
+        "OUTP",
+        [
+            f"NET_HEAT_FLUX_OUTPUT = {cfast_logical(getattr(case, 'net_heat_flux_output', True))}",
+            f"VALIDATION_OUTPUT = {cfast_logical(getattr(case, 'validation_output', False))}",
+            f"SPREADSHEET_OUTPUT = {cfast_string(spreadsheet_output_code(case))}",
+        ],
+    )
+    lines.append("")
 
     for extra_namelist in getattr(case, "extra_namelists", []):
         text = extra_namelist.strip()

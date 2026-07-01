@@ -385,9 +385,16 @@ class CeditMainWindow(QMainWindow):
         self.cfast_process.errorOccurred.connect(self.cfast_error)
 
         cfast_exe = self.get_cfast_executable()
+        cfast_args = [path.name]
+        if abs(case.simulation_time) < 1.0e-12:
+            cfast_args.append("-I")
 
         self.simulation_tab.append_message(f"Executable: {cfast_exe}\n\n")
-        self.cfast_process.start(cfast_exe, [path.name])
+        if "-I" in cfast_args:
+            self.simulation_tab.append_message(
+                "Simulation Time is 0; running initialization only (-I).\n\n"
+            )
+        self.cfast_process.start(cfast_exe, cfast_args)
 
     def cfast_ready_read_stdout(self):
         if self.cfast_process is None:

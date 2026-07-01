@@ -37,7 +37,8 @@
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, errormessage
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, netheatflux, ssoutoptions, &
+        overwrite_testcase, inputfile, errormessage
     use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -224,6 +225,55 @@
 
     end subroutine read_time
 
+    ! --------------------------- apply_output_options -------------------------------------------
+
+!> \brief   apply output options read from &OUTP
+
+    subroutine apply_output_options (validation_output, net_heat_flux_output, spreadsheet_output)
+
+    logical, intent(in) :: validation_output, net_heat_flux_output
+    character(len=*), intent(in) :: spreadsheet_output
+
+    if (validation_output) validation_flag = .true.
+    if (net_heat_flux_output) netheatflux = .true.
+    if (trim(spreadsheet_output)/=' ') call set_spreadsheet_output_options(spreadsheet_output)
+
+    end subroutine apply_output_options
+
+    ! --------------------------- set_spreadsheet_output_options -------------------------------------------
+
+!> \brief   set spreadsheet output options from a CDMVW-style option string
+
+    subroutine set_spreadsheet_output_options (selected_outputs)
+
+    character(len=*), intent(in) :: selected_outputs
+
+    integer :: i, index
+    character(len=26) :: selected
+
+    selected = adjustl(selected_outputs)
+    do i = 1, len_trim(selected)
+        if (selected(i:i)>='a'.and.selected(i:i)<='z') selected(i:i) = achar(ichar(selected(i:i))-32)
+    end do
+    ssoutoptions = 0
+
+    if (selected=='ALL') then
+        ssoutoptions = (/ (i, i=1,26) /)
+        return
+    end if
+    if (selected=='NONE'.or.selected=='OFF') return
+
+    do i = 1, len_trim(selected)
+        if (selected(i:i)>='A'.and.selected(i:i)<='Z') then
+            index = ichar(selected(i:i))-ichar('A')+1
+        else
+            cycle
+        end if
+        ssoutoptions(index) = i
+    end do
+
+    end subroutine set_spreadsheet_output_options
+
     ! --------------------------- read_output_options -------------------------------------------
 
 !> \brief   pre-read output options needed before the full input file is processed
@@ -236,14 +286,16 @@
 
     integer :: ios
     real(eb) :: criterion
-    logical :: validation_output
+    logical :: validation_output, net_heat_flux_output
     character(len=25) :: file, type
     character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
     character(len=64), dimension(2) :: first_field, second_field
+    character(len=26) :: spreadsheet_output
     character(len=128) :: fyi
 
     namelist /OUTP/ id, file, first_device, first_measurement, second_device, &
-                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output
+                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output, &
+                    net_heat_flux_output, spreadsheet_output
 
     ios = 1
     rewind (unit=lu)
@@ -260,7 +312,7 @@
             call cfastexit('read_output_options',1)
         end if
 
-        if (validation_output) validation_flag = .true.
+        call apply_output_options(validation_output, net_heat_flux_output, spreadsheet_output)
     end do outp_loop
 
     rewind (unit=lu)
@@ -283,6 +335,8 @@
     type = ' '
     criterion = -1
     validation_output = .false.
+    net_heat_flux_output = .false.
+    spreadsheet_output = ' '
 
     end subroutine set_defaults
 
@@ -2737,19 +2791,21 @@ continue
     
     integer :: ios, i, ii, counter
     type(dump_type), pointer :: dumpptr
-    logical :: found, validation_output
+    logical :: found, validation_output, net_heat_flux_output
     
     real(eb) :: criterion
     character(len=4) :: dump_syntax
     character(len=25) :: file, type
     character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
     character(len=64), dimension(2) :: first_field, second_field
+    character(len=26) :: spreadsheet_output
     character(len=128) :: fyi
 
     namelist /DUMP/ id, file, first_device, first_measurement, second_device, &
                     second_measurement, first_field, second_field, criterion, type, fyi
     namelist /OUTP/ id, file, first_device, first_measurement, second_device, &
-                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output
+                    second_measurement, first_field, second_field, criterion, type, fyi, validation_output, &
+                    net_heat_flux_output, spreadsheet_output
 
 
     ios = 1
@@ -2812,7 +2868,7 @@ continue
             if (dump_syntax=='DUMP') read(lu,DUMP)
             if (dump_syntax=='OUTP') read(lu,OUTP)
 
-            if (validation_output) validation_flag = .true.
+            call apply_output_options(validation_output, net_heat_flux_output, spreadsheet_output)
             if (dump_syntax=='OUTP' .and. output_options_only()) cycle read_dump_loop
             
             if (first_field(1)==' ' .and. first_field(2)==' ' .and. first_device/=' ' .and. first_measurement/=' ') then
@@ -2946,6 +3002,8 @@ continue
     type = ' '
     criterion = -1
     validation_output = .false.
+    net_heat_flux_output = .false.
+    spreadsheet_output = ' '
     
     end subroutine set_defaults
 

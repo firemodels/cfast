@@ -319,9 +319,15 @@ class CfastCase:
     wall_surface_connections: list[WallSurfaceConnection] = field(default_factory=list)
     ceiling_floor_surface_connections: list[CeilingFloorSurfaceConnection] = field(default_factory=list)
     output_visualizations: list[OutputVisualization] = field(default_factory=list)
+    net_heat_flux_output: bool = True
     validation_output: bool = False
     debug_output: bool = False
     show_cfast_window: bool = False
+    spreadsheet_output_compartments: bool = True
+    spreadsheet_output_devices: bool = True
+    spreadsheet_output_masses: bool = True
+    spreadsheet_output_vents: bool = True
+    spreadsheet_output_walls: bool = True
     extra_namelists: list[str] = field(default_factory=list)
     fires: list[FireDefinition] = field(default_factory=list)
     fire_properties: list[FireProperty] = field(default_factory=list)

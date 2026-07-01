@@ -374,7 +374,23 @@ def apply_record(
                 "VALIDATION_OUTPUT",
                 case.validation_output,
             )
-        if any(key != "VALIDATION_OUTPUT" for key in fields):
+        if "NET_HEAT_FLUX_OUTPUT" in fields:
+            case.net_heat_flux_output = bool_field(
+                fields,
+                "NET_HEAT_FLUX_OUTPUT",
+                case.net_heat_flux_output,
+            )
+        if "SPREADSHEET_OUTPUT" in fields:
+            apply_spreadsheet_output(
+                case,
+                string_field(fields, "SPREADSHEET_OUTPUT", ""),
+            )
+        known_outp_fields = {
+            "VALIDATION_OUTPUT",
+            "NET_HEAT_FLUX_OUTPUT",
+            "SPREADSHEET_OUTPUT",
+        }
+        if any(key not in known_outp_fields for key in fields):
             case.extra_namelists.append(record.raw.strip())
             warnings.append(
                 f"Line {record.line}: &OUTP settings were preserved but are not editable yet."
@@ -405,6 +421,23 @@ def apply_record(
         warnings.append(
             f"Line {record.line}: &{record.name} was preserved but is not editable yet."
         )
+
+
+def apply_spreadsheet_output(case: CfastCase, value: str) -> None:
+    selected = value.strip().upper()
+    if not selected:
+        return
+
+    if selected == "ALL":
+        selected = "CDMVW"
+    elif selected in {"NONE", "OFF"}:
+        selected = ""
+
+    case.spreadsheet_output_compartments = "C" in selected
+    case.spreadsheet_output_devices = "D" in selected
+    case.spreadsheet_output_masses = "M" in selected
+    case.spreadsheet_output_vents = "V" in selected
+    case.spreadsheet_output_walls = "W" in selected
 
 
 def material_from_fields(fields: dict[str, list[Any]]) -> MaterialProperty:

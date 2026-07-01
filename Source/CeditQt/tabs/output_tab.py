@@ -101,9 +101,23 @@ class OutputTab(QWidget):
         self.depth_grid_edit = QLineEdit("50")
         self.height_grid_edit = QLineEdit("50")
 
+        self.net_heat_flux_checkbox = QCheckBox("Net Heat Flux Output")
         self.validation_checkbox = QCheckBox("Validation Output")
         self.debug_checkbox = QCheckBox("Debug Output")
         self.show_cfast_window_checkbox = QCheckBox("Show CFAST Window")
+        self.spreadsheet_select_all_checkbox = QCheckBox("Select All Spreadsheet Output")
+        self.spreadsheet_compartments_checkbox = QCheckBox("Compartments Output")
+        self.spreadsheet_devices_checkbox = QCheckBox("Devices Output")
+        self.spreadsheet_masses_checkbox = QCheckBox("Masses Output")
+        self.spreadsheet_vents_checkbox = QCheckBox("Vents Output")
+        self.spreadsheet_walls_checkbox = QCheckBox("Walls Output")
+        self.spreadsheet_checkboxes = [
+            self.spreadsheet_compartments_checkbox,
+            self.spreadsheet_devices_checkbox,
+            self.spreadsheet_masses_checkbox,
+            self.spreadsheet_vents_checkbox,
+            self.spreadsheet_walls_checkbox,
+        ]
 
         self.build_layout()
         self.load_demo_data()
@@ -147,11 +161,20 @@ class OutputTab(QWidget):
                     editable=(col != 1),
                 )
 
+        self.net_heat_flux_checkbox.setChecked(case.net_heat_flux_output)
         self.validation_checkbox.setChecked(case.validation_output)
         self.debug_checkbox.setChecked(case.debug_output)
         self.show_cfast_window_checkbox.setChecked(case.show_cfast_window)
+        self.spreadsheet_compartments_checkbox.setChecked(
+            case.spreadsheet_output_compartments
+        )
+        self.spreadsheet_devices_checkbox.setChecked(case.spreadsheet_output_devices)
+        self.spreadsheet_masses_checkbox.setChecked(case.spreadsheet_output_masses)
+        self.spreadsheet_vents_checkbox.setChecked(case.spreadsheet_output_vents)
+        self.spreadsheet_walls_checkbox.setChecked(case.spreadsheet_output_walls)
 
         self.updating = False
+        self.update_spreadsheet_select_all()
         self.refresh_visual_numbers()
         self.refresh_resolution_numbers()
         self.select_first_rows()
@@ -165,11 +188,15 @@ class OutputTab(QWidget):
         left_layout.addWidget(self.build_resolution_group(), 1)
 
         right_layout.addSpacing(110)
+        right_layout.addWidget(self.net_heat_flux_checkbox)
+        right_layout.addSpacing(25)
         right_layout.addWidget(self.validation_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.debug_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.show_cfast_window_checkbox)
+        right_layout.addSpacing(35)
+        right_layout.addWidget(self.build_spreadsheet_group())
         right_layout.addStretch(1)
 
         main_layout.addLayout(left_layout, 1)
@@ -265,6 +292,41 @@ class OutputTab(QWidget):
         self.width_grid_edit.editingFinished.connect(self.editor_to_resolution_row)
         self.depth_grid_edit.editingFinished.connect(self.editor_to_resolution_row)
         self.height_grid_edit.editingFinished.connect(self.editor_to_resolution_row)
+        self.spreadsheet_select_all_checkbox.toggled.connect(
+            self.select_all_spreadsheet_outputs
+        )
+        for checkbox in self.spreadsheet_checkboxes:
+            checkbox.toggled.connect(self.spreadsheet_output_changed)
+
+    def build_spreadsheet_group(self):
+        group = QGroupBox("Spreadsheet Output")
+        layout = QVBoxLayout()
+        layout.addWidget(self.spreadsheet_select_all_checkbox)
+        for checkbox in self.spreadsheet_checkboxes:
+            layout.addWidget(checkbox)
+        group.setLayout(layout)
+        return group
+
+    def select_all_spreadsheet_outputs(self, checked: bool):
+        if self.updating:
+            return
+
+        self.updating = True
+        for checkbox in self.spreadsheet_checkboxes:
+            checkbox.setChecked(checked)
+        self.updating = False
+        self.update_spreadsheet_select_all()
+
+    def spreadsheet_output_changed(self):
+        if self.updating:
+            return
+        self.update_spreadsheet_select_all()
+
+    def update_spreadsheet_select_all(self):
+        all_checked = all(checkbox.isChecked() for checkbox in self.spreadsheet_checkboxes)
+        self.spreadsheet_select_all_checkbox.blockSignals(True)
+        self.spreadsheet_select_all_checkbox.setChecked(all_checked)
+        self.spreadsheet_select_all_checkbox.blockSignals(False)
 
     def load_demo_data(self):
         self.clear_table(self.visual_table)
@@ -502,9 +564,17 @@ class OutputTab(QWidget):
             )
 
         case.output_visualizations = visualizations
+        case.net_heat_flux_output = self.net_heat_flux_checkbox.isChecked()
         case.validation_output = self.validation_checkbox.isChecked()
         case.debug_output = self.debug_checkbox.isChecked()
         case.show_cfast_window = self.show_cfast_window_checkbox.isChecked()
+        case.spreadsheet_output_compartments = (
+            self.spreadsheet_compartments_checkbox.isChecked()
+        )
+        case.spreadsheet_output_devices = self.spreadsheet_devices_checkbox.isChecked()
+        case.spreadsheet_output_masses = self.spreadsheet_masses_checkbox.isChecked()
+        case.spreadsheet_output_vents = self.spreadsheet_vents_checkbox.isChecked()
+        case.spreadsheet_output_walls = self.spreadsheet_walls_checkbox.isChecked()
 
         grid_by_compartment: dict[str, tuple[int, int, int]] = {}
         for row in range(self.resolution_table.rowCount()):

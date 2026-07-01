@@ -95,8 +95,7 @@ def main():
     old_filename = ' '
     model_df = None
     
-    # Open list.txt (Unit 9)
-    list_txt = open('list.txt', 'w')
+    list_txt = None
 
     ir = 0
     # Main loop (Fortran: 10 ir = ir + 1 ... if (...) go to 10)
@@ -221,6 +220,8 @@ def main():
                         partial_filename = '...' + d2_filename[-20:]
                     
                     # write (9,'(i4,3x,a25,3x,a15,f12.3)')
+                    if list_txt is None:
+                        list_txt = open('list.txt', 'w')
                     list_txt.write(f"{ir:4}   {partial_filename:25}   {d2_data_col_names[0][:15]:15}   {activation_time:12.3f}\n")
 
                 elif d2_calculation_type == do_temperature_profile:
@@ -310,7 +311,8 @@ def main():
                     print('Invalid specifier for d2_calculation_type')
                     sys.exit()
 
-    list_txt.close()
+    if list_txt is not None:
+        list_txt.close()
     
     # Helper functions for structured output (SSaddtolist / SSprintresults)
     def ss_add_to_list(print_array, value, text=' '):
@@ -444,5 +446,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 

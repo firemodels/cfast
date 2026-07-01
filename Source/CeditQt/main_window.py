@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QSettings
@@ -33,6 +34,19 @@ from tabs.surface_connections_tab import SurfaceConnectionsTab
 from tabs.targets_tab import TargetsTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
+
+
+FILENAME_WHITESPACE = re.compile(r"\s+")
+
+
+def sanitize_cfast_input_path(path: Path) -> Path:
+    """Return a CFAST input path whose file name has no whitespace."""
+    name = path.name.strip()
+    sanitized_name = FILENAME_WHITESPACE.sub("_", name)
+    if not sanitized_name:
+        sanitized_name = "cedit_qt_test.in"
+
+    return path.with_name(sanitized_name)
 
 
 class CeditMainWindow(QMainWindow):
@@ -228,7 +242,9 @@ class CeditMainWindow(QMainWindow):
             self.export_cfast_input()
             return
 
-        self.write_case_to_path(self.current_path)
+        written_path = self.write_case_to_path(self.current_path)
+        if written_path is not None:
+            self.current_path = written_path
 
     def export_cfast_input(self):
         path_text, _ = QFileDialog.getSaveFileName(
@@ -241,11 +257,36 @@ class CeditMainWindow(QMainWindow):
         if not path_text:
             return
 
-        path = Path(path_text)
-        self.write_case_to_path(path)
-        self.current_path = path
+        written_path = self.write_case_to_path(Path(path_text))
+        if written_path is not None:
+            self.current_path = written_path
 
-    def write_case_to_path(self, path: Path):
+    def sanitize_path_for_write(self, path: Path) -> Path | None:
+        sanitized_path = sanitize_cfast_input_path(path)
+        if sanitized_path == path:
+            return path
+
+        if sanitized_path.exists():
+            response = QMessageBox.question(
+                self,
+                "CFAST Input File Name",
+                "CFAST input file names cannot contain blanks.\n\n"
+                f"CEdit Qt will use:\n{sanitized_path}\n\n"
+                "This file already exists. Overwrite it?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if response != QMessageBox.StandardButton.Yes:
+                return None
+
+        return sanitized_path
+
+    def write_case_to_path(self, path: Path) -> Path | None:
+        original_path = path
+        path = self.sanitize_path_for_write(path)
+        if path is None:
+            return None
+
         try:
             case = self.build_cfast_case()
             write_cfast_input(case, path)
@@ -253,12 +294,19 @@ class CeditMainWindow(QMainWindow):
             self.simulation_tab.set_message(str(exc))
             self.statusBar().showMessage("Errors")
             QMessageBox.critical(self, "Export failed", str(exc))
-            return
+            return None
 
         message = f"Wrote CFAST input file:\n{path}"
+        if path != original_path:
+            message = (
+                "CFAST input file names cannot contain blanks.\n"
+                f"Using:\n{path}\n\n"
+                f"{message}"
+            )
         self.simulation_tab.set_message(message)
         self.statusBar().showMessage("No Errors")
         QMessageBox.information(self, "Export complete", message)
+        return path
 
     def open_cfast_input(self):
         path_text, _ = QFileDialog.getOpenFileName(
@@ -421,6 +469,11 @@ class CeditMainWindow(QMainWindow):
 
             path = Path(path_text)
 
+        original_path = path
+        path = self.sanitize_path_for_write(path)
+        if path is None:
+            return None
+
         try:
             case = self.build_cfast_case()
             write_cfast_input(case, path)
@@ -431,6 +484,11 @@ class CeditMainWindow(QMainWindow):
             return None
 
         self.current_path = path
+        if path != original_path:
+            self.simulation_tab.set_message(
+                "CFAST input file names cannot contain blanks.\n"
+                f"Using:\n{path}\n"
+            )
         return path, case
 
     def run_cfast(self):

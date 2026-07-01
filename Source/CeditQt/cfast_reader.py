@@ -55,7 +55,10 @@ def read_cfast_input(path: str | Path) -> CfastCase:
 def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
     path = Path(path)
     text = path.read_text(encoding="utf-8")
-    records = parse_namelists(text)
+    try:
+        records = parse_namelists(text)
+    except ValueError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
 
     warnings: list[str] = []
     case = CfastCase()
@@ -96,6 +99,7 @@ def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
 
 def parse_namelists(text: str) -> list[NamelistRecord]:
     stripped = strip_comments(text)
+    validate_namelist_structure(stripped)
     records: list[NamelistRecord] = []
     index = 0
 
@@ -129,6 +133,43 @@ def parse_namelists(text: str) -> list[NamelistRecord]:
         index = end + 1
 
     return records
+
+
+def validate_namelist_structure(text: str) -> None:
+    current_name: str | None = None
+    current_line: int | None = None
+
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        namelist_name = line_start_namelist_name(line)
+        if namelist_name is not None:
+            if current_name is not None and current_line is not None:
+                raise ValueError(
+                    f"Line {line_number}: &{namelist_name} starts before "
+                    f"&{current_name} from line {current_line} is closed with '/'."
+                )
+            current_name = namelist_name
+            current_line = line_number
+
+        if current_name is not None and find_record_end(line, 0) is not None:
+            current_name = None
+            current_line = None
+
+    if current_name is not None and current_line is not None:
+        raise ValueError(
+            f"Line {current_line}: &{current_name} namelist is missing closing '/'."
+        )
+
+
+def line_start_namelist_name(line: str) -> str | None:
+    stripped = line.lstrip()
+    if not stripped.startswith("&"):
+        return None
+
+    match = _IDENT_RE.match(stripped, 1)
+    if match is None:
+        return None
+
+    return match.group(0).upper()
 
 
 def strip_comments(text: str) -> str:

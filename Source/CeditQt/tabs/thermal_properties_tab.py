@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
@@ -14,17 +12,17 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, MaterialProperty
-
-
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+from units import (
+    CONDUCTIVITY,
+    DENSITY,
+    LENGTH,
+    SPECIFIC_HEAT,
+    format_number,
+    format_value,
+    parse_number,
+    parse_value,
+    unit_label,
+)
 
 
 class ThermalPropertiesTab(QWidget):
@@ -32,18 +30,7 @@ class ThermalPropertiesTab(QWidget):
         super().__init__(parent)
 
         self.table = QTableWidget(8, 8)
-        self.table.setHorizontalHeaderLabels(
-            [
-                "ID",
-                "Material",
-                "Conductivity\n(W/m-K)",
-                "Specific Heat\n(kJ/kg-K)",
-                "Density\n(kg/m3)",
-                "Thickness\n(m)",
-                "Emissivity",
-                "FYI",
-            ]
-        )
+        self.refresh_unit_labels()
 
         self.table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -74,6 +61,7 @@ class ThermalPropertiesTab(QWidget):
         self.load_demo_data()
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         rows = max(1, len(case.materials))
         self.table.blockSignals(True)
         self.table.clearContents()
@@ -83,10 +71,10 @@ class ThermalPropertiesTab(QWidget):
             values = [
                 material.id,
                 material.material,
-                format_number(material.conductivity),
-                format_number(material.specific_heat),
-                format_number(material.density),
-                format_number(material.thickness),
+                format_value(CONDUCTIVITY, material.conductivity),
+                format_value(SPECIFIC_HEAT, material.specific_heat),
+                format_value(DENSITY, material.density),
+                format_value(LENGTH, material.thickness),
                 format_number(material.emissivity),
                 material.fyi,
             ]
@@ -101,20 +89,20 @@ class ThermalPropertiesTab(QWidget):
             [
                 "CONCRETE",
                 "Concrete Normal Weight (6 in)",
-                "1.75",
-                "1",
-                "2200",
-                "0.15",
+                format_value(CONDUCTIVITY, 1.75),
+                format_value(SPECIFIC_HEAT, 1.0),
+                format_value(DENSITY, 2200.0),
+                format_value(LENGTH, 0.15),
                 "0.94",
                 "",
             ],
             [
                 "GYPSUM",
                 "Gypsum Wallboard",
-                "0.16",
-                "1.09",
-                "800",
-                "0.0127",
+                format_value(CONDUCTIVITY, 0.16),
+                format_value(SPECIFIC_HEAT, 1.09),
+                format_value(DENSITY, 800.0),
+                format_value(LENGTH, 0.0127),
                 "0.9",
                 "",
             ],
@@ -180,11 +168,11 @@ class ThermalPropertiesTab(QWidget):
             material = MaterialProperty(
                 id=matl_id,
                 material=material_name or matl_id,
-                conductivity=parse_float(values[2], "Conductivity"),
-                specific_heat=parse_float(values[3], "Specific Heat"),
-                density=parse_float(values[4], "Density"),
-                thickness=parse_float(values[5], "Thickness"),
-                emissivity=parse_float(values[6], "Emissivity"),
+                conductivity=parse_value(CONDUCTIVITY, values[2], "Conductivity"),
+                specific_heat=parse_value(SPECIFIC_HEAT, values[3], "Specific Heat"),
+                density=parse_value(DENSITY, values[4], "Density"),
+                thickness=parse_value(LENGTH, values[5], "Thickness"),
+                emissivity=parse_number(values[6], "Emissivity"),
                 fyi=values[7],
             )
 
@@ -217,12 +205,16 @@ class ThermalPropertiesTab(QWidget):
 
         case.materials = materials
 
-
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"
+    def refresh_unit_labels(self):
+        self.table.setHorizontalHeaderLabels(
+            [
+                "ID",
+                "Material",
+                f"Conductivity\n({unit_label(CONDUCTIVITY)})",
+                f"Specific Heat\n({unit_label(SPECIFIC_HEAT)})",
+                f"Density\n({unit_label(DENSITY)})",
+                f"Thickness\n({unit_label(LENGTH)})",
+                "Emissivity",
+                "FYI",
+            ]
+        )

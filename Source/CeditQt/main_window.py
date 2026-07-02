@@ -6,7 +6,11 @@ from pathlib import Path
 from PySide6.QtCore import QProcess, QSettings
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
     QMainWindow,
     QMessageBox,
@@ -34,9 +38,19 @@ from tabs.surface_connections_tab import SurfaceConnectionsTab
 from tabs.targets_tab import TargetsTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
+from units import BASE_UNIT_KEYS, unit_system
 
 
 FILENAME_WHITESPACE = re.compile(r"\s+")
+BASE_UNIT_NAMES = {
+    "length": "Length",
+    "mass": "Mass",
+    "time": "Time",
+    "temperature": "Temperature",
+    "pressure": "Pressure",
+    "energy": "Energy",
+    "smoke": "Smoke",
+}
 
 
 def sanitize_cfast_input_path(path: Path) -> Path:
@@ -65,6 +79,7 @@ class CeditMainWindow(QMainWindow):
         self.main_toolbar: QToolBar | None = None
 
         self.settings = QSettings("FireModels", "CEditQt")
+        unit_system.load_settings(self.settings)
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
         self.smokeview_executable = self.settings.value(
             "smokeview_executable",
@@ -135,6 +150,12 @@ class CeditMainWindow(QMainWindow):
 
         view_menu = self.menuBar().addMenu("&View")
 
+        units_action = QAction("Select Engineering &Units...", self)
+        units_action.triggered.connect(self.select_engineering_units)
+        view_menu.addAction(units_action)
+
+        view_menu.addSeparator()
+
         show_toolbar_action = QAction("Show &Toolbar", self)
         show_toolbar_action.setCheckable(True)
         show_toolbar_action.setChecked(
@@ -167,6 +188,7 @@ class CeditMainWindow(QMainWindow):
         self.set_smokeview_action = set_smokeview_action
         self.clear_smokeview_action = clear_smokeview_action
         self.exit_action = exit_action
+        self.units_action = units_action
         self.show_toolbar_action = show_toolbar_action
         self.geometry_action = geometry_action
         self.results_action = results_action
@@ -195,6 +217,25 @@ class CeditMainWindow(QMainWindow):
         if self.show_toolbar_action.isChecked() != visible:
             self.show_toolbar_action.setChecked(visible)
         self.settings.setValue("show_toolbar", visible)
+
+    def select_engineering_units(self):
+        try:
+            case = self.build_cfast_case()
+        except Exception as exc:
+            self.simulation_tab.set_message(str(exc))
+            self.statusBar().showMessage("Errors")
+            QMessageBox.critical(self, "Engineering Units", str(exc))
+            return
+
+        dialog = EngineeringUnitsDialog(self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        unit_system.set_indices(dialog.selected_indices())
+        unit_system.save_settings(self.settings)
+        self.load_case(case)
+        self.simulation_tab.set_message("Engineering units updated.")
+        self.statusBar().showMessage("No Errors")
 
     def build_central_widget(self):
         container = QWidget()
@@ -783,3 +824,32 @@ class CeditMainWindow(QMainWindow):
             "About CEdit Qt Prototype",
             "Experimental Python/PySide6 prototype for a new CEdit front end.",
         )
+
+
+class EngineeringUnitsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Select Engineering Units")
+        self.combos: dict[str, QComboBox] = {}
+
+        layout = QFormLayout()
+        for key in BASE_UNIT_KEYS:
+            combo = QComboBox()
+            combo.addItems(unit_system.choices(key))
+            combo.setCurrentIndex(unit_system.selected[key])
+            self.combos[key] = combo
+            layout.addRow(f"{BASE_UNIT_NAMES[key]}:", combo)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok
+            | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+        self.setLayout(layout)
+
+    def selected_indices(self) -> dict[str, int]:
+        return {key: combo.currentIndex() for key, combo in self.combos.items()}

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -23,71 +22,55 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment
+from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
 
 
-SUMMARY_HEADERS = [
-    "ID",
-    "Num",
-    "Width",
-    "Depth",
-    "Height",
-    "X Position",
-    "Y Position",
-    "Z Position",
-    "Ceiling",
-    "Walls",
-    "Floor",
-    "F",
-    "H",
-    "V",
-    "M",
-    "D",
-    "T",
-]
+def summary_headers() -> list[str]:
+    length = unit_label(LENGTH)
+    return [
+        "ID",
+        "Num",
+        f"Width\n({length})",
+        f"Depth\n({length})",
+        f"Height\n({length})",
+        f"X Position\n({length})",
+        f"Y Position\n({length})",
+        f"Z Position\n({length})",
+        "Ceiling",
+        "Walls",
+        "Floor",
+        "F",
+        "H",
+        "V",
+        "M",
+        "D",
+        "T",
+    ]
 
 
-MATERIAL_HEADERS = [
-    "Ceiling Material",
-    "Ceiling Thickness",
-    "Wall Material",
-    "Wall Thickness",
-    "Floor Material",
-    "Floor Thickness",
-]
+def material_headers() -> list[str]:
+    length = unit_label(LENGTH)
+    return [
+        "Ceiling Material",
+        f"Ceiling Thickness\n({length})",
+        "Wall Material",
+        f"Wall Thickness\n({length})",
+        "Floor Material",
+        f"Floor Thickness\n({length})",
+    ]
 
 
-AREA_HEADERS = ["Height", "Area"]
-
-
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+def area_headers() -> list[str]:
+    return [f"Height\n({unit_label(LENGTH)})", f"Area\n({unit_label(AREA)})"]
 
 
 def parse_int(text: str, field_name: str) -> int:
-    value = parse_float(text, field_name)
+    value = parse_number(text, field_name)
 
     if abs(value - round(value)) > 1.0e-12:
         raise ValueError(f"{field_name} must be an integer: {text!r}")
 
     return int(round(value))
-
-
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-
-    return f"{value:.6g}"
 
 
 def first_or_off(values: tuple[str, str, str]) -> str:
@@ -102,8 +85,8 @@ class CompartmentsTab(QWidget):
         self.selected_index = 0
         self.compartments = self.default_compartments()
 
-        self.summary_table = QTableWidget(0, len(SUMMARY_HEADERS))
-        self.summary_table.setHorizontalHeaderLabels(SUMMARY_HEADERS)
+        self.summary_table = QTableWidget(0, len(summary_headers()))
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -154,14 +137,14 @@ class CompartmentsTab(QWidget):
         self.floor_leak_area_edit = QLineEdit()
 
         self.area_table = QTableWidget(6, 2)
-        self.area_table.setHorizontalHeaderLabels(AREA_HEADERS)
+        self.area_table.setHorizontalHeaderLabels(area_headers())
         self.area_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
         self.area_table.verticalHeader().setVisible(False)
 
         self.materials_table = QTableWidget(3, 6)
-        self.materials_table.setHorizontalHeaderLabels(MATERIAL_HEADERS)
+        self.materials_table.setHorizontalHeaderLabels(material_headers())
         self.materials_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -200,10 +183,16 @@ class CompartmentsTab(QWidget):
         self.load_detail_from_selected()
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.compartments = copy.deepcopy(case.compartments) or [self.default_compartment()]
         self.selected_index = 0
         self.refresh_summary_table(select_row=0)
         self.load_detail_from_selected()
+
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.materials_table.setHorizontalHeaderLabels(material_headers())
+        self.area_table.setHorizontalHeaderLabels(area_headers())
 
     def default_compartments(self) -> list[Compartment]:
         concrete_surface = {
@@ -442,12 +431,12 @@ class CompartmentsTab(QWidget):
         return [
             compartment.id,
             str(row + 1),
-            format_number(compartment.width),
-            format_number(compartment.depth),
-            format_number(compartment.height),
-            format_number(compartment.origin_x),
-            format_number(compartment.origin_y),
-            format_number(compartment.origin_z),
+            format_value(LENGTH, compartment.width),
+            format_value(LENGTH, compartment.depth),
+            format_value(LENGTH, compartment.height),
+            format_value(LENGTH, compartment.origin_x),
+            format_value(LENGTH, compartment.origin_y),
+            format_value(LENGTH, compartment.origin_z),
             first_or_off(compartment.ceiling_matl_id),
             first_or_off(compartment.wall_matl_id),
             first_or_off(compartment.floor_matl_id),
@@ -488,12 +477,12 @@ class CompartmentsTab(QWidget):
 
         try:
             c.id = self.summary_cell(row, 0) or c.id
-            c.width = parse_float(self.summary_cell(row, 2), "Width")
-            c.depth = parse_float(self.summary_cell(row, 3), "Depth")
-            c.height = parse_float(self.summary_cell(row, 4), "Height")
-            c.origin_x = parse_float(self.summary_cell(row, 5), "X Position")
-            c.origin_y = parse_float(self.summary_cell(row, 6), "Y Position")
-            c.origin_z = parse_float(self.summary_cell(row, 7), "Z Position")
+            c.width = parse_value(LENGTH, self.summary_cell(row, 2), "Width")
+            c.depth = parse_value(LENGTH, self.summary_cell(row, 3), "Depth")
+            c.height = parse_value(LENGTH, self.summary_cell(row, 4), "Height")
+            c.origin_x = parse_value(LENGTH, self.summary_cell(row, 5), "X Position")
+            c.origin_y = parse_value(LENGTH, self.summary_cell(row, 6), "Y Position")
+            c.origin_z = parse_value(LENGTH, self.summary_cell(row, 7), "Z Position")
             c.ceiling_matl_id = self.replace_first_string(
                 c.ceiling_matl_id,
                 self.summary_cell(row, 8) or "OFF",
@@ -525,12 +514,12 @@ class CompartmentsTab(QWidget):
         )
 
         self.id_edit.setText(c.id)
-        self.width_edit.setText(format_number(c.width))
-        self.depth_edit.setText(format_number(c.depth))
-        self.height_edit.setText(format_number(c.height))
-        self.x_edit.setText(format_number(c.origin_x))
-        self.y_edit.setText(format_number(c.origin_y))
-        self.z_edit.setText(format_number(c.origin_z))
+        self.width_edit.setText(format_value(LENGTH, c.width))
+        self.depth_edit.setText(format_value(LENGTH, c.depth))
+        self.height_edit.setText(format_value(LENGTH, c.height))
+        self.x_edit.setText(format_value(LENGTH, c.origin_x))
+        self.y_edit.setText(format_value(LENGTH, c.origin_y))
+        self.z_edit.setText(format_value(LENGTH, c.origin_z))
 
         if c.shaft:
             self.shaft_radio.setChecked(True)
@@ -542,8 +531,8 @@ class CompartmentsTab(QWidget):
         self.flow_coefficient_edit.setText(format_number(c.flow_coefficient))
         self.wall_leak_area_ratio_edit.setText(format_number(c.wall_leak_area_ratio))
         self.floor_leak_area_ratio_edit.setText(format_number(c.floor_leak_area_ratio))
-        self.wall_leak_area_edit.setText(format_number(c.wall_leak_area))
-        self.floor_leak_area_edit.setText(format_number(c.floor_leak_area))
+        self.wall_leak_area_edit.setText(format_value(AREA, c.wall_leak_area))
+        self.floor_leak_area_edit.setText(format_value(AREA, c.floor_leak_area))
 
         self.load_materials_table(c)
         self.load_area_table(c)
@@ -558,11 +547,11 @@ class CompartmentsTab(QWidget):
         for row in range(3):
             values = [
                 compartment.ceiling_matl_id[row],
-                format_number(compartment.ceiling_thickness[row]),
+                format_value(LENGTH, compartment.ceiling_thickness[row]),
                 compartment.wall_matl_id[row],
-                format_number(compartment.wall_thickness[row]),
+                format_value(LENGTH, compartment.wall_thickness[row]),
                 compartment.floor_matl_id[row],
-                format_number(compartment.floor_thickness[row]),
+                format_value(LENGTH, compartment.floor_thickness[row]),
             ]
 
             for col, value in enumerate(values):
@@ -579,8 +568,8 @@ class CompartmentsTab(QWidget):
         for row, (height, area) in enumerate(
             zip(compartment.cross_section_heights, compartment.cross_section_areas)
         ):
-            self.area_table.setItem(row, 0, QTableWidgetItem(format_number(height)))
-            self.area_table.setItem(row, 1, QTableWidgetItem(format_number(area)))
+            self.area_table.setItem(row, 0, QTableWidgetItem(format_value(LENGTH, height)))
+            self.area_table.setItem(row, 1, QTableWidgetItem(format_value(AREA, area)))
 
         self.area_table.blockSignals(False)
 
@@ -598,31 +587,33 @@ class CompartmentsTab(QWidget):
 
         try:
             c.id = self.id_edit.text().strip() or c.id
-            c.width = parse_float(self.width_edit.text(), "Width")
-            c.depth = parse_float(self.depth_edit.text(), "Depth")
-            c.height = parse_float(self.height_edit.text(), "Height")
-            c.origin_x = parse_float(self.x_edit.text() or "0", "X Position")
-            c.origin_y = parse_float(self.y_edit.text() or "0", "Y Position")
-            c.origin_z = parse_float(self.z_edit.text() or "0", "Z Position")
+            c.width = parse_value(LENGTH, self.width_edit.text(), "Width")
+            c.depth = parse_value(LENGTH, self.depth_edit.text(), "Depth")
+            c.height = parse_value(LENGTH, self.height_edit.text(), "Height")
+            c.origin_x = parse_value(LENGTH, self.x_edit.text() or "0", "X Position")
+            c.origin_y = parse_value(LENGTH, self.y_edit.text() or "0", "Y Position")
+            c.origin_z = parse_value(LENGTH, self.z_edit.text() or "0", "Z Position")
             c.shaft = self.shaft_radio.isChecked()
             c.hall = self.hall_radio.isChecked()
-            c.flow_coefficient = parse_float(
+            c.flow_coefficient = parse_number(
                 self.flow_coefficient_edit.text() or "0.07",
                 "Flow Coefficient",
             )
-            c.wall_leak_area_ratio = parse_float(
+            c.wall_leak_area_ratio = parse_number(
                 self.wall_leak_area_ratio_edit.text() or "0",
                 "Wall Leak Area Ratio",
             )
-            c.floor_leak_area_ratio = parse_float(
+            c.floor_leak_area_ratio = parse_number(
                 self.floor_leak_area_ratio_edit.text() or "0",
                 "Floor Leak Area Ratio",
             )
-            c.wall_leak_area = parse_float(
+            c.wall_leak_area = parse_value(
+                AREA,
                 self.wall_leak_area_edit.text() or "0",
                 "Wall Leak Area",
             )
-            c.floor_leak_area = parse_float(
+            c.floor_leak_area = parse_value(
+                AREA,
                 self.floor_leak_area_edit.text() or "0",
                 "Floor Leak Area",
             )
@@ -644,11 +635,11 @@ class CompartmentsTab(QWidget):
 
         for row in range(3):
             ceiling_ids.append(self.material_cell(row, 0) or "OFF")
-            ceiling_thickness.append(parse_float(self.material_cell(row, 1) or "0", "Ceiling Thickness"))
+            ceiling_thickness.append(parse_value(LENGTH, self.material_cell(row, 1) or "0", "Ceiling Thickness"))
             wall_ids.append(self.material_cell(row, 2) or "OFF")
-            wall_thickness.append(parse_float(self.material_cell(row, 3) or "0", "Wall Thickness"))
+            wall_thickness.append(parse_value(LENGTH, self.material_cell(row, 3) or "0", "Wall Thickness"))
             floor_ids.append(self.material_cell(row, 4) or "OFF")
-            floor_thickness.append(parse_float(self.material_cell(row, 5) or "0", "Floor Thickness"))
+            floor_thickness.append(parse_value(LENGTH, self.material_cell(row, 5) or "0", "Floor Thickness"))
 
         compartment.ceiling_matl_id = tuple(ceiling_ids)  # type: ignore[assignment]
         compartment.ceiling_thickness = tuple(ceiling_thickness)  # type: ignore[assignment]
@@ -671,8 +662,8 @@ class CompartmentsTab(QWidget):
             if not height_text or not area_text:
                 raise ValueError("Variable area rows need both height and area.")
 
-            heights.append(parse_float(height_text, "Cross-section Height"))
-            areas.append(parse_float(area_text, "Cross-section Area"))
+            heights.append(parse_value(LENGTH, height_text, "Cross-section Height"))
+            areas.append(parse_value(AREA, area_text, "Cross-section Area"))
 
         compartment.cross_section_heights = heights
         compartment.cross_section_areas = areas

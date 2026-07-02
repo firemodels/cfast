@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -20,20 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CeilingFloorVent, CfastCase
-
-
-def parse_float(text: str, field_name: str, default: float | None = None) -> float:
-    text = text.strip()
-
-    if not text and default is not None:
-        return default
-
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
 def table_item_text(table: QTableWidget, row: int, col: int) -> str:
@@ -46,19 +31,6 @@ def table_item_text(table: QTableWidget, row: int, col: int) -> str:
 
 
 class CeilingFloorVentsTab(QWidget):
-    SUMMARY_HEADERS = [
-        "Num",
-        "ID",
-        "First Compartment",
-        "Second Compartment",
-        "Type",
-        "Shape",
-        "Area",
-        "Initial Open",
-        "X Offset",
-        "Y Offset",
-    ]
-
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -66,8 +38,8 @@ class CeilingFloorVentsTab(QWidget):
         self.loading_editor = False
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
-        self.summary_table = QTableWidget(8, len(self.SUMMARY_HEADERS))
-        self.summary_table.setHorizontalHeaderLabels(self.SUMMARY_HEADERS)
+        self.summary_table = QTableWidget(8, len(self.summary_headers()))
+        self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -105,7 +77,9 @@ class CeilingFloorVentsTab(QWidget):
 
         self.use_time_fraction_checkbox = QCheckBox("Use Time Opening Fraction")
         self.fraction_table = QTableWidget(5, 2)
-        self.fraction_table.setHorizontalHeaderLabels(["Time", "Fraction"])
+        self.fraction_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )
         self.fraction_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -125,6 +99,7 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.setCurrentCell(0, 0)
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         vents = list(case.ceiling_floor_vents)
 
         self.summary_table.blockSignals(True)
@@ -142,10 +117,10 @@ class CeilingFloorVentsTab(QWidget):
                     vent.second_comp_id,
                     vent.vent_type,
                     vent.shape,
-                    format_number(vent.area),
+                    format_value(AREA, vent.area),
                     format_number(vent.initial_open),
-                    format_number(vent.offset_x),
-                    format_number(vent.offset_y),
+                    format_value(LENGTH, vent.offset_x),
+                    format_value(LENGTH, vent.offset_y),
                 ],
             )
             self.schedules[row] = (list(vent.t_values), list(vent.f_values))
@@ -264,10 +239,10 @@ class CeilingFloorVentsTab(QWidget):
                 "Comp 2",
                 "FLOOR",
                 "ROUND",
+                format_value(AREA, 1.0),
                 "1",
-                "1",
-                "0",
-                "0",
+                format_value(LENGTH, 0.0),
+                format_value(LENGTH, 0.0),
             ],
         )
         self.summary_table.blockSignals(False)
@@ -394,7 +369,7 @@ class CeilingFloorVentsTab(QWidget):
             if idx >= self.fraction_table.rowCount():
                 self.fraction_table.insertRow(self.fraction_table.rowCount())
 
-            self.fraction_table.setItem(idx, 0, QTableWidgetItem(str(time_value)))
+            self.fraction_table.setItem(idx, 0, QTableWidgetItem(format_value(TIME, time_value)))
             self.fraction_table.setItem(idx, 1, QTableWidgetItem(str(fraction_value)))
 
         self.use_time_fraction_checkbox.blockSignals(True)
@@ -420,8 +395,8 @@ class CeilingFloorVentsTab(QWidget):
             if not t_text or not f_text:
                 continue
 
-            t_values.append(parse_float(t_text, "Time"))
-            f_values.append(parse_float(f_text, "Fraction"))
+            t_values.append(parse_value(TIME, t_text, "Time"))
+            f_values.append(parse_number(f_text, "Fraction"))
 
         self.schedules[row] = (t_values, f_values)
 
@@ -443,10 +418,10 @@ class CeilingFloorVentsTab(QWidget):
                 "Comp 2",
                 "FLOOR",
                 "ROUND",
+                format_value(AREA, 1.0),
                 "1",
-                "1",
-                "0",
-                "0",
+                format_value(LENGTH, 0.0),
+                format_value(LENGTH, 0.0),
             ],
         )
         self.summary_table.setCurrentCell(row, 0)
@@ -562,16 +537,18 @@ class CeilingFloorVentsTab(QWidget):
                 second_comp_id=second_comp,
                 vent_type=(table_item_text(self.summary_table, row, 4) or "CEILING").upper(),
                 shape=(table_item_text(self.summary_table, row, 5) or "ROUND").upper(),
-                area=parse_float(table_item_text(self.summary_table, row, 6), "Area"),
-                initial_open=parse_float(
+                area=parse_value(AREA, table_item_text(self.summary_table, row, 6), "Area"),
+                initial_open=parse_number(
                     table_item_text(self.summary_table, row, 7) or "1",
                     "Initial Open",
                 ),
-                offset_x=parse_float(
+                offset_x=parse_value(
+                    LENGTH,
                     table_item_text(self.summary_table, row, 8) or "0",
                     "X Offset",
                 ),
-                offset_y=parse_float(
+                offset_y=parse_value(
+                    LENGTH,
                     table_item_text(self.summary_table, row, 9) or "0",
                     "Y Offset",
                 ),
@@ -601,12 +578,23 @@ class CeilingFloorVentsTab(QWidget):
 
         case.ceiling_floor_vents = vents
 
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
+        self.fraction_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )
 
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"
+    @staticmethod
+    def summary_headers() -> list[str]:
+        return [
+            "Num",
+            "ID",
+            "First Compartment",
+            "Second Compartment",
+            "Type",
+            "Shape",
+            f"Area\n({unit_label(AREA)})",
+            "Initial Open",
+            f"X Offset\n({unit_label(LENGTH)})",
+            f"Y Offset\n({unit_label(LENGTH)})",
+        ]

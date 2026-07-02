@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import (
@@ -18,20 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase
-
-
-def parse_float(text: str, field_name: str, allow_default: bool = False) -> float | None:
-    text = text.strip()
-
-    if allow_default and text.lower() == "default":
-        return None
-
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+from units import PRESSURE, TEMPERATURE, TIME, format_number, format_value, parse_number, parse_value
 
 
 class SimulationTab(QWidget):
@@ -40,16 +25,16 @@ class SimulationTab(QWidget):
 
         self.title_edit = QLineEdit("CEdit Qt Prototype Case")
 
-        self.simulation_time_edit = QLineEdit("3600 s")
-        self.print_interval_edit = QLineEdit("60 s")
-        self.spreadsheet_interval_edit = QLineEdit("60 s")
-        self.smokeview_interval_edit = QLineEdit("60 s")
+        self.simulation_time_edit = QLineEdit(format_value(TIME, 3600.0))
+        self.print_interval_edit = QLineEdit(format_value(TIME, 60.0))
+        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 60.0))
+        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 60.0))
         self.max_time_step_edit = QLineEdit("Default")
 
-        self.interior_temperature_edit = QLineEdit("20 C")
+        self.interior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
         self.relative_humidity_edit = QLineEdit("50 %")
-        self.exterior_temperature_edit = QLineEdit("20 C")
-        self.pressure_edit = QLineEdit("101325 Pa")
+        self.exterior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
+        self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
         self.lower_oxygen_limit_edit = QLineEdit("0.1")
@@ -90,17 +75,17 @@ class SimulationTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.title_edit.setText(case.title)
-        self.simulation_time_edit.setText(format_number(case.simulation_time))
-        self.print_interval_edit.setText(format_number(case.print_interval))
-        self.spreadsheet_interval_edit.setText(format_number(case.spreadsheet_interval))
-        self.smokeview_interval_edit.setText(format_number(case.smokeview_interval))
+        self.simulation_time_edit.setText(format_value(TIME, case.simulation_time))
+        self.print_interval_edit.setText(format_value(TIME, case.print_interval))
+        self.spreadsheet_interval_edit.setText(format_value(TIME, case.spreadsheet_interval))
+        self.smokeview_interval_edit.setText(format_value(TIME, case.smokeview_interval))
         self.max_time_step_edit.setText(
-            "Default" if case.max_time_step is None else format_number(case.max_time_step)
+            "Default" if case.max_time_step is None else format_value(TIME, case.max_time_step)
         )
-        self.interior_temperature_edit.setText(format_number(case.interior_temperature))
+        self.interior_temperature_edit.setText(format_value(TEMPERATURE, case.interior_temperature))
         self.relative_humidity_edit.setText(format_number(case.relative_humidity))
-        self.exterior_temperature_edit.setText(format_number(case.exterior_temperature))
-        self.pressure_edit.setText(format_number(case.pressure))
+        self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
+        self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
         self.lower_oxygen_limit_edit.setText(format_number(case.lower_oxygen_limit))
 
@@ -164,47 +149,55 @@ class SimulationTab(QWidget):
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"
 
-        case.simulation_time = parse_float(
+        case.simulation_time = parse_value(
+            TIME,
             self.simulation_time_edit.text(),
             "Simulation Time",
         )
-        case.print_interval = parse_float(
+        case.print_interval = parse_value(
+            TIME,
             self.print_interval_edit.text(),
             "Text Output Interval",
         )
-        case.spreadsheet_interval = parse_float(
+        case.spreadsheet_interval = parse_value(
+            TIME,
             self.spreadsheet_interval_edit.text(),
             "Spreadsheet Output Interval",
         )
-        case.smokeview_interval = parse_float(
+        case.smokeview_interval = parse_value(
+            TIME,
             self.smokeview_interval_edit.text(),
             "Smokeview Output Interval",
         )
-        case.max_time_step = parse_float(
+        case.max_time_step = parse_value(
+            TIME,
             self.max_time_step_edit.text(),
             "Maximum Time Step",
             allow_default=True,
         )
 
-        case.interior_temperature = parse_float(
+        case.interior_temperature = parse_value(
+            TEMPERATURE,
             self.interior_temperature_edit.text(),
             "Interior Temperature",
         )
-        case.relative_humidity = parse_float(
+        case.relative_humidity = parse_number(
             self.relative_humidity_edit.text(),
             "Humidity",
         )
-        case.exterior_temperature = parse_float(
+        case.exterior_temperature = parse_value(
+            TEMPERATURE,
             self.exterior_temperature_edit.text(),
             "Exterior Temperature",
         )
-        case.pressure = parse_float(
+        case.pressure = parse_value(
+            PRESSURE,
             self.pressure_edit.text(),
             "Pressure",
         )
 
         case.adiabatic_surfaces = self.adiabatic_checkbox.isChecked()
-        case.lower_oxygen_limit = parse_float(
+        case.lower_oxygen_limit = parse_number(
             self.lower_oxygen_limit_edit.text(),
             "Lower Oxygen Limit",
         )
@@ -216,13 +209,3 @@ class SimulationTab(QWidget):
         self.message_panel.moveCursor(QTextCursor.MoveOperation.End)
         self.message_panel.insertPlainText(text)
         self.message_panel.ensureCursorVisible()
-
-
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"

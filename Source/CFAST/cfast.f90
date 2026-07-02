@@ -95,8 +95,8 @@ subroutine output_runtime_diagnostics(lu, elapsed_time, nsteps)
     integer, intent(in) :: nsteps
     real(eb), intent(in) :: elapsed_time
 
-    write (lu,'("Total execution time = ",1pg10.3," seconds")') elapsed_time
-    write (lu,'("Total time steps = ",i10)') nsteps
+    write (lu,'("Total execution time",t25,"= ",1pg10.3," seconds")') elapsed_time
+    write (lu,'("Total time steps",t25,"= ",i10)') nsteps
 
 end subroutine output_runtime_diagnostics
 

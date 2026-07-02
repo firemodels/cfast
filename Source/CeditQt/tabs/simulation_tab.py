@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QTextCursor
+from PySide6.QtGui import QFont, QFontDatabase, QTextCursor
 from PySide6.QtWidgets import (
     QCheckBox,
     QFrame,
@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QTextEdit,
+    QPlainTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -39,8 +39,21 @@ class SimulationTab(QWidget):
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
         self.lower_oxygen_limit_edit = QLineEdit("0.1")
 
-        self.message_panel = QTextEdit()
+        self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
+        self.message_panel.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+
+        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+
+        if "Menlo" in QFontDatabase.families():
+            fixed_font = QFont("Menlo")
+
+        fixed_font.setStyleHint(QFont.StyleHint.Monospace)
+        fixed_font.setFixedPitch(True)
+        fixed_font.setPointSize(12)
+
+        self.message_panel.setFont(fixed_font)
+
         self.message_panel.setPlainText("")
         self.message_panel.setMinimumHeight(140)
 

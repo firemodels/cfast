@@ -24,7 +24,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase
+from cfast_case import (
+    CfastCase,
+    Compartment,
+    FireDefinition,
+    FireProperty,
+    FireRampPoint,
+    WallVent,
+)
 from cfast_reader import read_cfast_input_with_warnings
 from cfast_writer import write_cfast_input
 from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
@@ -86,6 +93,64 @@ def latest_cfast_version_from_tag() -> tuple[str, str] | None:
     return latest[1], latest[2]
 
 
+def single_compartment_example() -> CfastCase:
+    case = CfastCase(
+        title="Single Compartment Example",
+        simulation_time=600.0,
+        print_interval=10.0,
+        smokeview_interval=10.0,
+        spreadsheet_interval=10.0,
+    )
+    case.compartments = [
+        Compartment(
+            id="Room",
+            width=5.0,
+            depth=4.0,
+            height=3.0,
+            grid=(50, 50, 50),
+        )
+    ]
+    case.wall_vents = [
+        WallVent(
+            id="Door",
+            first_comp_id="Room",
+            second_comp_id="OUTSIDE",
+            bottom=0.0,
+            height=2.0,
+            width=0.9,
+            face="FRONT",
+            offset=2.05,
+        )
+    ]
+    case.fire_properties = [
+        FireProperty(
+            id="Example Fire",
+            carbon=1,
+            hydrogen=4,
+            heat_of_combustion=50000.0,
+            radiative_fraction=0.35,
+            ramp=[
+                FireRampPoint(time=0.0, hrr=0.0, height=0.0, area=0.25),
+                FireRampPoint(time=60.0, hrr=250.0, height=0.0, area=0.25),
+                FireRampPoint(time=300.0, hrr=250.0, height=0.0, area=0.25),
+                FireRampPoint(time=600.0, hrr=0.0, height=0.0, area=0.25),
+            ],
+        )
+    ]
+    case.fires = [
+        FireDefinition(
+            id="Fire",
+            comp_id="Room",
+            fire_property_id="Example Fire",
+            ignition_criterion="TIME",
+            setpoint=0.0,
+            x_position=2.5,
+            y_position=2.0,
+        )
+    ]
+    return case
+
+
 def sanitize_cfast_input_path(path: Path) -> Path:
     """Return a CFAST input path whose file name has no whitespace."""
     name = path.name.strip()
@@ -139,6 +204,7 @@ class CeditMainWindow(QMainWindow):
 
         self.setStatusBar(QStatusBar(self))
         self.statusBar().showMessage("No Errors")
+        self.load_case(CfastCase())
 
     def build_menu(self):
         self.menuBar().setNativeMenuBar(False)
@@ -156,6 +222,12 @@ class CeditMainWindow(QMainWindow):
         save_as_action = QAction("Save &As...", self)
         save_as_action.triggered.connect(self.save_cfast_input_as)
         file_menu.addAction(save_as_action)
+
+        file_menu.addSeparator()
+
+        load_example_action = QAction("Load &Example...", self)
+        load_example_action.triggered.connect(self.load_single_compartment_example)
+        file_menu.addAction(load_example_action)
 
         file_menu.addSeparator()
 
@@ -216,6 +288,7 @@ class CeditMainWindow(QMainWindow):
         self.open_action = open_action
         self.save_action = save_action
         self.save_as_action = save_as_action
+        self.load_example_action = load_example_action
         self.set_cfast_action = set_cfast_action
         self.clear_cfast_action = clear_cfast_action
         self.set_smokeview_action = set_smokeview_action
@@ -419,6 +492,15 @@ class CeditMainWindow(QMainWindow):
             return
 
         self.load_cfast_input(Path(path_text))
+
+    def load_single_compartment_example(self):
+        self.current_path = None
+        self.load_case(single_compartment_example())
+        self.simulation_tab.set_message(
+            "Loaded example: Single Compartment Example.\n"
+            "Use File > Save As... to write a CFAST input file."
+        )
+        self.statusBar().showMessage("No Errors")
 
     def load_cfast_input(self, path: Path):
         try:

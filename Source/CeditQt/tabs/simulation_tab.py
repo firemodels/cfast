@@ -23,7 +23,7 @@ class SimulationTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.title_edit = QLineEdit("CEdit Qt Prototype Case")
+        self.title_edit = QLineEdit("CFAST Simulation")
 
         self.simulation_time_edit = QLineEdit(format_value(TIME, 3600.0))
         self.print_interval_edit = QLineEdit(format_value(TIME, 60.0))

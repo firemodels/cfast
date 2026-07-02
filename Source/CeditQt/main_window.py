@@ -62,6 +62,7 @@ class CeditMainWindow(QMainWindow):
         self.cfast_output_text = ""
         self.launch_smokeview_after_cfast = False
         self.extra_namelists: list[str] = []
+        self.main_toolbar: QToolBar | None = None
 
         self.settings = QSettings("FireModels", "CEditQt")
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
@@ -104,9 +105,9 @@ class CeditMainWindow(QMainWindow):
         save_action.triggered.connect(self.save_cfast_input)
         file_menu.addAction(save_action)
 
-        export_action = QAction("&Export CFAST Input...", self)
-        export_action.triggered.connect(self.export_cfast_input)
-        file_menu.addAction(export_action)
+        save_as_action = QAction("Save &As...", self)
+        save_as_action.triggered.connect(self.save_cfast_input_as)
+        file_menu.addAction(save_as_action)
 
         file_menu.addSeparator()
 
@@ -134,6 +135,16 @@ class CeditMainWindow(QMainWindow):
 
         view_menu = self.menuBar().addMenu("&View")
 
+        show_toolbar_action = QAction("Show &Toolbar", self)
+        show_toolbar_action.setCheckable(True)
+        show_toolbar_action.setChecked(
+            self.settings.value("show_toolbar", False, type=bool)
+        )
+        show_toolbar_action.toggled.connect(self.set_toolbar_visible)
+        view_menu.addAction(show_toolbar_action)
+
+        view_menu.addSeparator()
+
         geometry_action = QAction("&Geometry", self)
         geometry_action.triggered.connect(self.generate_smokeview_geometry)
         view_menu.addAction(geometry_action)
@@ -150,26 +161,40 @@ class CeditMainWindow(QMainWindow):
 
         self.open_action = open_action
         self.save_action = save_action
-        self.export_action = export_action
+        self.save_as_action = save_as_action
         self.set_cfast_action = set_cfast_action
         self.clear_cfast_action = clear_cfast_action
         self.set_smokeview_action = set_smokeview_action
         self.clear_smokeview_action = clear_smokeview_action
         self.exit_action = exit_action
+        self.show_toolbar_action = show_toolbar_action
         self.geometry_action = geometry_action
         self.results_action = results_action
 
     def build_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
+        self.main_toolbar = toolbar
         self.addToolBar(toolbar)
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.save_action)
-        toolbar.addAction(self.export_action)
+        toolbar.addAction(self.save_as_action)
         toolbar.addSeparator()
         toolbar.addAction(self.geometry_action)
         toolbar.addAction(self.results_action)
         toolbar.addSeparator()
         toolbar.addAction(self.exit_action)
+        toolbar.visibilityChanged.connect(self.on_toolbar_visibility_changed)
+        toolbar.setVisible(self.show_toolbar_action.isChecked())
+
+    def set_toolbar_visible(self, visible: bool):
+        if self.main_toolbar is not None:
+            self.main_toolbar.setVisible(visible)
+        self.settings.setValue("show_toolbar", visible)
+
+    def on_toolbar_visibility_changed(self, visible: bool):
+        if self.show_toolbar_action.isChecked() != visible:
+            self.show_toolbar_action.setChecked(visible)
+        self.settings.setValue("show_toolbar", visible)
 
     def build_central_widget(self):
         container = QWidget()
@@ -239,17 +264,17 @@ class CeditMainWindow(QMainWindow):
 
     def save_cfast_input(self):
         if self.current_path is None:
-            self.export_cfast_input()
+            self.save_cfast_input_as()
             return
 
         written_path = self.write_case_to_path(self.current_path)
         if written_path is not None:
             self.current_path = written_path
 
-    def export_cfast_input(self):
+    def save_cfast_input_as(self):
         path_text, _ = QFileDialog.getSaveFileName(
             self,
-            "Export CFAST Input",
+            "Save As",
             "cedit_qt_test.in",
             "CFAST input files (*.in);;All files (*)",
         )
@@ -293,7 +318,7 @@ class CeditMainWindow(QMainWindow):
         except Exception as exc:
             self.simulation_tab.set_message(str(exc))
             self.statusBar().showMessage("Errors")
-            QMessageBox.critical(self, "Export failed", str(exc))
+            QMessageBox.critical(self, "Save failed", str(exc))
             return None
 
         message = f"Wrote CFAST input file:\n{path}"
@@ -305,7 +330,7 @@ class CeditMainWindow(QMainWindow):
             )
         self.simulation_tab.set_message(message)
         self.statusBar().showMessage("No Errors")
-        QMessageBox.information(self, "Export complete", message)
+        QMessageBox.information(self, "Save complete", message)
         return path
 
     def open_cfast_input(self):

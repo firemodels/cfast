@@ -292,7 +292,7 @@ class FireDefinition:
 
 @dataclass
 class CfastCase:
-    title: str = "CEdit Qt Prototype Case"
+    title: str = "CFAST Simulation"
     version: int = 7600
 
     simulation_time: float = 3600.0

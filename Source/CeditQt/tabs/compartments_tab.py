@@ -184,10 +184,13 @@ class CompartmentsTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
-        self.compartments = copy.deepcopy(case.compartments) or [self.default_compartment()]
-        self.selected_index = 0
-        self.refresh_summary_table(select_row=0)
-        self.load_detail_from_selected()
+        self.compartments = copy.deepcopy(case.compartments)
+        self.selected_index = 0 if self.compartments else -1
+        self.refresh_summary_table(select_row=0 if self.compartments else None)
+        if self.compartments:
+            self.load_detail_from_selected()
+        else:
+            self.clear_detail()
 
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
@@ -346,9 +349,13 @@ class CompartmentsTab(QWidget):
     def add_compartment(self):
         self.save_detail_to_selected()
         new_index = len(self.compartments) + 1
-        compartment = copy.deepcopy(self.compartments[self.selected_index])
+        if self.compartments:
+            compartment = copy.deepcopy(self.compartments[self.selected_index])
+        else:
+            compartment = self.default_compartment()
         compartment.id = f"Comp {new_index}"
-        compartment.origin_x += compartment.width
+        if len(self.compartments) > 0:
+            compartment.origin_x += compartment.width
         self.compartments.append(compartment)
         self.refresh_summary_table(select_row=len(self.compartments) - 1)
         self.load_detail_from_selected()
@@ -394,10 +401,14 @@ class CompartmentsTab(QWidget):
     def remove_compartment(self):
         self.save_detail_to_selected()
 
+        if not self.compartments:
+            return
+
         if len(self.compartments) == 1:
-            self.compartments[0] = self.default_compartment()
-            self.refresh_summary_table(select_row=0)
-            self.load_detail_from_selected()
+            self.compartments.clear()
+            self.selected_index = -1
+            self.refresh_summary_table()
+            self.clear_detail()
             return
 
         del self.compartments[self.selected_index]
@@ -538,6 +549,33 @@ class CompartmentsTab(QWidget):
         self.load_area_table(c)
         self.fyi_edit.setText(c.fyi)
 
+        self.loading = False
+
+    def clear_detail(self):
+        self.loading = True
+        self.detail_group.setTitle("Compartment")
+
+        for edit in (
+            self.id_edit,
+            self.width_edit,
+            self.depth_edit,
+            self.height_edit,
+            self.x_edit,
+            self.y_edit,
+            self.z_edit,
+            self.flow_coefficient_edit,
+            self.wall_leak_area_ratio_edit,
+            self.floor_leak_area_ratio_edit,
+            self.wall_leak_area_edit,
+            self.floor_leak_area_edit,
+            self.fyi_edit,
+        ):
+            edit.clear()
+
+        self.normal_radio.setChecked(True)
+        self.materials_table.clearContents()
+        self.area_table.clearContents()
+        self.area_table.setRowCount(6)
         self.loading = False
 
     def load_materials_table(self, compartment: Compartment):

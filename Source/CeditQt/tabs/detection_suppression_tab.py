@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -20,23 +19,16 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, DetectionDevice
-
-
-_NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
-
-
-def parse_float(text: str, field_name: str, default: float | None = None) -> float:
-    text = text.strip()
-
-    if not text and default is not None:
-        return default
-
-    match = _NUMBER_RE.search(text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+from units import (
+    LENGTH,
+    RTI,
+    SMOKE,
+    TEMPERATURE,
+    VELOCITY,
+    format_value,
+    parse_value,
+    unit_label,
+)
 
 
 def set_combo_text(combo: QComboBox, text: str) -> None:
@@ -104,20 +96,7 @@ class DetectionSuppressionTab(QWidget):
         self.devices: list[DetectionDevice] = []
 
         self.summary_table = QTableWidget(0, 10)
-        self.summary_table.setHorizontalHeaderLabels(
-            [
-                "Num",
-                "ID",
-                "Compartment",
-                "Type",
-                "X Position",
-                "Y Position",
-                "Z Position",
-                "Activation",
-                "RTI",
-                "Spray Density",
-            ]
-        )
+        self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -152,6 +131,7 @@ class DetectionSuppressionTab(QWidget):
         self.select_device(0)
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.devices = copy.deepcopy(case.detection_devices)
         self.update_compartment_choices()
         self.rebuild_summary_table()
@@ -331,17 +311,20 @@ class DetectionSuppressionTab(QWidget):
         return device.activation_temperature
 
     def device_summary_values(self, row: int, device: DetectionDevice) -> list[str]:
+        activation_kind = (
+            SMOKE if device.device_type.upper() == "SMOKE_DETECTOR" else TEMPERATURE
+        )
         return [
             str(row + 1),
             device.id,
             device.comp_id,
             device.display_type(),
-            f"{device.x_position:g}",
-            f"{device.y_position:g}",
-            f"{device.z_position:g}",
-            f"{self.device_activation_value(device):g}",
-            f"{device.rti:g}",
-            f"{device.spray_density:g}",
+            format_value(LENGTH, device.x_position),
+            format_value(LENGTH, device.y_position),
+            format_value(LENGTH, device.z_position),
+            format_value(activation_kind, self.device_activation_value(device)),
+            format_value(RTI, device.rti),
+            format_value(VELOCITY, device.spray_density),
         ]
 
     def rebuild_summary_table(self):
@@ -460,15 +443,17 @@ class DetectionSuppressionTab(QWidget):
         self.id_edit.setText(device.id)
         set_combo_text(self.type_combo, device.display_type())
         set_combo_text(self.compartment_combo, device.comp_id)
-        self.x_edit.setText(f"{device.x_position:g} m")
-        self.y_edit.setText(f"{device.y_position:g} m")
-        self.z_edit.setText(f"{device.z_position:g} m")
-        self.activation_temperature_edit.setText(f"{device.activation_temperature:g} C")
-        self.activation_obscuration_edit.setText(
-            f"{device.activation_obscuration:g} %/m"
+        self.x_edit.setText(format_value(LENGTH, device.x_position))
+        self.y_edit.setText(format_value(LENGTH, device.y_position))
+        self.z_edit.setText(format_value(LENGTH, device.z_position))
+        self.activation_temperature_edit.setText(
+            format_value(TEMPERATURE, device.activation_temperature)
         )
-        self.rti_edit.setText(f"{device.rti:g}")
-        self.spray_density_edit.setText(f"{device.spray_density:g}")
+        self.activation_obscuration_edit.setText(
+            format_value(SMOKE, device.activation_obscuration)
+        )
+        self.rti_edit.setText(format_value(RTI, device.rti))
+        self.spray_density_edit.setText(format_value(VELOCITY, device.spray_density))
         self.fyi_edit.setText(device.fyi)
 
         self.loading_editor = False
@@ -533,23 +518,30 @@ class DetectionSuppressionTab(QWidget):
         device.device_type = display_type_to_devc_type(
             self.table_text(row, self.COL_TYPE) or device.display_type()
         )
-        device.x_position = parse_float(
+        device.x_position = parse_value(
+            LENGTH,
             self.table_text(row, self.COL_X),
             "X Position",
             device.x_position,
         )
-        device.y_position = parse_float(
+        device.y_position = parse_value(
+            LENGTH,
             self.table_text(row, self.COL_Y),
             "Y Position",
             device.y_position,
         )
-        device.z_position = parse_float(
+        device.z_position = parse_value(
+            LENGTH,
             self.table_text(row, self.COL_Z),
             "Z Position",
             device.z_position,
         )
 
-        activation = parse_float(
+        activation_kind = (
+            SMOKE if device.device_type.upper() == "SMOKE_DETECTOR" else TEMPERATURE
+        )
+        activation = parse_value(
+            activation_kind,
             self.table_text(row, self.COL_ACTIVATION),
             "Activation",
             self.device_activation_value(device),
@@ -559,12 +551,14 @@ class DetectionSuppressionTab(QWidget):
         else:
             device.activation_temperature = activation
 
-        device.rti = parse_float(
+        device.rti = parse_value(
+            RTI,
             self.table_text(row, self.COL_RTI),
             "RTI",
             device.rti,
         )
-        device.spray_density = parse_float(
+        device.spray_density = parse_value(
+            VELOCITY,
             self.table_text(row, self.COL_SPRAY_DENSITY),
             "Spray Density",
             device.spray_density,
@@ -578,21 +572,24 @@ class DetectionSuppressionTab(QWidget):
         device.id = self.id_edit.text().strip() or device.id
         device.device_type = display_type_to_devc_type(self.type_combo.currentText())
         device.comp_id = self.compartment_combo.currentText().strip() or "Comp 1"
-        device.x_position = parse_float(self.x_edit.text(), "X Position", 0.0)
-        device.y_position = parse_float(self.y_edit.text(), "Y Position", 0.0)
-        device.z_position = parse_float(self.z_edit.text(), "Z Position", 0.0)
-        device.activation_temperature = parse_float(
+        device.x_position = parse_value(LENGTH, self.x_edit.text(), "X Position", 0.0)
+        device.y_position = parse_value(LENGTH, self.y_edit.text(), "Y Position", 0.0)
+        device.z_position = parse_value(LENGTH, self.z_edit.text(), "Z Position", 0.0)
+        device.activation_temperature = parse_value(
+            TEMPERATURE,
             self.activation_temperature_edit.text(),
             "Activation Temperature",
             73.88998,
         )
-        device.activation_obscuration = parse_float(
+        device.activation_obscuration = parse_value(
+            SMOKE,
             self.activation_obscuration_edit.text(),
             "Activation Obscuration",
             23.93346,
         )
-        device.rti = parse_float(self.rti_edit.text(), "RTI", 100.0)
-        device.spray_density = parse_float(
+        device.rti = parse_value(RTI, self.rti_edit.text(), "RTI", 100.0)
+        device.spray_density = parse_value(
+            VELOCITY,
             self.spray_density_edit.text(),
             "Spray Density",
             0.0,
@@ -698,3 +695,22 @@ class DetectionSuppressionTab(QWidget):
                 )
 
         case.detection_devices = list(self.devices)
+
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
+
+    @staticmethod
+    def summary_headers() -> list[str]:
+        length = unit_label(LENGTH)
+        return [
+            "Num",
+            "ID",
+            "Compartment",
+            "Type",
+            f"X Position\n({length})",
+            f"Y Position\n({length})",
+            f"Z Position\n({length})",
+            "Activation",
+            f"RTI\n({unit_label(RTI)})",
+            f"Spray Density\n({unit_label(VELOCITY)})",
+        ]

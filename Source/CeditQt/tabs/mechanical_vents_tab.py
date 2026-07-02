@@ -1,5 +1,4 @@
 import copy
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -18,23 +17,34 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, MechanicalVent
+from units import (
+    AREA,
+    FLOWRATE,
+    LENGTH,
+    PRESSURE,
+    TIME,
+    format_number,
+    format_value,
+    parse_number,
+    parse_value,
+    unit_label,
+)
 
 
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
-
-
-def format_number(value: float) -> str:
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-
-    return f"{value:.6g}"
+def summary_headers() -> list[str]:
+    return [
+        "Num",
+        "ID",
+        "From Compartment",
+        f"From Area\n({unit_label(AREA)})",
+        f"From Height\n({unit_label(LENGTH)})",
+        "From Type",
+        "To Compartment",
+        f"To Area\n({unit_label(AREA)})",
+        f"To Height\n({unit_label(LENGTH)})",
+        "To Type",
+        f"Flow\n({unit_label(FLOWRATE)})",
+    ]
 
 
 def table_item(text: str) -> QTableWidgetItem:
@@ -52,21 +62,7 @@ class MechanicalVentsTab(QWidget):
         self.updating = False
 
         self.summary_table = QTableWidget(0, 11)
-        self.summary_table.setHorizontalHeaderLabels(
-            [
-                "Num",
-                "ID",
-                "From Compartment",
-                "From Area",
-                "From Height",
-                "From Type",
-                "To Compartment",
-                "To Area",
-                "To Height",
-                "To Type",
-                "Flow",
-            ]
-        )
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -101,7 +97,9 @@ class MechanicalVentsTab(QWidget):
         self.criterion_combo.addItems(["Time", "Temperature", "Flux"])
 
         self.schedule_table = QTableWidget(8, 2)
-        self.schedule_table.setHorizontalHeaderLabels(["Time", "Fraction"])
+        self.schedule_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )
         self.schedule_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -112,6 +110,7 @@ class MechanicalVentsTab(QWidget):
         self.load_demo_data()
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.vents = copy.deepcopy(case.mechanical_vents)
         self.refresh_summary_table()
 
@@ -294,14 +293,14 @@ class MechanicalVentsTab(QWidget):
                 str(row + 1),
                 vent.id,
                 vent.from_comp_id,
-                format_number(vent.from_area),
-                format_number(vent.from_height),
+                format_value(AREA, vent.from_area),
+                format_value(LENGTH, vent.from_height),
                 self.display_orientation(vent.from_orientation),
                 vent.to_comp_id,
-                format_number(vent.to_area),
-                format_number(vent.to_height),
+                format_value(AREA, vent.to_area),
+                format_value(LENGTH, vent.to_height),
                 self.display_orientation(vent.to_orientation),
-                format_number(vent.flow),
+                format_value(FLOWRATE, vent.flow),
             ]
 
             for col, value in enumerate(values):
@@ -340,22 +339,22 @@ class MechanicalVentsTab(QWidget):
         self.editor_group.setTitle(f"Vent {index + 1} (of {len(self.vents)}) Geometry")
         self.id_edit.setText(vent.id)
         self.from_compartment_edit.setText(vent.from_comp_id)
-        self.from_area_edit.setText(f"{format_number(vent.from_area)} m²")
-        self.from_height_edit.setText(f"{format_number(vent.from_height)} m")
+        self.from_area_edit.setText(format_value(AREA, vent.from_area))
+        self.from_height_edit.setText(format_value(LENGTH, vent.from_height))
         self.set_combo_text(self.from_orientation_combo, self.display_orientation(vent.from_orientation))
 
         self.to_compartment_edit.setText(vent.to_comp_id)
-        self.to_area_edit.setText(f"{format_number(vent.to_area)} m²")
-        self.to_height_edit.setText(f"{format_number(vent.to_height)} m")
+        self.to_area_edit.setText(format_value(AREA, vent.to_area))
+        self.to_height_edit.setText(format_value(LENGTH, vent.to_height))
         self.set_combo_text(self.to_orientation_combo, self.display_orientation(vent.to_orientation))
 
-        self.flow_edit.setText(f"{format_number(vent.flow)} m^3/s")
-        self.begin_dropoff_edit.setText(f"{format_number(vent.begin_dropoff)} Pa")
-        self.zero_flow_edit.setText(f"{format_number(vent.zero_flow)} Pa")
-        self.offset_x_edit.setText(f"{format_number(vent.offset_x)} m")
-        self.offset_y_edit.setText(f"{format_number(vent.offset_y)} m")
+        self.flow_edit.setText(format_value(FLOWRATE, vent.flow))
+        self.begin_dropoff_edit.setText(format_value(PRESSURE, vent.begin_dropoff))
+        self.zero_flow_edit.setText(format_value(PRESSURE, vent.zero_flow))
+        self.offset_x_edit.setText(format_value(LENGTH, vent.offset_x))
+        self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
         self.filter_efficiency_edit.setText(f"{format_number(vent.filter_efficiency)} %")
-        self.filter_time_edit.setText(f"{format_number(vent.filter_time)} s")
+        self.filter_time_edit.setText(format_value(TIME, vent.filter_time))
         self.set_combo_text(self.criterion_combo, self.display_criterion(vent.criterion))
 
         self.schedule_table.blockSignals(True)
@@ -364,7 +363,7 @@ class MechanicalVentsTab(QWidget):
         self.schedule_table.setRowCount(row_count)
 
         for row, time_value in enumerate(vent.t_values):
-            self.schedule_table.setItem(row, 0, table_item(format_number(time_value)))
+            self.schedule_table.setItem(row, 0, table_item(format_value(TIME, time_value)))
 
         for row, fraction_value in enumerate(vent.f_values):
             self.schedule_table.setItem(row, 1, table_item(format_number(fraction_value)))
@@ -408,20 +407,20 @@ class MechanicalVentsTab(QWidget):
         vent.to_comp_id = self.to_compartment_edit.text().strip() or "OUTSIDE"
 
         try:
-            vent.from_area = parse_float(self.from_area_edit.text(), "From Area")
-            vent.from_height = parse_float(self.from_height_edit.text(), "From Height")
-            vent.to_area = parse_float(self.to_area_edit.text(), "To Area")
-            vent.to_height = parse_float(self.to_height_edit.text(), "To Height")
-            vent.flow = parse_float(self.flow_edit.text(), "Flow Rate")
-            vent.begin_dropoff = parse_float(self.begin_dropoff_edit.text(), "Begin Dropoff")
-            vent.zero_flow = parse_float(self.zero_flow_edit.text(), "Zero Flow")
-            vent.offset_x = parse_float(self.offset_x_edit.text(), "Vent Offset X")
-            vent.offset_y = parse_float(self.offset_y_edit.text(), "Vent Offset Y")
-            vent.filter_efficiency = parse_float(
+            vent.from_area = parse_value(AREA, self.from_area_edit.text(), "From Area")
+            vent.from_height = parse_value(LENGTH, self.from_height_edit.text(), "From Height")
+            vent.to_area = parse_value(AREA, self.to_area_edit.text(), "To Area")
+            vent.to_height = parse_value(LENGTH, self.to_height_edit.text(), "To Height")
+            vent.flow = parse_value(FLOWRATE, self.flow_edit.text(), "Flow Rate")
+            vent.begin_dropoff = parse_value(PRESSURE, self.begin_dropoff_edit.text(), "Begin Dropoff")
+            vent.zero_flow = parse_value(PRESSURE, self.zero_flow_edit.text(), "Zero Flow")
+            vent.offset_x = parse_value(LENGTH, self.offset_x_edit.text(), "Vent Offset X")
+            vent.offset_y = parse_value(LENGTH, self.offset_y_edit.text(), "Vent Offset Y")
+            vent.filter_efficiency = parse_number(
                 self.filter_efficiency_edit.text(),
                 "Filter Efficiency",
             )
-            vent.filter_time = parse_float(self.filter_time_edit.text(), "Begin Filter")
+            vent.filter_time = parse_value(TIME, self.filter_time_edit.text(), "Begin Filter")
         except ValueError:
             return
 
@@ -447,8 +446,8 @@ class MechanicalVentsTab(QWidget):
             if not time_text and not fraction_text:
                 continue
 
-            t_values.append(parse_float(time_text, "Schedule Time"))
-            f_values.append(parse_float(fraction_text, "Schedule Fraction"))
+            t_values.append(parse_value(TIME, time_text, "Schedule Time"))
+            f_values.append(parse_number(fraction_text, "Schedule Fraction"))
 
         return t_values, f_values
 
@@ -564,3 +563,9 @@ class MechanicalVentsTab(QWidget):
     @staticmethod
     def internal_criterion(value: str) -> str:
         return value.strip().upper()
+
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.schedule_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )

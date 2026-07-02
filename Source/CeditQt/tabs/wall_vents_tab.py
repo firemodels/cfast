@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -20,16 +19,23 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, WallVent
+from units import LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+def summary_headers() -> list[str]:
+    length = unit_label(LENGTH)
+    return [
+        "Num",
+        "ID",
+        "First Compartment",
+        "Second Compartment",
+        f"Bottom\n({length})",
+        f"Height\n({length})",
+        f"Width\n({length})",
+        "Initial Open",
+        "Face",
+        f"Offset\n({length})",
+    ]
 
 
 class WallVentsTab(QWidget):
@@ -40,20 +46,7 @@ class WallVentsTab(QWidget):
         self.loading = False
 
         self.summary_table = QTableWidget(0, 10)
-        self.summary_table.setHorizontalHeaderLabels(
-            [
-                "Num",
-                "ID",
-                "First Compartment",
-                "Second Compartment",
-                "Bottom",
-                "Height",
-                "Width",
-                "Initial Open",
-                "Face",
-                "Offset",
-            ]
-        )
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -84,7 +77,9 @@ class WallVentsTab(QWidget):
         self.offset_edit = QLineEdit()
 
         self.schedule_table = QTableWidget(8, 2)
-        self.schedule_table.setHorizontalHeaderLabels(["Time", "Fraction"])
+        self.schedule_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )
         self.schedule_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -95,6 +90,7 @@ class WallVentsTab(QWidget):
         self.load_demo_data()
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.records = [self.record_from_vent(vent) for vent in case.wall_vents]
         self.rebuild_summary_table()
 
@@ -113,15 +109,15 @@ class WallVentsTab(QWidget):
             "id": vent.id,
             "first_compartment": vent.first_comp_id,
             "second_compartment": second_compartment,
-            "bottom": format_number(vent.bottom),
-            "height": format_number(vent.height),
-            "width": format_number(vent.width),
+            "bottom": format_value(LENGTH, vent.bottom),
+            "height": format_value(LENGTH, vent.height),
+            "width": format_value(LENGTH, vent.width),
             "initial_open": format_number(vent.initial_open),
             "face": vent.face.strip().capitalize(),
-            "offset": format_number(vent.offset),
+            "offset": format_value(LENGTH, vent.offset),
             "criterion": vent.criterion.strip().capitalize(),
             "schedule": [
-                (format_number(time_value), format_number(fraction_value))
+                (format_value(TIME, time_value), format_number(fraction_value))
                 for time_value, fraction_value in zip(vent.t_values, vent.f_values)
             ],
         }
@@ -245,12 +241,12 @@ class WallVentsTab(QWidget):
             "id": f"WallVent_{index}",
             "first_compartment": "Comp 1",
             "second_compartment": "Outside",
-            "bottom": "0",
-            "height": "2",
-            "width": "1",
+            "bottom": format_value(LENGTH, 0.0),
+            "height": format_value(LENGTH, 2.0),
+            "width": format_value(LENGTH, 1.0),
             "initial_open": "1",
             "face": "Front",
-            "offset": "2",
+            "offset": format_value(LENGTH, 2.0),
             "criterion": "Time",
             "schedule": [],
         }
@@ -520,11 +516,11 @@ class WallVentsTab(QWidget):
 
             ids_seen.add(vent_id)
 
-            bottom = parse_float(record["bottom"], "Wall vent bottom")
-            height = parse_float(record["height"], "Wall vent height")
-            width = parse_float(record["width"], "Wall vent width")
-            initial_open = parse_float(record["initial_open"], "Initial Open")
-            offset = parse_float(record["offset"], "Wall vent offset")
+            bottom = parse_value(LENGTH, record["bottom"], "Wall vent bottom")
+            height = parse_value(LENGTH, record["height"], "Wall vent height")
+            width = parse_value(LENGTH, record["width"], "Wall vent width")
+            initial_open = parse_number(record["initial_open"], "Initial Open")
+            offset = parse_value(LENGTH, record["offset"], "Wall vent offset")
 
             if bottom < 0.0:
                 raise ValueError(f"Wall Vents row {row + 1}: bottom must be non-negative.")
@@ -550,8 +546,8 @@ class WallVentsTab(QWidget):
                         "time and fraction are both required."
                     )
 
-                time_value = parse_float(time_text, "Opening time")
-                fraction_value = parse_float(fraction_text, "Opening fraction")
+                time_value = parse_value(TIME, time_text, "Opening time")
+                fraction_value = parse_number(fraction_text, "Opening fraction")
 
                 if time_value < 0.0:
                     raise ValueError(
@@ -585,12 +581,8 @@ class WallVentsTab(QWidget):
 
         case.wall_vents = vents
 
-
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.schedule_table.setHorizontalHeaderLabels(
+            [f"Time\n({unit_label(TIME)})", "Fraction"]
+        )

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -25,30 +24,28 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, FireDefinition, FireProperty, FireRampPoint
-
-
-_NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
-
-
-def parse_float(text: str, field_name: str, default: float | None = None) -> float:
-    text = text.strip()
-
-    if not text and default is not None:
-        return default
-
-    match = _NUMBER_RE.search(text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
+from units import (
+    AREA,
+    HEAT_FLUX,
+    HOC,
+    HRR,
+    LENGTH,
+    TEMPERATURE,
+    TIME,
+    display_value,
+    format_number,
+    format_value,
+    parse_number,
+    parse_value,
+    unit_label,
+)
 
 
 def parse_int(text: str, field_name: str, default: int | None = None) -> int:
     if not text.strip() and default is not None:
         return default
 
-    value = parse_float(text, field_name)
+    value = parse_number(text, field_name)
 
     if abs(value - round(value)) > 1.0e-12:
         raise ValueError(f"{field_name} must be an integer: {text!r}")
@@ -81,6 +78,28 @@ def make_read_only_item(text: str) -> QTableWidgetItem:
     return item
 
 
+def ignition_setpoint_kind(criterion: str) -> str:
+    value = criterion.strip().upper()
+    if value == "TEMPERATURE":
+        return TEMPERATURE
+    if value == "FLUX":
+        return HEAT_FLUX
+    return TIME
+
+
+def ramp_headers() -> list[str]:
+    return [
+        f"Time\n({unit_label(TIME)})",
+        f"HRR\n({unit_label(HRR)})",
+        f"Height\n({unit_label(LENGTH)})",
+        f"Area\n({unit_label(AREA)})",
+        "CO Yield",
+        "Soot Yield",
+        "HCN Yield",
+        "TS Yield",
+    ]
+
+
 class FirePlotCanvas(FigureCanvas):
     def __init__(self, parent=None):
         self.figure = Figure(figsize=(6, 3), tight_layout=True)
@@ -102,19 +121,19 @@ class FirePlotCanvas(FigureCanvas):
             )
             self.ax.set_xlim(0.0, 1.0)
             self.ax.set_ylim(0.0, 1.0)
-            self.ax.set_title("HRR (kW)")
+            self.ax.set_title(f"HRR ({unit_label(HRR)})")
         else:
             ramp = fire_property.sorted_ramp()
-            times = [point.time for point in ramp]
-            hrrs = [point.hrr for point in ramp]
+            times = [display_value(TIME, point.time) for point in ramp]
+            hrrs = [display_value(HRR, point.hrr) for point in ramp]
 
             self.ax.plot(times, hrrs)
             self.ax.set_xlim(left=0.0)
             self.ax.set_ylim(bottom=0.0)
-            self.ax.set_title(f"{fire_property.id}: HRR (kW)")
+            self.ax.set_title(f"{fire_property.id}: HRR ({unit_label(HRR)})")
 
-        self.ax.set_xlabel("Time (s)")
-        self.ax.set_ylabel("HRR (kW)")
+        self.ax.set_xlabel(f"Time ({unit_label(TIME)})")
+        self.ax.set_ylabel(f"HRR ({unit_label(HRR)})")
         self.ax.grid(True)
         self.draw()
 
@@ -175,18 +194,7 @@ class FiresTab(QWidget):
         self.radiative_fraction_edit = QLineEdit()
 
         self.ramp_table = QTableWidget(8, 8)
-        self.ramp_table.setHorizontalHeaderLabels(
-            [
-                "Time\n(s)",
-                "HRR\n(kW)",
-                "Height\n(m)",
-                "Area\n(m2)",
-                "CO Yield",
-                "Soot Yield",
-                "HCN Yield",
-                "TS Yield",
-            ]
-        )
+        self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
         self.ramp_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -202,6 +210,7 @@ class FiresTab(QWidget):
         self.select_fire(0)
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.fires = copy.deepcopy(case.fires)
         self.fire_properties = copy.deepcopy(case.fire_properties)
         self.update_compartment_choices()
@@ -485,13 +494,13 @@ class FiresTab(QWidget):
                 fire.comp_id,
                 fire.id,
                 fire.ignition_criterion.title(),
-                f"{fire.setpoint:g}",
+                format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint),
                 fire.target,
-                f"{fire.x_position:g}",
-                f"{fire.y_position:g}",
+                format_value(LENGTH, fire.x_position),
+                format_value(LENGTH, fire.y_position),
                 fire.fire_property_id,
                 fuel,
-                f"{peak_hrr:g}",
+                format_value(HRR, peak_hrr),
             ]
 
             for col, value in enumerate(values):
@@ -561,10 +570,12 @@ class FiresTab(QWidget):
 
         self.fire_id_edit.setText(fire.id)
         set_combo_text(self.compartment_combo, fire.comp_id)
-        self.x_position_edit.setText(f"{fire.x_position:g}")
-        self.y_position_edit.setText(f"{fire.y_position:g}")
+        self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
+        self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
         set_combo_text(self.ignition_combo, fire.ignition_criterion.upper())
-        self.setpoint_edit.setText(f"{fire.setpoint:g}")
+        self.setpoint_edit.setText(
+            format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint)
+        )
         set_combo_text(self.target_combo, fire.target)
         self.update_property_choices()
         set_combo_text(self.fire_property_combo, fire.fire_property_id)
@@ -585,7 +596,7 @@ class FiresTab(QWidget):
         self.oxygen_edit.setText(str(prop.oxygen))
         self.nitrogen_edit.setText(str(prop.nitrogen))
         self.chlorine_edit.setText(str(prop.chlorine))
-        self.heat_of_combustion_edit.setText(f"{prop.heat_of_combustion:g} kJ/kg")
+        self.heat_of_combustion_edit.setText(format_value(HOC, prop.heat_of_combustion))
         self.radiative_fraction_edit.setText(f"{prop.radiative_fraction:g}")
 
         self.ramp_table.blockSignals(True)
@@ -594,10 +605,10 @@ class FiresTab(QWidget):
 
         for row, point in enumerate(prop.sorted_ramp()):
             values = [
-                point.time,
-                point.hrr,
-                point.height,
-                point.area,
+                format_value(TIME, point.time),
+                format_value(HRR, point.hrr),
+                format_value(LENGTH, point.height),
+                format_value(AREA, point.area),
                 point.co_yield,
                 point.soot_yield,
                 point.hcn_yield,
@@ -605,7 +616,11 @@ class FiresTab(QWidget):
             ]
 
             for col, value in enumerate(values):
-                self.ramp_table.setItem(row, col, QTableWidgetItem(f"{value:g}"))
+                if isinstance(value, str):
+                    text = value
+                else:
+                    text = format_number(value)
+                self.ramp_table.setItem(row, col, QTableWidgetItem(text))
 
         self.ramp_table.blockSignals(False)
 
@@ -665,10 +680,15 @@ class FiresTab(QWidget):
         fire.comp_id = self.compartment_combo.currentText().strip() or "Comp 1"
         fire.fire_property_id = self.fire_property_combo.currentText().strip()
         fire.ignition_criterion = self.ignition_combo.currentText().strip().upper()
-        fire.setpoint = parse_float(self.setpoint_edit.text(), "Set Point", 0.0)
+        fire.setpoint = parse_value(
+            ignition_setpoint_kind(fire.ignition_criterion),
+            self.setpoint_edit.text(),
+            "Set Point",
+            0.0,
+        )
         fire.target = self.target_combo.currentText().strip()
-        fire.x_position = parse_float(self.x_position_edit.text(), "X Position", 0.0)
-        fire.y_position = parse_float(self.y_position_edit.text(), "Y Position", 0.0)
+        fire.x_position = parse_value(LENGTH, self.x_position_edit.text(), "X Position", 0.0)
+        fire.y_position = parse_value(LENGTH, self.y_position_edit.text(), "Y Position", 0.0)
 
     def save_current_editor(self):
         fire = self.selected_fire()
@@ -692,12 +712,13 @@ class FiresTab(QWidget):
         prop.oxygen = parse_int(self.oxygen_edit.text(), "O", 0)
         prop.nitrogen = parse_int(self.nitrogen_edit.text(), "N", 0)
         prop.chlorine = parse_int(self.chlorine_edit.text(), "Cl", 0)
-        prop.heat_of_combustion = parse_float(
+        prop.heat_of_combustion = parse_value(
+            HOC,
             self.heat_of_combustion_edit.text(),
             "Heat of Combustion",
             50000.0,
         )
-        prop.radiative_fraction = parse_float(
+        prop.radiative_fraction = parse_number(
             self.radiative_fraction_edit.text(),
             "Radiative Fraction",
             0.35,
@@ -718,14 +739,14 @@ class FiresTab(QWidget):
                 continue
 
             point = FireRampPoint(
-                time=parse_float(values[0], "Time", 0.0),
-                hrr=parse_float(values[1], "HRR", 0.0),
-                height=parse_float(values[2], "Height", 0.0),
-                area=parse_float(values[3], "Area", 0.1),
-                co_yield=parse_float(values[4], "CO Yield", 0.0),
-                soot_yield=parse_float(values[5], "Soot Yield", 0.0),
-                hcn_yield=parse_float(values[6], "HCN Yield", 0.0),
-                trace_yield=parse_float(values[7], "TS Yield", 0.0),
+                time=parse_value(TIME, values[0], "Time", 0.0),
+                hrr=parse_value(HRR, values[1], "HRR", 0.0),
+                height=parse_value(LENGTH, values[2], "Height", 0.0),
+                area=parse_value(AREA, values[3], "Area", 0.1),
+                co_yield=parse_number(values[4], "CO Yield", 0.0),
+                soot_yield=parse_number(values[5], "Soot Yield", 0.0),
+                hcn_yield=parse_number(values[6], "HCN Yield", 0.0),
+                trace_yield=parse_number(values[7], "TS Yield", 0.0),
             )
             points.append(point)
 
@@ -815,6 +836,9 @@ class FiresTab(QWidget):
             "From File",
             "Loading a fire definition from file is not implemented yet.",
         )
+
+    def refresh_unit_labels(self):
+        self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
 
     def add_to_case(self, case: CfastCase):
         self.save_current_editor()

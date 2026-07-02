@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -20,6 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, OutputVisualization
+from units import LENGTH, format_value, parse_number, parse_value, unit_label
 
 
 AXIS_LABELS = {
@@ -29,18 +28,8 @@ AXIS_LABELS = {
 }
 
 
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
-
-
 def parse_int(text: str, field_name: str) -> int:
-    value = parse_float(text, field_name)
+    value = parse_number(text, field_name)
 
     if abs(value - round(value)) > 1.0e-12:
         raise ValueError(f"{field_name} must be an integer: {text!r}")
@@ -77,9 +66,7 @@ class OutputTab(QWidget):
         self.updating = False
 
         self.visual_table = QTableWidget(10, 5)
-        self.visual_table.setHorizontalHeaderLabels(
-            ["Num", "Type", "Compartment", "Axis", "Value"]
-        )
+        self.visual_table.setHorizontalHeaderLabels(visual_headers())
         self.visual_table.verticalHeader().setVisible(False)
 
         self.resolution_table = QTableWidget(10, 5)
@@ -92,7 +79,7 @@ class OutputTab(QWidget):
         self.visualization_type_combo.addItems(["2-D", "3-D"])
 
         self.visual_compartment_edit = QLineEdit("All")
-        self.visual_position_edit = QLineEdit("2.5 m")
+        self.visual_position_edit = QLineEdit(format_value(LENGTH, 2.5))
 
         self.axis_combo = QComboBox()
         self.axis_combo.addItems(["X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"])
@@ -129,6 +116,7 @@ class OutputTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.updating = True
+        self.refresh_unit_labels()
 
         self.visual_table.clearContents()
         self.visual_table.setRowCount(max(10, len(case.output_visualizations)))
@@ -138,7 +126,7 @@ class OutputTab(QWidget):
                 vis.visualization_type,
                 display_compartment(vis.comp_id),
                 AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
-                format_number(vis.value),
+                format_value(LENGTH, vis.value),
             ]
             for col, value in enumerate(values):
                 self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
@@ -334,9 +322,9 @@ class OutputTab(QWidget):
         self.clear_table(self.resolution_table)
 
         visuals = [
-            ["", "2-D", "All", "X-Axis", "2.5 m"],
-            ["", "2-D", "All", "Y-Axis", "2.5 m"],
-            ["", "2-D", "All", "Z-Axis", "2.95 m"],
+            ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)],
+            ["", "2-D", "All", "Y-Axis", format_value(LENGTH, 2.5)],
+            ["", "2-D", "All", "Z-Axis", format_value(LENGTH, 2.95)],
         ]
         resolutions = [
             ["Comp 1", "", "50", "50", "50"],
@@ -404,7 +392,7 @@ class OutputTab(QWidget):
     def add_visualization(self):
         row = self.first_empty_row(self.visual_table)
         self.updating = True
-        values = ["", "2-D", "All", "X-Axis", "2.5 m"]
+        values = ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)]
         for col, value in enumerate(values):
             self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
         self.updating = False
@@ -555,6 +543,9 @@ class OutputTab(QWidget):
         self.set_cell_text(self.resolution_table, row, 4, self.height_grid_edit.text())
         self.updating = False
 
+    def refresh_unit_labels(self):
+        self.visual_table.setHorizontalHeaderLabels(visual_headers())
+
     def add_to_case(self, case: CfastCase):
         visualizations: list[OutputVisualization] = []
 
@@ -566,7 +557,7 @@ class OutputTab(QWidget):
             vis_type = values[0] or "2-D"
             comp_id = values[1] or "All"
             axis = axis_code(values[2] or "X")
-            value = parse_float(values[3] or "0", "Visualization Value")
+            value = parse_value(LENGTH, values[3] or "0", "Visualization Value")
 
             visualizations.append(
                 OutputVisualization(
@@ -605,19 +596,11 @@ class OutputTab(QWidget):
         for compartment in case.compartments:
             if compartment.id in grid_by_compartment:
                 compartment.grid = grid_by_compartment[compartment.id]
-
-
-def format_number(value: float | int) -> str:
-    if isinstance(value, int):
-        return str(value)
-
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"
-
-
 def display_compartment(value: str) -> str:
     if value.strip().upper() in {"NULL", "ALL", ""}:
         return "All"
     return value
+
+
+def visual_headers() -> list[str]:
+    return ["Num", "Type", "Compartment", "Axis", f"Value\n({unit_label(LENGTH)})"]

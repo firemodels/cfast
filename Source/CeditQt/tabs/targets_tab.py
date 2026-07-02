@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 from dataclasses import replace
 
 from PySide6.QtCore import Qt
@@ -22,6 +21,17 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Target
+from units import (
+    CONDUCTIVITY,
+    DENSITY,
+    LENGTH,
+    SPECIFIC_HEAT,
+    format_number,
+    format_value,
+    parse_number,
+    parse_value,
+    unit_label,
+)
 
 
 MATERIAL_LIBRARY = {
@@ -46,19 +56,21 @@ MATERIAL_LIBRARY = {
 }
 
 
-TABLE_COLUMNS = [
-    "Num",
-    "ID",
-    "Compartment",
-    "X Position",
-    "Y Position",
-    "Z Position",
-    "X Normal",
-    "Y Normal",
-    "Z Normal",
-    "Material",
-    "Type",
-]
+def table_columns() -> list[str]:
+    length = unit_label(LENGTH)
+    return [
+        "Num",
+        "ID",
+        "Compartment",
+        f"X Position\n({length})",
+        f"Y Position\n({length})",
+        f"Z Position\n({length})",
+        "X Normal",
+        "Y Normal",
+        "Z Normal",
+        "Material",
+        "Type",
+    ]
 
 
 class TargetsTab(QWidget):
@@ -70,8 +82,8 @@ class TargetsTab(QWidget):
         self.updating = False
         self.editor_connections_ready = False
 
-        self.summary_table = QTableWidget(0, len(TABLE_COLUMNS))
-        self.summary_table.setHorizontalHeaderLabels(TABLE_COLUMNS)
+        self.summary_table = QTableWidget(0, len(table_columns()))
+        self.summary_table.setHorizontalHeaderLabels(table_columns())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -115,6 +127,7 @@ class TargetsTab(QWidget):
         self.load_demo_data()
 
     def load_case(self, case: CfastCase):
+        self.refresh_unit_labels()
         self.targets = copy.deepcopy(case.targets)
         self.current_index = 0 if self.targets else -1
         self.refresh_summary_table(select_row=0 if self.targets else None)
@@ -256,9 +269,9 @@ class TargetsTab(QWidget):
                 str(row + 1),
                 target.id,
                 target.comp_id,
-                format_number(target.x_position),
-                format_number(target.y_position),
-                format_number(target.z_position),
+                format_value(LENGTH, target.x_position),
+                format_value(LENGTH, target.y_position),
+                format_value(LENGTH, target.z_position),
                 format_number(target.x_normal),
                 format_number(target.y_normal),
                 format_number(target.z_normal),
@@ -310,14 +323,14 @@ class TargetsTab(QWidget):
         self.id_edit.setText(target.id)
         set_combo_text(self.compartment_combo, target.comp_id)
         set_combo_text(self.target_type_combo, display_target_type(target.target_type))
-        self.x_edit.setText(format_with_unit(target.x_position, "m"))
-        self.y_edit.setText(format_with_unit(target.y_position, "m"))
-        self.z_edit.setText(format_with_unit(target.z_position, "m"))
+        self.x_edit.setText(format_value(LENGTH, target.x_position))
+        self.y_edit.setText(format_value(LENGTH, target.y_position))
+        self.z_edit.setText(format_value(LENGTH, target.z_position))
         self.nx_edit.setText(format_number(target.x_normal))
         self.ny_edit.setText(format_number(target.y_normal))
         self.nz_edit.setText(format_number(target.z_normal))
         set_combo_text(self.material_combo, target.matl_id)
-        self.temperature_depth_edit.setText(format_with_unit(target.temperature_depth, "m"))
+        self.temperature_depth_edit.setText(format_value(LENGTH, target.temperature_depth))
         self.update_material_labels(target)
 
         self.updating = False
@@ -380,16 +393,17 @@ class TargetsTab(QWidget):
         return Target(
             id=self.id_edit.text().strip() or f"Targ {self.current_index + 1}",
             comp_id=self.compartment_combo.currentText().strip() or "Comp 1",
-            x_position=parse_float(self.x_edit.text(), "X Position"),
-            y_position=parse_float(self.y_edit.text(), "Y Position"),
-            z_position=parse_float(self.z_edit.text(), "Z Position"),
-            x_normal=parse_float(self.nx_edit.text(), "X Normal"),
-            y_normal=parse_float(self.ny_edit.text(), "Y Normal"),
-            z_normal=parse_float(self.nz_edit.text(), "Z Normal"),
+            x_position=parse_value(LENGTH, self.x_edit.text(), "X Position"),
+            y_position=parse_value(LENGTH, self.y_edit.text(), "Y Position"),
+            z_position=parse_value(LENGTH, self.z_edit.text(), "Z Position"),
+            x_normal=parse_number(self.nx_edit.text(), "X Normal"),
+            y_normal=parse_number(self.ny_edit.text(), "Y Normal"),
+            z_normal=parse_number(self.nz_edit.text(), "Z Normal"),
             matl_id=matl_id,
             target_type=self.target_type_combo.currentText().strip().upper(),
             thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
-            temperature_depth=parse_float(
+            temperature_depth=parse_value(
+                LENGTH,
                 self.temperature_depth_edit.text(),
                 "Internal Temperature Depth",
             ),
@@ -411,16 +425,16 @@ class TargetsTab(QWidget):
     def update_material_labels(self, target: Target):
         material = material_properties(target.matl_id)
         self.conductivity_label.setText(
-            f"Conductivity: {format_property(material.get('conductivity'))} W/(m K)"
+            f"Conductivity: {format_property(material.get('conductivity'), CONDUCTIVITY)} {unit_label(CONDUCTIVITY)}"
         )
         self.specific_heat_label.setText(
-            f"Specific Heat: {format_property(material.get('specific_heat'))} kJ/(kg °C)"
+            f"Specific Heat: {format_property(material.get('specific_heat'), SPECIFIC_HEAT)} {unit_label(SPECIFIC_HEAT)}"
         )
         self.density_label.setText(
-            f"Density: {format_property(material.get('density'))} kg/m^3"
+            f"Density: {format_property(material.get('density'), DENSITY)} {unit_label(DENSITY)}"
         )
         self.thickness_label.setText(
-            f"Thickness: {format_property(material.get('thickness'))} m"
+            f"Thickness: {format_property(material.get('thickness'), LENGTH)} {unit_label(LENGTH)}"
         )
 
     def add_target(self):
@@ -513,26 +527,8 @@ class TargetsTab(QWidget):
 
         case.targets = list(self.targets)
 
-
-def parse_float(text: str, field_name: str) -> float:
-    text = text.strip()
-    match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?", text)
-
-    if match is None:
-        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
-
-    return float(match.group(0).replace("D", "E").replace("d", "e"))
-
-
-def format_number(value: float) -> str:
-    value = float(value)
-    if abs(value - round(value)) < 1.0e-12:
-        return str(int(round(value)))
-    return f"{value:.6g}"
-
-
-def format_with_unit(value: float, unit: str) -> str:
-    return f"{format_number(value)} {unit}"
+    def refresh_unit_labels(self):
+        self.summary_table.setHorizontalHeaderLabels(table_columns())
 
 
 def set_combo_text(combo: QComboBox, text: str):
@@ -554,10 +550,10 @@ def material_properties(matl_id: str) -> dict:
     return MATERIAL_LIBRARY.get(matl_id.strip().upper(), MATERIAL_LIBRARY["DEFAULT"])
 
 
-def format_property(value) -> str:
+def format_property(value, kind: str) -> str:
     if isinstance(value, str):
         return value
-    return format_number(float(value))
+    return format_value(kind, float(value), include_unit=False)
 
 
 def unique_id(base: str, existing: set[str]) -> str:

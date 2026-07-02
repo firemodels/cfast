@@ -1,0 +1,43 @@
+case,field,expected_value,unit,tolerance
+units_basic,time.simulation,5,min,1e-9
+units_basic,time.print,0.5,min,1e-9
+units_basic,init.interior_temperature,68,F,1e-9
+units_basic,init.exterior_temperature,50,F,1e-9
+units_basic,init.pressure,1,atm,1e-9
+units_basic,matl.CONCRETE.conductivity,0.01686347038,BTU/(min ft F),1e-9
+units_basic,matl.CONCRETE.specific_heat,0.2390058119,BTU/(lb F),1e-9
+units_basic,matl.CONCRETE.density,137.3415042,lb/ft^3,1e-7
+units_basic,matl.CONCRETE.thickness,0.4921259843,ft,1e-9
+units_basic,comp.Room.width,16.40419948,ft,1e-8
+units_basic,comp.Room.depth,13.12335958,ft,1e-8
+units_basic,comp.Room.height,9.842519685,ft,1e-8
+units_basic,comp.Room.origin_x,3.280839895,ft,1e-9
+units_basic,comp.Room.wall_leak_area,0.1076391042,ft2,1e-9
+units_basic,comp.Room.floor_leak_area,0.2152782083,ft2,1e-9
+units_basic,output_visualization.1.value,8.202099738,ft,1e-9
+units_vents_devices,wall_vent.Door.bottom,0.656167979,ft,1e-9
+units_vents_devices,wall_vent.Door.height,6.56167979,ft,1e-8
+units_vents_devices,wall_vent.Door.width,2.952755906,ft,1e-9
+units_vents_devices,wall_vent.Door.offset,4.921259843,ft,1e-9
+units_vents_devices,wall_vent.Door.t_2,1,min,1e-9
+units_vents_devices,ceiling_floor_vent.CeilingVent.area,12.9166925,ft2,1e-8
+units_vents_devices,ceiling_floor_vent.CeilingVent.offset_x,1.640419948,ft,1e-9
+units_vents_devices,ceiling_floor_vent.CeilingVent.t_2,0.5,min,1e-9
+units_vents_devices,mechanical_vent.Supply.flow,423.7760007,ft^3/min,1e-6
+units_vents_devices,mechanical_vent.Supply.from_area,2.690977604,ft2,1e-9
+units_vents_devices,mechanical_vent.Supply.begin_dropoff,0.0009869232667,atm,1e-12
+units_vents_devices,mechanical_vent.Supply.filter_time,2,min,1e-9
+units_vents_devices,target.Thermocouple.x_position,8.202099738,ft,1e-9
+units_vents_devices,target.Thermocouple.temperature_depth,0.1640419948,ft,1e-10
+units_vents_devices,device.Sprinkler.activation_temperature,154.9994,F,1e-7
+units_vents_devices,device.Sprinkler.rti,30.39906639,(ft min)^0.5,1e-8
+units_vents_devices,device.Sprinkler.spray_density,0.01377952756,ft/min,1e-11
+units_vents_devices,device.Smoke.activation_obscuration,7.999999813,%/ft,1e-8
+units_fire,fire.Couch.setpoint,0.5,min,1e-9
+units_fire,fire.Couch.x_position,7.217847769,ft,1e-9
+units_fire,fire_property.Couch_Fire.heat_of_combustion,21510.52307,BTU/lb,1e-5
+units_fire,fire_property.Couch_Fire.ramp_2_time,1,min,1e-9
+units_fire,fire_property.Couch_Fire.ramp_2_hrr,56907.09916,BTU/min,1e-5
+units_fire,fire_property.Couch_Fire.ramp_2_height,4.921259843,ft,1e-9
+units_fire,fire_property.Couch_Fire.ramp_2_area,3.229173125,ft2,1e-9
+units_fire,output_visualization.1.value,8.202099738,ft,1e-9

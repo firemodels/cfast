@@ -16,7 +16,7 @@ from main_window import CeditMainWindow
 
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName("CEdit Qt Prototype")
+    app.setApplicationName("CFAST Editor (CEdit)")
 
     window = CeditMainWindow()
     window.show()

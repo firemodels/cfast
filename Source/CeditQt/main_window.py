@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QSettings
@@ -42,6 +43,7 @@ from units import BASE_UNIT_KEYS, unit_system
 
 
 FILENAME_WHITESPACE = re.compile(r"\s+")
+CFAST_VERSION_TAG = re.compile(r"^CFAST-?(\d+(?:\.\d+)+)$", re.IGNORECASE)
 BASE_UNIT_NAMES = {
     "length": "Length",
     "mass": "Mass",
@@ -51,6 +53,37 @@ BASE_UNIT_NAMES = {
     "energy": "Energy",
     "smoke": "Smoke",
 }
+
+
+def latest_cfast_version_from_tag() -> tuple[str, str] | None:
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        result = subprocess.run(
+            ["git", "tag", "--list"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+    latest: tuple[tuple[int, ...], str, str] | None = None
+    for tag in result.stdout.splitlines():
+        match = CFAST_VERSION_TAG.match(tag.strip())
+        if not match:
+            continue
+
+        version = match.group(1)
+        version_key = tuple(int(part) for part in version.split("."))
+        if latest is None or version_key > latest[0]:
+            latest = (version_key, version, tag)
+
+    if latest is None:
+        return None
+
+    return latest[1], latest[2]
 
 
 def sanitize_cfast_input_path(path: Path) -> Path:
@@ -67,7 +100,7 @@ class CeditMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("CEdit Qt Prototype")
+        self.setWindowTitle("CFAST Editor (CEdit)")
         self.resize(1200, 800)
 
         self.current_path: Path | None = None
@@ -176,7 +209,7 @@ class CeditMainWindow(QMainWindow):
 
         help_menu = self.menuBar().addMenu("&Help")
 
-        about_action = QAction("&About CEdit Qt Prototype", self)
+        about_action = QAction("&About CFAST Editor (CEdit)", self)
         about_action.triggered.connect(self.about)
         help_menu.addAction(about_action)
 
@@ -819,10 +852,18 @@ class CeditMainWindow(QMainWindow):
         QMessageBox.critical(self, "Smokeview", message)
 
     def about(self):
+        cfast_version = latest_cfast_version_from_tag()
+        if cfast_version is None:
+            version_text = "CFAST version: Unknown"
+        else:
+            version, tag = cfast_version
+            version_text = f"CFAST version: {version} ({tag})"
+
         QMessageBox.information(
             self,
-            "About CEdit Qt Prototype",
-            "Experimental Python/PySide6 prototype for a new CEdit front end.",
+            "About CFAST Editor (CEdit)",
+            "Python/PySide6 front end for editing and running CFAST input files.\n\n"
+            f"{version_text}",
         )
 
 

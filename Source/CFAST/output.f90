@@ -31,6 +31,7 @@ module output_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
     use iso_fortran_env, only: compiler_version
+    use spreadsheet_output_data, only: n_ssvent
 
     implicit none
     external grabky, get_info
@@ -1508,7 +1509,11 @@ module output_routines
         iocsv(iocsv_devices) = iofilssd
         if (ssoutoptions(ichar('M')-ichar('A')+1)>0) open(iofilssm, file=ssmasses,form='formatted')
         iocsv(iocsv_masses) = iofilssm
-        if (ssoutoptions(ichar('V')-ichar('A')+1)>0) open(iofilssv, file=ssvent,form='formatted')
+        if (ssoutoptions(ichar('V')-ichar('A')+1)>0) then
+           if (n_ssvent > 0) then
+              open(iofilssv, file=ssvent,form='formatted')
+           endif
+        endif
         iocsv(iocsv_vents) = iofilssv
         if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw

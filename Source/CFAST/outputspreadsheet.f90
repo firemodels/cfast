@@ -48,11 +48,7 @@ module spreadsheet_routines
     if (ssoutoptions(ichar('C')-ichar('A')+1)>0) call output_spreadsheet_compartments (time)
     if (ssoutoptions(ichar('D')-ichar('A')+1)>0) call output_spreadsheet_devices (time)
     if (ssoutoptions(ichar('M')-ichar('A')+1)>0) call output_spreadsheet_masses (time)
-    if (ssoutoptions(ichar('V')-ichar('A')+1)>0) then
-       if(n_ssvent > 0) then
-          call output_spreadsheet_vents (time)
-       endif
-    endif
+    if (ssoutoptions(ichar('V')-ichar('A')+1)>0) call output_spreadsheet_vents (time)
     if (ssoutoptions(ichar('W')-ichar('A')+1)>0) call output_spreadsheet_walls (time)
     
     if (radi_verification_flag) call output_spreadsheet_diag(time)

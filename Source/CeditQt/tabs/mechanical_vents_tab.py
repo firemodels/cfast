@@ -53,6 +53,14 @@ def table_item(text: str) -> QTableWidgetItem:
     return item
 
 
+def display_compartment(value: str) -> str:
+    return "Outside" if value.strip().upper() == "OUTSIDE" else value
+
+
+def internal_compartment(value: str) -> str:
+    return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value
+
+
 class MechanicalVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -60,6 +68,7 @@ class MechanicalVentsTab(QWidget):
         self.vents: list[MechanicalVent] = []
         self.current_index = -1
         self.updating = False
+        self.compartment_ids: list[str] = []
 
         self.summary_table = QTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
@@ -73,13 +82,17 @@ class MechanicalVentsTab(QWidget):
 
         self.id_edit = QLineEdit()
 
-        self.from_compartment_edit = QLineEdit()
+        self.from_compartment_edit = QComboBox()
+        self.from_compartment_edit.setEditable(True)
+        self.from_compartment_edit.addItems(["Outside"])
         self.from_area_edit = QLineEdit()
         self.from_height_edit = QLineEdit()
         self.from_orientation_combo = QComboBox()
         self.from_orientation_combo.addItems(["Vertical", "Horizontal"])
 
-        self.to_compartment_edit = QLineEdit()
+        self.to_compartment_edit = QComboBox()
+        self.to_compartment_edit.setEditable(True)
+        self.to_compartment_edit.addItems(["Outside"])
         self.to_area_edit = QLineEdit()
         self.to_height_edit = QLineEdit()
         self.to_orientation_combo = QComboBox()
@@ -237,10 +250,8 @@ class MechanicalVentsTab(QWidget):
     def connect_editor_signals(self):
         line_edits = [
             self.id_edit,
-            self.from_compartment_edit,
             self.from_area_edit,
             self.from_height_edit,
-            self.to_compartment_edit,
             self.to_area_edit,
             self.to_height_edit,
             self.flow_edit,
@@ -255,6 +266,8 @@ class MechanicalVentsTab(QWidget):
         for edit in line_edits:
             edit.editingFinished.connect(self.store_current_vent)
 
+        self.from_compartment_edit.currentTextChanged.connect(self.store_current_vent)
+        self.to_compartment_edit.currentTextChanged.connect(self.store_current_vent)
         self.from_orientation_combo.currentIndexChanged.connect(self.store_current_vent)
         self.to_orientation_combo.currentIndexChanged.connect(self.store_current_vent)
         self.criterion_combo.currentIndexChanged.connect(self.store_current_vent)
@@ -265,7 +278,7 @@ class MechanicalVentsTab(QWidget):
             MechanicalVent(
                 id="MechanicalVent_1",
                 from_comp_id="OUTSIDE",
-                to_comp_id="Comp 1",
+                to_comp_id=self.default_compartment(),
                 from_area=0.25,
                 from_height=2.75,
                 to_area=0.25,
@@ -292,11 +305,11 @@ class MechanicalVentsTab(QWidget):
             values = [
                 str(row + 1),
                 vent.id,
-                vent.from_comp_id,
+                display_compartment(vent.from_comp_id),
                 format_value(AREA, vent.from_area),
                 format_value(LENGTH, vent.from_height),
                 self.display_orientation(vent.from_orientation),
-                vent.to_comp_id,
+                display_compartment(vent.to_comp_id),
                 format_value(AREA, vent.to_area),
                 format_value(LENGTH, vent.to_height),
                 self.display_orientation(vent.to_orientation),
@@ -338,12 +351,12 @@ class MechanicalVentsTab(QWidget):
 
         self.editor_group.setTitle(f"Vent {index + 1} (of {len(self.vents)}) Geometry")
         self.id_edit.setText(vent.id)
-        self.from_compartment_edit.setText(vent.from_comp_id)
+        self.set_combo_text(self.from_compartment_edit, display_compartment(vent.from_comp_id))
         self.from_area_edit.setText(format_value(AREA, vent.from_area))
         self.from_height_edit.setText(format_value(LENGTH, vent.from_height))
         self.set_combo_text(self.from_orientation_combo, self.display_orientation(vent.from_orientation))
 
-        self.to_compartment_edit.setText(vent.to_comp_id)
+        self.set_combo_text(self.to_compartment_edit, display_compartment(vent.to_comp_id))
         self.to_area_edit.setText(format_value(AREA, vent.to_area))
         self.to_height_edit.setText(format_value(LENGTH, vent.to_height))
         self.set_combo_text(self.to_orientation_combo, self.display_orientation(vent.to_orientation))
@@ -375,10 +388,8 @@ class MechanicalVentsTab(QWidget):
         self.updating = True
         for widget in [
             self.id_edit,
-            self.from_compartment_edit,
             self.from_area_edit,
             self.from_height_edit,
-            self.to_compartment_edit,
             self.to_area_edit,
             self.to_height_edit,
             self.flow_edit,
@@ -390,6 +401,8 @@ class MechanicalVentsTab(QWidget):
             self.filter_time_edit,
         ]:
             widget.clear()
+        self.set_combo_text(self.from_compartment_edit, "")
+        self.set_combo_text(self.to_compartment_edit, "")
         self.schedule_table.clearContents()
         self.editor_group.setTitle("Vent 0 (of 0) Geometry")
         self.updating = False
@@ -403,8 +416,12 @@ class MechanicalVentsTab(QWidget):
 
         vent = self.vents[self.current_index]
         vent.id = self.id_edit.text().strip() or vent.id
-        vent.from_comp_id = self.from_compartment_edit.text().strip() or "OUTSIDE"
-        vent.to_comp_id = self.to_compartment_edit.text().strip() or "OUTSIDE"
+        vent.from_comp_id = internal_compartment(
+            self.from_compartment_edit.currentText().strip() or "OUTSIDE"
+        )
+        vent.to_comp_id = internal_compartment(
+            self.to_compartment_edit.currentText().strip() or "OUTSIDE"
+        )
 
         try:
             vent.from_area = parse_value(AREA, self.from_area_edit.text(), "From Area")
@@ -458,7 +475,7 @@ class MechanicalVentsTab(QWidget):
             MechanicalVent(
                 id=f"MechanicalVent_{new_index}",
                 from_comp_id="OUTSIDE",
-                to_comp_id="Comp 1",
+                to_comp_id=self.default_compartment(),
             )
         )
         self.refresh_summary_table()
@@ -544,9 +561,25 @@ class MechanicalVentsTab(QWidget):
 
     @staticmethod
     def set_combo_text(combo: QComboBox, text: str):
-        index = combo.findText(text)
+        index = combo.findText(text, Qt.MatchFlag.MatchFixedString)
         if index >= 0:
             combo.setCurrentIndex(index)
+        else:
+            combo.setEditText(text)
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        choices = ["Outside"] + self.compartment_ids
+        for combo in (self.from_compartment_edit, self.to_compartment_edit):
+            current = combo.currentText()
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItems(choices)
+            self.set_combo_text(combo, current)
+            combo.blockSignals(False)
+
+    def default_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
 
     @staticmethod
     def display_orientation(value: str) -> str:

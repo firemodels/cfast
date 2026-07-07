@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
+    QComboBox,
     QFormLayout,
     QGridLayout,
     QGroupBox,
@@ -84,6 +85,7 @@ class CompartmentsTab(QWidget):
         self.loading = False
         self.selected_index = 0
         self.compartments = self.default_compartments()
+        self.material_choices = ["OFF"]
 
         self.summary_table = QTableWidget(0, len(summary_headers()))
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
@@ -196,6 +198,14 @@ class CompartmentsTab(QWidget):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.materials_table.setHorizontalHeaderLabels(material_headers())
         self.area_table.setHorizontalHeaderLabels(area_headers())
+
+    def set_material_ids(self, material_ids: list[str]):
+        choices = ["OFF"]
+        for material_id in material_ids:
+            if material_id and material_id not in choices:
+                choices.append(material_id)
+        self.material_choices = choices
+        self.refresh_material_combo_choices()
 
     def default_compartments(self) -> list[Compartment]:
         concrete_surface = {
@@ -573,14 +583,20 @@ class CompartmentsTab(QWidget):
             edit.clear()
 
         self.normal_radio.setChecked(True)
-        self.materials_table.clearContents()
+        self.clear_materials_table()
         self.area_table.clearContents()
         self.area_table.setRowCount(6)
         self.loading = False
 
+    def clear_materials_table(self):
+        for row in range(self.materials_table.rowCount()):
+            for col in (0, 2, 4):
+                self.materials_table.removeCellWidget(row, col)
+        self.materials_table.clearContents()
+
     def load_materials_table(self, compartment: Compartment):
         self.materials_table.blockSignals(True)
-        self.materials_table.clearContents()
+        self.clear_materials_table()
 
         for row in range(3):
             values = [
@@ -593,9 +609,44 @@ class CompartmentsTab(QWidget):
             ]
 
             for col, value in enumerate(values):
-                self.materials_table.setItem(row, col, QTableWidgetItem(value))
+                if col in (0, 2, 4):
+                    self.set_material_combo(row, col, value)
+                else:
+                    self.materials_table.setItem(row, col, QTableWidgetItem(value))
 
         self.materials_table.blockSignals(False)
+
+    def set_material_combo(self, row: int, col: int, value: str):
+        combo = QComboBox(self.materials_table)
+        combo.setEditable(True)
+        self.populate_material_combo(combo, value)
+        combo.activated.connect(lambda _index: self.save_detail_to_selected())
+        if combo.lineEdit() is not None:
+            combo.lineEdit().editingFinished.connect(self.save_detail_to_selected)
+        self.materials_table.setCellWidget(row, col, combo)
+
+    def populate_material_combo(self, combo: QComboBox, value: str):
+        choices = list(self.material_choices)
+        value = value.strip()
+        if value and value not in choices:
+            choices.append(value)
+
+        combo.blockSignals(True)
+        combo.clear()
+        combo.addItems(choices)
+        match = combo.findText(value, Qt.MatchFlag.MatchFixedString)
+        if match >= 0:
+            combo.setCurrentIndex(match)
+        else:
+            combo.setEditText(value)
+        combo.blockSignals(False)
+
+    def refresh_material_combo_choices(self):
+        for row in range(self.materials_table.rowCount()):
+            for col in (0, 2, 4):
+                widget = self.materials_table.cellWidget(row, col)
+                if isinstance(widget, QComboBox):
+                    self.populate_material_combo(widget, widget.currentText())
 
     def load_area_table(self, compartment: Compartment):
         self.area_table.blockSignals(True)
@@ -707,6 +758,10 @@ class CompartmentsTab(QWidget):
         compartment.cross_section_areas = areas
 
     def material_cell(self, row: int, col: int) -> str:
+        widget = self.materials_table.cellWidget(row, col)
+        if isinstance(widget, QComboBox):
+            return widget.currentText().strip()
+
         item = self.materials_table.item(row, col)
         return "" if item is None else item.text().strip()
 

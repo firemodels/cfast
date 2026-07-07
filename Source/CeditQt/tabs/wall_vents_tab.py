@@ -38,12 +38,17 @@ def summary_headers() -> list[str]:
     ]
 
 
+def normalize_compartment(value: str) -> str:
+    return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value.strip()
+
+
 class WallVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.records: list[dict] = []
         self.loading = False
+        self.compartment_ids: list[str] = []
 
         self.summary_table = QTableWidget(0, 10)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
@@ -65,7 +70,7 @@ class WallVentsTab(QWidget):
 
         for combo in [self.first_comp_combo, self.second_comp_combo]:
             combo.setEditable(True)
-            combo.addItems(["Comp 1", "Comp 2", "Comp 3", "Outside"])
+            combo.addItems(["Outside"])
 
         self.face_combo.addItems(["Front", "Rear", "Right", "Left"])
         self.criterion_combo.addItems(["Time"])
@@ -239,7 +244,7 @@ class WallVentsTab(QWidget):
     def make_default_record(self, index: int) -> dict:
         return {
             "id": f"WallVent_{index}",
-            "first_compartment": "Comp 1",
+            "first_compartment": self.default_first_compartment(),
             "second_compartment": "Outside",
             "bottom": format_value(LENGTH, 0.0),
             "height": format_value(LENGTH, 2.0),
@@ -346,6 +351,20 @@ class WallVentsTab(QWidget):
             combo.setCurrentIndex(index)
         else:
             combo.setEditText(text)
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        choices = ["Outside"] + self.compartment_ids
+        for combo in (self.first_comp_combo, self.second_comp_combo):
+            current = combo.currentText()
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItems(choices)
+            self.set_combo_text(combo, current)
+            combo.blockSignals(False)
+
+    def default_first_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
 
     def load_record_into_editor(self, row: int):
         record = self.records[row]
@@ -490,13 +509,12 @@ class WallVentsTab(QWidget):
                 continue
 
             vent_id = record["id"].strip()
-            first_comp_id = record["first_compartment"].strip()
-            second_comp_id = record["second_compartment"].strip() or "Outside"
+            first_comp_id = normalize_compartment(record["first_compartment"])
+            second_comp_id = normalize_compartment(
+                record["second_compartment"] or "Outside"
+            )
             face = record["face"].strip().upper()
             criterion = record["criterion"].strip().upper() or "TIME"
-
-            if second_comp_id.upper() == "OUTSIDE":
-                second_comp_id = "OUTSIDE"
 
             if not vent_id:
                 raise ValueError(f"Wall Vents row {row + 1}: ID is required.")

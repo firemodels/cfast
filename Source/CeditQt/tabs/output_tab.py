@@ -78,7 +78,9 @@ class OutputTab(QWidget):
         self.visualization_type_combo = QComboBox()
         self.visualization_type_combo.addItems(["2-D", "3-D"])
 
-        self.visual_compartment_edit = QLineEdit("All")
+        self.visual_compartment_edit = QComboBox()
+        self.visual_compartment_edit.setEditable(True)
+        self.visual_compartment_edit.addItems(["All"])
         self.visual_position_edit = QLineEdit(format_value(LENGTH, 2.5))
 
         self.axis_combo = QComboBox()
@@ -113,6 +115,16 @@ class OutputTab(QWidget):
         self.refresh_visual_numbers()
         self.refresh_resolution_numbers()
         self.select_first_rows()
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        current = self.visual_compartment_edit.currentText()
+        self.visual_compartment_edit.blockSignals(True)
+        self.visual_compartment_edit.clear()
+        self.visual_compartment_edit.addItems(
+            ["All"] + [comp_id for comp_id in compartment_ids if comp_id]
+        )
+        set_combo_text(self.visual_compartment_edit, current)
+        self.visual_compartment_edit.blockSignals(False)
 
     def load_case(self, case: CfastCase):
         self.updating = True
@@ -274,7 +286,7 @@ class OutputTab(QWidget):
         self.resolution_table.cellChanged.connect(self.resolution_cell_changed)
 
         self.visualization_type_combo.currentTextChanged.connect(self.editor_to_visual_row)
-        self.visual_compartment_edit.editingFinished.connect(self.editor_to_visual_row)
+        self.visual_compartment_edit.currentTextChanged.connect(self.editor_to_visual_row)
         self.visual_position_edit.editingFinished.connect(self.editor_to_visual_row)
         self.axis_combo.currentTextChanged.connect(self.editor_to_visual_row)
 
@@ -478,7 +490,7 @@ class OutputTab(QWidget):
 
         self.updating = True
         self.visualization_type_combo.setCurrentText(values[0] or "2-D")
-        self.visual_compartment_edit.setText(values[1] or "All")
+        set_combo_text(self.visual_compartment_edit, values[1] or "All")
         axis = axis_code(values[2] or "X")
         if axis == "X":
             self.axis_combo.setCurrentText("X-axis (Width)")
@@ -499,7 +511,7 @@ class OutputTab(QWidget):
 
         self.updating = True
         self.set_cell_text(self.visual_table, row, 1, self.visualization_type_combo.currentText())
-        self.set_cell_text(self.visual_table, row, 2, self.visual_compartment_edit.text())
+        self.set_cell_text(self.visual_table, row, 2, self.visual_compartment_edit.currentText())
         self.set_cell_text(self.visual_table, row, 3, AXIS_LABELS[axis_code(self.axis_combo.currentText())])
         self.set_cell_text(self.visual_table, row, 4, self.visual_position_edit.text())
         self.updating = False
@@ -600,6 +612,14 @@ def display_compartment(value: str) -> str:
     if value.strip().upper() in {"NULL", "ALL", ""}:
         return "All"
     return value
+
+
+def set_combo_text(combo: QComboBox, text: str) -> None:
+    index = combo.findText(text, Qt.MatchFlag.MatchFixedString)
+    if index >= 0:
+        combo.setCurrentIndex(index)
+    else:
+        combo.setEditText(text)
 
 
 def visual_headers() -> list[str]:

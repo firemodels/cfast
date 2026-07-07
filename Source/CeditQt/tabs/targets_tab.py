@@ -81,6 +81,8 @@ class TargetsTab(QWidget):
         self.current_index = -1
         self.updating = False
         self.editor_connections_ready = False
+        self.compartment_ids: list[str] = []
+        self.material_ids: list[str] = ["OFF", "DEFAULT"]
 
         self.summary_table = QTableWidget(0, len(table_columns()))
         self.summary_table.setHorizontalHeaderLabels(table_columns())
@@ -214,7 +216,7 @@ class TargetsTab(QWidget):
 
         self.material_combo = QComboBox()
         self.material_combo.setEditable(True)
-        self.material_combo.addItems(["CONCRETE", "GYPSUM", "DEFAULT"])
+        self.material_combo.addItems(self.material_ids)
 
         self.conductivity_label = QLabel("Conductivity: ")
         self.specific_heat_label = QLabel("Specific Heat: ")
@@ -392,7 +394,10 @@ class TargetsTab(QWidget):
 
         return Target(
             id=self.id_edit.text().strip() or f"Targ {self.current_index + 1}",
-            comp_id=self.compartment_combo.currentText().strip() or "Comp 1",
+            comp_id=(
+                self.compartment_combo.currentText().strip()
+                or self.default_compartment()
+            ),
             x_position=parse_value(LENGTH, self.x_edit.text(), "X Position"),
             y_position=parse_value(LENGTH, self.y_edit.text(), "Y Position"),
             z_position=parse_value(LENGTH, self.z_edit.text(), "Z Position"),
@@ -444,7 +449,7 @@ class TargetsTab(QWidget):
         if base is None:
             target = Target(
                 id=f"Targ {next_number}",
-                comp_id="Comp 1",
+                comp_id=self.default_compartment(),
                 x_position=0.0,
                 y_position=0.0,
                 z_position=0.0,
@@ -529,6 +534,33 @@ class TargetsTab(QWidget):
 
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(table_columns())
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        current = self.compartment_combo.currentText()
+        self.compartment_combo.blockSignals(True)
+        self.compartment_combo.clear()
+        self.compartment_combo.addItems(self.compartment_ids)
+        if current:
+            set_combo_text(self.compartment_combo, current)
+        self.compartment_combo.blockSignals(False)
+
+    def default_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
+
+    def set_material_ids(self, material_ids: list[str]):
+        choices = ["OFF", "DEFAULT"]
+        for material_id in material_ids:
+            if material_id and material_id not in choices:
+                choices.append(material_id)
+        self.material_ids = choices
+        current = self.material_combo.currentText()
+        self.material_combo.blockSignals(True)
+        self.material_combo.clear()
+        self.material_combo.addItems(self.material_ids)
+        if current:
+            set_combo_text(self.material_combo, current)
+        self.material_combo.blockSignals(False)
 
 
 def set_combo_text(combo: QComboBox, text: str):

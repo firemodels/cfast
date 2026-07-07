@@ -94,6 +94,7 @@ class DetectionSuppressionTab(QWidget):
         self.updating_table = False
         self.current_index = -1
         self.devices: list[DetectionDevice] = []
+        self.compartment_ids: list[str] = []
 
         self.summary_table = QTableWidget(0, 10)
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
@@ -295,10 +296,21 @@ class DetectionSuppressionTab(QWidget):
         current = self.compartment_combo.currentText()
         self.compartment_combo.blockSignals(True)
         self.compartment_combo.clear()
-        self.compartment_combo.addItems(["Comp 1", "Comp 2", "Comp 3"])
-        if current:
+        self.compartment_combo.addItems(self.compartment_ids)
+        if current in self.compartment_ids:
             set_combo_text(self.compartment_combo, current)
+        elif self.compartment_ids:
+            self.compartment_combo.setCurrentIndex(0)
+        else:
+            self.compartment_combo.setEditText("")
         self.compartment_combo.blockSignals(False)
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        self.update_compartment_choices()
+
+    def default_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
 
     def selected_device(self) -> DetectionDevice | None:
         if 0 <= self.current_index < len(self.devices):
@@ -514,7 +526,10 @@ class DetectionSuppressionTab(QWidget):
         device = self.devices[row]
 
         device.id = self.table_text(row, self.COL_ID) or device.id
-        device.comp_id = self.table_text(row, self.COL_COMPARTMENT) or "Comp 1"
+        device.comp_id = (
+            self.table_text(row, self.COL_COMPARTMENT)
+            or self.default_compartment()
+        )
         device.device_type = display_type_to_devc_type(
             self.table_text(row, self.COL_TYPE) or device.display_type()
         )
@@ -571,7 +586,10 @@ class DetectionSuppressionTab(QWidget):
 
         device.id = self.id_edit.text().strip() or device.id
         device.device_type = display_type_to_devc_type(self.type_combo.currentText())
-        device.comp_id = self.compartment_combo.currentText().strip() or "Comp 1"
+        device.comp_id = (
+            self.compartment_combo.currentText().strip()
+            or self.default_compartment()
+        )
         device.x_position = parse_value(LENGTH, self.x_edit.text(), "X Position", 0.0)
         device.y_position = parse_value(LENGTH, self.y_edit.text(), "Y Position", 0.0)
         device.z_position = parse_value(LENGTH, self.z_edit.text(), "Z Position", 0.0)
@@ -606,7 +624,7 @@ class DetectionSuppressionTab(QWidget):
         number = len(self.devices) + 1
         device = DetectionDevice(
             id=f"Sprinkler_{number}",
-            comp_id="Comp 1",
+            comp_id=self.default_compartment(),
             device_type="SPRINKLER",
         )
         self.devices.append(device)

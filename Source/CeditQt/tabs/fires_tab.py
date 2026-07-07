@@ -146,6 +146,8 @@ class FiresTab(QWidget):
         self.current_index = -1
         self.fires: list[FireDefinition] = []
         self.fire_properties: list[FireProperty] = []
+        self.compartment_ids: list[str] = []
+        self.target_ids: list[str] = []
 
         self.summary_table = QTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(
@@ -214,6 +216,7 @@ class FiresTab(QWidget):
         self.fires = copy.deepcopy(case.fires)
         self.fire_properties = copy.deepcopy(case.fire_properties)
         self.update_compartment_choices()
+        self.update_target_choices()
         self.update_property_choices()
         self.rebuild_summary_table()
 
@@ -443,16 +446,43 @@ class FiresTab(QWidget):
         ]
 
         self.update_compartment_choices()
+        self.update_target_choices()
         self.update_property_choices()
 
     def update_compartment_choices(self):
         current = self.compartment_combo.currentText()
         self.compartment_combo.blockSignals(True)
         self.compartment_combo.clear()
-        self.compartment_combo.addItems(["Comp 1", "Comp 2", "Comp 3"])
-        if current:
+        self.compartment_combo.addItems(self.compartment_ids)
+        if current in self.compartment_ids:
             set_combo_text(self.compartment_combo, current)
+        elif self.compartment_ids:
+            self.compartment_combo.setCurrentIndex(0)
+        else:
+            self.compartment_combo.setEditText("")
         self.compartment_combo.blockSignals(False)
+
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        self.update_compartment_choices()
+
+    def default_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
+
+    def update_target_choices(self):
+        current = self.target_combo.currentText()
+        self.target_combo.blockSignals(True)
+        self.target_combo.clear()
+        self.target_combo.addItems(self.target_ids)
+        if current in self.target_ids:
+            set_combo_text(self.target_combo, current)
+        else:
+            self.target_combo.setEditText("")
+        self.target_combo.blockSignals(False)
+
+    def set_target_ids(self, target_ids: list[str]):
+        self.target_ids = [target_id for target_id in target_ids if target_id]
+        self.update_target_choices()
 
     def update_property_choices(self):
         current = self.fire_property_combo.currentText()
@@ -677,7 +707,10 @@ class FiresTab(QWidget):
             return
 
         fire.id = self.fire_id_edit.text().strip() or fire.id
-        fire.comp_id = self.compartment_combo.currentText().strip() or "Comp 1"
+        fire.comp_id = (
+            self.compartment_combo.currentText().strip()
+            or self.default_compartment()
+        )
         fire.fire_property_id = self.fire_property_combo.currentText().strip()
         fire.ignition_criterion = self.ignition_combo.currentText().strip().upper()
         fire.setpoint = parse_value(
@@ -775,7 +808,7 @@ class FiresTab(QWidget):
         )
         fire = FireDefinition(
             id=fire_id,
-            comp_id="Comp 1",
+            comp_id=self.default_compartment(),
             fire_property_id=prop_id,
             ignition_criterion="TIME",
             setpoint=0.0,
@@ -810,7 +843,7 @@ class FiresTab(QWidget):
         )
         fire = FireDefinition(
             id=fire_id,
-            comp_id="Comp 1",
+            comp_id=self.default_compartment(),
             fire_property_id=prop_id,
             ignition_criterion="TIME",
             setpoint=0.0,

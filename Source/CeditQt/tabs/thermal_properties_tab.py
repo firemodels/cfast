@@ -142,6 +142,14 @@ class ThermalPropertiesTab(QWidget):
 
         return item.text().strip()
 
+    def material_ids(self) -> list[str]:
+        material_ids: list[str] = []
+        for row in range(self.table.rowCount()):
+            material_id = self.cell_text(row, 0)
+            if material_id:
+                material_ids.append(material_id)
+        return material_ids
+
     def add_to_case(self, case: CfastCase):
         materials: list[MaterialProperty] = []
         ids_seen: set[str] = set()

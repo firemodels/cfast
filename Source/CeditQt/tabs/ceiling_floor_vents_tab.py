@@ -30,12 +30,25 @@ def table_item_text(table: QTableWidget, row: int, col: int) -> str:
     return item.text().strip()
 
 
+def set_combo_text(combo: QComboBox, text: str) -> None:
+    index = combo.findText(text, Qt.MatchFlag.MatchFixedString)
+    if index >= 0:
+        combo.setCurrentIndex(index)
+    else:
+        combo.setEditText(text)
+
+
+def normalize_compartment(value: str) -> str:
+    return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value.strip()
+
+
 class CeilingFloorVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.current_row = -1
         self.loading_editor = False
+        self.compartment_ids: list[str] = []
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
         self.summary_table = QTableWidget(8, len(self.summary_headers()))
@@ -60,8 +73,10 @@ class CeilingFloorVentsTab(QWidget):
         remove_button.clicked.connect(self.remove_selected)
 
         self.id_edit = QLineEdit()
-        self.first_comp_edit = QLineEdit()
-        self.second_comp_edit = QLineEdit()
+        self.first_comp_edit = QComboBox()
+        self.first_comp_edit.setEditable(True)
+        self.second_comp_edit = QComboBox()
+        self.second_comp_edit.setEditable(True)
         self.type_combo = QComboBox()
         self.type_combo.addItems(["CEILING", "FLOOR"])
         self.shape_combo = QComboBox()
@@ -195,6 +210,25 @@ class CeilingFloorVentsTab(QWidget):
         group.setLayout(layout)
         return group
 
+    def set_compartment_ids(self, compartment_ids: list[str]):
+        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        choices = ["Outside"] + self.compartment_ids
+        for combo in (self.first_comp_edit, self.second_comp_edit):
+            current = combo.currentText()
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItems(choices)
+            set_combo_text(combo, current)
+            combo.blockSignals(False)
+
+    def default_first_compartment(self) -> str:
+        return self.compartment_ids[0] if self.compartment_ids else ""
+
+    def default_second_compartment(self) -> str:
+        if len(self.compartment_ids) > 1:
+            return self.compartment_ids[1]
+        return "Outside"
+
     def build_opening_group(self):
         group = QGroupBox("Opening Fraction")
         layout = QVBoxLayout()
@@ -213,8 +247,6 @@ class CeilingFloorVentsTab(QWidget):
     def connect_editor_signals(self):
         for widget in [
             self.id_edit,
-            self.first_comp_edit,
-            self.second_comp_edit,
             self.area_edit,
             self.initial_open_edit,
             self.offset_x_edit,
@@ -223,6 +255,8 @@ class CeilingFloorVentsTab(QWidget):
         ]:
             widget.editingFinished.connect(self.save_current_editor)
 
+        self.first_comp_edit.currentTextChanged.connect(self.save_current_editor)
+        self.second_comp_edit.currentTextChanged.connect(self.save_current_editor)
         self.type_combo.currentTextChanged.connect(self.save_current_editor)
         self.shape_combo.currentTextChanged.connect(self.save_current_editor)
         self.use_time_fraction_checkbox.stateChanged.connect(self.save_current_editor)
@@ -235,8 +269,8 @@ class CeilingFloorVentsTab(QWidget):
             [
                 "1",
                 "CFVent_1",
-                "Comp 3",
-                "Comp 2",
+                self.default_first_compartment(),
+                self.default_second_compartment(),
                 "FLOOR",
                 "ROUND",
                 format_value(AREA, 1.0),
@@ -287,8 +321,8 @@ class CeilingFloorVentsTab(QWidget):
 
         self.loading_editor = True
         self.id_edit.setText(table_item_text(self.summary_table, row, 1))
-        self.first_comp_edit.setText(table_item_text(self.summary_table, row, 2))
-        self.second_comp_edit.setText(table_item_text(self.summary_table, row, 3))
+        set_combo_text(self.first_comp_edit, table_item_text(self.summary_table, row, 2))
+        set_combo_text(self.second_comp_edit, table_item_text(self.summary_table, row, 3))
         self.type_combo.setCurrentText(table_item_text(self.summary_table, row, 4) or "CEILING")
         self.shape_combo.setCurrentText(table_item_text(self.summary_table, row, 5) or "ROUND")
         self.area_edit.setText(table_item_text(self.summary_table, row, 6))
@@ -304,8 +338,6 @@ class CeilingFloorVentsTab(QWidget):
         self.loading_editor = True
         for widget in [
             self.id_edit,
-            self.first_comp_edit,
-            self.second_comp_edit,
             self.area_edit,
             self.initial_open_edit,
             self.offset_x_edit,
@@ -313,6 +345,8 @@ class CeilingFloorVentsTab(QWidget):
             self.fyi_edit,
         ]:
             widget.clear()
+        set_combo_text(self.first_comp_edit, "")
+        set_combo_text(self.second_comp_edit, "")
         self.fraction_table.clearContents()
         self.use_time_fraction_checkbox.setChecked(False)
         self.detail_group.setTitle("Vent 0 (of 0) Geometry")
@@ -341,12 +375,30 @@ class CeilingFloorVentsTab(QWidget):
         if row < 0 or row >= self.summary_table.rowCount():
             return
 
+        substantive_values = [
+            self.id_edit.text().strip(),
+            self.first_comp_edit.currentText().strip(),
+            self.second_comp_edit.currentText().strip(),
+            self.area_edit.text().strip(),
+            self.initial_open_edit.text().strip(),
+            self.offset_x_edit.text().strip(),
+            self.offset_y_edit.text().strip(),
+        ]
+        if not any(substantive_values) and not self.extract_schedule():
+            self.summary_table.blockSignals(True)
+            for col in range(1, self.summary_table.columnCount()):
+                self.summary_table.setItem(row, col, QTableWidgetItem(""))
+            self.summary_table.blockSignals(False)
+            self.schedules.pop(row, None)
+            self.renumber_rows()
+            return
+
         self.summary_table.blockSignals(True)
         values = [
             table_item_text(self.summary_table, row, 0) or str(row + 1),
             self.id_edit.text().strip(),
-            self.first_comp_edit.text().strip(),
-            self.second_comp_edit.text().strip(),
+            self.first_comp_edit.currentText().strip(),
+            self.second_comp_edit.currentText().strip(),
             self.type_combo.currentText().strip(),
             self.shape_combo.currentText().strip(),
             self.area_edit.text().strip(),
@@ -414,8 +466,8 @@ class CeilingFloorVentsTab(QWidget):
             [
                 str(num),
                 f"CFVent_{num}",
-                "Comp 3",
-                "Comp 2",
+                self.default_first_compartment(),
+                self.default_second_compartment(),
                 "FLOOR",
                 "ROUND",
                 format_value(AREA, 1.0),
@@ -516,8 +568,8 @@ class CeilingFloorVentsTab(QWidget):
                 continue
 
             vent_id = table_item_text(self.summary_table, row, 1)
-            first_comp = table_item_text(self.summary_table, row, 2)
-            second_comp = table_item_text(self.summary_table, row, 3)
+            first_comp = normalize_compartment(table_item_text(self.summary_table, row, 2))
+            second_comp = normalize_compartment(table_item_text(self.summary_table, row, 3))
 
             if not vent_id:
                 raise ValueError(f"Ceiling/Floor Vents row {row + 1}: ID is required.")

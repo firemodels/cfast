@@ -1443,6 +1443,7 @@ module output_routines
     rewind (unit=iofilstat)
     write (iofilstat,5001,err=10) t, dt, total_steps
     call results_compressed (iofilstat)
+    flush (unit=iofilstat)
 10  continue
     return
 

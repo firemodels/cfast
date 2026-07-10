@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QFrame,
     QGridLayout,
@@ -138,6 +140,80 @@ class FirePlotCanvas(FigureCanvas):
         self.draw()
 
 
+class SpreadsheetTableWidget(QTableWidget):
+    pasted = Signal()
+
+    def keyPressEvent(self, event):
+        if event.matches(QKeySequence.StandardKey.Paste):
+            if self.paste_from_clipboard():
+                event.accept()
+                return
+
+        super().keyPressEvent(event)
+
+    def paste_from_clipboard(self) -> bool:
+        text = QApplication.clipboard().text()
+        rows = self.parse_clipboard_text(text)
+        if not rows:
+            return False
+
+        start_row, start_col = self.paste_start_cell()
+        if start_row < 0 or start_col < 0:
+            return False
+
+        needed_rows = start_row + len(rows)
+        if needed_rows > self.rowCount():
+            self.setRowCount(needed_rows)
+
+        self.blockSignals(True)
+        for row_offset, values in enumerate(rows):
+            target_row = start_row + row_offset
+            for col_offset, value in enumerate(values):
+                target_col = start_col + col_offset
+                if target_col >= self.columnCount():
+                    break
+
+                item = self.item(target_row, target_col)
+                if item is None:
+                    item = QTableWidgetItem()
+                    self.setItem(target_row, target_col, item)
+                item.setText(value)
+        self.blockSignals(False)
+        self.pasted.emit()
+        return True
+
+    def paste_start_cell(self) -> tuple[int, int]:
+        selected = self.selectedIndexes()
+        if selected:
+            start_row = min(index.row() for index in selected)
+            start_col = min(index.column() for index in selected)
+            return start_row, start_col
+
+        row = self.currentRow()
+        col = self.currentColumn()
+        if row < 0:
+            row = 0
+        if col < 0:
+            col = 0
+        return row, col
+
+    @staticmethod
+    def parse_clipboard_text(text: str) -> list[list[str]]:
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+        lines = text.split("\n")
+        if lines and lines[-1] == "":
+            lines = lines[:-1]
+
+        rows: list[list[str]] = []
+        for line in lines:
+            values = [value.strip() for value in line.split("\t")]
+            if len(values) == 1 and values[0] == "":
+                continue
+            rows.append(values)
+
+        return rows
+
+
 class FiresTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -195,13 +271,16 @@ class FiresTab(QWidget):
         self.heat_of_combustion_edit = QLineEdit()
         self.radiative_fraction_edit = QLineEdit()
 
-        self.ramp_table = QTableWidget(8, 8)
+        self.ramp_table = SpreadsheetTableWidget(8, 8)
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
         self.ramp_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
         self.ramp_table.verticalHeader().setVisible(True)
+        self.ramp_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+        self.ramp_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectItems)
         self.ramp_table.cellChanged.connect(self.editor_changed)
+        self.ramp_table.pasted.connect(self.editor_changed)
 
         self.plot_canvas = FirePlotCanvas()
 
@@ -485,13 +564,15 @@ class FiresTab(QWidget):
         self.update_target_choices()
 
     def update_property_choices(self):
-        current = self.fire_property_combo.currentText()
+        current = self.fire_property_combo.currentText().strip()
+        property_ids = [prop.id for prop in self.fire_properties]
         self.fire_property_combo.blockSignals(True)
         self.fire_property_combo.clear()
-        for prop in self.fire_properties:
-            self.fire_property_combo.addItem(prop.id)
-        if current:
+        self.fire_property_combo.addItems(property_ids)
+        if current in property_ids:
             set_combo_text(self.fire_property_combo, current)
+        else:
+            self.fire_property_combo.setEditText("")
         self.fire_property_combo.blockSignals(False)
 
     def selected_fire(self) -> FireDefinition | None:
@@ -542,6 +623,7 @@ class FiresTab(QWidget):
         if not self.fires:
             self.current_index = -1
             self.clear_editor()
+            self.update_plot()
             return
 
         index = max(0, min(index, len(self.fires) - 1))
@@ -571,23 +653,29 @@ class FiresTab(QWidget):
 
     def clear_editor(self):
         self.loading = True
-        for widget in [
-            self.fire_id_edit,
-            self.x_position_edit,
-            self.y_position_edit,
-            self.setpoint_edit,
-            self.property_id_edit,
-            self.carbon_edit,
-            self.hydrogen_edit,
-            self.oxygen_edit,
-            self.nitrogen_edit,
-            self.chlorine_edit,
-            self.heat_of_combustion_edit,
-            self.radiative_fraction_edit,
-        ]:
-            widget.clear()
-        self.ramp_table.clearContents()
-        self.loading = False
+        try:
+            for widget in [
+                self.fire_id_edit,
+                self.x_position_edit,
+                self.y_position_edit,
+                self.setpoint_edit,
+                self.property_id_edit,
+                self.carbon_edit,
+                self.hydrogen_edit,
+                self.oxygen_edit,
+                self.nitrogen_edit,
+                self.chlorine_edit,
+                self.heat_of_combustion_edit,
+                self.radiative_fraction_edit,
+            ]:
+                widget.clear()
+
+            self.compartment_combo.setEditText("")
+            self.target_combo.setEditText("")
+            self.fire_property_combo.setEditText("")
+            self.ramp_table.clearContents()
+        finally:
+            self.loading = False
 
     def load_editor(self, index: int):
         if not 0 <= index < len(self.fires):
@@ -659,12 +747,71 @@ class FiresTab(QWidget):
             return
 
         try:
+            self.ensure_fire_for_ramp_table()
             self.save_current_editor()
             self.rebuild_summary_table()
             self.select_summary_row_without_loading(self.current_index)
             self.update_plot()
         except ValueError:
             pass
+
+    def ensure_fire_for_ramp_table(self):
+        if self.selected_fire() is not None or not self.ramp_table_has_data():
+            return
+
+        number = len(self.fires) + 1
+        fire_id = self.fire_id_edit.text().strip() or f"Fire_{number}"
+        prop_id = (
+            self.property_id_edit.text().strip()
+            or self.fire_property_combo.currentText().strip()
+            or f"{fire_id}_Fire"
+        )
+        prop = self.find_property(prop_id)
+        if prop is None:
+            prop = FireProperty(id=prop_id)
+            self.fire_properties.append(prop)
+
+        fire = FireDefinition(
+            id=fire_id,
+            comp_id=(
+                self.compartment_combo.currentText().strip()
+                or self.default_compartment()
+            ),
+            fire_property_id=prop_id,
+        )
+        self.fires.append(fire)
+        self.current_index = len(self.fires) - 1
+
+        self.loading = True
+        try:
+            self.fire_id_edit.setText(fire.id)
+            set_combo_text(self.compartment_combo, fire.comp_id)
+            set_combo_text(self.ignition_combo, fire.ignition_criterion)
+            self.setpoint_edit.setText(format_value(TIME, fire.setpoint))
+            self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
+            self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
+            self.property_id_edit.setText(prop.id)
+            self.carbon_edit.setText(str(prop.carbon))
+            self.hydrogen_edit.setText(str(prop.hydrogen))
+            self.oxygen_edit.setText(str(prop.oxygen))
+            self.nitrogen_edit.setText(str(prop.nitrogen))
+            self.chlorine_edit.setText(str(prop.chlorine))
+            self.heat_of_combustion_edit.setText(
+                format_value(HOC, prop.heat_of_combustion)
+            )
+            self.radiative_fraction_edit.setText(f"{prop.radiative_fraction:g}")
+            self.update_property_choices()
+            set_combo_text(self.fire_property_combo, prop.id)
+        finally:
+            self.loading = False
+
+    def ramp_table_has_data(self) -> bool:
+        for row in range(self.ramp_table.rowCount()):
+            for col in range(self.ramp_table.columnCount()):
+                if read_table_item(self.ramp_table, row, col):
+                    return True
+
+        return False
 
     def referenced_property_changed(self):
         if self.loading:

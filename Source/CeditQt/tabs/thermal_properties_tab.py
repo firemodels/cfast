@@ -150,6 +150,41 @@ class ThermalPropertiesTab(QWidget):
                 material_ids.append(material_id)
         return material_ids
 
+    def has_material_id(self, material_id: str) -> bool:
+        return material_id in self.material_ids()
+
+    def add_material_property(self, material: MaterialProperty):
+        if self.has_material_id(material.id):
+            return
+
+        row = self.first_blank_row()
+        if row is None:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
+
+        values = [
+            material.id,
+            material.material,
+            format_value(CONDUCTIVITY, material.conductivity),
+            format_value(SPECIFIC_HEAT, material.specific_heat),
+            format_value(DENSITY, material.density),
+            format_value(LENGTH, material.thickness),
+            format_number(material.emissivity),
+            material.fyi,
+        ]
+
+        self.table.blockSignals(True)
+        for col, value in enumerate(values):
+            self.table.setItem(row, col, QTableWidgetItem(value))
+        self.table.blockSignals(False)
+
+    def first_blank_row(self) -> int | None:
+        for row in range(self.table.rowCount()):
+            values = [self.cell_text(row, col) for col in range(self.table.columnCount())]
+            if not any(values):
+                return row
+        return None
+
     def add_to_case(self, case: CfastCase):
         materials: list[MaterialProperty] = []
         ids_seen: set[str] = set()

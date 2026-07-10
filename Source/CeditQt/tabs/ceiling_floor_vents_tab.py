@@ -384,7 +384,7 @@ class CeilingFloorVentsTab(QWidget):
             self.offset_x_edit.text().strip(),
             self.offset_y_edit.text().strip(),
         ]
-        if not any(substantive_values) and not self.extract_schedule():
+        if not any(substantive_values) and not self.editor_has_schedule():
             self.summary_table.blockSignals(True)
             for col in range(1, self.summary_table.columnCount()):
                 self.summary_table.setItem(row, col, QTableWidgetItem(""))
@@ -410,6 +410,19 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.blockSignals(False)
         self.save_schedule_for_row(row)
         self.renumber_rows()
+
+    def editor_has_schedule(self) -> bool:
+        if not self.use_time_fraction_checkbox.isChecked():
+            return False
+
+        for table_row in range(self.fraction_table.rowCount()):
+            t_text = table_item_text(self.fraction_table, table_row, 0)
+            f_text = table_item_text(self.fraction_table, table_row, 1)
+
+            if t_text or f_text:
+                return True
+
+        return False
 
     def load_schedule_for_row(self, row: int):
         t_values, f_values = self.schedules.get(row, ([], []))

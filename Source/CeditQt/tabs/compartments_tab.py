@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
@@ -79,6 +79,8 @@ def first_or_off(values: tuple[str, str, str]) -> str:
 
 
 class CompartmentsTab(QWidget):
+    materials_referenced = Signal(list)
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -369,6 +371,7 @@ class CompartmentsTab(QWidget):
         self.compartments.append(compartment)
         self.refresh_summary_table(select_row=len(self.compartments) - 1)
         self.load_detail_from_selected()
+        self.materials_referenced.emit(self.material_ids_for_compartment(compartment))
 
     def duplicate_compartment(self):
         self.save_detail_to_selected()
@@ -379,6 +382,22 @@ class CompartmentsTab(QWidget):
         self.compartments.insert(insert_row, compartment)
         self.refresh_summary_table(select_row=insert_row)
         self.load_detail_from_selected()
+        self.materials_referenced.emit(self.material_ids_for_compartment(compartment))
+
+    def material_ids_for_compartment(self, compartment: Compartment) -> list[str]:
+        material_ids: list[str] = []
+        for values in (
+            compartment.ceiling_matl_id,
+            compartment.wall_matl_id,
+            compartment.floor_matl_id,
+        ):
+            for material_id in values:
+                material_id = material_id.strip()
+                if material_id.upper() in {"", "OFF", "NULL", "DEFAULT"}:
+                    continue
+                if material_id not in material_ids:
+                    material_ids.append(material_id)
+        return material_ids
 
     def move_compartment_up(self):
         self.save_detail_to_selected()

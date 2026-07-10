@@ -38,6 +38,7 @@ from cfast_case import (
     FireDefinition,
     FireProperty,
     FireRampPoint,
+    MaterialProperty,
     WallVent,
 )
 from cfast_reader import read_cfast_input_with_warnings
@@ -170,6 +171,18 @@ def single_compartment_example() -> CfastCase:
     return case
 
 
+def default_concrete_material() -> MaterialProperty:
+    return MaterialProperty(
+        id="CONCRETE",
+        material="Concrete Normal Weight (6 in)",
+        conductivity=1.75,
+        specific_heat=1.0,
+        density=2200.0,
+        thickness=0.15,
+        emissivity=0.94,
+    )
+
+
 def sanitize_cfast_input_path(path: Path) -> Path:
     """Return a CFAST input path whose file name has no whitespace."""
     name = path.name.strip()
@@ -221,6 +234,9 @@ class CeditMainWindow(QMainWindow):
         self.simulation_tab = SimulationTab()
         self.thermal_properties_tab = ThermalPropertiesTab()
         self.compartments_tab = CompartmentsTab()
+        self.compartments_tab.materials_referenced.connect(
+            self.add_missing_default_materials
+        )
         self.wall_vents_tab = WallVentsTab()
         self.ceiling_floor_vents_tab = CeilingFloorVentsTab()
         self.mechanical_vents_tab = MechanicalVentsTab()
@@ -478,6 +494,20 @@ class CeditMainWindow(QMainWindow):
         self.targets_tab.set_material_ids(material_ids)
         self.detection_suppression_tab.set_compartment_ids(compartment_ids)
         self.output_tab.set_compartment_ids(compartment_ids)
+
+    def add_missing_default_materials(self, material_ids: list[str]):
+        added_material = False
+        for material_id in material_ids:
+            if material_id.upper() != "CONCRETE":
+                continue
+            if self.thermal_properties_tab.has_material_id(material_id):
+                continue
+
+            self.thermal_properties_tab.add_material_property(default_concrete_material())
+            added_material = True
+
+        if added_material:
+            self.refresh_reference_lists()
 
     def save_cfast_input(self):
         if self.current_path is None:

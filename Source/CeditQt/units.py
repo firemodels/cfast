@@ -102,6 +102,44 @@ BASE_UNITS: dict[str, list[BaseUnit]] = {
     ],
 }
 
+_BASE_UNIT_ALIASES = {
+    "s": ["sec", "secs", "second", "seconds"],
+    "min": ["mins", "minute", "minutes"],
+    "h": ["hr", "hrs", "hour", "hours"],
+    "ft": ["foot", "feet"],
+    "in": ["inch", "inches"],
+    "lb": ["lbs", "pound", "pounds"],
+    "oz": ["ounce", "ounces"],
+    "C": ["deg C", "degC", "Celsius"],
+    "F": ["deg F", "degF", "Fahrenheit"],
+    "K": ["Kelvin"],
+    "R": ["Rankine"],
+    "BTU": ["Btu", "btu"],
+}
+_EXPLICIT_UNIT_LOOKUP_CACHE: dict[str, dict[str, Conversion]] = {}
+
+
+def normalize_unit_label(label: str) -> str:
+    normalized = label.strip().lower()
+    normalized = normalized.replace("°", "")
+    normalized = normalized.replace("²", "2").replace("³", "3")
+    normalized = normalized.replace("**", "^")
+    normalized = re.sub(r"\s+", "", normalized)
+    normalized = normalized.replace("(", "").replace(")", "")
+    return normalized.replace("^", "")
+
+
+def label_variants(label: str) -> set[str]:
+    variants = {label}
+    variants.update(_BASE_UNIT_ALIASES.get(label, []))
+
+    if "2" in label:
+        variants.add(label.replace("2", "^2"))
+    if "3" in label:
+        variants.add(label.replace("3", "^3"))
+
+    return variants
+
 
 def format_number(value: float | int) -> str:
     if isinstance(value, int):
@@ -283,6 +321,251 @@ class UnitSystem:
         }
 
 
+def hrr_unit_labels(energy_label: str, time_label: str) -> set[str]:
+    base_label = f"{energy_label}/{time_label}"
+    labels = {base_label}
+
+    if base_label == "J/s":
+        labels.add("W")
+    elif base_label == "kJ/s":
+        labels.add("kW")
+    elif base_label == "MJ/s":
+        labels.add("MW")
+
+    return labels
+
+
+def heat_flux_unit_labels(energy_label: str, time_label: str, length_label: str) -> set[str]:
+    labels = {
+        f"{energy_label}/({time_label} {length_label}2)",
+        f"{energy_label}/{time_label}/{length_label}2",
+    }
+
+    for hrr_label in hrr_unit_labels(energy_label, time_label):
+        labels.add(f"{hrr_label}/{length_label}2")
+
+    return labels
+
+
+def conductivity_unit_labels(
+    energy_label: str,
+    time_label: str,
+    length_label: str,
+    temperature_label: str,
+) -> set[str]:
+    labels = {
+        f"{energy_label}/({time_label} {length_label} {temperature_label})",
+        f"{energy_label}/{time_label}/{length_label}/{temperature_label}",
+    }
+
+    for hrr_label in hrr_unit_labels(energy_label, time_label):
+        labels.add(f"{hrr_label}/({length_label} {temperature_label})")
+        labels.add(f"{hrr_label}/{length_label}/{temperature_label}")
+
+    return labels
+
+
+def register_unit(
+    lookup: dict[str, Conversion],
+    label: str,
+    conversion: Conversion,
+) -> None:
+    for variant in label_variants(label):
+        lookup[normalize_unit_label(variant)] = conversion
+
+
+def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
+    cached = _EXPLICIT_UNIT_LOOKUP_CACHE.get(kind)
+    if cached is not None:
+        return cached
+
+    lookup: dict[str, Conversion] = {}
+
+    if kind in BASE_UNITS:
+        for unit in BASE_UNITS[kind]:
+            register_unit(
+                lookup,
+                unit.label,
+                Conversion(
+                    unit.multiplier,
+                    unit.offset,
+                    unit.label,
+                    smoke=(kind == SMOKE),
+                ),
+            )
+        _EXPLICIT_UNIT_LOOKUP_CACHE[kind] = lookup
+        return lookup
+
+    if kind == TEMPERATURE_RISE:
+        for unit in BASE_UNITS[TEMPERATURE]:
+            register_unit(
+                lookup,
+                unit.label,
+                Conversion(unit.multiplier, 0.0, unit.label),
+            )
+        _EXPLICIT_UNIT_LOOKUP_CACHE[kind] = lookup
+        return lookup
+
+    for length in BASE_UNITS[LENGTH]:
+        if kind == AREA:
+            register_unit(
+                lookup,
+                f"{length.label}2",
+                Conversion(length.multiplier ** 2, 0.0, f"{length.label}2"),
+            )
+
+        for time in BASE_UNITS[TIME]:
+            if kind == VELOCITY:
+                register_unit(
+                    lookup,
+                    f"{length.label}/{time.label}",
+                    Conversion(
+                        length.multiplier / time.multiplier,
+                        0.0,
+                        f"{length.label}/{time.label}",
+                    ),
+                )
+            elif kind == FLOWRATE:
+                register_unit(
+                    lookup,
+                    f"{length.label}^3/{time.label}",
+                    Conversion(
+                        length.multiplier ** 3 / time.multiplier,
+                        0.0,
+                        f"{length.label}^3/{time.label}",
+                    ),
+                )
+
+        for mass in BASE_UNITS[MASS]:
+            if kind == DENSITY:
+                register_unit(
+                    lookup,
+                    f"{mass.label}/{length.label}^3",
+                    Conversion(
+                        mass.multiplier / length.multiplier ** 3,
+                        0.0,
+                        f"{mass.label}/{length.label}^3",
+                    ),
+                )
+
+    for length in BASE_UNITS[LENGTH]:
+        for time in BASE_UNITS[TIME]:
+            if kind == RTI:
+                register_unit(
+                    lookup,
+                    f"({length.label} {time.label})^0.5",
+                    Conversion(
+                        math.sqrt(length.multiplier * time.multiplier),
+                        0.0,
+                        f"({length.label} {time.label})^0.5",
+                    ),
+                )
+
+    for mass in BASE_UNITS[MASS]:
+        for time in BASE_UNITS[TIME]:
+            if kind == MASS_LOSS:
+                register_unit(
+                    lookup,
+                    f"{mass.label}/{time.label}",
+                    Conversion(
+                        mass.multiplier / time.multiplier,
+                        0.0,
+                        f"{mass.label}/{time.label}",
+                    ),
+                )
+
+    for energy in BASE_UNITS[ENERGY]:
+        for time in BASE_UNITS[TIME]:
+            if kind == HRR:
+                for label in hrr_unit_labels(energy.label, time.label):
+                    register_unit(
+                        lookup,
+                        label,
+                        Conversion(
+                            energy.multiplier / time.multiplier,
+                            0.0,
+                            label,
+                        ),
+                    )
+
+            for length in BASE_UNITS[LENGTH]:
+                if kind == HEAT_FLUX:
+                    for label in heat_flux_unit_labels(
+                        energy.label,
+                        time.label,
+                        length.label,
+                    ):
+                        register_unit(
+                            lookup,
+                            label,
+                            Conversion(
+                                energy.multiplier
+                                / (time.multiplier * length.multiplier ** 2),
+                                0.0,
+                                label,
+                            ),
+                        )
+
+                for temperature in BASE_UNITS[TEMPERATURE]:
+                    if kind == CONDUCTIVITY:
+                        for label in conductivity_unit_labels(
+                            energy.label,
+                            time.label,
+                            length.label,
+                            temperature.label,
+                        ):
+                            register_unit(
+                                lookup,
+                                label,
+                                Conversion(
+                                    energy.multiplier
+                                    / (
+                                        time.multiplier
+                                        * length.multiplier
+                                        * temperature.multiplier
+                                    ),
+                                    0.0,
+                                    label,
+                                ),
+                            )
+
+        for mass in BASE_UNITS[MASS]:
+            if kind in {HOC, HOG}:
+                register_unit(
+                    lookup,
+                    f"{energy.label}/{mass.label}",
+                    Conversion(
+                        energy.multiplier / mass.multiplier,
+                        0.0,
+                        f"{energy.label}/{mass.label}",
+                    ),
+                )
+
+            for temperature in BASE_UNITS[TEMPERATURE]:
+                if kind == SPECIFIC_HEAT:
+                    for label in (
+                        f"{energy.label}/({mass.label} {temperature.label})",
+                        f"{energy.label}/{mass.label}/{temperature.label}",
+                    ):
+                        register_unit(
+                            lookup,
+                            label,
+                            Conversion(
+                                energy.multiplier
+                                / (mass.multiplier * temperature.multiplier),
+                                0.0,
+                                label,
+                            ),
+                        )
+
+    _EXPLICIT_UNIT_LOOKUP_CACHE[kind] = lookup
+    return lookup
+
+
+def explicit_unit_conversion(kind: str, suffix: str) -> Conversion | None:
+    return explicit_unit_lookup(kind).get(normalize_unit_label(suffix))
+
+
 unit_system = UnitSystem()
 
 
@@ -336,9 +619,24 @@ def parse_value(
     if not stripped and default is not None:
         return default
 
-    value = parse_number(stripped, field_name)
+    match = _NUMBER_RE.search(stripped)
+    if match is None:
+        raise ValueError(f"Could not parse numeric value for {field_name}: {text!r}")
+
+    value = float(match.group(0).replace("D", "E").replace("d", "e"))
     if value is None:
         return None
+
+    suffix = stripped[match.end():].strip()
+    if suffix:
+        conversion = explicit_unit_conversion(kind, suffix)
+        if conversion is None:
+            raise ValueError(
+                f"Unknown unit {suffix!r} for {field_name}; expected {unit_label(kind)} "
+                "or another compatible engineering unit."
+            )
+        return si_to_model(kind, conversion.to_si(value))
+
     return model_value(kind, value)
 
 

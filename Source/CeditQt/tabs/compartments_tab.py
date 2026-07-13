@@ -513,6 +513,7 @@ class CompartmentsTab(QWidget):
 
         row = item.row()
         self.update_model_from_summary(row)
+        self.refresh_summary_table(select_row=row)
 
         if row == self.selected_index:
             self.load_detail_from_selected()
@@ -745,6 +746,8 @@ class CompartmentsTab(QWidget):
 
         if refresh_summary:
             self.refresh_summary_table(select_row=row)
+            if row == self.selected_index:
+                self.load_detail_from_selected()
 
     def save_materials_from_table(self, compartment: Compartment):
         ceiling_ids: list[str] = []
@@ -801,10 +804,14 @@ class CompartmentsTab(QWidget):
         item = self.area_table.item(row, col)
         return "" if item is None else item.text().strip()
 
-    def add_to_case(self, case: CfastCase):
+    def add_to_case(self, case: CfastCase, require_compartments: bool = True):
         self.save_detail_to_selected()
 
         if not self.compartments:
+            case.compartments = []
+            case.comp_id = ""
+            if not require_compartments:
+                return
             raise ValueError("At least one compartment is required.")
 
         ids_seen: set[str] = set()

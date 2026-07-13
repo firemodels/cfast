@@ -1,14 +1,14 @@
-#/bin/bash
-# This script runs the FDS Verification Cases on a linux machine with
+#!/bin/bash
+# This script runs the CFAST Verification Cases on a linux machine with
 # a batch queuing system
 
 function usage {
 echo "Run_CFAST_Cases.sh [-d -h -q queue_name -s ]"
-echo "Runs CFAST verification/validateion suite"
+echo "Runs CFAST verification suite"
 echo ""
 echo "Options"
 echo "-d - use debug version of cfast"
-echo "-m max_iterations - stop cfast runs after a specifed number of iterations (delayed stop)"
+echo "-m max_iterations - stop cfast runs after a specified number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause cfast to stop after 10 iterations"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
@@ -87,5 +87,5 @@ fi
 
 export BASEDIR=`pwd`
 
-echo CFAST cases submitted
+echo CFAST verification cases submitted
 scripts/CFAST_Cases.sh

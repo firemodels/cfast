@@ -80,7 +80,7 @@ if [ "$queue" != "" ]; then
 fi
 
 if [ "$TIME" == "" ]; then
-  export RUNCFAST="$SVNROOT/Utilities/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+  export RUNCFAST="$SVNROOT/Utilities/scripts/qcfast.sh $queue $JOBPREFIX -e $CFAST "
 else
   export RUNCFAST="$SVNROOT/Validation/scripts/gettime.sh"
 fi

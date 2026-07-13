@@ -36,6 +36,7 @@ class ThermalPropertiesTab(QWidget):
             QHeaderView.ResizeMode.Stretch
         )
         self.table.verticalHeader().setVisible(True)
+        self.table.itemChanged.connect(self.cell_changed)
 
         add_row_button = QPushButton("Add Row")
         delete_row_button = QPushButton("Delete Selected")
@@ -133,6 +134,30 @@ class ThermalPropertiesTab(QWidget):
 
     def clear_table(self):
         self.table.clearContents()
+
+    def cell_changed(self, item: QTableWidgetItem):
+        kind_by_column = {
+            2: CONDUCTIVITY,
+            3: SPECIFIC_HEAT,
+            4: DENSITY,
+            5: LENGTH,
+        }
+        kind = kind_by_column.get(item.column())
+        if kind is None:
+            return
+
+        text = item.text().strip()
+        if not text:
+            return
+
+        try:
+            value = parse_value(kind, text, self.table.horizontalHeaderItem(item.column()).text())
+        except ValueError:
+            return
+
+        self.table.blockSignals(True)
+        item.setText(format_value(kind, value))
+        self.table.blockSignals(False)
 
     def cell_text(self, row: int, col: int) -> str:
         item = self.table.item(row, col)

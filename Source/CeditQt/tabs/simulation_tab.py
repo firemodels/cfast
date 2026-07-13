@@ -58,6 +58,7 @@ class SimulationTab(QWidget):
         self.message_panel.setMinimumHeight(140)
 
         self.build_layout()
+        self.connect_unit_normalizers()
 
     def build_layout(self):
         main_layout = QVBoxLayout()
@@ -158,6 +159,45 @@ class SimulationTab(QWidget):
         group.setMinimumWidth(380)
 
         return group
+
+    def connect_unit_normalizers(self):
+        for edit, kind, field_name, allow_default in (
+            (self.simulation_time_edit, TIME, "Simulation Time", False),
+            (self.print_interval_edit, TIME, "Text Output Interval", False),
+            (self.spreadsheet_interval_edit, TIME, "Spreadsheet Output Interval", False),
+            (self.smokeview_interval_edit, TIME, "Smokeview Output Interval", False),
+            (self.max_time_step_edit, TIME, "Maximum Time Step", True),
+            (self.interior_temperature_edit, TEMPERATURE, "Interior Temperature", False),
+            (self.exterior_temperature_edit, TEMPERATURE, "Exterior Temperature", False),
+            (self.pressure_edit, PRESSURE, "Pressure", False),
+        ):
+            edit.editingFinished.connect(
+                lambda edit=edit, kind=kind, field_name=field_name, allow_default=allow_default: (
+                    self.normalize_value_edit(edit, kind, field_name, allow_default)
+                )
+            )
+
+    def normalize_value_edit(
+        self,
+        edit: QLineEdit,
+        kind: str,
+        field_name: str,
+        allow_default: bool = False,
+    ):
+        try:
+            value = parse_value(
+                kind,
+                edit.text(),
+                field_name,
+                allow_default=allow_default,
+            )
+        except ValueError:
+            return
+
+        if value is None:
+            edit.setText("Default")
+        else:
+            edit.setText(format_value(kind, value))
 
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"

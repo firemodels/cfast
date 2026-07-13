@@ -290,8 +290,28 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.blockSignals(False)
 
     def set_summary_row(self, row: int, values: list[str]):
+        values = self.normalized_summary_values(values)
         for col, value in enumerate(values):
             self.summary_table.setItem(row, col, summary_item(value, editable=(col != 0)))
+
+    def normalized_summary_values(self, values: list[str]) -> list[str]:
+        normalized = list(values)
+        for col, kind, field_name in (
+            (6, AREA, "Area"),
+            (8, LENGTH, "X Offset"),
+            (9, LENGTH, "Y Offset"),
+        ):
+            if col >= len(normalized):
+                continue
+            text = normalized[col].strip()
+            if not text:
+                continue
+            try:
+                value = parse_value(kind, text, field_name)
+            except ValueError:
+                continue
+            normalized[col] = format_value(kind, value)
+        return normalized
 
     def summary_selection_changed(self, current_row, current_col, previous_row, previous_col):
         if previous_row >= 0:
@@ -304,9 +324,17 @@ class CeilingFloorVentsTab(QWidget):
         if self.loading_editor:
             return
 
+        row = item.row()
+        values = [
+            table_item_text(self.summary_table, row, col)
+            for col in range(self.summary_table.columnCount())
+        ]
+        self.summary_table.blockSignals(True)
+        self.set_summary_row(row, values)
+        self.summary_table.blockSignals(False)
         self.renumber_rows()
-        if item.row() == self.current_row:
-            self.load_editor_from_row(item.row())
+        if row == self.current_row:
+            self.load_editor_from_row(row)
 
     def renumber_rows(self):
         self.summary_table.blockSignals(True)

@@ -375,7 +375,7 @@ class CeditMainWindow(QMainWindow):
 
     def select_engineering_units(self):
         try:
-            case = self.build_cfast_case()
+            case = self.build_cfast_case(require_compartments=False)
         except Exception as exc:
             self.simulation_tab.set_message(str(exc))
             self.statusBar().showMessage("Errors")
@@ -450,12 +450,15 @@ class CeditMainWindow(QMainWindow):
 
         return row
 
-    def build_cfast_case(self):
+    def build_cfast_case(self, require_compartments: bool = True):
         case = CfastCase()
         case.extra_namelists = list(self.extra_namelists)
         self.simulation_tab.add_to_case(case)
         self.thermal_properties_tab.add_to_case(case)
-        self.compartments_tab.add_to_case(case)
+        self.compartments_tab.add_to_case(
+            case,
+            require_compartments=require_compartments,
+        )
         self.wall_vents_tab.add_to_case(case)
         self.ceiling_floor_vents_tab.add_to_case(case)
         self.mechanical_vents_tab.add_to_case(case)

@@ -327,6 +327,7 @@ class WallVentsTab(QWidget):
             return
 
         self.save_summary_row_to_record(row)
+        self.update_summary_row(row, self.records[row])
         if row == self.current_row():
             self.load_record_into_editor(row)
 
@@ -341,10 +342,42 @@ class WallVentsTab(QWidget):
         record["initial_open"] = self.summary_cell(row, 7)
         record["face"] = self.summary_cell(row, 8)
         record["offset"] = self.summary_cell(row, 9)
+        self.normalize_record_units(record)
 
     def summary_cell(self, row: int, col: int) -> str:
         item = self.summary_table.item(row, col)
         return "" if item is None else item.text().strip()
+
+    def normalize_record_units(self, record: dict):
+        for key, field_name in (
+            ("bottom", "Wall vent bottom"),
+            ("height", "Wall vent height"),
+            ("width", "Wall vent width"),
+            ("offset", "Wall vent offset"),
+        ):
+            text = record[key].strip()
+            if not text:
+                continue
+            try:
+                value = parse_value(LENGTH, text, field_name)
+            except ValueError:
+                continue
+            record[key] = format_value(LENGTH, value)
+
+        normalized_schedule = []
+        for time_text, fraction_text in record["schedule"]:
+            try:
+                time_value = parse_value(TIME, time_text, "Opening time")
+                time_text = format_value(TIME, time_value)
+            except ValueError:
+                pass
+            try:
+                fraction_value = parse_number(fraction_text, "Opening fraction")
+                fraction_text = format_number(fraction_value)
+            except ValueError:
+                pass
+            normalized_schedule.append((time_text, fraction_text))
+        record["schedule"] = normalized_schedule
 
     def clear_editor(self):
         self.loading = True
@@ -445,6 +478,7 @@ class WallVentsTab(QWidget):
         record["face"] = self.face_combo.currentText().strip()
         record["criterion"] = self.criterion_combo.currentText().strip()
         record["schedule"] = self.extract_schedule_strings()
+        self.normalize_record_units(record)
         self.update_summary_row(row, record)
 
     def extract_schedule_strings(self) -> list[tuple[str, str]]:

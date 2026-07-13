@@ -476,9 +476,30 @@ class OutputTab(QWidget):
     def visual_cell_changed(self, row, col):
         if self.updating:
             return
+        if col == 4:
+            self.normalize_visual_position(row)
         self.refresh_visual_numbers()
         if row == self.visual_table.currentRow():
             self.visual_row_to_editor(row)
+
+    def normalize_visual_position(self, row: int):
+        text = self.cell_text(self.visual_table, row, 4)
+        if not text:
+            return
+
+        try:
+            value = parse_value(LENGTH, text, "Visualization Value")
+        except ValueError:
+            return
+
+        self.updating = True
+        self.set_cell_text(
+            self.visual_table,
+            row,
+            4,
+            format_value(LENGTH, value),
+        )
+        self.updating = False
 
     def visual_row_to_editor(self, row: int):
         if row < 0:
@@ -509,11 +530,23 @@ class OutputTab(QWidget):
         if row < 0:
             return
 
+        position_text = self.visual_position_edit.text()
+        try:
+            position_value = parse_value(
+                LENGTH,
+                position_text,
+                "Visualization Value",
+            )
+            position_text = format_value(LENGTH, position_value)
+            self.visual_position_edit.setText(position_text)
+        except ValueError:
+            pass
+
         self.updating = True
         self.set_cell_text(self.visual_table, row, 1, self.visualization_type_combo.currentText())
         self.set_cell_text(self.visual_table, row, 2, self.visual_compartment_edit.currentText())
         self.set_cell_text(self.visual_table, row, 3, AXIS_LABELS[axis_code(self.axis_combo.currentText())])
-        self.set_cell_text(self.visual_table, row, 4, self.visual_position_edit.text())
+        self.set_cell_text(self.visual_table, row, 4, position_text)
         self.updating = False
         self.refresh_visual_numbers()
 

@@ -354,9 +354,15 @@ class CompartmentsTab(QWidget):
         for edit in edits:
             edit.editingFinished.connect(self.save_detail_to_selected)
 
-        self.flow_group.buttonClicked.connect(self.save_detail_to_selected)
-        self.area_table.cellChanged.connect(self.save_detail_to_selected)
-        self.materials_table.cellChanged.connect(self.save_detail_to_selected)
+        self.flow_group.buttonClicked.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
+        self.area_table.cellChanged.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
+        self.materials_table.cellChanged.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
 
     def add_compartment(self):
         self.save_detail_to_selected()
@@ -447,25 +453,26 @@ class CompartmentsTab(QWidget):
 
     def refresh_summary_table(self, select_row: int | None = None):
         self.loading = True
-        self.summary_table.setRowCount(len(self.compartments))
+        try:
+            self.summary_table.setRowCount(len(self.compartments))
 
-        for row, compartment in enumerate(self.compartments):
-            values = self.summary_values(row, compartment)
+            for row, compartment in enumerate(self.compartments):
+                values = self.summary_values(row, compartment)
 
-            for col, value in enumerate(values):
-                item = QTableWidgetItem(value)
+                for col, value in enumerate(values):
+                    item = QTableWidgetItem(value)
 
-                if col in {1, 11, 12, 13, 14, 15, 16}:
-                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    if col in {1, 11, 12, 13, 14, 15, 16}:
+                        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
-                self.summary_table.setItem(row, col, item)
+                    self.summary_table.setItem(row, col, item)
 
-        self.loading = False
-
-        if select_row is not None:
-            select_row = max(0, min(select_row, len(self.compartments) - 1))
-            self.selected_index = select_row
-            self.summary_table.selectRow(select_row)
+            if select_row is not None and self.compartments:
+                select_row = max(0, min(select_row, len(self.compartments) - 1))
+                self.selected_index = select_row
+                self.summary_table.selectRow(select_row)
+        finally:
+            self.loading = False
 
     def summary_values(self, row: int, compartment: Compartment) -> list[str]:
         return [
@@ -493,7 +500,7 @@ class CompartmentsTab(QWidget):
             return
 
         if previous.isValid():
-            self.save_detail_to_selected(previous.row())
+            self.save_detail_to_selected(previous.row(), refresh_summary=False)
 
         if current.isValid():
             self.selected_index = current.row()
@@ -681,7 +688,11 @@ class CompartmentsTab(QWidget):
 
         self.area_table.blockSignals(False)
 
-    def save_detail_to_selected(self, row: int | None = None):
+    def save_detail_to_selected(
+        self,
+        row: int | None = None,
+        refresh_summary: bool = True,
+    ):
         if self.loading or not self.compartments:
             return
 
@@ -731,7 +742,8 @@ class CompartmentsTab(QWidget):
         except ValueError:
             return
 
-        self.refresh_summary_table(select_row=row)
+        if refresh_summary:
+            self.refresh_summary_table(select_row=row)
 
     def save_materials_from_table(self, compartment: Compartment):
         ceiling_ids: list[str] = []

@@ -126,7 +126,7 @@ gnu_osx : obj = cfast7_osx
 gnu_osx : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
-gnu_osx_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_osx_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_osx_db : FCOMPL = gfortran
 gnu_osx_db : obj = cfast7_osx_db
 gnu_osx_db : $(objfgnu)
@@ -178,4 +178,3 @@ clean:
 .PHONY : winclean
 winclean:
 	-erase *.mod *.obj 
-

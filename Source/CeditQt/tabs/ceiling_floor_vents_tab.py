@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CeilingFloorVent, CfastCase
+from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -42,6 +43,13 @@ def normalize_compartment(value: str) -> str:
     return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value.strip()
 
 
+def summary_item(text: str, editable: bool = True) -> QTableWidgetItem:
+    item = QTableWidgetItem(text)
+    if not editable:
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+    return item
+
+
 class CeilingFloorVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -51,7 +59,7 @@ class CeilingFloorVentsTab(QWidget):
         self.compartment_ids: list[str] = []
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
-        self.summary_table = QTableWidget(8, len(self.summary_headers()))
+        self.summary_table = HoverEditTableWidget(8, len(self.summary_headers()))
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -283,7 +291,7 @@ class CeilingFloorVentsTab(QWidget):
 
     def set_summary_row(self, row: int, values: list[str]):
         for col, value in enumerate(values):
-            self.summary_table.setItem(row, col, QTableWidgetItem(value))
+            self.summary_table.setItem(row, col, summary_item(value, editable=(col != 0)))
 
     def summary_selection_changed(self, current_row, current_col, previous_row, previous_col):
         if previous_row >= 0:
@@ -293,10 +301,12 @@ class CeilingFloorVentsTab(QWidget):
         self.load_editor_from_row(current_row)
 
     def summary_item_changed(self, item):
-        if item.column() == 1 and item.row() == self.current_row:
-            self.id_edit.setText(item.text())
+        if self.loading_editor:
+            return
 
         self.renumber_rows()
+        if item.row() == self.current_row:
+            self.load_editor_from_row(item.row())
 
     def renumber_rows(self):
         self.summary_table.blockSignals(True)
@@ -305,7 +315,13 @@ class CeilingFloorVentsTab(QWidget):
         for row in range(self.summary_table.rowCount()):
             if self.row_has_data(row):
                 count += 1
-                self.summary_table.setItem(row, 0, QTableWidgetItem(str(count)))
+                self.summary_table.setItem(
+                    row,
+                    0,
+                    summary_item(str(count), editable=False),
+                )
+            else:
+                self.summary_table.setItem(row, 0, summary_item("", editable=False))
 
         self.summary_table.blockSignals(False)
 

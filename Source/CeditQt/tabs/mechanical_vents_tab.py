@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, MechanicalVent
+from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
     FLOWRATE,
@@ -47,9 +48,11 @@ def summary_headers() -> list[str]:
     ]
 
 
-def table_item(text: str) -> QTableWidgetItem:
+def table_item(text: str, editable: bool = True) -> QTableWidgetItem:
     item = QTableWidgetItem(text)
     item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    if not editable:
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
     return item
 
 
@@ -70,7 +73,7 @@ class MechanicalVentsTab(QWidget):
         self.updating = False
         self.compartment_ids: list[str] = []
 
-        self.summary_table = QTableWidget(0, 11)
+        self.summary_table = HoverEditTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -79,6 +82,7 @@ class MechanicalVentsTab(QWidget):
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.summary_table.itemSelectionChanged.connect(self.summary_selection_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         self.id_edit = QLineEdit()
 
@@ -317,7 +321,11 @@ class MechanicalVentsTab(QWidget):
             ]
 
             for col, value in enumerate(values):
-                self.summary_table.setItem(row, col, table_item(value))
+                self.summary_table.setItem(
+                    row,
+                    col,
+                    table_item(value, editable=(col != 0)),
+                )
 
         self.updating = False
 
@@ -331,6 +339,53 @@ class MechanicalVentsTab(QWidget):
             return
 
         self.load_vent_into_editor(selected[0].row())
+
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.updating:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.vents):
+            return
+
+        try:
+            self.update_vent_from_summary(row)
+        except ValueError:
+            return
+
+        if row == self.current_index:
+            self.load_vent_into_editor(row)
+
+        self.refresh_summary_table()
+        self.summary_table.selectRow(row)
+
+    def update_vent_from_summary(self, row: int):
+        vent = self.vents[row]
+        values = [self.summary_cell(row, col) for col in range(self.summary_table.columnCount())]
+
+        vent.id = values[1] or vent.id
+        vent.from_comp_id = internal_compartment(values[2] or display_compartment(vent.from_comp_id))
+        vent.from_area = parse_value(AREA, values[3], "From Area", vent.from_area)
+        vent.from_height = parse_value(
+            LENGTH,
+            values[4],
+            "From Height",
+            vent.from_height,
+        )
+        vent.from_orientation = self.internal_orientation(
+            values[5] or self.display_orientation(vent.from_orientation)
+        )
+        vent.to_comp_id = internal_compartment(values[6] or display_compartment(vent.to_comp_id))
+        vent.to_area = parse_value(AREA, values[7], "To Area", vent.to_area)
+        vent.to_height = parse_value(LENGTH, values[8], "To Height", vent.to_height)
+        vent.to_orientation = self.internal_orientation(
+            values[9] or self.display_orientation(vent.to_orientation)
+        )
+        vent.flow = parse_value(FLOWRATE, values[10], "Flow Rate", vent.flow)
+
+    def summary_cell(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
 
     def select_row(self, row: int):
         if not self.vents:

@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Target
+from table_widgets import HoverEditTableWidget
 from units import (
     CONDUCTIVITY,
     DENSITY,
@@ -84,7 +85,7 @@ class TargetsTab(QWidget):
         self.compartment_ids: list[str] = []
         self.material_ids: list[str] = ["OFF", "DEFAULT"]
 
-        self.summary_table = QTableWidget(0, len(table_columns()))
+        self.summary_table = HoverEditTableWidget(0, len(table_columns()))
         self.summary_table.setHorizontalHeaderLabels(table_columns())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -92,8 +93,8 @@ class TargetsTab(QWidget):
         self.summary_table.verticalHeader().setVisible(False)
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
-        self.summary_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.summary_table.itemSelectionChanged.connect(self.summary_selection_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         add_button = QPushButton("Add")
         duplicate_button = QPushButton("Duplicate")
@@ -267,25 +268,7 @@ class TargetsTab(QWidget):
         self.summary_table.setRowCount(len(self.targets))
 
         for row, target in enumerate(self.targets):
-            values = [
-                str(row + 1),
-                target.id,
-                target.comp_id,
-                format_value(LENGTH, target.x_position),
-                format_value(LENGTH, target.y_position),
-                format_value(LENGTH, target.z_position),
-                format_number(target.x_normal),
-                format_number(target.y_normal),
-                format_number(target.z_normal),
-                target.matl_id,
-                display_target_type(target.target_type),
-            ]
-
-            for col, value in enumerate(values):
-                item = QTableWidgetItem(value)
-                if col == 0:
-                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                self.summary_table.setItem(row, col, item)
+            self.set_summary_row(row, target)
 
         self.updating = False
 
@@ -296,6 +279,38 @@ class TargetsTab(QWidget):
         else:
             self.current_index = -1
             self.load_target_into_editor(None)
+
+    def set_summary_row(self, row: int, target: Target):
+        values = self.summary_values(row, target)
+
+        for col, value in enumerate(values):
+            item = QTableWidgetItem(value)
+            if col == 0:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.summary_table.setItem(row, col, item)
+
+    def summary_values(self, row: int, target: Target) -> list[str]:
+        return [
+            str(row + 1),
+            target.id,
+            target.comp_id,
+            format_value(LENGTH, target.x_position),
+            format_value(LENGTH, target.y_position),
+            format_value(LENGTH, target.z_position),
+            format_number(target.x_normal),
+            format_number(target.y_normal),
+            format_number(target.z_normal),
+            target.matl_id,
+            display_target_type(target.target_type),
+        ]
+
+    def update_summary_row(self, row: int):
+        if not 0 <= row < len(self.targets):
+            return
+
+        self.updating = True
+        self.set_summary_row(row, self.targets[row])
+        self.updating = False
 
     def summary_selection_changed(self):
         if self.updating:
@@ -308,6 +323,23 @@ class TargetsTab(QWidget):
 
         self.current_index = indexes[0].row()
         self.load_target_into_editor(self.targets[self.current_index])
+
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.updating:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.targets):
+            return
+
+        try:
+            self.targets[row] = self.target_from_summary(row)
+        except ValueError:
+            return
+
+        self.update_summary_row(row)
+        if row == self.current_index:
+            self.load_target_into_editor(self.targets[row])
 
     def load_target_into_editor(self, target: Target | None):
         self.updating = True
@@ -426,6 +458,61 @@ class TargetsTab(QWidget):
             ),
             fyi=existing.fyi if existing is not None else "",
         )
+
+    def target_from_summary(self, row: int) -> Target:
+        existing = self.targets[row]
+        matl_id = self.summary_text(row, 9) or existing.matl_id or "DEFAULT"
+        material = material_properties(matl_id)
+        if matl_id.strip().upper() in MATERIAL_LIBRARY:
+            thickness = material.get("thickness", 0.0)
+        else:
+            thickness = existing.thickness
+
+        return replace(
+            existing,
+            id=self.summary_text(row, 1) or existing.id,
+            comp_id=self.summary_text(row, 2) or self.default_compartment(),
+            x_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 3),
+                "X Position",
+                existing.x_position,
+            ),
+            y_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 4),
+                "Y Position",
+                existing.y_position,
+            ),
+            z_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 5),
+                "Z Position",
+                existing.z_position,
+            ),
+            x_normal=parse_number(
+                self.summary_text(row, 6),
+                "X Normal",
+                existing.x_normal,
+            ),
+            y_normal=parse_number(
+                self.summary_text(row, 7),
+                "Y Normal",
+                existing.y_normal,
+            ),
+            z_normal=parse_number(
+                self.summary_text(row, 8),
+                "Z Normal",
+                existing.z_normal,
+            ),
+            matl_id=matl_id,
+            target_type=(self.summary_text(row, 10) or existing.target_type).upper(),
+            thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
+        )
+
+    def summary_text(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
 
     def update_material_labels(self, target: Target):
         material = material_properties(target.matl_id)

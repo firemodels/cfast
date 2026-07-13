@@ -80,6 +80,12 @@ def make_read_only_item(text: str) -> QTableWidgetItem:
     return item
 
 
+def make_summary_item(text: str, editable: bool = True) -> QTableWidgetItem:
+    if not editable:
+        return make_read_only_item(text)
+    return QTableWidgetItem(text)
+
+
 def ignition_setpoint_kind(criterion: str) -> str:
     value = criterion.strip().upper()
     if value == "TEMPERATURE":
@@ -248,6 +254,7 @@ class FiresTab(QWidget):
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.summary_table.itemSelectionChanged.connect(self.selection_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         self.fire_id_edit = QLineEdit()
         self.compartment_combo = QComboBox()
@@ -597,26 +604,44 @@ class FiresTab(QWidget):
         self.summary_table.setRowCount(len(self.fires))
 
         for row, fire in enumerate(self.fires):
-            prop = self.find_property(fire.fire_property_id)
-            fuel = prop.fuel_formula() if prop is not None else ""
-            peak_hrr = prop.peak_hrr() if prop is not None else 0.0
-            values = [
-                str(row + 1),
-                fire.comp_id,
-                fire.id,
-                fire.ignition_criterion.title(),
-                format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint),
-                fire.target,
-                format_value(LENGTH, fire.x_position),
-                format_value(LENGTH, fire.y_position),
-                fire.fire_property_id,
-                fuel,
-                format_value(HRR, peak_hrr),
-            ]
+            self.set_summary_row(row, fire)
 
-            for col, value in enumerate(values):
-                self.summary_table.setItem(row, col, make_read_only_item(value))
+        self.summary_table.blockSignals(False)
 
+    def set_summary_row(self, row: int, fire: FireDefinition):
+        values = self.summary_values(row, fire)
+
+        for col, value in enumerate(values):
+            self.summary_table.setItem(
+                row,
+                col,
+                make_summary_item(value, editable=(col not in {0, 9, 10})),
+            )
+
+    def summary_values(self, row: int, fire: FireDefinition) -> list[str]:
+        prop = self.find_property(fire.fire_property_id)
+        fuel = prop.fuel_formula() if prop is not None else ""
+        peak_hrr = prop.peak_hrr() if prop is not None else 0.0
+        return [
+            str(row + 1),
+            fire.comp_id,
+            fire.id,
+            fire.ignition_criterion.title(),
+            format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint),
+            fire.target,
+            format_value(LENGTH, fire.x_position),
+            format_value(LENGTH, fire.y_position),
+            fire.fire_property_id,
+            fuel,
+            format_value(HRR, peak_hrr),
+        ]
+
+    def update_summary_row(self, row: int):
+        if not 0 <= row < len(self.fires):
+            return
+
+        self.summary_table.blockSignals(True)
+        self.set_summary_row(row, self.fires[row])
         self.summary_table.blockSignals(False)
 
     def select_fire(self, index: int):
@@ -650,6 +675,61 @@ class FiresTab(QWidget):
         self.save_current_editor()
         self.current_index = new_index
         self.load_editor(new_index)
+
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.loading:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.fires):
+            return
+
+        try:
+            self.update_fire_from_summary(row)
+        except ValueError:
+            return
+
+        self.update_summary_row(row)
+        if row == self.current_index:
+            self.load_editor(row)
+            self.update_plot()
+
+    def update_fire_from_summary(self, row: int):
+        fire = self.fires[row]
+        criterion = (self.summary_cell(row, 3) or fire.ignition_criterion).upper()
+        prop_id = self.summary_cell(row, 8) or fire.fire_property_id
+
+        fire.comp_id = self.summary_cell(row, 1) or self.default_compartment()
+        fire.id = self.summary_cell(row, 2) or fire.id
+        fire.ignition_criterion = criterion
+        fire.setpoint = parse_value(
+            ignition_setpoint_kind(criterion),
+            self.summary_cell(row, 4),
+            "Set Point",
+            fire.setpoint,
+        )
+        fire.target = self.summary_cell(row, 5)
+        fire.x_position = parse_value(
+            LENGTH,
+            self.summary_cell(row, 6),
+            "X Position",
+            fire.x_position,
+        )
+        fire.y_position = parse_value(
+            LENGTH,
+            self.summary_cell(row, 7),
+            "Y Position",
+            fire.y_position,
+        )
+        fire.fire_property_id = prop_id
+
+        if prop_id and self.find_property(prop_id) is None:
+            self.fire_properties.append(FireProperty(id=prop_id))
+            self.update_property_choices()
+
+    def summary_cell(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
 
     def clear_editor(self):
         self.loading = True

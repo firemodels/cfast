@@ -59,6 +59,7 @@ class WallVentsTab(QWidget):
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.summary_table.currentCellChanged.connect(self.current_row_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         self.editor_group = QGroupBox("Vent Geometry")
 
@@ -285,14 +286,21 @@ class WallVentsTab(QWidget):
             record["offset"],
         ]
 
-        for col, value in enumerate(values):
-            item = self.summary_table.item(row, col)
+        previous_loading = self.loading
+        self.loading = True
+        try:
+            for col, value in enumerate(values):
+                item = self.summary_table.item(row, col)
 
-            if item is None:
-                item = QTableWidgetItem()
-                self.summary_table.setItem(row, col, item)
+                if item is None:
+                    item = QTableWidgetItem()
+                    self.summary_table.setItem(row, col, item)
 
-            item.setText(value)
+                item.setText(value)
+                if col == 0:
+                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        finally:
+            self.loading = previous_loading
 
     def current_row(self) -> int:
         return self.summary_table.currentRow()
@@ -308,6 +316,34 @@ class WallVentsTab(QWidget):
             self.load_record_into_editor(current_row)
         else:
             self.clear_editor()
+
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.loading:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.records):
+            return
+
+        self.save_summary_row_to_record(row)
+        if row == self.current_row():
+            self.load_record_into_editor(row)
+
+    def save_summary_row_to_record(self, row: int):
+        record = self.records[row]
+        record["id"] = self.summary_cell(row, 1)
+        record["first_compartment"] = self.summary_cell(row, 2)
+        record["second_compartment"] = self.summary_cell(row, 3)
+        record["bottom"] = self.summary_cell(row, 4)
+        record["height"] = self.summary_cell(row, 5)
+        record["width"] = self.summary_cell(row, 6)
+        record["initial_open"] = self.summary_cell(row, 7)
+        record["face"] = self.summary_cell(row, 8)
+        record["offset"] = self.summary_cell(row, 9)
+
+    def summary_cell(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
 
     def clear_editor(self):
         self.loading = True

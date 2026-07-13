@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, WallVent
+from table_widgets import HoverEditTableWidget
 from units import LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -50,7 +51,7 @@ class WallVentsTab(QWidget):
         self.loading = False
         self.compartment_ids: list[str] = []
 
-        self.summary_table = QTableWidget(0, 10)
+        self.summary_table = HoverEditTableWidget(0, 10)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

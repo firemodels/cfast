@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CeilingFloorVent, CfastCase
+from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -58,7 +59,7 @@ class CeilingFloorVentsTab(QWidget):
         self.compartment_ids: list[str] = []
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
 
-        self.summary_table = QTableWidget(8, len(self.summary_headers()))
+        self.summary_table = HoverEditTableWidget(8, len(self.summary_headers()))
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

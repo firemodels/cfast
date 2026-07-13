@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Target
+from table_widgets import HoverEditTableWidget
 from units import (
     CONDUCTIVITY,
     DENSITY,
@@ -84,7 +85,7 @@ class TargetsTab(QWidget):
         self.compartment_ids: list[str] = []
         self.material_ids: list[str] = ["OFF", "DEFAULT"]
 
-        self.summary_table = QTableWidget(0, len(table_columns()))
+        self.summary_table = HoverEditTableWidget(0, len(table_columns()))
         self.summary_table.setHorizontalHeaderLabels(table_columns())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

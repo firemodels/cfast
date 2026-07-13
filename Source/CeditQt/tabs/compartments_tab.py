@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment
+from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -89,7 +90,7 @@ class CompartmentsTab(QWidget):
         self.compartments = self.default_compartments()
         self.material_choices = ["OFF"]
 
-        self.summary_table = QTableWidget(0, len(summary_headers()))
+        self.summary_table = HoverEditTableWidget(0, len(summary_headers()))
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

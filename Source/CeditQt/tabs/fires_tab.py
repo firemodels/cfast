@@ -26,6 +26,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, FireDefinition, FireProperty, FireRampPoint
+from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
     HEAT_FLUX,
@@ -231,7 +232,7 @@ class FiresTab(QWidget):
         self.compartment_ids: list[str] = []
         self.target_ids: list[str] = []
 
-        self.summary_table = QTableWidget(0, 11)
+        self.summary_table = HoverEditTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(
             [
                 "Num",

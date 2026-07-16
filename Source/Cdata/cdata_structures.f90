@@ -3,9 +3,10 @@ module preprocessor_types
     use precision_parameters
     use exit_routines, only: cfastexit
     use pp_params, only: mxpntsarray, idx_uniform, idx_triangle, idx_user_defined_discrete, &
-                     idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
-                     val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear, &
-                     idx_trun_normal, idx_trun_log_normal, idx_gamma
+                         idx_user_defined_continous_interval, idx_beta, idx_normal , idx_log_normal, rand_dist, &
+                         val_types, idx_real, idx_char, idx_int, idx_logic, mxseeds, idx_const, idx_linear, &
+                         idx_trun_normal, idx_trun_log_normal, idx_gamma, mxrngseeds, cdata_seed_to_rng_seed, &
+                         get_current_rng_seed, set_current_rng_seed
     
     use cparams
     use cfast_types, only: cfast_type, fire_type, table_type
@@ -147,8 +148,8 @@ module preprocessor_types
         real(eb) :: constant                            ! for constant value functions
         logical :: first = .true.                       ! logical used in conjunction with 
         logical :: use_seeds                            ! determines if seeds have been supplied. 
-        integer :: seeds(mxseeds)                       ! seed values
-        integer :: base_seeds(mxseeds)                  ! first seeds used 
+        integer :: seeds(mxrngseeds)                    ! current compiler-specific seed state
+        integer :: base_seeds(mxrngseeds)               ! first seed state used
         integer :: current_iteration
         real(eb) :: linear_delta
         type(field_pointer) :: current_val
@@ -304,7 +305,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         real(eb) :: x
         real :: a, b, p1, p2
-        integer :: tmpseeds(mxseeds), ii, idx
+        integer :: tmpseeds(mxrngseeds), cdata_seeds(mxseeds), ii, idx
         logical :: first
         
         if (me%first) then
@@ -315,11 +316,12 @@ module preprocessor_types
                 me%seeds = me%base_seeds
             else
                 call RANDOM_NUMBER(x)
-                call RANDOM_SEED(GET=tmpseeds)
-                me%seeds(1) = mod((tmpseeds(1) + 1301)*104179,1073916995)
-                me%seeds(2) = mod((tmpseeds(2) + 1303)*104173,1073916995)
-                me%seeds(2) = mod((me%seeds(1) + 1301)*104179,1073916995)
-                me%seeds(1) = mod((me%seeds(2) + 1303)*104173,1073916995)
+                call get_current_rng_seed(tmpseeds)
+                cdata_seeds(1) = mod((tmpseeds(1) + 1301)*104179,1073916995)
+                cdata_seeds(2) = mod((tmpseeds(2) + 1303)*104173,1073916995)
+                cdata_seeds(2) = mod((cdata_seeds(1) + 1301)*104179,1073916995)
+                cdata_seeds(1) = mod((cdata_seeds(2) + 1303)*104173,1073916995)
+                call cdata_seed_to_rng_seed(cdata_seeds, me%seeds)
                 me%base_seeds = me%seeds
             end if
         else 
@@ -336,11 +338,11 @@ module preprocessor_types
         me%current_iteration = iteration
         
         if (me%type_dist == rand_dist(idx_uniform)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             call RANDOM_NUMBER(x)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (me%value_type == val_types(idx_real)) then
                 me%current_real_val = me%minimum() + me%min_offset + & 
                             x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
@@ -350,11 +352,11 @@ module preprocessor_types
                     call me%errorcall('RAND', 6)
             end if
         else if (me%type_dist == rand_dist(idx_user_defined_discrete)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             call RANDOM_NUMBER(x)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             do ii = 1, me%num_discrete_values
                 if (x < me%prob_array(ii)) then
                     idx = ii
@@ -368,11 +370,11 @@ module preprocessor_types
                 call me%errorcall('RAND', 8)
             end if
         else if (me%type_dist == rand_dist(idx_user_defined_continous_interval)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             call RANDOM_NUMBER(x)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             do ii = 1, me%num_discrete_values
                 if (x < me%prob_array(ii)) then
                     idx = ii
@@ -404,29 +406,29 @@ module preprocessor_types
                 call me%errorcall('RAND', 16)
             end if
         else if (me%type_dist == rand_dist(idx_log_normal)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             x = random_normal()
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (me%value_type == val_types(idx_real)) then
                 me%current_real_val = exp(log(me%stdev)*x+log(me%mean))
                 me%current_real_val = me%current_real_val + me%add()
                 val%val = me%current_real_val
             end if
         else if (me%type_dist == rand_dist(idx_normal)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             x = random_normal()
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (me%value_type == val_types(idx_real)) then
                 me%current_real_val = me%stdev*x + me%mean + me%add()
                 val%val = me%current_real_val
             end if
         else if (me%type_dist == rand_dist(idx_trun_normal)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             val%val = me%minimum() + me%min_offset - 100.0_eb
             if (me%value_type == val_types(idx_real)) then
                 do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
@@ -435,11 +437,11 @@ module preprocessor_types
                     val%val = me%current_real_val
                 end do
             end if
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
         else if (me%type_dist == rand_dist(idx_trun_log_normal)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             val%val = me%minimum() - 100.0_eb
             if (me%value_type == val_types(idx_real)) then
                 do while(val%val < me%minimum() + me%min_offset .or. val%val > me%maximum() + me%max_offset)
@@ -448,14 +450,14 @@ module preprocessor_types
                     val%val = me%current_real_val
                 end do
             end if
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
         else if (me%type_dist == rand_dist(idx_triangle)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             call RANDOM_NUMBER(x)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (x <= (me%peak - me%minimum() - me%min_offset)/ &
                 (me%maximum() + me%max_offset - me%minimum() - me%min_offset)) then
                 me%current_real_val = sqrt(x*(me%maximum() + me%max_offset - me%minimum() - me%min_offset)* &
@@ -467,13 +469,13 @@ module preprocessor_types
             end if
             val%val = me%current_real_val
         else if (me%type_dist == rand_dist(idx_beta)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             a = me%alpha
             b = me%beta
             x = random_beta(a, b, first)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (me%value_type == val_types(idx_real)) then
                 me%current_real_val = me%minimum() + me%min_offset + & 
                     x*(me%maximum() +me%max_offset - me%minimum() - me%min_offset)
@@ -483,12 +485,12 @@ module preprocessor_types
                 call me%errorcall('RAND', 23)
             end if
         else if (me%type_dist == rand_dist(idx_gamma)) then
-            call RANDOM_SEED(GET=tmpseeds)
-            call RANDOM_SEED(PUT=me%seeds)
+            call get_current_rng_seed(tmpseeds)
+            call set_current_rng_seed(me%seeds)
             a = me%alpha
             x = random_gamma(a, first)
-            call RANDOM_SEED(GET=me%seeds)
-            call RANDOM_SEED(PUT = tmpseeds)
+            call get_current_rng_seed(me%seeds)
+            call set_current_rng_seed(tmpseeds)
             if (me%value_type == val_types(idx_real)) then
                 me%current_real_val = x/me%beta
                 me%current_real_val = me%current_real_val + me%add()
@@ -507,7 +509,7 @@ module preprocessor_types
     !---------add_header-----------
     !
     
-    subroutine add_header(me, icol, array)
+    recursive subroutine add_header(me, icol, array)
     
         class(value_wrapper_type), intent(inout) :: me
         integer, intent(inout) :: icol
@@ -1178,6 +1180,7 @@ module preprocessor_types
         end if 
         
         tmp = 0
+        tmp1 = 0
         
         ! Doing the incipient growth model
         ! determing if it is flaming or smoldering if that is set up
@@ -1198,6 +1201,7 @@ module preprocessor_types
             call me%smolder_hrr_ptr%do_rand(iteration)
             me%fire%flaming_transition_time = me%smolder_time_ptr%realval%val
         end if
+        if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) tmp1 = 1
         
         if (me%generate_fire) then
             do i = 1, me%n_firepoints
@@ -1205,11 +1209,6 @@ module preprocessor_types
                 call me%firegenerators(2,i)%do_rand(iteration)
             end do
             if (me%growth_npts > 0) then
-                if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) then
-                    tmp1 = 1
-                else 
-                    tmp1 = 0
-                end if
                 if (.not. me%fire_generator_is_time_to_1054_kW) then
                     t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val
                     c = me%firegenerators(1,1 + tmp1)%realval%val

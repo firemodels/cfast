@@ -7,6 +7,7 @@
     save
     
     integer, parameter :: mxpntsarray = 200, mxranddists = 13, mxgenerators = 200, mxvaltypes = 4, mxseeds = 2
+    integer, parameter :: mxrngseeds = 256
     integer, parameter :: mxrndfires = mxfires
     integer, parameter :: mxfiresections = 50, mxrandfires = 5, mxfiregens = 100, mxiterations = 100000
     integer, parameter :: mxstats = 10, mxfirepnts = 20
@@ -51,6 +52,54 @@
     character(len=5), parameter :: imgformat_list(mximgformats) = (/'jpeg', 'svg ', 'tiff', 'pdf ', 'png '/)
     
     integer, parameter :: mxdiags = 20, mxdiagcols = 1000
-    
+
+    contains
+
+    subroutine cdata_seed_to_rng_seed(cdata_seeds, rng_seeds)
+
+    integer, intent(in) :: cdata_seeds(mxseeds)
+    integer, intent(out) :: rng_seeds(mxrngseeds)
+    integer :: i
+
+    rng_seeds = 0
+    rng_seeds(1:mxseeds) = abs(cdata_seeds(1:mxseeds))
+    do i = mxseeds + 1, mxrngseeds
+        rng_seeds(i) = mod((rng_seeds(i - mxseeds) + 1301 + i)*104179, 1073916995)
+    end do
+
+    end subroutine cdata_seed_to_rng_seed
+
+    subroutine get_current_rng_seed(rng_seeds)
+
+    integer, intent(out) :: rng_seeds(mxrngseeds)
+    integer :: seed_size
+
+    call random_seed(size=seed_size)
+    if (seed_size > mxrngseeds) stop 'RANDOM_SEED size exceeds CData mxrngseeds'
+    rng_seeds = 0
+    call random_seed(get=rng_seeds(1:seed_size))
+
+    end subroutine get_current_rng_seed
+
+    subroutine set_current_rng_seed(rng_seeds)
+
+    integer, intent(in) :: rng_seeds(mxrngseeds)
+    integer :: seed_size
+
+    call random_seed(size=seed_size)
+    if (seed_size > mxrngseeds) stop 'RANDOM_SEED size exceeds CData mxrngseeds'
+    call random_seed(put=rng_seeds(1:seed_size))
+
+    end subroutine set_current_rng_seed
+
+    subroutine set_current_rng_seed_from_cdata(cdata_seeds)
+
+    integer, intent(in) :: cdata_seeds(mxseeds)
+    integer :: rng_seeds(mxrngseeds)
+
+    call cdata_seed_to_rng_seed(cdata_seeds, rng_seeds)
+    call set_current_rng_seed(rng_seeds)
+
+    end subroutine set_current_rng_seed_from_cdata
+
     end module pp_params
-    

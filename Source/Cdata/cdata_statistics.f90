@@ -1,7 +1,5 @@
 module statistics_routines
     
-    use ifport
-    
     use precision_parameters
     
     use exit_routines, only: cfastexit

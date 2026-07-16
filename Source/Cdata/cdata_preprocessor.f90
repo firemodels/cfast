@@ -22,7 +22,7 @@ module preprocessor_routines
     
     !------------------------CData data-----------------------------------------------
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires, &
-        mxiterations
+        mxiterations, set_current_rng_seed_from_cdata
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
         n_rndfires, randfireinfo, mc_max_iterations, workpath, parameterfile, fieldptr, validation_output
     use preprocessor_types, only: random_generator_type
@@ -107,7 +107,7 @@ module preprocessor_routines
     restart_values(8) = values(5)*10000 + values(6)*100 + values(8)
     rnd_seeds(2) = mod((rnd_seeds(2)+restart_values(5))*restart_values(6),restart_values(9))
     rnd_seeds(1) = mod((rnd_seeds(1)+restart_values(7))*restart_values(8),restart_values(9))
-    call RANDOM_SEED(PUT=rnd_seeds)
+    call set_current_rng_seed_from_cdata(rnd_seeds)
     mc_write_seeds = .false.
     
     mc_max_iterations = mxiterations
@@ -125,7 +125,7 @@ module preprocessor_routines
         generatorinfo(i)%int_array(1:mxpntsarray) = -1001  
         generatorinfo(i)%logic_array(1:mxpntsarray) = .false.
         generatorinfo(i)%prob_array(1:mxpntsarray) = -1001._eb 
-        generatorinfo(i)%seeds(1:mxseeds) = -1001
+        generatorinfo(i)%seeds = -1001
         call generatorinfo(i)%set_max_value(d1mach(2))
         call generatorinfo(i)%set_min_value(-d1mach(2))
         call generatorinfo(i)%set_add_value(0.0_eb)
@@ -264,12 +264,10 @@ module preprocessor_routines
     
     do i = 1, n_generators
         genptr => generatorinfo(i)
-        call add_seeds_to_seeds_buffer(genptr%id, genptr%base_seeds)
+        call add_seeds_to_seeds_buffer(genptr%id, genptr%base_seeds(1:mxseeds))
     end do
     call flush_seeds_buffer
     
     end subroutine write_seeds_outputfile
     
     end module preprocessor_routines
-        
-    

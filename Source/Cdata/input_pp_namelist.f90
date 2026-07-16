@@ -43,7 +43,7 @@
         mxrndfires, idx_firefiles, idx_stagefires, fire_generator_types, mxrndfires, mxfiregens, mxstats, mxanalys, &
         mximgformats, analysis_list, imgformatext_list, imgformat_list, default_img, idx_const, mxrandfires, idx_linear, &
         idx_normal, idx_log_normal, idx_trun_normal, idx_trun_log_normal, idx_beta, idx_gamma, &
-        idx_user_defined_continous_interval
+        idx_user_defined_continous_interval, cdata_seed_to_rng_seed, set_current_rng_seed_from_cdata
         
     use preprocessor_types, only: preprocessor_type, random_generator_type, field_pointer, fire_generator_type
     use analysis_types, only: stat_type
@@ -199,7 +199,7 @@
         mc_number_of_cases = number_of_cases
         rnd_seeds(1:2) = seeds(1:2)
         if (seeds(1) /= -1001 .and. seeds(2) /= -1001) then
-            call RANDOM_SEED(PUT=seeds)
+            call set_current_rng_seed_from_cdata(seeds)
         end if
         mc_write_seeds = write_seeds
         if (trim(work_folder) == 'NULL') then
@@ -301,7 +301,7 @@
             genptr%id = id
             genptr%fyi = fyi
             if (random_seeds(1) /= -1001 .and. random_seeds(2) /= -1001) then
-                genptr%base_seeds = random_seeds
+                call cdata_seed_to_rng_seed(random_seeds, genptr%base_seeds)
                 genptr%use_seeds = .true. 
             end if 
             genptr%min_offset = minimum_offset

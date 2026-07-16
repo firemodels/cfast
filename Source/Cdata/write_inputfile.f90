@@ -149,9 +149,6 @@
     
     return
 
-5000 format(i5)    
-5010 format(f9.2)
-    
     end subroutine write_time
     
     !------------------------write_init-------------------------------------------------------------------
@@ -210,8 +207,6 @@
     
     return
     
-5000 format(f10.2)
-    
     end subroutine write_init
     
     !------------------------write_misc-------------------------------------------------------------------
@@ -249,9 +244,6 @@
     
     return
     
-5000 format(f10.2)
-5010 format(f10.4)     
-     
     end subroutine write_misc
     
     !------------------------write_matl-------------------------------------------------------------------
@@ -857,18 +849,6 @@
     return
     end subroutine write_vent
     
-    !------------------------write_conn-------------------------------------------------------------------
-    subroutine write_conn(iounit)
-    
-    implicit none
-    integer, intent(in) :: iounit
-    
-    write(iounit,*) 'Should not see this write'
-    call cfastexit('WRITE_CONN',1)
-    
-    return
-    end subroutine write_conn
-    
     !------------------------write_dump-------------------------------------------------------------------
     subroutine write_dump(iounit)
     
@@ -962,7 +942,7 @@
     ierr = 0
     ilen = len(buf)
     if (floor(value) == value) then
-        itmp = value
+        itmp = int(value)
         if (ilen >= 7) then
             write(buf,'(i7)') itmp
         else if (ilen == 6 .and. itmp < 1000000 .and. itmp > -100000) then

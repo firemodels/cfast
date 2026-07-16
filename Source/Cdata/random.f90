@@ -757,7 +757,7 @@ IF (mu > 10.0) THEN
 !             PROBABILITIES FK WHENEVER K >= M(MU). L=IFIX(MU-1.1484)
 !             IS AN UPPER BOUND TO M(MU) FOR ALL MU >= 10 .
 
-    l = mu - 1.1484
+    l = INT(mu - 1.1484)
     full_init = .false.
   END IF
 
@@ -766,7 +766,7 @@ IF (mu > 10.0) THEN
 
   g = mu + s*random_normal()
   IF (g > 0.0) THEN
-    ival = g
+    ival = INT(g)
 
 !     STEP I. IMMEDIATE ACCEPTANCE IF ival IS LARGE ENOUGH
 
@@ -819,7 +819,7 @@ IF (mu > 10.0) THEN
   u = u + u - one
   t = 1.8 + SIGN(e, u)
   IF (t <= (-.6744)) GO TO 50
-  ival = mu + s*t
+  ival = INT(mu + s*t)
   fk = ival
   difmuk = mu - fk
 
@@ -946,7 +946,7 @@ REAL, SAVE      :: odds_ratio, p_r
 REAL, PARAMETER :: zero = 0.0, one = 1.0
 
 IF (first) THEN
-  r0 = (n+1)*p
+  r0 = INT((n+1)*p)
   p_r = bin_prob(n, p, r0)
   odds_ratio = p / (one - p)
 END IF
@@ -1003,8 +1003,8 @@ REAL                :: fn_val
 !     Local variable
 REAL                :: one = 1.0
 
-fn_val = EXP( lngamma(DBLE(n+1)) - lngamma(DBLE(r+1)) - lngamma(DBLE(n-r+1)) &
-              + r*LOG(p) + (n-r)*LOG(one - p) )
+fn_val = REAL(EXP( lngamma(DBLE(n+1)) - lngamma(DBLE(r+1)) - lngamma(DBLE(n-r+1)) &
+              + r*LOG(p) + (n-r)*LOG(one - p) ))
 RETURN
 
 END FUNCTION bin_prob
@@ -1164,7 +1164,7 @@ END IF
 IF (xnp > 30.) THEN
   IF (first) THEN
     ffm = xnp + p
-    m = ffm
+    m = INT(ffm)
     fm = m
     xnpq = xnp * q
     p1 = INT(2.195*SQRT(xnpq) - 4.6*q) + half
@@ -1190,7 +1190,7 @@ IF (xnp > 30.) THEN
 !     TRIANGULAR REGION
 
   IF (u <= p1) THEN
-    ix = xm - p1 * v + u
+    ix = INT(xm - p1 * v + u)
     GO TO 110
   END IF
 
@@ -1200,20 +1200,20 @@ IF (xnp > 30.) THEN
     x = xl + (u-p1) / c
     v = v * c + one - ABS(xm-x) / p1
     IF (v > one .OR. v <= zero) GO TO 20
-    ix = x
+    ix = INT(x)
   ELSE
 
 !     LEFT TAIL
 
     IF (u <= p3) THEN
-      ix = xl + LOG(v) / xll
+      ix = INT(xl + LOG(v) / xll)
       IF (ix < 0) GO TO 20
       v = v * (u-p2) * xll
     ELSE
 
 !     RIGHT TAIL
 
-      ix = xr - LOG(v) / xlr
+      ix = INT(xr - LOG(v) / xlr)
       IF (ix > n) GO TO 20
       v = v * (u-p3) * xlr
     END IF
@@ -1346,13 +1346,13 @@ x = zero
 st = sk
 IF (p > h) THEN
   v = one/LOG(p)
-  k = st
+  k = INT(st)
   DO i = 1,k
     DO
       CALL RANDOM_NUMBER(r)
       IF (r > zero) EXIT
     END DO
-    n = v*LOG(r)
+    n = INT(v*LOG(r))
     x = x + n
   END DO
   st = st - k
@@ -1376,7 +1376,7 @@ DO
   g = g + one
 END DO
 
-ival = x + s + half
+ival = INT(x + s + half)
 RETURN
 END FUNCTION random_neg_binomial
 
@@ -1417,7 +1417,7 @@ IF (first) THEN                        ! Initialization, if necessary
     RETURN
   END IF
 
-  nk = k + k + one
+  nk = INT(k + k + one)
   IF (nk > 20) THEN
     WRITE(*, *) '** Error: argument k for random_von_Mises = ', k
     RETURN
@@ -1489,7 +1489,7 @@ REAL, INTENT(OUT)     :: result
 
 !     Local variables
 
-REAL (dp)  :: xmid, range, x1, x2,                                    &
+REAL (dp)  :: accum, xmid, range, x1, x2,                              &
   x(3) = (/0.238619186083197_dp, 0.661209386466265_dp, 0.932469514203152_dp/), &
   w(3) = (/0.467913934572691_dp, 0.360761573048139_dp, 0.171324492379170_dp/)
 INTEGER    :: i
@@ -1497,14 +1497,14 @@ INTEGER    :: i
 xmid = (a + b)/2._dp
 range = (b - a)/2._dp
 
-result = 0._dp
+accum = 0._dp
 DO i = 1, 3
   x1 = xmid + x(i)*range
   x2 = xmid - x(i)*range
-  result = result + w(i)*(EXP(dk*COS(x1)) + EXP(dk*COS(x2)))
+  accum = accum + w(i)*(EXP(dk*COS(x1)) + EXP(dk*COS(x2)))
 END DO
 
-result = result * range
+result = REAL(accum * range)
 RETURN
 END SUBROUTINE integral
 
@@ -1553,7 +1553,7 @@ END DO
 
 DO i = n, 2, -1
   CALL RANDOM_NUMBER(wk)
-  j = 1 + i * wk
+  j = 1 + INT(i * wk)
   IF (j < i) THEN
     k = order(i)
     order(i) = order(j)

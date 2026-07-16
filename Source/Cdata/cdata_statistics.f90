@@ -39,7 +39,6 @@ module statistics_routines
     
     call init_stats
     
-    !call test_stats
     call exehandle(exepath, datapath, project, extension)
     buf = trim(datapath) // trim(project) // trim(extension)
     inputfile = trim(buf)
@@ -96,68 +95,5 @@ module statistics_routines
     statinfo(1:mxstats)%img_format = 'NULL'
     
     end subroutine init_stats
-    
-    !
-    !----------------------test_stats----------------------------------------
-    
-    subroutine test_stats
-    
-    n_stats = 1
-    statinfo(n_stats)%id = 'Test 1'
-    statinfo(n_stats)%analysis_type = 'CORRELATION_TREE'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'case0_ctree_Max_Temp_Bedroom_2'
-    statinfo(n_stats)%errfile = 'case0_ctree_Max_Temp_Bedroom_2.err'
-    statinfo(n_stats)%logfile = 'case0_ctree_Max_Temp_Bedroom_2.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 2'
-    statinfo(n_stats)%img_format = 'JPG'
-    n_stats = 2
-    statinfo(n_stats)%id = 'Test 2'
-    statinfo(n_stats)%analysis_type = 'CONVERGENCE_OF_MEAN'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'case0_convergence_Max_Temp_Bedroom_2'
-    statinfo(n_stats)%errfile = 'convergence.err'
-    statinfo(n_stats)%logfile = 'convergence.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 2'
-    statinfo(n_stats)%img_format = 'JPG'
-    n_stats = 3
-    statinfo(n_stats)%id = 'Test 3'
-    statinfo(n_stats)%analysis_type = 'HISTOGRAM'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'cased0_histogram_Max_Temp_Bedroom_2'
-    statinfo(n_stats)%errfile = 'histogram.err'
-    statinfo(n_stats)%logfile = 'histogram.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 2'
-    statinfo(n_stats)%img_format = 'JPG'
-    
-    n_stats = n_stats + 1
-    statinfo(n_stats)%id = 'Test 1'
-    statinfo(n_stats)%analysis_type = 'CORRELATION_TREE'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'case0_ctree_Max_Temp_Bedroom_3'
-    statinfo(n_stats)%errfile = 'case0_ctree_Max_Temp_Bedroom_3.err'
-    statinfo(n_stats)%logfile = 'case0_ctree_Max_Temp_Bedroom_3.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 3'
-    statinfo(n_stats)%img_format = 'JPG'
-    n_stats = n_stats + 1
-    statinfo(n_stats)%id = 'Test 2'
-    statinfo(n_stats)%analysis_type = 'CONVERGENCE_OF_MEAN'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'case0_convergence_Max_Temp_Bedroom_3'
-    statinfo(n_stats)%errfile = 'convergence.err'
-    statinfo(n_stats)%logfile = 'convergence.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 3'
-    statinfo(n_stats)%img_format = 'JPG'
-    n_stats = n_stats + 1
-    statinfo(n_stats)%id = 'Test 3'
-    statinfo(n_stats)%analysis_type = 'HISTOGRAM'
-    statinfo(n_stats)%infile = 'case0_accumulate.csv'
-    statinfo(n_stats)%outfile = 'cased0_histogram_Max_Temp_Bedroom_3'
-    statinfo(n_stats)%errfile = 'histogram.err'
-    statinfo(n_stats)%logfile = 'histogram.log'
-    statinfo(n_stats)%col_title = 'Max Temp Bedroom 3'
-    statinfo(n_stats)%img_format = 'JPG'
-    
-    end subroutine test_stats
     
 end module statistics_routines

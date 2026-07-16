@@ -34,19 +34,6 @@ module diagnostic_routines
     
     implicit none
     
-    character(len=256) :: diag_output_path
-    
-    integer :: iunit, maxrowio, maxcolio, nstart, iunit2, maxrowtmp, maxcoltmp
-    integer :: nend, maxcolout
-    integer :: nfiles
-    logical :: lend, tmplend, header
-    integer :: iosunit, tmpunit(6)
-    
-    integer :: i, j, ierr
-    character(len=256) :: outfile
-    character(len=512) :: lbuf, obuf
-    
-    
     private
 
     public diagnostics
@@ -64,11 +51,10 @@ module diagnostic_routines
     integer :: numr
     integer :: numc
     
-    integer :: maxrowio, maxcolio, nstart, maxrowtmp, maxcoltmp
+    integer :: maxrowio, maxcolio, nstart
     integer :: iunit, iunit2, iunitc, iunitd
-    integer :: nend, maxcolout, icol, rcol, iskip
-    integer :: nfiles
-    logical :: lend, tmplend, header
+    integer :: icol, rcol, iskip
+    logical :: lend
     
     !real(eb), allocatable :: issx(:, :), ossx(:, :), tmpx(:, :)
     !character, allocatable :: issc(:, :)*(128), ossc(:, :)*(128), tmpc(:,:)*(128)
@@ -79,8 +65,8 @@ module diagnostic_routines
     character :: compc(6010, 600)*(128), devc(6010, 600)*(128)
     logical :: test_read
     
-    integer :: i, j, ierr, ioerr, ios
-    character(len=256) :: outfile, compfile, devfile
+    integer :: i, ioerr, ios
+    character(len=256) :: outfile
     character(len=512) :: lbuf, obuf, ebuf, buf
     
 ! Body of GetData
@@ -154,9 +140,7 @@ module diagnostic_routines
     !write(*,*)'after '
     
     nstart = 1
-    nend = 1
     lend = .false. 
-    header = .true. 
     !write(*,*)'before first readcsvformat'
     call readcsvformat(iunit, issx, issc, 2, numc, nstart, 1, maxrowio, maxcolio, lend)
     !write(*,*)'after first readcsvformat lend = ', lend
@@ -382,7 +366,7 @@ module diagnostic_routines
     
     subroutine diagnostic_initialize
     
-    diag_output_path = 'NULL'
+    integer :: i
     
     n_diag = 0
     allocate(diaginfo(mxdiags))

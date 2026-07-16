@@ -378,10 +378,10 @@ module preprocessor_types
             do ii = 1, me%num_discrete_values
                 if (x < me%prob_array(ii)) then
                     idx = ii
-                    a = me%real_array(idx - 1)
-                    b = me%real_array(idx)
-                    p1 = me%prob_array(idx - 1)
-                    p2 = me%prob_array(idx)
+                    a = real(me%real_array(idx - 1))
+                    b = real(me%real_array(idx))
+                    p1 = real(me%prob_array(idx - 1))
+                    p2 = real(me%prob_array(idx))
                     exit
                 end if
             end do 
@@ -471,8 +471,8 @@ module preprocessor_types
         else if (me%type_dist == rand_dist(idx_beta)) then
             call get_current_rng_seed(tmpseeds)
             call set_current_rng_seed(me%seeds)
-            a = me%alpha
-            b = me%beta
+            a = real(me%alpha)
+            b = real(me%beta)
             x = random_beta(a, b, first)
             call get_current_rng_seed(me%seeds)
             call set_current_rng_seed(tmpseeds)
@@ -487,7 +487,7 @@ module preprocessor_types
         else if (me%type_dist == rand_dist(idx_gamma)) then
             call get_current_rng_seed(tmpseeds)
             call set_current_rng_seed(me%seeds)
-            a = me%alpha
+            a = real(me%alpha)
             x = random_gamma(a, first)
             call get_current_rng_seed(me%seeds)
             call set_current_rng_seed(tmpseeds)
@@ -966,7 +966,7 @@ module preprocessor_types
     function field_min_dependency(me) result(field_id)
         
         class(field_pointer) :: me
-        character(len=28) :: field_id
+        character(len=128) :: field_id
         
         if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
             field_id = 'NULL'
@@ -979,7 +979,7 @@ module preprocessor_types
     function field_max_dependency(me) result(field_id)
         
         class(field_pointer) :: me
-        character(len=28) :: field_id
+        character(len=128) :: field_id
         
         if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
             field_id = 'NULL'
@@ -992,7 +992,7 @@ module preprocessor_types
     function field_add_dependency(me) result(field_id)
         
         class(field_pointer) :: me
-        character(len=28) :: field_id
+        character(len=128) :: field_id
         
         if (trim(me%field_type) == trim(me%fld_types(me%idx_pointer))) then
             field_id = 'NULL'
@@ -1139,8 +1139,8 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         type(table_type),   pointer :: tablptr
-        integer :: i, tmp, tmp1
-        real(eb) :: deltat, a, b, c, t1, t0
+        integer :: i, tmp1
+        real(eb) :: deltat, a, b, c, t1, t0, tmp
         
         if (me%copy_base_to_fire) then
             call me%copybasetofire(me%fire, me%base, me%copy_base_to_fire)

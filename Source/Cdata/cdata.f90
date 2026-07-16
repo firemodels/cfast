@@ -23,7 +23,7 @@
     !use diagnostic_routines, only: diagnostics
     use preprocessor_output_routines, only: flush_parameters_buffer
     use setup_data, only: program_name, cdata_accumulator, cdata_preprocessor, cdata_statistics, &
-        cdata_diagnostics, exepath, datapath, project, extension, cfast_version
+        exepath, datapath, project, extension, cfast_version
     use input_routines, only: exehandle
     use output_routines, only: output_version
     use utility_routines, only: read_command_options
@@ -75,4 +75,3 @@
     return
 
     end subroutine  post_process
-    

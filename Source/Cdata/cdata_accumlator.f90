@@ -212,37 +212,12 @@ module accumulator_routines
     return
     end subroutine writecsvformat
     
-    !-------------------clr_arrays(x, c, numr, numc)
-    
-    subroutine clr_arrays(x, c, numr, numc)
-
-    implicit none
-    
-    integer, parameter :: eb = selected_real_kind(12)
-
-    integer, intent(in) :: numr, numc
-    real(eb), intent(out) :: x(numr, numc)
-    character, intent(out) :: c(numr, numc)*(*)
-
-    integer :: i, j
-    
-    do i = 1, numr
-        do j = 1, numc
-            x(i,j) = 0.0_eb
-            c(i,j) = ' '
-        end do
-    end do
-    return
-    end subroutine clr_arrays
-    
     !---------------------------------------fndOpenMCFile(filename, path, iunit)----------------------------
     
     subroutine fndOpenMCFile(filename, path, iunit, ierr)
     
     implicit none
 
-    integer, parameter :: eb = selected_real_kind(12)
-    
     character, intent(in) :: filename*(*), path*(*)
     integer, intent(out) :: iunit, ierr
     

@@ -241,7 +241,6 @@
     
     character(len=128) :: id, fyi
     character(len=35) :: distribution_type
-    integer, parameter :: no_seed_value = -1001
     real(eb) :: minimum, maximum, mean, stdev, alpha, beta, peak, minimum_offset, maximum_offset
     integer :: random_seeds(mxseeds), ndx
     real(eb) :: probabilities(mxpntsarray), values(mxpntsarray) 

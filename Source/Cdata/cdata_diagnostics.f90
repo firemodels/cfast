@@ -20,8 +20,6 @@ module diagnostic_routines
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
         add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
     
-    use ifport
-    
     use preprocessor_types, only: preprocessor_type
     use diagnostic_types, only: diagnostic_type
     

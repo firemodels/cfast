@@ -57,7 +57,7 @@ module preprocessor_routines
     call read_command_options
     call open_files
 
-    call read_input_file
+    call read_input_file(.false.)
     
     call preprocessor_initialize
     call cdata_preprocessor_rereadinputfile
@@ -260,11 +260,11 @@ module preprocessor_routines
     call add_filename_to_parameters(filename)
     do i = 1, n_rndfires
         call randfireinfo(i)%do_rand(iteration)
-        !call randfireinfo(i)%write_value
+        call randfireinfo(i)%write_value
     end do 
     do i = 1, n_fields
         call fieldinfo(fieldptr(i))%do_rand(iteration)
-        !call fieldinfo(fieldptr(i))%write_value
+        call fieldinfo(fieldptr(i))%write_value
     end do 
     
     end subroutine create_case

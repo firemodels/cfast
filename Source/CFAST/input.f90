@@ -44,10 +44,12 @@
 
 !> \brief   read the input file and set up the data for processing
 
-    subroutine read_input_file ()
+    subroutine read_input_file (open_outputs)
 
     implicit none
 
+    logical, intent(in), optional :: open_outputs
+    logical :: do_open_outputs
     real(eb) :: temparea(mxpts), temphgt(mxpts), deps1, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
     integer :: ios, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
@@ -59,6 +61,9 @@
     type(target_type), pointer :: targptr
     type(material_type), pointer :: thrmpptr
     type(vent_type), pointer :: ventptr    
+
+    do_open_outputs = .true.
+    if (present(open_outputs)) do_open_outputs = open_outputs
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
@@ -118,7 +123,7 @@
     end do
 
     ! we now know what output is going to be generated, so create the files
-    call open_output_files
+    if (do_open_outputs) call open_output_files
 
     interior_rho = interior_abs_pressure/interior_ambient_temperature/rgas
     exterior_rho = exterior_abs_pressure/exterior_ambient_temperature/rgas
@@ -651,7 +656,7 @@
         if (ilen>0) then
             xname = buf
 
-            !	Split out the components
+            ! Split out the components
             drive(i) = ' '
             dir(i) = ' '
             name(i) = ' '
@@ -682,7 +687,7 @@
 
     inquire (file=buf(1:len_trim(buf)), exist=doesthefileexist)
     if (doesthefileexist) then
-        !	The project file exists
+        ! The project file exists
         exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
         datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
         project = name(2)(1:ln(2))

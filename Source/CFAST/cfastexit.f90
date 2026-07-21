@@ -176,10 +176,10 @@ module exit_routines
     
     subroutine closeoutputfiles
 
-    !	closeoutputfile closes units from open_output_files
-    !	Unit numbers defined here and read_input_file
+    ! closeoutputfile closes units from open_output_files
+    ! Unit numbers defined here and read_input_file
 
-    !	Unit numbers defined for various I/O purposes
+    ! Unit numbers defined for various I/O purposes
     !
     !     iofili        solver.ini and data files (data file, tpp and objects)
     !     iofill        log file
@@ -202,66 +202,45 @@ module exit_routines
     logical :: openunit
 
     ! first the file for "printed" output
-    inquire (iofilo, opened=openunit)
-    if(openunit) then
-        close(iofilo)
-    end if
+    call close_if_open(iofilo)
 
     ! the status files
-    inquire (iofilstat, opened=openunit)
-    if(openunit) then
-        close(iofilstat)
-    end if
+    call close_if_open(iofilstat)
 
     ! the smokeview files
     if (smv_out_interval>0) then
-        inquire(iofilsmv, opened=openunit)
-        if (openunit) then
-            close(iofilsmv)
-        end if
-        inquire(iofilsmvplt, opened=openunit)
-        if (openunit) then
-            close(iofilsmvplt)
-        end if
-        inquire(iofilsmvzone, opened=openunit)
-        if (openunit) then
-            close(iofilsmvzone)
-        end if
+        call close_if_open(iofilsmv)
+        call close_if_open(iofilsmvplt)
+        call close_if_open(iofilsmvzone)
     end if
 
     ! the spread sheet files
     if (ss_out_interval>0) then
         ! compartments spreadsheet
-        inquire(iofilssc, opened=openunit)
-        if(openunit) then
-            close(iofilssc)
-        end if
+        call close_if_open(iofilssc)
         ! devices spreadsheet
-        inquire(iofilssd, opened=openunit)
-        if (openunit) then
-            close(iofilssd)
-        end if
+        call close_if_open(iofilssd)
         ! masses spreadsheet
-        inquire(iofilssm, opened=openunit)
-        if (openunit) then
-            close(iofilssm)
-        end if
+        call close_if_open(iofilssm)
         ! vents spreadsheet
-        inquire(iofilssv, opened=openunit)
-        if (openunit) then 
-            close(iofilssv)
-        end if
+        call close_if_open(iofilssv)
         ! diagnostic spreadsheet
-        inquire(iofilssdiag, opened=openunit)
-        if (openunit) then
-            close(iofilssdiag)
-        end if
+        call close_if_open(iofilssdiag)
         ! calculations spreadhseet
-        inquire(iofilcalc, opened=openunit)
-        if (openunit) then
-            close(iofilcalc)
-        end if
+        call close_if_open(iofilcalc)
     end if 
+
+    contains
+
+    subroutine close_if_open(unit)
+
+    integer, intent(in) :: unit
+
+    if (unit<=0) return
+    inquire(unit, opened=openunit)
+    if (openunit) close(unit)
+
+    end subroutine close_if_open
     
     end subroutine closeoutputfiles
     

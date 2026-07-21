@@ -96,7 +96,7 @@ module preprocessor_types
         real(eb), dimension(mxpntsarray) :: real_array
         integer, dimension(mxpntsarray) :: int_array
         logical, dimension(mxpntsarray) :: logic_array
-        character(len=128), dimension(mxpntsarray) :: char_array
+        character(len=128), allocatable, dimension(:) :: char_array
         character(len=128) :: labelval
         logical :: conditional_min, conditional_max
         integer :: position
@@ -132,7 +132,7 @@ module preprocessor_types
                                                         !           CONSTANT, VALUE
         character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL, INTEGER, 
                                                         !           LOGICAL
-        character(len=128) :: char_array(mxpntsarray)   ! values for discrete distributions with string type
+        character(len=128), allocatable :: char_array(:) ! values for discrete distributions with string type
         integer :: num_discrete_values                  ! number of values in arrays for discrere probablities 
         real(eb) :: real_array(mxpntsarray)             ! values for discrete distributions with real type
         integer :: int_array(mxpntsarray)               ! values for discrete distributions with integer type
@@ -1139,7 +1139,7 @@ module preprocessor_types
         integer, intent(in) :: iteration
         
         type(table_type),   pointer :: tablptr
-        integer :: i, tmp1
+        integer :: i, first_generated_pt, last_generated_pt, tmp1
         real(eb) :: deltat, a, b, c, t1, t0, tmp
         
         if (me%copy_base_to_fire) then
@@ -1204,10 +1204,16 @@ module preprocessor_types
         if (trim(me%incipient_type) /= trim(me%incip_typ(me%idx_none))) tmp1 = 1
         
         if (me%generate_fire) then
-            do i = 1, me%n_firepoints
+            first_generated_pt = me%last_growth_pt + 1
+            last_generated_pt = me%last_growth_pt + me%n_firegenerators
+            do i = first_generated_pt, last_generated_pt
                 call me%firegenerators(1,i)%do_rand(iteration)
                 call me%firegenerators(2,i)%do_rand(iteration)
             end do
+            if (me%decay_npts > 0) then
+                call me%firegenerators(1,me%n_firepoints)%do_rand(iteration)
+                call me%firegenerators(2,me%n_firepoints)%do_rand(iteration)
+            end if
             if (me%growth_npts > 0) then
                 if (.not. me%fire_generator_is_time_to_1054_kW) then
                     t1 = me%firegenerators(2,me%last_growth_pt+1)%realval%val

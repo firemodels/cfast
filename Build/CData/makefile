@@ -134,7 +134,7 @@ gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu linux debug
-gnu_linux_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
+gnu_linux_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -Wno-surprising -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
 gnu_linux_db : obj = cdata7_linux_db
@@ -168,7 +168,7 @@ gnu_osx : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
+gnu_osx_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -Wno-surprising -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_osx_db : FCOMPL = gfortran
 gnu_osx_db : LFLAGS = 
 gnu_osx_db : obj = cdata7_osx_db

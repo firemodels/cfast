@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$RUNSMV -d SP_AST SP_AST_Test_1.in
+echo "No CFAST verification Smokeview pictures are configured."

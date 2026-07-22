@@ -7,8 +7,7 @@
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
-        netheatflux, ssoutoptions, cdata_accumulator, cdata_preprocessor, cdata_statistics, cdata_diagnostics, &
-        errormessage, listoutput 
+        netheatflux, ssoutoptions, errormessage, listoutput
 
     implicit none
 
@@ -493,17 +492,13 @@
     ! unit numbers defined in read_command_options, open_output_files, read_input_file
 
     ! options
-    !     a = run cdata accumulator on the specified input file
     !     d to turn on debugging writes
     !     f/c = printed output options, full/compact. default is full
-    !     g = run cdata diagnositic on the specified input file
-    !	  i = do initialization only
+    !     i = do initialization only
     !     k = do not access keyboard
     !     l = list interim output to the screen
     !     n = output just target fluxes relative to ambient (like -v but smoke still in od)
     !     o = output "solver.ini" options into the file solve.ini
-    !     p = run cdata preprocessor on the specified input file
-    !     s = run cdata statistics on the specified input file
     !     v = output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8), i
@@ -524,7 +519,6 @@
     nargs = 8
     call cmdline(nargs,strs,iarg,iopt)
 
-    if (cmdflag('A',iopt)/=0) cdata_accumulator = .true.
     if (cmdflag('K',iopt)/=0) nokbd = .true.
     if (cmdflag('L',iopt)/=0) listoutput = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
@@ -542,11 +536,6 @@
             end if
         end do
     end if
-    if (cmdflag('P',iopt)/=0) cdata_preprocessor = .true.
-    cdata_statistics = .false.
-    if (cmdflag('S',iopt)/=0) cdata_statistics = .true.
-    if (cmdflag('G',iopt)/=0) cdata_diagnostics = .true.
-
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
         write (errormessage,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
         call cfastexit('read_command_options',1)

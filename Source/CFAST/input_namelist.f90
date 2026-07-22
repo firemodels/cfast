@@ -4,9 +4,6 @@
 
     use exit_routines, only: cfastexit
     use fire_routines, only: flame_height
-    use initialization_routines, only: initialize_memory
-    use utility_routines, only: get_filenumber
-
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type
     
@@ -48,7 +45,7 @@
     
     private
 
-    public namelist_input, read_misc, read_output_options, checkread, cdata_preprocessor_rereadinputfile, read_time
+    public namelist_input, read_misc, read_output_options, checkread, read_time
 
     contains
 
@@ -3133,36 +3130,4 @@ continue
     return
     
     end function newid
-    
-    !---------------------cdata_rereadinputfile---------------------------
-    
-!> \brief reread CFAST input file for CData file generation
-    
-    subroutine cdata_preprocessor_rereadinputfile
-    
-    integer :: ios
-    character(len=256) :: buf
-    
-    !open input file and check to see if it's a new (namelist) format file
-    iofili = get_filenumber()
-    open (iofili, file=inputfile, action='read', status='old', iostat=ios)
-    read (unit=iofili,fmt='(a)') buf
-    rewind (unit=iofili)
-    
-    init_fire = .true.
-    init_vent = .true.
-    init_devc = .true.
-    call initialize_memory
-    
-    convert_negative_distances = .false.
-    call read_devc(iofili)
-    call read_tabl(iofili)
-    call read_fire(iofili)
-    call read_vent(iofili)
-    convert_negative_distances = .true. 
-    
-    close(iofili)
-    
-    end subroutine cdata_preprocessor_rereadinputfile
-
     end module namelist_input_routines

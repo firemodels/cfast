@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# This script generates smokeview pictures from the
-# FDS Verification Cases on a Linux or OS X machine
+# This script generates Smokeview pictures from the
+# CFAST Verification cases on a Linux or OS X machine
 
 function usage {
-echo "Make_FDS_Pictures.sh [-d -h -r -s size -X ]"
-echo "Generates Smokeview figures from FDS verification suite"
+echo "Make_CFAST_Pictures.sh [-d -h -r -s size -X ]"
+echo "Generates Smokeview figures from CFAST verification suite"
 echo ""
 echo "Options"
 echo "-3 - make pictures using 32 bit apps"
@@ -24,6 +24,7 @@ exit
 prog=$0
 progname=${prog##*/}
 CURDIR=`pwd`
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx
@@ -77,7 +78,7 @@ esac
 done
 shift $(($OPTIND-1))
 
-firemodels=../../..
+firemodels="$SCRIPT_DIR/../../.."
 cd $firemodels
 firemodels=`pwd`
 
@@ -97,14 +98,14 @@ fi
 
 export RUNSMV=$SVNROOT/Utilities/Scripts/runsmv.sh
 export SMVBINDIR="-bindir $SVNROOT/SMV/for_bundle/"
-export BASEDIR=`pwd`/..
+export BASEDIR="$SCRIPT_DIR/.."
 
 echo "erasing SCRIPT_FIGURES png files"
 
 if [ "$START_X" == "yes" ]; then
   source $SVNROOT/Utilities/Scripts/startXserver.sh 2>/dev/null
 fi
-cd $cfastrepo/Validation
+cd $cfastrepo/Verification
 scripts/CFAST_Pictures.sh
 if [ "$START_X" == "yes" ]; then
   source $SVNROOT/Utilities/Scripts/stopXserver.sh 2>/dev/null

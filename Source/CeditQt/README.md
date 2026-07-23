@@ -45,9 +45,41 @@ The DMG is written under:
 
     Build/bundle/macos
 
+## Building a Linux Application
+
+To build a standalone Linux application, first install PyInstaller in the
+Python environment that already has PySide6 and matplotlib:
+
+    python -m pip install pyinstaller
+
+Then run on Linux:
+
+    Source/CeditQt/build_linux_app.sh
+
+The app is written to:
+
+    Build/CeditQt/linux/CFAST Editor (CEdit)
+
+## Building a Linux Bundle
+
+After the CFAST executable, optional CEditQt app, manuals, example input file,
+and optional Smokeview files have been built, stage the Linux bundle and create
+a tarball from the repository root:
+
+    Build/scripts/build_linux_bundle.sh
+
+The tarball is written under:
+
+    Build/bundle/linux
+
+After extracting the tarball, source the startup file from bash or zsh before
+using CFAST from a terminal:
+
+    source /path/to/CFAST/bin/CFASTVARS.sh
+
 ## Running CFAST from CEdit Qt
 
-In the macOS bundle, CEdit Qt first looks for the bundled executable:
+In a bundle, CEdit Qt first looks for the bundled executable:
 
     CFAST/bin/cfast
 
@@ -66,7 +98,7 @@ To return to the bundled/PATH default, choose:
 
     File > Use Bundled CFAST or CFAST from PATH
 
-The Geometry and View controls also use Smokeview. In the macOS bundle, CEdit Qt
+The Geometry and View controls also use Smokeview. In a bundle, CEdit Qt
 first looks for:
 
     CFAST/SMV6/smokeview

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, Signal
@@ -80,6 +82,110 @@ BASE_UNIT_NAMES = {
     "energy": "Energy",
     "smoke": "Smoke",
 }
+CFAST_EXECUTABLE_CANDIDATES = (
+    Path("bin/cfast"),
+    Path("bin/cfast.exe"),
+    Path("bin/cfast7_osx"),
+    Path("bin/cfast7_linux"),
+    Path("bin/cfast7_win.exe"),
+    Path("bin/cfast7.exe"),
+    Path("cfast"),
+    Path("cfast.exe"),
+    Path("cfast7_osx"),
+    Path("cfast7_linux"),
+    Path("cfast7_win.exe"),
+    Path("cfast7.exe"),
+)
+SMOKEVIEW_EXECUTABLE_CANDIDATES = (
+    Path("SMV6/smokeview"),
+    Path("SMV6/smokeview.exe"),
+    Path("SMV6/smokeview_osx"),
+    Path("SMV6/smokeview_linux"),
+    Path("SMV6/smokeview_win.exe"),
+    Path("SMV6/bin/smokeview"),
+    Path("SMV6/bin/smokeview.exe"),
+    Path("SMV6/bin/smokeview_osx"),
+    Path("SMV6/bin/smokeview_linux"),
+    Path("SMV6/bin/smokeview_win.exe"),
+    Path("smokeview"),
+    Path("smokeview.exe"),
+)
+
+
+def executable_file(path: Path) -> bool:
+    try:
+        return path.is_file() and os.access(path, os.X_OK)
+    except OSError:
+        return False
+
+
+def bundle_root_candidate(path: Path) -> bool:
+    return (
+        path.name.lower() == "cfast"
+        or (path / "bin").is_dir()
+        or (path / "SMV6").is_dir()
+    )
+
+
+def candidate_bundle_roots() -> list[Path]:
+    candidates: list[Path] = []
+
+    if getattr(sys, "frozen", False):
+        executable_path = Path(sys.executable).resolve()
+        app_bundle_found = False
+        for parent in executable_path.parents:
+            if parent.suffix == ".app":
+                candidates.append(parent.parent)
+                app_bundle_found = True
+                break
+        if not app_bundle_found:
+            for parent in (executable_path.parent, *executable_path.parents):
+                if bundle_root_candidate(parent):
+                    candidates.append(parent)
+                    break
+
+    source_path = Path(__file__).resolve()
+    for parent in source_path.parents:
+        if parent.suffix == ".app":
+            candidates.append(parent.parent)
+            break
+        if bundle_root_candidate(parent):
+            candidates.append(parent)
+            break
+
+    if sys.platform == "darwin":
+        candidates.append(Path("/Applications/CFAST"))
+    elif sys.platform.startswith("linux"):
+        candidates.append(Path("/opt/CFAST"))
+        candidates.append(Path("/usr/local/CFAST"))
+    elif sys.platform.startswith("win"):
+        for env_name in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"):
+            base_path = os.environ.get(env_name)
+            if base_path:
+                candidates.append(Path(base_path) / "CFAST")
+
+    unique_candidates: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+        except OSError:
+            resolved = candidate
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        unique_candidates.append(candidate)
+
+    return unique_candidates
+
+
+def find_bundled_executable(relative_paths: tuple[Path, ...]) -> Path | None:
+    for root in candidate_bundle_roots():
+        for relative_path in relative_paths:
+            candidate = root / relative_path
+            if executable_file(candidate):
+                return candidate
+    return None
 
 
 def latest_cfast_version_from_tag() -> tuple[str, str] | None:
@@ -284,7 +390,7 @@ class CeditMainWindow(QMainWindow):
         set_cfast_action.triggered.connect(self.set_cfast_executable)
         file_menu.addAction(set_cfast_action)
 
-        clear_cfast_action = QAction("Use CFAST from &PATH", self)
+        clear_cfast_action = QAction("Use Bundled CFAST or CFAST from &PATH", self)
         clear_cfast_action.triggered.connect(self.clear_cfast_executable)
         file_menu.addAction(clear_cfast_action)
 
@@ -292,7 +398,10 @@ class CeditMainWindow(QMainWindow):
         set_smokeview_action.triggered.connect(self.set_smokeview_executable)
         file_menu.addAction(set_smokeview_action)
 
-        clear_smokeview_action = QAction("Use Smokeview from PA&TH", self)
+        clear_smokeview_action = QAction(
+            "Use Bundled Smokeview or Smokeview from PA&TH",
+            self,
+        )
         clear_smokeview_action.triggered.connect(self.clear_smokeview_executable)
         file_menu.addAction(clear_smokeview_action)
 
@@ -639,12 +748,30 @@ class CeditMainWindow(QMainWindow):
         self.refresh_reference_lists()
 
     def get_cfast_executable(self) -> str:
+        if self.cfast_executable and executable_file(
+            Path(self.cfast_executable).expanduser()
+        ):
+            return self.cfast_executable
+
+        bundled_executable = find_bundled_executable(CFAST_EXECUTABLE_CANDIDATES)
+        if bundled_executable is not None:
+            return str(bundled_executable)
+
         if self.cfast_executable:
             return self.cfast_executable
 
         return "cfast"
 
     def get_smokeview_executable(self) -> str:
+        if self.smokeview_executable and executable_file(
+            Path(self.smokeview_executable).expanduser()
+        ):
+            return self.smokeview_executable
+
+        bundled_executable = find_bundled_executable(SMOKEVIEW_EXECUTABLE_CANDIDATES)
+        if bundled_executable is not None:
+            return str(bundled_executable)
+
         if self.smokeview_executable:
             return self.smokeview_executable
 
@@ -685,7 +812,8 @@ class CeditMainWindow(QMainWindow):
 
         self.simulation_tab.set_message(
             "CFAST executable override cleared.\n"
-            "CEdit Qt will run 'cfast' from PATH."
+            "CEdit Qt will use the bundled CFAST executable if available, "
+            "otherwise 'cfast' from PATH."
         )
         self.statusBar().showMessage("No Errors")
 
@@ -724,7 +852,8 @@ class CeditMainWindow(QMainWindow):
 
         self.simulation_tab.set_message(
             "Smokeview executable override cleared.\n"
-            "CEdit Qt will run 'smokeview' from PATH."
+            "CEdit Qt will use the bundled Smokeview executable if available, "
+            "otherwise 'smokeview' from PATH."
         )
         self.statusBar().showMessage("No Errors")
 
@@ -1096,7 +1225,10 @@ class CeditMainWindow(QMainWindow):
             f"Attempted executable:\n{executable}\n\n"
             "If this is a development build, use:\n"
             "File > Set CFAST Executable...\n"
-            "and select your built CFAST executable.\n"
+            "and select your built CFAST executable.\n\n"
+            "For an installed bundle, make sure the CFAST folder contains "
+            "bin/cfast, bin/cfast.exe, or the platform-specific cfast7 "
+            "executable.\n"
         )
         self.statusBar().showMessage("Errors")
         if error == QProcess.ProcessError.FailedToStart:
@@ -1209,7 +1341,9 @@ class CeditMainWindow(QMainWindow):
             f"Attempted executable:\n{smokeview_exe}\n\n"
             "If this is a development build, use:\n"
             "File > Set Smokeview Executable...\n"
-            "and select your Smokeview executable."
+            "and select your Smokeview executable.\n\n"
+            "For an installed bundle, make sure the CFAST folder contains "
+            "SMV6/smokeview or SMV6/smokeview.exe."
         )
         self.simulation_tab.append_message(f"\n{message}\n")
         self.statusBar().showMessage("Errors")

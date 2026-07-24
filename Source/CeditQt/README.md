@@ -84,6 +84,52 @@ using CFAST from a terminal:
 
     source /path/to/CFAST/bin/CFASTVARS.sh
 
+## Building a Windows Application
+
+To build a standalone Windows application, first install PyInstaller in the
+Python environment that already has PySide6 and matplotlib:
+
+    python -m pip install pyinstaller
+
+Then run on Windows:
+
+    python Source\CeditQt\build_windows_app.py
+
+The app is written to:
+
+    Build\CeditQt\windows\CFAST Editor (CEdit)
+
+By default, the build script uses `assets\CeditQt.ico` when present. If only
+`assets\CeditQt.png` is present, Pillow is used to create an `.ico` file:
+
+    python -m pip install pillow
+
+## Building a Windows Bundle
+
+After the CFAST executable, optional CEditQt app, manuals, example input file,
+and optional Smokeview files have been built, stage the Windows bundle and
+create a self-extracting EXE from the repository root:
+
+    python Build\bundle\build_windows_bundle.py
+
+The self-extracting EXE is written under:
+
+    Build\bundle\windows
+
+The Windows bundle script stages a `CFAST` folder containing the executable,
+manuals, examples, optional CEditQt files, optional Smokeview files, and
+available compiler/runtime DLLs found next to the executables or on `PATH`.
+It then uses PyInstaller to embed the staged folder in a single
+self-extracting installer executable.
+
+The installer creates or replaces a `CFAST` folder under:
+
+    %ProgramFiles%\firemodels
+
+To use CFAST from a command prompt after installation:
+
+    call "C:\Program Files\firemodels\CFAST\bin\CFASTVARS.bat"
+
 ## Running CFAST from CEdit Qt
 
 In a bundle, CEdit Qt first looks for the bundled executable:

@@ -76,8 +76,8 @@ The tarball is written under:
     Build/bundle/linux
 
 The Linux bundle script copies selected compiler/runtime libraries into
-`CFAST/lib`. If `patchelf` is available, it also embeds `$ORIGIN/../lib` in the
-staged CFAST and Smokeview executables.
+`CFAST/lib`; the generated startup file and CEditQt launcher add that directory
+to `LD_LIBRARY_PATH`.
 
 After extracting the tarball, source the startup file from bash or zsh before
 using CFAST from a terminal:

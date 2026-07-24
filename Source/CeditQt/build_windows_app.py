@@ -44,8 +44,10 @@ def make_icon_from_png(python_exe: str, png_path: Path, ico_path: Path):
     try:
         subprocess.run([python_exe, "-c", script, str(png_path), str(ico_path)], check=True)
     except Exception:
-        print("*** Warning: Pillow was not available to create a Windows .ico; continuing without an icon.")
-        return None
+        raise SystemExit(
+            "***error: Pillow is required to create the Windows .ico from assets/CeditQt.png.\n"
+            f"         Try: {python_exe} -m pip install pillow"
+        )
     return ico_path
 
 
@@ -132,6 +134,8 @@ def main() -> int:
         "PyQt6",
         "--exclude-module",
         "PySide2",
+        "--add-data",
+        f"{Path(__file__).resolve().parent / 'assets'};assets",
     ]
 
     if icon_path is not None:

@@ -88,6 +88,89 @@ copy_optional_dir()
   fi
 }
 
+linux_runtime_library_name()
+{
+  local library_name="$1"
+
+  case "$library_name" in
+    libgcc_s.so*|libgfortran.so*|libgomp.so*|libquadmath.so*|libstdc++.so*)
+      return 0
+      ;;
+    libfabric.so*|libiomp5.so*|libimf.so*|libintlc.so*|libirng.so*)
+      return 0
+      ;;
+    libifcore.so*|libifcoremt.so*|libifport.so*|libirc.so*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+copy_linux_runtime_libraries()
+{
+  local binary_path="$1"
+  local lib_dir="$2"
+  local dependency_path
+  local library_name
+  local destination_path
+
+  mkdir -p "$lib_dir"
+
+  while read -r dependency_path; do
+    if [[ "$dependency_path" == "" || ! -f "$dependency_path" ]]; then
+      continue
+    fi
+
+    library_name="$(basename "$dependency_path")"
+    if ! linux_runtime_library_name "$library_name"; then
+      continue
+    fi
+
+    destination_path="$lib_dir/$library_name"
+    if [[ ! -f "$destination_path" ]]; then
+      echo "*** Copying Linux runtime library: $library_name"
+      cp -L -p "$dependency_path" "$destination_path"
+      chmod u+w "$destination_path"
+    fi
+  done < <(
+    ldd "$binary_path" | awk '
+      /=>/ { print $3; next }
+      /^[[:space:]]*\// { print $1; next }
+    '
+  )
+}
+
+patch_linux_runtime_path()
+{
+  local binary_path="$1"
+  local runtime_path="$2"
+
+  if [[ ! -d "$(dirname "$binary_path")/../lib" ]]; then
+    return 0
+  fi
+
+  if ! command -v patchelf >/dev/null 2>&1; then
+    echo "*** Warning: patchelf not found; $binary_path will rely on LD_LIBRARY_PATH."
+    echo "             Install patchelf to embed $runtime_path in the bundled executable."
+    return 0
+  fi
+
+  echo "*** Patching Linux runtime search path: $binary_path"
+  patchelf --set-rpath "$runtime_path" "$binary_path"
+}
+
+bundle_linux_runtime_libraries()
+{
+  local binary_path="$1"
+  local lib_dir="$2"
+  local runtime_path="$3"
+
+  copy_linux_runtime_libraries "$binary_path" "$lib_dir"
+  patch_linux_runtime_path "$binary_path" "$runtime_path"
+}
+
 write_cfast_vars_sh()
 {
   local out_file="$1"
@@ -119,6 +202,13 @@ if [ -n "$_cfast_vars_dir" ]; then
         case ":${PATH:-}:" in
             *":$CFAST_HOME/SMV6:"*) ;;
             *) export PATH="$CFAST_HOME/SMV6:${PATH:-}" ;;
+        esac
+    fi
+
+    if [ -d "$CFAST_HOME/lib" ]; then
+        case ":${LD_LIBRARY_PATH:-}:" in
+            *":$CFAST_HOME/lib:"*) ;;
+            *) export LD_LIBRARY_PATH="$CFAST_HOME/lib:${LD_LIBRARY_PATH:-}" ;;
         esac
     fi
 fi
@@ -155,6 +245,13 @@ if [[ -d "$CFAST_HOME/SMV6" ]]; then
     esac
 fi
 
+if [[ -d "$CFAST_HOME/lib" ]]; then
+    case ":${LD_LIBRARY_PATH:-}:" in
+        *":$CFAST_HOME/lib:"*) ;;
+        *) export LD_LIBRARY_PATH="$CFAST_HOME/lib:${LD_LIBRARY_PATH:-}" ;;
+    esac
+fi
+
 if [[ ! -x "$cedit_exe" ]]; then
     echo "***error: CEditQt executable not found: $cedit_exe"
     exit 1
@@ -182,6 +279,7 @@ This bundle contains:
 - CEditQt/CFAST Editor (CEdit), if CEditQt was available when the bundle was made
 - Documentation/*.pdf
 - Examples/Users_Guide_Example.in
+- lib/compiler runtime libraries copied from the build host, if needed
 - SMV6/smokeview, if Smokeview was available when the bundle was made
 
 To use CFAST from bash or zsh:
@@ -297,6 +395,7 @@ mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
 copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast7_linux"
 chmod +x "$DIST_DIR/bin/cfast7_linux"
 ln -s cfast7_linux "$DIST_DIR/bin/cfast"
+bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast7_linux" "$DIST_DIR/lib" '$ORIGIN/../lib'
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 
@@ -325,6 +424,7 @@ if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
     mkdir -p "$DIST_DIR/SMV6"
     copy_file "$SMV_EXE" "$DIST_DIR/SMV6/smokeview"
     chmod +x "$DIST_DIR/SMV6/smokeview"
+    bundle_linux_runtime_libraries "$DIST_DIR/SMV6/smokeview" "$DIST_DIR/lib" '$ORIGIN/../lib'
     copy_optional_file "$SMV_BUNDLE_DIR/objects.svo" "$DIST_DIR/SMV6/objects.svo"
     copy_optional_file "$SMV_BUNDLE_DIR/volrender.ssf" "$DIST_DIR/SMV6/volrender.ssf"
     copy_optional_file "$SMV_BUNDLE_DIR/smokeview.ini" "$DIST_DIR/SMV6/smokeview.ini"

@@ -104,6 +104,9 @@ By default, the build script uses `assets\CeditQt.ico` when present. If only
 
     python -m pip install pillow
 
+The Windows application build includes the CEditQt asset directory so the Qt
+window and taskbar icon use the same icon as the executable.
+
 ## Building a Windows Bundle
 
 After the CFAST executable, optional CEditQt app, manuals, example input file,
@@ -125,6 +128,15 @@ self-extracting installer executable.
 The installer creates or replaces a `CFAST` folder under:
 
     %ProgramFiles%\firemodels
+
+If CEditQt is included, the installer asks whether to create a Desktop
+shortcut to `CFAST Editor (CEdit)`. For scripted installs, use:
+
+    CFAST-...-windows.exe --desktop-shortcut
+
+or:
+
+    CFAST-...-windows.exe --no-desktop-shortcut
 
 To use CFAST from a command prompt after installation:
 

@@ -305,11 +305,13 @@ def make_payload_zip(payload_root: Path, zip_path: Path) -> None:
 
 def write_installer_script(script_path: Path) -> None:
     script_path.write_text(
-        r'''#!/usr/bin/env python3
+        r"""#!/usr/bin/env python3
 import argparse
 import os
 import shutil
+import subprocess
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -357,11 +359,89 @@ def extract_payload(payload_zip, destination_parent, overwrite):
     return target
 
 
+def cedit_executable(install_root):
+    return install_root / "CEditQt" / "CFAST Editor (CEdit)" / "CFAST Editor (CEdit).exe"
+
+
+def should_create_desktop_shortcut(args, install_root):
+    if not cedit_executable(install_root).is_file():
+        return False
+    if args.desktop_shortcut:
+        return True
+    if args.no_desktop_shortcut or args.silent:
+        return False
+
+    answer = input("Create a Desktop shortcut to CFAST Editor (CEdit)? [Y/n]: ").strip().lower()
+    return answer in {"", "y", "yes"}
+
+
+def create_desktop_shortcut(install_root):
+    target_path = cedit_executable(install_root)
+    if not target_path.is_file():
+        return False
+
+    powershell = shutil.which("powershell") or shutil.which("pwsh")
+    if powershell is None:
+        print("*** Warning: PowerShell was not found; Desktop shortcut was not created.")
+        return False
+
+    script_text = r'''
+param(
+    [string]$TargetPath,
+    [string]$ShortcutName
+)
+
+$Desktop = [Environment]::GetFolderPath("DesktopDirectory")
+$ShortcutPath = Join-Path $Desktop $ShortcutName
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($ShortcutPath)
+$Shortcut.TargetPath = $TargetPath
+$Shortcut.WorkingDirectory = Split-Path -Parent $TargetPath
+$Shortcut.IconLocation = "$TargetPath,0"
+$Shortcut.Save()
+'''
+
+    script_file = None
+    try:
+        with tempfile.NamedTemporaryFile("w", suffix=".ps1", delete=False, encoding="utf-8-sig") as handle:
+            script_file = Path(handle.name)
+            handle.write(script_text)
+        subprocess.run(
+            [
+                powershell,
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                str(script_file),
+                str(target_path),
+                "CFAST Editor (CEdit).lnk",
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        print("*** Warning: Desktop shortcut creation failed.")
+        return False
+    finally:
+        if script_file is not None:
+            try:
+                script_file.unlink()
+            except OSError:
+                pass
+
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
     parser.add_argument("--extract-to", metavar="PATH", help="install parent folder")
     parser.add_argument("--overwrite", action="store_true", help="replace an existing CFAST folder")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
+    shortcut_group = parser.add_mutually_exclusive_group()
+    shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")
+    shortcut_group.add_argument("--no-desktop-shortcut", action="store_true", help="do not create a Desktop shortcut")
     args = parser.parse_args()
 
     payload_zip = resource_path("payload.zip")
@@ -383,6 +463,9 @@ def main():
 
     print("")
     print(f"CFAST installed to: {target}")
+    if should_create_desktop_shortcut(args, target):
+        if create_desktop_shortcut(target):
+            print("Desktop shortcut created: CFAST Editor (CEdit)")
     print("")
     print("To use CFAST from a command prompt:")
     print(f'    call "{target}\\bin\\CFASTVARS.bat"')
@@ -395,7 +478,7 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-''',
+""",
         encoding="utf-8",
     )
 
@@ -468,7 +551,11 @@ def parse_args():
         firemodels_root / "smv/Build/smokeview/gnu_win/smokeview_win.exe",
         repo_root / "Utilities/for_bundle/SMV6/smokeview.exe",
     ]
-    default_icon = repo_root / "Source/CeditQt/assets/CeditQt.ico"
+    icon_candidates = [
+        repo_root / "Build/CeditQt/icons/CeditQt.ico",
+        repo_root / "Source/CeditQt/assets/CeditQt.ico",
+    ]
+    default_icon = first_existing(icon_candidates)
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", help="distribution folder and installer base name")

@@ -69,8 +69,10 @@ __pycache__/
 # CEditQt app build output
 Build/CeditQt/
 
-# macOS bundle build output
-Build/bundle/
+# bundle build output
+Build/bundle/linux/
+Build/bundle/macos/
+Build/bundle/stage/
 
 # CEditQt generated test files
 Source/CeditQt/cedit_qt_test*

@@ -39,7 +39,7 @@ been built, install the DMG builder in the active Python environment:
 
 Then stage the macOS bundle and create a DMG from the repository root:
 
-    Build/scripts/build_macos_bundle.sh
+    Build/bundle/build_macos_bundle.sh
 
 The DMG is written under:
 
@@ -69,7 +69,7 @@ After the CFAST executable, optional CEditQt app, manuals, example input file,
 and optional Smokeview files have been built, stage the Linux bundle and create
 a tarball from the repository root:
 
-    Build/scripts/build_linux_bundle.sh
+    Build/bundle/build_linux_bundle.sh
 
 The tarball is written under:
 

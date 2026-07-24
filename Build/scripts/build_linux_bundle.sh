@@ -142,33 +142,12 @@ copy_linux_runtime_libraries()
   )
 }
 
-patch_linux_runtime_path()
-{
-  local binary_path="$1"
-  local runtime_path="$2"
-
-  if [[ ! -d "$(dirname "$binary_path")/../lib" ]]; then
-    return 0
-  fi
-
-  if ! command -v patchelf >/dev/null 2>&1; then
-    echo "*** Warning: patchelf not found; $binary_path will rely on LD_LIBRARY_PATH."
-    echo "             Install patchelf to embed $runtime_path in the bundled executable."
-    return 0
-  fi
-
-  echo "*** Patching Linux runtime search path: $binary_path"
-  patchelf --set-rpath "$runtime_path" "$binary_path"
-}
-
 bundle_linux_runtime_libraries()
 {
   local binary_path="$1"
   local lib_dir="$2"
-  local runtime_path="$3"
 
   copy_linux_runtime_libraries "$binary_path" "$lib_dir"
-  patch_linux_runtime_path "$binary_path" "$runtime_path"
 }
 
 write_cfast_vars_sh()
@@ -395,7 +374,7 @@ mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
 copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast7_linux"
 chmod +x "$DIST_DIR/bin/cfast7_linux"
 ln -s cfast7_linux "$DIST_DIR/bin/cfast"
-bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast7_linux" "$DIST_DIR/lib" '$ORIGIN/../lib'
+bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast7_linux" "$DIST_DIR/lib"
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 
@@ -424,7 +403,7 @@ if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
     mkdir -p "$DIST_DIR/SMV6"
     copy_file "$SMV_EXE" "$DIST_DIR/SMV6/smokeview"
     chmod +x "$DIST_DIR/SMV6/smokeview"
-    bundle_linux_runtime_libraries "$DIST_DIR/SMV6/smokeview" "$DIST_DIR/lib" '$ORIGIN/../lib'
+    bundle_linux_runtime_libraries "$DIST_DIR/SMV6/smokeview" "$DIST_DIR/lib"
     copy_optional_file "$SMV_BUNDLE_DIR/objects.svo" "$DIST_DIR/SMV6/objects.svo"
     copy_optional_file "$SMV_BUNDLE_DIR/volrender.ssf" "$DIST_DIR/SMV6/volrender.ssf"
     copy_optional_file "$SMV_BUNDLE_DIR/smokeview.ini" "$DIST_DIR/SMV6/smokeview.ini"

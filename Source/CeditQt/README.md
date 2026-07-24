@@ -45,6 +45,9 @@ The DMG is written under:
 
     Build/bundle/macos
 
+The macOS bundle script copies non-system CFAST/Smokeview runtime libraries
+into `CFAST/lib` and rewrites the staged executables to load those local copies.
+
 ## Building a Linux Application
 
 To build a standalone Linux application, first install PyInstaller in the
@@ -71,6 +74,10 @@ a tarball from the repository root:
 The tarball is written under:
 
     Build/bundle/linux
+
+The Linux bundle script copies selected compiler/runtime libraries into
+`CFAST/lib`. If `patchelf` is available, it also embeds `$ORIGIN/../lib` in the
+staged CFAST and Smokeview executables.
 
 After extracting the tarball, source the startup file from bash or zsh before
 using CFAST from a terminal:

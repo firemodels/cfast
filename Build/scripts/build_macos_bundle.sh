@@ -18,6 +18,7 @@ SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
 INCLUDE_SMOKEVIEW=1
 CREATE_DMG=1
 CUSTOMIZE_DMG=1
+RUNTIME_LIB_MANIFEST=""
 
 usage()
 {
@@ -99,6 +100,190 @@ copy_optional_dir()
   if [[ -d "$from_path" ]]; then
     copy_dir "$from_path" "$to_path"
   fi
+}
+
+resolve_macos_dependency()
+{
+  local dependency="$1"
+  local loader_path="$2"
+  local loader_dir
+  local dependency_name
+  local candidate
+
+  case "$dependency" in
+    /usr/lib/*|/System/Library/*)
+      return 1
+      ;;
+  esac
+
+  loader_dir="$(dirname "$loader_path")"
+  dependency_name="$(basename "$dependency")"
+
+  case "$dependency" in
+    /*)
+      candidate="$dependency"
+      ;;
+    @rpath/*|@loader_path/*)
+      candidate="$loader_dir/$dependency_name"
+      ;;
+    @executable_path/*)
+      candidate="$loader_dir/${dependency#@executable_path/}"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+
+  if [[ -f "$candidate" ]]; then
+    printf "%s\n" "$candidate"
+    return 0
+  fi
+
+  return 1
+}
+
+record_macos_runtime_dependency()
+{
+  local load_name="$1"
+  local source_path="$2"
+  local library_name="$3"
+  local record="$load_name|$source_path|$library_name"
+
+  if ! grep -Fqx "$record" "$RUNTIME_LIB_MANIFEST"; then
+    printf "%s\n" "$record" >> "$RUNTIME_LIB_MANIFEST"
+  fi
+}
+
+macos_runtime_reference()
+{
+  local load_name="$1"
+  local reference_prefix="$2"
+  local recorded_load_name
+  local source_path
+  local library_name
+
+  while IFS="|" read -r recorded_load_name source_path library_name; do
+    if [[ "$recorded_load_name" == "$load_name" ]]; then
+      printf "%s/%s\n" "$reference_prefix" "$library_name"
+      return 0
+    fi
+  done < "$RUNTIME_LIB_MANIFEST"
+
+  return 1
+}
+
+copy_macos_runtime_libraries()
+{
+  local source_binary="$1"
+  local lib_dir="$2"
+  local queue_file="$STAGE_ROOT/macos_runtime_queue.txt"
+  local seen_file="$STAGE_ROOT/macos_runtime_seen.txt"
+  local queue_index=1
+  local source_path
+  local load_name
+  local dependency_path
+  local library_name
+  local destination_path
+
+  mkdir -p "$lib_dir"
+  : > "$RUNTIME_LIB_MANIFEST"
+  : > "$queue_file"
+  : > "$seen_file"
+  printf "%s\n" "$source_binary" >> "$queue_file"
+
+  while source_path="$(sed -n "${queue_index}p" "$queue_file")" && [[ "$source_path" != "" ]]; do
+    queue_index=$((queue_index + 1))
+    if grep -Fqx "$source_path" "$seen_file"; then
+      continue
+    fi
+    printf "%s\n" "$source_path" >> "$seen_file"
+
+    while read -r load_name; do
+      if dependency_path="$(resolve_macos_dependency "$load_name" "$source_path")"; then
+        library_name="$(basename "$dependency_path")"
+        destination_path="$lib_dir/$library_name"
+        record_macos_runtime_dependency "$load_name" "$dependency_path" "$library_name"
+        if [[ "$dependency_path" != "$source_binary" && ! -f "$destination_path" ]]; then
+          echo "*** Copying macOS runtime library: $library_name"
+          copy_file "$dependency_path" "$destination_path"
+          chmod u+w "$destination_path"
+        fi
+        if [[ "$dependency_path" != "$source_binary" ]]; then
+          printf "%s\n" "$dependency_path" >> "$queue_file"
+        fi
+      fi
+    done < <(otool -L "$source_path" | awk 'NR > 1 {print $1}')
+  done
+}
+
+patch_macos_runtime_references()
+{
+  local target_path="$1"
+  local reference_prefix="$2"
+  local skip_first_dependency="$3"
+  local dependency_index=0
+  local load_name
+  local new_reference
+
+  while read -r load_name; do
+    dependency_index=$((dependency_index + 1))
+    if [[ "$skip_first_dependency" == "1" && "$dependency_index" == "1" ]]; then
+      continue
+    fi
+    if new_reference="$(macos_runtime_reference "$load_name" "$reference_prefix")"; then
+      if [[ "$load_name" != "$new_reference" ]]; then
+        install_name_tool -change "$load_name" "$new_reference" "$target_path"
+      fi
+    fi
+  done < <(otool -L "$target_path" | awk 'NR > 1 {print $1}')
+}
+
+codesign_macos_runtime_file()
+{
+  local target_path="$1"
+
+  if command -v codesign >/dev/null 2>&1; then
+    codesign --force --sign - "$target_path" >/dev/null 2>&1 || {
+      echo "*** Warning: ad hoc codesign failed for $target_path"
+    }
+  fi
+}
+
+bundle_macos_runtime_libraries()
+{
+  local source_binary="$1"
+  local staged_binary="$2"
+  local lib_dir="$3"
+  local library_path
+  local library_name
+
+  if ! command -v install_name_tool >/dev/null 2>&1; then
+    echo "***error: install_name_tool is required to make the macOS bundle portable."
+    exit 1
+  fi
+
+  RUNTIME_LIB_MANIFEST="$STAGE_ROOT/macos_runtime_manifest.txt"
+  copy_macos_runtime_libraries "$source_binary" "$lib_dir"
+
+  if [[ ! -s "$RUNTIME_LIB_MANIFEST" ]]; then
+    return 0
+  fi
+
+  echo "*** Patching macOS runtime library paths"
+  chmod u+w "$staged_binary"
+  patch_macos_runtime_references "$staged_binary" "@loader_path/../lib" 0
+
+  for library_path in "$lib_dir"/*.dylib; do
+    if [[ ! -f "$library_path" ]]; then
+      continue
+    fi
+    library_name="$(basename "$library_path")"
+    install_name_tool -id "@loader_path/$library_name" "$library_path"
+    patch_macos_runtime_references "$library_path" "@loader_path" 1
+    codesign_macos_runtime_file "$library_path"
+  done
+
+  codesign_macos_runtime_file "$staged_binary"
 }
 
 create_background()
@@ -292,6 +477,7 @@ create_compressed_dmg()
   fi
   write_dmgbuild_settings "$settings_file" "$background_file"
 
+  rm -f "$DMG_PATH"
   echo "*** Creating DMG with dmgbuild"
   if ! python3 -m dmgbuild \
     --settings "$settings_file" \
@@ -484,6 +670,7 @@ copy_dir "$CEDIT_APP" "$DIST_DIR/$APP_NAME.app"
 copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast7_osx"
 chmod +x "$DIST_DIR/bin/cfast7_osx"
 ln -s cfast7_osx "$DIST_DIR/bin/cfast"
+bundle_macos_runtime_libraries "$CFAST_EXE" "$DIST_DIR/bin/cfast7_osx" "$DIST_DIR/lib"
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 
@@ -501,6 +688,7 @@ if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
     mkdir -p "$DIST_DIR/SMV6"
     copy_file "$SMV_EXE" "$DIST_DIR/SMV6/smokeview"
     chmod +x "$DIST_DIR/SMV6/smokeview"
+    bundle_macos_runtime_libraries "$SMV_EXE" "$DIST_DIR/SMV6/smokeview" "$DIST_DIR/lib"
     copy_optional_file "$SMV_BUNDLE_DIR/objects.svo" "$DIST_DIR/SMV6/objects.svo"
     copy_optional_file "$SMV_BUNDLE_DIR/volrender.ssf" "$DIST_DIR/SMV6/volrender.ssf"
     copy_optional_file "$SMV_BUNDLE_DIR/smokeview.ini" "$DIST_DIR/SMV6/smokeview.ini"
@@ -521,7 +709,7 @@ if [[ "$CREATE_DMG" == "1" ]]; then
 
   if ! create_compressed_dmg; then
     echo "***error: macOS DMG creation failed."
-    echo "         Confirm dmgbuild is installed in the active Python environment."
+    echo "         Confirm dmgbuild is installed and hdiutil can create disk images."
     exit 1
   fi
 

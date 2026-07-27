@@ -297,8 +297,8 @@ class CfastCase:
 
     simulation_time: float = 3600.0
     print_interval: float = 60.0
-    smokeview_interval: float = 60.0
-    spreadsheet_interval: float = 60.0
+    smokeview_interval: float = 15.0
+    spreadsheet_interval: float = 15.0
     max_time_step: float | None = None
 
     pressure: float = 101325.0
@@ -307,7 +307,7 @@ class CfastCase:
     exterior_temperature: float = 20.0
 
     adiabatic_surfaces: bool = False
-    lower_oxygen_limit: float = 0.1
+    lower_oxygen_limit: float = 0.15
 
     materials: list[MaterialProperty] = field(default_factory=list)
     compartments: list[Compartment] = field(default_factory=list)

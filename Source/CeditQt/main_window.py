@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFont, QFontDatabase
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QSpacerItem,
+    QSplitter,
     QStatusBar,
     QTableWidget,
     QTableWidgetItem,
@@ -65,6 +66,7 @@ from units import (
     PRESSURE,
     TEMPERATURE,
     TIME,
+    format_number,
     format_value,
     unit_label,
     unit_system,
@@ -1179,6 +1181,7 @@ class CeditMainWindow(QMainWindow):
 
     def run_error_text(self, path: Path | None, exit_code: int) -> str:
         messages: list[str] = []
+        log_text = ""
         if path is not None:
             log_path = path.with_suffix(".log")
             try:
@@ -1188,13 +1191,26 @@ class CeditMainWindow(QMainWindow):
             if log_text:
                 messages.append(log_text)
 
-        if self.cfast_output_text.strip():
-            messages.append(self.cfast_output_text.strip())
+        process_text = self.process_output_not_in_log(log_text)
+        if process_text:
+            messages.append(process_text)
 
         if exit_code != 0:
             messages.append(f"CFAST exited with a non-zero exit code: {exit_code}")
 
         return "\n\n".join(messages) if messages else "No Errors"
+
+    def process_output_not_in_log(self, log_text: str) -> str:
+        process_text = self.cfast_output_text.strip()
+        if not process_text or not log_text:
+            return process_text
+
+        log_lines = {line.strip() for line in log_text.splitlines() if line.strip()}
+        unique_lines = [
+            line for line in process_text.splitlines()
+            if line.strip() and line.strip() not in log_lines
+        ]
+        return "\n".join(unique_lines)
 
     def cfast_output_compatibility_hint(self) -> str:
         text = self.cfast_output_text.upper()
@@ -1397,6 +1413,10 @@ class EngineeringUnitsDialog(QDialog):
 class RunMonitorDialog(QDialog):
     stop_requested = Signal()
     update_requested = Signal()
+    CFAST_HEADER_LABELS = ("Revision", "Revision Date", "Compiler", "Compilation Date")
+    CFAST_HEADER_RE = re.compile(
+        r"^(?P<label>Revision|Revision Date|Compiler|Compilation Date)\s*:\s*(?P<value>.*)$"
+    )
 
     STATUS_RE = re.compile(
         r"Status\s+at\s+T\s*=\s*"
@@ -1440,7 +1460,9 @@ class RunMonitorDialog(QDialog):
 
         self.errors_edit = QPlainTextEdit("No Errors")
         self.errors_edit.setReadOnly(True)
+        self.errors_edit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.errors_edit.setMinimumHeight(120)
+        self.errors_edit.setFont(self.fixed_width_font())
 
         self.close_button = QPushButton("Close")
         self.stop_button = QPushButton("Stop")
@@ -1460,10 +1482,28 @@ class RunMonitorDialog(QDialog):
 
         layout = QVBoxLayout()
         layout.addLayout(top_layout)
-        layout.addWidget(self.summary_table, 1)
-        layout.addWidget(self.errors_edit)
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        splitter.addWidget(self.summary_table)
+        splitter.addWidget(self.errors_edit)
+        splitter.setChildrenCollapsible(False)
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 2)
+        splitter.setSizes([320, 180])
+        layout.addWidget(splitter, 1)
         layout.addLayout(button_layout)
         self.setLayout(layout)
+
+    @staticmethod
+    def fixed_width_font() -> QFont:
+        font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+
+        if "Menlo" in QFontDatabase.families():
+            font = QFont("Menlo")
+
+        font.setStyleHint(QFont.StyleHint.Monospace)
+        font.setFixedPitch(True)
+        font.setPointSize(12)
+        return font
 
     def summary_headers(self) -> list[str]:
         return [
@@ -1553,7 +1593,11 @@ class RunMonitorDialog(QDialog):
 
     def format_status_value(self, kind: str, text: str) -> str:
         try:
-            return format_value(kind, self.parse_status_number(text), include_unit=False)
+            value = self.parse_status_number(text)
+            if kind == HRR:
+                # CFAST status output reports fire size in W, while input HRR uses kW.
+                return format_number(unit_system.from_si(kind, value))
+            return format_value(kind, value, include_unit=False)
         except ValueError:
             return ""
 
@@ -1572,7 +1616,22 @@ class RunMonitorDialog(QDialog):
         self.close_button.setEnabled(True)
         self.stop_button.setEnabled(False)
         self.update_button.setEnabled(False)
-        self.errors_edit.setPlainText(errors or "No Errors")
+        self.errors_edit.setPlainText(self.format_run_output(errors or "No Errors"))
+
+    def format_run_output(self, text: str) -> str:
+        label_width = max(len(label) for label in self.CFAST_HEADER_LABELS)
+        lines = []
+        for line in text.splitlines():
+            match = self.CFAST_HEADER_RE.match(line)
+            if match is None:
+                lines.append(line)
+                continue
+
+            label = match.group("label")
+            value = match.group("value")
+            lines.append(f"{label:<{label_width}} : {value}")
+
+        return "\n".join(lines)
 
     def closeEvent(self, event):
         if self.running:

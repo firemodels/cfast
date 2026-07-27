@@ -19,6 +19,10 @@ from cfast_case import CfastCase
 from units import PRESSURE, TEMPERATURE, TIME, format_number, format_value, parse_number, parse_value
 
 
+def format_percent(value: float | int) -> str:
+    return f"{format_number(value)} %"
+
+
 class SimulationTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -32,7 +36,7 @@ class SimulationTab(QWidget):
         self.max_time_step_edit = QLineEdit("Default")
 
         self.interior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
-        self.relative_humidity_edit = QLineEdit("50 %")
+        self.relative_humidity_edit = QLineEdit(format_percent(50.0))
         self.exterior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
         self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
 
@@ -97,7 +101,7 @@ class SimulationTab(QWidget):
             "Default" if case.max_time_step is None else format_value(TIME, case.max_time_step)
         )
         self.interior_temperature_edit.setText(format_value(TEMPERATURE, case.interior_temperature))
-        self.relative_humidity_edit.setText(format_number(case.relative_humidity))
+        self.relative_humidity_edit.setText(format_percent(case.relative_humidity))
         self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
         self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
@@ -176,6 +180,7 @@ class SimulationTab(QWidget):
                     self.normalize_value_edit(edit, kind, field_name, allow_default)
                 )
             )
+        self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
 
     def normalize_value_edit(
         self,
@@ -198,6 +203,14 @@ class SimulationTab(QWidget):
             edit.setText("Default")
         else:
             edit.setText(format_value(kind, value))
+
+    def normalize_relative_humidity(self):
+        try:
+            value = parse_number(self.relative_humidity_edit.text(), "Humidity")
+        except ValueError:
+            return
+
+        self.relative_humidity_edit.setText(format_percent(value))
 
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"

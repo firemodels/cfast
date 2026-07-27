@@ -4,7 +4,7 @@ The Environment page defines the initial conditions and simulation time for the 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Environment_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Environment_Tab}
 \caption[The CFAST Simulation Environment Tab]{The CFAST Simulation Environment Tab.}
 \end{figure}
 
@@ -16,6 +16,7 @@ The Environment page defines the initial conditions and simulation time for the 
 
 \item[Title] The first thing to do when setting up an input file is to give the simulation a title. The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string.
 \end{description}
+
 
 
 
@@ -79,7 +80,7 @@ The thermophysical properties of materials used for compartment surfaces or targ
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Thermal_Properties_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Thermal_Properties_Tab}
 \caption[The CFAST Thermal Properties Tab]{The CFAST Thermal Properties Tab.}
 \end{figure}
 
@@ -124,7 +125,7 @@ The `From File' button allows you to insert thermal properties from existing CFA
 \chapter{Compartments}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Compartment_Geometry_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Compartment_Geometry_Tab}
 \caption[The CFAST Compartments Tab]{The CFAST Compartments Tab.}
 \end{center}
 \end{figure}
@@ -298,7 +299,7 @@ Natural ventilation can occur when two compartments are connected via open doorw
 \label{info:VENT}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Natural_Flow_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Natural_Flow_Tab}
 \caption[The CFAST Wall Vents Tab]{The CFAST Wall Vents Tab.}
 \end{center}
 \end{figure}
@@ -341,7 +342,7 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \subsection{Ceiling/Floor Vents}
 \label{info:VENT2}
 \begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Vertical_Flow_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Vertical_Flow_Tab}
 \caption[The CFAST Ceiling/Floor Vents Tab]{The CFAST Ceiling/Floor Vents Tab.}
 \end{figure}
 
@@ -387,7 +388,7 @@ Vertical connections can only be created between compartments that could be phys
 \section{Mechanical Ventilation}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Mechanical_Vent_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Mechanical_Vent_Tab}
 \caption[The CFAST Mechanical Vents Tab]{The CFAST Mechanical Vents Tab.}
 \end{center}
 \end{figure}
@@ -477,7 +478,7 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Fire_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Fire_Tab}
 \caption[The CFAST Fires Tab]{The CFAST Fires Tab.}
 \end{center}
 \end{figure}
@@ -563,7 +564,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Target_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Target_Tab}
 \caption[The CFAST Targets Tab]{The CFAST Targets Tab.}
 \end{center}
 \end{figure}
@@ -610,7 +611,7 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Detector_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Detector_Tab}
 \caption[The CFAST Detection/Suppression Tab]{The CFAST Detection/Suppression Tab.}
 \end{center}
 \end{figure}
@@ -649,7 +650,7 @@ Several cautions should be observed when using estimates of sprinkler suppressio
 \label{info:CONN}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Surface_Connection_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Surface_Connection_Tab}
 \caption[The CFAST Surface Connections Tab]{The CFAST Surface Connections Tab.}
 \end{center}
 \end{figure}
@@ -681,7 +682,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Visualizations_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Visualizations_Tab}
 \caption[The CFAST Visualizations Tab]{The CFAST Visualizations Tab.}
 \end{center}
 \end{figure}
@@ -725,7 +726,7 @@ Sample visualizations are included below.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/SMV_Sample}
-\caption{example Smokeview Visualization for a Three Compartment Test Case with Two Fires (\ct User\_Guide\_Example.in)}
+\caption[Example Smokeview Visualization for a Three Compartment Test Case]{Example Smokeview Visualization for a Three Compartment Test Case with Two Fires (\ct User\_Guide\_Example.in)}
 \end{center}
 \end{figure}
 
@@ -759,7 +760,5 @@ By default, CFAST generates a set of output files that includes a formatted read
     \item[Debug Output] If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
     \item[Show CFAST Window] If checked, this item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
 \end{description}
-
-
 
 

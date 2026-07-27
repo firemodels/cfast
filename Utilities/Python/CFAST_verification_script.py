@@ -7,18 +7,24 @@ import fdsplotlib
 import matplotlib.pyplot as plt
 import runpy
 import importlib
+import sys
 importlib.reload(fdsplotlib) # use for development (while making changes to fdsplotlib.py)
 print("Using:", fdsplotlib.__file__)
 
 # If there is an error in one of the sub-scripts, print the message but do not stop the main script.
 
-def safe_run(script_path):
+def safe_run(script_path, script_args=None):
+    original_argv = sys.argv[:]
     try:
+        if script_args is not None:
+            sys.argv = [script_path] + script_args
         runpy.run_path(script_path, run_name="__main__")
         plt.clf()         # Clear the current figure (if any)
         plt.close('all')  # Close all open figure windows
     except Exception as exc:
         print(f"Error in {script_path}: {exc}")
+    finally:
+        sys.argv = original_argv
 
 # Scripts to run prior to dataplot
 
@@ -27,6 +33,7 @@ print("radiativefluxes...");                   safe_run("./scripts/radiativeflux
 print("speciesmass...");                       safe_run("./scripts/speciesmass.py")
 print("sprinkler_1...");                       safe_run("./scripts/sprinkler_1.py")
 print("target_2...");                          safe_run("./scripts/target_2.py")
+print("generate_cedit_figures...");            safe_run("../../Manuals/CFAST_Users_Guide/generate_cedit_figures.py", [])
 
 # Dataplot and scatplot options
 

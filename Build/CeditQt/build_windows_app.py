@@ -16,6 +16,10 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def source_dir(root: Path) -> Path:
+    return root / "Source/CeditQt"
+
+
 def check_python_environment(python_exe: str) -> None:
     script = "import PyInstaller, PySide6, matplotlib"
     try:
@@ -64,7 +68,7 @@ def resolve_icon(args, root: Path):
             raise SystemExit(f"***error: icon file not found: {icon_path}")
         return icon_path
 
-    asset_dir = Path(__file__).resolve().parent / "assets"
+    asset_dir = source_dir(root) / "assets"
     png_path = asset_dir / "CeditQt.png"
     if png_path.is_file():
         return make_icon_from_png(args.python, png_path, root / "Build/CeditQt/icons/CeditQt.ico")
@@ -145,7 +149,7 @@ def main() -> int:
         "--exclude-module",
         "PySide2",
         "--add-data",
-        f"{Path(__file__).resolve().parent / 'assets'};assets",
+        f"{source_dir(root) / 'assets'};assets",
     ]
 
     if icon_path is not None:
@@ -162,7 +166,7 @@ def main() -> int:
     if icon_path is not None:
         print(f"*** Icon: {icon_path}")
 
-    subprocess.run(command, check=True, cwd=Path(__file__).resolve().parent, env=env)
+    subprocess.run(command, check=True, cwd=source_dir(root), env=env)
 
     app_exe = app_path / f"{args.name}.exe"
     if not app_exe.is_file():

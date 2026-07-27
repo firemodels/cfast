@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 LENGTH = "length"
 MASS = "mass"
+MASS_FRACTION = "mass_fraction"
 TIME = "time"
 TEMPERATURE = "temperature"
 TEMPERATURE_RISE = "temperature_rise"
@@ -281,6 +282,7 @@ class UnitSystem:
                 f"({l_length} {l_time})^0.5",
             ),
             MASS: Conversion(mass.multiplier, 0.0, l_mass),
+            MASS_FRACTION: Conversion(1.0, 0.0, f"{l_mass}/{l_mass}"),
             MASS_LOSS: Conversion(
                 mass.multiplier / time.multiplier,
                 0.0,
@@ -462,6 +464,13 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                 )
 
     for mass in BASE_UNITS[MASS]:
+        if kind == MASS_FRACTION:
+            register_unit(
+                lookup,
+                f"{mass.label}/{mass.label}",
+                Conversion(1.0, 0.0, f"{mass.label}/{mass.label}"),
+            )
+
         for time in BASE_UNITS[TIME]:
             if kind == MASS_LOSS:
                 register_unit(

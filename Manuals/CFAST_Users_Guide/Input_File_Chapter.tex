@@ -489,7 +489,7 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 \label{sec:fire_inputs}
 Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
-For a new fire , click on the {\bf Add New} button or {\bf Add t$^2$} buttons within the fire definition block of inputs. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
+For a new fire, click on the {\bf Add New} button within the fire definition block of inputs. The {\bf Add t$^2$} button creates a new fire with a seeded quadratic heat release rate curve that can then be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
 \begin{description}
 \item[Fire ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
 \item[Compartment] Name of the compartment where the fire occurs.
@@ -512,17 +512,17 @@ Each instance of a fire can be unique fires with different chemical composition 
 
 \section{Time-Dependent Properties}
 \label{info:FIRE2}
-Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet.
+Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
 \begin{description}
 \item[Time] (default units: s, default values: none): Time from ignition.
 \item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
 \item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
 \item[Area] (default units: m$^2$, default values: calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
-\item[CO Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
-\item[Soot Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
+\item[CO Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of CO produced per unit mass of fuel consumed.
+\item[Soot Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of soot produced per unit mass of fuel consumed.
 %Should this still be there if all the N2 in the fuel is assumed to go to HCN.
-\item[HCN Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
+\item[HCN Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+\item[TS Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
 \end{description}
 
 
@@ -533,20 +533,7 @@ Use the `Add t$^2$' button to create a new fire with a heat release rate that gr
    \dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
 \ee
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=5in]{FIGURES/Create_t2}
-\caption[Inserting T-squared Fires in CFAST]{Inserting T-squared Fires in CFAST.}
-\end{center}
-\end{figure}
-
-\begin{description}
-\item[Fire Growth Rate] A set of specific t-squared fires labeled slow, medium, fast, or ultra-fast such that the fire reaches 1054~kW (1000~BTU/s) in 600~s, 300~s, 150~s, and 75~s.  A custom selection allows you to define any growth or decay rate desired.
-\item[Time to Peak] (default units: s, default value: 300 s): The time for the fire to reach the peak HRR.
-\item[Peak HRR] (default units: kW, default value: 1054 kW): The peak heat release rate of the t-squared fire.
-\item[Steady Burning Period] (default units: s, default value: 300 s): Duration of time that the fire continues burning at the rate specified by the peak HRR.
-\item[Decay Time] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
-\end{description}
+The generated fire curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
 
 %Where is the getting fire definitions from files?
 
@@ -760,5 +747,3 @@ By default, CFAST generates a set of output files that includes a formatted read
     \item[Debug Output] If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
     \item[Show CFAST Window] If checked, this item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
 \end{description}
-
-

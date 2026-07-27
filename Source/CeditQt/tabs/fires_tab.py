@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QSplitter,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -33,6 +34,7 @@ from units import (
     HOC,
     HRR,
     LENGTH,
+    MASS_FRACTION,
     TEMPERATURE,
     TIME,
     display_value,
@@ -102,10 +104,10 @@ def ramp_headers() -> list[str]:
         f"HRR\n({unit_label(HRR)})",
         f"Height\n({unit_label(LENGTH)})",
         f"Area\n({unit_label(AREA)})",
-        "CO Yield",
-        "Soot Yield",
-        "HCN Yield",
-        "TS Yield",
+        f"CO Yield\n({unit_label(MASS_FRACTION)})",
+        f"Soot Yield\n({unit_label(MASS_FRACTION)})",
+        f"HCN Yield\n({unit_label(MASS_FRACTION)})",
+        f"TS Yield\n({unit_label(MASS_FRACTION)})",
     ]
 
 
@@ -434,8 +436,14 @@ class FiresTab(QWidget):
     def build_right_editor(self):
         widget = QWidget()
         layout = QVBoxLayout()
-        layout.addWidget(self.ramp_table, 2)
-        layout.addWidget(self.plot_canvas, 3)
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        splitter.addWidget(self.ramp_table)
+        splitter.addWidget(self.plot_canvas)
+        splitter.setChildrenCollapsible(False)
+        splitter.setStretchFactor(0, 2)
+        splitter.setStretchFactor(1, 3)
+        splitter.setSizes([220, 280])
+        layout.addWidget(splitter, 1)
         widget.setLayout(layout)
         return widget
 
@@ -804,10 +812,10 @@ class FiresTab(QWidget):
 
         for row, point in enumerate(prop.sorted_ramp()):
             values = [
-                format_value(TIME, point.time),
-                format_value(HRR, point.hrr),
-                format_value(LENGTH, point.height),
-                format_value(AREA, point.area),
+                format_value(TIME, point.time, include_unit=False),
+                format_value(HRR, point.hrr, include_unit=False),
+                format_value(LENGTH, point.height, include_unit=False),
+                format_value(AREA, point.area, include_unit=False),
                 point.co_yield,
                 point.soot_yield,
                 point.hcn_yield,
@@ -1004,10 +1012,10 @@ class FiresTab(QWidget):
                 hrr=parse_value(HRR, values[1], "HRR", 0.0),
                 height=parse_value(LENGTH, values[2], "Height", 0.0),
                 area=parse_value(AREA, values[3], "Area", 0.1),
-                co_yield=parse_number(values[4], "CO Yield", 0.0),
-                soot_yield=parse_number(values[5], "Soot Yield", 0.0),
-                hcn_yield=parse_number(values[6], "HCN Yield", 0.0),
-                trace_yield=parse_number(values[7], "TS Yield", 0.0),
+                co_yield=parse_value(MASS_FRACTION, values[4], "CO Yield", 0.0),
+                soot_yield=parse_value(MASS_FRACTION, values[5], "Soot Yield", 0.0),
+                hcn_yield=parse_value(MASS_FRACTION, values[6], "HCN Yield", 0.0),
+                trace_yield=parse_value(MASS_FRACTION, values[7], "TS Yield", 0.0),
             )
             points.append(point)
 

@@ -23,6 +23,10 @@ def format_percent(value: float | int) -> str:
     return f"{format_number(value)} %"
 
 
+def format_mol_fraction(value: float | int) -> str:
+    return f"{format_number(value)} mol/mol"
+
+
 class SimulationTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -41,7 +45,7 @@ class SimulationTab(QWidget):
         self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
-        self.lower_oxygen_limit_edit = QLineEdit("0.1")
+        self.lower_oxygen_limit_edit = QLineEdit(format_mol_fraction(0.15))
 
         self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
@@ -105,7 +109,7 @@ class SimulationTab(QWidget):
         self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
         self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
-        self.lower_oxygen_limit_edit.setText(format_number(case.lower_oxygen_limit))
+        self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
 
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
@@ -181,6 +185,7 @@ class SimulationTab(QWidget):
                 )
             )
         self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
+        self.lower_oxygen_limit_edit.editingFinished.connect(self.normalize_lower_oxygen_limit)
 
     def normalize_value_edit(
         self,
@@ -211,6 +216,14 @@ class SimulationTab(QWidget):
             return
 
         self.relative_humidity_edit.setText(format_percent(value))
+
+    def normalize_lower_oxygen_limit(self):
+        try:
+            value = parse_number(self.lower_oxygen_limit_edit.text(), "Lower Oxygen Limit")
+        except ValueError:
+            return
+
+        self.lower_oxygen_limit_edit.setText(format_mol_fraction(value))
 
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"

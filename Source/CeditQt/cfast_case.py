@@ -307,7 +307,7 @@ class CfastCase:
     exterior_temperature: float = 20.0
 
     adiabatic_surfaces: bool = False
-    lower_oxygen_limit: float = 0.1
+    lower_oxygen_limit: float = 0.15
 
     materials: list[MaterialProperty] = field(default_factory=list)
     compartments: list[Compartment] = field(default_factory=list)

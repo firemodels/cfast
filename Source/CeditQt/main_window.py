@@ -65,6 +65,7 @@ from units import (
     PRESSURE,
     TEMPERATURE,
     TIME,
+    format_number,
     format_value,
     unit_label,
     unit_system,
@@ -1553,7 +1554,11 @@ class RunMonitorDialog(QDialog):
 
     def format_status_value(self, kind: str, text: str) -> str:
         try:
-            return format_value(kind, self.parse_status_number(text), include_unit=False)
+            value = self.parse_status_number(text)
+            if kind == HRR:
+                # CFAST status output reports fire size in W, while input HRR uses kW.
+                return format_number(unit_system.from_si(kind, value))
+            return format_value(kind, value, include_unit=False)
         except ValueError:
             return ""
 

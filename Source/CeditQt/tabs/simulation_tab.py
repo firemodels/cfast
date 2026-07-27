@@ -35,8 +35,8 @@ class SimulationTab(QWidget):
 
         self.simulation_time_edit = QLineEdit(format_value(TIME, 3600.0))
         self.print_interval_edit = QLineEdit(format_value(TIME, 60.0))
-        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 60.0))
-        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 60.0))
+        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 15.0))
+        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 15.0))
         self.max_time_step_edit = QLineEdit("Default")
 
         self.interior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))

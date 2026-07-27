@@ -822,29 +822,24 @@ Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceili
 
 \section{Heat Conduction within Solid Walls or Targets}
 
-The heat conduction equation is solved in the direction normal to solid targets or wall surfaces using non-uniformly spaced nodes and a second-order accurate central difference scheme for the spatial derivatives.
+The heat conduction equation is solved in the direction normal to wall and target surfaces using non-uniformly spaced nodes and a second-order accurate central difference scheme for the spatial derivatives.
 
-Wall surface temperatures are updated in time implicitly using the solver DASSL which couples wall surface temperatures with gas solution variables (pressures, layer volumes and temperatures).   Target temperatures on the other hand are updated in time using a semi-implicit time marching scheme.  Since they do not affect compartment conditions significantly, there is no need to couple them with other solution variables as is done with wall temperatures.
+Wall surface temperatures are updated in time implicitly using the solver DASSL, which couples wall surface temperatures with gas solution variables (pressures, layer volumes and temperatures). Target temperatures, on the other hand, are updated in time using a semi-implicit time marching scheme. Because targets do not affect compartment conditions significantly, there is no need to couple them with the gas phase solution variables as is done with wall temperatures.
 
 At each time step, the wall temperature profiles are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be
    \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{\partial \Ts}{\partial x} \Big|_{x=0} \label{eq:net_fluxes}
 \ee
-where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.
+where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines because fewer equations need to be solved. 
 
-Wall and target temperature profiles are advanced in time using the heat equation. The heat conduction equation normal to the solid surface is:
+Wall and target inner temperature profiles are advanced in time by solving the heat conduction equation normal to the solid surface:
 \be \frac{\partial \Ts}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 \Ts}{\partial x^2}
 \label{eq:Target_PDE} \ee
 where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target or wall material. The boundary condition used at the front wall surface is :
 \be
    \Ts(0,t) \equiv \Tw(t)
 \ee
-A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surface. Define a penetration depth of
-\be
-   x_p = 2 \sqrt{\alpha \, t_{\rm end}} \; \hbox{erfc}^{-1} \brackets{0.05}
-\ee
-where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function. The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{\rm end}$ seconds. Eighty percent of the nodes are placed on the interior side of $x_p$ and the remaining 20~\% are placed on the exterior side.
-
+Walls are sub-divided into 30 cells; 20 of which span the inner half-thickness and 10 which span the outer half-thickness. The cell width increases linearly starting from the front and back surfaces. Targets are sub-divided into 60 cells; half of which span each half-thickness and increase by 50~\% starting from the front or back surfaces.
 
 \newcommand{\Dt}{\Delta t}
 \newcommand{\Dr}{\Delta r}
@@ -852,11 +847,11 @@ where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function
 \newcommand{\TTi}{T_{i}^{n+1}}
 \newcommand{\Timo}{T_{i-1}^{n+1}}
 
-The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates:
+The 1-D heat conduction equation can be written in either Cartesian or cylindrical\footnote{Only targets can take on a cylindrical geometry, and the solution of the heat conduction equation in cylindrical coordinates uses a uniform grid.} coordinates. The solution methodology shall be presented for cylindrical coordinates:
 \be
   \frac{\partial \Ts}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial \Ts}{\partial r} \right)
 \ee
-Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form, where $T_i^n \equiv \Ts(x_i,t_n)$:
+Dividing the cylinder into $N$ concentric control volumes, this equation can be written in discretized form, where $T_i^n \equiv \Ts(x_i,t_n)$:
 \begin{eqnarray}
 \TTi-\Ti^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
 \left[

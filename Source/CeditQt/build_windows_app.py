@@ -38,8 +38,14 @@ def make_icon_from_png(python_exe: str, png_path: Path, ico_path: Path):
         "png = Path(sys.argv[1])\n"
         "ico = Path(sys.argv[2])\n"
         "ico.parent.mkdir(parents=True, exist_ok=True)\n"
-        "image = Image.open(png).convert('RGBA')\n"
-        "image.save(ico, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])\n"
+        "source = Image.open(png).convert('RGBA')\n"
+        "transparent = source.getchannel('A').point(lambda value: 255 if value == 0 else 0)\n"
+        "source.paste(Image.new('RGBA', source.size, (0, 0, 0, 0)), mask=transparent)\n"
+        "sizes = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]\n"
+        "source.save(ico, sizes=sizes)\n"
+        "probe = Image.open(ico).convert('RGBA')\n"
+        "if source.getpixel((0, 0))[3] == 0 and probe.getpixel((0, 0))[3] != 0:\n"
+        "    raise SystemExit(f'generated icon does not preserve transparent corners: {ico}')\n"
     )
     try:
         subprocess.run([python_exe, "-c", script, str(png_path), str(ico_path)], check=True)
@@ -59,11 +65,15 @@ def resolve_icon(args, root: Path):
         return icon_path
 
     asset_dir = Path(__file__).resolve().parent / "assets"
+    png_path = asset_dir / "CeditQt.png"
+    if png_path.is_file():
+        return make_icon_from_png(args.python, png_path, root / "Build/CeditQt/icons/CeditQt.ico")
+
     ico_path = asset_dir / "CeditQt.ico"
     if ico_path.is_file():
         return ico_path
 
-    return make_icon_from_png(args.python, asset_dir / "CeditQt.png", root / "Build/CeditQt/icons/CeditQt.ico")
+    return None
 
 
 def parse_args():
@@ -140,6 +150,8 @@ def main() -> int:
 
     if icon_path is not None:
         command.extend(["--icon", str(icon_path)])
+        if icon_path.name == "CeditQt.ico":
+            command.extend(["--add-data", f"{icon_path};assets"])
     if args.clean:
         command.append("--clean")
     command.append("cedit_qt.py")

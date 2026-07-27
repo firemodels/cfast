@@ -1,210 +1,118 @@
 # CEdit Qt
 
-Python/PySide6 prototype for a CFAST input-file editor.
+Python/PySide6 interface for editing and running CFAST input files.
 
 ## Running
 
-No compilation step is required. Run the GUI from this directory:
+The Python environment must provide PySide6 and matplotlib.
+
+Run the GUI from this directory:
 
     cd Source/CeditQt
     python cedit_qt.py
 
-The Python environment must provide PySide6 and matplotlib.
+## Dependencies
 
-## Building a macOS App
-
-To build a standalone macOS app, first install PyInstaller in the Python
-environment that already has PySide6 and matplotlib:
+Install the dependencies needed for the action you are running:
 
     python -m pip install pyinstaller
+    python -m pip install pillow
+    python -m pip install dmgbuild
 
-Then run:
+PyInstaller is required for standalone app builds. Pillow is required for
+Windows icon generation. dmgbuild is required for the macOS DMG.
+
+## macOS App
+
+Run from the repository root:
 
     cd Source/CeditQt
     ./build_macos_app.sh --python python
 
-The app is written to:
+Output:
 
     Build/CeditQt/macos/CFAST Editor (CEdit).app
 
-By default, the build script uses `assets/CeditQt.icns` when present,
-otherwise it passes `assets/CeditQt.png` to PyInstaller.
+## macOS Bundle
 
-## Building a macOS Bundle
-
-After the CFAST executable, CEditQt app, manuals, and Smokeview files have
-been built, install the DMG builder in the active Python environment:
-
-    python -m pip install dmgbuild
-
-Then stage the macOS bundle and create a DMG from the repository root:
+Run from the repository root:
 
     Build/bundle/build_macos_bundle.sh
 
-The DMG is written under:
+Output:
 
     Build/bundle/macos
 
-The macOS bundle script copies non-system CFAST/Smokeview runtime libraries
-into `CFAST/lib` and rewrites the staged executables to load those local copies.
+## Linux App
 
-## Building a Linux Application
-
-To build a standalone Linux application, first install PyInstaller in the
-Python environment that already has PySide6 and matplotlib:
-
-    python -m pip install pyinstaller
-
-Then run on Linux:
+Run from the repository root on Linux:
 
     Source/CeditQt/build_linux_app.sh
 
-The app is written to:
+Output:
 
     Build/CeditQt/linux/CFAST Editor (CEdit)
 
-## Building a Linux Bundle
+## Linux Bundle
 
-After the CFAST executable, optional CEditQt app, manuals, example input file,
-and optional Smokeview files have been built, stage the Linux bundle and create
-a tarball from the repository root:
+Run from the repository root on Linux:
 
     Build/bundle/build_linux_bundle.sh
 
-The tarball is written under:
+Output:
 
     Build/bundle/linux
 
-The Linux bundle script copies selected compiler/runtime libraries into
-`CFAST/lib`; the generated startup file and CEditQt launcher add that directory
-to `LD_LIBRARY_PATH`.
-
-After extracting the tarball, source the startup file from bash or zsh before
-using CFAST from a terminal:
+After extracting the tarball, source the startup file before using CFAST from a
+terminal:
 
     source /path/to/CFAST/bin/CFASTVARS.sh
 
-## Building a Windows Application
+## Windows App
 
-To build a standalone Windows application, first install PyInstaller in the
-Python environment that already has PySide6 and matplotlib:
-
-    python -m pip install pyinstaller
-
-Then run on Windows:
+Run from the repository root on Windows:
 
     python Source\CeditQt\build_windows_app.py
 
-The app is written to:
+Output:
 
     Build\CeditQt\windows\CFAST Editor (CEdit)
 
-By default, the build script uses `assets\CeditQt.ico` when present. If only
-`assets\CeditQt.png` is present, Pillow is used to create an `.ico` file:
+## Windows Bundle
 
-    python -m pip install pillow
-
-The Windows application build includes the CEditQt asset directory so the Qt
-window and taskbar icon use the same icon as the executable.
-
-## Building a Windows Bundle
-
-After the CFAST executable, optional CEditQt app, manuals, example input file,
-and optional Smokeview files have been built, stage the Windows bundle and
-create a self-extracting EXE from the repository root:
+Run from the repository root on Windows:
 
     python Build\bundle\build_windows_bundle.py
 
-The self-extracting EXE is written under:
+Output:
 
     Build\bundle\windows
 
-The Windows bundle script stages a `CFAST` folder containing the executable,
-manuals, examples, optional CEditQt files, optional Smokeview files, and
-available compiler/runtime DLLs found next to the executables or on `PATH`.
-It then uses PyInstaller to embed the staged folder in a single
-self-extracting installer executable.
+The installer writes to:
 
-The installer creates or replaces a `CFAST` folder under:
+    C:\Program Files\firemodels\CFAST
 
-    %ProgramFiles%\firemodels
+For a test installer that should not request administrator privileges:
 
-If CEditQt is included, the installer asks whether to create a Desktop
-shortcut to `CFAST Editor (CEdit)`. For scripted installs, use:
+    python Build\bundle\build_windows_bundle.py --no-uac-admin
+
+Shortcut options:
 
     CFAST-...-windows.exe --desktop-shortcut
-
-or:
-
     CFAST-...-windows.exe --no-desktop-shortcut
 
-To use CFAST from a command prompt after installation:
+## CFAST and Smokeview Paths
 
-    call "C:\Program Files\firemodels\CFAST\bin\CFASTVARS.bat"
+In a bundle, CEdit Qt first looks for the bundled CFAST and Smokeview
+executables. Outside a bundle, CEdit Qt uses `cfast` and `smokeview` from
+`PATH`.
 
-## Running CFAST from CEdit Qt
-
-In a bundle, CEdit Qt first looks for the bundled executable:
-
-    CFAST/bin/cfast
-
-If a bundled executable is not found, CEdit Qt runs:
-
-    cfast
-
-so the CFAST executable must be available on your PATH when running outside the
-bundle.
-
-To use a specific executable, for example a local development build, choose:
+To select a specific executable:
 
     File > Set CFAST Executable...
-
-To return to the bundled/PATH default, choose:
-
-    File > Use Bundled CFAST or CFAST from PATH
-
-The Geometry and View controls also use Smokeview. In a bundle, CEdit Qt
-first looks for:
-
-    CFAST/SMV6/smokeview
-
-If a bundled Smokeview executable is not found, CEdit Qt runs:
-
-    smokeview
-
-so the Smokeview executable must be available on your PATH when running outside
-the bundle. To use a specific executable, choose:
-
     File > Set Smokeview Executable...
 
-To return to the bundled/PATH default, choose:
+To return to the bundled/PATH default:
 
+    File > Use Bundled CFAST or CFAST from PATH
     File > Use Bundled Smokeview or Smokeview from PATH
-
-## Optional syntax check
-
-To check the Python files without launching the GUI:
-
-    cd Source/CeditQt
-    python -m py_compile cedit_qt.py main_window.py cfast_case.py cfast_writer.py tabs/*.py widgets/*.py
-
-## Verification UI test harness
-
-To load verification cases through the Qt UI, write the CFAST input files,
-run CFAST, and leave generated CSV outputs ready for the official verification
-scripts:
-
-    cd Source/CeditQt
-    python run_verification_ui_tests.py --cfast-exe ../../Build/CFAST/gnu_osx/cfast7_osx
-
-To test only one case while developing:
-
-    cd Source/CeditQt
-    python run_verification_ui_tests.py --cfast-exe ../../Build/CFAST/gnu_osx/cfast7_osx --case basic_tempequilib --keep-work-dir
-
-The harness copies `Verification/` to a temporary work tree before running, so
-the checked-in verification input files are not modified.
-
-The optional `--compare-targets` flag runs an experimental built-in CSV
-comparison. Use `Utilities/Python/CFAST_verification_script.py` as the
-authoritative verification statistics check.

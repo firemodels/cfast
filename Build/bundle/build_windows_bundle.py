@@ -141,6 +141,56 @@ def copy_windows_runtime_libraries(binary_path: Path, target_dir: Path) -> None:
                 break
 
 
+def make_icon_from_png(python_exe: str, png_path: Path, ico_path: Path):
+    if not png_path.is_file():
+        return None
+
+    script = (
+        "from pathlib import Path\n"
+        "import sys\n"
+        "from PIL import Image\n"
+        "png = Path(sys.argv[1])\n"
+        "ico = Path(sys.argv[2])\n"
+        "ico.parent.mkdir(parents=True, exist_ok=True)\n"
+        "source = Image.open(png).convert('RGBA')\n"
+        "transparent = source.getchannel('A').point(lambda value: 255 if value == 0 else 0)\n"
+        "source.paste(Image.new('RGBA', source.size, (0, 0, 0, 0)), mask=transparent)\n"
+        "sizes = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]\n"
+        "source.save(ico, sizes=sizes)\n"
+        "probe = Image.open(ico).convert('RGBA')\n"
+        "if source.getpixel((0, 0))[3] == 0 and probe.getpixel((0, 0))[3] != 0:\n"
+        "    raise SystemExit(f'generated icon does not preserve transparent corners: {ico}')\n"
+    )
+    try:
+        subprocess.run([python_exe, "-c", script, str(png_path), str(ico_path)], check=True)
+    except Exception:
+        raise SystemExit(
+            "***error: Pillow is required to create the Windows .ico from Source/CeditQt/assets/CeditQt.png.\n"
+            f"         Try: {python_exe} -m pip install pillow"
+        )
+    return ico_path
+
+
+def resolve_installer_icon(args):
+    if args.icon:
+        icon_path = args.icon.resolve()
+        if not icon_path.is_file():
+            raise SystemExit(f"***error: icon file not found: {icon_path}")
+        return icon_path
+
+    png_path = args.repo_root / "Source/CeditQt/assets/CeditQt.png"
+    generated_icon = args.repo_root / "Build/bundle/icons/CeditQt.ico"
+    icon_path = make_icon_from_png(args.python, png_path, generated_icon)
+    if icon_path is not None:
+        return icon_path
+
+    icon_candidates = [
+        args.repo_root / "Build/CeditQt/icons/CeditQt.ico",
+        args.repo_root / "Source/CeditQt/assets/CeditQt.ico",
+    ]
+    return first_existing(icon_candidates)
+
+
 def write_cfast_vars_bat(out_file: Path) -> None:
     out_file.write_text(
         textwrap.dedent(
@@ -504,6 +554,7 @@ def build_self_extracting_exe(args, payload_root: Path) -> Path:
 
     make_payload_zip(payload_root, payload_zip)
     write_installer_script(installer_script)
+    icon_path = resolve_installer_icon(args)
 
     command = [
         args.python,
@@ -524,8 +575,11 @@ def build_self_extracting_exe(args, payload_root: Path) -> Path:
         f"{payload_zip};.",
     ]
 
-    if args.icon and args.icon.is_file():
-        command.extend(["--icon", str(args.icon)])
+    if not args.no_uac_admin:
+        command.append("--uac-admin")
+
+    if icon_path and icon_path.is_file():
+        command.extend(["--icon", str(icon_path)])
 
     command.append(str(installer_script))
 
@@ -551,12 +605,6 @@ def parse_args():
         firemodels_root / "smv/Build/smokeview/gnu_win/smokeview_win.exe",
         repo_root / "Utilities/for_bundle/SMV6/smokeview.exe",
     ]
-    icon_candidates = [
-        repo_root / "Build/CeditQt/icons/CeditQt.ico",
-        repo_root / "Source/CeditQt/assets/CeditQt.ico",
-    ]
-    default_icon = first_existing(icon_candidates)
-
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", help="distribution folder and installer base name")
     parser.add_argument("--output-dir", type=Path, default=repo_root / "Build/bundle/windows", help="output directory")
@@ -567,7 +615,8 @@ def parse_args():
     parser.add_argument("--smokeview-exe", type=Path, default=first_existing(smv_candidates), help="Smokeview executable to bundle")
     parser.add_argument("--smokeview-data", type=Path, default=firemodels_root / "smv/Build/for_bundle", help="Smokeview for_bundle directory")
     parser.add_argument("--python", default=sys.executable, help="Python executable used to build the self-extracting EXE")
-    parser.add_argument("--icon", type=Path, default=default_icon if default_icon.is_file() else None, help="optional installer .ico file")
+    parser.add_argument("--icon", type=Path, help="optional installer .ico file")
+    parser.add_argument("--no-uac-admin", action="store_true", help="build installer without requesting administrator privileges")
     parser.add_argument("--no-cedit", dest="include_cedit", action="store_false", help="do not bundle CEditQt")
     parser.add_argument("--no-smokeview", dest="include_smokeview", action="store_false", help="do not bundle Smokeview")
     parser.set_defaults(include_cedit=True, include_smokeview=True)
@@ -579,8 +628,6 @@ def parse_args():
     args.cedit_app = args.cedit_app.resolve()
     args.smokeview_exe = args.smokeview_exe.resolve()
     args.smokeview_data = args.smokeview_data.resolve()
-    if args.icon is not None:
-        args.icon = args.icon.resolve()
     return args
 
 

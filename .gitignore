@@ -67,7 +67,13 @@ __pycache__/
 *.py[cod]
 
 # CEditQt app build output
-Build/CeditQt/
+Build/CeditQt/icons/
+Build/CeditQt/linux/
+Build/CeditQt/macos/
+Build/CeditQt/pyinstaller-cache/
+Build/CeditQt/pyinstaller-work/
+Build/CeditQt/spec/
+Build/CeditQt/windows/
 
 # bundle build output
 Build/bundle/linux/

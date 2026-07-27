@@ -3,33 +3,30 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SOURCE_DIR="$REPO_ROOT/Source/CeditQt"
 
 APP_NAME="CFAST Editor (CEdit)"
-BUNDLE_IDENTIFIER="gov.nist.firemodels.cedit"
-ASSET_DIR="$SCRIPT_DIR/assets"
+ASSET_DIR="$SOURCE_DIR/assets"
 PYTHON_EXE="${PYTHON:-python3}"
-OUT_DIR="$REPO_ROOT/Build/CeditQt/macos"
+OUT_DIR="$REPO_ROOT/Build/CeditQt/linux"
 WORK_DIR="$REPO_ROOT/Build/CeditQt/pyinstaller-work"
 SPEC_DIR="$REPO_ROOT/Build/CeditQt/spec"
 PYINSTALLER_CACHE_DIR="$REPO_ROOT/Build/CeditQt/pyinstaller-cache"
 ICON_PATH=""
 CLEAN=1
-AD_HOC_SIGN=0
 
 usage()
 {
-  echo "Usage: build_macos_app.sh [options]"
+  echo "Usage: build_linux_app.sh [options]"
   echo ""
-  echo "Builds CEditQt as a macOS .app using PyInstaller."
+  echo "Builds CEditQt as a Linux PyInstaller application."
   echo ""
   echo "Options:"
   echo "  --python path       Python executable to use (default: python3 or \$PYTHON)"
-  echo "  --output-dir path   Directory for the .app (default: Build/CeditQt/macos)"
+  echo "  --output-dir path   Directory for the app (default: Build/CeditQt/linux)"
   echo "  --name name         Application name (default: CFAST Editor (CEdit))"
-  echo "  --bundle-id id      macOS bundle identifier"
-  echo "  --icon path         .icns or square .png icon file"
+  echo "  --icon path         Square .png icon file"
   echo "  --no-clean          Reuse the previous PyInstaller work directory"
-  echo "  --ad-hoc-sign       Run codesign --sign - on the generated app"
   echo "  -h, --help          Display this message"
 }
 
@@ -37,12 +34,8 @@ resolve_app_icon()
 {
   local icon_ext
 
-  if [[ "$ICON_PATH" == "" ]]; then
-    if [[ -f "$ASSET_DIR/CeditQt.icns" ]]; then
-      ICON_PATH="$ASSET_DIR/CeditQt.icns"
-    elif [[ -f "$ASSET_DIR/CeditQt.png" ]]; then
-      ICON_PATH="$ASSET_DIR/CeditQt.png"
-    fi
+  if [[ "$ICON_PATH" == "" && -f "$ASSET_DIR/CeditQt.png" ]]; then
+    ICON_PATH="$ASSET_DIR/CeditQt.png"
   fi
 
   if [[ "$ICON_PATH" == "" ]]; then
@@ -55,8 +48,8 @@ resolve_app_icon()
   fi
 
   icon_ext="$(printf "%s" "${ICON_PATH##*.}" | tr "[:upper:]" "[:lower:]")"
-  if [[ "$icon_ext" != "icns" && "$icon_ext" != "png" ]]; then
-    echo "***error: icon file must be .icns or .png: $ICON_PATH"
+  if [[ "$icon_ext" != "png" ]]; then
+    echo "***error: Linux icon file must be .png: $ICON_PATH"
     exit 1
   fi
 
@@ -77,20 +70,12 @@ while [[ $# -gt 0 ]]; do
       APP_NAME="$2"
       shift 2
       ;;
-    --bundle-id)
-      BUNDLE_IDENTIFIER="$2"
-      shift 2
-      ;;
     --icon)
       ICON_PATH="$2"
       shift 2
       ;;
     --no-clean)
       CLEAN=0
-      shift
-      ;;
-    --ad-hoc-sign)
-      AD_HOC_SIGN=1
       shift
       ;;
     -h|--help)
@@ -105,8 +90,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$(uname)" != "Darwin" ]]; then
-  echo "***error: CEditQt .app builds must be run on macOS."
+if [[ "$(uname)" != "Linux" ]]; then
+  echo "***error: CEditQt Linux builds must be run on Linux."
   exit 1
 fi
 
@@ -127,7 +112,7 @@ then
 fi
 
 mkdir -p "$OUT_DIR" "$WORK_DIR" "$SPEC_DIR" "$PYINSTALLER_CACHE_DIR"
-rm -rf "$OUT_DIR/$APP_NAME.app"
+rm -rf "$OUT_DIR/$APP_NAME"
 
 export PYINSTALLER_CONFIG_DIR="$PYINSTALLER_CACHE_DIR"
 export MPLCONFIGDIR="${TMPDIR:-/tmp}/cedit-qt-matplotlib"
@@ -145,7 +130,6 @@ pyinstaller_args=(
   --distpath "$OUT_DIR"
   --workpath "$WORK_DIR"
   --specpath "$SPEC_DIR"
-  --osx-bundle-identifier "$BUNDLE_IDENTIFIER"
   --hidden-import matplotlib.backends.backend_qtagg
   --hidden-import matplotlib.backends.backend_qt
   --hidden-import matplotlib.backends.qt_compat
@@ -162,32 +146,23 @@ if [[ "$CLEAN" == "1" ]]; then
   pyinstaller_args+=(--clean)
 fi
 
-echo "*** Building $APP_NAME.app"
+echo "*** Building $APP_NAME"
 echo "*** Python: $("$PYTHON_EXE" -c 'import sys; print(sys.executable)')"
 echo "*** Output: $OUT_DIR"
 if [[ "$APP_ICON" != "" ]]; then
   echo "*** Icon: $APP_ICON"
 fi
 
-cd "$SCRIPT_DIR"
+cd "$SOURCE_DIR"
 "$PYTHON_EXE" -m PyInstaller "${pyinstaller_args[@]}" cedit_qt.py
 
-APP_PATH="$OUT_DIR/$APP_NAME.app"
-APP_EXECUTABLE="$APP_PATH/Contents/MacOS/$APP_NAME"
+APP_PATH="$OUT_DIR/$APP_NAME"
+APP_EXECUTABLE="$APP_PATH/$APP_NAME"
 
 if [[ ! -x "$APP_EXECUTABLE" ]]; then
   echo "***error: expected app executable was not created: $APP_EXECUTABLE"
   exit 1
 fi
 
-if [[ "$AD_HOC_SIGN" == "1" ]]; then
-  if ! command -v codesign >/dev/null 2>&1; then
-    echo "***error: codesign not found."
-    exit 1
-  fi
-  echo "*** Ad-hoc signing $APP_PATH"
-  codesign --force --deep --sign - "$APP_PATH"
-fi
-
-echo "*** CEditQt app built:"
+echo "*** CEditQt Linux app built:"
 echo "    $APP_PATH"

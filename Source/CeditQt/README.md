@@ -26,8 +26,7 @@ Windows icon generation. dmgbuild is required for the macOS DMG.
 
 Run from the repository root:
 
-    cd Source/CeditQt
-    ./build_macos_app.sh --python python
+    Build/CeditQt/build_macos_app.sh --python python
 
 Output:
 
@@ -47,7 +46,7 @@ Output:
 
 Run from the repository root on Linux:
 
-    Source/CeditQt/build_linux_app.sh
+    Build/CeditQt/build_linux_app.sh
 
 Output:
 
@@ -72,7 +71,7 @@ terminal:
 
 Run from the repository root on Windows:
 
-    python Source\CeditQt\build_windows_app.py
+    python Build\CeditQt\build_windows_app.py
 
 Output:
 

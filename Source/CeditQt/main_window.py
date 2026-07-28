@@ -431,6 +431,20 @@ class CeditMainWindow(QMainWindow):
 
         view_menu.addSeparator()
 
+        view_input_action = QAction("View CFAST &Input File", self)
+        view_input_action.triggered.connect(self.view_cfast_input_file)
+        view_menu.addAction(view_input_action)
+
+        view_output_action = QAction("View CFAST &Output File", self)
+        view_output_action.triggered.connect(self.view_cfast_output_file)
+        view_menu.addAction(view_output_action)
+
+        view_log_action = QAction("View CFAST &Log File", self)
+        view_log_action.triggered.connect(self.view_cfast_log_file)
+        view_menu.addAction(view_log_action)
+
+        view_menu.addSeparator()
+
         geometry_action = QAction("&Geometry", self)
         geometry_action.triggered.connect(self.generate_smokeview_geometry)
         view_menu.addAction(geometry_action)
@@ -456,6 +470,9 @@ class CeditMainWindow(QMainWindow):
         self.exit_action = exit_action
         self.units_action = units_action
         self.show_toolbar_action = show_toolbar_action
+        self.view_input_action = view_input_action
+        self.view_output_action = view_output_action
+        self.view_log_action = view_log_action
         self.geometry_action = geometry_action
         self.results_action = results_action
 
@@ -733,6 +750,57 @@ class CeditMainWindow(QMainWindow):
 
         self.simulation_tab.set_message(message)
         self.statusBar().showMessage("No Errors")
+
+    def cfast_text_file_path(self, suffix: str) -> Path | None:
+        if self.current_path is None:
+            return None
+
+        if suffix == ".in":
+            return self.current_path
+
+        return self.current_path.with_suffix(suffix)
+
+    def view_cfast_text_file(self, suffix: str, title: str):
+        path = self.cfast_text_file_path(suffix)
+        if path is None:
+            message = (
+                "No CFAST input file has been opened or saved yet.\n\n"
+                "Open an existing CFAST input file or save the current case first."
+            )
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        if not path.is_file():
+            self.simulation_tab.set_message(f"{title} not found:\n{path}")
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError as exc:
+            self.simulation_tab.set_message(f"Could not read {title}:\n{path}\n\n{exc}")
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        self.simulation_tab.set_message(
+            f"{title}:\n{path}\n\n{text}",
+            syntax_highlight=(suffix == ".in"),
+        )
+        self.tabs.setCurrentWidget(self.simulation_tab)
+        self.statusBar().showMessage("No Errors")
+
+    def view_cfast_input_file(self):
+        self.view_cfast_text_file(".in", "CFAST input file")
+
+    def view_cfast_output_file(self):
+        self.view_cfast_text_file(".out", "CFAST output file")
+
+    def view_cfast_log_file(self):
+        self.view_cfast_text_file(".log", "CFAST log file")
 
     def load_case(self, case: CfastCase):
         self.extra_namelists = list(getattr(case, "extra_namelists", []))

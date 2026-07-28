@@ -65,7 +65,8 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=(
             "CFAST executable used to generate the standard output dialog when "
-            "the .status and .log files are not already present."
+            "the .status and .log files are not already present. Relative paths "
+            "are interpreted from the CFAST repository root."
         ),
     )
     parser.add_argument(
@@ -130,13 +131,22 @@ def is_executable(path: Path) -> bool:
 
 
 def candidate_cfast_executables(repo_root: Path) -> list[Path]:
+    # Cfastbot generates these screenshots during verification plotting on Linux.
+    # Keep the GNU Linux build first for that workflow. For manual runs on macOS,
+    # Windows, or another build tree, pass --cfast-exe with the desired executable.
     candidates = [
+        repo_root / "Build" / "CFAST" / "gnu_linux" / "cfast7_linux",
+        repo_root / "Build" / "CFAST" / "intel_linux" / "cfast7_linux",
+        repo_root / "Build" / "CFAST" / "gnu_linux_db" / "cfast7_linux_db",
+        repo_root / "Build" / "CFAST" / "intel_linux_db" / "cfast7_linux_db",
         repo_root / "Build" / "CFAST" / "gnu_osx" / "cfast7_osx",
         repo_root / "Build" / "CFAST" / "gnu_osx_db" / "cfast7_osx_db",
-        repo_root / "Build" / "CFAST" / "gnu_linux" / "cfast7_linux",
-        repo_root / "Build" / "CFAST" / "gnu_linux_db" / "cfast7_linux_db",
+        repo_root / "Build" / "CFAST" / "intel_osx" / "cfast7_osx",
+        repo_root / "Build" / "CFAST" / "intel_osx_db" / "cfast7_osx_db",
         repo_root / "Build" / "CFAST" / "gnu_win" / "cfast7_win.exe",
+        repo_root / "Build" / "CFAST" / "intel_win" / "cfast7_win.exe",
         repo_root / "Build" / "CFAST" / "gnu_win_db" / "cfast7_win_db.exe",
+        repo_root / "Build" / "CFAST" / "intel_win_db" / "cfast7_win_db.exe",
     ]
     path_exe = shutil.which("cfast")
     if path_exe:
@@ -146,7 +156,11 @@ def candidate_cfast_executables(repo_root: Path) -> list[Path]:
 
 def find_cfast_executable(repo_root: Path, requested: Optional[Path]) -> Path:
     if requested is not None:
-        path = requested.expanduser().resolve()
+        requested_path = requested.expanduser()
+        if requested_path.is_absolute():
+            path = requested_path.resolve()
+        else:
+            path = (repo_root / requested_path).resolve()
         if not is_executable(path):
             raise FileNotFoundError(path)
         return path
@@ -279,14 +293,6 @@ def main() -> int:
     if not input_path.is_file():
         raise FileNotFoundError(input_path)
 
-    status_path, log_path = output_source_files(
-        repo_root,
-        args.cfast_exe,
-        input_path,
-        status_path,
-        log_path,
-    )
-
     output_dir.mkdir(parents=True, exist_ok=True)
 
     qt_settings_dir = Path(tempfile.mkdtemp(prefix="cedit-qt-guide-settings-"))
@@ -323,6 +329,14 @@ def main() -> int:
         for figure in TAB_FIGURES:
             path = save_tab_figure(app, window, figure, output_dir)
             print(display_path(path, repo_root))
+
+        status_path, log_path = output_source_files(
+            repo_root,
+            args.cfast_exe,
+            input_path,
+            status_path,
+            log_path,
+        )
 
         path = save_standard_output_figure(
             app,

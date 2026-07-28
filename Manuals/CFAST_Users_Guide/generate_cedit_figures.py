@@ -37,6 +37,8 @@ TAB_FIGURES = (
     TabFigure("Output", "Visualizations_Tab.png"),
 )
 
+_QT_MESSAGE_HANDLER = None
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -124,6 +126,29 @@ def patch_message_boxes(QMessageBox) -> None:
 
     QMessageBox.critical = quiet_message_box
     QMessageBox.information = quiet_message_box
+
+
+def install_qt_message_filter(qInstallMessageHandler) -> None:
+    suppressed_messages = {
+        "This plugin does not support propagateSizeHints()",
+    }
+
+    previous_handler = None
+
+    def filtered_message_handler(mode, context, message):
+        if message in suppressed_messages or (
+            message.startswith("Populating font family aliases took ")
+            and 'missing font family "Sans Serif"' in message
+        ):
+            return
+        if previous_handler is not None:
+            previous_handler(mode, context, message)
+        else:
+            print(message, file=sys.stderr)
+
+    global _QT_MESSAGE_HANDLER
+    _QT_MESSAGE_HANDLER = filtered_message_handler
+    previous_handler = qInstallMessageHandler(filtered_message_handler)
 
 
 def is_executable(path: Path) -> bool:
@@ -302,8 +327,10 @@ def main() -> int:
 
     sys.path.insert(0, str((repo_root / "Source" / "CeditQt").resolve()))
 
-    from PySide6.QtCore import QSettings
+    from PySide6.QtCore import QSettings, qInstallMessageHandler
     from PySide6.QtWidgets import QApplication, QMessageBox
+
+    install_qt_message_filter(qInstallMessageHandler)
 
     QSettings.setDefaultFormat(QSettings.Format.IniFormat)
     QSettings.setPath(

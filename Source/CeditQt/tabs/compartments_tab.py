@@ -288,23 +288,31 @@ class CompartmentsTab(QWidget):
         group = QGroupBox("Geometry")
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Width (X):"), 0, 0)
+        layout.addWidget(self.geometry_label("Width (X):"), 0, 0)
         layout.addWidget(self.width_edit, 0, 1)
-        layout.addWidget(QLabel("Position, X:"), 0, 2)
+        layout.addWidget(self.geometry_label("Position, X:"), 0, 2)
         layout.addWidget(self.x_edit, 0, 3)
 
-        layout.addWidget(QLabel("Depth (Y):"), 1, 0)
+        layout.addWidget(self.geometry_label("Depth (Y):"), 1, 0)
         layout.addWidget(self.depth_edit, 1, 1)
-        layout.addWidget(QLabel("Y:"), 1, 2)
+        layout.addWidget(self.geometry_label("Position, Y:"), 1, 2)
         layout.addWidget(self.y_edit, 1, 3)
 
-        layout.addWidget(QLabel("Height (Z):"), 2, 0)
+        layout.addWidget(self.geometry_label("Height (Z):"), 2, 0)
         layout.addWidget(self.height_edit, 2, 1)
-        layout.addWidget(QLabel("Z:"), 2, 2)
+        layout.addWidget(self.geometry_label("Position, Z:"), 2, 2)
         layout.addWidget(self.z_edit, 2, 3)
 
         group.setLayout(layout)
         return group
+
+    @staticmethod
+    def geometry_label(text: str) -> QLabel:
+        label = QLabel(text)
+        label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
+        return label
 
     def build_advanced_group(self) -> QGroupBox:
         group = QGroupBox("Advanced")

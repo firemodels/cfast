@@ -20,6 +20,32 @@ def source_dir(root: Path) -> Path:
     return root / "Source/CeditQt"
 
 
+def git_describe(root: Path) -> str:
+    try:
+        result = subprocess.run(
+            ["git", "describe", "--long", "--dirty"],
+            check=True,
+            cwd=root,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return ""
+
+    return result.stdout.strip()
+
+
+def write_cedit_version(source: Path, description: str) -> str:
+    version_file = source / "cedit_version.py"
+    original_text = version_file.read_text(encoding="utf-8")
+    version_file.write_text(
+        "from __future__ import annotations\n\n\n"
+        f"CFAST_GIT_DESCRIBE = {description!r}\n",
+        encoding="utf-8",
+    )
+    return original_text
+
+
 def check_python_environment(python_exe: str) -> None:
     script = "import PyInstaller, PySide6, matplotlib"
     try:
@@ -95,6 +121,7 @@ def parse_args():
 def main() -> int:
     args = parse_args()
     root = repo_root()
+    src_dir = source_dir(root)
 
     if os.name != "nt":
         raise SystemExit("***error: CEditQt Windows builds must be run on Windows.")
@@ -166,7 +193,14 @@ def main() -> int:
     if icon_path is not None:
         print(f"*** Icon: {icon_path}")
 
-    subprocess.run(command, check=True, cwd=source_dir(root), env=env)
+    original_version_text = write_cedit_version(src_dir, git_describe(root))
+    try:
+        subprocess.run(command, check=True, cwd=src_dir, env=env)
+    finally:
+        (src_dir / "cedit_version.py").write_text(
+            original_version_text,
+            encoding="utf-8",
+        )
 
     app_exe = app_path / f"{args.name}.exe"
     if not app_exe.is_file():

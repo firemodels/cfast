@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, QUrl, Signal
-from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase
+from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QPixmap
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -45,6 +45,7 @@ from cfast_case import (
     WallVent,
 )
 from cfast_reader import read_cfast_input_with_warnings
+from cedit_version import CFAST_GIT_DESCRIBE
 from cfast_writer import write_cfast_input
 from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 from tabs.compartments_tab import CompartmentsTab
@@ -75,6 +76,7 @@ from units import (
 
 FILENAME_WHITESPACE = re.compile(r"\s+")
 CFAST_VERSION_TAG = re.compile(r"^CFAST-?(\d+(?:\.\d+)+)$", re.IGNORECASE)
+APP_TITLE = "CFAST Editor (CEdit)"
 BASE_UNIT_NAMES = {
     "length": "Length",
     "mass": "Mass",
@@ -123,6 +125,11 @@ def executable_file(path: Path) -> bool:
         return path.is_file() and os.access(path, os.X_OK)
     except OSError:
         return False
+
+
+def resource_file(relative_path: str) -> Path:
+    base_path = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return base_path / relative_path
 
 
 def bundle_root_candidate(path: Path) -> bool:
@@ -235,6 +242,53 @@ def latest_cfast_version_from_tag() -> tuple[str, str] | None:
     return latest[1], latest[2]
 
 
+def cfast_git_describe() -> str | None:
+    if CFAST_GIT_DESCRIBE:
+        return CFAST_GIT_DESCRIBE
+
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        result = subprocess.run(
+            ["git", "describe", "--long", "--dirty"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+    description = result.stdout.strip()
+    return description or None
+
+
+def cedit_window_title() -> str:
+    description = cfast_git_describe()
+    if description is None:
+        cfast_version = latest_cfast_version_from_tag()
+        if cfast_version is not None:
+            description = cfast_version[1]
+
+    if not description:
+        return APP_TITLE
+
+    return f"{APP_TITLE} - {description}"
+
+
+def cedit_about_pixmap() -> QPixmap:
+    pixmap = QPixmap(str(resource_file("assets/CeditQt.png")))
+    if pixmap.isNull():
+        return pixmap
+
+    return pixmap.scaled(
+        64,
+        64,
+        Qt.AspectRatioMode.KeepAspectRatio,
+        Qt.TransformationMode.SmoothTransformation,
+    )
+
+
 def single_compartment_example() -> CfastCase:
     case = CfastCase(
         title="Single Compartment Example",
@@ -319,7 +373,7 @@ class CeditMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("CFAST Editor (CEdit)")
+        self.setWindowTitle(cedit_window_title())
         self.resize(1200, 800)
 
         self.current_path: Path | None = None
@@ -1574,19 +1628,31 @@ class CeditMainWindow(QMainWindow):
         QMessageBox.critical(self, "Smokeview", message)
 
     def about(self):
-        cfast_version = latest_cfast_version_from_tag()
-        if cfast_version is None:
-            version_text = "CFAST version: Unknown"
+        description = cfast_git_describe()
+        if description is not None:
+            version_text = f"CFAST version: {description}"
         else:
-            version, tag = cfast_version
-            version_text = f"CFAST version: {version} ({tag})"
+            cfast_version = latest_cfast_version_from_tag()
+            if cfast_version is not None:
+                version, tag = cfast_version
+                version_text = f"CFAST version: {version} ({tag})"
+            else:
+                version_text = "CFAST version: Unknown"
 
-        QMessageBox.information(
-            self,
-            "About CFAST Editor (CEdit)",
+        box = QMessageBox(self)
+        box.setWindowTitle("About CFAST Editor (CEdit)")
+        box.setText(
             "Python/PySide6 front end for editing and running CFAST input files.\n\n"
-            f"{version_text}",
+            f"{version_text}"
         )
+        pixmap = cedit_about_pixmap()
+        if pixmap.isNull():
+            box.setIcon(QMessageBox.Icon.Information)
+        else:
+            box.setIconPixmap(pixmap)
+
+        box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        box.exec()
 
 
 class EngineeringUnitsDialog(QDialog):

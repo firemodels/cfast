@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
+    QAbstractItemView,
     QFrame,
     QGridLayout,
     QGroupBox,
@@ -27,6 +28,11 @@ AXIS_LABELS = {
     "Z": "Z-Axis",
 }
 
+EDITOR_FIELD_WIDTH = 220
+GRID_FIELD_WIDTH = 120
+VISUAL_COLUMN_WIDTHS = (55, 90, 150, 100, 100)
+RESOLUTION_COLUMN_WIDTHS = (150, 55, 95, 95, 95)
+
 
 def parse_int(text: str, field_name: str) -> int:
     value = parse_number(text, field_name)
@@ -39,11 +45,18 @@ def parse_int(text: str, field_name: str) -> int:
 
 def make_item(text: str, editable: bool = True) -> QTableWidgetItem:
     item = QTableWidgetItem(text)
-
-    if not editable:
-        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+    set_item_editable(item, editable)
 
     return item
+
+
+def set_item_editable(item: QTableWidgetItem, editable: bool):
+    flags = item.flags()
+    if editable:
+        flags |= Qt.ItemFlag.ItemIsEditable
+    else:
+        flags &= ~Qt.ItemFlag.ItemIsEditable
+    item.setFlags(flags)
 
 
 def axis_code(text: str) -> str:
@@ -70,10 +83,14 @@ class OutputTab(QWidget):
         self.visual_table.verticalHeader().setVisible(False)
 
         self.resolution_table = QTableWidget(10, 5)
-        self.resolution_table.setHorizontalHeaderLabels(
-            ["Compartment", "Num", "Width", "Depth", "Height"]
-        )
+        self.resolution_table.setHorizontalHeaderLabels(resolution_headers())
         self.resolution_table.verticalHeader().setVisible(False)
+        self.resolution_table.setEditTriggers(
+            QAbstractItemView.EditTrigger.NoEditTriggers
+        )
+        self.resolution_table.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
 
         self.visualization_type_combo = QComboBox()
         self.visualization_type_combo.addItems(["2-D", "3-D"])
@@ -89,6 +106,7 @@ class OutputTab(QWidget):
         self.width_grid_edit = QLineEdit("50")
         self.depth_grid_edit = QLineEdit("50")
         self.height_grid_edit = QLineEdit("50")
+        self.set_editor_widths()
 
         self.net_heat_flux_checkbox = QCheckBox("Net Heat Flux Output")
         self.validation_checkbox = QCheckBox("Validation Output")
@@ -125,6 +143,56 @@ class OutputTab(QWidget):
         )
         set_combo_text(self.visual_compartment_edit, current)
         self.visual_compartment_edit.blockSignals(False)
+        self.sync_resolution_compartments(compartment_ids)
+
+    def sync_resolution_compartments(self, compartment_ids: list[str]):
+        existing_by_id: dict[str, tuple[str, str, str]] = {}
+        existing_by_row: dict[int, tuple[str, str, str]] = {}
+        for row in range(self.resolution_table.rowCount()):
+            comp_id = self.cell_text(self.resolution_table, row, 0)
+            grid = (
+                self.cell_text(self.resolution_table, row, 2) or "50",
+                self.cell_text(self.resolution_table, row, 3) or "50",
+                self.cell_text(self.resolution_table, row, 4) or "50",
+            )
+            if comp_id:
+                existing_by_id[comp_id] = grid
+                existing_by_row[row] = grid
+
+        active_ids = [comp_id for comp_id in compartment_ids if comp_id]
+        current_row = self.resolution_table.currentRow()
+
+        self.updating = True
+        self.resolution_table.clearContents()
+        self.resolution_table.setRowCount(max(10, len(active_ids)))
+        for row, comp_id in enumerate(active_ids):
+            grid = existing_by_id.get(
+                comp_id,
+                existing_by_row.get(row, ("50", "50", "50")),
+            )
+            values = [comp_id, "", *grid]
+            for col, value in enumerate(values):
+                self.set_cell_text(
+                    self.resolution_table,
+                    row,
+                    col,
+                    value,
+                    editable=self.resolution_cell_is_editable(row, col),
+                )
+
+        self.prepare_resolution_table()
+        self.updating = False
+        self.refresh_resolution_numbers()
+
+        if active_ids:
+            self.resolution_table.setCurrentCell(
+                min(max(current_row, 0), len(active_ids) - 1),
+                2,
+            )
+            self.resolution_row_to_editor(self.resolution_table.currentRow())
+        else:
+            self.resolution_table.setCurrentCell(0, 0)
+            self.resolution_row_to_editor(0)
 
     def load_case(self, case: CfastCase):
         self.updating = True
@@ -159,8 +227,9 @@ class OutputTab(QWidget):
                     row,
                     col,
                     value,
-                    editable=(col != 1),
+                    editable=self.resolution_cell_is_editable(row, col),
                 )
+        self.prepare_resolution_table()
 
         self.net_heat_flux_checkbox.setChecked(case.net_heat_flux_output)
         self.validation_checkbox.setChecked(case.validation_output)
@@ -205,16 +274,38 @@ class OutputTab(QWidget):
         main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
 
+    def set_editor_widths(self):
+        for widget in (
+            self.visualization_type_combo,
+            self.visual_compartment_edit,
+            self.visual_position_edit,
+            self.axis_combo,
+        ):
+            widget.setMaximumWidth(EDITOR_FIELD_WIDTH)
+
+        for widget in (
+            self.width_grid_edit,
+            self.depth_grid_edit,
+            self.height_grid_edit,
+        ):
+            widget.setMaximumWidth(GRID_FIELD_WIDTH)
+
+    def fit_table_to_columns(self, table: QTableWidget):
+        width = table.frameWidth() * 2 + 6
+        if table.verticalHeader().isVisible():
+            width += table.verticalHeader().width()
+        width += sum(table.columnWidth(col) for col in range(table.columnCount()))
+        width += table.verticalScrollBar().sizeHint().width()
+        table.setFixedWidth(width)
+
     def build_visualizations_group(self):
         group = QGroupBox("Visualizations")
         group_layout = QGridLayout()
 
         self.visual_table.setMinimumHeight(230)
-        self.visual_table.setColumnWidth(0, 55)
-        self.visual_table.setColumnWidth(1, 100)
-        self.visual_table.setColumnWidth(2, 160)
-        self.visual_table.setColumnWidth(3, 100)
-        self.visual_table.setColumnWidth(4, 100)
+        for col, width in enumerate(VISUAL_COLUMN_WIDTHS):
+            self.visual_table.setColumnWidth(col, width)
+        self.fit_table_to_columns(self.visual_table)
 
         group_layout.addWidget(self.visual_table, 0, 0, 1, 2)
 
@@ -237,6 +328,9 @@ class OutputTab(QWidget):
 
         group_layout.addLayout(button_layout, 1, 0, 1, 1)
         group_layout.addLayout(self.build_visual_editor(), 0, 2, 2, 1)
+        group_layout.setColumnStretch(0, 1)
+        group_layout.setColumnStretch(1, 0)
+        group_layout.setColumnStretch(2, 0)
 
         group.setLayout(group_layout)
         return group
@@ -258,14 +352,14 @@ class OutputTab(QWidget):
         group_layout = QGridLayout()
 
         self.resolution_table.setMinimumHeight(220)
-        self.resolution_table.setColumnWidth(0, 160)
-        self.resolution_table.setColumnWidth(1, 55)
-        self.resolution_table.setColumnWidth(2, 100)
-        self.resolution_table.setColumnWidth(3, 100)
-        self.resolution_table.setColumnWidth(4, 100)
+        for col, width in enumerate(RESOLUTION_COLUMN_WIDTHS):
+            self.resolution_table.setColumnWidth(col, width)
+        self.fit_table_to_columns(self.resolution_table)
 
         group_layout.addWidget(self.resolution_table, 0, 0)
         group_layout.addLayout(self.build_resolution_editor(), 0, 1)
+        group_layout.setColumnStretch(0, 1)
+        group_layout.setColumnStretch(1, 0)
         group.setLayout(group_layout)
         return group
 
@@ -333,26 +427,42 @@ class OutputTab(QWidget):
         self.clear_table(self.visual_table)
         self.clear_table(self.resolution_table)
 
-        visuals = [
-            ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)],
-            ["", "2-D", "All", "Y-Axis", format_value(LENGTH, 2.5)],
-            ["", "2-D", "All", "Z-Axis", format_value(LENGTH, 2.95)],
-        ]
+        self.load_default_visualizations(clear_first=False)
+
+        self.updating = True
         resolutions = [
             ["Comp 1", "", "50", "50", "50"],
             ["Comp 2", "", "50", "50", "50"],
             ["Comp 3", "", "50", "50", "50"],
+        ]
+        for row, values in enumerate(resolutions):
+            for col, value in enumerate(values):
+                self.resolution_table.setItem(
+                    row,
+                    col,
+                    make_item(
+                        value,
+                        editable=self.resolution_cell_is_editable(row, col),
+                    ),
+                )
+        self.prepare_resolution_table()
+
+        self.updating = False
+
+    def load_default_visualizations(self, clear_first: bool = True):
+        if clear_first:
+            self.clear_table(self.visual_table)
+
+        visuals = [
+            ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)],
+            ["", "2-D", "All", "Y-Axis", format_value(LENGTH, 2.5)],
+            ["", "2-D", "All", "Z-Axis", format_value(LENGTH, 2.95)],
         ]
 
         self.updating = True
         for row, values in enumerate(visuals):
             for col, value in enumerate(values):
                 self.visual_table.setItem(row, col, make_item(value, editable=(col != 0)))
-
-        for row, values in enumerate(resolutions):
-            for col, value in enumerate(values):
-                self.resolution_table.setItem(row, col, make_item(value, editable=(col != 1)))
-
         self.updating = False
 
     def load_output_option_defaults(self):
@@ -373,6 +483,7 @@ class OutputTab(QWidget):
             self.visual_table.setCurrentCell(0, 1)
         if self.resolution_table.rowCount() > 0:
             self.resolution_table.setCurrentCell(0, 2)
+            self.resolution_row_to_editor(self.resolution_table.currentRow())
 
     def clear_table(self, table: QTableWidget):
         table.blockSignals(True)
@@ -389,8 +500,19 @@ class OutputTab(QWidget):
             table.setItem(row, col, make_item(text, editable=editable))
         else:
             item.setText(text)
-            if not editable:
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            set_item_editable(item, editable)
+
+    def resolution_cell_is_editable(self, row: int, col: int) -> bool:
+        return False
+
+    def prepare_resolution_table(self):
+        for row in range(self.resolution_table.rowCount()):
+            for col in range(self.resolution_table.columnCount()):
+                item = self.resolution_table.item(row, col)
+                if item is None:
+                    item = make_item("", editable=False)
+                    self.resolution_table.setItem(row, col, item)
+                set_item_editable(item, self.resolution_cell_is_editable(row, col))
 
     def first_empty_row(self, table: QTableWidget) -> int:
         for row in range(table.rowCount()):
@@ -441,10 +563,10 @@ class OutputTab(QWidget):
         self.visual_table.setCurrentCell(min(row, self.visual_table.rowCount() - 1), 1)
 
     def add_default_visualizations(self):
-        self.load_demo_data()
+        self.load_default_visualizations()
         self.refresh_visual_numbers()
-        self.refresh_resolution_numbers()
-        self.select_first_rows()
+        if self.visual_table.rowCount() > 0:
+            self.visual_table.setCurrentCell(0, 1)
 
     def refresh_visual_numbers(self):
         self.updating = True
@@ -566,13 +688,25 @@ class OutputTab(QWidget):
 
         comp_id = self.cell_text(self.resolution_table, row, 0)
         if not comp_id:
+            self.updating = True
+            self.width_grid_edit.clear()
+            self.depth_grid_edit.clear()
+            self.height_grid_edit.clear()
+            self.set_resolution_editor_enabled(False)
+            self.updating = False
             return
 
         self.updating = True
+        self.set_resolution_editor_enabled(True)
         self.width_grid_edit.setText(self.cell_text(self.resolution_table, row, 2) or "50")
         self.depth_grid_edit.setText(self.cell_text(self.resolution_table, row, 3) or "50")
         self.height_grid_edit.setText(self.cell_text(self.resolution_table, row, 4) or "50")
         self.updating = False
+
+    def set_resolution_editor_enabled(self, enabled: bool):
+        self.width_grid_edit.setEnabled(enabled)
+        self.depth_grid_edit.setEnabled(enabled)
+        self.height_grid_edit.setEnabled(enabled)
 
     def editor_to_resolution_row(self):
         if self.updating:
@@ -581,15 +715,36 @@ class OutputTab(QWidget):
         row = self.resolution_table.currentRow()
         if row < 0:
             return
+        if not self.cell_text(self.resolution_table, row, 0):
+            return
 
         self.updating = True
-        self.set_cell_text(self.resolution_table, row, 2, self.width_grid_edit.text())
-        self.set_cell_text(self.resolution_table, row, 3, self.depth_grid_edit.text())
-        self.set_cell_text(self.resolution_table, row, 4, self.height_grid_edit.text())
+        self.set_cell_text(
+            self.resolution_table,
+            row,
+            2,
+            self.width_grid_edit.text(),
+            editable=False,
+        )
+        self.set_cell_text(
+            self.resolution_table,
+            row,
+            3,
+            self.depth_grid_edit.text(),
+            editable=False,
+        )
+        self.set_cell_text(
+            self.resolution_table,
+            row,
+            4,
+            self.height_grid_edit.text(),
+            editable=False,
+        )
         self.updating = False
 
     def refresh_unit_labels(self):
         self.visual_table.setHorizontalHeaderLabels(visual_headers())
+        self.resolution_table.setHorizontalHeaderLabels(resolution_headers())
 
     def add_to_case(self, case: CfastCase):
         visualizations: list[OutputVisualization] = []
@@ -657,3 +812,13 @@ def set_combo_text(combo: QComboBox, text: str) -> None:
 
 def visual_headers() -> list[str]:
     return ["Num", "Type", "Compartment", "Axis", f"Value\n({unit_label(LENGTH)})"]
+
+
+def resolution_headers() -> list[str]:
+    return [
+        "Compartment",
+        "Num",
+        "Width\n(cells)",
+        "Depth\n(cells)",
+        "Height\n(cells)",
+    ]

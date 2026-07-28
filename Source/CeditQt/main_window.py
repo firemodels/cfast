@@ -6,8 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, Signal
-from PySide6.QtGui import QAction, QFont, QFontDatabase
+from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, QUrl, Signal
+from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QPixmap
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -45,6 +45,7 @@ from cfast_case import (
     WallVent,
 )
 from cfast_reader import read_cfast_input_with_warnings
+from cedit_version import CFAST_GIT_DESCRIBE
 from cfast_writer import write_cfast_input
 from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 from tabs.compartments_tab import CompartmentsTab
@@ -75,6 +76,7 @@ from units import (
 
 FILENAME_WHITESPACE = re.compile(r"\s+")
 CFAST_VERSION_TAG = re.compile(r"^CFAST-?(\d+(?:\.\d+)+)$", re.IGNORECASE)
+APP_TITLE = "CFAST Editor (CEdit)"
 BASE_UNIT_NAMES = {
     "length": "Length",
     "mass": "Mass",
@@ -112,6 +114,10 @@ SMOKEVIEW_EXECUTABLE_CANDIDATES = (
     Path("smokeview"),
     Path("smokeview.exe"),
 )
+DOCUMENTATION_CANDIDATES = (
+    Path("Documentation/CFAST_Users_Guide.pdf"),
+    Path("Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf"),
+)
 
 
 def executable_file(path: Path) -> bool:
@@ -119,6 +125,11 @@ def executable_file(path: Path) -> bool:
         return path.is_file() and os.access(path, os.X_OK)
     except OSError:
         return False
+
+
+def resource_file(relative_path: str) -> Path:
+    base_path = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return base_path / relative_path
 
 
 def bundle_root_candidate(path: Path) -> bool:
@@ -190,6 +201,16 @@ def find_bundled_executable(relative_paths: tuple[Path, ...]) -> Path | None:
     return None
 
 
+def find_existing_file(relative_paths: tuple[Path, ...]) -> Path | None:
+    repo_root = Path(__file__).resolve().parents[2]
+    for root in (*candidate_bundle_roots(), repo_root):
+        for relative_path in relative_paths:
+            candidate = root / relative_path
+            if candidate.is_file():
+                return candidate
+    return None
+
+
 def latest_cfast_version_from_tag() -> tuple[str, str] | None:
     repo_root = Path(__file__).resolve().parents[2]
     try:
@@ -219,6 +240,53 @@ def latest_cfast_version_from_tag() -> tuple[str, str] | None:
         return None
 
     return latest[1], latest[2]
+
+
+def cfast_git_describe() -> str | None:
+    if CFAST_GIT_DESCRIBE:
+        return CFAST_GIT_DESCRIBE
+
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        result = subprocess.run(
+            ["git", "describe", "--long", "--dirty"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+    description = result.stdout.strip()
+    return description or None
+
+
+def cedit_window_title() -> str:
+    description = cfast_git_describe()
+    if description is None:
+        cfast_version = latest_cfast_version_from_tag()
+        if cfast_version is not None:
+            description = cfast_version[1]
+
+    if not description:
+        return APP_TITLE
+
+    return f"{APP_TITLE} - {description}"
+
+
+def cedit_about_pixmap() -> QPixmap:
+    pixmap = QPixmap(str(resource_file("assets/CeditQt.png")))
+    if pixmap.isNull():
+        return pixmap
+
+    return pixmap.scaled(
+        64,
+        64,
+        Qt.AspectRatioMode.KeepAspectRatio,
+        Qt.TransformationMode.SmoothTransformation,
+    )
 
 
 def single_compartment_example() -> CfastCase:
@@ -305,7 +373,7 @@ class CeditMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("CFAST Editor (CEdit)")
+        self.setWindowTitle(cedit_window_title())
         self.resize(1200, 800)
 
         self.current_path: Path | None = None
@@ -431,6 +499,20 @@ class CeditMainWindow(QMainWindow):
 
         view_menu.addSeparator()
 
+        view_input_action = QAction("View CFAST &Input File", self)
+        view_input_action.triggered.connect(self.view_cfast_input_file)
+        view_menu.addAction(view_input_action)
+
+        view_output_action = QAction("View CFAST &Output File", self)
+        view_output_action.triggered.connect(self.view_cfast_output_file)
+        view_menu.addAction(view_output_action)
+
+        view_log_action = QAction("View CFAST &Log File", self)
+        view_log_action.triggered.connect(self.view_cfast_log_file)
+        view_menu.addAction(view_log_action)
+
+        view_menu.addSeparator()
+
         geometry_action = QAction("&Geometry", self)
         geometry_action.triggered.connect(self.generate_smokeview_geometry)
         view_menu.addAction(geometry_action)
@@ -441,7 +523,22 @@ class CeditMainWindow(QMainWindow):
 
         help_menu = self.menuBar().addMenu("&Help")
 
-        about_action = QAction("&About CFAST Editor (CEdit)", self)
+        update_inputs_action = QAction("&Update Input Files...", self)
+        update_inputs_action.setShortcut("Ctrl+U")
+        update_inputs_action.triggered.connect(self.update_input_files)
+        help_menu.addAction(update_inputs_action)
+
+        documentation_action = QAction("&Documentation", self)
+        documentation_action.triggered.connect(self.open_documentation)
+        help_menu.addAction(documentation_action)
+
+        cfast_web_action = QAction("CFAST &Web Site", self)
+        cfast_web_action.triggered.connect(self.open_cfast_website)
+        help_menu.addAction(cfast_web_action)
+
+        help_menu.addSeparator()
+
+        about_action = QAction("&About", self)
         about_action.triggered.connect(self.about)
         help_menu.addAction(about_action)
 
@@ -456,8 +553,15 @@ class CeditMainWindow(QMainWindow):
         self.exit_action = exit_action
         self.units_action = units_action
         self.show_toolbar_action = show_toolbar_action
+        self.view_input_action = view_input_action
+        self.view_output_action = view_output_action
+        self.view_log_action = view_log_action
         self.geometry_action = geometry_action
         self.results_action = results_action
+        self.update_inputs_action = update_inputs_action
+        self.documentation_action = documentation_action
+        self.cfast_web_action = cfast_web_action
+        self.about_action = about_action
 
     def build_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
@@ -733,6 +837,164 @@ class CeditMainWindow(QMainWindow):
 
         self.simulation_tab.set_message(message)
         self.statusBar().showMessage("No Errors")
+
+    def cfast_text_file_path(self, suffix: str) -> Path | None:
+        if self.current_path is None:
+            return None
+
+        if suffix == ".in":
+            return self.current_path
+
+        return self.current_path.with_suffix(suffix)
+
+    def view_cfast_text_file(self, suffix: str, title: str):
+        path = self.cfast_text_file_path(suffix)
+        if path is None:
+            message = (
+                "No CFAST input file has been opened or saved yet.\n\n"
+                "Open an existing CFAST input file or save the current case first."
+            )
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        if not path.is_file():
+            self.simulation_tab.set_message(f"{title} not found:\n{path}")
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError as exc:
+            self.simulation_tab.set_message(f"Could not read {title}:\n{path}\n\n{exc}")
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            return
+
+        self.simulation_tab.set_message(
+            f"{title}:\n{path}\n\n{text}",
+            syntax_highlight=(suffix == ".in"),
+        )
+        self.tabs.setCurrentWidget(self.simulation_tab)
+        self.statusBar().showMessage("No Errors")
+
+    def view_cfast_input_file(self):
+        self.view_cfast_text_file(".in", "CFAST input file")
+
+    def view_cfast_output_file(self):
+        self.view_cfast_text_file(".out", "CFAST output file")
+
+    def view_cfast_log_file(self):
+        self.view_cfast_text_file(".log", "CFAST log file")
+
+    def update_input_files(self):
+        paths_text, _ = QFileDialog.getOpenFileNames(
+            self,
+            "Update CFAST Input Files",
+            str(Path.cwd()),
+            "CFAST input files (*.in);;All files (*)",
+        )
+
+        if not paths_text:
+            return
+
+        response = QMessageBox.question(
+            self,
+            "Update Input Files",
+            "CEdit will read and rewrite the selected CFAST input files "
+            "using the current CEdit format.\n\n"
+            "This overwrites the selected files. Continue?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if response != QMessageBox.StandardButton.Yes:
+            return
+
+        updated: list[Path] = []
+        warnings: list[str] = []
+        errors: list[str] = []
+
+        for path_text in paths_text:
+            path = Path(path_text)
+            try:
+                result = read_cfast_input_with_warnings(path)
+                write_cfast_input(result.case, path)
+            except Exception as exc:
+                errors.append(f"{path}:\n{exc}")
+                continue
+
+            updated.append(path)
+            warnings.extend(f"{path}: {warning}" for warning in result.warnings)
+
+        lines = [
+            f"Updated CFAST input files: {len(updated)} of {len(paths_text)}",
+            "",
+        ]
+        if updated:
+            lines.append("Updated files:")
+            lines.extend(str(path) for path in updated)
+
+        if warnings:
+            lines.extend(("", "Import warnings:"))
+            lines.extend(warnings)
+
+        if errors:
+            lines.extend(("", "Errors:"))
+            lines.extend(errors)
+
+        self.simulation_tab.set_message("\n".join(lines))
+        self.tabs.setCurrentWidget(self.simulation_tab)
+        self.statusBar().showMessage("Errors" if errors else "No Errors")
+
+        if errors:
+            QMessageBox.warning(
+                self,
+                "Update Input Files",
+                "Some input files could not be updated. "
+                "See the Simulation tab for details.",
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Update Input Files",
+                f"Updated {len(updated)} CFAST input file(s).",
+            )
+
+    def open_documentation(self):
+        path = find_existing_file(DOCUMENTATION_CANDIDATES)
+        if path is None:
+            message = (
+                "CFAST documentation was not found.\n\n"
+                "In an installed bundle, look in the CFAST Documentation folder.\n"
+                "In a source checkout, build the CFAST Users Guide under "
+                "Manuals/CFAST_Users_Guide."
+            )
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            QMessageBox.information(self, "Documentation", message)
+            return
+
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))):
+            message = f"Could not open documentation:\n{path}"
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            QMessageBox.warning(self, "Documentation", message)
+            return
+
+        self.statusBar().showMessage("No Errors")
+
+    def open_cfast_website(self):
+        url = "https://pages.nist.gov/cfast/"
+        if not QDesktopServices.openUrl(QUrl(url)):
+            QMessageBox.warning(
+                self,
+                "CFAST Web Site",
+                f"Could not open {url}",
+            )
 
     def load_case(self, case: CfastCase):
         self.extra_namelists = list(getattr(case, "extra_namelists", []))
@@ -1366,19 +1628,31 @@ class CeditMainWindow(QMainWindow):
         QMessageBox.critical(self, "Smokeview", message)
 
     def about(self):
-        cfast_version = latest_cfast_version_from_tag()
-        if cfast_version is None:
-            version_text = "CFAST version: Unknown"
+        description = cfast_git_describe()
+        if description is not None:
+            version_text = f"CFAST version: {description}"
         else:
-            version, tag = cfast_version
-            version_text = f"CFAST version: {version} ({tag})"
+            cfast_version = latest_cfast_version_from_tag()
+            if cfast_version is not None:
+                version, tag = cfast_version
+                version_text = f"CFAST version: {version} ({tag})"
+            else:
+                version_text = "CFAST version: Unknown"
 
-        QMessageBox.information(
-            self,
-            "About CFAST Editor (CEdit)",
+        box = QMessageBox(self)
+        box.setWindowTitle("About CFAST Editor (CEdit)")
+        box.setText(
             "Python/PySide6 front end for editing and running CFAST input files.\n\n"
-            f"{version_text}",
+            f"{version_text}"
         )
+        pixmap = cedit_about_pixmap()
+        if pixmap.isNull():
+            box.setIcon(QMessageBox.Icon.Information)
+        else:
+            box.setIconPixmap(pixmap)
+
+        box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        box.exec()
 
 
 class EngineeringUnitsDialog(QDialog):

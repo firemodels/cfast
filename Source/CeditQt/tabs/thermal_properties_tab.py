@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QAbstractItemView,
+    QDialog,
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QFileDialog,
+    QMessageBox,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
@@ -12,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, MaterialProperty
+from cfast_reader import read_cfast_input_with_warnings
 from units import (
     CONDUCTIVITY,
     DENSITY,
@@ -23,6 +29,102 @@ from units import (
     parse_value,
     unit_label,
 )
+
+
+def read_only_item(text: str) -> QTableWidgetItem:
+    item = QTableWidgetItem(text)
+    item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
+    return item
+
+
+class ThermalPropertyImportDialog(QDialog):
+    def __init__(self, materials: list[MaterialProperty], parent=None):
+        super().__init__(parent)
+
+        self.materials = materials
+        self.setWindowTitle("Insert Thermal Properties")
+        self.resize(800, 360)
+
+        self.table = QTableWidget(len(materials), 7)
+        self.table.setHorizontalHeaderLabels(
+            [
+                "",
+                "ID",
+                "Material",
+                f"Conductivity\n({unit_label(CONDUCTIVITY)})",
+                f"Specific Heat\n({unit_label(SPECIFIC_HEAT)})",
+                f"Density\n({unit_label(DENSITY)})",
+                f"Thickness\n({unit_label(LENGTH)})",
+            ]
+        )
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
+        self.table.horizontalHeader().setStretchLastSection(True)
+
+        for row, material in enumerate(materials):
+            check_item = QTableWidgetItem()
+            check_item.setFlags(
+                Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled
+            )
+            check_item.setCheckState(Qt.CheckState.Checked)
+            self.table.setItem(row, 0, check_item)
+            self.table.setItem(row, 1, read_only_item(material.id))
+            self.table.setItem(row, 2, read_only_item(material.material))
+            self.table.setItem(
+                row, 3, read_only_item(format_value(CONDUCTIVITY, material.conductivity))
+            )
+            self.table.setItem(
+                row, 4, read_only_item(format_value(SPECIFIC_HEAT, material.specific_heat))
+            )
+            self.table.setItem(
+                row, 5, read_only_item(format_value(DENSITY, material.density))
+            )
+            self.table.setItem(
+                row, 6, read_only_item(format_value(LENGTH, material.thickness))
+            )
+
+        select_all_button = QPushButton("Select All")
+        deselect_all_button = QPushButton("Deselect All")
+        ok_button = QPushButton("OK")
+        cancel_button = QPushButton("Cancel")
+
+        select_all_button.clicked.connect(
+            lambda: self.set_all_checked(Qt.CheckState.Checked)
+        )
+        deselect_all_button.clicked.connect(
+            lambda: self.set_all_checked(Qt.CheckState.Unchecked)
+        )
+        ok_button.clicked.connect(self.accept)
+        cancel_button.clicked.connect(self.reject)
+
+        button_layout = QHBoxLayout()
+        button_layout.addStretch(1)
+        button_layout.addWidget(select_all_button)
+        button_layout.addWidget(deselect_all_button)
+        button_layout.addStretch(1)
+        button_layout.addWidget(ok_button)
+        button_layout.addWidget(cancel_button)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+
+    def set_all_checked(self, state: Qt.CheckState) -> None:
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item is not None:
+                item.setCheckState(state)
+
+    def selected_materials(self) -> list[MaterialProperty]:
+        selected: list[MaterialProperty] = []
+        for row, material in enumerate(self.materials):
+            item = self.table.item(row, 0)
+            if item is not None and item.checkState() == Qt.CheckState.Checked:
+                selected.append(material)
+        return selected
 
 
 class ThermalPropertiesTab(QWidget):
@@ -38,13 +140,15 @@ class ThermalPropertiesTab(QWidget):
         self.table.verticalHeader().setVisible(True)
         self.table.itemChanged.connect(self.cell_changed)
 
-        add_row_button = QPushButton("Add Row")
-        delete_row_button = QPushButton("Delete Selected")
-        clear_button = QPushButton("Clear")
+        add_row_button = QPushButton("Add")
+        duplicate_button = QPushButton("Duplicate")
+        from_file_button = QPushButton("From File")
+        remove_button = QPushButton("Remove")
 
         add_row_button.clicked.connect(self.add_row)
-        delete_row_button.clicked.connect(self.delete_selected_rows)
-        clear_button.clicked.connect(self.clear_table)
+        duplicate_button.clicked.connect(self.duplicate_row)
+        from_file_button.clicked.connect(self.import_from_file)
+        remove_button.clicked.connect(self.delete_selected_rows)
 
         layout = QVBoxLayout()
         layout.addWidget(QLabel("<b>Thermal Properties</b>"))
@@ -52,8 +156,9 @@ class ThermalPropertiesTab(QWidget):
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(add_row_button)
-        button_layout.addWidget(delete_row_button)
-        button_layout.addWidget(clear_button)
+        button_layout.addWidget(duplicate_button)
+        button_layout.addWidget(from_file_button)
+        button_layout.addWidget(remove_button)
         button_layout.addStretch(1)
 
         layout.addLayout(button_layout)
@@ -119,6 +224,114 @@ class ThermalPropertiesTab(QWidget):
 
     def add_row(self):
         self.table.insertRow(self.table.rowCount())
+        self.table.setCurrentCell(self.table.rowCount() - 1, 0)
+
+    def duplicate_row(self):
+        source_row = self.selected_row()
+
+        if source_row is None:
+            return
+
+        values = [
+            self.cell_text(source_row, col) for col in range(self.table.columnCount())
+        ]
+
+        if not any(values):
+            return
+
+        values[0], values[1] = self.next_new_material_names()
+
+        row = self.first_blank_row()
+        if row is None:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
+
+        self.table.blockSignals(True)
+        for col, value in enumerate(values):
+            self.table.setItem(row, col, QTableWidgetItem(value))
+        self.table.blockSignals(False)
+
+        self.table.selectRow(row)
+
+    def import_from_file(self):
+        paths, _ = QFileDialog.getOpenFileNames(
+            self,
+            "Insert Thermal Properties",
+            "",
+            "CFAST files (*.in *.cfast);;All files (*.*)",
+        )
+
+        if not paths:
+            return
+
+        materials: list[MaterialProperty] = []
+        errors: list[str] = []
+
+        for path in paths:
+            try:
+                result = read_cfast_input_with_warnings(path)
+            except ValueError as exc:
+                errors.append(str(exc))
+                continue
+
+            materials.extend(result.case.materials)
+
+        if not materials:
+            message = "No thermal properties were found."
+            if errors:
+                message += "\n\nFiles with errors:\n" + "\n".join(errors)
+                QMessageBox.warning(self, "Insert Thermal Properties", message)
+            else:
+                QMessageBox.information(self, "Insert Thermal Properties", message)
+            return
+
+        dialog = ThermalPropertyImportDialog(materials, self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        added = 0
+        skipped = 0
+
+        for material in dialog.selected_materials():
+            if self.has_material_id(material.id):
+                skipped += 1
+                continue
+
+            self.add_material_property(material)
+            added += 1
+
+        message = f"Added {added} thermal propert{'y' if added == 1 else 'ies'}."
+        if skipped:
+            message += f"\nSkipped {skipped} duplicate ID{'s' if skipped != 1 else ''}."
+        if errors:
+            message += "\n\nFiles with errors:\n" + "\n".join(errors)
+            QMessageBox.warning(self, "Insert Thermal Properties", message)
+        else:
+            QMessageBox.information(self, "Insert Thermal Properties", message)
+
+    def selected_row(self) -> int | None:
+        selected_rows = sorted(
+            {index.row() for index in self.table.selectionModel().selectedIndexes()}
+        )
+
+        if selected_rows:
+            return selected_rows[0]
+
+        row = self.table.currentRow()
+        if row >= 0:
+            return row
+
+        return None
+
+    def next_new_material_names(self) -> tuple[str, str]:
+        existing_ids = set(self.material_ids())
+        index = max(1, len(existing_ids) + 1)
+
+        while True:
+            material_id = f"NM_{index}"
+            if material_id not in existing_ids:
+                return material_id, f"New Material {index}"
+            index += 1
 
     def delete_selected_rows(self):
         selected_rows = sorted(
@@ -131,9 +344,6 @@ class ThermalPropertiesTab(QWidget):
 
         if self.table.rowCount() == 0:
             self.table.setRowCount(1)
-
-    def clear_table(self):
-        self.table.clearContents()
 
     def cell_changed(self, item: QTableWidgetItem):
         kind_by_column = {

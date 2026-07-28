@@ -16,6 +16,8 @@ PYINSTALLER_CACHE_DIR="$REPO_ROOT/Build/CeditQt/pyinstaller-cache"
 ICON_PATH=""
 CLEAN=1
 AD_HOC_SIGN=0
+VERSION_FILE="$SOURCE_DIR/cedit_version.py"
+VERSION_BACKUP="$WORK_DIR/cedit_version.py.bak"
 
 usage()
 {
@@ -62,6 +64,35 @@ resolve_app_icon()
   fi
 
   APP_ICON="$ICON_PATH"
+}
+
+restore_cedit_version()
+{
+  if [[ -f "$VERSION_BACKUP" ]]; then
+    cp "$VERSION_BACKUP" "$VERSION_FILE"
+  fi
+}
+
+write_cedit_version()
+{
+  local description
+
+  description="$(git -C "$REPO_ROOT" describe --long --dirty 2>/dev/null || true)"
+  cp "$VERSION_FILE" "$VERSION_BACKUP"
+  trap restore_cedit_version EXIT
+
+  "$PYTHON_EXE" - "$VERSION_FILE" "$description" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+description = sys.argv[2]
+path.write_text(
+    "from __future__ import annotations\n\n\n"
+    f"CFAST_GIT_DESCRIBE = {description!r}\n",
+    encoding="utf-8",
+)
+PY
 }
 
 while [[ $# -gt 0 ]]; do
@@ -138,6 +169,7 @@ mkdir -p "$MPLCONFIGDIR"
 
 APP_ICON=""
 resolve_app_icon
+write_cedit_version
 
 pyinstaller_args=(
   --noconfirm

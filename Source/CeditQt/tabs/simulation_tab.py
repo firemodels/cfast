@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase
+from cfast_syntax_highlighter import CfastSyntaxHighlighter
 from units import PRESSURE, TEMPERATURE, TIME, format_number, format_value, parse_number, parse_value
 
 
@@ -64,6 +65,7 @@ class SimulationTab(QWidget):
 
         self.message_panel.setPlainText("")
         self.message_panel.setMinimumHeight(140)
+        self.syntax_highlighter = CfastSyntaxHighlighter(self.message_panel.document())
 
         self.build_layout()
         self.connect_unit_normalizers()
@@ -281,10 +283,12 @@ class SimulationTab(QWidget):
             "Lower Oxygen Limit",
         )
 
-    def set_message(self, text: str):
+    def set_message(self, text: str, syntax_highlight: bool = False):
+        self.syntax_highlighter.set_enabled(syntax_highlight)
         self.message_panel.setPlainText(text)
 
     def append_message(self, text: str):
+        self.syntax_highlighter.set_enabled(False)
         self.message_panel.moveCursor(QTextCursor.MoveOperation.End)
         self.message_panel.insertPlainText(text)
         self.message_panel.ensureCursorVisible()

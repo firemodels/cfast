@@ -163,7 +163,7 @@ The molecular weight of H$_2$O is 18~g/mol; thus, the total mass of H$_2$O produ
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
-CFAST predicts that the final mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_7} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
+CFAST predicts that the final mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_8} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
 Y_k = \frac{X_{k} M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
 \end{equation}
@@ -423,7 +423,7 @@ For this verification case, the upper layer thickness for each compartment is se
 \label{Leakage_1}
 \label{Leakage_2}
 
-Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_7} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ or $\Delta P = \rho/2 \times \left( \dV/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 \times 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
+Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ or $\Delta P = \rho/2 \times \left( \dV/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 \times 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
 
 The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
@@ -648,5 +648,4 @@ for a 1 s increment. The following figure compares the calculated FED to its exp
 \section{Summary of Verification Results}
 
 The tests included in this chapter test the energy and mass balance equations in CFAST and various heat transfer (through walls, targets, and fire detectors/sprinklers) and mass transfer (flow through vents) calculations included in the model with comparisons to analytical calculations. These comparisons are an integral part of a process known as regression testing, which aims to evaluate the accuracy of outputs predicted by a numerical software package. The results from this chapter can be compared to another version of CFAST as a way of measuring the quality of results between versions.  These results also help determine the impact of code additions and modifications on the overall accuracy of CFAST and can help identify errors in the CFAST source code. Appendix \ref{info:verification_statistics} presents the results of the verification tests for the current version of CFAST.
-
 

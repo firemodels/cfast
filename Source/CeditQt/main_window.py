@@ -6,8 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, Signal
-from PySide6.QtGui import QAction, QFont, QFontDatabase
+from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, QUrl, Signal
+from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -112,6 +112,10 @@ SMOKEVIEW_EXECUTABLE_CANDIDATES = (
     Path("smokeview"),
     Path("smokeview.exe"),
 )
+DOCUMENTATION_CANDIDATES = (
+    Path("Documentation/CFAST_Users_Guide.pdf"),
+    Path("Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf"),
+)
 
 
 def executable_file(path: Path) -> bool:
@@ -186,6 +190,16 @@ def find_bundled_executable(relative_paths: tuple[Path, ...]) -> Path | None:
         for relative_path in relative_paths:
             candidate = root / relative_path
             if executable_file(candidate):
+                return candidate
+    return None
+
+
+def find_existing_file(relative_paths: tuple[Path, ...]) -> Path | None:
+    repo_root = Path(__file__).resolve().parents[2]
+    for root in (*candidate_bundle_roots(), repo_root):
+        for relative_path in relative_paths:
+            candidate = root / relative_path
+            if candidate.is_file():
                 return candidate
     return None
 
@@ -455,7 +469,22 @@ class CeditMainWindow(QMainWindow):
 
         help_menu = self.menuBar().addMenu("&Help")
 
-        about_action = QAction("&About CFAST Editor (CEdit)", self)
+        update_inputs_action = QAction("&Update Input Files...", self)
+        update_inputs_action.setShortcut("Ctrl+U")
+        update_inputs_action.triggered.connect(self.update_input_files)
+        help_menu.addAction(update_inputs_action)
+
+        documentation_action = QAction("&Documentation", self)
+        documentation_action.triggered.connect(self.open_documentation)
+        help_menu.addAction(documentation_action)
+
+        cfast_web_action = QAction("CFAST &Web Site", self)
+        cfast_web_action.triggered.connect(self.open_cfast_website)
+        help_menu.addAction(cfast_web_action)
+
+        help_menu.addSeparator()
+
+        about_action = QAction("&About", self)
         about_action.triggered.connect(self.about)
         help_menu.addAction(about_action)
 
@@ -475,6 +504,10 @@ class CeditMainWindow(QMainWindow):
         self.view_log_action = view_log_action
         self.geometry_action = geometry_action
         self.results_action = results_action
+        self.update_inputs_action = update_inputs_action
+        self.documentation_action = documentation_action
+        self.cfast_web_action = cfast_web_action
+        self.about_action = about_action
 
     def build_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
@@ -801,6 +834,113 @@ class CeditMainWindow(QMainWindow):
 
     def view_cfast_log_file(self):
         self.view_cfast_text_file(".log", "CFAST log file")
+
+    def update_input_files(self):
+        paths_text, _ = QFileDialog.getOpenFileNames(
+            self,
+            "Update CFAST Input Files",
+            str(Path.cwd()),
+            "CFAST input files (*.in);;All files (*)",
+        )
+
+        if not paths_text:
+            return
+
+        response = QMessageBox.question(
+            self,
+            "Update Input Files",
+            "CEdit will read and rewrite the selected CFAST input files "
+            "using the current CEdit format.\n\n"
+            "This overwrites the selected files. Continue?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if response != QMessageBox.StandardButton.Yes:
+            return
+
+        updated: list[Path] = []
+        warnings: list[str] = []
+        errors: list[str] = []
+
+        for path_text in paths_text:
+            path = Path(path_text)
+            try:
+                result = read_cfast_input_with_warnings(path)
+                write_cfast_input(result.case, path)
+            except Exception as exc:
+                errors.append(f"{path}:\n{exc}")
+                continue
+
+            updated.append(path)
+            warnings.extend(f"{path}: {warning}" for warning in result.warnings)
+
+        lines = [
+            f"Updated CFAST input files: {len(updated)} of {len(paths_text)}",
+            "",
+        ]
+        if updated:
+            lines.append("Updated files:")
+            lines.extend(str(path) for path in updated)
+
+        if warnings:
+            lines.extend(("", "Import warnings:"))
+            lines.extend(warnings)
+
+        if errors:
+            lines.extend(("", "Errors:"))
+            lines.extend(errors)
+
+        self.simulation_tab.set_message("\n".join(lines))
+        self.tabs.setCurrentWidget(self.simulation_tab)
+        self.statusBar().showMessage("Errors" if errors else "No Errors")
+
+        if errors:
+            QMessageBox.warning(
+                self,
+                "Update Input Files",
+                "Some input files could not be updated. "
+                "See the Simulation tab for details.",
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Update Input Files",
+                f"Updated {len(updated)} CFAST input file(s).",
+            )
+
+    def open_documentation(self):
+        path = find_existing_file(DOCUMENTATION_CANDIDATES)
+        if path is None:
+            message = (
+                "CFAST documentation was not found.\n\n"
+                "In an installed bundle, look in the CFAST Documentation folder.\n"
+                "In a source checkout, build the CFAST Users Guide under "
+                "Manuals/CFAST_Users_Guide."
+            )
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            QMessageBox.information(self, "Documentation", message)
+            return
+
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))):
+            message = f"Could not open documentation:\n{path}"
+            self.simulation_tab.set_message(message)
+            self.tabs.setCurrentWidget(self.simulation_tab)
+            self.statusBar().showMessage("Errors")
+            QMessageBox.warning(self, "Documentation", message)
+            return
+
+        self.statusBar().showMessage("No Errors")
+
+    def open_cfast_website(self):
+        url = "https://pages.nist.gov/cfast/"
+        if not QDesktopServices.openUrl(QUrl(url)):
+            QMessageBox.warning(
+                self,
+                "CFAST Web Site",
+                f"Could not open {url}",
+            )
 
     def load_case(self, case: CfastCase):
         self.extra_namelists = list(getattr(case, "extra_namelists", []))

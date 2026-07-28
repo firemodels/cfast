@@ -18,7 +18,7 @@
 \headerB{
 CFAST -- Consolidated Fire \\
  and Smoke Transport \\
- (Version 7) \\
+ (Version 8) \\
  Volume 4: Software Quality Assurance \\
 }
 
@@ -49,7 +49,7 @@ CFAST -- Consolidated Fire \\
 \headerB{
 CFAST -- Consolidated Fire \\
  And Smoke Transport \\
- (Version 7) \\
+ (Version 8) \\
  Volume 4: Software Quality Assurance \\
 }
 
@@ -88,7 +88,7 @@ Revision:~\gitrevision}
 The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Software Quality Assurance Plan}.  This includes
 
 \begin{itemize}
-    \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_7}\, instructions for its are contained in a separate user's guide \cite{CFAST_Users_Guide_7}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_7}.
+    \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_8}\, instructions for its are contained in a separate user's guide \cite{CFAST_Users_Guide_8}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_8}.
 
     \item Description of the development process for the model.
 
@@ -213,7 +213,7 @@ Each of these official releases form a baseline for any future development of th
 
 \section{Version Documentation}
 
-Each released version of CFAST is documented by four primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_7}, the User's Guide \cite{CFAST_Users_Guide_7}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_7}, and this Software Quality Assurance plan. The documents apply to a specific version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
+Each released version of CFAST is documented by four primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_8}, the User's Guide \cite{CFAST_Users_Guide_8}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and this Software Quality Assurance plan. The documents apply to a specific version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
 
 \chapter{Software Requirements Identification, Design, Implementation, and Testing}
 
@@ -276,7 +276,7 @@ Individual testing of model algorithms are made by the developers during any rev
 
 \item For major new releases of the model, a complete suite of test cases should be compared to those from previous versions of the model.  At a minimum this includes the set of validation exercises described in U.S. Nuclear Regulatory Commission publication NUREG 1824 \cite{NRCNUREG1824}, but may include additional example cases or validation exercises as appropriate.
 
-\item For all changes to the model, an automated testing process is used that provides automatic error checking and collecting performance and accuracy statistics between CFAST revisions. Results of this process for release version of the model are included in the Verification and Validation Guide \cite{CFAST_Valid_Guide_7}.
+\item For all changes to the model, an automated testing process is used that provides automatic error checking and collecting performance and accuracy statistics between CFAST revisions. Results of this process for release version of the model are included in the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
 \end{itemize}
 
 \section{Automated Software Quality Testing}
@@ -315,11 +315,11 @@ Additionally, scripts in the CFAST and SMV verification suites are used to gener
 
 \subsection*{Stage 7: Generation of verification and validation plots and regression statistics}
 
-Scripts in the CFAST verification and validation suites are used to generate plots, regression information, and timing statistics using the results from Stage~5. These plots, figures, and statistical information are used in the CFAST Verification and Validation Guide \cite{CFAST_Valid_Guide_7}.
+Scripts in the CFAST verification and validation suites are used to generate plots, regression information, and timing statistics using the results from Stage~5. These plots, figures, and statistical information are used in the CFAST Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
 
 \subsection*{Stage 8: Compilation of CFAST Guides}
 
-The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_7}, User's Guide \cite{CFAST_Users_Guide_7}, Verification and Validation Guide \cite{CFAST_Valid_Guide_7}, and this Software Quality Assurance Plan are compiled to ensure that all figures and equations can be compiled without any \LaTeX\ errors.
+The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_8}, User's Guide \cite{CFAST_Users_Guide_8}, Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and this Software Quality Assurance Plan are compiled to ensure that all figures and equations can be compiled without any \LaTeX\ errors.
 
 \section{Issuing New Releases}
 
@@ -329,7 +329,7 @@ The decision to change versions of the software is made by consensus of the deve
 
 Each proposed release undergoes testing. There are two sets of input files that are used to test new releases -- a verification suite and a validation suite. The verification suite consists of a range of calculations, from ones that just test a feature to ones that compare CFAST results with analytical solutions of the governing equations. The validation suite consists of simulations of a wide range of experiments.
 
-Each release is tested with the verification suite during the nightly CFASTbot testing. Each release is also tested with the validation suite. The validation cases take considerably longer to run, but the procedure is similar -- the results are plotted and compared to the experimental measurements using an automated plotting package that essentially redraws all of the plots and graphs in the CFAST Validation Guide~\cite{CFAST_Valid_Guide_7}. The old and new guides are compared to assess whether or not the new version of the model has become noticeably less accurate than the old. The CFAST~Validation Guide contains a table in the Summary chapter that lists the bias and relative standard deviation values for all of the predicted quantities. These are the uncertainty metrics that ought to be cited by anyone using this particular  release. In essence, for a minor release, the assessment procedure outlined in ASTM~E~1355 is repeated. The verification and validation studies are redone by the automated continuous integration scripts.
+Each release is tested with the verification suite during the nightly CFASTbot testing. Each release is also tested with the validation suite. The validation cases take considerably longer to run, but the procedure is similar -- the results are plotted and compared to the experimental measurements using an automated plotting package that essentially redraws all of the plots and graphs in the CFAST Validation Guide~\cite{CFAST_Valid_Guide_8}. The old and new guides are compared to assess whether or not the new version of the model has become noticeably less accurate than the old. The CFAST~Validation Guide contains a table in the Summary chapter that lists the bias and relative standard deviation values for all of the predicted quantities. These are the uncertainty metrics that ought to be cited by anyone using this particular  release. In essence, for a minor release, the assessment procedure outlined in ASTM~E~1355 is repeated. The verification and validation studies are redone by the automated continuous integration scripts.
 
 
 \subsection{Announcing a New Version}
@@ -370,7 +370,7 @@ No specific training is identified for use of this plan.  Details of training re
 This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST). This includes
 
 \begin{itemize}
-\item Relevant documentation for the model: a Technical Reference Guide \cite{CFAST_Tech_Guide_7}, a User's Guide \cite{CFAST_Users_Guide_7}, a Validation Guide \cite{CFAST_Valid_Guide_7}, this Configuration Management Guide, and publications by others on the accuracy of the model.
+\item Relevant documentation for the model: a Technical Reference Guide \cite{CFAST_Tech_Guide_8}, a User's Guide \cite{CFAST_Users_Guide_8}, a Validation Guide \cite{CFAST_Valid_Guide_8}, this Configuration Management Guide, and publications by others on the accuracy of the model.
 
 \item Description of the development process for the model.
 

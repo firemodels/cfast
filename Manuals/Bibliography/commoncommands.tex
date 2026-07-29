@@ -163,15 +163,38 @@ morestring=[b]', }
 \setlength{\cftfignumwidth}{0.45in}         % Width of figure number and space before figure caption in the list of figures
 \setlength{\cfttabnumwidth}{0.45in}         % Width of table number and space before table caption in the list of tables
 
-% CFAST Version String
-\newcommand{\cfastversion}{7.7.3}
+\newcommand{\authortitlesigs}
+{
+Richard Peacock \\
+Glenn Forney \\
+Paul Reneke \\
+Kevin McGrattan \\
+Randall McDermott \\
+Jason Floyd \\
+Jonathan Hodges
+}
+
+\newcommand{\authorsigs}
+{
+Richard Peacock \\
+Glenn Forney \\
+Paul Reneke \\
+Kevin McGrattan \\
+Randall McDermott \\
+{\em Fire Research Division, Engineering Laboratory, Gaithersburg, Maryland} \\[.1in]
+Jason Floyd \\
+Jonathan Hodges \\
+{\em UL Research Institutes' Fire Safety Research Institute, Columbia, Maryland}
+}
 
 % commands to use for "official" cover and title pages
 % see smokeview verification guide to see how they are used
 
 \newcommand{\logosigs}{
-\begin{minipage}[b]{6.5in}
-\flushright{\includegraphics[height=1.05in]{FIGURES/nistident}}
+\begin{minipage}[b]{6.25in}
+\parbox[b]{.5\textwidth}{\flushleft{\includegraphics[height=0.8in]{../Bibliography/FSRI_blk_logo_Lockup}}}
+\hfill
+\parbox[b]{.5\textwidth}{\flushright{\includegraphics[height=1in]{../Bibliography/nistident_flright_vec}}}
 \end{minipage}
 }
 
@@ -347,7 +370,7 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\of}{\frac{1}{4}}
 \newcommand{\twth}{\frac{2}{3}}
 
-\newcommand{\ct}{\tt\small}
+\newcommand{\ct}[1]{\lstinline{#1}}
 
 \newcommand{\rb}[1]{\raisebox{1.5ex}[0pt]{#1}}
 

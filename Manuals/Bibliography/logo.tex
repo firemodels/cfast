@@ -1,0 +1,66 @@
+% CFAST-specific title-page and logo commands.
+
+\IfFileExists{../Bibliography/gitrevision.tex}
+{\input{../Bibliography/gitrevision}}
+{\newcommand{\gitrevision}{unknown}}
+
+\newcommand{\logosigs}{
+\begin{minipage}[b]{6.25in}
+\parbox[b]{.5\textwidth}{\flushleft{\includegraphics[height=0.8in]{../Bibliography/FSRI_blk_logo_Lockup}}}
+\hfill
+\parbox[b]{.5\textwidth}{\flushright{\includegraphics[height=1in]{../Bibliography/nistident_flright_vec}}}
+\end{minipage}
+}
+
+\newcommand{\titlesigs}
+{
+\small
+\begin{flushright}
+U.S. Department of Commerce \\
+{\em Howard Lutnick, Secretary} \\
+\hspace{1in} \\
+National Institute of Standards and Technology \\
+{\em Arvind Raman, NIST Director and Under Secretary of Commerce for Standards and Technology}
+\end{flushright}
+}
+
+\newcommand{\headerA}[1]{
+\begin{flushright}
+\fontsize{20}{24}\selectfont
+\bf{NIST Technical Note #1}
+\end{flushright}
+}
+
+\newcommand{\headerB}[1]{
+\begin{flushright}
+\fontsize{28}{33.6}\selectfont
+\bf{#1}
+\end{flushright}
+}
+
+\newcommand{\headerC}[1]{
+\vspace{.15in}
+\begin{flushright}
+\fontsize{12}{14}\selectfont
+#1
+\end{flushright}
+}
+
+\newcommand{\headerD}[1]{
+\begin{flushright}
+\fontsize{12}{14}\selectfont
+http://dx.doi.org/10.6028/NIST.TN.#1
+\end{flushright}
+}
+
+\newcommand{\coden}[1]{
+\vspace*{\fill}
+\begin{flushright}
+\fontsize{12}{14}\selectfont
+\textbf{National Institute of Standards and Technology Technical Note #1 \\
+Natl. Inst. Stand. Technol. Tech. Note #1, \pageref{last_page} pages (\today) \\
+CODEN: NTNOEF \\
+\vspace{\baselineskip}
+http://dx.doi.org/10.6028/NIST.TN.#1}
+\end{flushright}
+}

@@ -23,7 +23,7 @@ CFAST -- Consolidated Fire \\
 }
 
 \headerC{
-   Richard D. Peacock \\
+   Randall J. McDermott \\
    Kevin B. McGrattan \\
    Glenn P. Forney \\
    Paul A. Reneke \\
@@ -57,7 +57,7 @@ CFAST -- Consolidated Fire \\
 }
 
 \headerC{
-   Richard D. Peacock \\
+   Randall J. McDermott \\
    Kevin B. McGrattan \\
    Glenn P. Forney \\
    Paul A. Reneke \\
@@ -86,7 +86,7 @@ Revision:~\gitrevision}
 \pagestyle{plain}
 \setcounter{page}{3}
 
-\input{../Bibliography/authors}
+%\input{../Bibliography/authors}
 
 %
 % -------------------  Preface ------------------------
@@ -95,6 +95,8 @@ Revision:~\gitrevision}
 \chapter{Preface}
 
 This document provides the theoretical basis for the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+
+
 
 %
 % -------------------  Disclaimer ------------------------
@@ -110,21 +112,17 @@ Throughout this document, the mention of computer hardware or commercial softwar
 
 \coden{1889v1}
 
-%
-% -------------------  Acknowledgments ------------------------
-%
+
 
 \chapter{Acknowledgments}
 
 \label{acksection}
 
-CFAST was originally developed by Walter Jones, formerly of NIST.
+CFAST was originally developed by Walter Jones, Richard Peacock, Glenn Forney, and Paul Reneke.
 
 Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
 
-Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous corrections, clarifications, and updates to the guides and the model through his detailed review of the model and documentation. Allan Coutts, Washington Safety Management Solutions, provided insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
 
-Colleen Wade of the Building Research Association of New Zealand (BRANZ), Fred Mowrer of the California Polytechnic State University, and David Sheppard of the U.S. Bureau of Alcohol, Tobacco and Firearms (ATF) provided useful comments on the development of CFAST version 7.
 
 \cleardoublepage
 \phantomsection
@@ -830,7 +828,7 @@ At each time step, the wall temperature profiles are updated in time until the n
 \be
    \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{\partial \Ts}{\partial x} \Big|_{x=0} \label{eq:net_fluxes}
 \ee
-where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines because fewer equations need to be solved. 
+where $k$ is the thermal conductivity of the wall material.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines because fewer equations need to be solved.
 
 Wall and target inner temperature profiles are advanced in time by solving the heat conduction equation normal to the solid surface:
 \be \frac{\partial \Ts}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 \Ts}{\partial x^2}

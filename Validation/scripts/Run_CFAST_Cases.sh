@@ -71,9 +71,16 @@ else
   PLATFORM=linux
 fi
 PLATFORM2=$PLATFORM
-PLATFORM=$PLATFORM$DEBUG
 
-export CFAST="$SVNROOT/Build/CFAST/${compiler}_${PLATFORM}/cfast7_$PLATFORM"
+if [ "$PLATFORM2" == "osx" ]; then
+  CFAST_PLATFORM=macos
+else
+  CFAST_PLATFORM=$PLATFORM2
+fi
+CFAST_PLATFORM=$CFAST_PLATFORM$DEBUG
+PLATFORM=$CFAST_PLATFORM
+
+export CFAST="$SVNROOT/Build/CFAST/${compiler}_${PLATFORM}/cfast8_$CFAST_PLATFORM"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"

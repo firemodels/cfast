@@ -9,7 +9,7 @@ APP_NAME="CFAST Editor (CEdit)"
 DIST_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/linux"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
-CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_linux/cfast7_linux"
+CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_linux/cfast8_linux"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/linux/$APP_NAME"
 EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_linux/smokeview_linux"
@@ -252,7 +252,7 @@ CFAST Linux Bundle
 
 This bundle contains:
 
-- bin/cfast and bin/cfast7_linux
+- bin/cfast and bin/cfast8_linux
 - bin/CFASTVARS.sh
 - bin/cedit, if CEditQt was available when the bundle was made
 - CEditQt/CFAST Editor (CEdit), if CEditQt was available when the bundle was made
@@ -371,10 +371,10 @@ echo "*** Output: $TARBALL_PATH"
 rm -rf "$STAGE_ROOT/$DIST_NAME"
 mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
 
-copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast7_linux"
-chmod +x "$DIST_DIR/bin/cfast7_linux"
-ln -s cfast7_linux "$DIST_DIR/bin/cfast"
-bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast7_linux" "$DIST_DIR/lib"
+copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast8_linux"
+chmod +x "$DIST_DIR/bin/cfast8_linux"
+ln -s cfast8_linux "$DIST_DIR/bin/cfast"
+bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast8_linux" "$DIST_DIR/lib"
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 

@@ -70,25 +70,25 @@ setup_win:
 
 gnu_win : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
-gnu_win : obj = cfast7_win
+gnu_win : obj = cfast8_win
 gnu_win : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win_db : FCOMPL = gfortran
-gnu_win_db : obj = cfast7_win_db
+gnu_win_db : obj = cfast8_win_db
 gnu_win_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 intel_win : FFLAGS = /O2 /fp:consistent /fpconstant /traceback $(GITINFO)
 intel_win : FCOMPL = ifx
-intel_win : obj = cfast7_win
+intel_win : obj = cfast8_win
 intel_win : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
 intel_win_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f23 $(GITINFO)
 intel_win_db : FCOMPL = ifx
-intel_win_db : obj = cfast7_win_db
+intel_win_db : obj = cfast8_win_db
 intel_win_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin)  	
 
@@ -96,52 +96,52 @@ intel_win_db : setup_win $(objwin)
  
 gnu_linux : FFLAGS = -O0 $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
-gnu_linux : obj = cfast7_linux
+gnu_linux : obj = cfast8_linux
 gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 gnu_linux_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
-gnu_linux_db : obj = cfast7_linux_db
+gnu_linux_db : obj = cfast8_linux_db
 gnu_linux_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 intel_linux : FFLAGS = -O2 -traceback $(GITINFO)
 intel_linux : FCOMPL = ifx
-intel_linux : obj = cfast7_linux
+intel_linux : obj = cfast8_linux
 intel_linux : $(objf)
 	$(FCOMPL) -o $(obj) $(objf)
 
 intel_linux_db : FFLAGS = -check all -warn all -O0 -init=snan -traceback -g -fpe0 -fp-model strict -stand f2023 $(GITINFO)
 intel_linux_db : FCOMPL = ifx
-intel_linux_db : obj = cfast7_linux_db
+intel_linux_db : obj = cfast8_linux_db
 intel_linux_db : $(objf)
 	$(FCOMPL) -o $(obj) $(objf)
 
-# ------------- OSX -------------------
+# ------------- macOS -------------------
 
-gnu_osx : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
-gnu_osx: FCOMPL = gfortran
-gnu_osx : obj = cfast7_osx
-gnu_osx : $(objfgnu)
+gnu_macos : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_macos: FCOMPL = gfortran
+gnu_macos : obj = cfast8_macos
+gnu_macos : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
-gnu_osx_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
-gnu_osx_db : FCOMPL = gfortran
-gnu_osx_db : obj = cfast7_osx_db
-gnu_osx_db : $(objfgnu)
+gnu_macos_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
+gnu_macos_db : FCOMPL = gfortran
+gnu_macos_db : obj = cfast8_macos_db
+gnu_macos_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
-intel_osx : FFLAGS = -O2 -traceback $(GITINFO)
-intel_osx : FCOMPL = ifx
-intel_osx : obj = cfast7_osx
-intel_osx : $(objf)
+intel_macos : FFLAGS = -O2 -traceback $(GITINFO)
+intel_macos : FCOMPL = ifx
+intel_macos : obj = cfast8_macos
+intel_macos : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.7 -o $(obj) $(objf)
 
-intel_osx_db : FFLAGS = -fpp -check all -warn all -O0 -g -traceback -fpe:0 -fp-model strict -fp-stack-check -FR $(GITINFO)
-intel_osx_db : FCOMPL = ifx
-intel_osx_db : obj = cfast7_osx_db
-intel_osx_db : $(objf)
+intel_macos_db : FFLAGS = -fpp -check all -warn all -O0 -g -traceback -fpe:0 -fp-model strict -fp-stack-check -FR $(GITINFO)
+intel_macos_db : FCOMPL = ifx
+intel_macos_db : obj = cfast8_macos_db
+intel_macos_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.7 -o $(obj) $(objf)
 
 # *** Object Dependencies ***

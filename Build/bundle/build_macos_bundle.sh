@@ -10,7 +10,7 @@ DIST_NAME=""
 VOLUME_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/macos"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
-CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_osx/cfast7_osx"
+CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_macos/cfast8_macos"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/macos/$APP_NAME.app"
 EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_osx/smokeview_osx"
@@ -539,7 +539,7 @@ CFAST macOS Bundle
 This bundle contains:
 
 - CFAST Editor (CEdit).app
-- bin/cfast and bin/cfast7_osx
+- bin/cfast and bin/cfast8_macos
 - Documentation/*.pdf
 - Examples/Users_Guide_Example.in
 - SMV6/smokeview, if Smokeview was available when the bundle was made
@@ -667,10 +667,10 @@ ln -s /Applications "$STAGE_ROOT/$DIST_NAME/Applications"
 
 copy_dir "$CEDIT_APP" "$DIST_DIR/$APP_NAME.app"
 
-copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast7_osx"
-chmod +x "$DIST_DIR/bin/cfast7_osx"
-ln -s cfast7_osx "$DIST_DIR/bin/cfast"
-bundle_macos_runtime_libraries "$CFAST_EXE" "$DIST_DIR/bin/cfast7_osx" "$DIST_DIR/lib"
+copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast8_macos"
+chmod +x "$DIST_DIR/bin/cfast8_macos"
+ln -s cfast8_macos "$DIST_DIR/bin/cfast"
+bundle_macos_runtime_libraries "$CFAST_EXE" "$DIST_DIR/bin/cfast8_macos" "$DIST_DIR/lib"
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 

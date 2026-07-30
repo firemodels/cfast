@@ -65,9 +65,13 @@ backgrounddir=intel$OS
 background=background
 backgroundout=background
 
-cfastdir=intel$OS
-cfast=cfast7_intel$OS
-cfastout=cfast7$OS
+cfastplatform=$OS
+if [ "$OS" == "_osx" ]; then
+  cfastplatform=_macos
+fi
+cfastdir=intel$cfastplatform
+cfast=cfast8$cfastplatform
+cfastout=cfast8$cfastplatform
 
 scp_fds_smvroot=\~$fdsrepo
 fds_smvroot=$fdsrepo

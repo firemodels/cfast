@@ -4,8 +4,8 @@ Title Bundle cfast for Windows
 
 :: installation settings settings
 
-set installerbase=cfast7_installer
-set distname=cfast7
+set installerbase=cfast8_installer
+set distname=cfast8
 
 :: VVVVVVVVVVVVVVVVV shouldn't need to change anything below VVVVVVVVVVVVVVV
 

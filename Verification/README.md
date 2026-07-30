@@ -4,7 +4,7 @@ These folders contain the CFAST verification input files that are run by the CFA
 
 The verification cases can also be run locally without CFASTbot:
 
-    python run_cfast_verification_cases.py --cfast-exe ../Build/CFAST/gnu_osx/cfast7_osx
+    python run_cfast_verification_cases.py --cfast-exe ../Build/CFAST/gnu_macos/cfast8_macos
 
 After the cases complete, run the plotting and statistics script from `Utilities/Python`:
 

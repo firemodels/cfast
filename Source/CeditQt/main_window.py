@@ -89,16 +89,14 @@ BASE_UNIT_NAMES = {
 CFAST_EXECUTABLE_CANDIDATES = (
     Path("bin/cfast"),
     Path("bin/cfast.exe"),
-    Path("bin/cfast7_osx"),
-    Path("bin/cfast7_linux"),
-    Path("bin/cfast7_win.exe"),
-    Path("bin/cfast7.exe"),
+    Path("bin/cfast8_macos"),
+    Path("bin/cfast8_linux"),
+    Path("bin/cfast8_win.exe"),
     Path("cfast"),
     Path("cfast.exe"),
-    Path("cfast7_osx"),
-    Path("cfast7_linux"),
-    Path("cfast7_win.exe"),
-    Path("cfast7.exe"),
+    Path("cfast8_macos"),
+    Path("cfast8_linux"),
+    Path("cfast8_win.exe"),
 )
 SMOKEVIEW_EXECUTABLE_CANDIDATES = (
     Path("SMV6/smokeview"),
@@ -1505,7 +1503,7 @@ class CeditMainWindow(QMainWindow):
             "File > Set CFAST Executable...\n"
             "and select your built CFAST executable.\n\n"
             "For an installed bundle, make sure the CFAST folder contains "
-            "bin/cfast, bin/cfast.exe, or the platform-specific cfast7 "
+            "bin/cfast, bin/cfast.exe, or the platform-specific cfast8 "
             "executable.\n"
         )
         self.statusBar().showMessage("Errors")

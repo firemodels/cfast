@@ -160,18 +160,18 @@ def candidate_cfast_executables(repo_root: Path) -> list[Path]:
     # Keep the GNU Linux build first for that workflow. For manual runs on macOS,
     # Windows, or another build tree, pass --cfast-exe with the desired executable.
     candidates = [
-        repo_root / "Build" / "CFAST" / "gnu_linux" / "cfast7_linux",
-        repo_root / "Build" / "CFAST" / "intel_linux" / "cfast7_linux",
-        repo_root / "Build" / "CFAST" / "gnu_linux_db" / "cfast7_linux_db",
-        repo_root / "Build" / "CFAST" / "intel_linux_db" / "cfast7_linux_db",
-        repo_root / "Build" / "CFAST" / "gnu_osx" / "cfast7_osx",
-        repo_root / "Build" / "CFAST" / "gnu_osx_db" / "cfast7_osx_db",
-        repo_root / "Build" / "CFAST" / "intel_osx" / "cfast7_osx",
-        repo_root / "Build" / "CFAST" / "intel_osx_db" / "cfast7_osx_db",
-        repo_root / "Build" / "CFAST" / "gnu_win" / "cfast7_win.exe",
-        repo_root / "Build" / "CFAST" / "intel_win" / "cfast7_win.exe",
-        repo_root / "Build" / "CFAST" / "gnu_win_db" / "cfast7_win_db.exe",
-        repo_root / "Build" / "CFAST" / "intel_win_db" / "cfast7_win_db.exe",
+        repo_root / "Build" / "CFAST" / "gnu_linux" / "cfast8_linux",
+        repo_root / "Build" / "CFAST" / "intel_linux" / "cfast8_linux",
+        repo_root / "Build" / "CFAST" / "gnu_linux_db" / "cfast8_linux_db",
+        repo_root / "Build" / "CFAST" / "intel_linux_db" / "cfast8_linux_db",
+        repo_root / "Build" / "CFAST" / "gnu_macos" / "cfast8_macos",
+        repo_root / "Build" / "CFAST" / "gnu_macos_db" / "cfast8_macos_db",
+        repo_root / "Build" / "CFAST" / "intel_macos" / "cfast8_macos",
+        repo_root / "Build" / "CFAST" / "intel_macos_db" / "cfast8_macos_db",
+        repo_root / "Build" / "CFAST" / "gnu_win" / "cfast8_win.exe",
+        repo_root / "Build" / "CFAST" / "intel_win" / "cfast8_win.exe",
+        repo_root / "Build" / "CFAST" / "gnu_win_db" / "cfast8_win_db.exe",
+        repo_root / "Build" / "CFAST" / "intel_win_db" / "cfast8_win_db.exe",
     ]
     path_exe = shutil.which("cfast")
     if path_exe:

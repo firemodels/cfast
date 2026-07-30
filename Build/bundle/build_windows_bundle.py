@@ -247,7 +247,7 @@ def write_readme(out_file: Path) -> None:
 
             This bundle contains:
 
-            - bin\\cfast.exe and bin\\cfast7_win.exe
+            - bin\\cfast.exe and bin\\cfast8_win.exe
             - bin\\CFASTVARS.bat
             - bin\\cedit.bat, if CEditQt was available when the bundle was made
             - CEditQt\\CFAST Editor (CEdit), if CEditQt was available when the bundle was made
@@ -300,7 +300,7 @@ def stage_bundle(args) -> Path:
     docs_dir.mkdir()
     examples_dir.mkdir()
 
-    copy_file(args.cfast_exe, bin_dir / "cfast7_win.exe")
+    copy_file(args.cfast_exe, bin_dir / "cfast8_win.exe")
     copy_file(args.cfast_exe, bin_dir / "cfast.exe")
     copy_windows_runtime_libraries(args.cfast_exe, bin_dir)
 
@@ -596,8 +596,8 @@ def parse_args():
     repo_root = default_repo_root()
     firemodels_root = repo_root.parent
     cfast_candidates = [
-        repo_root / "Build/CFAST/intel_win/cfast7_win.exe",
-        repo_root / "Build/CFAST/gnu_win/cfast7_win.exe",
+        repo_root / "Build/CFAST/intel_win/cfast8_win.exe",
+        repo_root / "Build/CFAST/gnu_win/cfast8_win.exe",
         repo_root / "Utilities/for_bundle/Bin/cfast.exe",
     ]
     smv_candidates = [

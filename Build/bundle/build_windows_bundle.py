@@ -45,7 +45,9 @@ MANUAL_FILES = (
     ("CFAST_Users_Guide", "CFAST_Users_Guide.pdf"),
     ("CFAST_Validation_Guide", "CFAST_Validation_Guide.pdf"),
 )
-RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES) + ("CFAST_INFO.txt",)
+RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES)
+RELEASE_INFO_ASSET = "CFAST_INFO.txt"
+CFAST_WINDOWS_BUILD_TARGETS = ("intel_win", "gnu_win")
 
 
 def default_repo_root() -> Path:
@@ -57,6 +59,10 @@ def first_existing(paths):
         if path.exists():
             return path
     return paths[0]
+
+
+def cfast_exe_for_build_target(repo_root: Path, target: str) -> Path:
+    return repo_root / "Build/CFAST" / target / "cfast8_win.exe"
 
 
 def git_version(repo_root: Path) -> str:
@@ -81,6 +87,17 @@ def sanitize_name(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "-", name).strip("-") or "CFAST-windows"
 
 
+def parse_bool(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    lowered = value.lower()
+    if lowered in {"1", "true", "yes", "on"}:
+        return True
+    if lowered in {"0", "false", "no", "off"}:
+        return False
+    raise argparse.ArgumentTypeError(f"expected true or false, got {value!r}")
+
+
 def require_file(path: Path, description: str) -> None:
     if not path.is_file():
         raise SystemExit(f"***error: {description} not found: {path}")
@@ -89,6 +106,18 @@ def require_file(path: Path, description: str) -> None:
 def require_command(command: str) -> None:
     if shutil.which(command) is None:
         raise SystemExit(f"***error: required command not found: {command}")
+
+
+def require_dir(path: Path, description: str) -> None:
+    if not path.is_dir():
+        raise SystemExit(f"***error: {description} not found: {path}")
+
+
+def run_checked(command, cwd: Path, description: str, shell: bool = False) -> None:
+    try:
+        subprocess.run(command, check=True, cwd=cwd, shell=shell)
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(f"***error: {description} failed with exit code {exc.returncode}")
 
 
 def copy_file(from_path: Path, to_path: Path) -> None:
@@ -157,8 +186,7 @@ def check_release_revision(repo_root: Path, info_file: Path) -> None:
             "***error: release manuals were generated from a different CFAST revision.\n"
             f"         release CFAST_HASH: {release_hash}\n"
             f"         local CFAST_HASH:   {local_hash[:len(release_hash)]}\n"
-            "         Rerun after the Linux Cfastbot -U job has uploaded matching manuals,\n"
-            "         or use --skip-manual-revision-check for a deliberate mismatch."
+            "         Rerun after the Linux Cfastbot -U job has uploaded matching manuals."
         )
 
 
@@ -200,6 +228,8 @@ def download_release_manuals(args) -> dict[str, Path]:
             "***error: release is missing required CFAST manual assets:\n"
             + "\n".join(f"         {asset}" for asset in missing)
         )
+    if args.strict_revision and RELEASE_INFO_ASSET not in assets:
+        raise SystemExit(f"***error: release is missing required revision asset: {RELEASE_INFO_ASSET}")
 
     download_dir = args.manuals_download_dir
     if download_dir.exists():
@@ -218,7 +248,10 @@ def download_release_manuals(args) -> dict[str, Path]:
         str(download_dir),
         "--clobber",
     ]
-    for asset in RELEASE_MANUAL_ASSETS:
+    download_assets = list(RELEASE_MANUAL_ASSETS)
+    if RELEASE_INFO_ASSET in assets:
+        download_assets.append(RELEASE_INFO_ASSET)
+    for asset in download_assets:
         download_command.extend(["-p", asset])
 
     subprocess.run(download_command, check=True)
@@ -226,8 +259,8 @@ def download_release_manuals(args) -> dict[str, Path]:
     for asset in RELEASE_MANUAL_ASSETS:
         require_file(download_dir / asset, f"release asset {asset}")
 
-    if not args.skip_manual_revision_check:
-        check_release_revision(args.repo_root, download_dir / "CFAST_INFO.txt")
+    if args.strict_revision:
+        check_release_revision(args.repo_root, download_dir / RELEASE_INFO_ASSET)
 
     return {filename: download_dir / filename for _, filename in MANUAL_FILES}
 
@@ -236,6 +269,63 @@ def resolve_manual_sources(args) -> dict[str, Path]:
     if args.manuals_from_release:
         return download_release_manuals(args)
     return local_manual_sources(args.repo_root)
+
+
+def build_cfast_executable(args) -> None:
+    if not args.build_cfast:
+        return
+    if os.name != "nt":
+        raise SystemExit("***error: CFAST Windows executable builds must run on Windows.")
+
+    build_dir = args.repo_root / "Build/CFAST" / args.cfast_build_target
+    require_dir(build_dir, f"CFAST build directory for {args.cfast_build_target}")
+
+    print(f"*** Building CFAST Windows executable ({args.cfast_build_target})")
+    if args.cfast_build_target == "intel_win":
+        setup_script = args.repo_root / "Build/scripts/setup_intel_compilers.bat"
+        md5_script = args.repo_root / "Utilities/scripts/md5hash.bat"
+        require_file(setup_script, "Intel compiler setup script")
+        command = (
+            f'call "{setup_script}" intel64 && '
+            'make SHELL="%ComSpec%" VERSION="Release Version  :" -f ..\\makefile intel_win'
+        )
+        if md5_script.is_file():
+            command += f' && call "{md5_script}" cfast8_win.exe'
+        run_checked(
+            [os.environ.get("ComSpec", os.environ.get("COMSPEC", "cmd.exe")), "/c", command],
+            build_dir,
+            "CFAST intel_win build",
+        )
+    elif args.cfast_build_target == "gnu_win":
+        require_command("make")
+        run_checked(["make", "-f", "..\\makefile", "gnu_win"], build_dir, "CFAST gnu_win build")
+    else:
+        raise SystemExit(f"***error: unsupported CFAST Windows build target: {args.cfast_build_target}")
+
+
+def build_cedit_app(args) -> None:
+    if not args.include_cedit or not args.build_cedit:
+        return
+    if os.name != "nt":
+        raise SystemExit("***error: CEditQt Windows app builds must run on Windows.")
+
+    build_script = args.repo_root / "Build/CeditQt/build_windows_app.py"
+    require_file(build_script, "CEditQt Windows build script")
+    print("*** Building CEditQt Windows app")
+    run_checked(
+        [
+            args.python,
+            str(build_script),
+            "--python",
+            args.python,
+            "--output-dir",
+            str(args.cedit_app.parent),
+            "--name",
+            args.cedit_app.name,
+        ],
+        args.repo_root,
+        "CEditQt Windows app build",
+    )
 
 
 def path_entries():
@@ -443,7 +533,7 @@ def stage_bundle(args) -> Path:
 
     copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
 
-    manual_sources = resolve_manual_sources(args)
+    manual_sources = args.manual_sources or resolve_manual_sources(args)
     for _, filename in MANUAL_FILES:
         source = manual_sources[filename]
         require_file(source, f"CFAST manual {filename}")
@@ -733,11 +823,6 @@ def build_self_extracting_exe(args, payload_root: Path) -> Path:
 def parse_args():
     repo_root = default_repo_root()
     firemodels_root = repo_root.parent
-    cfast_candidates = [
-        repo_root / "Build/CFAST/intel_win/cfast8_win.exe",
-        repo_root / "Build/CFAST/gnu_win/cfast8_win.exe",
-        repo_root / "Utilities/for_bundle/Bin/cfast.exe",
-    ]
     smv_candidates = [
         firemodels_root / "smv/Build/smokeview/intel_win/smokeview_win.exe",
         firemodels_root / "smv/Build/smokeview/gnu_win/smokeview_win.exe",
@@ -747,7 +832,8 @@ def parse_args():
     parser.add_argument("--name", help="distribution folder and installer base name")
     parser.add_argument("--output-dir", type=Path, default=repo_root / "Build/bundle/windows", help="output directory")
     parser.add_argument("--stage-dir", type=Path, default=repo_root / "Build/bundle/stage", help="temporary staging directory")
-    parser.add_argument("--cfast-exe", type=Path, default=first_existing(cfast_candidates), help="CFAST executable to bundle")
+    parser.add_argument("--cfast-build-target", choices=CFAST_WINDOWS_BUILD_TARGETS, default="intel_win", help="CFAST Windows build target")
+    parser.add_argument("--cfast-exe", type=Path, help="CFAST executable to bundle")
     parser.add_argument("--cedit-app", type=Path, default=repo_root / "Build/CeditQt/windows" / APP_NAME, help="CEditQt PyInstaller directory")
     parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="example input file")
     parser.add_argument("--smokeview-exe", type=Path, default=first_existing(smv_candidates), help="Smokeview executable to bundle")
@@ -755,28 +841,44 @@ def parse_args():
     parser.add_argument("--python", default=sys.executable, help="Python executable used to build the self-extracting EXE")
     parser.add_argument("--icon", type=Path, help="optional installer .ico file")
     parser.add_argument("--no-uac-admin", action="store_true", help="build installer without requesting administrator privileges")
+    parser.add_argument("--no-build-cfast", dest="build_cfast", action="store_false", help="do not build CFAST before bundling")
+    parser.add_argument("--no-build-cedit", dest="build_cedit", action="store_false", help="do not build CEditQt before bundling")
     parser.add_argument("--no-cedit", dest="include_cedit", action="store_false", help="do not bundle CEditQt")
     parser.add_argument("--no-smokeview", dest="include_smokeview", action="store_false", help="do not bundle Smokeview")
     parser.add_argument("--manuals-from-release", action="store_true", help="download manuals from a GitHub release before bundling")
     parser.add_argument("--manuals-release-repo", default="firemodels/test_bundles", help="GitHub owner/repo containing released manual assets")
     parser.add_argument("--manuals-release-tag", default="CFAST_TEST", help="GitHub release tag containing released manual assets")
     parser.add_argument("--manuals-download-dir", type=Path, default=repo_root / "Build/bundle/stage/release-manuals", help="temporary directory for downloaded release manuals")
-    parser.add_argument("--skip-manual-revision-check", action="store_true", help="do not compare CFAST_INFO.txt CFAST_HASH with the local checkout")
-    parser.set_defaults(include_cedit=True, include_smokeview=True)
+    parser.add_argument(
+        "--strict-revision",
+        dest="strict_revision",
+        nargs="?",
+        const=True,
+        default=False,
+        type=parse_bool,
+        help="require CFAST_INFO.txt CFAST_HASH to match the local checkout",
+    )
+    parser.set_defaults(build_cfast=True, build_cedit=True, include_cedit=True, include_smokeview=True)
     args = parser.parse_args()
     args.repo_root = repo_root
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    if args.cfast_exe is None:
+        args.cfast_exe = cfast_exe_for_build_target(repo_root, args.cfast_build_target)
     args.cfast_exe = args.cfast_exe.resolve()
     args.example_file = args.example_file.resolve()
     args.cedit_app = args.cedit_app.resolve()
     args.smokeview_exe = args.smokeview_exe.resolve()
     args.smokeview_data = args.smokeview_data.resolve()
     args.manuals_download_dir = args.manuals_download_dir.resolve()
+    args.manual_sources = None
     return args
 
 
 def main() -> int:
     args = parse_args()
+    args.manual_sources = resolve_manual_sources(args)
+    build_cfast_executable(args)
+    build_cedit_app(args)
     require_file(args.cfast_exe, "CFAST executable")
     require_file(args.example_file, "CFAST example file")
 

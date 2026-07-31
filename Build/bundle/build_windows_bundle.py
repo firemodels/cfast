@@ -48,10 +48,19 @@ MANUAL_FILES = (
 RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES)
 RELEASE_INFO_ASSET = "CFAST_INFO.txt"
 CFAST_WINDOWS_BUILD_TARGETS = ("intel_win", "gnu_win")
+DEFAULT_UPLOAD_RELEASE_TAG = os.environ.get("GH_CFAST_TAG", "CFAST_TEST")
 
 
 def default_repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+def default_upload_release_repo() -> str:
+    owner = os.environ.get("GH_OWNER")
+    repo = os.environ.get("GH_REPO")
+    if owner and repo:
+        return f"{owner}/{repo}"
+    return "firemodels/test_bundles"
 
 
 def first_existing(paths):
@@ -813,6 +822,86 @@ def build_self_extracting_exe(args, payload_root: Path) -> Path:
     return exe_path
 
 
+def release_asset_names(release_repo: str, release_tag: str) -> list[str]:
+    command = [
+        "gh",
+        "release",
+        "view",
+        release_tag,
+        "-R",
+        release_repo,
+        "--json",
+        "assets",
+        "--jq",
+        ".assets[].name",
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(
+            "***error: unable to read GitHub release assets before upload.\n"
+            f"         release: {release_repo} {release_tag}\n"
+            f"{exc.stderr}"
+        )
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def is_cfast_windows_bundle_asset(asset_name: str) -> bool:
+    lower_name = asset_name.lower()
+    return lower_name.startswith("cfast") and lower_name.endswith(".exe") and (
+        "win" in lower_name or "windows" in lower_name
+    )
+
+
+def upload_windows_bundle(args, exe_path: Path) -> None:
+    if not args.upload:
+        return
+
+    require_command("gh")
+    release_repo = args.upload_release_repo
+    release_tag = args.upload_release_tag
+
+    print(f"*** Uploading Windows bundle to {release_repo} release {release_tag}")
+    for asset_name in release_asset_names(release_repo, release_tag):
+        if is_cfast_windows_bundle_asset(asset_name):
+            print(f"*** Removing previous CFAST Windows bundle: {asset_name}")
+            run_checked(
+                [
+                    "gh",
+                    "release",
+                    "delete-asset",
+                    release_tag,
+                    asset_name,
+                    "-R",
+                    release_repo,
+                    "-y",
+                ],
+                args.repo_root,
+                f"GitHub release asset removal for {asset_name}",
+            )
+
+    run_checked(
+        [
+            "gh",
+            "release",
+            "upload",
+            release_tag,
+            str(exe_path),
+            "--clobber",
+            "-R",
+            release_repo,
+        ],
+        args.repo_root,
+        "GitHub release upload",
+    )
+
+
 def parse_args():
     repo_root = default_repo_root()
     firemodels_root = repo_root.parent
@@ -842,6 +931,21 @@ def parse_args():
     parser.add_argument("--manuals-release-repo", default="firemodels/test_bundles", help="GitHub owner/repo containing released manual assets")
     parser.add_argument("--manuals-release-tag", default="CFAST_TEST", help="GitHub release tag containing released manual assets")
     parser.add_argument("--manuals-download-dir", type=Path, default=repo_root / "Build/bundle/stage/release-manuals", help="temporary directory for downloaded release manuals")
+    parser.add_argument(
+        "--upload",
+        action="store_true",
+        help="upload the Windows bundle to a GitHub release after it is created",
+    )
+    parser.add_argument(
+        "--upload-release-repo",
+        default=default_upload_release_repo(),
+        help="GitHub owner/repo receiving the Windows bundle",
+    )
+    parser.add_argument(
+        "--upload-release-tag",
+        default=DEFAULT_UPLOAD_RELEASE_TAG,
+        help="GitHub release tag receiving the Windows bundle",
+    )
     parser.add_argument(
         "--strict-revision",
         dest="strict_revision",
@@ -879,6 +983,7 @@ def main() -> int:
     exe_path = build_self_extracting_exe(args, dist_dir)
     print("*** Self-extracting EXE created:")
     print(f"    {exe_path}")
+    upload_windows_bundle(args, exe_path)
     return 0
 
 

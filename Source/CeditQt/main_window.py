@@ -735,10 +735,16 @@ class CeditMainWindow(QMainWindow):
             self.current_path = written_path
 
     def save_cfast_input_as(self):
+        # Determine the starting path/filename for the file dialog
+        if getattr(self, "current_path", None):
+            default_target = str(self.current_path)
+        else:
+            default_target = "cedit_qt_test.in"
+
         path_text, _ = QFileDialog.getSaveFileName(
             self,
             "Save As",
-            "cedit_qt_test.in",
+            default_target,  # <--- Pass existing path or fallback
             "CFAST input files (*.in);;All files (*)",
         )
 
@@ -797,17 +803,29 @@ class CeditMainWindow(QMainWindow):
         return path
 
     def open_cfast_input(self):
-        path_text, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open CFAST Input",
-            str(Path.cwd()),
-            "CFAST input files (*.in);;All files (*)",
-        )
+            # Start in the directory of the current active file if set, otherwise current working dir
+            initial_dir = (
+                str(self.current_path.parent)
+                if getattr(self, "current_path", None)
+                else str(Path.cwd())
+            )
 
-        if not path_text:
-            return
+            path_text, _ = QFileDialog.getOpenFileName(
+                self,
+                "Open CFAST Input",
+                initial_dir,
+                "CFAST input files (*.in);;All files (*)",
+            )
 
-        self.load_cfast_input(Path(path_text))
+            if not path_text:
+                return
+
+            selected_path = Path(path_text)
+
+            # load_cfast_input may not update self.current_path internally,
+            # so we set it here directly to ensure Save As remembers this file/folder.
+            self.current_path = selected_path
+            self.load_cfast_input(selected_path)
 
     def load_single_compartment_example(self):
         self.current_path = None

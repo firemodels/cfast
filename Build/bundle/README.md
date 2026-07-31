@@ -45,6 +45,12 @@ To upload the installer to the test bundle release after it is built:
 python Build\bundle\build_windows_bundle.py --manuals-from-release --upload
 ```
 
+For a Windows scheduled task, use the wrapper script:
+
+```powershell
+Build\bundle\run_windows_bundle.ps1
+```
+
 By default, `--upload` pushes to `firemodels/test_bundles` release tag
 `CFAST_TEST`. Override this with:
 
@@ -119,4 +125,3 @@ Windows-only options:
 - `--strict-revision`: require downloaded manuals to match the local CFAST revision
 - `--upload`: upload the created installer to a GitHub release
 - `--no-uac-admin`: build the installer without requesting administrator privileges
-

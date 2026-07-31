@@ -39,6 +39,13 @@ WINDOWS_RUNTIME_DLLS = (
     "vcruntime140.dll",
     "vcruntime140_1.dll",
 )
+MANUAL_FILES = (
+    ("CFAST_Configuration_Guide", "CFAST_Configuration_Guide.pdf"),
+    ("CFAST_Tech_Ref", "CFAST_Tech_Ref.pdf"),
+    ("CFAST_Users_Guide", "CFAST_Users_Guide.pdf"),
+    ("CFAST_Validation_Guide", "CFAST_Validation_Guide.pdf"),
+)
+RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES) + ("CFAST_INFO.txt",)
 
 
 def default_repo_root() -> Path:
@@ -79,6 +86,11 @@ def require_file(path: Path, description: str) -> None:
         raise SystemExit(f"***error: {description} not found: {path}")
 
 
+def require_command(command: str) -> None:
+    if shutil.which(command) is None:
+        raise SystemExit(f"***error: required command not found: {command}")
+
+
 def copy_file(from_path: Path, to_path: Path) -> None:
     to_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(from_path, to_path)
@@ -99,6 +111,131 @@ def copy_optional_file(from_path: Path, to_path: Path) -> None:
 def copy_optional_dir(from_path: Path, to_path: Path) -> None:
     if from_path.is_dir():
         copy_dir(from_path, to_path)
+
+
+def local_manual_sources(repo_root: Path) -> dict[str, Path]:
+    return {
+        filename: repo_root / "Manuals" / guide_dir / filename
+        for guide_dir, filename in MANUAL_FILES
+    }
+
+
+def parse_cfast_info(info_file: Path) -> dict[str, str]:
+    info = {}
+    for line in info_file.read_text(encoding="utf-8").splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) == 2:
+            info[parts[0]] = parts[1]
+    return info
+
+
+def current_git_hash(repo_root: Path) -> str:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except Exception:
+        return ""
+    return result.stdout.strip()
+
+
+def check_release_revision(repo_root: Path, info_file: Path) -> None:
+    info = parse_cfast_info(info_file)
+    release_hash = info.get("CFAST_HASH", "")
+    local_hash = current_git_hash(repo_root)
+
+    if not release_hash:
+        raise SystemExit(f"***error: CFAST_INFO.txt does not contain CFAST_HASH: {info_file}")
+    if not local_hash:
+        raise SystemExit("***error: unable to determine local CFAST git hash")
+    if not local_hash.startswith(release_hash):
+        raise SystemExit(
+            "***error: release manuals were generated from a different CFAST revision.\n"
+            f"         release CFAST_HASH: {release_hash}\n"
+            f"         local CFAST_HASH:   {local_hash[:len(release_hash)]}\n"
+            "         Rerun after the Linux Cfastbot -U job has uploaded matching manuals,\n"
+            "         or use --skip-manual-revision-check for a deliberate mismatch."
+        )
+
+
+def download_release_manuals(args) -> dict[str, Path]:
+    require_command("gh")
+
+    print("*** Checking manual release assets")
+    view_command = [
+        "gh",
+        "release",
+        "view",
+        args.manuals_release_tag,
+        "-R",
+        args.manuals_release_repo,
+        "--json",
+        "assets",
+        "--jq",
+        ".assets[].name",
+    ]
+    try:
+        result = subprocess.run(
+            view_command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(
+            "***error: unable to read GitHub release manual assets.\n"
+            f"         release: {args.manuals_release_repo} {args.manuals_release_tag}\n"
+            f"{exc.stderr}"
+        )
+
+    assets = {line.strip() for line in result.stdout.splitlines() if line.strip()}
+    missing = [asset for asset in RELEASE_MANUAL_ASSETS if asset not in assets]
+    if missing:
+        raise SystemExit(
+            "***error: release is missing required CFAST manual assets:\n"
+            + "\n".join(f"         {asset}" for asset in missing)
+        )
+
+    download_dir = args.manuals_download_dir
+    if download_dir.exists():
+        shutil.rmtree(download_dir)
+    download_dir.mkdir(parents=True)
+
+    print("*** Downloading manual release assets")
+    download_command = [
+        "gh",
+        "release",
+        "download",
+        args.manuals_release_tag,
+        "-R",
+        args.manuals_release_repo,
+        "--dir",
+        str(download_dir),
+        "--clobber",
+    ]
+    for asset in RELEASE_MANUAL_ASSETS:
+        download_command.extend(["-p", asset])
+
+    subprocess.run(download_command, check=True)
+
+    for asset in RELEASE_MANUAL_ASSETS:
+        require_file(download_dir / asset, f"release asset {asset}")
+
+    if not args.skip_manual_revision_check:
+        check_release_revision(args.repo_root, download_dir / "CFAST_INFO.txt")
+
+    return {filename: download_dir / filename for _, filename in MANUAL_FILES}
+
+
+def resolve_manual_sources(args) -> dict[str, Path]:
+    if args.manuals_from_release:
+        return download_release_manuals(args)
+    return local_manual_sources(args.repo_root)
 
 
 def path_entries():
@@ -306,10 +443,11 @@ def stage_bundle(args) -> Path:
 
     copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
 
-    copy_file(repo_root / "Manuals/CFAST_Configuration_Guide/CFAST_Configuration_Guide.pdf", docs_dir / "CFAST_Configuration_Guide.pdf")
-    copy_file(repo_root / "Manuals/CFAST_Tech_Ref/CFAST_Tech_Ref.pdf", docs_dir / "CFAST_Tech_Ref.pdf")
-    copy_file(repo_root / "Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf", docs_dir / "CFAST_Users_Guide.pdf")
-    copy_file(repo_root / "Manuals/CFAST_Validation_Guide/CFAST_Validation_Guide.pdf", docs_dir / "CFAST_Validation_Guide.pdf")
+    manual_sources = resolve_manual_sources(args)
+    for _, filename in MANUAL_FILES:
+        source = manual_sources[filename]
+        require_file(source, f"CFAST manual {filename}")
+        copy_file(source, docs_dir / filename)
 
     write_cfast_vars_bat(bin_dir / "CFASTVARS.bat")
     write_readme(dist_dir / "README.txt")
@@ -619,6 +757,11 @@ def parse_args():
     parser.add_argument("--no-uac-admin", action="store_true", help="build installer without requesting administrator privileges")
     parser.add_argument("--no-cedit", dest="include_cedit", action="store_false", help="do not bundle CEditQt")
     parser.add_argument("--no-smokeview", dest="include_smokeview", action="store_false", help="do not bundle Smokeview")
+    parser.add_argument("--manuals-from-release", action="store_true", help="download manuals from a GitHub release before bundling")
+    parser.add_argument("--manuals-release-repo", default="firemodels/test_bundles", help="GitHub owner/repo containing released manual assets")
+    parser.add_argument("--manuals-release-tag", default="CFAST_TEST", help="GitHub release tag containing released manual assets")
+    parser.add_argument("--manuals-download-dir", type=Path, default=repo_root / "Build/bundle/stage/release-manuals", help="temporary directory for downloaded release manuals")
+    parser.add_argument("--skip-manual-revision-check", action="store_true", help="do not compare CFAST_INFO.txt CFAST_HASH with the local checkout")
     parser.set_defaults(include_cedit=True, include_smokeview=True)
     args = parser.parse_args()
     args.repo_root = repo_root
@@ -628,6 +771,7 @@ def parse_args():
     args.cedit_app = args.cedit_app.resolve()
     args.smokeview_exe = args.smokeview_exe.resolve()
     args.smokeview_data = args.smokeview_data.resolve()
+    args.manuals_download_dir = args.manuals_download_dir.resolve()
     return args
 
 

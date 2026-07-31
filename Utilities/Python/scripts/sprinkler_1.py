@@ -28,26 +28,21 @@ RTI = 100  # ms^0.5
 filename = os.path.join(data_dir, 'sprinkler_1')
 filenamew = filename + '_devices.csv'
 
-# Read the file. importdata(..., 5) in Matlab skips 5 header lines.
-# We read the header from the first line and data starting from line 6.
-with open(filenamew, 'r') as f:
-    first_line = f.readline().strip()
-W = first_line.split(',')
-
-# Load numeric data skipping 5 lines
-Z_data = np.loadtxt(filenamew, delimiter=',', skiprows=5)
+# Read CFAST spreadsheet output by column labels. Rows 2-4 contain
+# long names, object IDs, and units.
+devices = pd.read_csv(filenamew, header=0, skiprows=range(1, 4))
 
 # find the locations for all of the variable columns
 # strncmpi(W, ..., N) matches the first N characters case-insensitively
-colTime = [i for i, s in enumerate(W) if s[:4].lower() == 'time'][0]
-colv = [i for i, s in enumerate(W) if s[:12].lower() == 'sensgasv_1'][0]
-colTg = [i for i, s in enumerate(W) if s[:10].lower() == 'sensgast_1'][0]
-colTL = [i for i, s in enumerate(W) if s[:7].lower() == 'senst_1'][0]
+colTime = [s for s in devices.columns if str(s)[:4].lower() == 'time'][0]
+colv = [s for s in devices.columns if str(s)[:12].lower() == 'sensgasv_1'][0]
+colTg = [s for s in devices.columns if str(s)[:10].lower() == 'sensgast_1'][0]
+colTL = [s for s in devices.columns if str(s)[:7].lower() == 'senst_1'][0]
 
-v_vec = Z_data[:, colv]
-Tg_vec = Z_data[:, colTg]
-TL_vec = Z_data[:, colTL]
-t_vec = Z_data[:, colTime]
+v_vec = devices[colv].to_numpy()
+Tg_vec = devices[colTg].to_numpy()
+TL_vec = devices[colTL].to_numpy()
+t_vec = devices[colTime].to_numpy()
 
 # Solve for the TL temperatures
 v_interp = interp1d(t_vec, v_vec, fill_value="extrapolate")
@@ -90,16 +85,11 @@ plt.legend(loc='lower right') # SouthEast equivalent
 # Read in the n.csv file for the case
 filenameZone = filename + '_compartments.csv'
 
-# Read the file. importdata(..., 5) skips 5 header lines.
-with open(filenameZone, 'r') as f:
-    first_line_zone = f.readline().strip()
-F = first_line_zone.split(',')
-
-Q_data = np.loadtxt(filenameZone, delimiter=',', skiprows=5)
+compartments = pd.read_csv(filenameZone, header=0, skiprows=range(1, 4))
 
 # Find the locations for all of the variables and store the columns
-colQ = [i for i, s in enumerate(F) if s[:5].lower() == 'hrr_1'][0]
-hrr = Q_data[:, colQ]
+colQ = [s for s in compartments.columns if str(s)[:5].lower() == 'hrr_1'][0]
+hrr = compartments[colQ].to_numpy()
 
 # The expected heat release rate is being calculated
 # tactLoc = find(floor(TL) == tempInit); tactLoc = tactLoc(1);
@@ -151,4 +141,3 @@ with open(output_path, 'w') as f:
     f.write(header + '\n')
     # dlmwrite with roffset 1 appends below the header
     df_out.to_csv(f, header=False, index=False)
-

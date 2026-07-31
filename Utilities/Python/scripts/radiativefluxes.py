@@ -14,22 +14,9 @@ def radiativefluxes(data_dir):
     # current Matlab script to handle verification and validation take a single 
     # column of values. Thus, a transpose of matrix is needed.
 
-    # Helper to handle the logic of importdata(filename, ',', 5) and prefix matching
     def process_cfast_file(filepath):
-        # importdata(filename, ',', 5) skips 5 lines for numeric data.
-        # Z.data contains the numeric values.
-        # Z.textdata{1,1} contains the first line of the file.
-        
-        # Read the first line to get column names (W = strsplit(Z.textdata{1,1}, ','))
-        with open(filepath, 'r') as f:
-            first_line = f.readline()
-        w_cols = [col.strip() for col in first_line.split(',')]
-        
-        # Read the numeric data skipping 5 lines
-        # In Matlab, importdata(..., 5) means the numeric data starts after 5 header lines.
-        z_data = pd.read_csv(filepath, skiprows=5, header=None).values
-        
-        return w_cols, z_data
+        data = pd.read_csv(filepath, header=0, skiprows=range(1, 4))
+        return data.columns.tolist(), data.to_numpy()
 
     # Helper for find(strncmpi(W, prefix, len))
     def find_cols_by_prefix(w_list, prefix, length):
@@ -178,4 +165,3 @@ if __name__ == "__main__":
     # Dummy data directory
     data_directory = '../../Verification/Radiation/' 
     radiativefluxes(data_directory)
-

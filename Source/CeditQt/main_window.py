@@ -1714,6 +1714,15 @@ class RunMonitorDialog(QDialog):
         r"\s+DT\s*=\s*"
         r"(?P<dt>[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?)"
     )
+    STATUS_TABLE_LABELS = (
+        ("compartment", ("Compartment",), ""),
+        ("upper", ("Upper",), TEMPERATURE),
+        ("lower", ("Lower",), TEMPERATURE),
+        ("interface", ("Inter.", "Interface"), LENGTH),
+        ("pyrolysis", ("Pyrol", "Pyrolysis"), MASS_LOSS),
+        ("fire", ("Fire",), HRR),
+        ("pressure", ("Pressure",), PRESSURE),
+    )
 
     def __init__(self, parent, case_name: str, simulation_time: float):
         super().__init__(parent)
@@ -1830,8 +1839,14 @@ class RunMonitorDialog(QDialog):
             self.dt_edit.setText(format_value(TIME, dt))
 
     def update_summary_rows(self, lines: list[str]):
-        rows = [self.parse_compact_row(line) for line in lines]
-        rows = [row for row in rows if row is not None]
+        columns = self.status_table_columns(lines)
+        rows = []
+        for line in lines:
+            row = self.parse_status_table_row(line, columns)
+            if row is None:
+                row = self.parse_compact_row(line)
+            if row is not None:
+                rows.append(row)
         if not rows:
             return
 
@@ -1880,6 +1895,50 @@ class RunMonitorDialog(QDialog):
             ]
 
         return None
+
+    def status_table_columns(self, lines: list[str]) -> list[tuple[str, str, int]]:
+        for line in lines:
+            if "Compartment" not in line or "Pressure" not in line:
+                continue
+
+            starts = []
+            search_from = 0
+            for name, labels, kind in self.STATUS_TABLE_LABELS:
+                matches = [(line.find(label, search_from), label) for label in labels]
+                matches = [(index, label) for index, label in matches if index >= 0]
+                if not matches:
+                    return []
+                start, label = min(matches)
+                starts.append((name, kind, start))
+                search_from = start + len(label)
+            return starts
+        return []
+
+    def parse_status_table_row(self, line: str, columns: list[tuple[str, str, int]]) -> list[str] | None:
+        if not columns or not line.strip() or set(line.strip()) == {"-"}:
+            return None
+
+        values = {}
+        for index, (name, _kind, start) in enumerate(columns):
+            end = columns[index + 1][2] if index + 1 < len(columns) else max(len(line), start + 10)
+            values[name] = line[start:end].strip()
+
+        compartment = values.get("compartment", "")
+        if compartment.lower() == "outside":
+            return ["Outside", "", "", "", "", self.format_status_value(HRR, values.get("fire", "")), ""]
+
+        if not compartment.lstrip("+-").isdigit():
+            return None
+
+        return [
+            compartment,
+            self.format_status_value(TEMPERATURE, values.get("upper", "")),
+            self.format_status_value(TEMPERATURE, values.get("lower", "")),
+            self.format_status_value(LENGTH, values.get("interface", "")),
+            self.format_status_value(MASS_LOSS, values.get("pyrolysis", "")),
+            self.format_status_value(HRR, values.get("fire", "")),
+            self.format_status_value(PRESSURE, values.get("pressure", "")),
+        ]
 
     def format_status_value(self, kind: str, text: str) -> str:
         try:

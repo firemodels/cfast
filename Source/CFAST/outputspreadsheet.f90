@@ -224,9 +224,9 @@ module spreadsheet_routines
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGLLT_'//trim(cDet), 'Target Lower Layer Temperature', &
                 targptr%id, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGHGT_'//trim(cDet), 'Target Layer Height', &
-                targptr%id, 'C')
+                targptr%id, 'm')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGPRS_'//trim(cDet), 'Target Pressure', &
-                targptr%id, 'C')
+                targptr%id, 'Pa')
             if (validation_flag) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', &
                     targptr%id, 'kW/m^2')

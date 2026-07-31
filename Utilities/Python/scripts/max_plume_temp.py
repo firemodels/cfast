@@ -5,6 +5,13 @@ import pandas as pd
 import numpy as np
 import os
 
+def read_cfast_csv(filepath):
+    return pd.read_csv(filepath, header=0, skiprows=range(1, 4))
+
+def columns_with_prefix(df, prefix):
+    prefix = prefix.lower()
+    return [column for column in df.columns if str(column).lower().startswith(prefix)]
+
 outdir = '../../Validation/NIST_NRC_Corner_Effects/'
 
 casename = [None] * 18
@@ -32,25 +39,9 @@ for j in range(1, 19):
         # Construct file path
         filepath = os.path.join(outdir, casename[j-1] + '_devices.csv')
         
-        # In Matlab, importdata(..., 5) reads data skipping 5 header lines
-        # textdata contains the header lines. W is split from the first line.
-        with open(filepath, 'r') as f:
-            all_lines = f.readlines()
-        
-        M_textdata = all_lines[:5]
-        # Equivalent to W = strsplit(M.textdata{1,1},',')
-        W = M_textdata[0].strip().split(',')
-        
-        # Equivalent to M = importdata(..., 5) numeric part
-        # Using pandas read_csv to skip 5 lines and treat as numeric data
-        M_data = pd.read_csv(filepath, skiprows=5, header=None).values
-        
-        # col = find(strncmpi(W,'TRGGAST',7))'
-        # find indices for columns starting with 'TRGGAST' (case-insensitive, first 7 chars)
-        col = [i for i, name in enumerate(W) if name[:7].lower() == 'trggast']
-        
-        # t = M.data(:,col);
-        t = M_data[:, col]
+        data = read_cfast_csv(filepath)
+        columns = columns_with_prefix(data, 'TRGGAST')
+        t = data[columns].to_numpy()
 
         H = [
             ['s', 'C', 'C', 'C'],
@@ -85,14 +76,10 @@ for j in range(1, 19):
                 lowvals = t[i, low_idx]
                 low = np.max(lowvals)
                 
-                # fprintf(fid,'%4.0f,%5.1f,%5.1f,%5.1f\n',M.data(i,1),low,mid,high);
-                # M.data(i,1) is the first column of the numeric matrix
-                fid.write(f"{M_data[i, 0]:4.0f},{low:5.1f},{mid:5.1f},{high:5.1f}\n")
+                fid.write(f"{data['Time'].iloc[i]:4.0f},{low:5.1f},{mid:5.1f},{high:5.1f}\n")
         
-        # Matlab clear statements are implicitly handled by scope in Python
-        del M_data, W, col, t
+        del data, columns, t
         
     except Exception:
         print(f"Warning: Problem with NIST/NRC Corner Test {j}. File not found. Skipping case.")
         continue
-

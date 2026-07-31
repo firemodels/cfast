@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 # This script runs the FDS Verification Cases on a linux machine with
 # a batch queuing system
 
@@ -16,6 +16,7 @@ echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
 echo "-s - stop CFAST runs"
 echo "-t - output run times to a history file"
+echo "--test-UI - load and rewrite each input through CEditQt instead of running CFAST"
 exit
 }
 STOPFDS=
@@ -28,6 +29,22 @@ export SVNROOT=`pwd`/..
 smvrepo=
 compiler=intel
 TIME=
+TEST_UI=
+
+args=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --test-UI)
+      TEST_UI=1
+      shift
+      ;;
+    *)
+      args+=("$1")
+      shift
+      ;;
+  esac
+done
+set -- "${args[@]}"
 
 while getopts 'dhI:j:m:p:q:sS:t' OPTION
 do
@@ -87,12 +104,20 @@ if [ "$queue" != "" ]; then
 fi
 
 if [ "$TIME" == "" ]; then
-  export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+  if [ "$TEST_UI" == "" ]; then
+    export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+  else
+    export RUNCFAST="$SVNROOT/Validation/scripts/qcedit.sh $queue $JOBPREFIX "
+  fi
 else
   export RUNCFAST="$SVNROOT/Validation/scripts/gettime.sh"
 fi
 
 export BASEDIR=`pwd`
 
-echo CFAST cases submitted
+if [ "$TEST_UI" == "" ]; then
+  echo CFAST cases submitted
+else
+  echo CEditQt UI cases submitted
+fi
 scripts/CFAST_Cases.sh

@@ -120,6 +120,10 @@ def run_checked(command, cwd: Path, description: str, shell: bool = False) -> No
         raise SystemExit(f"***error: {description} failed with exit code {exc.returncode}")
 
 
+def command_processor() -> str:
+    return os.environ.get("ComSpec") or os.environ.get("COMSPEC") or "cmd.exe"
+
+
 def copy_file(from_path: Path, to_path: Path) -> None:
     to_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(from_path, to_path)
@@ -282,20 +286,9 @@ def build_cfast_executable(args) -> None:
 
     print(f"*** Building CFAST Windows executable ({args.cfast_build_target})")
     if args.cfast_build_target == "intel_win":
-        setup_script = args.repo_root / "Build/scripts/setup_intel_compilers.bat"
-        md5_script = args.repo_root / "Utilities/scripts/md5hash.bat"
-        require_file(setup_script, "Intel compiler setup script")
-        command = (
-            f'call "{setup_script}" intel64 && '
-            'make SHELL="%ComSpec%" VERSION="Release Version  :" -f ..\\makefile intel_win'
-        )
-        if md5_script.is_file():
-            command += f' && call "{md5_script}" cfast8_win.exe'
-        run_checked(
-            [os.environ.get("ComSpec", os.environ.get("COMSPEC", "cmd.exe")), "/c", command],
-            build_dir,
-            "CFAST intel_win build",
-        )
+        make_script = build_dir / "make_cfast.bat"
+        require_file(make_script, "CFAST Intel Windows make script")
+        run_checked([command_processor(), "/d", "/c", make_script.name], build_dir, "CFAST intel_win build")
     elif args.cfast_build_target == "gnu_win":
         require_command("make")
         run_checked(["make", "-f", "..\\makefile", "gnu_win"], build_dir, "CFAST gnu_win build")

@@ -32,6 +32,8 @@ SPECIFIC_HEAT = "specific_heat"
 BASE_UNIT_KEYS = (LENGTH, MASS, TIME, TEMPERATURE, PRESSURE, ENERGY, SMOKE)
 
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
+_SUPERSCRIPT_TO_DIGIT = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
+_SUBSCRIPT_TO_DIGIT = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
 
 
 @dataclass(frozen=True)
@@ -79,15 +81,15 @@ BASE_UNITS: dict[str, list[BaseUnit]] = {
         BaseUnit("h", 3600.0),
     ],
     TEMPERATURE: [
-        BaseUnit("C", 1.0, 273.15),
+        BaseUnit("°C", 1.0, 273.15),
         BaseUnit("K", 1.0, 0.0),
-        BaseUnit("F", 5.0 / 9.0, 459.67),
+        BaseUnit("°F", 5.0 / 9.0, 459.67),
         BaseUnit("R", 5.0 / 9.0, 0.0),
     ],
     PRESSURE: [
         BaseUnit("Pa", 1.0),
         BaseUnit("mm Hg", 133.3224),
-        BaseUnit("in H2O", 249.0889),
+        BaseUnit("in H₂O", 249.0889),
         BaseUnit("atm", 101325.0),
     ],
     ENERGY: [
@@ -111,8 +113,8 @@ _BASE_UNIT_ALIASES = {
     "in": ["inch", "inches"],
     "lb": ["lbs", "pound", "pounds"],
     "oz": ["ounce", "ounces"],
-    "C": ["deg C", "degC", "Celsius"],
-    "F": ["deg F", "degF", "Fahrenheit"],
+    "°C": ["C", "deg C", "degC", "Celsius"],
+    "°F": ["F", "deg F", "degF", "Fahrenheit"],
     "K": ["Kelvin"],
     "R": ["Rankine"],
     "BTU": ["Btu", "btu"],
@@ -123,10 +125,14 @@ _EXPLICIT_UNIT_LOOKUP_CACHE: dict[str, dict[str, Conversion]] = {}
 def normalize_unit_label(label: str) -> str:
     normalized = label.strip().lower()
     normalized = normalized.replace("°", "")
-    normalized = normalized.replace("²", "2").replace("³", "3")
+    normalized = normalized.translate(_SUPERSCRIPT_TO_DIGIT)
+    normalized = normalized.translate(_SUBSCRIPT_TO_DIGIT)
     normalized = normalized.replace("**", "^")
     normalized = re.sub(r"\s+", "", normalized)
     normalized = normalized.replace("(", "").replace(")", "")
+    for degree_word in ("degrees", "degree", "deg"):
+        normalized = normalized.replace(f"{degree_word}c", "c")
+        normalized = normalized.replace(f"{degree_word}f", "f")
     return normalized.replace("^", "")
 
 
@@ -134,12 +140,30 @@ def label_variants(label: str) -> set[str]:
     variants = {label}
     variants.update(_BASE_UNIT_ALIASES.get(label, []))
 
-    if "2" in label:
+    if "^2" in label:
+        variants.add(label.replace("^2", "2"))
+    elif "2" in label:
         variants.add(label.replace("2", "^2"))
-    if "3" in label:
+    if "^3" in label:
+        variants.add(label.replace("^3", "3"))
+    elif "3" in label:
         variants.add(label.replace("3", "^3"))
+    if label.startswith("√(") and label.endswith(")"):
+        inner_label = label[2:-1]
+        variants.add(f"({inner_label})^0.5")
+        variants.add(f"({inner_label})^1/2")
+        variants.add(f"sqrt({inner_label})")
 
     return variants
+
+
+def power_label(label: str, exponent: int) -> str:
+    superscripts = {2: "²", 3: "³"}
+    return f"{label}{superscripts.get(exponent, f'^{exponent}')}"
+
+
+def root_label(label: str) -> str:
+    return f"√({label})"
 
 
 def format_number(value: float | int) -> str:
@@ -229,6 +253,8 @@ class UnitSystem:
         l_pressure = pressure.label
         l_energy = energy.label
         l_smoke = smoke.label
+        l_area = power_label(l_length, 2)
+        l_volume = power_label(l_length, 3)
 
         hrr_label = f"{l_energy}/{l_time}"
         if hrr_label == "J/s":
@@ -238,13 +264,13 @@ class UnitSystem:
         elif hrr_label == "MJ/s":
             hrr_label = "MW"
 
-        heat_flux_label = f"{l_energy}/({l_time} {l_length}2)"
-        if heat_flux_label == "J/(s m2)":
-            heat_flux_label = "W/m2"
-        elif heat_flux_label == "kJ/(s m2)":
-            heat_flux_label = "kW/m2"
-        elif heat_flux_label == "MJ/(s m2)":
-            heat_flux_label = "MW/m2"
+        heat_flux_label = f"{l_energy}/({l_time} {l_area})"
+        if heat_flux_label == "J/(s m²)":
+            heat_flux_label = "W/m²"
+        elif heat_flux_label == "kJ/(s m²)":
+            heat_flux_label = "kW/m²"
+        elif heat_flux_label == "MJ/(s m²)":
+            heat_flux_label = "MW/m²"
 
         conductivity_prefix = f"{l_energy}/({l_time} "
         if conductivity_prefix == "J/(s ":
@@ -265,7 +291,7 @@ class UnitSystem:
             PRESSURE: Conversion(pressure.multiplier, 0.0, l_pressure),
             LENGTH: Conversion(length.multiplier, 0.0, l_length),
             SMOKE: Conversion(smoke.multiplier, 0.0, l_smoke, smoke=True),
-            AREA: Conversion(length.multiplier * length.multiplier, 0.0, f"{l_length}2"),
+            AREA: Conversion(length.multiplier * length.multiplier, 0.0, l_area),
             VELOCITY: Conversion(
                 length.multiplier / time.multiplier,
                 0.0,
@@ -274,12 +300,12 @@ class UnitSystem:
             FLOWRATE: Conversion(
                 length.multiplier ** 3 / time.multiplier,
                 0.0,
-                f"{l_length}^3/{l_time}",
+                f"{l_volume}/{l_time}",
             ),
             RTI: Conversion(
                 math.sqrt(length.multiplier * time.multiplier),
                 0.0,
-                f"({l_length} {l_time})^0.5",
+                root_label(f"{l_length} {l_time}"),
             ),
             MASS: Conversion(mass.multiplier, 0.0, l_mass),
             MASS_FRACTION: Conversion(1.0, 0.0, f"{l_mass}/{l_mass}"),
@@ -291,7 +317,7 @@ class UnitSystem:
             DENSITY: Conversion(
                 mass.multiplier / length.multiplier ** 3,
                 0.0,
-                f"{l_mass}/{l_length}^3",
+                f"{l_mass}/{l_volume}",
             ),
             HRR: Conversion(energy.multiplier / time.multiplier, 0.0, hrr_label),
             HOC: Conversion(
@@ -338,13 +364,14 @@ def hrr_unit_labels(energy_label: str, time_label: str) -> set[str]:
 
 
 def heat_flux_unit_labels(energy_label: str, time_label: str, length_label: str) -> set[str]:
+    area_label = power_label(length_label, 2)
     labels = {
-        f"{energy_label}/({time_label} {length_label}2)",
-        f"{energy_label}/{time_label}/{length_label}2",
+        f"{energy_label}/({time_label} {area_label})",
+        f"{energy_label}/{time_label}/{area_label}",
     }
 
     for hrr_label in hrr_unit_labels(energy_label, time_label):
-        labels.add(f"{hrr_label}/{length_label}2")
+        labels.add(f"{hrr_label}/{area_label}")
 
     return labels
 
@@ -410,10 +437,11 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
 
     for length in BASE_UNITS[LENGTH]:
         if kind == AREA:
+            area_label = power_label(length.label, 2)
             register_unit(
                 lookup,
-                f"{length.label}2",
-                Conversion(length.multiplier ** 2, 0.0, f"{length.label}2"),
+                area_label,
+                Conversion(length.multiplier ** 2, 0.0, area_label),
             )
 
         for time in BASE_UNITS[TIME]:
@@ -428,38 +456,41 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                     ),
                 )
             elif kind == FLOWRATE:
+                volume_label = power_label(length.label, 3)
                 register_unit(
                     lookup,
-                    f"{length.label}^3/{time.label}",
+                    f"{volume_label}/{time.label}",
                     Conversion(
                         length.multiplier ** 3 / time.multiplier,
                         0.0,
-                        f"{length.label}^3/{time.label}",
+                        f"{volume_label}/{time.label}",
                     ),
                 )
 
         for mass in BASE_UNITS[MASS]:
             if kind == DENSITY:
+                volume_label = power_label(length.label, 3)
                 register_unit(
                     lookup,
-                    f"{mass.label}/{length.label}^3",
+                    f"{mass.label}/{volume_label}",
                     Conversion(
                         mass.multiplier / length.multiplier ** 3,
                         0.0,
-                        f"{mass.label}/{length.label}^3",
+                        f"{mass.label}/{volume_label}",
                     ),
                 )
 
     for length in BASE_UNITS[LENGTH]:
         for time in BASE_UNITS[TIME]:
             if kind == RTI:
+                rti_label = root_label(f"{length.label} {time.label}")
                 register_unit(
                     lookup,
-                    f"({length.label} {time.label})^0.5",
+                    rti_label,
                     Conversion(
                         math.sqrt(length.multiplier * time.multiplier),
                         0.0,
-                        f"({length.label} {time.label})^0.5",
+                        rti_label,
                     ),
                 )
 
@@ -582,7 +613,7 @@ _MODEL_TO_SI_FACTOR = {
     HRR: 1000.0,  # CFAST input uses kW.
     HOC: 1000.0,  # CFAST input uses kJ/kg.
     HOG: 1000.0,
-    HEAT_FLUX: 1000.0,  # CFAST input uses kW/m2.
+    HEAT_FLUX: 1000.0,  # CFAST input uses kW/m².
     SPECIFIC_HEAT: 1000.0,  # CFAST input uses kJ/(kg K).
 }
 

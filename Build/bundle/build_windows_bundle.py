@@ -595,11 +595,7 @@ def write_readme(out_file: Path) -> None:
             - SMV6\\smokeview.exe and SMV6\\smokeview_win.exe, if Smokeview was available
 
             To install from the self-extracting EXE, double-click it or run it from
-            a command prompt. The default install parent is:
-
-                %ProgramFiles%\\firemodels
-
-            The installed folder is:
+            a command prompt. The default installation directory is:
 
                 %ProgramFiles%\\firemodels\\CFAST8
 
@@ -722,8 +718,8 @@ def read_destination(default_parent):
     print("")
     print("CFAST 8 self-extracting installer")
     print("")
-    print(f"Default install parent: {default_parent}")
-    print("The installer will create or replace a CFAST8 folder inside that parent.")
+    print(f"Default installation directory: {default_parent / 'CFAST8'}")
+    print("The installer will create or replace a CFAST8 folder inside the selected parent.")
     print("")
     value = input("Install parent [press Enter for default, or q to quit]: ").strip()
     if value.lower() in {"q", "quit", "exit"}:

@@ -679,7 +679,7 @@ def draw_background(path, scale):
     caption_font = load_font(16 * render_scale)
 
     title = "Drag CFAST to Applications"
-    caption = "Copy the CFAST folder to install CFAST 8."
+    caption = "CFAST8 is inside the CFAST folder."
 
     title_box = draw.textbbox((0, 0), title, font=title_font)
     title_x = (width - (title_box[2] - title_box[0])) // 2
@@ -757,7 +757,8 @@ import os
 from pathlib import Path
 
 settings_file = Path(os.environ["SETTINGS_FILE"])
-dist_dir = os.environ["DIST_DIR"]
+dist_dir = Path(os.environ["DIST_DIR"])
+cfast_dir = str(dist_dir.parent)
 background_file = os.environ["BACKGROUND_FILE"]
 customize_dmg = os.environ["CUSTOMIZE_DMG"] == "1"
 
@@ -781,7 +782,7 @@ compression_level = 9
 size = None
 
 files = [
-    ({dist_dir!r}, "CFAST"),
+    ({cfast_dir!r}, "CFAST"),
 ]
 
 symlinks = {{
@@ -891,11 +892,11 @@ To install, drag the CFAST folder to Applications.
 
 To use CFAST from a terminal, source:
 
-    source "/Applications/CFAST/bin/CFASTVARS.sh"
+    source "/Applications/CFAST/CFAST8/bin/CFASTVARS.sh"
 
 Then run:
 
-    cfast /Applications/CFAST/Examples/Users_Guide_Example.in
+    cfast /Applications/CFAST/CFAST8/Examples/Users_Guide_Example.in
 
 EOF
 }
@@ -1199,7 +1200,7 @@ require_file "$EXAMPLE_FILE" "CFAST example file"
 
 mkdir -p "$OUTPUT_DIR"
 
-DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST"
+DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST/CFAST8"
 DMG_NAME="$(sanitize_name "$DIST_NAME").dmg"
 DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
 

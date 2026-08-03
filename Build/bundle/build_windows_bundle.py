@@ -601,12 +601,12 @@ def write_readme(out_file: Path) -> None:
 
             The installed folder is:
 
-                %ProgramFiles%\\firemodels\\CFAST
+                %ProgramFiles%\\firemodels\\CFAST8
 
             To use CFAST from an existing command prompt:
 
-                call "C:\\Program Files\\firemodels\\CFAST\\bin\\CFASTVARS.bat"
-                cfast "C:\\Program Files\\firemodels\\CFAST\\Examples\\Users_Guide_Example.in"
+                call "C:\\Program Files\\firemodels\\CFAST8\\bin\\CFASTVARS.bat"
+                cfast "C:\\Program Files\\firemodels\\CFAST8\\Examples\\Users_Guide_Example.in"
 
             To launch CEditQt from a command prompt:
 
@@ -622,7 +622,7 @@ def stage_bundle(args) -> Path:
     repo_root = args.repo_root
     firemodels_root = repo_root.parent
     dist_name = args.name or git_version(repo_root)
-    dist_dir = args.stage_dir / dist_name / "CFAST"
+    dist_dir = args.stage_dir / dist_name / "CFAST8"
 
     print("*** Staging CFAST Windows bundle")
     print(f"*** Distribution: {dist_name}")
@@ -723,7 +723,7 @@ def read_destination(default_parent):
     print("CFAST 8 self-extracting installer")
     print("")
     print(f"Default install parent: {default_parent}")
-    print("The installer will create or replace a CFAST folder inside that parent.")
+    print("The installer will create or replace a CFAST8 folder inside that parent.")
     print("")
     value = input("Install parent [press Enter for default, or q to quit]: ").strip()
     if value.lower() in {"q", "quit", "exit"}:
@@ -734,7 +734,7 @@ def read_destination(default_parent):
 
 
 def extract_payload(payload_zip, destination_parent, overwrite):
-    target = destination_parent / "CFAST"
+    target = destination_parent / "CFAST8"
 
     if target.exists():
         if not overwrite:
@@ -827,7 +827,7 @@ $Shortcut.Save()
 def main():
     parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
     parser.add_argument("--extract-to", metavar="PATH", help="install parent folder")
-    parser.add_argument("--overwrite", action="store_true", help="replace an existing CFAST folder")
+    parser.add_argument("--overwrite", action="store_true", help="replace an existing CFAST8 folder")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
     shortcut_group = parser.add_mutually_exclusive_group()
     shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")

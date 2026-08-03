@@ -382,8 +382,8 @@ This bundle contains:
 
 To use CFAST from bash or zsh:
 
-    source /path/to/CFAST/bin/CFASTVARS.sh
-    cfast /path/to/CFAST/Examples/Users_Guide_Example.in
+    source /path/to/CFAST/CFAST8/bin/CFASTVARS.sh
+    cfast /path/to/CFAST/CFAST8/Examples/Users_Guide_Example.in
 
 To launch CEditQt from a terminal:
 
@@ -511,7 +511,7 @@ build_smokeview_executable
 
 mkdir -p "$OUTPUT_DIR"
 
-DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST"
+DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST/CFAST8"
 TARBALL_NAME="$(sanitize_name "$DIST_NAME").tar.gz"
 TARBALL_PATH="$OUTPUT_DIR/$TARBALL_NAME"
 

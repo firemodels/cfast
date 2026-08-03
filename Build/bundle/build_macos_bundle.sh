@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ORIGINAL_ARGS=("$@")
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
@@ -10,15 +11,51 @@ DIST_NAME=""
 VOLUME_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/macos"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
+CFAST_BUILD_TARGET="gnu_macos"
 CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_macos/cfast8_macos"
+CFAST_EXE_SET=0
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/macos/$APP_NAME.app"
 EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_osx/smokeview_osx"
+SMV_EXE_SET=0
 SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
+SMV_BUILD_TARGET="gnu_osx"
+PYTHON_EXE="${PYTHON:-python3}"
+INCLUDE_CEDIT=1
 INCLUDE_SMOKEVIEW=1
+BUILD_CFAST=1
+BUILD_CEDIT=1
+BUILD_SMOKEVIEW=1
 CREATE_DMG=1
 CUSTOMIZE_DMG=1
 RUNTIME_LIB_MANIFEST=""
+UPDATE_REPOS=1
+UPDATE_BRANCH="master"
+MANUALS_FROM_RELEASE=0
+MANUALS_RELEASE_REPO="firemodels/test_bundles"
+MANUALS_RELEASE_TAG="CFAST_TEST"
+MANUALS_DOWNLOAD_DIR="$STAGE_ROOT/release-manuals"
+MANUALS_DOWNLOAD_DIR_SET=0
+STRICT_REVISION=0
+UPLOAD=0
+if [[ -n "${GH_OWNER:-}" && -n "${GH_REPO:-}" ]]; then
+  UPLOAD_RELEASE_REPO="$GH_OWNER/$GH_REPO"
+else
+  UPLOAD_RELEASE_REPO="firemodels/test_bundles"
+fi
+UPLOAD_RELEASE_TAG="${GH_CFAST_TAG:-CFAST_TEST}"
+
+CONFIG_MANUAL="$REPO_ROOT/Manuals/CFAST_Configuration_Guide/CFAST_Configuration_Guide.pdf"
+TECH_REF_MANUAL="$REPO_ROOT/Manuals/CFAST_Tech_Ref/CFAST_Tech_Ref.pdf"
+USERS_GUIDE_MANUAL="$REPO_ROOT/Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf"
+VALIDATION_GUIDE_MANUAL="$REPO_ROOT/Manuals/CFAST_Validation_Guide/CFAST_Validation_Guide.pdf"
+RELEASE_INFO_ASSET="CFAST_INFO.txt"
+RELEASE_MANUAL_ASSETS=(
+  "CFAST_Configuration_Guide.pdf"
+  "CFAST_Tech_Ref.pdf"
+  "CFAST_Users_Guide.pdf"
+  "CFAST_Validation_Guide.pdf"
+)
 
 usage()
 {
@@ -31,12 +68,29 @@ usage()
   echo "  --volume-name name       DMG volume name"
   echo "  --output-dir path        Output directory for the DMG"
   echo "  --stage-dir path         Temporary staging directory"
+  echo "  --cfast-build-target target CFAST build target: gnu_macos or intel_macos"
   echo "  --cfast-exe path         CFAST executable to bundle"
   echo "  --cedit-app path         CEditQt .app to bundle"
   echo "  --example path           Example .in file to bundle"
   echo "  --smokeview-exe path     Smokeview executable to bundle"
   echo "  --smokeview-data path    Smokeview for_bundle directory"
+  echo "  --smokeview-build-target target Smokeview build target: gnu_osx or clang_osx"
+  echo "  --python path            Python executable used to build CEditQt and the DMG"
+  echo "  --update-branch branch   Branch to update before building"
+  echo "  --no-update-repos        Do not update the CFAST, Smokeview, and FDS repos"
+  echo "  --no-build-cfast         Do not build CFAST before bundling"
+  echo "  --no-build-cedit         Do not build CEditQt before bundling"
+  echo "  --no-build-smokeview     Do not build Smokeview before bundling"
+  echo "  --no-cedit               Do not bundle CEditQt"
   echo "  --no-smokeview           Do not bundle Smokeview files"
+  echo "  --manuals-from-release   Download manuals from a GitHub release"
+  echo "  --manuals-release-repo repo GitHub owner/repo containing manual assets"
+  echo "  --manuals-release-tag tag GitHub release tag containing manual assets"
+  echo "  --manuals-download-dir path Temporary directory for downloaded manuals"
+  echo "  --strict-revision [bool] Require downloaded manuals to match local CFAST hash"
+  echo "  --upload                 Upload the DMG to a GitHub release"
+  echo "  --upload-release-repo repo GitHub owner/repo receiving the DMG"
+  echo "  --upload-release-tag tag GitHub release tag receiving the DMG"
   echo "  --no-dmg                 Stage files only"
   echo "  --no-layout              Do not use a DMG background image"
   echo "  -h, --help               Display this message"
@@ -60,6 +114,16 @@ require_dir()
 
   if [[ ! -d "$dir_path" ]]; then
     echo "***error: $description not found: $dir_path"
+    exit 1
+  fi
+}
+
+require_command()
+{
+  local command_name="$1"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "***error: required command not found: $command_name"
     exit 1
   fi
 }
@@ -100,6 +164,285 @@ copy_optional_dir()
   if [[ -d "$from_path" ]]; then
     copy_dir "$from_path" "$to_path"
   fi
+}
+
+parse_bool_arg()
+{
+  local value
+
+  value="$(printf "%s" "$1" | tr "[:upper:]" "[:lower:]")"
+  case "$value" in
+    1|true|yes|on)
+      printf "1\n"
+      ;;
+    0|false|no|off)
+      printf "0\n"
+      ;;
+    *)
+      echo "***error: expected true or false, got: $1" >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_checked()
+{
+  local description="$1"
+  shift
+
+  if ! "$@"; then
+    echo "***error: $description failed."
+    exit 1
+  fi
+}
+
+set_release_manual_sources()
+{
+  CONFIG_MANUAL="$MANUALS_DOWNLOAD_DIR/CFAST_Configuration_Guide.pdf"
+  TECH_REF_MANUAL="$MANUALS_DOWNLOAD_DIR/CFAST_Tech_Ref.pdf"
+  USERS_GUIDE_MANUAL="$MANUALS_DOWNLOAD_DIR/CFAST_Users_Guide.pdf"
+  VALIDATION_GUIDE_MANUAL="$MANUALS_DOWNLOAD_DIR/CFAST_Validation_Guide.pdf"
+}
+
+release_asset_available()
+{
+  local assets="$1"
+  local asset_name="$2"
+
+  printf "%s\n" "$assets" | grep -Fxq "$asset_name"
+}
+
+current_git_hash()
+{
+  git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || true
+}
+
+check_release_revision()
+{
+  local info_file="$1"
+  local release_hash
+  local local_hash
+
+  release_hash="$(awk '$1 == "CFAST_HASH" {print $2; exit}' "$info_file")"
+  local_hash="$(current_git_hash)"
+
+  if [[ "$release_hash" == "" ]]; then
+    echo "***error: CFAST_INFO.txt does not contain CFAST_HASH: $info_file"
+    exit 1
+  fi
+  if [[ "$local_hash" == "" ]]; then
+    echo "***error: unable to determine local CFAST git hash"
+    exit 1
+  fi
+  if [[ "${local_hash:0:${#release_hash}}" != "$release_hash" ]]; then
+    echo "***error: release manuals were generated from a different CFAST revision."
+    echo "         release CFAST_HASH: $release_hash"
+    echo "         local CFAST_HASH:   ${local_hash:0:${#release_hash}}"
+    echo "         Rerun after the Linux Cfastbot -U job has uploaded matching manuals."
+    exit 1
+  fi
+}
+
+download_release_manuals()
+{
+  local assets
+  local download_command
+  local asset_name
+
+  require_command gh
+
+  echo "*** Checking manual release assets"
+  if ! assets="$(gh release view "$MANUALS_RELEASE_TAG" \
+    -R "$MANUALS_RELEASE_REPO" \
+    --json assets \
+    --jq ".assets[].name")"; then
+    echo "***error: unable to read GitHub release manual assets."
+    echo "         release: $MANUALS_RELEASE_REPO $MANUALS_RELEASE_TAG"
+    exit 1
+  fi
+
+  for asset_name in "${RELEASE_MANUAL_ASSETS[@]}"; do
+    if ! release_asset_available "$assets" "$asset_name"; then
+      echo "***error: release is missing required CFAST manual asset: $asset_name"
+      exit 1
+    fi
+  done
+
+  if [[ "$STRICT_REVISION" == "1" ]] && ! release_asset_available "$assets" "$RELEASE_INFO_ASSET"; then
+    echo "***error: release is missing required revision asset: $RELEASE_INFO_ASSET"
+    exit 1
+  fi
+
+  rm -rf "$MANUALS_DOWNLOAD_DIR"
+  mkdir -p "$MANUALS_DOWNLOAD_DIR"
+
+  echo "*** Downloading manual release assets"
+  download_command=(
+    gh release download "$MANUALS_RELEASE_TAG"
+    -R "$MANUALS_RELEASE_REPO"
+    --dir "$MANUALS_DOWNLOAD_DIR"
+    --clobber
+  )
+  for asset_name in "${RELEASE_MANUAL_ASSETS[@]}"; do
+    download_command+=(-p "$asset_name")
+  done
+  if release_asset_available "$assets" "$RELEASE_INFO_ASSET"; then
+    download_command+=(-p "$RELEASE_INFO_ASSET")
+  fi
+  run_checked "GitHub release manual download" "${download_command[@]}"
+
+  for asset_name in "${RELEASE_MANUAL_ASSETS[@]}"; do
+    require_file "$MANUALS_DOWNLOAD_DIR/$asset_name" "release asset $asset_name"
+  done
+
+  if [[ "$STRICT_REVISION" == "1" ]]; then
+    check_release_revision "$MANUALS_DOWNLOAD_DIR/$RELEASE_INFO_ASSET"
+  fi
+
+  set_release_manual_sources
+}
+
+resolve_manual_sources()
+{
+  if [[ "$MANUALS_FROM_RELEASE" == "1" ]]; then
+    download_release_manuals
+  fi
+}
+
+require_clean_repo()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+  local status_output
+
+  git -C "$repo_dir" update-index --refresh >/dev/null 2>&1 || true
+  status_output="$(git -C "$repo_dir" status --short --untracked-files=no)"
+  if [[ "$status_output" != "" ]]; then
+    echo "***error: $repo_name repo has tracked local changes; refusing to update before bundle build."
+    echo "         repo: $repo_dir"
+    echo "$status_output"
+    exit 1
+  fi
+}
+
+remote_branch_exists()
+{
+  local repo_dir="$1"
+  local remote_name="$2"
+  local branch_name="$3"
+
+  git -C "$repo_dir" show-ref --verify --quiet "refs/remotes/$remote_name/$branch_name"
+}
+
+update_git_repo()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+
+  require_dir "$repo_dir/.git" "$repo_name git repository"
+  require_clean_repo "$repo_name" "$repo_dir"
+
+  echo "*** Updating $repo_name repo"
+  echo "    branch: $UPDATE_BRANCH"
+  echo "    repo:   $repo_dir"
+  run_checked "$repo_name checkout $UPDATE_BRANCH" git -C "$repo_dir" checkout "$UPDATE_BRANCH"
+  require_clean_repo "$repo_name" "$repo_dir"
+  run_checked "$repo_name remote update" git -C "$repo_dir" remote update
+
+  if remote_branch_exists "$repo_dir" origin "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge origin/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "origin/$UPDATE_BRANCH"
+  fi
+  if remote_branch_exists "$repo_dir" firemodels "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge firemodels/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "firemodels/$UPDATE_BRANCH"
+  fi
+
+}
+
+update_bundle_repos()
+{
+  if [[ "$UPDATE_REPOS" != "1" ]]; then
+    return 0
+  fi
+  if [[ "${CFAST_MACOS_BUNDLE_REEXECUTED:-}" == "1" ]]; then
+    return 0
+  fi
+
+  update_git_repo cfast "$REPO_ROOT"
+  update_git_repo smv "$FIREMODELS_ROOT/smv"
+  update_git_repo fds "$FIREMODELS_ROOT/fds"
+
+  echo "*** Re-starting macOS bundle script after repo updates"
+  export CFAST_MACOS_BUNDLE_REEXECUTED=1
+  exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+}
+
+build_cfast_executable()
+{
+  local build_dir
+  local make_script
+
+  if [[ "$BUILD_CFAST" != "1" ]]; then
+    return 0
+  fi
+
+  build_dir="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET"
+  make_script="$build_dir/make_cfast.sh"
+  require_dir "$build_dir" "CFAST build directory for $CFAST_BUILD_TARGET"
+
+  echo "*** Building CFAST macOS executable ($CFAST_BUILD_TARGET)"
+  if [[ -f "$make_script" ]]; then
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" bash ./make_cfast.sh)
+  else
+    require_command make
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" make -f ../makefile "$CFAST_BUILD_TARGET")
+  fi
+}
+
+build_cedit_app()
+{
+  local build_script
+  local cedit_output_dir
+  local cedit_name
+
+  if [[ "$INCLUDE_CEDIT" != "1" || "$BUILD_CEDIT" != "1" ]]; then
+    return 0
+  fi
+
+  build_script="$REPO_ROOT/Build/CeditQt/build_macos_app.sh"
+  require_file "$build_script" "CEditQt macOS build script"
+  require_command "$PYTHON_EXE"
+
+  cedit_output_dir="$(dirname "$CEDIT_APP")"
+  cedit_name="$(basename "$CEDIT_APP")"
+  cedit_name="${cedit_name%.app}"
+
+  echo "*** Building CEditQt macOS app"
+  run_checked "CEditQt macOS app build" \
+    bash "$build_script" \
+      --python "$PYTHON_EXE" \
+      --output-dir "$cedit_output_dir" \
+      --name "$cedit_name"
+}
+
+build_smokeview_executable()
+{
+  local libs_dir
+  local smokeview_dir
+
+  if [[ "$INCLUDE_SMOKEVIEW" != "1" || "$BUILD_SMOKEVIEW" != "1" ]]; then
+    return 0
+  fi
+
+  libs_dir="$FIREMODELS_ROOT/smv/Build/LIBS/$SMV_BUILD_TARGET"
+  smokeview_dir="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET"
+  require_file "$libs_dir/make_LIBS.sh" "Smokeview library build script"
+  require_file "$smokeview_dir/make_smokeview.sh" "Smokeview macOS build script"
+
+  echo "*** Building Smokeview macOS libraries ($SMV_BUILD_TARGET)"
+  (cd "$libs_dir" && run_checked "Smokeview $SMV_BUILD_TARGET libraries build" bash ./make_LIBS.sh)
+
+  echo "*** Building Smokeview macOS executable ($SMV_BUILD_TARGET)"
+  (cd "$smokeview_dir" && run_checked "Smokeview $SMV_BUILD_TARGET build" bash ./make_smokeview.sh)
 }
 
 resolve_macos_dependency()
@@ -292,12 +635,12 @@ create_background()
 
   mkdir -p "$(dirname "$out_file")"
 
-  if ! command -v python3 >/dev/null 2>&1; then
-    echo "***error: python3 not found; cannot create DMG background."
+  if ! command -v "$PYTHON_EXE" >/dev/null 2>&1; then
+    echo "***error: Python executable not found: $PYTHON_EXE"
     exit 1
   fi
 
-  python3 - "$out_file" <<'PY'
+  "$PYTHON_EXE" - "$out_file" <<'PY'
 from pathlib import Path
 import sys
 
@@ -409,7 +752,7 @@ write_dmgbuild_settings()
   DIST_DIR="$DIST_DIR" \
   BACKGROUND_FILE="$background_file" \
   CUSTOMIZE_DMG="$CUSTOMIZE_DMG" \
-  python3 - <<'PY'
+  "$PYTHON_EXE" - <<'PY'
 import os
 from pathlib import Path
 
@@ -479,7 +822,7 @@ create_compressed_dmg()
 
   rm -f "$DMG_PATH"
   echo "*** Creating DMG with dmgbuild"
-  if ! python3 -m dmgbuild \
+  if ! "$PYTHON_EXE" -m dmgbuild \
     --settings "$settings_file" \
     --detach-retries 10 \
     "$VOLUME_NAME" \
@@ -538,8 +881,8 @@ CFAST macOS Bundle
 
 This bundle contains:
 
-- CFAST Editor (CEdit).app
 - bin/cfast and bin/cfast8_macos
+- CFAST Editor (CEdit).app, if CEditQt was available when the bundle was made
 - Documentation/*.pdf
 - Examples/Users_Guide_Example.in
 - SMV6/smokeview, if Smokeview was available when the bundle was made
@@ -562,6 +905,88 @@ sanitize_name()
   printf "%s" "$1" | tr -cs "[:alnum:]_.-" "-"
 }
 
+copy_manuals()
+{
+  require_file "$CONFIG_MANUAL" "CFAST manual CFAST_Configuration_Guide.pdf"
+  require_file "$TECH_REF_MANUAL" "CFAST manual CFAST_Tech_Ref.pdf"
+  require_file "$USERS_GUIDE_MANUAL" "CFAST manual CFAST_Users_Guide.pdf"
+  require_file "$VALIDATION_GUIDE_MANUAL" "CFAST manual CFAST_Validation_Guide.pdf"
+
+  copy_file "$CONFIG_MANUAL" "$DIST_DIR/Documentation/CFAST_Configuration_Guide.pdf"
+  copy_file "$TECH_REF_MANUAL" "$DIST_DIR/Documentation/CFAST_Tech_Ref.pdf"
+  copy_file "$USERS_GUIDE_MANUAL" "$DIST_DIR/Documentation/CFAST_Users_Guide.pdf"
+  copy_file "$VALIDATION_GUIDE_MANUAL" "$DIST_DIR/Documentation/CFAST_Validation_Guide.pdf"
+}
+
+release_asset_names()
+{
+  gh release view "$UPLOAD_RELEASE_TAG" \
+    -R "$UPLOAD_RELEASE_REPO" \
+    --json assets \
+    --jq ".assets[].name"
+}
+
+is_cfast_macos_bundle_asset()
+{
+  local asset_name="$1"
+  local lower_name
+
+  lower_name="$(printf "%s" "$asset_name" | tr "[:upper:]" "[:lower:]")"
+  case "$lower_name" in
+    cfast*.dmg)
+      case "$lower_name" in
+        *macos*|*osx*|*darwin*)
+          return 0
+          ;;
+      esac
+      ;;
+  esac
+
+  return 1
+}
+
+upload_macos_bundle()
+{
+  local assets
+  local asset_name
+
+  if [[ "$UPLOAD" != "1" ]]; then
+    return 0
+  fi
+  if [[ "$CREATE_DMG" != "1" ]]; then
+    echo "***error: --upload requires DMG creation; remove --no-dmg."
+    exit 1
+  fi
+
+  require_command gh
+  require_file "$DMG_PATH" "macOS DMG"
+
+  echo "*** Uploading macOS bundle to $UPLOAD_RELEASE_REPO release $UPLOAD_RELEASE_TAG"
+  if ! assets="$(release_asset_names)"; then
+    echo "***error: unable to read GitHub release assets before upload."
+    echo "         release: $UPLOAD_RELEASE_REPO $UPLOAD_RELEASE_TAG"
+    exit 1
+  fi
+
+  while IFS= read -r asset_name; do
+    if [[ "$asset_name" == "" ]]; then
+      continue
+    fi
+    if is_cfast_macos_bundle_asset "$asset_name"; then
+      echo "*** Removing previous CFAST macOS bundle: $asset_name"
+      run_checked "GitHub release asset removal for $asset_name" \
+        gh release delete-asset "$UPLOAD_RELEASE_TAG" "$asset_name" \
+          -R "$UPLOAD_RELEASE_REPO" \
+          -y
+    fi
+  done <<< "$assets"
+
+  run_checked "GitHub release upload" \
+    gh release upload "$UPLOAD_RELEASE_TAG" "$DMG_PATH" \
+      --clobber \
+      -R "$UPLOAD_RELEASE_REPO"
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --name)
@@ -580,8 +1005,13 @@ while [[ $# -gt 0 ]]; do
       STAGE_ROOT="$2"
       shift 2
       ;;
+    --cfast-build-target)
+      CFAST_BUILD_TARGET="$2"
+      shift 2
+      ;;
     --cfast-exe)
       CFAST_EXE="$2"
+      CFAST_EXE_SET=1
       shift 2
       ;;
     --cedit-app)
@@ -594,15 +1024,86 @@ while [[ $# -gt 0 ]]; do
       ;;
     --smokeview-exe)
       SMV_EXE="$2"
+      SMV_EXE_SET=1
       shift 2
       ;;
     --smokeview-data)
       SMV_BUNDLE_DIR="$2"
       shift 2
       ;;
+    --smokeview-build-target)
+      SMV_BUILD_TARGET="$2"
+      shift 2
+      ;;
+    --python)
+      PYTHON_EXE="$2"
+      shift 2
+      ;;
+    --update-branch)
+      UPDATE_BRANCH="$2"
+      shift 2
+      ;;
+    --no-update-repos)
+      UPDATE_REPOS=0
+      shift
+      ;;
+    --no-build-cfast)
+      BUILD_CFAST=0
+      shift
+      ;;
+    --no-build-cedit)
+      BUILD_CEDIT=0
+      shift
+      ;;
+    --no-build-smokeview)
+      BUILD_SMOKEVIEW=0
+      shift
+      ;;
+    --no-cedit)
+      INCLUDE_CEDIT=0
+      shift
+      ;;
     --no-smokeview)
       INCLUDE_SMOKEVIEW=0
       shift
+      ;;
+    --manuals-from-release)
+      MANUALS_FROM_RELEASE=1
+      shift
+      ;;
+    --manuals-release-repo)
+      MANUALS_RELEASE_REPO="$2"
+      shift 2
+      ;;
+    --manuals-release-tag)
+      MANUALS_RELEASE_TAG="$2"
+      shift 2
+      ;;
+    --manuals-download-dir)
+      MANUALS_DOWNLOAD_DIR="$2"
+      MANUALS_DOWNLOAD_DIR_SET=1
+      shift 2
+      ;;
+    --strict-revision)
+      STRICT_REVISION=1
+      if [[ $# -gt 1 && "$2" != -* ]]; then
+        STRICT_REVISION="$(parse_bool_arg "$2")"
+        shift 2
+      else
+        shift
+      fi
+      ;;
+    --upload)
+      UPLOAD=1
+      shift
+      ;;
+    --upload-release-repo)
+      UPLOAD_RELEASE_REPO="$2"
+      shift 2
+      ;;
+    --upload-release-tag)
+      UPLOAD_RELEASE_TAG="$2"
+      shift 2
       ;;
     --no-dmg)
       CREATE_DMG=0
@@ -629,6 +1130,38 @@ if [[ "$(uname)" != "Darwin" ]]; then
   exit 1
 fi
 
+case "$CFAST_BUILD_TARGET" in
+  gnu_macos|intel_macos)
+    ;;
+  *)
+    echo "***error: unsupported CFAST macOS build target: $CFAST_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
+case "$SMV_BUILD_TARGET" in
+  gnu_osx|clang_osx)
+    ;;
+  *)
+    echo "***error: unsupported Smokeview macOS build target: $SMV_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
+if [[ "$CFAST_EXE_SET" == "0" ]]; then
+  CFAST_EXE="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET/cfast8_macos"
+fi
+
+if [[ "$SMV_EXE_SET" == "0" ]]; then
+  SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET/smokeview_osx"
+fi
+
+if [[ "$MANUALS_DOWNLOAD_DIR_SET" == "0" ]]; then
+  MANUALS_DOWNLOAD_DIR="$STAGE_ROOT/release-manuals"
+fi
+
+update_bundle_repos
+
 if [[ "$DIST_NAME" == "" ]]; then
   if git -C "$REPO_ROOT" describe --tags --dirty --always >/dev/null 2>&1; then
     cfast_version="$(git -C "$REPO_ROOT" describe --tags --dirty --always)"
@@ -646,8 +1179,12 @@ if [[ "$VOLUME_NAME" == "" ]]; then
   VOLUME_NAME="$DIST_NAME"
 fi
 
+resolve_manual_sources
+build_cfast_executable
+build_cedit_app
+build_smokeview_executable
+
 require_file "$CFAST_EXE" "CFAST executable"
-require_dir "$CEDIT_APP" "CEditQt app"
 require_file "$EXAMPLE_FILE" "CFAST example file"
 
 mkdir -p "$OUTPUT_DIR"
@@ -661,11 +1198,19 @@ echo "*** Distribution: $DIST_NAME"
 echo "*** Stage: $DIST_DIR"
 echo "*** Output: $DMG_PATH"
 
-rm -rf "$STAGE_ROOT"
+rm -rf "$STAGE_ROOT/$DIST_NAME"
 mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
 ln -s /Applications "$STAGE_ROOT/$DIST_NAME/Applications"
 
-copy_dir "$CEDIT_APP" "$DIST_DIR/$APP_NAME.app"
+if [[ "$INCLUDE_CEDIT" == "1" ]]; then
+  if [[ -d "$CEDIT_APP" ]]; then
+    echo "*** Adding CEditQt"
+    copy_dir "$CEDIT_APP" "$DIST_DIR/$APP_NAME.app"
+  else
+    echo "*** Warning: CEditQt app not found; continuing without CEditQt."
+    echo "             cedit: $CEDIT_APP"
+  fi
+fi
 
 copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast8_macos"
 chmod +x "$DIST_DIR/bin/cfast8_macos"
@@ -674,10 +1219,7 @@ bundle_macos_runtime_libraries "$CFAST_EXE" "$DIST_DIR/bin/cfast8_macos" "$DIST_
 
 copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
 
-copy_file "$REPO_ROOT/Manuals/CFAST_Configuration_Guide/CFAST_Configuration_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Configuration_Guide.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Tech_Ref/CFAST_Tech_Ref.pdf" "$DIST_DIR/Documentation/CFAST_Tech_Ref.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Users_Guide.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Validation_Guide/CFAST_Validation_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Validation_Guide.pdf"
+copy_manuals
 
 write_cfast_vars "$DIST_DIR/bin/CFASTVARS.sh"
 write_readme "$DIST_DIR/README.txt"
@@ -702,8 +1244,8 @@ if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
 fi
 
 if [[ "$CREATE_DMG" == "1" ]]; then
-  if ! python3 -c "import dmgbuild" >/dev/null 2>&1; then
-    echo "***error: dmgbuild is not available in python3."
+  if ! "$PYTHON_EXE" -c "import dmgbuild" >/dev/null 2>&1; then
+    echo "***error: dmgbuild is not available in $PYTHON_EXE."
     exit 1
   fi
 
@@ -719,3 +1261,5 @@ else
   echo "*** Bundle staged:"
   echo "    $STAGE_ROOT/$DIST_NAME"
 fi
+
+upload_macos_bundle

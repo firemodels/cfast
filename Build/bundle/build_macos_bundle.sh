@@ -949,6 +949,7 @@ upload_macos_bundle()
 {
   local assets
   local asset_name
+  local removed_count=0
 
   if [[ "$UPLOAD" != "1" ]]; then
     return 0
@@ -961,7 +962,9 @@ upload_macos_bundle()
   require_command gh
   require_file "$DMG_PATH" "macOS DMG"
 
-  echo "*** Uploading macOS bundle to $UPLOAD_RELEASE_REPO release $UPLOAD_RELEASE_TAG"
+  echo "*** Preparing macOS bundle upload"
+  echo "    release: $UPLOAD_RELEASE_REPO $UPLOAD_RELEASE_TAG"
+  echo "    asset:   $(basename "$DMG_PATH")"
   if ! assets="$(release_asset_names)"; then
     echo "***error: unable to read GitHub release assets before upload."
     echo "         release: $UPLOAD_RELEASE_REPO $UPLOAD_RELEASE_TAG"
@@ -978,13 +981,20 @@ upload_macos_bundle()
         gh release delete-asset "$UPLOAD_RELEASE_TAG" "$asset_name" \
           -R "$UPLOAD_RELEASE_REPO" \
           -y
+      removed_count=$((removed_count + 1))
     fi
   done <<< "$assets"
 
+  if [[ "$removed_count" == "0" ]]; then
+    echo "*** No previous CFAST macOS bundle found on release"
+  fi
+
+  echo "*** Uploading new CFAST macOS bundle: $(basename "$DMG_PATH")"
   run_checked "GitHub release upload" \
     gh release upload "$UPLOAD_RELEASE_TAG" "$DMG_PATH" \
       --clobber \
       -R "$UPLOAD_RELEASE_REPO"
+  echo "*** macOS bundle upload complete"
 }
 
 while [[ $# -gt 0 ]]; do

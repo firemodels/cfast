@@ -446,6 +446,10 @@ class CeditMainWindow(QMainWindow):
         save_as_action.triggered.connect(self.save_cfast_input_as)
         file_menu.addAction(save_as_action)
 
+        reset_action = QAction("&Reset...", self)
+        reset_action.triggered.connect(self.reset_ui)
+        file_menu.addAction(reset_action)
+
         file_menu.addSeparator()
 
         load_example_action = QAction("Load &Example...", self)
@@ -543,6 +547,7 @@ class CeditMainWindow(QMainWindow):
         self.open_action = open_action
         self.save_action = save_action
         self.save_as_action = save_as_action
+        self.reset_action = reset_action
         self.load_example_action = load_example_action
         self.set_cfast_action = set_cfast_action
         self.clear_cfast_action = clear_cfast_action
@@ -568,6 +573,7 @@ class CeditMainWindow(QMainWindow):
         toolbar.addAction(self.open_action)
         toolbar.addAction(self.save_action)
         toolbar.addAction(self.save_as_action)
+        toolbar.addAction(self.reset_action)
         toolbar.addSeparator()
         toolbar.addAction(self.geometry_action)
         toolbar.addAction(self.results_action)
@@ -635,6 +641,7 @@ class CeditMainWindow(QMainWindow):
 
         open_button = QPushButton("Open")
         save_button = QPushButton("Save")
+        reset_button = QPushButton("Reset")
         geometry_button = QPushButton("Geometry")
         run_button = QPushButton("Run")
         stop_button = QPushButton("Stop")
@@ -643,6 +650,7 @@ class CeditMainWindow(QMainWindow):
 
         open_button.clicked.connect(self.open_cfast_input)
         save_button.clicked.connect(self.save_cfast_input)
+        reset_button.clicked.connect(self.reset_ui)
         geometry_button.clicked.connect(self.generate_smokeview_geometry)
         run_button.clicked.connect(self.run_cfast)
         stop_button.clicked.connect(self.stop_cfast)
@@ -653,6 +661,7 @@ class CeditMainWindow(QMainWindow):
 
         row.addWidget(open_button)
         row.addWidget(save_button)
+        row.addWidget(reset_button)
         row.addItem(QSpacerItem(40, 1))
         row.addWidget(geometry_button)
         row.addWidget(run_button)
@@ -725,16 +734,17 @@ class CeditMainWindow(QMainWindow):
         if added_material:
             self.refresh_reference_lists()
 
-    def save_cfast_input(self):
+    def save_cfast_input(self) -> bool:
         if self.current_path is None:
-            self.save_cfast_input_as()
-            return
+            return self.save_cfast_input_as()
 
         written_path = self.write_case_to_path(self.current_path)
         if written_path is not None:
             self.current_path = written_path
+            return True
+        return False
 
-    def save_cfast_input_as(self):
+    def save_cfast_input_as(self) -> bool:
         # Determine the starting path/filename for the file dialog
         if getattr(self, "current_path", None):
             default_target = str(self.current_path)
@@ -749,11 +759,68 @@ class CeditMainWindow(QMainWindow):
         )
 
         if not path_text:
-            return
+            return False
 
         written_path = self.write_case_to_path(Path(path_text))
         if written_path is not None:
             self.current_path = written_path
+            return True
+        return False
+
+    def reset_ui(self):
+        if self.cfast_is_running():
+            QMessageBox.information(
+                self,
+                "Reset",
+                "CFAST is running. Stop CFAST before resetting CEdit Qt.",
+            )
+            return
+
+        response = QMessageBox.question(
+            self,
+            "Reset CEdit Qt",
+            "Reset CEdit Qt to its opening state?\n\n"
+            "Save the current CFAST input file first?",
+            (
+                QMessageBox.StandardButton.Save
+                | QMessageBox.StandardButton.Discard
+                | QMessageBox.StandardButton.Cancel
+            ),
+            QMessageBox.StandardButton.Save,
+        )
+
+        if response == QMessageBox.StandardButton.Cancel:
+            return
+
+        if response == QMessageBox.StandardButton.Save and not self.save_cfast_input():
+            return
+
+        self.reset_to_opening_state()
+
+    def reset_to_opening_state(self):
+        self.current_path = None
+        self.extra_namelists = []
+        self.cfast_process = None
+        self.cfast_output_text = ""
+        self.cfast_process_context = ""
+        self.cfast_status_path = None
+        self.cfast_stop_path = None
+        self.cfast_query_path = None
+        self.cfast_last_status_text = ""
+        self.cfast_last_status_line = ""
+        self.launch_smokeview_after_cfast = False
+        self.cfast_status_timer.stop()
+        self.cfast_query_timer.stop()
+        self.set_cfast_running_ui(False)
+
+        self.load_case(CfastCase())
+        self.simulation_tab.set_message(
+            "CEdit Qt reset to its opening state.\n"
+            "Use File > Open... to load an existing CFAST input file."
+        )
+        if self.tabs is not None:
+            self.tabs.setCurrentWidget(self.simulation_tab)
+        self.statusBar().showMessage("No Errors")
 
     def sanitize_path_for_write(self, path: Path) -> Path | None:
         sanitized_path = sanitize_cfast_input_path(path)

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ORIGINAL_ARGS=("$@")
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
@@ -13,10 +14,15 @@ CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_linux/cfast8_linux"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/linux/$APP_NAME"
 EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_linux/smokeview_linux"
+SMV_EXE_SET=0
 SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
+SMV_BUILD_TARGET="gnu_linux"
 INCLUDE_CEDIT=1
 INCLUDE_SMOKEVIEW=1
+BUILD_SMOKEVIEW=1
 CREATE_TARBALL=1
+UPDATE_REPOS=1
+UPDATE_BRANCH="master"
 
 usage()
 {
@@ -33,6 +39,10 @@ usage()
   echo "  --example path           Example .in file to bundle"
   echo "  --smokeview-exe path     Smokeview executable to bundle"
   echo "  --smokeview-data path    Smokeview for_bundle directory"
+  echo "  --smokeview-build-target target Smokeview build target: gnu_linux, intel_linux, or clang_linux"
+  echo "  --update-branch branch   Branch to update before building"
+  echo "  --no-update-repos        Do not update the CFAST, Smokeview, and FDS repos"
+  echo "  --no-build-smokeview     Do not build Smokeview before bundling"
   echo "  --no-cedit               Do not bundle CEditQt"
   echo "  --no-smokeview           Do not bundle Smokeview files"
   echo "  --no-tarball             Stage files only"
@@ -46,6 +56,28 @@ require_file()
 
   if [[ ! -f "$file_path" ]]; then
     echo "***error: $description not found: $file_path"
+    exit 1
+  fi
+}
+
+require_dir()
+{
+  local dir_path="$1"
+  local description="$2"
+
+  if [[ ! -d "$dir_path" ]]; then
+    echo "***error: $description not found: $dir_path"
+    exit 1
+  fi
+}
+
+run_checked()
+{
+  local description="$1"
+  shift
+
+  if ! "$@"; then
+    echo "***error: $description failed."
     exit 1
   fi
 }
@@ -86,6 +118,93 @@ copy_optional_dir()
   if [[ -d "$from_path" ]]; then
     copy_dir "$from_path" "$to_path"
   fi
+}
+
+require_clean_repo()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+  local status_output
+
+  git -C "$repo_dir" update-index --refresh >/dev/null 2>&1 || true
+  status_output="$(git -C "$repo_dir" status --short --untracked-files=no)"
+  if [[ "$status_output" != "" ]]; then
+    echo "***error: $repo_name repo has tracked local changes; refusing to update before bundle build."
+    echo "         repo: $repo_dir"
+    echo "$status_output"
+    exit 1
+  fi
+}
+
+remote_branch_exists()
+{
+  local repo_dir="$1"
+  local remote_name="$2"
+  local branch_name="$3"
+
+  git -C "$repo_dir" show-ref --verify --quiet "refs/remotes/$remote_name/$branch_name"
+}
+
+update_git_repo()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+
+  require_dir "$repo_dir/.git" "$repo_name git repository"
+  require_clean_repo "$repo_name" "$repo_dir"
+
+  echo "*** Updating $repo_name repo"
+  echo "    branch: $UPDATE_BRANCH"
+  echo "    repo:   $repo_dir"
+  run_checked "$repo_name checkout $UPDATE_BRANCH" git -C "$repo_dir" checkout "$UPDATE_BRANCH"
+  require_clean_repo "$repo_name" "$repo_dir"
+  run_checked "$repo_name remote update" git -C "$repo_dir" remote update
+
+  if remote_branch_exists "$repo_dir" origin "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge origin/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "origin/$UPDATE_BRANCH"
+  fi
+  if remote_branch_exists "$repo_dir" firemodels "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge firemodels/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "firemodels/$UPDATE_BRANCH"
+  fi
+}
+
+update_bundle_repos()
+{
+  if [[ "$UPDATE_REPOS" != "1" ]]; then
+    return 0
+  fi
+  if [[ "${CFAST_LINUX_BUNDLE_REEXECUTED:-}" == "1" ]]; then
+    return 0
+  fi
+
+  update_git_repo cfast "$REPO_ROOT"
+  update_git_repo smv "$FIREMODELS_ROOT/smv"
+  update_git_repo fds "$FIREMODELS_ROOT/fds"
+
+  echo "*** Re-starting Linux bundle script after repo updates"
+  export CFAST_LINUX_BUNDLE_REEXECUTED=1
+  exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+}
+
+build_smokeview_executable()
+{
+  local libs_dir
+  local smokeview_dir
+
+  if [[ "$INCLUDE_SMOKEVIEW" != "1" || "$BUILD_SMOKEVIEW" != "1" ]]; then
+    return 0
+  fi
+
+  libs_dir="$FIREMODELS_ROOT/smv/Build/LIBS/$SMV_BUILD_TARGET"
+  smokeview_dir="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET"
+  require_file "$libs_dir/make_LIBS.sh" "Smokeview library build script"
+  require_file "$smokeview_dir/make_smokeview.sh" "Smokeview Linux build script"
+
+  echo "*** Building Smokeview Linux libraries ($SMV_BUILD_TARGET)"
+  (cd "$libs_dir" && run_checked "Smokeview $SMV_BUILD_TARGET libraries build" bash ./make_LIBS.sh)
+
+  echo "*** Building Smokeview Linux executable ($SMV_BUILD_TARGET)"
+  (cd "$smokeview_dir" && run_checked "Smokeview $SMV_BUILD_TARGET build" bash ./make_smokeview.sh)
 }
 
 linux_runtime_library_name()
@@ -306,11 +425,28 @@ while [[ $# -gt 0 ]]; do
       ;;
     --smokeview-exe)
       SMV_EXE="$2"
+      SMV_EXE_SET=1
       shift 2
       ;;
     --smokeview-data)
       SMV_BUNDLE_DIR="$2"
       shift 2
+      ;;
+    --smokeview-build-target)
+      SMV_BUILD_TARGET="$2"
+      shift 2
+      ;;
+    --update-branch)
+      UPDATE_BRANCH="$2"
+      shift 2
+      ;;
+    --no-update-repos)
+      UPDATE_REPOS=0
+      shift
+      ;;
+    --no-build-smokeview)
+      BUILD_SMOKEVIEW=0
+      shift
       ;;
     --no-cedit)
       INCLUDE_CEDIT=0
@@ -341,6 +477,21 @@ if [[ "$(uname)" != "Linux" ]]; then
   exit 1
 fi
 
+case "$SMV_BUILD_TARGET" in
+  gnu_linux|intel_linux|clang_linux)
+    ;;
+  *)
+    echo "***error: unsupported Smokeview Linux build target: $SMV_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
+if [[ "$SMV_EXE_SET" == "0" ]]; then
+  SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET/smokeview_linux"
+fi
+
+update_bundle_repos
+
 if [[ "$DIST_NAME" == "" ]]; then
   if git -C "$REPO_ROOT" describe --tags --dirty --always >/dev/null 2>&1; then
     cfast_version="$(git -C "$REPO_ROOT" describe --tags --dirty --always)"
@@ -356,6 +507,7 @@ fi
 
 require_file "$CFAST_EXE" "CFAST executable"
 require_file "$EXAMPLE_FILE" "CFAST example file"
+build_smokeview_executable
 
 mkdir -p "$OUTPUT_DIR"
 

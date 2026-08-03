@@ -48,6 +48,7 @@ MANUAL_FILES = (
 RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES)
 RELEASE_INFO_ASSET = "CFAST_INFO.txt"
 CFAST_WINDOWS_BUILD_TARGETS = ("intel_win", "gnu_win")
+SMV_WINDOWS_BUILD_TARGETS = ("intel_win", "clang_win")
 DEFAULT_UPLOAD_RELEASE_TAG = os.environ.get("GH_CFAST_TAG", "CFAST_TEST")
 
 
@@ -72,6 +73,10 @@ def first_existing(paths):
 
 def cfast_exe_for_build_target(repo_root: Path, target: str) -> Path:
     return repo_root / "Build/CFAST" / target / "cfast8_win.exe"
+
+
+def smokeview_exe_for_build_target(firemodels_root: Path, target: str) -> Path:
+    return firemodels_root / "smv/Build/smokeview" / target / "smokeview_win.exe"
 
 
 def git_version(repo_root: Path) -> str:
@@ -131,6 +136,89 @@ def run_checked(command, cwd: Path, description: str, shell: bool = False) -> No
 
 def command_processor() -> str:
     return os.environ.get("ComSpec") or os.environ.get("COMSPEC") or "cmd.exe"
+
+
+def git_output(repo_dir: Path, args: list[str]) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(repo_dir), *args],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def require_clean_repo(repo_name: str, repo_dir: Path) -> None:
+    try:
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "update-index", "--refresh"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        status = git_output(repo_dir, ["status", "--short", "--untracked-files=no"])
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(f"***error: unable to inspect {repo_name} repo status: {repo_dir}\n{exc.stderr}")
+
+    if status:
+        raise SystemExit(
+            f"***error: {repo_name} repo has tracked local changes; refusing to update before bundle build.\n"
+            f"         repo: {repo_dir}\n"
+            f"{status}"
+        )
+
+
+def remote_branch_exists(repo_dir: Path, remote_name: str, branch_name: str) -> bool:
+    return subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repo_dir),
+            "show-ref",
+            "--verify",
+            "--quiet",
+            f"refs/remotes/{remote_name}/{branch_name}",
+        ],
+        check=False,
+    ).returncode == 0
+
+
+def update_git_repo(repo_name: str, repo_dir: Path, branch_name: str) -> None:
+    require_dir(repo_dir / ".git", f"{repo_name} git repository")
+    require_clean_repo(repo_name, repo_dir)
+
+    print(f"*** Updating {repo_name} repo")
+    print(f"    branch: {branch_name}")
+    print(f"    repo:   {repo_dir}")
+    run_checked(["git", "checkout", branch_name], repo_dir, f"{repo_name} checkout {branch_name}")
+    require_clean_repo(repo_name, repo_dir)
+    run_checked(["git", "remote", "update"], repo_dir, f"{repo_name} remote update")
+
+    if remote_branch_exists(repo_dir, "origin", branch_name):
+        run_checked(["git", "merge", "--ff-only", f"origin/{branch_name}"], repo_dir, f"{repo_name} merge origin/{branch_name}")
+    if remote_branch_exists(repo_dir, "firemodels", branch_name):
+        run_checked(
+            ["git", "merge", "--ff-only", f"firemodels/{branch_name}"],
+            repo_dir,
+            f"{repo_name} merge firemodels/{branch_name}",
+        )
+
+
+def update_bundle_repos(args) -> None:
+    if not args.update_repos:
+        return
+    if os.environ.get("CFAST_WINDOWS_BUNDLE_REEXECUTED") == "1":
+        return
+
+    firemodels_root = args.repo_root.parent
+    update_git_repo("cfast", args.repo_root, args.update_branch)
+    update_git_repo("smv", firemodels_root / "smv", args.update_branch)
+    update_git_repo("fds", firemodels_root / "fds", args.update_branch)
+
+    print("*** Re-starting Windows bundle script after repo updates", flush=True)
+    os.environ["CFAST_WINDOWS_BUNDLE_REEXECUTED"] = "1"
+    os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
 
 
 def copy_file(from_path: Path, to_path: Path) -> None:
@@ -328,6 +416,28 @@ def build_cedit_app(args) -> None:
         args.repo_root,
         "CEditQt Windows app build",
     )
+
+
+def build_smokeview_executable(args) -> None:
+    if not args.include_smokeview or not args.build_smokeview:
+        return
+    if os.name != "nt":
+        raise SystemExit("***error: Smokeview Windows executable builds must run on Windows.")
+
+    smv_root = args.repo_root.parent / "smv"
+    libs_dir = smv_root / "Build/LIBS" / args.smokeview_build_target
+    smokeview_dir = smv_root / "Build/smokeview" / args.smokeview_build_target
+    libs_script = libs_dir / "make_LIBS.bat"
+    smokeview_script = smokeview_dir / "make_smokeview.bat"
+
+    require_file(libs_script, "Smokeview Windows library build script")
+    require_file(smokeview_script, "Smokeview Windows build script")
+
+    print(f"*** Building Smokeview Windows libraries ({args.smokeview_build_target})")
+    run_checked([command_processor(), "/d", "/c", libs_script.name], libs_dir, "Smokeview Windows library build")
+
+    print(f"*** Building Smokeview Windows executable ({args.smokeview_build_target})")
+    run_checked([command_processor(), "/d", "/c", smokeview_script.name], smokeview_dir, "Smokeview Windows build")
 
 
 def path_entries():
@@ -905,26 +1015,25 @@ def upload_windows_bundle(args, exe_path: Path) -> None:
 def parse_args():
     repo_root = default_repo_root()
     firemodels_root = repo_root.parent
-    smv_candidates = [
-        firemodels_root / "smv/Build/smokeview/intel_win/smokeview_win.exe",
-        firemodels_root / "smv/Build/smokeview/gnu_win/smokeview_win.exe",
-        repo_root / "Utilities/for_bundle/SMV6/smokeview.exe",
-    ]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", help="distribution folder and installer base name")
     parser.add_argument("--output-dir", type=Path, default=repo_root / "Build/bundle/windows", help="output directory")
     parser.add_argument("--stage-dir", type=Path, default=repo_root / "Build/bundle/stage", help="temporary staging directory")
+    parser.add_argument("--update-branch", default="master", help="branch to update before building")
+    parser.add_argument("--no-update-repos", dest="update_repos", action="store_false", help="do not update cfast, smv, and fds before bundling")
     parser.add_argument("--cfast-build-target", choices=CFAST_WINDOWS_BUILD_TARGETS, default="intel_win", help="CFAST Windows build target")
     parser.add_argument("--cfast-exe", type=Path, help="CFAST executable to bundle")
     parser.add_argument("--cedit-app", type=Path, default=repo_root / "Build/CeditQt/windows" / APP_NAME, help="CEditQt PyInstaller directory")
     parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="example input file")
-    parser.add_argument("--smokeview-exe", type=Path, default=first_existing(smv_candidates), help="Smokeview executable to bundle")
+    parser.add_argument("--smokeview-build-target", choices=SMV_WINDOWS_BUILD_TARGETS, default="intel_win", help="Smokeview Windows build target")
+    parser.add_argument("--smokeview-exe", type=Path, help="Smokeview executable to bundle")
     parser.add_argument("--smokeview-data", type=Path, default=firemodels_root / "smv/Build/for_bundle", help="Smokeview for_bundle directory")
     parser.add_argument("--python", default=sys.executable, help="Python executable used to build the self-extracting EXE")
     parser.add_argument("--icon", type=Path, help="optional installer .ico file")
     parser.add_argument("--no-uac-admin", action="store_true", help="build installer without requesting administrator privileges")
     parser.add_argument("--no-build-cfast", dest="build_cfast", action="store_false", help="do not build CFAST before bundling")
     parser.add_argument("--no-build-cedit", dest="build_cedit", action="store_false", help="do not build CEditQt before bundling")
+    parser.add_argument("--no-build-smokeview", dest="build_smokeview", action="store_false", help="do not build Smokeview before bundling")
     parser.add_argument("--no-cedit", dest="include_cedit", action="store_false", help="do not bundle CEditQt")
     parser.add_argument("--no-smokeview", dest="include_smokeview", action="store_false", help="do not bundle Smokeview")
     parser.add_argument("--manuals-from-release", action="store_true", help="download manuals from a GitHub release before bundling")
@@ -955,12 +1064,14 @@ def parse_args():
         type=parse_bool,
         help="require CFAST_INFO.txt CFAST_HASH to match the local checkout",
     )
-    parser.set_defaults(build_cfast=True, build_cedit=True, include_cedit=True, include_smokeview=True)
+    parser.set_defaults(build_cfast=True, build_cedit=True, build_smokeview=True, include_cedit=True, include_smokeview=True, update_repos=True)
     args = parser.parse_args()
     args.repo_root = repo_root
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.cfast_exe is None:
         args.cfast_exe = cfast_exe_for_build_target(repo_root, args.cfast_build_target)
+    if args.smokeview_exe is None:
+        args.smokeview_exe = smokeview_exe_for_build_target(firemodels_root, args.smokeview_build_target)
     args.cfast_exe = args.cfast_exe.resolve()
     args.example_file = args.example_file.resolve()
     args.cedit_app = args.cedit_app.resolve()
@@ -973,9 +1084,11 @@ def parse_args():
 
 def main() -> int:
     args = parse_args()
+    update_bundle_repos(args)
     args.manual_sources = resolve_manual_sources(args)
     build_cfast_executable(args)
     build_cedit_app(args)
+    build_smokeview_executable(args)
     require_file(args.cfast_exe, "CFAST executable")
     require_file(args.example_file, "CFAST example file")
 

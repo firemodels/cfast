@@ -3,6 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 
+_FORMULA_SUBSCRIPTS = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
+
+def formula_subscript(value: int) -> str:
+    return str(value).translate(_FORMULA_SUBSCRIPTS)
+
+
 @dataclass
 class MaterialProperty:
     id: str
@@ -265,15 +272,15 @@ class FireProperty:
     def fuel_formula(self) -> str:
         parts = []
         if self.carbon:
-            parts.append(f"C{self.carbon}")
+            parts.append(f"C{formula_subscript(self.carbon)}")
         if self.hydrogen:
-            parts.append(f"H{self.hydrogen}")
+            parts.append(f"H{formula_subscript(self.hydrogen)}")
         if self.oxygen:
-            parts.append(f"O{self.oxygen}")
+            parts.append(f"O{formula_subscript(self.oxygen)}")
         if self.nitrogen:
-            parts.append(f"N{self.nitrogen}")
+            parts.append(f"N{formula_subscript(self.nitrogen)}")
         if self.chlorine:
-            parts.append(f"Cl{self.chlorine}")
+            parts.append(f"Cl{formula_subscript(self.chlorine)}")
         return "".join(parts) if parts else "Unknown"
 
 

@@ -656,9 +656,13 @@ class CompartmentsTab(QWidget):
         combo = QComboBox(self.materials_table)
         combo.setEditable(True)
         self.populate_material_combo(combo, value)
-        combo.activated.connect(lambda _index: self.save_detail_to_selected())
+        combo.activated.connect(
+            lambda _index, combo=combo: self.material_combo_activated(combo)
+        )
         if combo.lineEdit() is not None:
-            combo.lineEdit().editingFinished.connect(self.save_detail_to_selected)
+            combo.lineEdit().editingFinished.connect(
+                lambda combo=combo: self.material_combo_edit_finished(combo)
+            )
         self.materials_table.setCellWidget(row, col, combo)
 
     def populate_material_combo(self, combo: QComboBox, value: str):
@@ -683,6 +687,42 @@ class CompartmentsTab(QWidget):
                 widget = self.materials_table.cellWidget(row, col)
                 if isinstance(widget, QComboBox):
                     self.populate_material_combo(widget, widget.currentText())
+
+    def material_combo_activated(self, combo: QComboBox):
+        self.save_material_combo_change()
+
+    def material_combo_edit_finished(self, combo: QComboBox):
+        if combo.view().isVisible():
+            return
+        self.save_material_combo_change()
+
+    def save_material_combo_change(self):
+        row = self.selected_index
+        self.save_detail_to_selected(refresh_summary=False)
+        self.update_summary_material_cells(row)
+
+    def update_summary_material_cells(self, row: int):
+        if row < 0 or row >= len(self.compartments):
+            return
+
+        compartment = self.compartments[row]
+        values = (
+            first_or_off(compartment.ceiling_matl_id),
+            first_or_off(compartment.wall_matl_id),
+            first_or_off(compartment.floor_matl_id),
+        )
+
+        self.loading = True
+        try:
+            for col, value in zip((8, 9, 10), values):
+                item = self.summary_table.item(row, col)
+                if item is None:
+                    item = QTableWidgetItem(value)
+                    self.summary_table.setItem(row, col, item)
+                else:
+                    item.setText(value)
+        finally:
+            self.loading = False
 
     def load_area_table(self, compartment: Compartment):
         self.area_table.blockSignals(True)

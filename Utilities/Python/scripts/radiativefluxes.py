@@ -15,8 +15,10 @@ def radiativefluxes(data_dir):
     # column of values. Thus, a transpose of matrix is needed.
 
     def process_cfast_file(filepath):
-        data = pd.read_csv(filepath, header=0, skiprows=range(1, 4))
-        return data.columns.tolist(), data.to_numpy()
+        with open(filepath, 'r') as f:
+            w_cols = [col.strip() for col in f.readline().split(',')]
+        z_data = pd.read_csv(filepath, skiprows=5, header=None).values
+        return w_cols, z_data
 
     # Helper for find(strncmpi(W, prefix, len))
     def find_cols_by_prefix(w_list, prefix, length):

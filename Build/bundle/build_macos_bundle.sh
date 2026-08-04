@@ -309,7 +309,7 @@ resolve_manual_sources()
   fi
 }
 
-require_clean_repo()
+tracked_local_changes()
 {
   local repo_name="$1"
   local repo_dir="$2"
@@ -318,11 +318,18 @@ require_clean_repo()
   git -C "$repo_dir" update-index --refresh >/dev/null 2>&1 || true
   status_output="$(git -C "$repo_dir" status --short --untracked-files=no)"
   if [[ "$status_output" != "" ]]; then
-    echo "***error: $repo_name repo has tracked local changes; refusing to update before bundle build."
+    if [[ "${STRICT_REVISION:-0}" == "1" ]]; then
+      echo "***error: $repo_name repo has tracked local changes; refusing to update before strict bundle build."
+      echo "         repo: $repo_dir"
+      echo "$status_output"
+      exit 1
+    fi
+    echo "*** Warning: $repo_name repo has tracked local changes; skipping update for this repo."
     echo "         repo: $repo_dir"
     echo "$status_output"
-    exit 1
+    return 0
   fi
+  return 1
 }
 
 remote_branch_exists()
@@ -340,13 +347,17 @@ update_git_repo()
   local repo_dir="$2"
 
   require_dir "$repo_dir/.git" "$repo_name git repository"
-  require_clean_repo "$repo_name" "$repo_dir"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
 
   echo "*** Updating $repo_name repo"
   echo "    branch: $UPDATE_BRANCH"
   echo "    repo:   $repo_dir"
   run_checked "$repo_name checkout $UPDATE_BRANCH" git -C "$repo_dir" checkout "$UPDATE_BRANCH"
-  require_clean_repo "$repo_name" "$repo_dir"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
   run_checked "$repo_name remote update" git -C "$repo_dir" remote update
 
   if remote_branch_exists "$repo_dir" origin "$UPDATE_BRANCH"; then
@@ -360,6 +371,8 @@ update_git_repo()
 
 update_bundle_repos()
 {
+  local updated_repo=0
+
   if [[ "$UPDATE_REPOS" != "1" ]]; then
     return 0
   fi
@@ -367,13 +380,21 @@ update_bundle_repos()
     return 0
   fi
 
-  update_git_repo cfast "$REPO_ROOT"
-  update_git_repo smv "$FIREMODELS_ROOT/smv"
-  update_git_repo fds "$FIREMODELS_ROOT/fds"
+  update_git_repo cfast "$REPO_ROOT" && updated_repo=1
+  update_git_repo smv "$FIREMODELS_ROOT/smv" && updated_repo=1
+  update_git_repo fds "$FIREMODELS_ROOT/fds" && updated_repo=1
+
+  if [[ "$updated_repo" != "1" ]]; then
+    return 0
+  fi
 
   echo "*** Re-starting macOS bundle script after repo updates"
   export CFAST_MACOS_BUNDLE_REEXECUTED=1
-  exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+  if [[ "${#ORIGINAL_ARGS[@]}" -gt 0 ]]; then
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+  else
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
+  fi
 }
 
 build_cfast_executable()
@@ -678,8 +699,8 @@ def draw_background(path, scale):
     title_font = load_font(30 * render_scale, bold=True)
     caption_font = load_font(16 * render_scale)
 
-    title = "Drag CFAST to Applications"
-    caption = "CFAST8 is inside the CFAST folder."
+    title = "Install CFAST 8"
+    caption = "Drag CFAST8 to Applications, or run the Terminal install menu."
 
     title_box = draw.textbbox((0, 0), title, font=title_font)
     title_x = (width - (title_box[2] - title_box[0])) // 2
@@ -688,35 +709,6 @@ def draw_background(path, scale):
     caption_box = draw.textbbox((0, 0), caption, font=caption_font)
     caption_x = (width - (caption_box[2] - caption_box[0])) // 2
     draw.text((caption_x, s(94, render_scale)), caption, fill=(86, 100, 120), font=caption_font)
-
-    arrow_color = (0, 122, 255)
-    draw.rounded_rectangle(
-        box((275, 201, 445, 209), render_scale),
-        radius=s(4, render_scale),
-        fill=arrow_color,
-    )
-    draw.polygon(
-        [
-            (s(455, render_scale), s(205, render_scale)),
-            (s(420, render_scale), s(180, render_scale)),
-            (s(420, render_scale), s(230, render_scale)),
-        ],
-        fill=arrow_color,
-    )
-
-    outline = (216, 223, 232)
-    draw.rounded_rectangle(
-        box((92, 145, 242, 284), render_scale),
-        radius=s(18, render_scale),
-        outline=outline,
-        width=s(2, render_scale),
-    )
-    draw.rounded_rectangle(
-        box((478, 145, 628, 284), render_scale),
-        radius=s(18, render_scale),
-        outline=outline,
-        width=s(2, render_scale),
-    )
 
     if oversample > 1:
         image = image.resize((720 * scale, 420 * scale), Image.Resampling.LANCZOS)
@@ -750,6 +742,8 @@ write_dmgbuild_settings()
 
   SETTINGS_FILE="$settings_file" \
   DIST_DIR="$DIST_DIR" \
+  DMG_README="$DMG_README" \
+  INSTALL_COMMAND="$INSTALL_COMMAND" \
   BACKGROUND_FILE="$background_file" \
   CUSTOMIZE_DMG="$CUSTOMIZE_DMG" \
   "$PYTHON_EXE" - <<'PY'
@@ -757,8 +751,9 @@ import os
 from pathlib import Path
 
 settings_file = Path(os.environ["SETTINGS_FILE"])
-dist_dir = Path(os.environ["DIST_DIR"])
-cfast_dir = str(dist_dir.parent)
+dist_dir = os.environ["DIST_DIR"]
+dmg_readme = os.environ["DMG_README"]
+install_command = os.environ["INSTALL_COMMAND"]
 background_file = os.environ["BACKGROUND_FILE"]
 customize_dmg = os.environ["CUSTOMIZE_DMG"] == "1"
 
@@ -782,7 +777,9 @@ compression_level = 9
 size = None
 
 files = [
-    ({cfast_dir!r}, "CFAST"),
+    ({dist_dir!r}, "CFAST8"),
+    ({dmg_readme!r}, "README.txt"),
+    ({install_command!r}, "Terminal Install Menu.command"),
 ]
 
 symlinks = {{
@@ -800,8 +797,10 @@ arrange_by = None
 icon_size = 96
 text_size = 16
 icon_locations = {{
-    "CFAST": (170, 235),
-    "Applications": (550, 235),
+    "CFAST8": (105, 235),
+    "Applications": (275, 235),
+    "README.txt": (455, 235),
+    "Terminal Install Menu.command": (625, 235),
 {background_location}}}
 """,
     encoding="utf-8",
@@ -888,17 +887,281 @@ This bundle contains:
 - Examples/Users_Guide_Example.in
 - SMV6/smokeview, if Smokeview was available when the bundle was made
 
-To install, drag the CFAST folder to Applications.
+To install manually, drag or copy the CFAST8 folder from the DMG into:
+
+    /Applications
+
+This installs CFAST into:
+
+    /Applications/CFAST8
+
+Finder will ask before replacing an existing /Applications/CFAST8 folder.
+
+For the menu-style installer, run Terminal Install Menu.command from the DMG.
+Choose option 1 to install to /Applications/CFAST8, or option 2 to extract the
+CFAST8 folder to a revision-named folder in Downloads. Choose option 3 to
+extract it to a revision-named folder in another directory.
 
 To use CFAST from a terminal, source:
 
-    source "/Applications/CFAST/CFAST8/bin/CFASTVARS.sh"
+    source "/Applications/CFAST8/bin/CFASTVARS.sh"
+
+To add CFAST to future Terminal sessions, add that source line to the profile
+file for your shell:
+
+    bash: ~/.bash_profile
+    zsh:  ~/.zprofile
 
 Then run:
 
-    cfast /Applications/CFAST/CFAST8/Examples/Users_Guide_Example.in
+    cfast /Applications/CFAST8/Examples/Users_Guide_Example.in
 
 EOF
+}
+
+write_dmg_readme()
+{
+  local out_file="$1"
+
+  cat > "$out_file" <<'EOF'
+CFAST macOS Bundle
+===================
+
+To install manually, drag or copy the CFAST8 folder from this DMG into:
+
+    /Applications
+
+This installs CFAST into:
+
+    /Applications/CFAST8
+
+Finder will ask before replacing an existing /Applications/CFAST8 folder.
+
+For the menu-style installer, run Terminal Install Menu.command from this
+DMG. Choose option 1 to install to /Applications/CFAST8, or option 2 to extract
+the CFAST8 folder to a revision-named folder in Downloads. Choose option 3 to
+extract it to a revision-named folder in another directory.
+
+After copying, source:
+
+    source "/Applications/CFAST8/bin/CFASTVARS.sh"
+
+To add CFAST to future Terminal sessions, add that source line to the profile
+file for your shell:
+
+    bash: ~/.bash_profile
+    zsh:  ~/.zprofile
+
+Then run:
+
+    cfast /Applications/CFAST8/Examples/Users_Guide_Example.in
+EOF
+}
+
+write_install_command()
+{
+  local out_file="$1"
+  local extract_name="$2"
+
+  {
+  cat <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd -P)"
+SOURCE_DIR="$SCRIPT_DIR/CFAST8"
+INSTALL_DIR="/Applications/CFAST8"
+EOF
+  printf "EXTRACT_NAME=%q\n" "$extract_name"
+  cat <<'EOF'
+EXTRACT_DIR="$HOME/Downloads/$EXTRACT_NAME"
+
+finish()
+{
+  printf "\nPress Enter to close."
+  IFS= read -r _ || true
+}
+trap finish EXIT
+
+copy_cfast8()
+{
+  local destination="$1"
+  shift
+
+  if [[ ! -d "$SOURCE_DIR" ]]; then
+    echo "***error: bundled CFAST8 directory was not found: $SOURCE_DIR"
+    exit 1
+  fi
+
+  if [[ -e "$destination" ]]; then
+    printf "%s already exists. Replace it? [y/N]: " "$destination"
+    IFS= read -r answer
+    case "$answer" in
+      y|Y|yes|YES) ;;
+      *)
+        echo "Cancelled."
+        exit 1
+        ;;
+    esac
+  fi
+
+  if [[ "$#" -gt 0 ]]; then
+    "$@" mkdir -p "$(dirname "$destination")"
+    if [[ -e "$destination" ]]; then
+      "$@" rm -rf "$destination"
+    fi
+    "$@" ditto "$SOURCE_DIR" "$destination"
+  else
+    mkdir -p "$(dirname "$destination")"
+    if [[ -e "$destination" ]]; then
+      rm -rf "$destination"
+    fi
+    ditto "$SOURCE_DIR" "$destination"
+  fi
+}
+
+expand_path()
+{
+  local input_path="$1"
+
+  case "$input_path" in
+    "~")
+      printf "%s\n" "$HOME"
+      ;;
+    "~/"*)
+      printf "%s/%s\n" "$HOME" "${input_path#\~/}"
+      ;;
+    *)
+      printf "%s\n" "$input_path"
+      ;;
+  esac
+}
+
+print_profile_guidance()
+{
+  local cfast_root="$1"
+  local cfast_dir_value="$cfast_root"
+  local shell_name="${SHELL:-}"
+  local profile_display="~/.bash_profile"
+
+  if [[ "$cfast_root" == "$HOME/"* ]]; then
+    cfast_dir_value="\$HOME/${cfast_root#$HOME/}"
+  fi
+  shell_name="${shell_name##*/}"
+  if [[ "$shell_name" == "zsh" ]]; then
+    profile_display="~/.zprofile"
+  fi
+
+  echo ""
+  echo "This Terminal appears to use ${shell_name:-bash}."
+  echo "To add CFAST to future Terminal sessions, add these lines to $profile_display:"
+  echo "    CFAST_DIR=\"$cfast_dir_value\""
+  echo '    source "$CFAST_DIR/bin/CFASTVARS.sh"'
+  echo ""
+  echo "Then open a new Terminal window, or run:"
+  echo "    source $profile_display"
+}
+
+install_default()
+{
+  if ! copy_cfast8 "$INSTALL_DIR"; then
+    echo ""
+    echo "*** Warning: install to /Applications failed without administrator privileges."
+    printf "Try again with sudo? [y/N]: "
+    IFS= read -r answer
+    case "$answer" in
+      y|Y|yes|YES)
+        sudo -v
+        copy_cfast8 "$INSTALL_DIR" sudo
+        ;;
+      *)
+        echo "Install cancelled."
+        return 1
+        ;;
+    esac
+  fi
+
+  echo ""
+  echo "CFAST installed to: $INSTALL_DIR"
+  echo "To use CFAST from a terminal:"
+  echo "    source \"$INSTALL_DIR/bin/CFASTVARS.sh\""
+  echo "    cfast \"$INSTALL_DIR/Examples/Users_Guide_Example.in\""
+  print_profile_guidance "$INSTALL_DIR"
+}
+
+extract_to_downloads()
+{
+  copy_cfast8 "$EXTRACT_DIR"
+  echo ""
+  echo "CFAST extracted to: $EXTRACT_DIR"
+  echo "You may rename this folder and move it wherever you want."
+  print_profile_guidance "$EXTRACT_DIR"
+}
+
+extract_to_custom()
+{
+  local parent_dir
+  local custom_extract_dir
+
+  echo ""
+  printf "Parent directory (for example, ~/Desktop): "
+  IFS= read -r parent_dir
+  parent_dir="$(expand_path "$parent_dir")"
+
+  if [[ -z "$parent_dir" ]]; then
+    echo "***error: no parent directory was entered."
+    exit 1
+  fi
+
+  if [[ -e "$parent_dir" && ! -d "$parent_dir" ]]; then
+    echo "***error: parent path is not a directory: $parent_dir"
+    exit 1
+  fi
+
+  custom_extract_dir="$parent_dir/$EXTRACT_NAME"
+  copy_cfast8 "$custom_extract_dir"
+  echo ""
+  echo "CFAST extracted to: $custom_extract_dir"
+  echo "You may rename this folder and move it wherever you want."
+  print_profile_guidance "$custom_extract_dir"
+}
+
+echo "CFAST 8 macOS installer"
+echo ""
+echo "1) Install CFAST8 to /Applications/CFAST8"
+echo "2) Extract CFAST8 to ~/Downloads/$EXTRACT_NAME"
+echo "3) Extract CFAST8 to another directory"
+echo "q) Quit"
+echo ""
+printf "Select an option [1]: "
+IFS= read -r choice
+
+case "$choice" in
+  ""|1)
+    install_default
+    ;;
+  2)
+    extract_to_downloads
+    ;;
+  3)
+    extract_to_custom
+    ;;
+  q|Q|quit|QUIT|exit|EXIT)
+    echo "Cancelled."
+    exit 1
+    ;;
+  *)
+    echo "***error: unknown option: $choice"
+    exit 1
+    ;;
+esac
+
+trap - EXIT
+finish
+EOF
+  } > "$out_file"
+
+  chmod +x "$out_file"
 }
 
 sanitize_name()
@@ -1190,6 +1453,13 @@ if [[ "$VOLUME_NAME" == "" ]]; then
   VOLUME_NAME="$DIST_NAME"
 fi
 
+if git -C "$REPO_ROOT" describe --tags --long --dirty --always >/dev/null 2>&1; then
+  EXTRACT_NAME="$(git -C "$REPO_ROOT" describe --tags --long --dirty --always)"
+else
+  EXTRACT_NAME="$DIST_NAME"
+fi
+EXTRACT_NAME="$(sanitize_name "$EXTRACT_NAME")"
+
 resolve_manual_sources
 build_cfast_executable
 build_cedit_app
@@ -1200,7 +1470,9 @@ require_file "$EXAMPLE_FILE" "CFAST example file"
 
 mkdir -p "$OUTPUT_DIR"
 
-DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST/CFAST8"
+DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST8"
+DMG_README="$STAGE_ROOT/$DIST_NAME/README.txt"
+INSTALL_COMMAND="$STAGE_ROOT/$DIST_NAME/Terminal Install Menu.command"
 DMG_NAME="$(sanitize_name "$DIST_NAME").dmg"
 DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
 
@@ -1211,7 +1483,6 @@ echo "*** Output: $DMG_PATH"
 
 rm -rf "$STAGE_ROOT/$DIST_NAME"
 mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
-ln -s /Applications "$STAGE_ROOT/$DIST_NAME/Applications"
 
 if [[ "$INCLUDE_CEDIT" == "1" ]]; then
   if [[ -d "$CEDIT_APP" ]]; then
@@ -1234,6 +1505,8 @@ copy_manuals
 
 write_cfast_vars "$DIST_DIR/bin/CFASTVARS.sh"
 write_readme "$DIST_DIR/README.txt"
+write_dmg_readme "$DMG_README"
+write_install_command "$INSTALL_COMMAND" "$EXTRACT_NAME"
 
 if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
   if [[ -f "$SMV_EXE" && -d "$SMV_BUNDLE_DIR" ]]; then

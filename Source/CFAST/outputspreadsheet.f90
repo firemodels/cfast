@@ -1612,9 +1612,9 @@ module spreadsheet_routines
         out = ' '
         do i = 1, ic
             if (validation_flag) then
-                write (out(i),"(e19.12)" ) array(i)
+                write (out(i),"(e12.5)" ) array(i)
             else
-                write (out(i),"(e13.6)" ) array(i)
+                write (out(i),"(e12.5)" ) array(i)
             end if
         end do
         write (iounit,"(16384a)") (trim(out(i)) // ',',i=1,ic-1),out(ic)

@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
 
-APP_NAME="CFAST Editor (CEdit)"
+APP_NAME="cedit"
 DIST_NAME=""
 VOLUME_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/macos"
@@ -882,7 +882,7 @@ CFAST macOS Bundle
 This bundle contains:
 
 - bin/cfast and bin/cfast8_macos
-- CFAST Editor (CEdit).app, if CEditQt was available when the bundle was made
+- cedit.app, if CEditQt was available when the bundle was made
 - Documentation/*.pdf
 - Examples/Users_Guide_Example.in
 - SMV6/smokeview, if Smokeview was available when the bundle was made

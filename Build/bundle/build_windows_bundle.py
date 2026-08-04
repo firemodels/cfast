@@ -12,7 +12,7 @@ import zipfile
 from pathlib import Path
 
 
-APP_NAME = "CFAST Editor (CEdit)"
+APP_NAME = "cedit"
 WINDOWS_RUNTIME_DLLS = (
     "concrt140.dll",
     "libgcc_s_dw2-1.dll",
@@ -583,7 +583,7 @@ def write_cedit_launcher(out_file: Path) -> None:
             set "PATH=%CFAST_HOME%\\bin;%PATH%"
             if exist "%CFAST_HOME%\\SMV6" set "PATH=%CFAST_HOME%\\SMV6;%PATH%"
 
-            set "CEDIT_EXE=%CFAST_HOME%\\CEditQt\\CFAST Editor (CEdit)\\CFAST Editor (CEdit).exe"
+            set "CEDIT_EXE=%CFAST_HOME%\\CEditQt\\cedit\\cedit.exe"
             if not exist "%CEDIT_EXE%" (
               echo ***error: CEditQt executable not found:
               echo          "%CEDIT_EXE%"
@@ -611,7 +611,7 @@ def write_readme(out_file: Path) -> None:
             - bin\\cfast.exe and bin\\cfast8_win.exe
             - bin\\CFASTVARS.bat
             - bin\\cedit.bat, if CEditQt was available when the bundle was made
-            - CEditQt\\CFAST Editor (CEdit), if CEditQt was available when the bundle was made
+            - CEditQt\\cedit, if CEditQt was available when the bundle was made
             - Documentation\\*.pdf
             - Examples\\Users_Guide_Example.in
             - SMV6\\smokeview.exe and SMV6\\smokeview_win.exe, if Smokeview was available
@@ -625,8 +625,9 @@ def write_readme(out_file: Path) -> None:
             when prompted, or run the installer with --install-dir PATH.
 
             During interactive installation, the installer can create Desktop
-            shortcuts for CFAST Editor (CEdit) and CMDcfast. CMDcfast opens a
-            command prompt and calls bin\\CFASTVARS.bat.
+            shortcuts for cedit and CMDcfast. cedit launches CFAST Editor
+            (CEdit), and CMDcfast opens a command prompt and calls
+            bin\\CFASTVARS.bat.
 
             To use CFAST from an existing command prompt:
 
@@ -780,7 +781,7 @@ def extract_payload(payload_zip, target, overwrite):
 
 
 def cedit_executable(install_root):
-    return install_root / "CEditQt" / "CFAST Editor (CEdit)" / "CFAST Editor (CEdit).exe"
+    return install_root / "CEditQt" / "cedit" / "cedit.exe"
 
 
 def cfast_vars_bat(install_root):
@@ -799,7 +800,7 @@ def should_create_desktop_shortcut(args, install_root):
     if args.no_desktop_shortcut or args.silent:
         return False
 
-    answer = input("Create a Desktop shortcut to CFAST Editor (CEdit)? [Y/n]: ").strip().lower()
+    answer = input("Create a Desktop shortcut to cedit? [Y/n]: ").strip().lower()
     return answer in {"", "y", "yes"}
 
 
@@ -887,7 +888,7 @@ def create_desktop_shortcut(install_root):
         return False
 
     return create_windows_shortcut(
-        "CFAST Editor (CEdit).lnk",
+        "cedit.lnk",
         target_path,
         target_path.parent,
         icon_location=f"{target_path},0",
@@ -914,7 +915,7 @@ def main():
     parser.add_argument("--overwrite", action="store_true", help="replace an existing installation directory")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
     shortcut_group = parser.add_mutually_exclusive_group()
-    shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")
+    shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to cedit")
     shortcut_group.add_argument("--no-desktop-shortcut", action="store_true", help="do not create a Desktop shortcut")
     cmdcfast_shortcut_group = parser.add_mutually_exclusive_group()
     cmdcfast_shortcut_group.add_argument("--cmdcfast-shortcut", action="store_true", help="create a Desktop shortcut to CMDcfast")
@@ -949,7 +950,7 @@ def main():
     print(f"CFAST installed to: {target}")
     if should_create_desktop_shortcut(args, target):
         if create_desktop_shortcut(target):
-            print("Desktop shortcut created: CFAST Editor (CEdit)")
+            print("Desktop shortcut created: cedit")
     if should_create_cmdcfast_shortcut(args, target):
         if create_cmdcfast_shortcut(target):
             print("Desktop shortcut created: CMDcfast")

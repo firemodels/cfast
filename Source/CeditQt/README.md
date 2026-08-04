@@ -30,7 +30,7 @@ Run from the repository root:
 
 Output:
 
-    Build/CeditQt/macos/CFAST Editor (CEdit).app
+    Build/CeditQt/macos/cedit.app
 
 ## macOS Bundle
 
@@ -50,7 +50,7 @@ Run from the repository root on Linux:
 
 Output:
 
-    Build/CeditQt/linux/CFAST Editor (CEdit)
+    Build/CeditQt/linux/cedit
 
 ## Linux Bundle
 
@@ -75,7 +75,7 @@ Run from the repository root on Windows:
 
 Output:
 
-    Build\CeditQt\windows\CFAST Editor (CEdit)
+    Build\CeditQt\windows\cedit
 
 ## Windows Bundle
 
@@ -89,7 +89,7 @@ Output:
 
 The installer writes to:
 
-    C:\Program Files\firemodels\CFAST
+    C:\Program Files\firemodels\CFAST8
 
 For a test installer that should not request administrator privileges:
 
@@ -99,6 +99,8 @@ Shortcut options:
 
     CFAST-...-windows.exe --desktop-shortcut
     CFAST-...-windows.exe --no-desktop-shortcut
+    CFAST-...-windows.exe --cmdcfast-shortcut
+    CFAST-...-windows.exe --no-cmdcfast-shortcut
 
 ## CFAST and Smokeview Paths
 

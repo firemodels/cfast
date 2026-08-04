@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 
-APP_NAME = "CFAST Editor (CEdit)"
+APP_NAME = "cedit"
 
 
 def repo_root() -> Path:

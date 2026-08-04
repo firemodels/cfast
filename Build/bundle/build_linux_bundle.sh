@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
 
-APP_NAME="CFAST Editor (CEdit)"
+APP_NAME="cedit"
 DIST_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/linux"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
@@ -348,7 +348,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cfast_home="$(cd "$script_dir/.." && pwd)"
-cedit_exe="$cfast_home/CEditQt/CFAST Editor (CEdit)/CFAST Editor (CEdit)"
+cedit_exe="$cfast_home/CEditQt/cedit/cedit"
 
 export CFAST_HOME="$cfast_home"
 
@@ -395,7 +395,7 @@ This bundle contains:
 - bin/cfast and bin/cfast8_linux
 - bin/CFASTVARS.sh
 - bin/cedit, if CEditQt was available when the bundle was made
-- CEditQt/CFAST Editor (CEdit), if CEditQt was available when the bundle was made
+- CEditQt/cedit, if CEditQt was available when the bundle was made
 - Documentation/*.pdf
 - Examples/Users_Guide_Example.in
 - lib/compiler runtime libraries copied from the build host, if needed

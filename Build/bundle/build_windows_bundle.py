@@ -12,7 +12,7 @@ import zipfile
 from pathlib import Path
 
 
-APP_NAME = "CFAST Editor (CEdit)"
+APP_NAME = "cedit"
 WINDOWS_RUNTIME_DLLS = (
     "concrt140.dll",
     "libgcc_s_dw2-1.dll",
@@ -44,6 +44,9 @@ MANUAL_FILES = (
     ("CFAST_Tech_Ref", "CFAST_Tech_Ref.pdf"),
     ("CFAST_Users_Guide", "CFAST_Users_Guide.pdf"),
     ("CFAST_Validation_Guide", "CFAST_Validation_Guide.pdf"),
+)
+EXTRA_EXAMPLE_FILES = (
+    "Large_Building.in",
 )
 RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES)
 RELEASE_INFO_ASSET = "CFAST_INFO.txt"
@@ -583,7 +586,7 @@ def write_cedit_launcher(out_file: Path) -> None:
             set "PATH=%CFAST_HOME%\\bin;%PATH%"
             if exist "%CFAST_HOME%\\SMV6" set "PATH=%CFAST_HOME%\\SMV6;%PATH%"
 
-            set "CEDIT_EXE=%CFAST_HOME%\\CEditQt\\CFAST Editor (CEdit)\\CFAST Editor (CEdit).exe"
+            set "CEDIT_EXE=%CFAST_HOME%\\CEditQt\\cedit\\cedit.exe"
             if not exist "%CEDIT_EXE%" (
               echo ***error: CEditQt executable not found:
               echo          "%CEDIT_EXE%"
@@ -611,9 +614,9 @@ def write_readme(out_file: Path) -> None:
             - bin\\cfast.exe and bin\\cfast8_win.exe
             - bin\\CFASTVARS.bat
             - bin\\cedit.bat, if CEditQt was available when the bundle was made
-            - CEditQt\\CFAST Editor (CEdit), if CEditQt was available when the bundle was made
+            - CEditQt\\cedit, if CEditQt was available when the bundle was made
             - Documentation\\*.pdf
-            - Examples\\Users_Guide_Example.in
+            - Examples\\*.in
             - SMV6\\smokeview.exe and SMV6\\smokeview_win.exe, if Smokeview was available
 
             To install from the self-extracting EXE, double-click it or run it from
@@ -623,6 +626,11 @@ def write_readme(out_file: Path) -> None:
 
             To install somewhere else, enter a different installation directory
             when prompted, or run the installer with --install-dir PATH.
+
+            During interactive installation, the installer can create Desktop
+            shortcuts for cedit and CMDcfast. cedit launches CFAST Editor
+            (CEdit), and CMDcfast opens a command prompt and calls
+            bin\\CFASTVARS.bat.
 
             To use CFAST from an existing command prompt:
 
@@ -664,7 +672,7 @@ def stage_bundle(args) -> Path:
     copy_file(args.cfast_exe, bin_dir / "cfast.exe")
     copy_windows_runtime_libraries(args.cfast_exe, bin_dir)
 
-    copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
+    copy_examples(args, examples_dir)
 
     manual_sources = args.manual_sources or resolve_manual_sources(args)
     for _, filename in MANUAL_FILES:
@@ -703,6 +711,14 @@ def stage_bundle(args) -> Path:
             print(f"             data:      {args.smokeview_data}")
 
     return dist_dir
+
+
+def copy_examples(args, examples_dir: Path) -> None:
+    copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
+    for filename in EXTRA_EXAMPLE_FILES:
+        source = args.extra_examples_dir / filename
+        require_file(source, f"CFAST example {filename}")
+        copy_file(source, examples_dir / filename)
 
 
 def make_payload_zip(payload_root: Path, zip_path: Path) -> None:
@@ -776,7 +792,15 @@ def extract_payload(payload_zip, target, overwrite):
 
 
 def cedit_executable(install_root):
-    return install_root / "CEditQt" / "CFAST Editor (CEdit)" / "CFAST Editor (CEdit).exe"
+    return install_root / "CEditQt" / "cedit" / "cedit.exe"
+
+
+def cfast_vars_bat(install_root):
+    return install_root / "bin" / "CFASTVARS.bat"
+
+
+def command_processor():
+    return os.environ.get("ComSpec") or os.environ.get("COMSPEC") or "cmd.exe"
 
 
 def should_create_desktop_shortcut(args, install_root):
@@ -787,15 +811,23 @@ def should_create_desktop_shortcut(args, install_root):
     if args.no_desktop_shortcut or args.silent:
         return False
 
-    answer = input("Create a Desktop shortcut to CFAST Editor (CEdit)? [Y/n]: ").strip().lower()
+    answer = input("Create a Desktop shortcut to cedit? [Y/n]: ").strip().lower()
     return answer in {"", "y", "yes"}
 
 
-def create_desktop_shortcut(install_root):
-    target_path = cedit_executable(install_root)
-    if not target_path.is_file():
+def should_create_cmdcfast_shortcut(args, install_root):
+    if not cfast_vars_bat(install_root).is_file():
+        return False
+    if args.cmdcfast_shortcut:
+        return True
+    if args.no_cmdcfast_shortcut or args.silent:
         return False
 
+    answer = input("Create a Desktop shortcut to CMDcfast? [Y/n]: ").strip().lower()
+    return answer in {"", "y", "yes"}
+
+
+def create_windows_shortcut(shortcut_name, target_path, working_directory, arguments="", icon_location=""):
     powershell = shutil.which("powershell") or shutil.which("pwsh")
     if powershell is None:
         print("*** Warning: PowerShell was not found; Desktop shortcut was not created.")
@@ -804,7 +836,10 @@ def create_desktop_shortcut(install_root):
     script_text = r'''
 param(
     [string]$TargetPath,
-    [string]$ShortcutName
+    [string]$ShortcutName,
+    [string]$WorkingDirectory,
+    [string]$Arguments,
+    [string]$IconLocation
 )
 
 $Desktop = [Environment]::GetFolderPath("DesktopDirectory")
@@ -812,8 +847,13 @@ $ShortcutPath = Join-Path $Desktop $ShortcutName
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
 $Shortcut.TargetPath = $TargetPath
-$Shortcut.WorkingDirectory = Split-Path -Parent $TargetPath
-$Shortcut.IconLocation = "$TargetPath,0"
+$Shortcut.WorkingDirectory = $WorkingDirectory
+if ($Arguments) {
+    $Shortcut.Arguments = $Arguments
+}
+if ($IconLocation) {
+    $Shortcut.IconLocation = $IconLocation
+}
 $Shortcut.Save()
 '''
 
@@ -831,7 +871,10 @@ $Shortcut.Save()
                 "-File",
                 str(script_file),
                 str(target_path),
-                "CFAST Editor (CEdit).lnk",
+                shortcut_name,
+                str(working_directory),
+                arguments,
+                icon_location,
             ],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -850,6 +893,32 @@ $Shortcut.Save()
     return True
 
 
+def create_desktop_shortcut(install_root):
+    target_path = cedit_executable(install_root)
+    if not target_path.is_file():
+        return False
+
+    return create_windows_shortcut(
+        "cedit.lnk",
+        target_path,
+        target_path.parent,
+        icon_location=f"{target_path},0",
+    )
+
+
+def create_cmdcfast_shortcut(install_root):
+    vars_path = cfast_vars_bat(install_root)
+    if not vars_path.is_file():
+        return False
+
+    return create_windows_shortcut(
+        "CMDcfast.lnk",
+        command_processor(),
+        os.environ.get("USERPROFILE", str(Path.home())),
+        arguments=f'/k call "{vars_path}"',
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
     parser.add_argument("--install-dir", metavar="PATH", help="installation directory")
@@ -857,8 +926,11 @@ def main():
     parser.add_argument("--overwrite", action="store_true", help="replace an existing installation directory")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
     shortcut_group = parser.add_mutually_exclusive_group()
-    shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")
+    shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to cedit")
     shortcut_group.add_argument("--no-desktop-shortcut", action="store_true", help="do not create a Desktop shortcut")
+    cmdcfast_shortcut_group = parser.add_mutually_exclusive_group()
+    cmdcfast_shortcut_group.add_argument("--cmdcfast-shortcut", action="store_true", help="create a Desktop shortcut to CMDcfast")
+    cmdcfast_shortcut_group.add_argument("--no-cmdcfast-shortcut", action="store_true", help="do not create a CMDcfast Desktop shortcut")
     args = parser.parse_args()
 
     payload_zip = resource_path("payload.zip")
@@ -889,7 +961,10 @@ def main():
     print(f"CFAST installed to: {target}")
     if should_create_desktop_shortcut(args, target):
         if create_desktop_shortcut(target):
-            print("Desktop shortcut created: CFAST Editor (CEdit)")
+            print("Desktop shortcut created: cedit")
+    if should_create_cmdcfast_shortcut(args, target):
+        if create_cmdcfast_shortcut(target):
+            print("Desktop shortcut created: CMDcfast")
     print("")
     print("To use CFAST from a command prompt:")
     print(f'    call "{target}\\bin\\CFASTVARS.bat"')
@@ -1058,7 +1133,7 @@ def parse_args():
     parser.add_argument("--cfast-build-target", choices=CFAST_WINDOWS_BUILD_TARGETS, default="intel_win", help="CFAST Windows build target")
     parser.add_argument("--cfast-exe", type=Path, help="CFAST executable to bundle")
     parser.add_argument("--cedit-app", type=Path, default=repo_root / "Build/CeditQt/windows" / APP_NAME, help="CEditQt PyInstaller directory")
-    parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="example input file")
+    parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="Users Guide example input file")
     parser.add_argument("--smokeview-build-target", choices=SMV_WINDOWS_BUILD_TARGETS, default="intel_win", help="Smokeview Windows build target")
     parser.add_argument("--smokeview-exe", type=Path, help="Smokeview executable to bundle")
     parser.add_argument("--smokeview-data", type=Path, default=firemodels_root / "smv/Build/for_bundle", help="Smokeview for_bundle directory")
@@ -1108,6 +1183,7 @@ def parse_args():
         args.smokeview_exe = smokeview_exe_for_build_target(firemodels_root, args.smokeview_build_target)
     args.cfast_exe = args.cfast_exe.resolve()
     args.example_file = args.example_file.resolve()
+    args.extra_examples_dir = (repo_root / "Utilities/for_bundle/Bin/Data").resolve()
     args.cedit_app = args.cedit_app.resolve()
     args.smokeview_exe = args.smokeview_exe.resolve()
     args.smokeview_data = args.smokeview_data.resolve()

@@ -77,6 +77,7 @@ from units import (
 FILENAME_WHITESPACE = re.compile(r"\s+")
 CFAST_VERSION_TAG = re.compile(r"^CFAST-?(\d+(?:\.\d+)+)$", re.IGNORECASE)
 APP_TITLE = "CFAST Editor (CEdit)"
+DEFAULT_CFAST_INPUT_FILENAME = "cfast_inputfile.in"
 BASE_UNIT_NAMES = {
     "length": "Length",
     "mass": "Mass",
@@ -362,7 +363,7 @@ def sanitize_cfast_input_path(path: Path) -> Path:
     name = path.name.strip()
     sanitized_name = FILENAME_WHITESPACE.sub("_", name)
     if not sanitized_name:
-        sanitized_name = "cedit_qt_test.in"
+        sanitized_name = DEFAULT_CFAST_INPUT_FILENAME
 
     return path.with_name(sanitized_name)
 
@@ -749,7 +750,7 @@ class CeditMainWindow(QMainWindow):
         if getattr(self, "current_path", None):
             default_target = str(self.current_path)
         else:
-            default_target = "cedit_qt_test.in"
+            default_target = DEFAULT_CFAST_INPUT_FILENAME
 
         path_text, _ = QFileDialog.getSaveFileName(
             self,
@@ -1221,7 +1222,7 @@ class CeditMainWindow(QMainWindow):
             path_text, _ = QFileDialog.getSaveFileName(
                 self,
                 save_dialog_title,
-                "cedit_qt_test.in",
+                DEFAULT_CFAST_INPUT_FILENAME,
                 "CFAST input files (*.in);;All files (*)",
             )
 

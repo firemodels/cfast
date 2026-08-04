@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
 
-APP_NAME="CFAST Editor (CEdit)"
+APP_NAME="cedit"
 DIST_NAME=""
 VOLUME_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/macos"
@@ -55,6 +55,9 @@ RELEASE_MANUAL_ASSETS=(
   "CFAST_Tech_Ref.pdf"
   "CFAST_Users_Guide.pdf"
   "CFAST_Validation_Guide.pdf"
+)
+EXTRA_EXAMPLE_FILES=(
+  "$REPO_ROOT/Utilities/for_bundle/Bin/Data/Large_Building.in"
 )
 
 usage()
@@ -882,9 +885,9 @@ CFAST macOS Bundle
 This bundle contains:
 
 - bin/cfast and bin/cfast8_macos
-- CFAST Editor (CEdit).app, if CEditQt was available when the bundle was made
+- cedit.app, if CEditQt was available when the bundle was made
 - Documentation/*.pdf
-- Examples/Users_Guide_Example.in
+- Examples/*.in
 - SMV6/smokeview, if Smokeview was available when the bundle was made
 
 To install manually, drag or copy the CFAST8 folder from the DMG into:
@@ -956,6 +959,18 @@ Then run:
 
     cfast /Applications/CFAST8/Examples/Users_Guide_Example.in
 EOF
+}
+
+copy_examples()
+{
+  local examples_dir="$1"
+  local source_file
+
+  copy_file "$EXAMPLE_FILE" "$examples_dir/Users_Guide_Example.in"
+  for source_file in "${EXTRA_EXAMPLE_FILES[@]}"; do
+    require_file "$source_file" "CFAST example $(basename "$source_file")"
+    copy_file "$source_file" "$examples_dir/$(basename "$source_file")"
+  done
 }
 
 write_install_command()
@@ -1499,7 +1514,7 @@ chmod +x "$DIST_DIR/bin/cfast8_macos"
 ln -s cfast8_macos "$DIST_DIR/bin/cfast"
 bundle_macos_runtime_libraries "$CFAST_EXE" "$DIST_DIR/bin/cfast8_macos" "$DIST_DIR/lib"
 
-copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
+copy_examples "$DIST_DIR/Examples"
 
 copy_manuals
 

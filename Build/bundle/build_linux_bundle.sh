@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
 
-APP_NAME="CFAST Editor (CEdit)"
+APP_NAME="cedit"
 DIST_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/linux"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
@@ -23,6 +23,9 @@ BUILD_SMOKEVIEW=1
 CREATE_TARBALL=1
 UPDATE_REPOS=1
 UPDATE_BRANCH="master"
+EXTRA_EXAMPLE_FILES=(
+  "$REPO_ROOT/Utilities/for_bundle/Bin/Data/Large_Building.in"
+)
 
 usage()
 {
@@ -348,7 +351,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cfast_home="$(cd "$script_dir/.." && pwd)"
-cedit_exe="$cfast_home/CEditQt/CFAST Editor (CEdit)/CFAST Editor (CEdit)"
+cedit_exe="$cfast_home/CEditQt/cedit/cedit"
 
 export CFAST_HOME="$cfast_home"
 
@@ -395,9 +398,9 @@ This bundle contains:
 - bin/cfast and bin/cfast8_linux
 - bin/CFASTVARS.sh
 - bin/cedit, if CEditQt was available when the bundle was made
-- CEditQt/CFAST Editor (CEdit), if CEditQt was available when the bundle was made
+- CEditQt/cedit, if CEditQt was available when the bundle was made
 - Documentation/*.pdf
-- Examples/Users_Guide_Example.in
+- Examples/*.in
 - lib/compiler runtime libraries copied from the build host, if needed
 - SMV6/smokeview, if Smokeview was available when the bundle was made
 
@@ -411,6 +414,18 @@ To launch CEditQt from a terminal:
     cedit
 
 EOF
+}
+
+copy_examples()
+{
+  local examples_dir="$1"
+  local source_file
+
+  copy_file "$EXAMPLE_FILE" "$examples_dir/Users_Guide_Example.in"
+  for source_file in "${EXTRA_EXAMPLE_FILES[@]}"; do
+    require_file "$source_file" "CFAST example $(basename "$source_file")"
+    copy_file "$source_file" "$examples_dir/$(basename "$source_file")"
+  done
 }
 
 sanitize_name()
@@ -549,7 +564,7 @@ chmod +x "$DIST_DIR/bin/cfast8_linux"
 ln -s cfast8_linux "$DIST_DIR/bin/cfast"
 bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast8_linux" "$DIST_DIR/lib"
 
-copy_file "$EXAMPLE_FILE" "$DIST_DIR/Examples/Users_Guide_Example.in"
+copy_examples "$DIST_DIR/Examples"
 
 copy_file "$REPO_ROOT/Manuals/CFAST_Configuration_Guide/CFAST_Configuration_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Configuration_Guide.pdf"
 copy_file "$REPO_ROOT/Manuals/CFAST_Tech_Ref/CFAST_Tech_Ref.pdf" "$DIST_DIR/Documentation/CFAST_Tech_Ref.pdf"

@@ -149,7 +149,7 @@ def git_output(repo_dir: Path, args: list[str]) -> str:
     return result.stdout.strip()
 
 
-def require_clean_repo(repo_name: str, repo_dir: Path) -> None:
+def tracked_local_changes(repo_name: str, repo_dir: Path) -> str:
     try:
         subprocess.run(
             ["git", "-C", str(repo_dir), "update-index", "--refresh"],
@@ -161,12 +161,7 @@ def require_clean_repo(repo_name: str, repo_dir: Path) -> None:
     except subprocess.CalledProcessError as exc:
         raise SystemExit(f"***error: unable to inspect {repo_name} repo status: {repo_dir}\n{exc.stderr}")
 
-    if status:
-        raise SystemExit(
-            f"***error: {repo_name} repo has tracked local changes; refusing to update before bundle build.\n"
-            f"         repo: {repo_dir}\n"
-            f"{status}"
-        )
+    return status
 
 
 def remote_branch_exists(repo_dir: Path, remote_name: str, branch_name: str) -> bool:
@@ -184,15 +179,37 @@ def remote_branch_exists(repo_dir: Path, remote_name: str, branch_name: str) -> 
     ).returncode == 0
 
 
-def update_git_repo(repo_name: str, repo_dir: Path, branch_name: str) -> None:
+def update_git_repo(repo_name: str, repo_dir: Path, branch_name: str, strict_local_changes: bool = False) -> bool:
     require_dir(repo_dir / ".git", f"{repo_name} git repository")
-    require_clean_repo(repo_name, repo_dir)
+    status = tracked_local_changes(repo_name, repo_dir)
+    if status:
+        if strict_local_changes:
+            raise SystemExit(
+                f"***error: {repo_name} repo has tracked local changes; refusing to update before strict bundle build.\n"
+                f"         repo: {repo_dir}\n"
+                f"{status}"
+            )
+        print(f"*** Warning: {repo_name} repo has tracked local changes; skipping update for this repo.")
+        print(f"         repo: {repo_dir}")
+        print(status)
+        return False
 
     print(f"*** Updating {repo_name} repo")
     print(f"    branch: {branch_name}")
     print(f"    repo:   {repo_dir}")
     run_checked(["git", "checkout", branch_name], repo_dir, f"{repo_name} checkout {branch_name}")
-    require_clean_repo(repo_name, repo_dir)
+    status = tracked_local_changes(repo_name, repo_dir)
+    if status:
+        if strict_local_changes:
+            raise SystemExit(
+                f"***error: {repo_name} repo has tracked local changes; refusing to update before strict bundle build.\n"
+                f"         repo: {repo_dir}\n"
+                f"{status}"
+            )
+        print(f"*** Warning: {repo_name} repo has tracked local changes; skipping update for this repo.")
+        print(f"         repo: {repo_dir}")
+        print(status)
+        return False
     run_checked(["git", "remote", "update"], repo_dir, f"{repo_name} remote update")
 
     if remote_branch_exists(repo_dir, "origin", branch_name):
@@ -203,6 +220,7 @@ def update_git_repo(repo_name: str, repo_dir: Path, branch_name: str) -> None:
             repo_dir,
             f"{repo_name} merge firemodels/{branch_name}",
         )
+    return True
 
 
 def update_bundle_repos(args) -> None:
@@ -212,9 +230,13 @@ def update_bundle_repos(args) -> None:
         return
 
     firemodels_root = args.repo_root.parent
-    update_git_repo("cfast", args.repo_root, args.update_branch)
-    update_git_repo("smv", firemodels_root / "smv", args.update_branch)
-    update_git_repo("fds", firemodels_root / "fds", args.update_branch)
+    updated_repo = False
+    updated_repo = update_git_repo("cfast", args.repo_root, args.update_branch, args.strict_revision) or updated_repo
+    updated_repo = update_git_repo("smv", firemodels_root / "smv", args.update_branch, args.strict_revision) or updated_repo
+    updated_repo = update_git_repo("fds", firemodels_root / "fds", args.update_branch, args.strict_revision) or updated_repo
+
+    if not updated_repo:
+        return
 
     print("*** Re-starting Windows bundle script after repo updates", flush=True)
     os.environ["CFAST_WINDOWS_BUNDLE_REEXECUTED"] = "1"
@@ -595,18 +617,17 @@ def write_readme(out_file: Path) -> None:
             - SMV6\\smokeview.exe and SMV6\\smokeview_win.exe, if Smokeview was available
 
             To install from the self-extracting EXE, double-click it or run it from
-            a command prompt. The default install parent is:
+            a command prompt. The default installation directory is:
 
-                %ProgramFiles%\\firemodels
+                %ProgramFiles%\\firemodels\\CFAST8
 
-            The installed folder is:
-
-                %ProgramFiles%\\firemodels\\CFAST
+            To install somewhere else, enter a different installation directory
+            when prompted, or run the installer with --install-dir PATH.
 
             To use CFAST from an existing command prompt:
 
-                call "C:\\Program Files\\firemodels\\CFAST\\bin\\CFASTVARS.bat"
-                cfast "C:\\Program Files\\firemodels\\CFAST\\Examples\\Users_Guide_Example.in"
+                call "C:\\Program Files\\firemodels\\CFAST8\\bin\\CFASTVARS.bat"
+                cfast "C:\\Program Files\\firemodels\\CFAST8\\Examples\\Users_Guide_Example.in"
 
             To launch CEditQt from a command prompt:
 
@@ -622,7 +643,7 @@ def stage_bundle(args) -> Path:
     repo_root = args.repo_root
     firemodels_root = repo_root.parent
     dist_name = args.name or git_version(repo_root)
-    dist_dir = args.stage_dir / dist_name / "CFAST"
+    dist_dir = args.stage_dir / dist_name / "CFAST8"
 
     print("*** Staging CFAST Windows bundle")
     print(f"*** Distribution: {dist_name}")
@@ -690,7 +711,7 @@ def make_payload_zip(payload_root: Path, zip_path: Path) -> None:
     zip_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(payload_root.rglob("*")):
-            archive.write(path, path.relative_to(payload_root.parent))
+            archive.write(path, path.relative_to(payload_root))
 
 
 def write_installer_script(script_path: Path) -> None:
@@ -718,23 +739,27 @@ def default_install_parent():
     return Path.home() / "firemodels"
 
 
-def read_destination(default_parent):
+def default_install_dir():
+    return default_install_parent() / "CFAST8"
+
+
+def read_destination(default_dir):
     print("")
     print("CFAST 8 self-extracting installer")
     print("")
-    print(f"Default install parent: {default_parent}")
-    print("The installer will create or replace a CFAST folder inside that parent.")
+    print(f"Default installation directory: {default_dir}")
+    print("The installer will create or replace the selected installation directory.")
     print("")
-    value = input("Install parent [press Enter for default, or q to quit]: ").strip()
+    value = input("Install directory [press Enter for default, or q to quit]: ").strip()
     if value.lower() in {"q", "quit", "exit"}:
         raise SystemExit(1)
     if not value:
-        return default_parent
+        return default_dir
     return Path(value)
 
 
-def extract_payload(payload_zip, destination_parent, overwrite):
-    target = destination_parent / "CFAST"
+def extract_payload(payload_zip, target, overwrite):
+    target = Path(target)
 
     if target.exists():
         if not overwrite:
@@ -743,9 +768,10 @@ def extract_payload(payload_zip, destination_parent, overwrite):
                 raise SystemExit("Install cancelled.")
         shutil.rmtree(target)
 
-    destination_parent.mkdir(parents=True, exist_ok=True)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(payload_zip, "r") as archive:
-        archive.extractall(destination_parent)
+        archive.extractall(target)
     return target
 
 
@@ -826,8 +852,9 @@ $Shortcut.Save()
 
 def main():
     parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
-    parser.add_argument("--extract-to", metavar="PATH", help="install parent folder")
-    parser.add_argument("--overwrite", action="store_true", help="replace an existing CFAST folder")
+    parser.add_argument("--install-dir", metavar="PATH", help="installation directory")
+    parser.add_argument("--extract-to", metavar="PATH", help="install parent folder; legacy alias")
+    parser.add_argument("--overwrite", action="store_true", help="replace an existing installation directory")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
     shortcut_group = parser.add_mutually_exclusive_group()
     shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")
@@ -838,12 +865,19 @@ def main():
     if not payload_zip.is_file():
         raise SystemExit(f"***error: payload not found: {payload_zip}")
 
-    destination_parent = Path(args.extract_to) if args.extract_to else default_install_parent()
-    if not args.silent and not args.extract_to:
-        destination_parent = read_destination(destination_parent)
+    if args.install_dir and args.extract_to:
+        parser.error("--install-dir and --extract-to cannot be used together")
+    if args.install_dir:
+        target = Path(args.install_dir)
+    elif args.extract_to:
+        target = Path(args.extract_to) / "CFAST8"
+    else:
+        target = default_install_dir()
+        if not args.silent:
+            target = read_destination(target)
 
     try:
-        target = extract_payload(payload_zip, destination_parent, args.overwrite)
+        target = extract_payload(payload_zip, target, args.overwrite)
     except PermissionError:
         print("")
         print("***error: permission denied while installing CFAST.")

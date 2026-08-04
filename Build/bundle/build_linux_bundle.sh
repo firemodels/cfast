@@ -120,7 +120,7 @@ copy_optional_dir()
   fi
 }
 
-require_clean_repo()
+tracked_local_changes()
 {
   local repo_name="$1"
   local repo_dir="$2"
@@ -129,11 +129,18 @@ require_clean_repo()
   git -C "$repo_dir" update-index --refresh >/dev/null 2>&1 || true
   status_output="$(git -C "$repo_dir" status --short --untracked-files=no)"
   if [[ "$status_output" != "" ]]; then
-    echo "***error: $repo_name repo has tracked local changes; refusing to update before bundle build."
+    if [[ "${STRICT_REVISION:-0}" == "1" ]]; then
+      echo "***error: $repo_name repo has tracked local changes; refusing to update before strict bundle build."
+      echo "         repo: $repo_dir"
+      echo "$status_output"
+      exit 1
+    fi
+    echo "*** Warning: $repo_name repo has tracked local changes; skipping update for this repo."
     echo "         repo: $repo_dir"
     echo "$status_output"
-    exit 1
+    return 0
   fi
+  return 1
 }
 
 remote_branch_exists()
@@ -151,13 +158,17 @@ update_git_repo()
   local repo_dir="$2"
 
   require_dir "$repo_dir/.git" "$repo_name git repository"
-  require_clean_repo "$repo_name" "$repo_dir"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
 
   echo "*** Updating $repo_name repo"
   echo "    branch: $UPDATE_BRANCH"
   echo "    repo:   $repo_dir"
   run_checked "$repo_name checkout $UPDATE_BRANCH" git -C "$repo_dir" checkout "$UPDATE_BRANCH"
-  require_clean_repo "$repo_name" "$repo_dir"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
   run_checked "$repo_name remote update" git -C "$repo_dir" remote update
 
   if remote_branch_exists "$repo_dir" origin "$UPDATE_BRANCH"; then
@@ -170,6 +181,8 @@ update_git_repo()
 
 update_bundle_repos()
 {
+  local updated_repo=0
+
   if [[ "$UPDATE_REPOS" != "1" ]]; then
     return 0
   fi
@@ -177,13 +190,21 @@ update_bundle_repos()
     return 0
   fi
 
-  update_git_repo cfast "$REPO_ROOT"
-  update_git_repo smv "$FIREMODELS_ROOT/smv"
-  update_git_repo fds "$FIREMODELS_ROOT/fds"
+  update_git_repo cfast "$REPO_ROOT" && updated_repo=1
+  update_git_repo smv "$FIREMODELS_ROOT/smv" && updated_repo=1
+  update_git_repo fds "$FIREMODELS_ROOT/fds" && updated_repo=1
+
+  if [[ "$updated_repo" != "1" ]]; then
+    return 0
+  fi
 
   echo "*** Re-starting Linux bundle script after repo updates"
   export CFAST_LINUX_BUNDLE_REEXECUTED=1
-  exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+  if [[ "${#ORIGINAL_ARGS[@]}" -gt 0 ]]; then
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+  else
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
+  fi
 }
 
 build_smokeview_executable()
@@ -382,8 +403,8 @@ This bundle contains:
 
 To use CFAST from bash or zsh:
 
-    source /path/to/CFAST/bin/CFASTVARS.sh
-    cfast /path/to/CFAST/Examples/Users_Guide_Example.in
+    source /path/to/CFAST/CFAST8/bin/CFASTVARS.sh
+    cfast /path/to/CFAST/CFAST8/Examples/Users_Guide_Example.in
 
 To launch CEditQt from a terminal:
 
@@ -511,7 +532,7 @@ build_smokeview_executable
 
 mkdir -p "$OUTPUT_DIR"
 
-DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST"
+DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST/CFAST8"
 TARBALL_NAME="$(sanitize_name "$DIST_NAME").tar.gz"
 TARBALL_PATH="$OUTPUT_DIR/$TARBALL_NAME"
 

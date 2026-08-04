@@ -565,16 +565,14 @@
         stop
     end if
 
-    ! output the revision for later identification of validation plots
-    if (validation_flag) then
-        call delete_output_files (gitfile)
-        iofilg = get_filenumber()
-        open (iofilg, file=gitfile, action='write', iostat=ios, status='new')
-        if (ios==0) then
-            call get_info(revision, revision_date, compile_date)
-            write (iofilg,'(a)') revision
-            close (unit=iofilg)
-        end if
+    ! output the revision for later identification of plots
+    call delete_output_files (gitfile)
+    iofilg = get_filenumber()
+    open (iofilg, file=gitfile, action='write', iostat=ios, status='new')
+    if (ios==0) then
+        call get_info(revision, revision_date, compile_date)
+        write (iofilg,'(a)') trim(revision)
+        close (unit=iofilg)
     end if
 
     ! open the log file to write error messages and such

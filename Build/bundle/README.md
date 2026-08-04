@@ -85,6 +85,7 @@ The bundle scripts stage:
 - `cfast8_*` and a generic `cfast` launcher/copy
 - CFAST manuals
 - `Utilities/for_bundle/Bin/Data/Users_Guide_Example.in`
+- Extra CFAST example inputs from `Utilities/for_bundle/Bin/Data`, such as `Large_Building.in`
 - CEditQt, when available
 - Smokeview, rebuilt from the local `smv` checkout unless disabled
 - runtime libraries needed by the bundled executables

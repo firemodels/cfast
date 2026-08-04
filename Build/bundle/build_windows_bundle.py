@@ -45,6 +45,9 @@ MANUAL_FILES = (
     ("CFAST_Users_Guide", "CFAST_Users_Guide.pdf"),
     ("CFAST_Validation_Guide", "CFAST_Validation_Guide.pdf"),
 )
+EXTRA_EXAMPLE_FILES = (
+    "Large_Building.in",
+)
 RELEASE_MANUAL_ASSETS = tuple(filename for _, filename in MANUAL_FILES)
 RELEASE_INFO_ASSET = "CFAST_INFO.txt"
 CFAST_WINDOWS_BUILD_TARGETS = ("intel_win", "gnu_win")
@@ -613,7 +616,7 @@ def write_readme(out_file: Path) -> None:
             - bin\\cedit.bat, if CEditQt was available when the bundle was made
             - CEditQt\\cedit, if CEditQt was available when the bundle was made
             - Documentation\\*.pdf
-            - Examples\\Users_Guide_Example.in
+            - Examples\\*.in
             - SMV6\\smokeview.exe and SMV6\\smokeview_win.exe, if Smokeview was available
 
             To install from the self-extracting EXE, double-click it or run it from
@@ -669,7 +672,7 @@ def stage_bundle(args) -> Path:
     copy_file(args.cfast_exe, bin_dir / "cfast.exe")
     copy_windows_runtime_libraries(args.cfast_exe, bin_dir)
 
-    copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
+    copy_examples(args, examples_dir)
 
     manual_sources = args.manual_sources or resolve_manual_sources(args)
     for _, filename in MANUAL_FILES:
@@ -708,6 +711,14 @@ def stage_bundle(args) -> Path:
             print(f"             data:      {args.smokeview_data}")
 
     return dist_dir
+
+
+def copy_examples(args, examples_dir: Path) -> None:
+    copy_file(args.example_file, examples_dir / "Users_Guide_Example.in")
+    for filename in EXTRA_EXAMPLE_FILES:
+        source = args.extra_examples_dir / filename
+        require_file(source, f"CFAST example {filename}")
+        copy_file(source, examples_dir / filename)
 
 
 def make_payload_zip(payload_root: Path, zip_path: Path) -> None:
@@ -1122,7 +1133,7 @@ def parse_args():
     parser.add_argument("--cfast-build-target", choices=CFAST_WINDOWS_BUILD_TARGETS, default="intel_win", help="CFAST Windows build target")
     parser.add_argument("--cfast-exe", type=Path, help="CFAST executable to bundle")
     parser.add_argument("--cedit-app", type=Path, default=repo_root / "Build/CeditQt/windows" / APP_NAME, help="CEditQt PyInstaller directory")
-    parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="example input file")
+    parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="Users Guide example input file")
     parser.add_argument("--smokeview-build-target", choices=SMV_WINDOWS_BUILD_TARGETS, default="intel_win", help="Smokeview Windows build target")
     parser.add_argument("--smokeview-exe", type=Path, help="Smokeview executable to bundle")
     parser.add_argument("--smokeview-data", type=Path, default=firemodels_root / "smv/Build/for_bundle", help="Smokeview for_bundle directory")
@@ -1172,6 +1183,7 @@ def parse_args():
         args.smokeview_exe = smokeview_exe_for_build_target(firemodels_root, args.smokeview_build_target)
     args.cfast_exe = args.cfast_exe.resolve()
     args.example_file = args.example_file.resolve()
+    args.extra_examples_dir = (repo_root / "Utilities/for_bundle/Bin/Data").resolve()
     args.cedit_app = args.cedit_app.resolve()
     args.smokeview_exe = args.smokeview_exe.resolve()
     args.smokeview_data = args.smokeview_data.resolve()

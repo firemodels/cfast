@@ -624,6 +624,10 @@ def write_readme(out_file: Path) -> None:
             To install somewhere else, enter a different installation directory
             when prompted, or run the installer with --install-dir PATH.
 
+            During interactive installation, the installer can create Desktop
+            shortcuts for CFAST Editor (CEdit) and CMDcfast. CMDcfast opens a
+            command prompt and calls bin\\CFASTVARS.bat.
+
             To use CFAST from an existing command prompt:
 
                 call "C:\\Program Files\\firemodels\\CFAST8\\bin\\CFASTVARS.bat"
@@ -779,6 +783,14 @@ def cedit_executable(install_root):
     return install_root / "CEditQt" / "CFAST Editor (CEdit)" / "CFAST Editor (CEdit).exe"
 
 
+def cfast_vars_bat(install_root):
+    return install_root / "bin" / "CFASTVARS.bat"
+
+
+def command_processor():
+    return os.environ.get("ComSpec") or os.environ.get("COMSPEC") or "cmd.exe"
+
+
 def should_create_desktop_shortcut(args, install_root):
     if not cedit_executable(install_root).is_file():
         return False
@@ -791,11 +803,19 @@ def should_create_desktop_shortcut(args, install_root):
     return answer in {"", "y", "yes"}
 
 
-def create_desktop_shortcut(install_root):
-    target_path = cedit_executable(install_root)
-    if not target_path.is_file():
+def should_create_cmdcfast_shortcut(args, install_root):
+    if not cfast_vars_bat(install_root).is_file():
+        return False
+    if args.cmdcfast_shortcut:
+        return True
+    if args.no_cmdcfast_shortcut or args.silent:
         return False
 
+    answer = input("Create a Desktop shortcut to CMDcfast? [Y/n]: ").strip().lower()
+    return answer in {"", "y", "yes"}
+
+
+def create_windows_shortcut(shortcut_name, target_path, working_directory, arguments="", icon_location=""):
     powershell = shutil.which("powershell") or shutil.which("pwsh")
     if powershell is None:
         print("*** Warning: PowerShell was not found; Desktop shortcut was not created.")
@@ -804,7 +824,10 @@ def create_desktop_shortcut(install_root):
     script_text = r'''
 param(
     [string]$TargetPath,
-    [string]$ShortcutName
+    [string]$ShortcutName,
+    [string]$WorkingDirectory,
+    [string]$Arguments,
+    [string]$IconLocation
 )
 
 $Desktop = [Environment]::GetFolderPath("DesktopDirectory")
@@ -812,8 +835,13 @@ $ShortcutPath = Join-Path $Desktop $ShortcutName
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
 $Shortcut.TargetPath = $TargetPath
-$Shortcut.WorkingDirectory = Split-Path -Parent $TargetPath
-$Shortcut.IconLocation = "$TargetPath,0"
+$Shortcut.WorkingDirectory = $WorkingDirectory
+if ($Arguments) {
+    $Shortcut.Arguments = $Arguments
+}
+if ($IconLocation) {
+    $Shortcut.IconLocation = $IconLocation
+}
 $Shortcut.Save()
 '''
 
@@ -831,7 +859,10 @@ $Shortcut.Save()
                 "-File",
                 str(script_file),
                 str(target_path),
-                "CFAST Editor (CEdit).lnk",
+                shortcut_name,
+                str(working_directory),
+                arguments,
+                icon_location,
             ],
             check=True,
             stdout=subprocess.DEVNULL,
@@ -850,6 +881,32 @@ $Shortcut.Save()
     return True
 
 
+def create_desktop_shortcut(install_root):
+    target_path = cedit_executable(install_root)
+    if not target_path.is_file():
+        return False
+
+    return create_windows_shortcut(
+        "CFAST Editor (CEdit).lnk",
+        target_path,
+        target_path.parent,
+        icon_location=f"{target_path},0",
+    )
+
+
+def create_cmdcfast_shortcut(install_root):
+    vars_path = cfast_vars_bat(install_root)
+    if not vars_path.is_file():
+        return False
+
+    return create_windows_shortcut(
+        "CMDcfast.lnk",
+        command_processor(),
+        os.environ.get("USERPROFILE", str(Path.home())),
+        arguments=f'/k call "{vars_path}"',
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
     parser.add_argument("--install-dir", metavar="PATH", help="installation directory")
@@ -859,6 +916,9 @@ def main():
     shortcut_group = parser.add_mutually_exclusive_group()
     shortcut_group.add_argument("--desktop-shortcut", action="store_true", help="create a Desktop shortcut to CFAST Editor (CEdit)")
     shortcut_group.add_argument("--no-desktop-shortcut", action="store_true", help="do not create a Desktop shortcut")
+    cmdcfast_shortcut_group = parser.add_mutually_exclusive_group()
+    cmdcfast_shortcut_group.add_argument("--cmdcfast-shortcut", action="store_true", help="create a Desktop shortcut to CMDcfast")
+    cmdcfast_shortcut_group.add_argument("--no-cmdcfast-shortcut", action="store_true", help="do not create a CMDcfast Desktop shortcut")
     args = parser.parse_args()
 
     payload_zip = resource_path("payload.zip")
@@ -890,6 +950,9 @@ def main():
     if should_create_desktop_shortcut(args, target):
         if create_desktop_shortcut(target):
             print("Desktop shortcut created: CFAST Editor (CEdit)")
+    if should_create_cmdcfast_shortcut(args, target):
+        if create_cmdcfast_shortcut(target):
+            print("Desktop shortcut created: CMDcfast")
     print("")
     print("To use CFAST from a command prompt:")
     print(f'    call "{target}\\bin\\CFASTVARS.bat"')

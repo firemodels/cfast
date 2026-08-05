@@ -75,10 +75,19 @@ The upload step requires `gh` to be installed and authenticated.
 
 ## Inputs
 
-The macOS, Linux, and Windows bundle scripts update `cfast`, `smv`, and `fds`
-from `master` before building unless `--no-update-repos` is supplied. The `fds`
-repo is updated only for the shared Python environment; FDS is not built by
-these scripts. The `exp` repo is not updated during bundle assembly.
+The macOS, Linux, and Windows bundle scripts reset and clean the local `cfast`
+checkout, fetch `git@github.com:firemodels/cfast.git`, and use the latest
+central `master` by default. Use `--cfast-tag` to build a specific CFAST tag.
+They also fresh-clone `smv` from `git@github.com:firemodels/smv.git` into the
+parallel firemodels workspace before building unless `--no-update-repos` is
+supplied.
+
+The macOS and Windows scripts fresh-clone `fds` from
+`git@github.com:firemodels/fds.git` into the parallel firemodels workspace and
+build `.github/fds_python_env` from that checkout unless `--python` is supplied.
+Linux also fresh-clones the parallel `fds` checkout during repo updates. FDS is
+used only for the shared Python environment; FDS is not built by these scripts.
+The `exp` repo is not updated during bundle assembly.
 
 The bundle scripts stage:
 
@@ -136,7 +145,8 @@ Common options:
 - `--output-dir`: set the output directory
 - `--stage-dir`: set the staging directory
 - `--update-branch`: branch to update before building
-- `--no-update-repos`: do not update `cfast`, `smv`, and `fds`
+- `--no-update-repos`: do not sync `cfast` or fresh-clone `smv`/`fds`
+- `--cfast-tag`: checkout a specific CFAST tag after fetching central
 - `--cfast-exe`: use a specific CFAST executable
 - `--smokeview-exe`: use a specific Smokeview executable
 - `--no-build-smokeview`: do not build Smokeview before bundling
@@ -147,6 +157,7 @@ Common options:
 
 macOS and Windows options:
 
+- `--python`: use a specific Python executable and skip fresh FDS Python env setup
 - `--no-build-cfast`: do not build CFAST before bundling
 - `--no-build-cedit`: do not build CEditQt before bundling
 

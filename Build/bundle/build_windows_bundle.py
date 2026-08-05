@@ -5,6 +5,7 @@ import argparse
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import textwrap
@@ -53,6 +54,9 @@ RELEASE_INFO_ASSET = "CFAST_INFO.txt"
 CFAST_WINDOWS_BUILD_TARGETS = ("intel_win", "gnu_win")
 SMV_WINDOWS_BUILD_TARGETS = ("intel_win", "clang_win")
 DEFAULT_UPLOAD_RELEASE_TAG = os.environ.get("GH_CFAST_TAG", "CFAST_TEST")
+DEFAULT_CFAST_REPO_URL = os.environ.get("CFAST_REPO_URL", "git@github.com:firemodels/cfast.git")
+DEFAULT_SMV_REPO_URL = os.environ.get("SMV_REPO_URL", "git@github.com:firemodels/smv.git")
+DEFAULT_FDS_REPO_URL = os.environ.get("FDS_REPO_URL", "git@github.com:firemodels/fds.git")
 
 
 def default_repo_root() -> Path:
@@ -135,6 +139,15 @@ def run_checked(command, cwd: Path, description: str, shell: bool = False) -> No
         subprocess.run(command, check=True, cwd=cwd, shell=shell)
     except subprocess.CalledProcessError as exc:
         raise SystemExit(f"***error: {description} failed with exit code {exc.returncode}")
+
+
+def remove_tree(path: Path) -> None:
+    def make_writable_and_retry(function, failing_path, _exc_info):
+        os.chmod(failing_path, stat.S_IWRITE)
+        function(failing_path)
+
+    if path.exists():
+        shutil.rmtree(path, onerror=make_writable_and_retry)
 
 
 def command_processor() -> str:
@@ -226,6 +239,49 @@ def update_git_repo(repo_name: str, repo_dir: Path, branch_name: str, strict_loc
     return True
 
 
+def sync_cfast_repo(args) -> None:
+    require_dir(args.repo_root / ".git", "cfast git repository")
+
+    print("*** Synchronizing cfast repo")
+    print(f"    repo:   {args.repo_root}")
+    print(f"    remote: {args.cfast_repo_url}")
+    if args.cfast_tag:
+        print(f"    tag:    {args.cfast_tag}")
+    else:
+        print(f"    branch: {args.update_branch}")
+
+    run_checked(["git", "reset", "--hard"], args.repo_root, "cfast tracked file reset")
+    run_checked(["git", "clean", "-fd"], args.repo_root, "cfast untracked file cleanup")
+
+    if args.cfast_tag:
+        run_checked(["git", "fetch", "--tags", args.cfast_repo_url], args.repo_root, "cfast central tag fetch")
+        run_checked(["git", "checkout", "--detach", args.cfast_tag], args.repo_root, f"cfast checkout tag {args.cfast_tag}")
+    else:
+        run_checked(["git", "fetch", args.cfast_repo_url, args.update_branch], args.repo_root, "cfast central branch fetch")
+        run_checked(
+            ["git", "checkout", "-B", args.update_branch, "FETCH_HEAD"],
+            args.repo_root,
+            f"cfast checkout {args.update_branch}",
+        )
+
+
+def clone_fresh_repo(repo_name: str, repo_url: str, repo_dir: Path, branch_name: str) -> None:
+    require_command("git")
+
+    print(f"*** Cloning fresh {repo_name} repo")
+    print(f"    repo:   {repo_dir}")
+    print(f"    remote: {repo_url}")
+    print(f"    branch: {branch_name}")
+
+    remove_tree(repo_dir)
+    repo_dir.parent.mkdir(parents=True, exist_ok=True)
+    run_checked(["git", "clone", "--depth", "1", "--branch", branch_name, repo_url, str(repo_dir)], repo_dir.parent, f"{repo_name} central clone")
+
+
+def needs_fds_python_env(args) -> bool:
+    return not args.python_was_set
+
+
 def update_bundle_repos(args) -> None:
     if not args.update_repos:
         return
@@ -234,9 +290,11 @@ def update_bundle_repos(args) -> None:
 
     firemodels_root = args.repo_root.parent
     updated_repo = False
-    updated_repo = update_git_repo("cfast", args.repo_root, args.update_branch, args.strict_revision) or updated_repo
-    updated_repo = update_git_repo("smv", firemodels_root / "smv", args.update_branch, args.strict_revision) or updated_repo
-    updated_repo = update_git_repo("fds", firemodels_root / "fds", args.update_branch, args.strict_revision) or updated_repo
+    sync_cfast_repo(args)
+    updated_repo = True
+    clone_fresh_repo("smv", args.smv_repo_url, firemodels_root / "smv", args.update_branch)
+    if needs_fds_python_env(args):
+        clone_fresh_repo("fds", args.fds_repo_url, firemodels_root / "fds", args.update_branch)
 
     if not updated_repo:
         return
@@ -244,6 +302,46 @@ def update_bundle_repos(args) -> None:
     print("*** Re-starting Windows bundle script after repo updates", flush=True)
     os.environ["CFAST_WINDOWS_BUNDLE_REEXECUTED"] = "1"
     os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
+
+
+def fds_venv_python(venv_dir: Path) -> Path:
+    if os.name == "nt":
+        return venv_dir / "Scripts/python.exe"
+    return venv_dir / "bin/python"
+
+
+def setup_fds_python_env(args) -> None:
+    if not needs_fds_python_env(args):
+        return
+
+    fds_repo = args.repo_root.parent / "fds"
+    venv_dir = fds_repo / ".github/fds_python_env"
+
+    print("*** Preparing FDS Python environment")
+    print(f"    repo:   {fds_repo}")
+
+    require_dir(fds_repo / ".git", "FDS support git repository")
+
+    requirements = fds_repo / ".github/requirements.txt"
+    require_file(requirements, "FDS Python requirements")
+
+    remove_tree(venv_dir)
+    run_checked([args.python, "-m", "venv", str(venv_dir)], fds_repo, "FDS Python virtual environment creation")
+    python_exe = fds_venv_python(venv_dir)
+    require_file(python_exe, "FDS Python virtual environment executable")
+
+    run_checked([str(python_exe), "-m", "pip", "install", "--upgrade", "pip"], fds_repo, "FDS Python pip upgrade")
+    run_checked([str(python_exe), "-m", "pip", "install", "-r", "requirements.txt"], fds_repo / ".github", "FDS Python requirements install")
+
+    args.python = str(python_exe)
+    python_path = str(fds_repo / "Utilities/Python")
+    if os.environ.get("PYTHONPATH"):
+        os.environ["PYTHONPATH"] = python_path + os.pathsep + os.environ["PYTHONPATH"]
+    else:
+        os.environ["PYTHONPATH"] = python_path
+
+    print("*** FDS Python environment ready:")
+    print(f"    python: {args.python}")
 
 
 def copy_file(from_path: Path, to_path: Path) -> None:
@@ -1124,20 +1222,25 @@ def upload_windows_bundle(args, exe_path: Path) -> None:
 def parse_args():
     repo_root = default_repo_root()
     firemodels_root = repo_root.parent
+    python_was_set = any(arg == "--python" or arg.startswith("--python=") for arg in sys.argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", help="distribution folder and installer base name")
     parser.add_argument("--output-dir", type=Path, default=repo_root / "Build/bundle/windows", help="output directory")
     parser.add_argument("--stage-dir", type=Path, default=repo_root / "Build/bundle/stage", help="temporary staging directory")
     parser.add_argument("--update-branch", default="master", help="branch to update before building")
-    parser.add_argument("--no-update-repos", dest="update_repos", action="store_false", help="do not update cfast, smv, and fds before bundling")
+    parser.add_argument("--no-update-repos", dest="update_repos", action="store_false", help="do not sync cfast or fresh-clone smv/fds before bundling")
     parser.add_argument("--cfast-build-target", choices=CFAST_WINDOWS_BUILD_TARGETS, default="intel_win", help="CFAST Windows build target")
     parser.add_argument("--cfast-exe", type=Path, help="CFAST executable to bundle")
+    parser.add_argument("--cfast-repo-url", default=DEFAULT_CFAST_REPO_URL, help="central CFAST repo URL used for updates")
+    parser.add_argument("--cfast-tag", default=os.environ.get("CFAST_TAG", ""), help="checkout this CFAST tag after updating")
     parser.add_argument("--cedit-app", type=Path, default=repo_root / "Build/CeditQt/windows" / APP_NAME, help="CEditQt PyInstaller directory")
     parser.add_argument("--example", dest="example_file", type=Path, default=repo_root / "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in", help="Users Guide example input file")
     parser.add_argument("--smokeview-build-target", choices=SMV_WINDOWS_BUILD_TARGETS, default="intel_win", help="Smokeview Windows build target")
     parser.add_argument("--smokeview-exe", type=Path, help="Smokeview executable to bundle")
+    parser.add_argument("--smokeview-repo-url", dest="smv_repo_url", default=DEFAULT_SMV_REPO_URL, help="central Smokeview repo URL used for fresh clones")
     parser.add_argument("--smokeview-data", type=Path, default=firemodels_root / "smv/Build/for_bundle", help="Smokeview for_bundle directory")
-    parser.add_argument("--python", default=sys.executable, help="Python executable used to build the self-extracting EXE")
+    parser.add_argument("--fds-repo-url", default=DEFAULT_FDS_REPO_URL, help="central FDS repo URL used for fresh clones")
+    parser.add_argument("--python", default=sys.executable, help="Python executable used to build the self-extracting EXE; disables fresh FDS Python env setup")
     parser.add_argument("--icon", type=Path, help="optional installer .ico file")
     parser.add_argument("--no-uac-admin", action="store_true", help="build installer without requesting administrator privileges")
     parser.add_argument("--no-build-cfast", dest="build_cfast", action="store_false", help="do not build CFAST before bundling")
@@ -1175,6 +1278,7 @@ def parse_args():
     )
     parser.set_defaults(build_cfast=True, build_cedit=True, build_smokeview=True, include_cedit=True, include_smokeview=True, update_repos=True)
     args = parser.parse_args()
+    args.python_was_set = python_was_set
     args.repo_root = repo_root
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.cfast_exe is None:
@@ -1195,6 +1299,7 @@ def parse_args():
 def main() -> int:
     args = parse_args()
     update_bundle_repos(args)
+    setup_fds_python_env(args)
     args.manual_sources = resolve_manual_sources(args)
     build_cfast_executable(args)
     build_cedit_app(args)

@@ -14,13 +14,21 @@ STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
 CFAST_BUILD_TARGET="gnu_macos"
 CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_macos/cfast8_macos"
 CFAST_EXE_SET=0
+CFAST_REPO_URL="${CFAST_REPO_URL:-git@github.com:firemodels/cfast.git}"
+CFAST_TAG="${CFAST_TAG:-}"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/macos/$APP_NAME.app"
 EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_osx/smokeview_osx"
 SMV_EXE_SET=0
 SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
 SMV_BUILD_TARGET="gnu_osx"
+SMV_REPO_URL="${SMV_REPO_URL:-git@github.com:firemodels/smv.git}"
 PYTHON_EXE="${PYTHON:-python3}"
+PYTHON_EXE_SET=0
+if [[ -n "${PYTHON:-}" ]]; then
+  PYTHON_EXE_SET=1
+fi
+FDS_REPO_URL="${FDS_REPO_URL:-git@github.com:firemodels/fds.git}"
 INCLUDE_CEDIT=1
 INCLUDE_SMOKEVIEW=1
 BUILD_CFAST=1
@@ -73,14 +81,18 @@ usage()
   echo "  --stage-dir path         Temporary staging directory"
   echo "  --cfast-build-target target CFAST build target: gnu_macos or intel_macos"
   echo "  --cfast-exe path         CFAST executable to bundle"
+  echo "  --cfast-repo-url url     Central CFAST repo URL used for updates"
+  echo "  --cfast-tag tag          Checkout this CFAST tag after updating"
   echo "  --cedit-app path         CEditQt .app to bundle"
   echo "  --example path           Example .in file to bundle"
   echo "  --smokeview-exe path     Smokeview executable to bundle"
+  echo "  --smokeview-repo-url url Central Smokeview repo URL used for fresh clones"
   echo "  --smokeview-data path    Smokeview for_bundle directory"
   echo "  --smokeview-build-target target Smokeview build target: gnu_osx or clang_osx"
-  echo "  --python path            Python executable used to build CEditQt and the DMG"
+  echo "  --fds-repo-url url       Central FDS repo URL used for fresh clones"
+  echo "  --python path            Python executable used to build CEditQt and the DMG; disables fresh FDS Python env setup"
   echo "  --update-branch branch   Branch to update before building"
-  echo "  --no-update-repos        Do not update the CFAST, Smokeview, and FDS repos"
+  echo "  --no-update-repos        Do not sync CFAST or fresh-clone Smokeview/FDS repos"
   echo "  --no-build-cfast         Do not build CFAST before bundling"
   echo "  --no-build-cedit         Do not build CEditQt before bundling"
   echo "  --no-build-smokeview     Do not build Smokeview before bundling"
@@ -372,6 +384,64 @@ update_git_repo()
 
 }
 
+sync_cfast_repo()
+{
+  require_dir "$REPO_ROOT/.git" "cfast git repository"
+
+  echo "*** Synchronizing cfast repo"
+  echo "    repo:   $REPO_ROOT"
+  echo "    remote: $CFAST_REPO_URL"
+  if [[ "$CFAST_TAG" != "" ]]; then
+    echo "    tag:    $CFAST_TAG"
+  else
+    echo "    branch: $UPDATE_BRANCH"
+  fi
+
+  run_checked "cfast tracked file reset" git -C "$REPO_ROOT" reset --hard
+  run_checked "cfast untracked file cleanup" git -C "$REPO_ROOT" clean -fd
+
+  if [[ "$CFAST_TAG" != "" ]]; then
+    run_checked "cfast central tag fetch" git -C "$REPO_ROOT" fetch --tags "$CFAST_REPO_URL"
+    run_checked "cfast checkout tag $CFAST_TAG" git -C "$REPO_ROOT" checkout --detach "$CFAST_TAG"
+  else
+    run_checked "cfast central branch fetch" git -C "$REPO_ROOT" fetch "$CFAST_REPO_URL" "$UPDATE_BRANCH"
+    run_checked "cfast checkout $UPDATE_BRANCH" \
+      git -C "$REPO_ROOT" checkout -B "$UPDATE_BRANCH" FETCH_HEAD
+  fi
+}
+
+clone_fresh_repo()
+{
+  local repo_name="$1"
+  local repo_url="$2"
+  local repo_dir="$3"
+
+  require_command git
+
+  echo "*** Cloning fresh $repo_name repo"
+  echo "    repo:   $repo_dir"
+  echo "    remote: $repo_url"
+  echo "    branch: $UPDATE_BRANCH"
+
+  rm -rf "$repo_dir"
+  mkdir -p "$(dirname "$repo_dir")"
+  run_checked "$repo_name central clone" git clone --depth 1 --branch "$UPDATE_BRANCH" "$repo_url" "$repo_dir"
+}
+
+need_fds_python_env()
+{
+  if [[ "$PYTHON_EXE_SET" == "1" ]]; then
+    return 1
+  fi
+  if [[ "$CREATE_DMG" == "1" ]]; then
+    return 0
+  fi
+  if [[ "$INCLUDE_CEDIT" == "1" && "$BUILD_CEDIT" == "1" ]]; then
+    return 0
+  fi
+  return 1
+}
+
 update_bundle_repos()
 {
   local updated_repo=0
@@ -383,9 +453,12 @@ update_bundle_repos()
     return 0
   fi
 
-  update_git_repo cfast "$REPO_ROOT" && updated_repo=1
-  update_git_repo smv "$FIREMODELS_ROOT/smv" && updated_repo=1
-  update_git_repo fds "$FIREMODELS_ROOT/fds" && updated_repo=1
+  sync_cfast_repo
+  updated_repo=1
+  clone_fresh_repo smv "$SMV_REPO_URL" "$FIREMODELS_ROOT/smv"
+  if need_fds_python_env; then
+    clone_fresh_repo fds "$FDS_REPO_URL" "$FIREMODELS_ROOT/fds"
+  fi
 
   if [[ "$updated_repo" != "1" ]]; then
     return 0
@@ -398,6 +471,47 @@ update_bundle_repos()
   else
     exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
   fi
+}
+
+setup_fds_python_env()
+{
+  local fds_repo
+  local venv_dir
+  local venv_python
+
+  if ! need_fds_python_env; then
+    return 0
+  fi
+
+  require_command "$PYTHON_EXE"
+
+  fds_repo="$FIREMODELS_ROOT/fds"
+  venv_dir="$fds_repo/.github/fds_python_env"
+
+  echo "*** Preparing FDS Python environment"
+  echo "    repo:   $fds_repo"
+  require_dir "$fds_repo/.git" "FDS support git repository"
+  require_file "$fds_repo/.github/requirements.txt" "FDS Python requirements"
+
+  rm -rf "$venv_dir"
+  run_checked "FDS Python virtual environment creation" \
+    "$PYTHON_EXE" -m venv "$venv_dir"
+
+  venv_python="$venv_dir/bin/python"
+  require_file "$venv_python" "FDS Python virtual environment executable"
+
+  run_checked "FDS Python pip upgrade" \
+    "$venv_python" -m pip install --upgrade pip
+  (
+    cd "$fds_repo/.github"
+    run_checked "FDS Python requirements install" \
+      "$venv_python" -m pip install -r requirements.txt
+  )
+
+  PYTHON_EXE="$venv_python"
+  export PYTHONPATH="$fds_repo/Utilities/Python:${PYTHONPATH:-}"
+  echo "*** FDS Python environment ready:"
+  echo "    python: $PYTHON_EXE"
 }
 
 build_cfast_executable()
@@ -1303,6 +1417,14 @@ while [[ $# -gt 0 ]]; do
       CFAST_EXE_SET=1
       shift 2
       ;;
+    --cfast-repo-url)
+      CFAST_REPO_URL="$2"
+      shift 2
+      ;;
+    --cfast-tag)
+      CFAST_TAG="$2"
+      shift 2
+      ;;
     --cedit-app)
       CEDIT_APP="$2"
       shift 2
@@ -1316,6 +1438,10 @@ while [[ $# -gt 0 ]]; do
       SMV_EXE_SET=1
       shift 2
       ;;
+    --smokeview-repo-url)
+      SMV_REPO_URL="$2"
+      shift 2
+      ;;
     --smokeview-data)
       SMV_BUNDLE_DIR="$2"
       shift 2
@@ -1326,6 +1452,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     --python)
       PYTHON_EXE="$2"
+      PYTHON_EXE_SET=1
+      shift 2
+      ;;
+    --fds-repo-url)
+      FDS_REPO_URL="$2"
       shift 2
       ;;
     --update-branch)
@@ -1450,6 +1581,7 @@ if [[ "$MANUALS_DOWNLOAD_DIR_SET" == "0" ]]; then
 fi
 
 update_bundle_repos
+setup_fds_python_env
 
 if [[ "$DIST_NAME" == "" ]]; then
   if git -C "$REPO_ROOT" describe --tags --dirty --always >/dev/null 2>&1; then

@@ -829,8 +829,7 @@ def make_payload_zip(payload_root: Path, zip_path: Path) -> None:
 
 
 def write_installer_script(script_path: Path) -> None:
-    script_path.write_text(
-        r"""#!/usr/bin/env python3
+    script_text = r"""#!/usr/bin/env python3
 import argparse
 import os
 import shutil
@@ -857,19 +856,45 @@ def default_install_dir():
     return default_install_parent() / "CFAST8"
 
 
-def read_destination(default_dir):
+def expanded_path(value):
+    return Path(os.path.expandvars(os.path.expanduser(value.strip().strip('"'))))
+
+
+def read_custom_install_dir():
+    while True:
+        value = input("Install directory: ").strip()
+        if value.lower() in {"q", "quit", "exit"}:
+            raise SystemExit(1)
+        if not value:
+            print("***error: no install directory was entered.")
+            continue
+
+        target = expanded_path(value)
+        if target.parent.exists() and not target.parent.is_dir():
+            print(f"***error: parent path is not a directory: {target.parent}")
+            continue
+        return target
+
+
+def read_interactive_target(default_dir):
     print("")
-    print("CFAST 8 self-extracting installer")
+    print("CFAST 8 Windows installer")
     print("")
-    print(f"Default installation directory: {default_dir}")
-    print("The installer will create or replace the selected installation directory.")
+    print(f"1) Install CFAST8 to {default_dir}")
+    print("2) Install CFAST8 to another directory")
+    print("q) Quit")
     print("")
-    value = input("Install directory [press Enter for default, or q to quit]: ").strip()
-    if value.lower() in {"q", "quit", "exit"}:
-        raise SystemExit(1)
-    if not value:
+    choice = input("Select an option [1]: ").strip()
+
+    if choice in {"", "1"}:
         return default_dir
-    return Path(value)
+    if choice == "2":
+        return read_custom_install_dir()
+    if choice.lower() in {"q", "quit", "exit"}:
+        print("Cancelled.")
+        raise SystemExit(1)
+
+    raise SystemExit(f"***error: unknown option: {choice}")
 
 
 def extract_payload(payload_zip, target, overwrite):
@@ -887,6 +912,11 @@ def extract_payload(payload_zip, target, overwrite):
     with zipfile.ZipFile(payload_zip, "r") as archive:
         archive.extractall(target)
     return target
+
+
+def wait_to_close(silent):
+    if not silent:
+        input("Press Enter to close.")
 
 
 def cedit_executable(install_root):
@@ -1018,9 +1048,9 @@ def create_cmdcfast_shortcut(install_root):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract the CFAST Windows bundle.")
+    parser = argparse.ArgumentParser(description="Install the CFAST Windows bundle.")
     parser.add_argument("--install-dir", metavar="PATH", help="installation directory")
-    parser.add_argument("--extract-to", metavar="PATH", help="install parent folder; legacy alias")
+    parser.add_argument("--extract-to", metavar="PATH", help=argparse.SUPPRESS)
     parser.add_argument("--overwrite", action="store_true", help="replace an existing installation directory")
     parser.add_argument("--silent", action="store_true", help="use defaults without prompting")
     shortcut_group = parser.add_mutually_exclusive_group()
@@ -1044,7 +1074,7 @@ def main():
     else:
         target = default_install_dir()
         if not args.silent:
-            target = read_destination(target)
+            target = read_interactive_target(target)
 
     try:
         target = extract_payload(payload_zip, target, args.overwrite)
@@ -1052,11 +1082,12 @@ def main():
         print("")
         print("***error: permission denied while installing CFAST.")
         print("         Run this installer as administrator or choose a writable folder.")
-        input("Press Enter to close.")
+        wait_to_close(args.silent)
         return 1
 
     print("")
     print(f"CFAST installed to: {target}")
+
     if should_create_desktop_shortcut(args, target):
         if create_desktop_shortcut(target):
             print("Desktop shortcut created: cedit")
@@ -1068,14 +1099,15 @@ def main():
     print(f'    call "{target}\\bin\\CFASTVARS.bat"')
     print(f'    cfast "{target}\\Examples\\Users_Guide_Example.in"')
     print("")
-    if not args.silent:
-        input("Press Enter to close.")
+    wait_to_close(args.silent)
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-""",
+"""
+    script_path.write_text(
+        script_text,
         encoding="utf-8",
     )
 

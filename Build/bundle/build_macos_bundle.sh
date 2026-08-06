@@ -46,6 +46,13 @@ MANUALS_DOWNLOAD_DIR="$STAGE_ROOT/release-manuals"
 MANUALS_DOWNLOAD_DIR_SET=0
 STRICT_REVISION=0
 UPLOAD=0
+SIGN_IDENTITY="${CODESIGN_ID:-}"
+NOTARY_PROFILE="${CFAST_MACOS_NOTARY_PROFILE:-}"
+SIGN_BUNDLE=0
+NOTARIZE=0
+if [[ "$SIGN_IDENTITY" != "" ]]; then
+  SIGN_BUNDLE=1
+fi
 if [[ -n "${GH_OWNER:-}" && -n "${GH_REPO:-}" ]]; then
   UPLOAD_RELEASE_REPO="$GH_OWNER/$GH_REPO"
 else
@@ -106,6 +113,9 @@ usage()
   echo "  --upload                 Upload the DMG to a GitHub release"
   echo "  --upload-release-repo repo GitHub owner/repo receiving the DMG"
   echo "  --upload-release-tag tag GitHub release tag receiving the DMG"
+  echo "  --sign-identity identity Developer ID Application certificate used to sign CEditQt, CFAST, Smokeview, and the DMG"
+  echo "  --notarize              Submit the signed DMG with notarytool and staple the result (requires --notary-profile)"
+  echo "  --notary-profile name   Keychain profile for xcrun notarytool (or CFAST_MACOS_NOTARY_PROFILE)"
   echo "  --no-dmg                 Stage files only"
   echo "  --no-layout              Do not use a DMG background image"
   echo "  -h, --help               Display this message"
@@ -721,13 +731,10 @@ patch_macos_runtime_references()
 
 codesign_macos_runtime_file()
 {
-  local target_path="$1"
-
-  if command -v codesign >/dev/null 2>&1; then
-    codesign --force --sign - "$target_path" >/dev/null 2>&1 || {
-      echo "*** Warning: ad hoc codesign failed for $target_path"
-    }
-  fi
+  # Runtime libraries are signed with the rest of the staged distribution,
+  # after all install_name_tool changes have been made.  Do not ad-hoc sign
+  # here: an ad-hoc signature is not accepted by Gatekeeper.
+  : "$1"
 }
 
 bundle_macos_runtime_libraries()
@@ -946,6 +953,85 @@ create_compressed_dmg()
     "$DMG_PATH"; then
     return 1
   fi
+}
+
+sign_macos_code()
+{
+  local target_path="$1"
+
+  codesign --force --sign "$SIGN_IDENTITY" --options runtime --timestamp "$target_path"
+}
+
+sign_macos_app()
+{
+  local app_path="$1"
+  local candidate
+
+  # Sign every nested Mach-O file before signing the enclosing app.  PyInstaller
+  # apps contain Python extensions, frameworks, and helper executables, so
+  # --deep is not a safe substitute for this explicit inside-out signing.
+  while IFS= read -r -d '' candidate; do
+    if file -b "$candidate" | grep -q 'Mach-O'; then
+      sign_macos_code "$candidate"
+    fi
+  done < <(find "$app_path" -type f -print0)
+  sign_macos_code "$app_path"
+  codesign --verify --deep --strict --verbose=2 "$app_path"
+}
+
+sign_staged_macos_bundle()
+{
+  local app_path="$DIST_DIR/$APP_NAME.app"
+  local library_path
+
+  if [[ "$SIGN_BUNDLE" != "1" ]]; then
+    return 0
+  fi
+
+  if [[ "$SIGN_IDENTITY" == "" ]]; then
+    echo "***error: CODESIGN_ID or --sign-identity is required when signing."
+    exit 1
+  fi
+  require_command codesign
+
+  echo "*** Signing staged macOS code"
+  echo "    identity: $SIGN_IDENTITY"
+  if [[ -d "$app_path" ]]; then
+    echo "    CEditQt:  $app_path"
+    sign_macos_app "$app_path"
+  fi
+
+  for library_path in "$DIST_DIR/lib"/*.dylib; do
+    [[ -f "$library_path" ]] || continue
+    sign_macos_code "$library_path"
+  done
+  sign_macos_code "$DIST_DIR/bin/cfast8_macos"
+  if [[ -f "$DIST_DIR/SMV6/smokeview" ]]; then
+    sign_macos_code "$DIST_DIR/SMV6/smokeview"
+  fi
+}
+
+notarize_macos_dmg()
+{
+  if [[ "$NOTARIZE" != "1" ]]; then
+    return 0
+  fi
+  if [[ "$SIGN_BUNDLE" != "1" ]]; then
+    echo "***error: --notarize requires --sign-identity."
+    exit 1
+  fi
+  if [[ "$NOTARY_PROFILE" == "" ]]; then
+    echo "***error: --notary-profile (or CFAST_MACOS_NOTARY_PROFILE) is required for notarization."
+    exit 1
+  fi
+  require_command xcrun
+
+  echo "*** Submitting DMG for Apple notarization"
+  xcrun notarytool submit "$DMG_PATH" --keychain-profile "$NOTARY_PROFILE" --wait
+  echo "*** Stapling notarization ticket to DMG"
+  xcrun stapler staple "$DMG_PATH"
+  xcrun stapler validate "$DMG_PATH"
+  spctl --assess --type open --context context:primary-signature --verbose=4 "$DMG_PATH"
 }
 
 write_cfast_vars()
@@ -1525,6 +1611,19 @@ while [[ $# -gt 0 ]]; do
       UPLOAD_RELEASE_TAG="$2"
       shift 2
       ;;
+    --sign-identity)
+      SIGN_IDENTITY="$2"
+      SIGN_BUNDLE=1
+      shift 2
+      ;;
+    --notarize)
+      NOTARIZE=1
+      shift
+      ;;
+    --notary-profile)
+      NOTARY_PROFILE="$2"
+      shift 2
+      ;;
     --no-dmg)
       CREATE_DMG=0
       shift
@@ -1544,6 +1643,10 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ "$NOTARIZE" == "1" ]]; then
+  SIGN_BUNDLE=1
+fi
 
 if [[ "$(uname)" != "Darwin" ]]; then
   echo "***error: macOS bundles must be built on macOS."
@@ -1674,6 +1777,8 @@ if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
   fi
 fi
 
+sign_staged_macos_bundle
+
 if [[ "$CREATE_DMG" == "1" ]]; then
   if ! "$PYTHON_EXE" -c "import dmgbuild" >/dev/null 2>&1; then
     echo "***error: dmgbuild is not available in $PYTHON_EXE."
@@ -1685,6 +1790,12 @@ if [[ "$CREATE_DMG" == "1" ]]; then
     echo "         Confirm dmgbuild is installed and hdiutil can create disk images."
     exit 1
   fi
+
+  if [[ "$SIGN_BUNDLE" == "1" ]]; then
+    echo "*** Signing DMG"
+    sign_macos_code "$DMG_PATH"
+  fi
+  notarize_macos_dmg
 
   echo "*** DMG created:"
   echo "    $DMG_PATH"

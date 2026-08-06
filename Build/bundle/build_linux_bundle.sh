@@ -10,7 +10,10 @@ APP_NAME="cedit"
 DIST_NAME=""
 OUTPUT_DIR="$REPO_ROOT/Build/bundle/linux"
 STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
-CFAST_EXE="$REPO_ROOT/Build/CFAST/gnu_linux/cfast8_linux"
+CFAST_BUILD_TARGET="gnu_linux"
+CFAST_BUILD_TARGET_SET=0
+CFAST_EXE="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET/cfast8_linux"
+CFAST_EXE_SET=0
 CFAST_REPO_URL="${CFAST_REPO_URL:-git@github.com:firemodels/cfast.git}"
 CFAST_TAG="${CFAST_TAG:-}"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/linux/$APP_NAME"
@@ -23,6 +26,7 @@ SMV_REPO_URL="${SMV_REPO_URL:-git@github.com:firemodels/smv.git}"
 FDS_REPO_URL="${FDS_REPO_URL:-git@github.com:firemodels/fds.git}"
 INCLUDE_CEDIT=1
 INCLUDE_SMOKEVIEW=1
+BUILD_CFAST=1
 BUILD_SMOKEVIEW=1
 CREATE_TARBALL=1
 UPDATE_REPOS=1
@@ -41,6 +45,7 @@ usage()
   echo "  --name name              Distribution folder name"
   echo "  --output-dir path        Output directory for the tarball"
   echo "  --stage-dir path         Temporary staging directory"
+  echo "  --cfast-build-target target CFAST build target: gnu_linux or intel_linux"
   echo "  --cfast-exe path         CFAST executable to bundle"
   echo "  --cfast-repo-url url     Central CFAST repo URL used for updates"
   echo "  --cfast-tag tag          Checkout this CFAST tag after updating"
@@ -53,6 +58,7 @@ usage()
   echo "  --fds-repo-url url       Central FDS repo URL used for fresh clones"
   echo "  --update-branch branch   Branch to update before building"
   echo "  --no-update-repos        Do not sync CFAST or fresh-clone Smokeview/FDS repos"
+  echo "  --no-build-cfast         Do not build CFAST before bundling"
   echo "  --no-build-smokeview     Do not build Smokeview before bundling"
   echo "  --no-cedit               Do not bundle CEditQt"
   echo "  --no-smokeview           Do not bundle Smokeview files"
@@ -282,6 +288,44 @@ build_smokeview_executable()
   (cd "$smokeview_dir" && run_checked "Smokeview $SMV_BUILD_TARGET build" bash ./make_smokeview.sh)
 }
 
+build_cfast_executable()
+{
+  local build_dir
+  local make_script
+
+  if [[ "$BUILD_CFAST" != "1" ]]; then
+    return 0
+  fi
+
+  build_dir="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET"
+  make_script="$build_dir/make_cfast.sh"
+  require_dir "$build_dir" "CFAST build directory for $CFAST_BUILD_TARGET"
+
+  echo "*** Building CFAST Linux executable ($CFAST_BUILD_TARGET)"
+  if [[ -f "$make_script" ]]; then
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" bash ./make_cfast.sh)
+  else
+    run_checked "CFAST $CFAST_BUILD_TARGET build" make -C "$REPO_ROOT/Build/CFAST" "$CFAST_BUILD_TARGET"
+  fi
+}
+
+infer_cfast_build_target_from_exe()
+{
+  local exe_path="$1"
+  local parent_dir
+
+  parent_dir="$(basename "$(dirname "$exe_path")")"
+  case "$parent_dir" in
+    gnu_linux|intel_linux)
+      printf "%s\n" "$parent_dir"
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 linux_runtime_library_name()
 {
   local library_name="$1"
@@ -498,8 +542,17 @@ while [[ $# -gt 0 ]]; do
       STAGE_ROOT="$2"
       shift 2
       ;;
+    --cfast-build-target)
+      CFAST_BUILD_TARGET="$2"
+      CFAST_BUILD_TARGET_SET=1
+      shift 2
+      ;;
     --cfast-exe)
       CFAST_EXE="$2"
+      CFAST_EXE_SET=1
+      if [[ "$CFAST_BUILD_TARGET_SET" == "0" ]]; then
+        CFAST_BUILD_TARGET="$(infer_cfast_build_target_from_exe "$CFAST_EXE" || printf "%s\n" "$CFAST_BUILD_TARGET")"
+      fi
       shift 2
       ;;
     --cfast-repo-url)
@@ -547,6 +600,10 @@ while [[ $# -gt 0 ]]; do
       UPDATE_REPOS=0
       shift
       ;;
+    --no-build-cfast)
+      BUILD_CFAST=0
+      shift
+      ;;
     --no-build-smokeview)
       BUILD_SMOKEVIEW=0
       shift
@@ -580,6 +637,15 @@ if [[ "$(uname)" != "Linux" ]]; then
   exit 1
 fi
 
+case "$CFAST_BUILD_TARGET" in
+  gnu_linux|intel_linux)
+    ;;
+  *)
+    echo "***error: unsupported CFAST Linux build target: $CFAST_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
 case "$SMV_BUILD_TARGET" in
   gnu_linux|intel_linux|clang_linux)
     ;;
@@ -588,6 +654,10 @@ case "$SMV_BUILD_TARGET" in
     exit 1
     ;;
 esac
+
+if [[ "$CFAST_EXE_SET" == "0" ]]; then
+  CFAST_EXE="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET/cfast8_linux"
+fi
 
 if [[ "$SMV_EXE_SET" == "0" ]]; then
   SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET/smokeview_linux"
@@ -608,6 +678,7 @@ if [[ "$DIST_NAME" == "" ]]; then
   fi
 fi
 
+build_cfast_executable
 require_file "$CFAST_EXE" "CFAST executable"
 require_file "$EXAMPLE_FILE" "CFAST example file"
 build_smokeview_executable

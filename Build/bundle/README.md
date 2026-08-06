@@ -30,8 +30,8 @@ Build/bundle/run_macos_bundle.sh
 
 ### Linux
 
-Build CFAST and CEditQt, then create the tarball. The bundle script updates
-the repos and rebuilds Smokeview before staging:
+Build CEditQt, then create the tarball. The bundle script updates the repos
+and rebuilds CFAST and Smokeview before staging:
 
 ```bash
 Build/CeditQt/build_linux_app.sh
@@ -100,8 +100,8 @@ The bundle scripts stage:
 - runtime libraries needed by the bundled executables
 
 The macOS and Windows scripts build CFAST, CEditQt, and Smokeview unless
-disabled. The Linux script currently builds Smokeview, but assumes the CFAST
-executable and CEditQt app have already been built.
+disabled. The Linux script builds CFAST and Smokeview, but assumes the CEditQt
+app has already been built.
 
 ## Dependencies
 
@@ -147,7 +147,9 @@ Common options:
 - `--update-branch`: branch to update before building
 - `--no-update-repos`: do not sync `cfast` or fresh-clone `smv`/`fds`
 - `--cfast-tag`: checkout a specific CFAST tag after fetching central
+- `--cfast-build-target`: CFAST build target
 - `--cfast-exe`: use a specific CFAST executable
+- `--no-build-cfast`: do not build CFAST before bundling
 - `--smokeview-exe`: use a specific Smokeview executable
 - `--no-build-smokeview`: do not build Smokeview before bundling
 - `--no-smokeview`: omit Smokeview

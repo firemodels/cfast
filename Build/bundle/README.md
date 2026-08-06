@@ -22,6 +22,15 @@ to the test bundle release:
 Build/bundle/build_macos_bundle.sh --manuals-from-release --upload
 ```
 
+### Signed and notarized macOS releases
+
+Gatekeeper accepts a downloaded application only after it has a Developer ID
+signature and has been notarized by Apple. The bundle build takes its Developer
+ID identity from `CODESIGN_ID`, keeping it out of the repository. It signs
+CEditQt and its nested code, CFAST, Smokeview, and bundled runtime libraries
+with the hardened runtime, then signs the finished DMG. When notarization is
+enabled, the build submits the DMG to Apple and staples the resulting ticket.
+
 For a macOS scheduled job, use the wrapper script:
 
 ```bash
@@ -30,8 +39,10 @@ Build/bundle/run_macos_bundle.sh
 
 ### Linux
 
-Build CEditQt, then create the tarball. The bundle script updates the repos
-and rebuilds CFAST and Smokeview before staging:
+Build CEditQt, then create the tarball. The bundle script updates the repos,
+rebuilds CFAST and Smokeview, and builds the CFAST manuals before staging. The
+Linux tarball includes the built manuals. The same PDFs and revision information
+are uploaded for the macOS and Windows bundle builds:
 
 ```bash
 Build/CeditQt/build_linux_app.sh
@@ -128,6 +139,8 @@ Linux:
 
 - GNU or Intel CFAST build environment
 - PyInstaller for the CEditQt app build
+- LaTeX with `biber` for the CFAST manuals
+- GitHub CLI (`gh`) to upload the built manuals
 
 ## Useful Options
 
@@ -153,9 +166,11 @@ Common options:
 - `--smokeview-exe`: use a specific Smokeview executable
 - `--no-build-smokeview`: do not build Smokeview before bundling
 - `--no-smokeview`: omit Smokeview
-- `--manuals-from-release`: download manuals from a GitHub release
-- `--strict-revision`: require downloaded manuals to match the local CFAST revision
-- `--upload`: upload the created bundle to a GitHub release
+
+Linux-only options:
+
+- `--no-build-manuals`: do not build the CFAST PDF manuals
+- `--no-upload-manuals`: skip publishing built manuals for a local-only run
 
 macOS and Windows options:
 

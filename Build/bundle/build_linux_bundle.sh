@@ -31,6 +31,20 @@ BUILD_SMOKEVIEW=1
 CREATE_TARBALL=1
 UPDATE_REPOS=1
 UPDATE_BRANCH="master"
+BUILD_MANUALS=1
+UPLOAD_MANUALS=1
+if [[ -n "${GH_OWNER:-}" && -n "${GH_REPO:-}" ]]; then
+  MANUALS_UPLOAD_REPO="$GH_OWNER/$GH_REPO"
+else
+  MANUALS_UPLOAD_REPO="firemodels/test_bundles"
+fi
+MANUALS_UPLOAD_TAG="${GH_CFAST_TAG:-CFAST_TEST}"
+MANUALS=(
+  "CFAST_Configuration_Guide"
+  "CFAST_Tech_Ref"
+  "CFAST_Users_Guide"
+  "CFAST_Validation_Guide"
+)
 EXTRA_EXAMPLE_FILES=(
   "$REPO_ROOT/Utilities/for_bundle/Bin/Data/Large_Building.in"
 )
@@ -60,8 +74,12 @@ usage()
   echo "  --no-update-repos        Do not sync CFAST or fresh-clone Smokeview/FDS repos"
   echo "  --no-build-cfast         Do not build CFAST before bundling"
   echo "  --no-build-smokeview     Do not build Smokeview before bundling"
+  echo "  --no-build-manuals       Do not build the CFAST PDF manuals"
   echo "  --no-cedit               Do not bundle CEditQt"
   echo "  --no-smokeview           Do not bundle Smokeview files"
+  echo "  --no-upload-manuals      Do not upload built manual PDFs and CFAST_INFO.txt"
+  echo "  --manuals-upload-repo repo GitHub owner/repo receiving built manuals"
+  echo "  --manuals-upload-tag tag GitHub release tag receiving built manuals"
   echo "  --no-tarball             Stage files only"
   echo "  -h, --help               Display this message"
 }
@@ -307,6 +325,92 @@ build_cfast_executable()
   else
     run_checked "CFAST $CFAST_BUILD_TARGET build" make -C "$REPO_ROOT/Build/CFAST" "$CFAST_BUILD_TARGET"
   fi
+}
+
+build_manuals()
+{
+  local manual_name
+  local manual_dir
+  local build_script
+
+  if [[ "$BUILD_MANUALS" != "1" ]]; then
+    return 0
+  fi
+
+  echo "*** Building CFAST manuals"
+  for manual_name in "${MANUALS[@]}"; do
+    manual_dir="$REPO_ROOT/Manuals/$manual_name"
+    build_script="$manual_dir/make_guide.sh"
+    require_file "$build_script" "$manual_name build script"
+    echo "    $manual_name"
+    (cd "$manual_dir" && run_checked "$manual_name build" bash ./make_guide.sh)
+    require_file "$manual_dir/$manual_name.pdf" "$manual_name PDF"
+  done
+}
+
+write_manual_release_info()
+{
+  local info_file="$1"
+  local cfast_hash
+  local cfast_revision
+  local smv_hash
+  local smv_revision
+
+  cfast_hash="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+  cfast_revision="$(git -C "$REPO_ROOT" describe --always --dirty)"
+  smv_hash="$(git -C "$FIREMODELS_ROOT/smv" rev-parse HEAD)"
+  smv_revision="$(git -C "$FIREMODELS_ROOT/smv" describe --always --dirty)"
+
+  {
+    printf "CFAST_HASH     %s\\n" "$cfast_hash"
+    printf "CFAST_REVISION %s\\n" "$cfast_revision"
+    printf "SMV_HASH       %s\\n" "$smv_hash"
+    printf "SMV_REVISION   %s\\n" "$smv_revision"
+  } > "$info_file"
+}
+
+copy_manuals()
+{
+  local documentation_dir="$1"
+  local manual_name
+
+  for manual_name in "${MANUALS[@]}"; do
+    require_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$manual_name PDF"
+    copy_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$documentation_dir/$manual_name.pdf"
+  done
+}
+
+upload_manuals()
+{
+  local upload_dir="$STAGE_ROOT/release-manuals"
+  local manual_name
+  local upload_files=()
+
+  if [[ "$UPLOAD_MANUALS" != "1" ]]; then
+    return 0
+  fi
+  if [[ "$BUILD_MANUALS" != "1" ]]; then
+    echo "***error: manual uploads require manual builds; do not use both --no-build-manuals and manual uploads."
+    exit 1
+  fi
+  if ! command -v gh >/dev/null 2>&1; then
+    echo "***error: gh command not found."
+    exit 1
+  fi
+
+  rm -rf "$upload_dir"
+  mkdir -p "$upload_dir"
+  for manual_name in "${MANUALS[@]}"; do
+    copy_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$upload_dir/$manual_name.pdf"
+    upload_files+=("$upload_dir/$manual_name.pdf")
+  done
+  write_manual_release_info "$upload_dir/CFAST_INFO.txt"
+  upload_files+=("$upload_dir/CFAST_INFO.txt")
+
+  echo "*** Uploading CFAST manuals"
+  echo "    release: $MANUALS_UPLOAD_REPO $MANUALS_UPLOAD_TAG"
+  run_checked "GitHub manual upload" \
+    gh release upload "$MANUALS_UPLOAD_TAG" "${upload_files[@]}" --clobber -R "$MANUALS_UPLOAD_REPO"
 }
 
 infer_cfast_build_target_from_exe()
@@ -608,6 +712,10 @@ while [[ $# -gt 0 ]]; do
       BUILD_SMOKEVIEW=0
       shift
       ;;
+    --no-build-manuals)
+      BUILD_MANUALS=0
+      shift
+      ;;
     --no-cedit)
       INCLUDE_CEDIT=0
       shift
@@ -615,6 +723,18 @@ while [[ $# -gt 0 ]]; do
     --no-smokeview)
       INCLUDE_SMOKEVIEW=0
       shift
+      ;;
+    --no-upload-manuals)
+      UPLOAD_MANUALS=0
+      shift
+      ;;
+    --manuals-upload-repo)
+      MANUALS_UPLOAD_REPO="$2"
+      shift 2
+      ;;
+    --manuals-upload-tag)
+      MANUALS_UPLOAD_TAG="$2"
+      shift 2
       ;;
     --no-tarball)
       CREATE_TARBALL=0
@@ -682,6 +802,8 @@ build_cfast_executable
 require_file "$CFAST_EXE" "CFAST executable"
 require_file "$EXAMPLE_FILE" "CFAST example file"
 build_smokeview_executable
+build_manuals
+upload_manuals
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -703,11 +825,7 @@ ln -s cfast8_linux "$DIST_DIR/bin/cfast"
 bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast8_linux" "$DIST_DIR/lib"
 
 copy_examples "$DIST_DIR/Examples"
-
-copy_file "$REPO_ROOT/Manuals/CFAST_Configuration_Guide/CFAST_Configuration_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Configuration_Guide.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Tech_Ref/CFAST_Tech_Ref.pdf" "$DIST_DIR/Documentation/CFAST_Tech_Ref.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Users_Guide/CFAST_Users_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Users_Guide.pdf"
-copy_file "$REPO_ROOT/Manuals/CFAST_Validation_Guide/CFAST_Validation_Guide.pdf" "$DIST_DIR/Documentation/CFAST_Validation_Guide.pdf"
+copy_manuals "$DIST_DIR/Documentation"
 
 write_cfast_vars_sh "$DIST_DIR/bin/CFASTVARS.sh"
 write_readme "$DIST_DIR/README.txt"

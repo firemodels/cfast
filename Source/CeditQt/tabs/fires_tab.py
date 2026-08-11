@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import copy
+import csv
+import html
+import io
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QByteArray, QMimeData, Qt, Signal
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -153,12 +156,77 @@ class SpreadsheetTableWidget(QTableWidget):
     pasted = Signal()
 
     def keyPressEvent(self, event):
+        if event.matches(QKeySequence.StandardKey.Copy):
+            if self.copy_to_clipboard():
+                event.accept()
+                return
+
         if event.matches(QKeySequence.StandardKey.Paste):
             if self.paste_from_clipboard():
                 event.accept()
                 return
 
         super().keyPressEvent(event)
+
+    def copy_to_clipboard(self) -> bool:
+        rows = self.selected_cell_rows()
+        if not rows:
+            return False
+
+        csv_text = self.delimited_text(rows, ",")
+        tab_text = self.delimited_text(rows, "\t")
+
+        mime_data = QMimeData()
+        mime_data.setText(csv_text)
+        mime_data.setData("text/csv", QByteArray(csv_text.encode("utf-8")))
+        mime_data.setData(
+            "text/tab-separated-values",
+            QByteArray(tab_text.encode("utf-8")),
+        )
+        mime_data.setHtml(self.html_table(rows))
+        QApplication.clipboard().setMimeData(mime_data)
+        return True
+
+    def selected_cell_rows(self) -> list[list[str]]:
+        selected = self.selectedIndexes()
+        if not selected:
+            current = self.currentIndex()
+            if not current.isValid():
+                return []
+            selected = [current]
+
+        selected_cells = {(index.row(), index.column()) for index in selected}
+        first_row = min(row for row, _ in selected_cells)
+        last_row = max(row for row, _ in selected_cells)
+        first_col = min(col for _, col in selected_cells)
+        last_col = max(col for _, col in selected_cells)
+
+        rows: list[list[str]] = []
+        for row in range(first_row, last_row + 1):
+            values: list[str] = []
+            for col in range(first_col, last_col + 1):
+                if (row, col) not in selected_cells:
+                    values.append("")
+                    continue
+                item = self.item(row, col)
+                values.append("" if item is None else item.text())
+            rows.append(values)
+        return rows
+
+    @staticmethod
+    def delimited_text(rows: list[list[str]], delimiter: str) -> str:
+        output = io.StringIO(newline="")
+        writer = csv.writer(output, delimiter=delimiter, lineterminator="\n")
+        writer.writerows(rows)
+        return output.getvalue()
+
+    @staticmethod
+    def html_table(rows: list[list[str]]) -> str:
+        table_rows = []
+        for row in rows:
+            cells = "".join(f"<td>{html.escape(value)}</td>" for value in row)
+            table_rows.append(f"<tr>{cells}</tr>")
+        return f"<table>{''.join(table_rows)}</table>"
 
     def paste_from_clipboard(self) -> bool:
         text = QApplication.clipboard().text()

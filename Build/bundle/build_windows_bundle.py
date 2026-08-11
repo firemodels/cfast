@@ -914,6 +914,23 @@ def extract_payload(payload_zip, target, overwrite):
     return target
 
 
+def report_install_permission_error(error):
+    locked_file = getattr(error, "filename", None)
+    if getattr(error, "winerror", None) in {32, 33}:
+        print("***error: the existing CFAST installation cannot be replaced because a file is in use.")
+        print("         Close CEdit, Smokeview, and any CMDcfast or Command Prompt windows using CFAST,")
+        print("         then run this installer again.")
+        if locked_file:
+            print(f"         File in use: {locked_file}")
+        return
+
+    print("***error: permission denied while installing CFAST.")
+    if locked_file:
+        print(f"         Unable to update: {locked_file}")
+    print("         Close any CFAST programs that are running. If the problem continues,")
+    print("         right-click this installer and choose Run as administrator, or choose a writable folder.")
+
+
 def wait_to_close(silent):
     if not silent:
         input("Press Enter to close.")
@@ -1078,10 +1095,9 @@ def main():
 
     try:
         target = extract_payload(payload_zip, target, args.overwrite)
-    except PermissionError:
+    except PermissionError as error:
         print("")
-        print("***error: permission denied while installing CFAST.")
-        print("         Run this installer as administrator or choose a writable folder.")
+        report_install_permission_error(error)
         wait_to_close(args.silent)
         return 1
 

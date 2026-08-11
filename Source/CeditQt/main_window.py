@@ -46,7 +46,7 @@ from cfast_case import (
 )
 from cfast_reader import read_cfast_input_with_warnings
 from cedit_version import CFAST_GIT_DESCRIBE
-from cfast_writer import write_cfast_input
+from cfast_writer import validate_case, write_cfast_input
 from tabs.ceiling_floor_vents_tab import CeilingFloorVentsTab
 from tabs.compartments_tab import CompartmentsTab
 from tabs.detection_suppression_tab import DetectionSuppressionTab
@@ -346,6 +346,20 @@ def single_compartment_example() -> CfastCase:
     return case
 
 
+def opening_case() -> CfastCase:
+    """Return the valid starter case shown when CEdit opens or resets."""
+    case = CfastCase()
+    case.compartments = [
+        Compartment(
+            id="Comp 1",
+            width=5.0,
+            depth=5.0,
+            height=3.0,
+        )
+    ]
+    return case
+
+
 def default_concrete_material() -> MaterialProperty:
     return MaterialProperty(
         id="CONCRETE",
@@ -428,7 +442,12 @@ class CeditMainWindow(QMainWindow):
 
         self.setStatusBar(QStatusBar(self))
         self.statusBar().showMessage("No Errors")
-        self.load_case(CfastCase())
+        self.live_validation_timer = QTimer(self)
+        self.live_validation_timer.setSingleShot(True)
+        self.live_validation_timer.setInterval(150)
+        self.live_validation_timer.timeout.connect(self.update_live_validation)
+        self.connect_live_validation_signals()
+        self.load_case(opening_case())
 
     def build_menu(self):
         self.menuBar().setNativeMenuBar(False)
@@ -692,6 +711,40 @@ class CeditMainWindow(QMainWindow):
         self.fires_tab.add_to_case(case)
         return case
 
+    def connect_live_validation_signals(self):
+        """Recheck the assembled case after a user changes an editor field."""
+        for widget in self.findChildren(QLineEdit):
+            widget.textChanged.connect(self.schedule_live_validation)
+        for widget in self.findChildren(QComboBox):
+            widget.currentTextChanged.connect(self.schedule_live_validation)
+        for widget in self.findChildren(QTableWidget):
+            widget.itemChanged.connect(self.schedule_live_validation)
+
+    def schedule_live_validation(self, *_args):
+        self.live_validation_timer.start()
+
+    def set_validation_status(self, message: str | None = None):
+        if message:
+            self.statusBar().setStyleSheet(
+                "QStatusBar { color: #b00020; font-weight: bold; }"
+            )
+            self.statusBar().showMessage(f"Error: {message}")
+        else:
+            self.statusBar().setStyleSheet("")
+            self.statusBar().showMessage("No Errors")
+
+    def update_live_validation(self):
+        if self.cfast_is_running():
+            return
+
+        try:
+            case = self.build_cfast_case()
+            validate_case(case)
+        except Exception as exc:
+            self.set_validation_status(str(exc))
+        else:
+            self.set_validation_status()
+
     def current_compartment_ids(self) -> list[str]:
         return [
             compartment.id
@@ -814,7 +867,7 @@ class CeditMainWindow(QMainWindow):
         self.cfast_query_timer.stop()
         self.set_cfast_running_ui(False)
 
-        self.load_case(CfastCase())
+        self.load_case(opening_case())
         self.simulation_tab.set_message(
             "CEdit Qt reset to its opening state.\n"
             "Use File > Open... to load an existing CFAST input file."

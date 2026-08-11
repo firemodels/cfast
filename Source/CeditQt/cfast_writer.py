@@ -123,7 +123,46 @@ def validate_case(case: CfastCase) -> None:
         raise ValueError("At least one compartment is required.")
 
     compartment_ids = {compartment.id for compartment in case.compartments}
+    compartments = {compartment.id: compartment for compartment in case.compartments}
     material_ids = {material.id for material in case.materials}
+
+    def require_unique_ids(object_type: str, objects) -> None:
+        ids = [object_.id for object_ in objects]
+        duplicates = sorted({object_id for object_id in ids if ids.count(object_id) > 1})
+        if duplicates:
+            raise ValueError(
+                f"Duplicate {object_type} ID: {duplicates[0]!r}. IDs must be unique."
+            )
+
+    def get_compartment(vent_type: str, vent_id: str, location: str, comp_id: str):
+        if comp_id not in compartments:
+            raise ValueError(
+                f"{vent_type} {vent_id!r}: {location} compartment "
+                f"{comp_id!r} does not exist."
+            )
+        return compartments[comp_id]
+
+    def validate_vent_schedule(vent_type: str, vent) -> None:
+        initial_open = getattr(vent, "initial_open", 1.0)
+        if not 0.0 <= initial_open <= 1.0:
+            raise ValueError(
+                f"{vent_type} {vent.id!r}: initial opening fraction must be 0 to 1."
+            )
+
+        t_values, f_values = scheduled_values(vent)
+        for index, (time_value, fraction_value) in enumerate(zip(t_values, f_values)):
+            if time_value < 0.0:
+                raise ValueError(
+                    f"{vent_type} {vent.id!r}: opening times must be non-negative."
+                )
+            if index and time_value < t_values[index - 1]:
+                raise ValueError(
+                    f"{vent_type} {vent.id!r}: opening times must increase."
+                )
+            if not 0.0 <= fraction_value <= 1.0:
+                raise ValueError(
+                    f"{vent_type} {vent.id!r}: opening fractions must be 0 to 1."
+                )
 
     def material_is_defined(material_id: str) -> bool:
         material_id = material_id.strip()
@@ -132,7 +171,66 @@ def validate_case(case: CfastCase) -> None:
 
         return material_id in material_ids
 
+    require_unique_ids("compartment", case.compartments)
+    require_unique_ids("thermal property", case.materials)
+    require_unique_ids("wall vent", case.wall_vents)
+    require_unique_ids("ceiling/floor vent", getattr(case, "ceiling_floor_vents", []))
+    require_unique_ids("mechanical vent", getattr(case, "mechanical_vents", []))
+    require_unique_ids("target", getattr(case, "targets", []))
+    require_unique_ids("detection device", getattr(case, "detection_devices", []))
+    require_unique_ids("fire property", case.fire_properties)
+    require_unique_ids("fire", case.fires)
+
+    for material in case.materials:
+        if not material.id.strip() or len(material.id) > 16:
+            raise ValueError(
+                f"Thermal property {material.id!r}: ID must contain 1 to 16 characters."
+            )
+        if not 0.0 <= material.emissivity <= 1.0:
+            raise ValueError(
+                f"Thermal property {material.id!r}: emissivity must be 0 to 1."
+            )
+        if material.conductivity < 0.0:
+            raise ValueError(
+                f"Thermal property {material.id!r}: conductivity must be non-negative."
+            )
+        if material.specific_heat < 0.0:
+            raise ValueError(
+                f"Thermal property {material.id!r}: specific heat must be non-negative."
+            )
+        if material.density < 0.0:
+            raise ValueError(
+                f"Thermal property {material.id!r}: density must be non-negative."
+            )
+        if material.thickness < 0.0:
+            raise ValueError(
+                f"Thermal property {material.id!r}: thickness must be non-negative."
+            )
+
     for compartment in case.compartments:
+        if compartment.width <= 0.0:
+            raise ValueError(f"Compartment {compartment.id!r}: width must be positive.")
+        if compartment.depth <= 0.0:
+            raise ValueError(f"Compartment {compartment.id!r}: depth must be positive.")
+        if compartment.height <= 0.0:
+            raise ValueError(f"Compartment {compartment.id!r}: height must be positive.")
+        if len(compartment.cross_section_heights) != len(compartment.cross_section_areas):
+            raise ValueError(
+                f"Compartment {compartment.id!r}: cross-section heights and areas must match."
+            )
+        for height, area in zip(
+            compartment.cross_section_heights, compartment.cross_section_areas
+        ):
+            if not 0.0 <= height <= compartment.height:
+                raise ValueError(
+                    f"Compartment {compartment.id!r}: cross-section height must be "
+                    "between the floor and ceiling."
+                )
+            if area < 0.0:
+                raise ValueError(
+                    f"Compartment {compartment.id!r}: cross-section area must be non-negative."
+                )
+
         for surface_name, material_values in (
             ("ceiling", compartment.ceiling_matl_id),
             ("wall", compartment.wall_matl_id),
@@ -146,43 +244,128 @@ def validate_case(case: CfastCase) -> None:
                     )
 
     for vent in case.wall_vents:
-        if vent.first_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Wall vent {vent.id!r}: first compartment "
-                f"{vent.first_comp_id!r} does not exist."
-            )
+        first_compartment = get_compartment(
+            "Wall vent", vent.id, "first", vent.first_comp_id
+        )
         if vent.second_comp_id != "OUTSIDE" and vent.second_comp_id not in compartment_ids:
             raise ValueError(
                 f"Wall vent {vent.id!r}: second compartment "
                 f"{vent.second_comp_id!r} does not exist."
             )
-        scheduled_values(vent)
+        if vent.first_comp_id == vent.second_comp_id:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: the two compartments must be different."
+            )
+        if vent.bottom < 0.0 or vent.bottom > first_compartment.height:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: bottom must be between the floor and ceiling "
+                f"of compartment {vent.first_comp_id!r}."
+            )
+        if vent.height <= 0.0 or vent.bottom + vent.height > first_compartment.height:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: top is above the ceiling of compartment "
+                f"{vent.first_comp_id!r}. Reduce the height or bottom elevation."
+            )
+        if vent.width <= 0.0 or vent.width > max(first_compartment.width, first_compartment.depth):
+            raise ValueError(
+                f"Wall vent {vent.id!r}: width must be positive and no greater than "
+                f"the dimensions of compartment {vent.first_comp_id!r}."
+            )
+        if vent.second_comp_id != "OUTSIDE":
+            second_compartment = compartments[vent.second_comp_id]
+            vent_bottom = vent.bottom + first_compartment.origin_z
+            vent_top = vent_bottom + vent.height
+            if (
+                vent_bottom < second_compartment.origin_z
+                or vent_top > second_compartment.origin_z + second_compartment.height
+            ):
+                raise ValueError(
+                    f"Wall vent {vent.id!r}: it extends below the floor or above the "
+                    f"ceiling of compartment {vent.second_comp_id!r}."
+                )
+        validate_vent_schedule("Wall vent", vent)
 
     for vent in getattr(case, "ceiling_floor_vents", []):
-        if vent.top_comp_id != "OUTSIDE" and vent.top_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: top compartment "
-                f"{vent.top_comp_id!r} does not exist."
+        top_compartment = None
+        bottom_compartment = None
+        if vent.top_comp_id != "OUTSIDE":
+            top_compartment = get_compartment(
+                "Ceiling/floor vent", vent.id, "top", vent.top_comp_id
             )
-        if vent.bottom_comp_id != "OUTSIDE" and vent.bottom_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Ceiling/floor vent {vent.id!r}: bottom compartment "
-                f"{vent.bottom_comp_id!r} does not exist."
+        if vent.bottom_comp_id != "OUTSIDE":
+            bottom_compartment = get_compartment(
+                "Ceiling/floor vent", vent.id, "bottom", vent.bottom_comp_id
             )
-        scheduled_values(vent)
+        if vent.top_comp_id == vent.bottom_comp_id:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: the two compartments must be different."
+            )
+        if vent.area <= 0.0:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: area must be positive."
+            )
+        if top_compartment is not None and vent.area > top_compartment.width * top_compartment.depth:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: area must be no greater than the floor "
+                f"area of compartment {vent.top_comp_id!r}."
+            )
+        if top_compartment is not None and not 0.0 <= vent.offset_x <= top_compartment.width:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: X offset must be within compartment "
+                f"{vent.top_comp_id!r}."
+            )
+        if top_compartment is not None and not 0.0 <= vent.offset_y <= top_compartment.depth:
+            raise ValueError(
+                f"Ceiling/floor vent {vent.id!r}: Y offset must be within compartment "
+                f"{vent.top_comp_id!r}."
+            )
+        if top_compartment is not None and bottom_compartment is not None:
+            if abs(top_compartment.origin_z - (bottom_compartment.origin_z + bottom_compartment.height)) > 0.1:
+                raise ValueError(
+                    f"Ceiling/floor vent {vent.id!r}: the floor of top compartment "
+                    f"{vent.top_comp_id!r} must align with the ceiling of bottom compartment "
+                    f"{vent.bottom_comp_id!r}."
+                )
+        validate_vent_schedule("Ceiling/floor vent", vent)
 
     for vent in getattr(case, "mechanical_vents", []):
-        if vent.from_comp_id != "OUTSIDE" and vent.from_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Mechanical vent {vent.id!r}: from compartment "
-                f"{vent.from_comp_id!r} does not exist."
+        from_compartment = None
+        to_compartment = None
+        if vent.from_comp_id != "OUTSIDE":
+            from_compartment = get_compartment(
+                "Mechanical vent", vent.id, "from", vent.from_comp_id
             )
-        if vent.to_comp_id != "OUTSIDE" and vent.to_comp_id not in compartment_ids:
-            raise ValueError(
-                f"Mechanical vent {vent.id!r}: to compartment "
-                f"{vent.to_comp_id!r} does not exist."
+        if vent.to_comp_id != "OUTSIDE":
+            to_compartment = get_compartment(
+                "Mechanical vent", vent.id, "to", vent.to_comp_id
             )
-        scheduled_values(vent)
+        if vent.from_comp_id == vent.to_comp_id:
+            raise ValueError(
+                f"Mechanical vent {vent.id!r}: the two compartments must be different."
+            )
+        if vent.from_area <= 0.0 or vent.to_area <= 0.0:
+            raise ValueError(f"Mechanical vent {vent.id!r}: diffuser areas must be positive.")
+        if vent.begin_dropoff < 0.0 or vent.zero_flow < 0.0:
+            raise ValueError(f"Mechanical vent {vent.id!r}: fan pressure cutoffs must be non-negative.")
+        if vent.begin_dropoff >= vent.zero_flow:
+            raise ValueError(
+                f"Mechanical vent {vent.id!r}: the flow-dropoff pressure must be less "
+                "than the zero-flow pressure."
+            )
+        if vent.filter_time < 0.0:
+            raise ValueError(f"Mechanical vent {vent.id!r}: filter time must be non-negative.")
+        for location, comp, area, height, orientation in (
+            ("from", from_compartment, vent.from_area, vent.from_height, vent.from_orientation),
+            ("to", to_compartment, vent.to_area, vent.to_height, vent.to_orientation),
+        ):
+            if comp is not None and orientation.upper() == "VERTICAL":
+                half_size = area ** 0.5 / 2.0
+                if height - half_size < 0.0 or height + half_size > comp.height:
+                    raise ValueError(
+                        f"Mechanical vent {vent.id!r}: the {location} diffuser extends "
+                        f"below the floor or above the ceiling of compartment {comp.id!r}."
+                    )
+        validate_vent_schedule("Mechanical vent", vent)
 
     for target in getattr(case, "targets", []):
         if target.comp_id not in compartment_ids:
@@ -204,6 +387,19 @@ def validate_case(case: CfastCase) -> None:
             raise ValueError(
                 f"Target {target.id!r}: internal temperature depth must be non-negative."
             )
+        target_compartment = compartments[target.comp_id]
+        if not 0.0 <= target.x_position <= target_compartment.width:
+            raise ValueError(f"Target {target.id!r}: X position is outside its compartment.")
+        if not 0.0 <= target.y_position <= target_compartment.depth:
+            raise ValueError(f"Target {target.id!r}: Y position is outside its compartment.")
+        if not 0.0 <= target.z_position <= target_compartment.height:
+            raise ValueError(f"Target {target.id!r}: Z position is outside its compartment.")
+        if any(abs(value) > 1.0 for value in (target.x_normal, target.y_normal, target.z_normal)):
+            raise ValueError(f"Target {target.id!r}: normal-vector values must be between -1 and 1.")
+        if target.thickness > 0.0 and target.temperature_depth > target.thickness:
+            raise ValueError(
+                f"Target {target.id!r}: internal temperature depth exceeds target thickness."
+            )
 
     for device in getattr(case, "detection_devices", []):
         if device.comp_id not in compartment_ids:
@@ -218,6 +414,19 @@ def validate_case(case: CfastCase) -> None:
         }:
             raise ValueError(
                 f"Detection device {device.id!r}: invalid type {device.device_type!r}."
+            )
+        device_compartment = compartments[device.comp_id]
+        if not 0.0 <= device.x_position <= device_compartment.width:
+            raise ValueError(
+                f"Detection device {device.id!r}: X position is outside its compartment."
+            )
+        if not 0.0 <= device.y_position <= device_compartment.depth:
+            raise ValueError(
+                f"Detection device {device.id!r}: Y position is outside its compartment."
+            )
+        if not 0.0 <= device.z_position <= device_compartment.height:
+            raise ValueError(
+                f"Detection device {device.id!r}: Z position is outside its compartment."
             )
 
     for conn in getattr(case, "wall_surface_connections", []):
@@ -266,6 +475,20 @@ def validate_case(case: CfastCase) -> None:
                 f"Visualization output: 2-D axis must be X, Y, or Z, got "
                 f"{vis.axis!r}."
             )
+        if vis_type == "2-D":
+            visualization_compartments = (
+                case.compartments
+                if comp_id.upper() in {"ALL", "NULL", ""}
+                else [compartments[comp_id]]
+            )
+            dimension_name = {"X": "width", "Y": "depth", "Z": "height"}[axis]
+            for visualization_compartment in visualization_compartments:
+                maximum = getattr(visualization_compartment, dimension_name)
+                if not 0.0 <= vis.value <= maximum:
+                    raise ValueError(
+                        f"Visualization output: {axis} position is outside compartment "
+                        f"{visualization_compartment.id!r}."
+                    )
 
     property_ids = {prop.id for prop in case.fire_properties}
 
@@ -286,12 +509,25 @@ def validate_case(case: CfastCase) -> None:
                 f"{fire.fire_property_id!r} does not exist."
             )
 
+        fire_compartment = compartments[fire.comp_id]
+        if not 0.0 <= fire.x_position <= fire_compartment.width:
+            raise ValueError(f"Fire {fire.id!r}: X position is outside its compartment.")
+        if not 0.0 <= fire.y_position <= fire_compartment.depth:
+            raise ValueError(f"Fire {fire.id!r}: Y position is outside its compartment.")
+
         ignition = fire.ignition_criterion.upper()
         if ignition not in {"TIME", "TEMPERATURE", "FLUX"}:
             raise ValueError(
                 f"Fire {fire.id!r}: ignition criterion must be TIME, TEMPERATURE, "
                 "or FLUX."
             )
+        if ignition != "TIME":
+            target_ids = {target.id for target in getattr(case, "targets", [])}
+            if fire.target not in target_ids:
+                raise ValueError(
+                    f"Fire {fire.id!r}: ignition by {ignition.lower()} requires an "
+                    "existing target."
+                )
 
 
 def write_cfast_input(case: CfastCase, path: str | Path) -> None:

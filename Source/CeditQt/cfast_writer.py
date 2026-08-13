@@ -396,7 +396,12 @@ def validate_case(case: CfastCase) -> None:
             raise ValueError(f"Target {target.id!r}: Z position is outside its compartment.")
         if any(abs(value) > 1.0 for value in (target.x_normal, target.y_normal, target.z_normal)):
             raise ValueError(f"Target {target.id!r}: normal-vector values must be between -1 and 1.")
-        if target.thickness > 0.0 and target.temperature_depth > target.thickness:
+        if target.depth_units.upper() == "FRACTION":
+            if target.temperature_depth > 1.0:
+                raise ValueError(
+                    f"Target {target.id!r}: internal temperature depth fraction must be 0 to 1."
+                )
+        elif target.thickness > 0.0 and target.temperature_depth > target.thickness:
             raise ValueError(
                 f"Target {target.id!r}: internal temperature depth exceeds target thickness."
             )

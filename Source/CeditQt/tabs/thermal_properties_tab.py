@@ -223,8 +223,27 @@ class ThermalPropertiesTab(QWidget):
         self.table.blockSignals(False)
 
     def add_row(self):
-        self.table.insertRow(self.table.rowCount())
-        self.table.setCurrentCell(self.table.rowCount() - 1, 0)
+        material_id, material_name = self.next_new_material_names()
+        values = [
+            material_id,
+            material_name,
+            format_value(CONDUCTIVITY, 0.16),
+            format_value(SPECIFIC_HEAT, 900.0),
+            format_value(DENSITY, 790.0),
+            format_value(LENGTH, 0.016),
+            "0.9",
+            "",
+        ]
+
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+
+        self.table.blockSignals(True)
+        for col, value in enumerate(values):
+            self.table.setItem(row, col, QTableWidgetItem(value))
+        self.table.blockSignals(False)
+
+        self.table.setCurrentCell(row, 0)
 
     def duplicate_row(self):
         source_row = self.selected_row()
@@ -328,7 +347,7 @@ class ThermalPropertiesTab(QWidget):
         index = max(1, len(existing_ids) + 1)
 
         while True:
-            material_id = f"NM_{index}"
+            material_id = f"NM {index}"
             if material_id not in existing_ids:
                 return material_id, f"New Material {index}"
             index += 1

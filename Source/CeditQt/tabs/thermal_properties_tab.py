@@ -440,6 +440,9 @@ class ThermalPropertiesTab(QWidget):
         return None
 
     def add_to_case(self, case: CfastCase):
+        case.materials = self.materials_from_table()
+
+    def materials_from_table(self) -> list[MaterialProperty]:
         materials: list[MaterialProperty] = []
         ids_seen: set[str] = set()
 
@@ -500,7 +503,7 @@ class ThermalPropertiesTab(QWidget):
 
             materials.append(material)
 
-        case.materials = materials
+        return materials
 
     def refresh_unit_labels(self):
         self.table.setHorizontalHeaderLabels(

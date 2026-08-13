@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QRect, QSize, Qt, Signal
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QStyle, QStyleOptionHeader
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
@@ -27,6 +29,61 @@ from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
 
 
+class CompartmentSummaryHeader(QHeaderView):
+    """Two-row header with a grouped label for compartment connection counts."""
+
+    connection_first_column = 11
+    connection_last_column = 16
+    group_height = 22
+
+    def sectionSizeFromContents(self, logical_index: int) -> QSize:
+        size = super().sectionSizeFromContents(logical_index)
+        return QSize(size.width(), size.height() + self.group_height)
+
+    def paintSection(self, painter, rect: QRect, logical_index: int):
+        lower_rect = QRect(
+            rect.x(),
+            rect.y() + self.group_height,
+            rect.width(),
+            rect.height() - self.group_height,
+        )
+        if logical_index >= self.connection_first_column:
+            option = QStyleOptionHeader()
+            self.initStyleOption(option)
+            option.rect = lower_rect
+            option.section = logical_index
+            option.text = str(
+                self.model().headerData(
+                    logical_index,
+                    self.orientation(),
+                    Qt.ItemDataRole.DisplayRole,
+                )
+                or ""
+            )
+            option.palette.setColor(QPalette.ColorRole.Button, QColor("#d8d8d8"))
+            self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
+        else:
+            super().paintSection(painter, lower_rect, logical_index)
+
+        if logical_index != self.connection_first_column:
+            return
+
+        group_width = sum(
+            self.sectionSize(column)
+            for column in range(
+                self.connection_first_column, self.connection_last_column + 1
+            )
+        )
+        group_rect = QRect(rect.x(), rect.y(), group_width, self.group_height)
+        option = QStyleOptionHeader()
+        self.initStyleOption(option)
+        option.rect = group_rect
+        option.text = "Compartment Connection Counts"
+        option.textAlignment = Qt.AlignmentFlag.AlignCenter
+        option.palette.setColor(QPalette.ColorRole.Button, QColor("#d8d8d8"))
+        self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
+
+
 def summary_headers() -> list[str]:
     length = unit_label(LENGTH)
     return [
@@ -41,12 +98,12 @@ def summary_headers() -> list[str]:
         "Ceiling",
         "Walls",
         "Floor",
-        "F",
-        "H",
-        "V",
-        "M",
-        "D",
-        "T",
+        "Fire",
+        "Wall",
+        "C/F",
+        "Mech",
+        "Dev",
+        "Targ",
     ]
 
 
@@ -60,6 +117,16 @@ def material_headers() -> list[str]:
         "Floor Material",
         f"Floor Thickness\n({length})",
     ]
+
+
+CONNECTION_COUNT_TOOLTIPS = {
+    11: "Fires connected to this compartment",
+    12: "Wall vents connected to this compartment",
+    13: "Ceiling/floor vents connected to this compartment",
+    14: "Mechanical vents connected to this compartment",
+    15: "Detection or suppression devices in this compartment",
+    16: "Targets in this compartment",
+}
 
 
 def area_headers() -> list[str]:
@@ -91,7 +158,9 @@ class CompartmentsTab(QWidget):
         self.material_choices = ["OFF"]
 
         self.summary_table = HoverEditTableWidget(0, len(summary_headers()))
+        self.summary_table.setHorizontalHeader(CompartmentSummaryHeader(Qt.Orientation.Horizontal))
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.set_summary_header_tooltips()
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -190,6 +259,7 @@ class CompartmentsTab(QWidget):
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
         self.compartments = copy.deepcopy(case.compartments)
+        self.update_connection_counts(case)
         self.selected_index = 0 if self.compartments else -1
         self.refresh_summary_table(select_row=0 if self.compartments else None)
         if self.compartments:
@@ -197,10 +267,46 @@ class CompartmentsTab(QWidget):
         else:
             self.clear_detail()
 
+    def update_connection_counts(self, case: CfastCase):
+        """Populate the read-only summary columns from the objects in *case*."""
+        compartments_by_id = {compartment.id: compartment for compartment in self.compartments}
+
+        for compartment in self.compartments:
+            compartment.fire_count = 0
+            compartment.hvent_count = 0
+            compartment.vent_count = 0
+            compartment.mechanical_count = 0
+            compartment.detector_count = 0
+            compartment.target_count = 0
+
+        def increment(compartment_ids: set[str], attribute: str):
+            for compartment_id in compartment_ids:
+                compartment = compartments_by_id.get(compartment_id)
+                if compartment is not None:
+                    setattr(compartment, attribute, getattr(compartment, attribute) + 1)
+
+        for fire in case.fires:
+            increment({fire.comp_id}, "fire_count")
+        for vent in case.wall_vents:
+            increment({vent.first_comp_id, vent.second_comp_id}, "hvent_count")
+        for vent in case.ceiling_floor_vents:
+            increment({vent.first_comp_id, vent.second_comp_id}, "vent_count")
+        for vent in case.mechanical_vents:
+            increment({vent.from_comp_id, vent.to_comp_id}, "mechanical_count")
+        for device in case.detection_devices:
+            increment({device.comp_id}, "detector_count")
+        for target in case.targets:
+            increment({target.comp_id}, "target_count")
+
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.set_summary_header_tooltips()
         self.materials_table.setHorizontalHeaderLabels(material_headers())
         self.area_table.setHorizontalHeaderLabels(area_headers())
+
+    def set_summary_header_tooltips(self):
+        for column, tooltip in CONNECTION_COUNT_TOOLTIPS.items():
+            self.summary_table.horizontalHeaderItem(column).setToolTip(tooltip)
 
     def set_material_ids(self, material_ids: list[str]):
         choices = ["OFF"]

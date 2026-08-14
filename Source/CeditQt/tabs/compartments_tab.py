@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import QRect, QSize, Qt, Signal
+from PySide6.QtCore import QRect, QSize, QTimer, Qt, Signal
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QStyle, QStyleOptionHeader
 from PySide6.QtWidgets import (
@@ -658,6 +658,15 @@ class CompartmentsTab(QWidget):
             return
 
         row = item.row()
+        # Do not rebuild the table while Qt is still delivering itemChanged.
+        # Replacing the emitting QTableWidgetItem here leaves later signal
+        # handlers with a dangling pointer and crashes PySide on macOS.
+        QTimer.singleShot(0, lambda row=row: self.commit_summary_row(row))
+
+    def commit_summary_row(self, row: int):
+        if row < 0 or row >= len(self.compartments):
+            return
+
         self.update_model_from_summary(row)
         self.refresh_summary_table(select_row=row)
 

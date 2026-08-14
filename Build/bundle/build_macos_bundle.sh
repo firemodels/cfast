@@ -273,30 +273,50 @@ download_release_manuals()
   local assets
   local download_command
   local asset_name
+  local manuals_ready
+  local missing_asset
+  local manual_check_deadline=$((SECONDS + 2 * 60 * 60))
 
   require_command gh
 
-  echo "*** Checking manual release assets"
-  if ! assets="$(gh release view "$MANUALS_RELEASE_TAG" \
-    -R "$MANUALS_RELEASE_REPO" \
-    --json assets \
-    --jq ".assets[].name")"; then
-    echo "***error: unable to read GitHub release manual assets."
-    echo "         release: $MANUALS_RELEASE_REPO $MANUALS_RELEASE_TAG"
-    exit 1
-  fi
+  while true; do
+    echo "*** Checking manual release assets"
+    manuals_ready=1
+    missing_asset=""
+    if ! assets="$(gh release view "$MANUALS_RELEASE_TAG" \
+      -R "$MANUALS_RELEASE_REPO" \
+      --json assets \
+      --jq ".assets[].name")"; then
+      manuals_ready=0
+      echo "*** Manual release is not available yet: $MANUALS_RELEASE_REPO $MANUALS_RELEASE_TAG"
+    else
+      for asset_name in "${RELEASE_MANUAL_ASSETS[@]}"; do
+        if ! release_asset_available "$assets" "$asset_name"; then
+          manuals_ready=0
+          missing_asset="$asset_name"
+          break
+        fi
+      done
+      if [[ "$manuals_ready" == "1" && "$STRICT_REVISION" == "1" ]] && ! release_asset_available "$assets" "$RELEASE_INFO_ASSET"; then
+        manuals_ready=0
+        missing_asset="$RELEASE_INFO_ASSET"
+      fi
+      if [[ "$manuals_ready" != "1" ]]; then
+        echo "*** Manual release is missing required asset: $missing_asset"
+      fi
+    fi
 
-  for asset_name in "${RELEASE_MANUAL_ASSETS[@]}"; do
-    if ! release_asset_available "$assets" "$asset_name"; then
-      echo "***error: release is missing required CFAST manual asset: $asset_name"
+    if [[ "$manuals_ready" == "1" ]]; then
+      break
+    fi
+    if (( SECONDS >= manual_check_deadline )); then
+      echo "***error: required manual release assets were not available after 2 hours."
+      echo "         release: $MANUALS_RELEASE_REPO $MANUALS_RELEASE_TAG"
       exit 1
     fi
+    echo "*** Retrying manual release check in 1 minute"
+    sleep 60
   done
-
-  if [[ "$STRICT_REVISION" == "1" ]] && ! release_asset_available "$assets" "$RELEASE_INFO_ASSET"; then
-    echo "***error: release is missing required revision asset: $RELEASE_INFO_ASSET"
-    exit 1
-  fi
 
   rm -rf "$MANUALS_DOWNLOAD_DIR"
   mkdir -p "$MANUALS_DOWNLOAD_DIR"

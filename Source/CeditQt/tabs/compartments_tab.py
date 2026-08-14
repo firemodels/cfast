@@ -30,24 +30,46 @@ from units import AREA, LENGTH, format_number, format_value, parse_number, parse
 
 
 class CompartmentSummaryHeader(QHeaderView):
-    """Two-row header with a grouped label for compartment connection counts."""
+    """Two-row header with grouped labels for construction and connections."""
 
+    surface_first_column = 8
+    surface_last_column = 10
     connection_first_column = 11
     connection_last_column = 16
     group_height = 22
+    surface_color = QColor("#e4e4e4")
+    connection_color = QColor("#d8d8d8")
+
+    def group_for_column(self, logical_index: int):
+        if self.surface_first_column <= logical_index <= self.surface_last_column:
+            return (
+                self.surface_first_column,
+                self.surface_last_column,
+                "Surface Construction",
+                self.surface_color,
+            )
+        if self.connection_first_column <= logical_index <= self.connection_last_column:
+            return (
+                self.connection_first_column,
+                self.connection_last_column,
+                "Compartment Connection Counts",
+                self.connection_color,
+            )
+        return None
 
     def sectionSizeFromContents(self, logical_index: int) -> QSize:
         size = super().sectionSizeFromContents(logical_index)
         return QSize(size.width(), size.height() + self.group_height)
 
     def paintSection(self, painter, rect: QRect, logical_index: int):
+        group = self.group_for_column(logical_index)
         lower_rect = QRect(
             rect.x(),
             rect.y() + self.group_height,
             rect.width(),
             rect.height() - self.group_height,
         )
-        if logical_index >= self.connection_first_column:
+        if group is not None:
             option = QStyleOptionHeader()
             self.initStyleOption(option)
             option.rect = lower_rect
@@ -60,27 +82,25 @@ class CompartmentSummaryHeader(QHeaderView):
                 )
                 or ""
             )
-            option.palette.setColor(QPalette.ColorRole.Button, QColor("#d8d8d8"))
+            option.palette.setColor(QPalette.ColorRole.Button, group[3])
             self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
         else:
             super().paintSection(painter, lower_rect, logical_index)
 
-        if logical_index != self.connection_first_column:
+        if group is None or logical_index != group[0]:
             return
 
         group_width = sum(
             self.sectionSize(column)
-            for column in range(
-                self.connection_first_column, self.connection_last_column + 1
-            )
+            for column in range(group[0], group[1] + 1)
         )
         group_rect = QRect(rect.x(), rect.y(), group_width, self.group_height)
         option = QStyleOptionHeader()
         self.initStyleOption(option)
         option.rect = group_rect
-        option.text = "Compartment Connection Counts"
+        option.text = group[2]
         option.textAlignment = Qt.AlignmentFlag.AlignCenter
-        option.palette.setColor(QPalette.ColorRole.Button, QColor("#d8d8d8"))
+        option.palette.setColor(QPalette.ColorRole.Button, group[3])
         self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
 
 
@@ -128,6 +148,12 @@ CONNECTION_COUNT_TOOLTIPS = {
     16: "Targets in this compartment",
 }
 
+SURFACE_CONSTRUCTION_TOOLTIPS = {
+    8: "Ceiling construction material or number of material layers",
+    9: "Wall construction material or number of material layers",
+    10: "Floor construction material or number of material layers",
+}
+
 
 def area_headers() -> list[str]:
     return [f"Height\n({unit_label(LENGTH)})", f"Area\n({unit_label(AREA)})"]
@@ -142,8 +168,13 @@ def parse_int(text: str, field_name: str) -> int:
     return int(round(value))
 
 
-def first_or_off(values: tuple[str, str, str]) -> str:
-    return values[0] if values and values[0] else "OFF"
+def construction_summary(values: tuple[str, str, str]) -> str:
+    layers = [value for value in values if value and value.upper() != "OFF"]
+    if not layers:
+        return "OFF"
+    if len(layers) == 1:
+        return layers[0]
+    return f"{len(layers)} Layers"
 
 
 class CompartmentsTab(QWidget):
@@ -305,7 +336,8 @@ class CompartmentsTab(QWidget):
         self.area_table.setHorizontalHeaderLabels(area_headers())
 
     def set_summary_header_tooltips(self):
-        for column, tooltip in CONNECTION_COUNT_TOOLTIPS.items():
+        tooltips = SURFACE_CONSTRUCTION_TOOLTIPS | CONNECTION_COUNT_TOOLTIPS
+        for column, tooltip in tooltips.items():
             self.summary_table.horizontalHeaderItem(column).setToolTip(tooltip)
 
     def set_material_ids(self, material_ids: list[str]):
@@ -599,9 +631,9 @@ class CompartmentsTab(QWidget):
             format_value(LENGTH, compartment.origin_x),
             format_value(LENGTH, compartment.origin_y),
             format_value(LENGTH, compartment.origin_z),
-            first_or_off(compartment.ceiling_matl_id),
-            first_or_off(compartment.wall_matl_id),
-            first_or_off(compartment.floor_matl_id),
+            construction_summary(compartment.ceiling_matl_id),
+            construction_summary(compartment.wall_matl_id),
+            construction_summary(compartment.floor_matl_id),
             str(compartment.fire_count),
             str(compartment.hvent_count),
             str(compartment.vent_count),
@@ -813,9 +845,9 @@ class CompartmentsTab(QWidget):
 
         compartment = self.compartments[row]
         values = (
-            first_or_off(compartment.ceiling_matl_id),
-            first_or_off(compartment.wall_matl_id),
-            first_or_off(compartment.floor_matl_id),
+            construction_summary(compartment.ceiling_matl_id),
+            construction_summary(compartment.wall_matl_id),
+            construction_summary(compartment.floor_matl_id),
         )
 
         self.loading = True
@@ -959,7 +991,9 @@ class CompartmentsTab(QWidget):
         return "" if item is None else item.text().strip()
 
     def add_to_case(self, case: CfastCase, require_compartments: bool = True):
-        self.save_detail_to_selected()
+        # Building a case is also used by the live validator.  Do not rebuild
+        # the table editor here: doing so destroys an open material dropdown.
+        self.save_detail_to_selected(refresh_summary=False)
 
         if not self.compartments:
             case.compartments = []

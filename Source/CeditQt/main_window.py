@@ -775,7 +775,7 @@ class CeditMainWindow(QMainWindow):
             self.thermal_properties_tab.materials_from_table()
         )
         self.detection_suppression_tab.set_compartment_ids(compartment_ids)
-        self.output_tab.set_compartment_ids(compartment_ids)
+        self.output_tab.set_compartments(self.compartments_tab.compartments)
 
     def add_missing_default_materials(self, material_ids: list[str]):
         added_material = False

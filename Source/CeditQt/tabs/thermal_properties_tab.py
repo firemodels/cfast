@@ -235,8 +235,10 @@ class ThermalPropertiesTab(QWidget):
             "",
         ]
 
-        row = self.table.rowCount()
-        self.table.insertRow(row)
+        row = self.first_blank_row()
+        if row is None:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
 
         self.table.blockSignals(True)
         for col, value in enumerate(values):

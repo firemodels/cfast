@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, OutputVisualization
+from cfast_case import CfastCase, Compartment, OutputVisualization
 from units import LENGTH, format_value, parse_number, parse_value, unit_label
 
 
@@ -77,6 +77,7 @@ class OutputTab(QWidget):
         super().__init__(parent)
 
         self.updating = False
+        self.compartments: list[Compartment] = []
 
         self.visual_table = QTableWidget(10, 5)
         self.visual_table.setHorizontalHeaderLabels(visual_headers())
@@ -145,6 +146,12 @@ class OutputTab(QWidget):
         self.visual_compartment_edit.blockSignals(False)
         self.sync_resolution_compartments(compartment_ids)
 
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartments = list(compartments)
+        self.set_compartment_ids(
+            [compartment.id for compartment in self.compartments]
+        )
+
     def sync_resolution_compartments(self, compartment_ids: list[str]):
         existing_by_id: dict[str, tuple[str, str, str]] = {}
         existing_by_row: dict[int, tuple[str, str, str]] = {}
@@ -196,17 +203,19 @@ class OutputTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.updating = True
+        self.compartments = list(case.compartments)
         self.refresh_unit_labels()
 
         self.visual_table.clearContents()
         self.visual_table.setRowCount(max(10, len(case.output_visualizations)))
         for row, vis in enumerate(case.output_visualizations):
+            is_3d = vis.visualization_type.upper() == "3-D"
             values = [
                 "",
                 vis.visualization_type,
                 display_compartment(vis.comp_id),
-                AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
-                format_value(LENGTH, vis.value),
+                "-" if is_3d else AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
+                "-" if is_3d else format_value(LENGTH, vis.value),
             ]
             for col, value in enumerate(values):
                 self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
@@ -453,16 +462,31 @@ class OutputTab(QWidget):
         if clear_first:
             self.clear_table(self.visual_table)
 
-        visuals = [
-            ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)],
-            ["", "2-D", "All", "Y-Axis", format_value(LENGTH, 2.5)],
-            ["", "2-D", "All", "Z-Axis", format_value(LENGTH, 2.95)],
-        ]
+        if not self.compartments:
+            return
+
+        visuals: list[list[str]] = []
+        for compartment in self.compartments:
+            visuals.extend(
+                [
+                    ["", "2-D", compartment.id, "X-Axis", format_value(LENGTH, compartment.width / 2.0)],
+                    ["", "2-D", compartment.id, "Y-Axis", format_value(LENGTH, compartment.depth / 2.0)],
+                    ["", "2-D", compartment.id, "Z-Axis", format_value(LENGTH, compartment.height * 0.99)],
+                ]
+            )
+        visuals.append(["", "3-D", "All", "-", "-"])
 
         self.updating = True
-        for row, values in enumerate(visuals):
+        for values in visuals:
+            row = self.first_empty_row(self.visual_table)
             for col, value in enumerate(values):
-                self.visual_table.setItem(row, col, make_item(value, editable=(col != 0)))
+                self.set_cell_text(
+                    self.visual_table,
+                    row,
+                    col,
+                    value,
+                    editable=(col != 0),
+                )
         self.updating = False
 
     def load_output_option_defaults(self):
@@ -563,7 +587,7 @@ class OutputTab(QWidget):
         self.visual_table.setCurrentCell(min(row, self.visual_table.rowCount() - 1), 1)
 
     def add_default_visualizations(self):
-        self.load_default_visualizations()
+        self.load_default_visualizations(clear_first=False)
         self.refresh_visual_numbers()
         if self.visual_table.rowCount() > 0:
             self.visual_table.setCurrentCell(0, 1)
@@ -605,6 +629,9 @@ class OutputTab(QWidget):
             self.visual_row_to_editor(row)
 
     def normalize_visual_position(self, row: int):
+        if self.cell_text(self.visual_table, row, 1).upper() == "3-D":
+            return
+
         text = self.cell_text(self.visual_table, row, 4)
         if not text:
             return
@@ -632,16 +659,24 @@ class OutputTab(QWidget):
             return
 
         self.updating = True
-        self.visualization_type_combo.setCurrentText(values[0] or "2-D")
+        vis_type = values[0] or "2-D"
+        is_3d = vis_type.upper() == "3-D"
+        self.visualization_type_combo.setCurrentText(vis_type)
         set_combo_text(self.visual_compartment_edit, values[1] or "All")
-        axis = axis_code(values[2] or "X")
-        if axis == "X":
+        if is_3d:
             self.axis_combo.setCurrentText("X-axis (Width)")
-        elif axis == "Y":
-            self.axis_combo.setCurrentText("Y-axis (Depth)")
+            self.visual_position_edit.clear()
         else:
-            self.axis_combo.setCurrentText("Z-axis (Height)")
-        self.visual_position_edit.setText(values[3] or "0")
+            axis = axis_code(values[2] or "X")
+            if axis == "X":
+                self.axis_combo.setCurrentText("X-axis (Width)")
+            elif axis == "Y":
+                self.axis_combo.setCurrentText("Y-axis (Depth)")
+            else:
+                self.axis_combo.setCurrentText("Z-axis (Height)")
+            self.visual_position_edit.setText(values[3] or "0")
+        self.axis_combo.setEnabled(not is_3d)
+        self.visual_position_edit.setEnabled(not is_3d)
         self.updating = False
 
     def editor_to_visual_row(self):
@@ -652,23 +687,33 @@ class OutputTab(QWidget):
         if row < 0:
             return
 
-        position_text = self.visual_position_edit.text()
-        try:
-            position_value = parse_value(
-                LENGTH,
-                position_text,
-                "Visualization Value",
-            )
-            position_text = format_value(LENGTH, position_value)
-            self.visual_position_edit.setText(position_text)
-        except ValueError:
-            pass
+        vis_type = self.visualization_type_combo.currentText()
+        is_3d = vis_type.upper() == "3-D"
+        if is_3d:
+            axis_text = "-"
+            position_text = "-"
+        else:
+            position_text = self.visual_position_edit.text()
+            try:
+                position_value = parse_value(
+                    LENGTH,
+                    position_text,
+                    "Visualization Value",
+                    0.0,
+                )
+                position_text = format_value(LENGTH, position_value)
+                self.visual_position_edit.setText(position_text)
+            except ValueError:
+                pass
+            axis_text = AXIS_LABELS[axis_code(self.axis_combo.currentText())]
 
         self.updating = True
-        self.set_cell_text(self.visual_table, row, 1, self.visualization_type_combo.currentText())
+        self.set_cell_text(self.visual_table, row, 1, vis_type)
         self.set_cell_text(self.visual_table, row, 2, self.visual_compartment_edit.currentText())
-        self.set_cell_text(self.visual_table, row, 3, AXIS_LABELS[axis_code(self.axis_combo.currentText())])
+        self.set_cell_text(self.visual_table, row, 3, axis_text)
         self.set_cell_text(self.visual_table, row, 4, position_text)
+        self.axis_combo.setEnabled(not is_3d)
+        self.visual_position_edit.setEnabled(not is_3d)
         self.updating = False
         self.refresh_visual_numbers()
 
@@ -756,8 +801,12 @@ class OutputTab(QWidget):
 
             vis_type = values[0] or "2-D"
             comp_id = values[1] or "All"
-            axis = axis_code(values[2] or "X")
-            value = parse_value(LENGTH, values[3] or "0", "Visualization Value")
+            if vis_type.upper() == "3-D":
+                axis = "X"
+                value = 0.0
+            else:
+                axis = axis_code(values[2] or "X")
+                value = parse_value(LENGTH, values[3] or "0", "Visualization Value")
 
             visualizations.append(
                 OutputVisualization(

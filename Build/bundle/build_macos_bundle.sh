@@ -48,6 +48,7 @@ STRICT_REVISION=0
 UPLOAD=0
 SIGN_IDENTITY="${CODESIGN_ID:-}"
 NOTARY_PROFILE="${CFAST_MACOS_NOTARY_PROFILE:-}"
+NOTARY_KEYCHAIN="${CFAST_MACOS_NOTARY_KEYCHAIN:-}"
 SIGN_BUNDLE=0
 NOTARIZE=0
 if [[ "$SIGN_IDENTITY" != "" ]]; then
@@ -116,6 +117,7 @@ usage()
   echo "  --sign-identity identity Developer ID Application certificate used to sign CEditQt, CFAST, Smokeview, and the DMG"
   echo "  --notarize              Submit the signed DMG with notarytool and staple the result (requires --notary-profile)"
   echo "  --notary-profile name   Keychain profile for xcrun notarytool (or CFAST_MACOS_NOTARY_PROFILE)"
+  echo "  --notary-keychain path  Keychain containing the notary profile (or CFAST_MACOS_NOTARY_KEYCHAIN)"
   echo "  --no-dmg                 Stage files only"
   echo "  --no-layout              Do not use a DMG background image"
   echo "  -h, --help               Display this message"
@@ -1033,6 +1035,8 @@ sign_staged_macos_bundle()
 
 notarize_macos_dmg()
 {
+  local -a notary_credentials
+
   if [[ "$NOTARIZE" != "1" ]]; then
     return 0
   fi
@@ -1046,8 +1050,14 @@ notarize_macos_dmg()
   fi
   require_command xcrun
 
+  notary_credentials=(--keychain-profile "$NOTARY_PROFILE")
+  if [[ "$NOTARY_KEYCHAIN" != "" ]]; then
+    require_file "$NOTARY_KEYCHAIN" "notarization keychain"
+    notary_credentials+=(--keychain "$NOTARY_KEYCHAIN")
+  fi
+
   echo "*** Submitting DMG for Apple notarization"
-  xcrun notarytool submit "$DMG_PATH" --keychain-profile "$NOTARY_PROFILE" --wait
+  xcrun notarytool submit "$DMG_PATH" "${notary_credentials[@]}" --wait
   echo "*** Stapling notarization ticket to DMG"
   xcrun stapler staple "$DMG_PATH"
   xcrun stapler validate "$DMG_PATH"
@@ -1642,6 +1652,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --notary-profile)
       NOTARY_PROFILE="$2"
+      shift 2
+      ;;
+    --notary-keychain)
+      NOTARY_KEYCHAIN="$2"
       shift 2
       ;;
     --no-dmg)

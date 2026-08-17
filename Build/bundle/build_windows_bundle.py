@@ -1224,6 +1224,34 @@ def is_cfast_windows_bundle_asset(asset_name: str) -> bool:
     )
 
 
+def sign_windows_bundle(exe_path: Path) -> None:
+    cert_sha1 = os.environ.get("CFAST_SIGNING_CERT_SHA1")
+    signtool = os.environ.get("SIGNTOOL_EXE")
+
+    if not cert_sha1:
+        raise RuntimeError("CFAST_SIGNING_CERT_SHA1 is not set")
+    if not signtool:
+        raise RuntimeError("SIGNTOOL_EXE is not set")
+
+    require_file(Path(signtool), "SignTool executable")
+
+    print("*** Signing Windows bundle")
+    run_checked(
+        [
+            signtool,
+            "sign",
+            "/sha1",
+            cert_sha1,
+            "/fd",
+            "SHA256",
+            str(exe_path),
+        ]
+    )
+
+    print("*** Verifying Windows bundle signature")
+    run_checked([signtool, "verify", "/pa", "/v", str(exe_path)])
+
+
 def upload_windows_bundle(args, exe_path: Path) -> None:
     if not args.upload:
         return
@@ -1359,6 +1387,8 @@ def main() -> int:
     exe_path = build_self_extracting_exe(args, dist_dir)
     print("*** Self-extracting EXE created:")
     print(f"    {exe_path}")
+    if args.upload:
+        sign_windows_bundle(exe_path)
     upload_windows_bundle(args, exe_path)
     return 0
 

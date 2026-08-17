@@ -1245,11 +1245,17 @@ def sign_windows_bundle(exe_path: Path) -> None:
             "/fd",
             "SHA256",
             str(exe_path),
-        ]
+        ],
+        cwd=exe_path.parent,
+        description="signing Windows bundle",
     )
 
     print("*** Verifying Windows bundle signature")
-    run_checked([signtool, "verify", "/pa", "/v", str(exe_path)])
+    run_checked(
+        [signtool, "verify", "/pa", "/v", str(exe_path)],
+        cwd=exe_path.parent,
+        description="verifying Windows bundle signature",
+    )
 
 
 def upload_windows_bundle(args, exe_path: Path) -> None:

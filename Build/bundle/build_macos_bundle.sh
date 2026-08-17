@@ -1033,6 +1033,8 @@ sign_staged_macos_bundle()
 
 notarize_macos_dmg()
 {
+  local notary_keychain="$HOME/Library/Keychains/login.keychain-db"
+
   if [[ "$NOTARIZE" != "1" ]]; then
     return 0
   fi
@@ -1045,9 +1047,13 @@ notarize_macos_dmg()
     exit 1
   fi
   require_command xcrun
+  require_file "$notary_keychain" "login keychain"
 
   echo "*** Submitting DMG for Apple notarization"
-  xcrun notarytool submit "$DMG_PATH" --keychain-profile "$NOTARY_PROFILE" --wait
+  xcrun notarytool submit "$DMG_PATH" \
+    --keychain-profile "$NOTARY_PROFILE" \
+    --keychain "$notary_keychain" \
+    --wait
   echo "*** Stapling notarization ticket to DMG"
   xcrun stapler staple "$DMG_PATH"
   xcrun stapler validate "$DMG_PATH"

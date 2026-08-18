@@ -31,6 +31,24 @@ trap cleanup EXIT
 
 echo "$LOG_PREFIX starting (SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-unset})"
 
+if [[ -z "${CODESIGN_ID:-}" ]]; then
+  echo "$LOG_PREFIX ERROR: CODESIGN_ID is not configured."
+  exit 1
+fi
+
+codesign_identities="$(/usr/bin/security find-identity -v -p codesigning 2>&1 || true)"
+if ! grep -Fq -- "$CODESIGN_ID" <<<"$codesign_identities"; then
+  echo "$LOG_PREFIX ERROR: the configured signing identity is unavailable: $CODESIGN_ID"
+  echo "$codesign_identities"
+  exit 1
+fi
+echo "$LOG_PREFIX code-signing preflight passed"
+
+if [[ -z "${GH_TOKEN:-}" ]]; then
+  echo "$LOG_PREFIX ERROR: GH_TOKEN is unset and ~/.config/gh/cron_token could not be read."
+  exit 1
+fi
+
 # Force the login-session agent to load keys stored in the macOS Keychain.
 # This is harmless when the key is already loaded and lets an unattended run
 # recover after the agent has been restarted.

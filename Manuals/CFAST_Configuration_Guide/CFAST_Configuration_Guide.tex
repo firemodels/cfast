@@ -81,16 +81,16 @@ Revision:~\gitrevision}
 
 \chapter{Preface}
 
-The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Software Quality Assurance Plan}.  This includes
+The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Software Quality Assurance Plan}.  This includes the following:
 
 \begin{itemize}
-    \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_8}\, instructions for its use are contained in a separate user's guide \cite{CFAST_Users_Guide_8}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_8}.
+    \item A description of the theoretical basis of the model \cite{CFAST_Tech_Guide_8}, instructions for its use contained in a separate user's guide \cite{CFAST_Users_Guide_8}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_8},
 
-    \item Description of the development process for the model.
+    \item A description of the development process for the model,
 
-    \item Control and tracking of the source code using a centralized project repository on GitHub.
+    \item Control and tracking of the source code using a centralized project repository on GitHub,
 
-    \item An automated build, verification, validation, and regression testing process then helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between CFAST revisions.
+    \item An automated build, verification, validation, and regression testing process then helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between CFAST revisions,
 
     \item Details of the review process used by the developers and NIST to ensure the quality of the model and related publications.
 
@@ -115,11 +115,14 @@ CFAST was originally developed by Walter Jones, formerly of NIST.
 
 Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Nuclear Regulatory Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
 
-The idea for this document originated with Jason Floyd, a co-developer of FDS and practicing engineer at Jensen Hughes. He readily saw the need for a clear description of the process of developing and maintaining FDS and Smokeview. This plan adapts the FDS process for the CFAST model.  Bryan Klein, currently with Thunderhead Engineering, Inc., and Kristopher Overholt, currently with Continuum Analytics instituted a number of the internet tools that are described in the Guide, including the source code repository, issue tracking system, and discussion group sites.
-
-
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
 \tableofcontents
 
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 
@@ -174,7 +177,7 @@ Document identification and control consists of placing all project files in a c
 
 CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of the version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository. Only development team members can commit changes to the repository. All others must submit a “pull request” which is then reviewed by the development team for inclusion into the repository.
 
-The current location of the CFAST repository is \href{https://github.com/firemodels/cfast}{\textct{https://github.com/firemodels/cfast}}. The repository contains more than 3000 configuration items:
+The current location of the CFAST repository is \href{https://github.com/firemodels/cfast}{\textct{https://github.com/firemodels/cfast}}.  It contains:
 \begin{enumerate}
 \item CFAST source code files
 \item CFAST documentation
@@ -184,7 +187,7 @@ The current location of the CFAST repository is \href{https://github.com/firemod
 \item Web pages and wikis containing notes and other information
 \end{enumerate}
 
-Each member of the CFAST development team has an account and password for access to the CFAST repository.~\footnote{Access to the CFAST repository is by means of two-factor identification.} In addition, anonymous users can ``fork,'' or copy, the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a ``pull request.'' If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
+Each member of the CFAST development team has an account and password for access to the CFAST repository\footnote{Access to the CFAST repository requires two-factor identification.}. In addition, anonymous users can fork or clone the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a pull request. If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
 
 In the event of an unexpected change to the GitHub service and/or the CFAST repository, each member of the development team, plus interested third parties, has a copy of the repository on their local computer. At NIST, the staff computers are regularly backed up as well. Thus, there is very little chance that the project repository will be lost. If need be, the files could be moved to another open source software development site.
 
@@ -192,18 +195,18 @@ Additional details on the use of GitHub for both CFAST and FDS are available on 
 
 \section{Version Identification and Numbering}
 
-At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the git repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the git revision number of the most recently committed source file. This is accomplished as part of the automated build and testing process where the git revision number is inserted into a source file that is used to identify the specific revision number, revision date, and compilation date for the CFAST model and user interface program, CEdit. Official versions of the model released by NIST are identified with specific version numbers tied to specific revisions in the repository and are identified on the download page for the model that can be compared to the version output from the model. For example, the following information is included on the CFAST download website for CFAST version 7.1.1
+At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the git repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the git revision number of the most recently committed source file. This is accomplished as part of the automated build and testing process where the git revision number is inserted into a source file that is used to identify the specific revision number, revision date, and compilation date for the CFAST model and user interface program, CEdit. Official versions of the model released by NIST are identified with specific version numbers tied to specific revisions in the repository and are identified on the download page for the model that can be compared to the version output from the model. For example, the following information is included on the CFAST download website for CFAST version 7.7.7
 
 \begin{lstlisting}
-CFAST 7.1.1
-Gitv7.1.1-0-g8f0c672
+CFAST 7.7.7               # Git tag
+CFAST-7.7.7-0-gb43e74e0f  # Output of git describe --long
 \end{lstlisting}
 
-New versions of CFAST and Smokeview are identified using a specific numbering convention, for example, \textct{CFAST~7.1.1} and are associated with a specific revision in the CFAST repository (for example, repository revision \textct{Gitv7.1.1-0-g8f0c672}). All four volumes of the CFAST documentation are also automatically tagged with this information on the title page of each document providing documentation and traceability of a given version of the documents to a specific version of CFAST and a specific repository revision.
+New versions of CFAST and Smokeview are identified using a specific numbering convention, for example, \textct{CFAST~7.7.7} and are associated with a specific revision in the CFAST repository (for example, repository revision \textct{CFAST-7.7.7-0-gb43e74e0f}). All four volumes of the CFAST documentation are also automatically tagged with this information on the title page of each document providing documentation and traceability of a given version of the documents to a specific version of CFAST and a specific repository revision.
 
 The version number consists of three integers separated by periods, where the first number is the {\em major} release, the second is the {\em minor} release, and the third is the {\em maintenance} release.   For example, CFAST 7.1.2 indicates that this is CFAST 7, the seventh major release. The 1 indicates a significant upgrade (a minor release), but still within the framework of CFAST 7.  The 2 indicates the second maintenance release of 7.1, mostly bug fixes and minor user requests. As a mature code, major releases occur rarely for CFAST, and as the name implies, significantly change the functionality of the model. Minor releases occur about once a year, and may cause minor changes in functionality. Release notes indicate whether the changes affect a particular model feature. Maintenance releases are either just bug fixes or the addition of minor enhancements (such as a new output quantity), and should not affect code functionality.
 
-The repository revision consists of three parts, where the first identifies the version of the current baseline code, the second identifies the number of revisions in the repository since the most recent tagged baseline of the code, and the third identifies the Git hash that links to a specific unique revision of all the tracked configuration items for that revision. For the example above, the CFAST baseline is identified as \textct{Gitv7.1.1} (a repository baseline tag for CFAST version 7.1.1), with no revisions since the baseline tag (\textct{0}, above), with a Git hash of \textct{g8f0c672}.
+The repository revision consists of three parts, where the first identifies the version of the current baseline code, the second identifies the number of revisions in the repository since the most recent tagged baseline of the code, and the third identifies the Git hash that links to a specific unique revision of all the tracked configuration items for that revision. For the example above, the CFAST baseline is identified as \textct{CFAST-7.7.7} (a repository baseline tag for CFAST version 7.7.7), with no revisions since the baseline tag (\textct{0}, above), with a hash (preceded by a ``g'' for Git) of \textct{b43e74e0f}.
 
 Each of these official releases forms a baseline for any future development of the software. Users can verify the official NIST release version by comparing the output from any CFAST run to the information included with each download on the CFAST download website.
 

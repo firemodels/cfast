@@ -10,7 +10,7 @@ The input file is saved with a name such as \ct{job_name.in}, where \ct{job_name
 
 There should be no blank spaces in the job name. Instead use the underscore character to represent a space.
 
-Be aware that CFAST will simply over-write the output files of a given case if its assigned name is the same. This is convenient when developing an input file because you save on disk space. Just be careful not to overwrite a calculation that you want to keep.
+Be aware that CFAST will simply overwrite the output files of a given case if its assigned name is the same. This is convenient when developing an input file because you save on disk space. Just be careful not to overwrite a calculation that you want to keep.
 
 \section{Namelist Formatting}
 
@@ -18,15 +18,15 @@ Parameters are specified within the input file by using {\em namelist} formatted
 \begin{lstlisting}
 &TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
 \end{lstlisting}
-sets various values of parameters contained in the \ct{TIME} namelist group. The meanings of these various parameters is explained in this guide. The namelist records can span multiple lines in the input file, but just be sure to end the record with a slash or else the data will not be understood. Do not add anything to a namelist line other than the parameters and values appropriate for that group. Otherwise, CFAST will stop immediately upon execution.
+sets various values of parameters contained in the \ct{TIME} namelist group. The meanings of these various parameters are explained in this guide. The namelist records can span multiple lines in the input file, but just be sure to end the record with a slash or else the data will not be understood. Do not add anything to a namelist line other than the parameters and values appropriate for that group. Otherwise, CFAST will stop immediately upon execution.
 
-Parameters within a namelist record can be separated by either commas, spaces, or line breaks. It is recommended that you use commas or line breaks, and never use tab stops because they are not explicitly defined in the namelist data structure. CFAST and CEdit expect the first character of the file to be an ampersand, \ct{&}, and by convention the first namelist is the \ct{HEAD} namelist but any namelist can be the first. Comments and notes can be written into the file between namelists so long as nothing comes before the ampersand except a space and nothing comes between the ampersand and the slash except appropriate parameters corresponding to that particular namelist group. However, it is important to note that any comments in an  input file that is opened by CEdit and saved will be lost.
+Parameters within a namelist record can be separated by either commas, spaces, or line breaks. It is recommended that you use commas or line breaks, and never use tab stops because they are not explicitly defined in the namelist data structure. CFAST and CEdit expect the first character of the file to be an ampersand, \ct{&}, and by convention the first namelist is the \ct{HEAD} namelist, but any namelist can be the first. Comments and notes can be written into the file between namelists so long as nothing comes before the ampersand except a space and nothing comes between the ampersand and the slash except appropriate parameters corresponding to that particular namelist group. However, it is important to note that any comments in an input file that is opened by CEdit and saved will be lost.
 
-The parameters in the input file can be integers, reals, character strings, or logical parameters. A logical parameter is either \ct{.TRUE.} or \ct{.FALSE.} -- the periods are a Fortran convention. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
+The parameters in the input file can be integers, reals, character strings, or logical parameters. A logical parameter is either \ct{.TRUE.} or \ct{.FALSE.} -- the periods are a Fortran convention. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case-sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
 
 Most of the input parameters are simply real or integer scalars, like \ct{PRINT = 50.}, but sometimes the inputs can be arrays.
 
-Note that character strings can be enclosed either by single or double quotation marks, however CEdit only recognizes the single quotation mark. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or Mac OS~X because of the difference in line endings between Windows and Unix/Linux operating systems. The editor Wordpad typically works better, but try a simple case first.
+Note that character strings can be enclosed either by single or double quotation marks; however, CEdit only recognizes the single quotation mark. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or Mac OS~X because of the difference in line endings between Windows and Unix/Linux operating systems. The editor WordPad typically works better, but try a simple case first.
 
 
 \section{Input File Structure}
@@ -49,7 +49,7 @@ The general structure of an input file is shown below, with many lines of the or
 !! Material Properties
 &MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)',
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
-!! Comparments
+!! Compartments
 &COMP ID = 'Comp 1'
       DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'CONCRETE' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
@@ -71,9 +71,9 @@ The general structure of an input file is shown below, with many lines of the or
 &TAIL /
 
 \end{lstlisting}
-It is recommended that when looking at a new scenario, first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
+When looking at a new scenario, it is recommended that you first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
 
-Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters and where you can find the reference to where it is introduced in the document and the table containing all of the keywords for each group.
+Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters, the section where each is introduced in the document, and the table containing all of the keywords for each group.
 
 
 \begin{table}[ht]
@@ -108,9 +108,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{itemize}
 \item The \ct{HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use \ct{&TAIL} as the last line at the end of the input file. This completes the file from \ct{&HEAD} to \ct{&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
 \item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
-\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying \ct{ADIABATIC} to be \ct{.TRUE.} triggers the code to treat all compartment surfaces to be perfectly insulated.
+\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying \ct{ADIABATIC} to be \ct{.TRUE.} triggers the code to treat all compartment surfaces as perfectly insulated.
 \item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, \ct{TEMPERATURES}, within the namelist group, \ct{INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
-\item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the \ct{LOWER_OXYGEN_LIMIT} has a default value of \ct{0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
+\item Default input values are assigned to some of the keywords to facilitate the setup of an input file. For instance, Table \ref{tbl:MISC} shows that the \ct{LOWER_OXYGEN_LIMIT} has a default value of \ct{0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
 \end{itemize}
 
 
@@ -513,7 +513,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \ct{DEVC_ID}                  & Character              & Section \ref{info:FIRE}     &                                    &                                 \\ \hline
 \ct{FIRE_ID}*                 & Character              & Section \ref{info:FIRE}     &                                    &                                 \\ \hline
 \ct{ID}*                      & Character              & Section \ref{info:FIRE}     &                                    &                                 \\ \hline
-\ct{IGNITION_CRITERION}\footnote{for \ct{IGNITION_CRITERION} inputs must be\ct{TIME},\ct{TEMPERTURE}, or \ct{FLUX}}
+\ct{IGNITION_CRITERION}\footnote{For \ct{IGNITION_CRITERION}, inputs must be \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}.}
                               & Selection List         & Section \ref{info:FIRE}     &                                    & \ct{TIME}                       \\ \hline
 \ct{LOCATION}*                & Real Pair              & Section \ref{info:FIRE}     & m                                  &                                 \\ \hline
 \ct{SETPOINT}                 & Real                   & Section \ref{info:FIRE}     & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s                             \\ \hline
@@ -610,12 +610,12 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter} & \parbox{1in}{\bf Type} & \parbox{1in}{\bf Reference} & \parbox{1in}{\bf Units}                                                                                                                                                                                                                                                                                                                                                                                                                                         & \parbox{1in}{\bf Default Value}                                                                                                                                                                                                                                                \\ \hline
-\ct{ADIABATIC_TARGET}\footnote{If included, inputs for \ct{CONVECTION_COEFFICENTS} are required.}
+\ct{ADIABATIC_TARGET}\footnote{If included, inputs for \ct{CONVECTION_COEFFICIENTS} are required.}
                               & Logical                & Section \ref{info:DEVC}     &                                                                                                                                                                                                                                                                                                                                                                                                                                                                 & \ct{.FALSE.}                                                                                                                                                                                                                                                                   \\ \hline
-\ct{CONVECTION_COEFFICENTS}   & Real Doublet           & Section \ref{info:DEVC}     & kW/(m$^2$$\cdot$K)                                                                                                                                                                                                                                                                                                                                                                                                                                              & 0, 0                                                                                                                                                                                                                                                                           \\ \hline
+\ct{CONVECTION_COEFFICIENTS}  & Real Doublet           & Section \ref{info:DEVC}     & kW/(m$^2$$\cdot$K)                                                                                                                                                                                                                                                                                                                                                                                                                                              & 0, 0                                                                                                                                                                                                                                                                           \\ \hline
 \ct{COMP_ID}*\footnote{ * indicates a required input for each \ct{DEVC} input included in the input file. Additional inputs may be required depending on the type of device.}
                               & Character              & Section \ref{info:DEVC}     &                                                                                                                                                                                                                                                                                                                                                                                                                                                                 &                                                                                                                                                                                                                                                                                \\ \hline
-\ct{SURFACE_ORIENTATION}      & Selection List         & Section \ref{info:DEVC}     & see footnote\footnote{Indicates where the front surface of the target is facing. Allowable input are CEILING, FLOOR, FRONT WALL, BACK WALL, LEFT WALL, RIGHT WALL to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.} &                                                                                                                                                                                                                                                                                \\ \hline
+\ct{SURFACE_ORIENTATION}      & Selection List         & Section \ref{info:DEVC}     & see footnote\footnote{Indicates where the front surface of the target is facing. Allowable inputs are CEILING, FLOOR, FRONT WALL, BACK WALL, LEFT WALL, RIGHT WALL to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.} &                                                                                                                                                                                                                                                                                \\ \hline
 \ct{SURFACE_TEMPERATURE}      & Real                   & Section \ref{info:DEVC}     &                                                                                                                                                                                                                                                                                                                                                                                                                                                                 &                                                                                                                                                                                                                                                                                \\ \hline
 \ct{ID}*                      & Character              & Section \ref{info:DEVC}     &                                                                                                                                                                                                                                                                                                                                                                                                                                                                 &                                                                                                                                                                                                                                                                                \\ \hline
 \ct{DEPTH_UNITS}              & Character              & Section \ref{info:DEVC}     & none or m                                                                                                                                                                                                                                                                                                                                                                                                                                                       & \ct{FRACTION}                                                                                                                                                                                                                                                                  \\ \hline
@@ -632,7 +632,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \end{longtable}
 \end{minipage}
 
-\graybox{\ct{PLATE} and \ct{CYLINDER} targets are defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{TEMPERATURE_DEPTH}, \ct{DEPTH_UNITS}and \ct{NORMAL}. \\
+\graybox{\ct{PLATE} and \ct{CYLINDER} targets are defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{TEMPERATURE_DEPTH}, \ct{DEPTH_UNITS}, and \ct{NORMAL}. \\
 
 A sprinkler is defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{RTI}, \ct{SETPOINT}, and \ct{SPRAY_DENSITY}.  \\
 
@@ -793,7 +793,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}                & \parbox{1in}{\bf Type} & \parbox{0.8in}{\bf Reference} & \parbox{0.8in}{\bf Units} & \parbox{1in}{\bf Default Value} \\ \hline
-\ct{ADIABATIC_TARGET_VERIFICATION}\footnote{If included, must be either \ct{ON} or \ct{OFF} \label{DIAGonoff}} \footnote{If \ct{ON}, \ct{RADIATIVE_INCIDIENT_FLUX} is required.}
+\ct{ADIABATIC_TARGET_VERIFICATION}\footnote{If included, must be either \ct{ON} or \ct{OFF} \label{DIAGonoff}} \footnote{If \ct{ON}, \ct{RADIATIVE_INCIDENT_FLUX} is required.}
                                              & Selection List         &                               &                           & \ct{OFF}                        \\ \hline
 \ct{CEILING_JET_SUB_MODEL}\footref{DIAGonoff}
                                              & Selection List         &                               &                           & \ct{ON}                         \\ \hline
@@ -822,12 +822,12 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{OXYGEN_TRACKING}\footref{DIAGonoff}      & Selection List         &                               &                           & \ct{OFF}                        \\ \hline
 \ct{PARTIAL_PRESSURE_CO}\footref{DIAGgpp}    & Real                   &                               & Pa                        &                                 \\ \hline
 \ct{PARTIAL_PRESSURE_H2O}\footref{DIAGgpp}   & Real                   &                               & Pa                        &                                 \\ \hline
-\ct{RADIATIVE_INCIDIENT_FLUX}                & Real                   &                               & kW/m$^2$                  & 0                               \\ \hline
+\ct{RADIATIVE_INCIDENT_FLUX}                 & Real                   &                               & kW/m$^2$                  & 0                               \\ \hline
 \ct{RADIATION_SUB_MODEL}\footref{DIAGonoff}  & Selection List         &                               &                           & \ct{ON}                         \\ \hline
 \ct{RADSOLVER}\footnote{\ct{RADSOLVER}, if included, must be either \ct{DEFAULT} or \ct{RADNET}.}
                                              & Selection List         &                               &                           & \ct{DEFAULT}                    \\ \hline
 \ct{RESIDUAL_DEBUG_PRINT}\footref{DIAGonoff} & Selection List         &                               &                           & \ct{OFF}                        \\ \hline
-\ct{STEADY_STATE_INTIAL_CONDITIONS}\footref{DIAGonoff}
+\ct{STEADY_STATE_INITIAL_CONDITIONS}\footref{DIAGonoff}
                                              & Selection List         &                               &                           & \ct{OFF}                        \\ \hline
 \ct{T}\footref{DIAGft}                       & Real Array             &                               & s                         &                                 \\ \hline
 \ct{VERTICAL_FLOW_SUB_MODEL}\footref{DIAGonoff}
@@ -839,7 +839,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 
 \section{Custom Output and Post-run Calculations}
 
-CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and write in CEdit.
+CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and written in CEdit.
 
 \noindent
 \begin{minipage}{6.5in}
@@ -1084,6 +1084,5 @@ One or more command line options can follow the name of the file to be run as fo
 
 
 \label{last_page}
-
 
 

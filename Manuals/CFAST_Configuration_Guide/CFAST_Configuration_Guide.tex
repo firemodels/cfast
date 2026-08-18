@@ -84,7 +84,7 @@ Revision:~\gitrevision}
 The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Software Quality Assurance Plan}.  This includes
 
 \begin{itemize}
-    \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_8}\, instructions for its are contained in a separate user's guide \cite{CFAST_Users_Guide_8}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_8}.
+    \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_8}\, instructions for its use are contained in a separate user's guide \cite{CFAST_Users_Guide_8}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_8}.
 
     \item Description of the development process for the model.
 
@@ -127,15 +127,15 @@ The idea for this document originated with Jason Floyd, a co-developer of FDS an
 
 \chapter{Overview}
 
-This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST).  This software quality assurance (SQA) plan is intended to guide the planning for modifications to the model, provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software is kept available for the life of the code.  While this report and many of our practices follow the ASTM International Standard 1355-05, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models'' \cite{CFAST:ASTM:E1355} which has been used extensively to guide the documentation, verification, and validation of the model, other standards have been followed as well.  Most notably, Institute of Electrical and Electronics Engineers (IEEE) standard for software quality assurance, IEEE 730-2002 \cite{CFAST:IEEE:730} defines best practices in important areas of software quality assurance and guides the structure and content of this plan.
+This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST).  This software quality assurance (SQA) plan is intended to guide the planning for modifications to the model, provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software are kept available for the life of the code.  While this report and many of our practices follow the ASTM International Standard 1355-05, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models'' \cite{CFAST:ASTM:E1355} which has been used extensively to guide the documentation, verification, and validation of the model, other standards have been followed as well.  Most notably, the Institute of Electrical and Electronics Engineers (IEEE) standard for software quality assurance, IEEE 730-2002 \cite{CFAST:IEEE:730} defines best practices in important areas of software quality assurance and guides the structure and content of this plan.
 
 The volumes that make up the CFAST documentation are based in part on ASTM E 1355, {\em Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models}~\cite{CFAST:ASTM:E1355}. ASTM~E~1355 outlines the process of assessing the accuracy of a fire model. Volumes~1 through 3 are the result of this evaluation process. The main purpose of the present volume is to describe the process by which the model software is developed and maintained. A model such as CFAST cannot remain static. As progress is made in fire science, the model needs to be updated and improved, but still shown to reliably predict the kinds of phenomena for which it was originally designed.
 
 CFAST is intended for use only by those competent in the field of fire safety and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model which has limitations based on the way it is used, and the data used for calculations. All results should be evaluated by a qualified user.
 
-The SQA process and requirements outlined in this document apply specifically to the CFAST and is focused on ensuring the quality of the numerical predictions of the model.  The user interface that may be used to develop input for the model is included in this process to insure that changes to the model are reflected in the user interface and in the data files created by the user interface for use by the model.  Of course, users must ensure that the input files developed for the simulations accurately reflect the desired model inputs, whether developed using the supplied user interface, another third-party interface, or manually input with a spreadsheet or text editor program.  Documentation of these inputs is included as part of the model documentation outlined below.
+The SQA process and requirements outlined in this document apply specifically to CFAST and are focused on ensuring the quality of the numerical predictions of the model.  The user interface that may be used to develop input for the model is included in this process to ensure that changes to the model are reflected in the user interface and in the data files created by the user interface for use by the model.  Of course, users must ensure that the input files developed for the simulations accurately reflect the desired model inputs, whether developed using the supplied user interface, another third-party interface, or manually input with a spreadsheet or text editor program.  Documentation of these inputs is included as part of the model documentation outlined below.
 
-Documentation and configuration management for its companion visualization program Smokeview, is included in the documentation for the Fire Dynamics Simulator (FDS) and Smokeview \cite{FDS_Configuration_Guide_6}.
+Documentation and configuration management for its companion visualization program Smokeview is included in the documentation for the Fire Dynamics Simulator (FDS) and Smokeview \cite{FDS_Configuration_Guide_6}.
 
 \IfFileExists{../Bibliography/model_description.tex}{\input{../Bibliography/model_description.tex}}{\typeout{Error: Missing file ../Bibliography/model_description.tex}}
 
@@ -143,7 +143,7 @@ Documentation and configuration management for its companion visualization progr
 
 \section{Project Management}
 
-CFAST is developed and maintained by the Engineering Laboratory (EL), NIST). Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
+CFAST is developed and maintained by the Engineering Laboratory (EL) at NIST. Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST.
 
 \begin{figure}
 \begin{center}
@@ -172,7 +172,7 @@ CFAST is distributed exclusively through a NIST website dedicated to the CFAST m
 
 Document identification and control consists of placing all project files in a central location and maintaining a record of changes to those files. The central location is known as the {\em Repository}.
 
-CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository. Only development team members can commit changes to the repository. All others must submit a “pull request” which is then reviewed by the development team for inclusion into the repository.
+CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of the version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository. Only development team members can commit changes to the repository. All others must submit a “pull request” which is then reviewed by the development team for inclusion into the repository.
 
 The current location of the CFAST repository is \href{https://github.com/firemodels/cfast}{\textct{https://github.com/firemodels/cfast}}. The repository contains more than 3000 configuration items:
 \begin{enumerate}
@@ -184,7 +184,7 @@ The current location of the CFAST repository is \href{https://github.com/firemod
 \item Web pages and wikis containing notes and other information
 \end{enumerate}
 
-Each member of the CFAST development team has an account and password access~\footnote{Access to the CFAST repository is by means of two-factor identification.} to the CFAST repository. In addition, anonymous users can ``fork,'' or copy, the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a ``pull request.'' If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
+Each member of the CFAST development team has an account and password for access to the CFAST repository.~\footnote{Access to the CFAST repository is by means of two-factor identification.} In addition, anonymous users can ``fork,'' or copy, the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a ``pull request.'' If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
 
 In the event of an unexpected change to the GitHub service and/or the CFAST repository, each member of the development team, plus interested third parties, has a copy of the repository on their local computer. At NIST, the staff computers are regularly backed up as well. Thus, there is very little chance that the project repository will be lost. If need be, the files could be moved to another open source software development site.
 
@@ -192,7 +192,7 @@ Additional details on the use of GitHub for both CFAST and FDS are available on 
 
 \section{Version Identification and Numbering}
 
-At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the git repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the git revision number of the most recently committed source file. This is accomplished as part of the automated build and testing process where the git revision number is inserted into a source file that is used to identify the specific revision number, revision data, and compilation date for the CFAST model and user interface program, CEdit. Official versions of the model released by NIST are identified with specific version numbers tied to specific revisions in the repository and are identified on the download page for the model that can be compared to the version output from the model. For example, the following information is included on the CFAST download website for CFAST version 7.1.1
+At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the git repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the git revision number of the most recently committed source file. This is accomplished as part of the automated build and testing process where the git revision number is inserted into a source file that is used to identify the specific revision number, revision date, and compilation date for the CFAST model and user interface program, CEdit. Official versions of the model released by NIST are identified with specific version numbers tied to specific revisions in the repository and are identified on the download page for the model that can be compared to the version output from the model. For example, the following information is included on the CFAST download website for CFAST version 7.1.1
 
 \begin{lstlisting}
 CFAST 7.1.1
@@ -203,9 +203,9 @@ New versions of CFAST and Smokeview are identified using a specific numbering co
 
 The version number consists of three integers separated by periods, where the first number is the {\em major} release, the second is the {\em minor} release, and the third is the {\em maintenance} release.   For example, CFAST 7.1.2 indicates that this is CFAST 7, the seventh major release. The 1 indicates a significant upgrade (a minor release), but still within the framework of CFAST 7.  The 2 indicates the second maintenance release of 7.1, mostly bug fixes and minor user requests. As a mature code, major releases occur rarely for CFAST, and as the name implies, significantly change the functionality of the model. Minor releases occur about once a year, and may cause minor changes in functionality. Release notes indicate whether the changes affect a particular model feature. Maintenance releases are either just bug fixes or the addition of minor enhancements (such as a new output quantity), and should not affect code functionality.
 
-The repository revision consists of three parts, where the first identifies the version of the current baseline code, the second identifies the number of revisions in the repository since the most recent tagged baseline of the code, and the third identifies the GitHub hastag that links to a specific unique revision of all the tracked configuration items for that revision. For the example above, the CFAST baseline is identified as \textct{Gitv7.1.1} (a repository baseline tag for CFAST version 7.1.1), with no revisions since the baseline tag (\textct{0}, above), with a GitHub hastag of \textct{g8f0c672}.
+The repository revision consists of three parts, where the first identifies the version of the current baseline code, the second identifies the number of revisions in the repository since the most recent tagged baseline of the code, and the third identifies the Git hash that links to a specific unique revision of all the tracked configuration items for that revision. For the example above, the CFAST baseline is identified as \textct{Gitv7.1.1} (a repository baseline tag for CFAST version 7.1.1), with no revisions since the baseline tag (\textct{0}, above), with a Git hash of \textct{g8f0c672}.
 
-Each of these official releases form a baseline for any future development of the software. User's can verify the official NIST release version by comparing the output from any CFAST run to the information included with each download on the CFAST download website.
+Each of these official releases forms a baseline for any future development of the software. Users can verify the official NIST release version by comparing the output from any CFAST run to the information included with each download on the CFAST download website.
 
 \section{Version Documentation}
 
@@ -220,7 +220,7 @@ Changes are made to the CFAST source code daily, and tracked via revision contro
 Given the mature state of the model and the small development team, the software development process for CFAST is intentionally simple. The process can be defined in five basic steps:
 
 \begin{description}
-\item [1. Identify and document the need for a change:] The need for changes to CFAST typically come from user inquiries. These may be reports of bugs in the software or requests for additional features or outputs from the model.
+\item [1. Identify and document the need for a change:] The need for changes to CFAST typically comes from user inquiries. These may be reports of bugs in the software or requests for additional features or outputs from the model.
 
     Significant changes to CFAST are made based on the following criteria, in no particular order:
 \begin{description}
@@ -229,20 +229,20 @@ Given the mature state of the model and the small development team, the software
 \item[Increased or Comparable Accuracy:] The validation experiments that are part of this plan serve as the metric for new routines. It is not enough for a new algorithm to perform well in a few cases. It must show clear improvement across the entire suite of experiments. If the accuracy is only comparable to the previous version, then some other criteria must be satisfied.
 \item[Acceptance by the Fire Protection Community:] Especially in regard to fire-specific devices, like sprinklers and smoke detectors, the algorithms in CFAST often are based on their acceptance among the practicing engineers. Typically, the algorithms come from an industry-standard handbook like the SFPE Handbook \cite{SFPE:2003}.
 \end{description}
-\item [2. Analyze, evaluate, and implement the change:] Algorithms for more complex changes are typically documented by revisions to the CFAST Technical Reference Guide and specific test cases to verify the correct operation of the model changes are included in the CFAST Verification and Validation Guide. Software implementation then follows the equations included in the Technical Reference Guide. Additional details of the process, tracking, and testing of changes is included in the sections below.
+\item [2. Analyze, evaluate, and implement the change:] Algorithms for more complex changes are typically documented by revisions to the CFAST Technical Reference Guide and specific test cases to verify the correct operation of the model changes are included in the CFAST Verification and Validation Guide. Software implementation then follows the equations included in the Technical Reference Guide. Additional details of the process, tracking, and testing of changes are included in the sections below.
 \item [3. Review and approval of the change:] Before accepting any change into the repository, verification and validation tests are run to ensure desired results. All changes to the software and documentation are automatically tracked in the CFAST repository.
-\item [4. Verification and Validation:] A suite of simple verification calculations are run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations are run each night. Any changes to the results are automatically flagged and emailed to developers for review. Additional details of the process is included in the sections below.
-\item [5. Release of new versions:] NIST policy requires review and approval of technical reports (all the CFAST documentation) and software (the CFAST software released on the CFAST website). Additional details of the review process is included in the sections below.
+\item [4. Verification and Validation:] A suite of simple verification calculations is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations is run each night. Any changes to the results are automatically flagged and emailed to developers for review. Additional details of the process are included in the sections below.
+\item [5. Release of new versions:] NIST policy requires review and approval of technical reports (all the CFAST documentation) and software (the CFAST software released on the CFAST website). Additional details of the review process are included in the sections below.
 \end{description}
 
 \section{Problem Reporting and Resolution}
 
-NIST has developed an automated reporting and resolution tracking website for use with the CFAST model to facilitate tracking and cataloging of inquires, problems, and model enhancements / revisions. This is included as part of the CFAST website at \newline
+NIST has developed an automated reporting and resolution tracking website for use with the CFAST model to facilitate tracking and cataloging of inquiries, problems, and model enhancements / revisions. This is included as part of the CFAST website at \newline
 \href{https://github.com/firemodels/cfast/issues}{\textct{https://github.com/firemodels/cfast/issues}}
 
 \section{Software Change Implementation}
 
-Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) are run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations (also included here) are run with each significant upgrade.
+Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations (also included here) is run with each significant upgrade.
 
 \subsection{Creating a Change Request}
 
@@ -263,23 +263,23 @@ Prior to final implementation of a new feature or change, a review of the propos
 
 \section{Model Testing}
 
-Individual testing of model algorithms are made by the developers during any revision of the model. Often, this testing forms the basis for any new standard test cases included with future model releases. System release testing of the model prior to release includes the following:
+Individual tests of model algorithms are performed by the developers during any revision of the model. Often, this testing forms the basis for any new standard test cases included with future model releases. System release testing of the model prior to release includes the following:
 
 \begin{itemize}
 \item Examination of results of test cases specific to any model modifications made as appropriate.  Comparison with analytic solutions to simplified problems is desirable when available.
 
-\item Examination of results of standard test cases included with the release version of the model. Any changes in the output from prior versions is explained (and documented in the software testing and validation results report) by modifications made to the model.
+\item Examination of results of standard test cases included with the release version of the model. Any changes in the output from prior versions are explained (and documented in the software testing and validation results report) by modifications made to the model.
 
 \item For major new releases of the model, a complete suite of test cases should be compared to those from previous versions of the model.  At a minimum this includes the set of validation exercises described in U.S. Nuclear Regulatory Commission publication NUREG 1824 \cite{NRCNUREG1824}, but may include additional example cases or validation exercises as appropriate.
 
-\item For all changes to the model, an automated testing process is used that provides automatic error checking and collecting performance and accuracy statistics between CFAST revisions. Results of this process for release version of the model are included in the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
+\item For all changes to the model, an automated testing process is used that provides automatic error checking and collecting performance and accuracy statistics between CFAST revisions. Results of this process for the release version of the model are included in the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
 \end{itemize}
 
 \section{Automated Software Quality Testing}
 
 The CFAST and Smokeview source codes undergo an automated build, verification, validation, and regression testing process, which is similar to a continuous integration system that automates the build/testing cycle for a project. This automated process is referred to as CFASTbot. The CFASTbot build/test process helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between CFAST revisions.
 
-The automated built/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
+The automated build/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
 
 Upon completion of the automated build/test process, the results of the build/test process are dispatched to the development team. In the event of a failure, the build/test process continues when possible, and the appropriate error logs are dispatched to the development team.  The automated build/test process consists of eight build stages, which are described in the following sections.
 
@@ -293,7 +293,7 @@ CFAST is compiled with debugging flags enabled. This stage allows for errors in 
 
 \subsection*{Stage 3: Run verification suite (or validation set) in debug mode}
 
-All of the cases in the verification suite (or validation set) are invoked using the CFAST debug versions that were compiled in Stage~2. The verification (or validation) cases are run for at least one time step to ensure that the cases start without errors. After all of the cases run for at least one time step, the cases are stopped using an CFAST stop file. Then the CFAST output logs are checked for Fortran errors, numerical instabilities, missing verification case files, or other CFAST errors.
+All of the cases in the verification suite (or validation set) are invoked using the CFAST debug versions that were compiled in Stage~2. The verification (or validation) cases are run for at least one time step to ensure that the cases start without errors. After all of the cases run for at least one time step, the cases are stopped using a CFAST stop file. Then the CFAST output logs are checked for Fortran errors, numerical instabilities, missing verification case files, or other CFAST errors.
 
 \subsection*{Stage 4: Compilation of CFAST release versions}
 
@@ -349,17 +349,17 @@ These computer systems are available only to specified personnel, including the 
 
 CFAST is entirely a product of NIST and as such does not include any commercial software libraries. The differential equation solver used by CFAST, DASSL, is a publicly available software package.  Full source code for the solver as used by CFAST is maintained under version control with the rest of the model code.
 
-BFRL currently uses Microsoft Visual Studio 2015 and Intel Fortran Professional 2016 for development\footnote{Certain commercial entities, equipment, or materials may be identified in this document in order to describe an experimental procedure or concept adequately. Such identification is not intended to imply recommendation or endorsement by the National Institute of Standards and Technology, nor is it intended to imply that the entities, materials, or equipment are necessarily the best available for the purpose.}.  Prior to any change to a different development system, a full test suite of test cases are compared to verify consistent operation of the model and model results.
+BFRL currently uses Microsoft Visual Studio 2015 and Intel Fortran Professional 2016 for development\footnote{Certain commercial entities, equipment, or materials may be identified in this document in order to describe an experimental procedure or concept adequately. Such identification is not intended to imply recommendation or endorsement by the National Institute of Standards and Technology, nor is it intended to imply that the entities, materials, or equipment are necessarily the best available for the purpose.}.  Prior to any change to a different development system, a full test suite of test cases is compared to verify consistent operation of the model and model results.
 
 \section{Records Collection, Maintenance, and Retention}
 
-In addition to the identified configuration items included in the CFAST repository, all software, documentation, and SQA documents are retained by the CFAST project leader, typically in electronic form. Software and documentation is also maintained and archived on the NIST CFAST website as part of the available older versions of the model.
+In addition to the identified configuration items included in the CFAST repository, all software, documentation, and SQA documents are retained by the CFAST project leader, typically in electronic form. Software and documentation are also maintained and archived on the NIST CFAST website as part of the available older versions of the model.
 
 NIST management approval is required prior to destruction of old or out-of-date records. Records are typically maintained for a minimum of 25 years.
 
 \section{Training}
 
-No specific training is identified for use of this plan.  Details of training requirements for use of the model included in the CFAST user's guide is applicable to developers of the model as well.
+No specific training is identified for use of this plan.  Details of training requirements for use of the model included in the CFAST user's guide are applicable to developers of the model as well.
 
 \chapter{Summary}
 

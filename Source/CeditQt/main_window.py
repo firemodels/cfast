@@ -352,9 +352,9 @@ def opening_case() -> CfastCase:
     case.compartments = [
         Compartment(
             id="Comp 1",
-            width=5.0,
-            depth=5.0,
-            height=3.0,
+            width=3.6,
+            depth=2.4,
+            height=2.4,
         )
     ]
     return case

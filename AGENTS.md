@@ -25,7 +25,7 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 ## Fortran source style
 
 - Use `IMPLICIT NONE`.
-- Write Fortran source in uppercase for readability and searchability.
+- Preserve the capitalization style of the surrounding code and avoid case-only rewrites.
 - Indent blocks by three spaces and never use tabs. Remove trailing and excessive whitespace.
 - Use one blank line within a subroutine and two blank lines between subroutines. Leave one blank line below major block comments.
 - Group variables of the same type into a single declaration when the result remains readable.

@@ -90,6 +90,7 @@ Group Name & Namelist Group Description  & Reference Section & Parameter Table \
 \ct{CONN}  & Surface Connections         & \ref{info:CONN}   & \ref{tbl:CONN}  \\ \hline
 \ct{DEVC}  & Devices                     & \ref{info:DEVC}   & \ref{tbl:DEVC}  \\ \hline
 \ct{DIAG}  & Diagnostics                 & \ref{info:DIAG}   & \ref{tbl:DIAG}  \\ \hline
+\ct{DUMP}  & Legacy Post-Run Calculations & \ref{info:OUTP}  & \ref{tbl:DUMP}  \\ \hline
 \ct{FIRE}  & Fire Placement              & \ref{info:FIRE}   & \ref{tbl:FIRE2} \\ \hline
 \ct{HEAD}  & Input File Header           & \ref{info:HEAD}   & \ref{tbl:HEAD}  \\ \hline
 \ct{INIT}  & Initial Conditions          & \ref{info:INIT}   & \ref{tbl:INIT}  \\ \hline
@@ -97,6 +98,7 @@ Group Name & Namelist Group Description  & Reference Section & Parameter Table \
 \ct{MATL}  & Material Properties         & \ref{info:MATL}   & \ref{tbl:MATL}  \\ \hline
 \ct{MISC}  & Miscellaneous               & \ref{info:MISC}   & \ref{tbl:MISC}  \\ \hline
 \ct{OUTP}  & Output and Post-Run Calculations & \ref{info:OUTP} & \ref{tbl:OUTP} \\ \hline
+\ct{RAMP}  & Legacy Ramp Functions       &                   & \ref{tbl:RAMP}  \\ \hline
 \ct{SLCF}  & Slice File Outputs          & \ref{info:SLCF}   & \ref{tbl:SLCF}  \\ \hline
 \ct{TAIL}  & End of Input File Indicator &                   &                 \\ \hline
 \ct{TABL}  & Table of Time-Based Inputs  & \ref{info:FIRE2}  & \ref{tbl:FIRE3} \\ \hline
@@ -142,16 +144,24 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+\ct{AREA}                                & Real                   & Section \ref{info:FIRE}         & m$^2$              & 0 \\ \hline
 \ct{CARBON}                              & Real                   & Section \ref{info:FIRE}         &                    & 1 \\ \hline
 \ct{CHLORINE}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{COMP_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{CO_YIELD}                            & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \ct{FLAMING_TRANSITION_TIME}             & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{HCN_YIELD}                           & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \ct{HEAT_OF_COMBUSTION}                  & Real                   & Section \ref{info:FIRE}         & kJ/kg              & 50000 \\ \hline
+\ct{HRR}                                 & Real                   & Section \ref{info:FIRE}         & kW                 & 0 \\ \hline
 \ct{HYDROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 4 \\ \hline
 \ct{ID}\footnote{Required for each \ct{CHEM} input included in the input file.\label{req:chem}}
                                          & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{NITROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{OXYGEN}                              & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{RADIATIVE_FRACTION}                  & Real                   & Section \ref{info:FIRE}         &                    & 0.35 \\ \hline
+\ct{SOOT_YIELD}                          & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
+\ct{TABLE_ID}                            & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{TRACE_YIELD}                         & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -194,14 +204,16 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
                                          & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
 \ct{FLOOR_MATL_ID}                       & Character Triplet      & Section \ref{info:COMP2}        &                    & \\ \hline
 \ct{FLOOR_THICKNESS}                     & Real Triplet           & Section \ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOW_COEFFICIENT}                    & Real                   & Section \ref{info:COMP}         &                    & 0.07 \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:COMP}         &                    & \\ \hline
 \ct{GRID}                                & Integer Triplet        & Section \ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
 \ct{HALL}                                & Logical                & Section \ref{info:COMP3}        &                    & \ct{.FALSE.} \\ \hline
 \ct{HEIGHT}\footref{req:comp}            & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
 \ct{ID}\footref{req:comp}                & Character              & Section \ref{info:COMP}         &                    & \\ \hline
-\ct{LEAK_AREA}                           & Real Doublet           & Section \ref{info:COMP}         & m$^2$/m$^2$        & \\ \hline
+\ct{LEAK_AREA}                           & Real Doublet           & Section \ref{info:COMP}         & m$^2$              & 0,0 \\ \hline
+\ct{LEAK_AREA_RATIO}                     & Real Doublet           & Section \ref{info:COMP}         & m$^2$/m$^2$        & 0,0 \\ \hline
 \ct{ORIGIN}                              & Real Triplet           & Section \ref{info:COMP}         & m                  & 0,0,0 \\ \hline
 \ct{SHAFT}                               & Logical                & Section \ref{info:COMP3}        &                    & \ct{.FALSE.} \\ \hline
-\ct{TYPE}                                & Character              & Section \ref{info:COMP}         &                    & \\ \hline
 \ct{WALL_MATL_ID}                        & Character Triplet      & Section \ref{info:COMP2}        &                    & \\ \hline
 \ct{WALL_THICKNESS}                      & Real Triplet           & Section \ref{info:COMP2}        &                    & \\ \hline
 \ct{WIDTH}\footref{req:comp}             & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
@@ -263,7 +275,8 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=1.46\hsize\raggedright\arraybackslash}X|>{\hsize=0.89\hsize\raggedright\arraybackslash}X|>{\hsize=0.57\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=1.13\hsize\raggedright\arraybackslash}X|}
+\small
+\begin{xltabular}{\textwidth}{|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|}
 \caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Section~\ref{info:DEVC}.}
 \label{tbl:DEVC} \\
 \hline
@@ -282,20 +295,25 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
                                          & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Section \ref{info:DEVC}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
 \ct{DEPTH_UNITS}                         & Character              & Section \ref{info:DEVC}         & none or m          & \ct{FRACTION} \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{ID}\footref{req:devc}                & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{LOCATION}\footref{req:devc}          & Real Triplet           & Section \ref{info:DEVC}         & m                  & \\ \hline
 \ct{MATL_ID}                             & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{NORMAL}                              & Real Triplet           & Section \ref{info:DEVC}         &                    & 0,0,1 \\ \hline
 \ct{RTI}                                 & Real                   & Section \ref{info:DEVC2}        & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 130 \\ \hline
-\ct{SETPOINT}                            & Real                   & Section \ref{info:DEVC}         & \degc or \%/m      & see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).} \\ \hline
-\ct{SETPOINTS}                           & Real Doublet           & Section \ref{info:DEVC}         & \%/m               & see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft) for both smoldering and flaming smoke.} \\ \hline
+\ct{SETPOINT}\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}
+                                         & Real                   & Section \ref{info:DEVC}         & \degc or \%/m      & \\ \hline
+\ct{SETPOINTS}\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft) for both smoldering and flaming smoke.}
+                                         & Real Doublet           & Section \ref{info:DEVC}         & \%/m               & \\ \hline
 \ct{SPRAY_DENSITY}                       & Real                   & Section \ref{info:DEVC2}        & m/s                & \\ \hline
-\ct{SURFACE_ORIENTATION}                 & Selection List         & Section \ref{info:DEVC}         & see footnote\footnote{Indicates where the front surface of the target is facing. Allowable inputs are CEILING, FLOOR, FRONT WALL, BACK WALL, LEFT WALL, RIGHT WALL to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.} & \\ \hline
+\ct{SURFACE_ORIENTATION}\footnote{Indicates where the front surface of the target is facing. Allowable inputs are CEILING, FLOOR, FRONT WALL, BACK WALL, LEFT WALL, RIGHT WALL to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.}
+                                         & Selection List         & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{SURFACE_TEMPERATURE}                 & Real                   & Section \ref{info:DEVC}         &                    & \\ \hline
 \ct{TEMPERATURE_DEPTH}                   & Real                   & Section \ref{info:DEVC}         &                    & 0.5 \\ \hline
 \ct{THICKNESS}                           & Real                   & Section \ref{info:DEVC}         &                    & material thickness \\ \hline
 \ct{TYPE}\footref{req:devc}              & Selection List         & Section \ref{info:DEVC}         &                    & \\ \hline
 \end{xltabular}
+\normalsize
 
 \graybox{
 \ct{PLATE} and \ct{CYLINDER} targets are defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{TEMPERATURE_DEPTH}, \ct{DEPTH_UNITS}, and \ct{NORMAL}.
@@ -335,7 +353,8 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=1.72\hsize\raggedright\arraybackslash}X|>{\hsize=1.04\hsize\raggedright\arraybackslash}X|>{\hsize=0.67\hsize\raggedright\arraybackslash}X|>{\hsize=0.6\hsize\raggedright\arraybackslash}X|>{\hsize=0.97\hsize\raggedright\arraybackslash}X|}
+\scriptsize
+\begin{xltabular}{\textwidth}{|>{\hsize=2.3\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=0.2\hsize\raggedright\arraybackslash}X|>{\hsize=0.5\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|}
 \caption[Diagnostic parameters (\ct{DIAG} namelist group)]{For more information see Section~\ref{info:DIAG}.}
 \label{tbl:DIAG} \\
 \hline
@@ -347,7 +366,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \multicolumn{5}{|c|}{\ct{DIAG} (Diagnostic Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Ref.} & {\bf Units} & {\bf Default Value} \\ \hline
 \ct{ADIABATIC_TARGET_VERIFICATION}\footnote{If included, must be either \ct{ON} or \ct{OFF} \label{DIAGonoff}} \footnote{If \ct{ON}, \ct{RADIATIVE_INCIDENT_FLUX} is required.}
                                          & Selection List         &                                 &                    & \ct{OFF} \\ \hline
 \ct{CEILING_JET_SUB_MODEL}\footref{DIAGonoff}
@@ -363,9 +382,9 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{F}\footnote{If included, both \ct{F} and \ct{T} are required.\label{DIAGft}}
                                          & Real Array             &                                 & \degc              & \\ \hline
 \ct{FIRE_SUB_MODEL}\footref{DIAGonoff}   & Selection List         &                                 &                    & \ct{ON} \\ \hline
-\ct{GAS_ABSORPTION_SUB_MODEL}\footnote{\ct{GAS_ABSORPTION}, if included, must be either \ct{CALCULATED} or \ct{CONSTANT}}
+\ct{GAS_ABSORBTION_SUB_MODEL}\footnote{\ct{GAS_ABSORBTION_SUB_MODEL}, if included, must be either \ct{CALCULATED} or \ct{CONSTANT}. The parameter name retains the source-code spelling.}
                                          & Selection List         &                                 &                    & \ct{CALCULATED} \\ \hline
-\ct{GAS_TEMPERATURE}\footnote{If included, \ct{GAS_TEMPERATURE}, \ct{PARTIAL_PRESSURE_H2O}, and \ct{PARTIAL_PRESSURE_CO} are all required.\label{DIAGgpp}}
+\ct{GAS_TEMPERATURE}\footnote{If included, \ct{GAS_TEMPERATURE}, \ct{PARTIAL_PRESSURE_H2O}, and \ct{PARTIAL_PRESSURE_CO2} are all required.\label{DIAGgpp}}
                                          & Real                   &                                 & \degc              & \\ \hline
 \ct{HORIZONTAL_FLOW_SUB_MODEL}\footref{DIAGonoff}
                                          & Selection List         &                                 &                    & \ct{ON} \\ \hline
@@ -374,19 +393,60 @@ These inputs are for internal diagnostic purposes used to test and verify specif
                                          & Selection List         &                                 &                    & \ct{ON} \\ \hline
 \ct{MECHANICAL_FLOW_SUB_MODEL}\footref{DIAGonoff}
                                          & Selection List         &                                 &                    & \ct{ON} \\ \hline
+\ct{MODE}\footnote{Reserved for internal diagnostic use.}
+                                         & Character              &                                 &                    & \\ \hline
 \ct{OXYGEN_TRACKING}\footref{DIAGonoff}  & Selection List         &                                 &                    & \ct{OFF} \\ \hline
-\ct{PARTIAL_PRESSURE_CO}\footref{DIAGgpp} & Real                   &                                 & Pa                 & \\ \hline
+\ct{PARTIAL_PRESSURE_CO2}\footref{DIAGgpp} & Real                  &                                 & Pa                 & \\ \hline
 \ct{PARTIAL_PRESSURE_H2O}\footref{DIAGgpp} & Real                   &                                 & Pa                 & \\ \hline
 \ct{RADIATION_SUB_MODEL}\footref{DIAGonoff} & Selection List         &                                 &                    & \ct{ON} \\ \hline
 \ct{RADIATIVE_INCIDENT_FLUX}             & Real                   &                                 & kW/m$^2$           & 0 \\ \hline
-\ct{RADSOLVER}\footnote{\ct{RADSOLVER}, if included, must be either \ct{DEFAULT} or \ct{RADNET}.}
-                                         & Selection List         &                                 &                    & \ct{DEFAULT} \\ \hline
+\ct{RAD_SOLVER}\footnote{Set to \ct{RADNNET} to use the neural-network radiation solver.}
+                                         & Selection List         &                                 &                    & \\ \hline
 \ct{RESIDUAL_DEBUG_PRINT}\footref{DIAGonoff} & Selection List         &                                 &                    & \ct{OFF} \\ \hline
 \ct{STEADY_STATE_INITIAL_CONDITIONS}\footref{DIAGonoff}
                                          & Selection List         &                                 &                    & \ct{OFF} \\ \hline
 \ct{T}\footref{DIAGft}                   & Real Array             &                                 & s                  & \\ \hline
+\ct{UPPER_LAYER_THICKNESS}               & Real                   &                                 & m                  & \\ \hline
+\ct{VERIFICATION_FIRE_HEAT_FLUX}         & Real                   &                                 & kW/m$^2$           & \\ \hline
+\ct{VERIFICATION_TIME_STEP}              & Real                   &                                 & s                  & 0 \\ \hline
 \ct{VERTICAL_FLOW_SUB_MODEL}\footref{DIAGonoff}
                                          & Selection List         &                                 &                    & \ct{ON} \\ \hline
+\end{xltabular}
+\normalsize
+
+
+\clearpage
+\section{\texorpdfstring{{\tt DUMP}}{DUMP} (Legacy Post-Run Calculation Parameters)}
+\label{app:namelist_dump}
+
+The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. New input files should use \ct{OUTP}; \ct{DUMP} remains accepted for compatibility.
+
+\noindent
+\renewcommand\footnoterule{}
+\begin{xltabular}{\textwidth}{|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|}
+\caption[Legacy Post-Run Calculation Parameters (\ct{DUMP} namelist group)]{For more information see Section~\ref{info:OUTP}.}
+\label{tbl:DUMP} \\
+\hline
+\multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
+\hline \hline
+\endhead
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+\ct{CRITERION}                           & Real                   & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FILE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_DEVICE}                        & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_FIELD}                         & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_MEASUREMENT}                   & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_DEVICE}                       & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_FIELD}                        & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_MEASUREMENT}                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{TYPE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
 \end{xltabular}
 
 
@@ -396,7 +456,8 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=0.63\hsize\raggedright\arraybackslash}X|>{\hsize=0.99\hsize\raggedright\arraybackslash}X|>{\hsize=0.63\hsize\raggedright\arraybackslash}X|>{\hsize=1.83\hsize\raggedright\arraybackslash}X|>{\hsize=0.92\hsize\raggedright\arraybackslash}X|}
+\small
+\begin{xltabular}{\textwidth}{|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|}
 \caption[Fire Parameters (\ct{FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
 \label{tbl:FIRE2} \\
 \hline
@@ -413,12 +474,14 @@ These inputs are for internal diagnostic purposes used to test and verify specif
                                          & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{DEVC_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{FIRE_ID}\footref{req:fire}           & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{ID}\footref{req:fire}                & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{IGNITION_CRITERION}\footnote{For \ct{IGNITION_CRITERION}, inputs must be \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}.}
                                          & Selection List         & Section \ref{info:FIRE}         &                    & \ct{TIME} \\ \hline
 \ct{LOCATION}\footref{req:fire}          & Real Pair              & Section \ref{info:FIRE}         & m                  & \\ \hline
 \ct{SETPOINT}                            & Real                   & Section \ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s \\ \hline
 \end{xltabular}
+\normalsize
 
 \vspace{\baselineskip}
 \noindent Example:
@@ -547,6 +610,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
                                          & Real                   & Section \ref{info:MATL}         & kW/(m$\cdot$K)     & \\ \hline
 \ct{DENSITY}\footref{req:matl}           & Real                   & Section \ref{info:MATL}         & kg/m$^3$           & \\ \hline
 \ct{EMISSIVITY}                          & Real                   & Section \ref{info:MATL}         &                    & 0.9 \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:MATL}         &                    & \\ \hline
 \ct{ID}\footref{req:matl}                & Character              & Section \ref{info:MATL}         &                    & \\ \hline
 \ct{MATERIAL}\footref{req:matl}          & Character              & Section \ref{info:MATL}         &                    & \\ \hline
 \ct{SPECIFIC_HEAT}\footref{req:matl}     & Real                   & Section \ref{info:MATL}         & kJ/(kg$\cdot$K)    & \\ \hline
@@ -604,7 +668,8 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=1.46\hsize\raggedright\arraybackslash}X|>{\hsize=1.14\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.61\hsize\raggedright\arraybackslash}X|>{\hsize=1.06\hsize\raggedright\arraybackslash}X|}
+\small
+\begin{xltabular}{\textwidth}{|>{\hsize=1.45\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
 \caption[Output and Post-Run Calculation parameters (\ct{OUTP} namelist group)]{For more information see Section~\ref{info:OUTP}.}
 \label{tbl:OUTP} \\
 \hline
@@ -618,30 +683,68 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \hline \hline
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
 \endhead
-\ct{CRITERIA}                            & Real                   &                                 &                    & \\ \hline
-\ct{FILE_TYPE} \footnote{\ct{FILE_TYPE} must be one of the CFAST spreadsheet outputs: \ct{NORMAL}, \ct{FLOW}, \ct{MASS}, \ct{SPECIES}, or \ct{WALL}.}
-
-                                         & Selection List         &                                 &                    & \\ \hline
-\ct{FIRST_DEVICE}                        & Character              &                                 &                    & \\ \hline
-\ct{FIRST_MEASUREMENT}                   & Character              &                                 &                    & \\ \hline
-\ct{ID}                                  & Character              &                                 &                    & \\ \hline
-\ct{SECOND_DEVICE}                       & Character              &                                 &                    & \\ \hline
-\ct{SECOND_MEASUREMENT}                  & Character              &                                 &                    & \\ \hline
-\ct{TYPE} \footnote{\ct{TYPE} must be \ct{TRIGGER_GREATER}, \ct{TRIGGER_LESSER}, \ct{MINIMUM}, \ct{MAXIMUM}, \ct{INTEGRATE}, or \ct{CHECK_TOTAL_HRR}}
-                                         & Selection List         &                                 &                    & \\ \hline
+\ct{CRITERION}                           & Real                   & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FILE}\footnote{\ct{FILE} must identify one of the CFAST spreadsheet outputs, such as \ct{NORMAL}, \ct{FLOW}, \ct{MASS}, \ct{SPECIES}, or \ct{WALL}.}
+                                         & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_DEVICE}                        & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_FIELD}                         & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_MEASUREMENT}                   & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{NET_HEAT_FLUX_OUTPUT}                & Logical                & Section \ref{info:OUTP}         &                    & \ct{.FALSE.} \\ \hline
+\ct{SECOND_DEVICE}                       & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_FIELD}                        & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_MEASUREMENT}                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{SPREADSHEET_OUTPUT}\footnote{A string of output-category letters selects and orders spreadsheet outputs; \ct{ALL} selects every category and \ct{NONE} or \ct{OFF} selects none.}
+                                         & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{TYPE}\footnote{\ct{TYPE} must be \ct{TRIGGER_GREATER}, \ct{TRIGGER_LESSER}, \ct{MINIMUM}, \ct{MAXIMUM}, \ct{INTEGRATE}, or \ct{CHECK_TOTAL_HRR}.}
+                                         & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{VALIDATION_OUTPUT}                   & Logical                & Section \ref{info:OUTP}         &                    & \ct{.FALSE.} \\ \hline
 \end{xltabular}
+\normalsize
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
 &OUTP ID = 'Total Time Completed'
-     FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
+     FILE = 'NORMAL'  TYPE = 'MAXIMUM'
      FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
 &OUTP ID = 'Fire Room Ion Detector'
-     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FILE = 'NORMAL'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
      FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
      SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
 \end{lstlisting}
+
+
+\clearpage
+\section{\texorpdfstring{{\tt RAMP}}{RAMP} (Legacy Ramp Parameters)}
+\label{app:namelist_ramp}
+
+The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with legacy input files.
+
+\noindent
+\renewcommand\footnoterule{}
+\begin{xltabular}{\textwidth}{|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|}
+\caption[Legacy Ramp Parameters (\ct{RAMP} namelist group)]{Legacy ramp parameters accepted by CFAST.}
+\label{tbl:RAMP} \\
+\hline
+\multicolumn{5}{|c|}{\ct{RAMP} (Legacy Ramp Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{\ct{RAMP} (Legacy Ramp Parameters)} \\
+\hline \hline
+\endhead
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+\ct{COMP_IDS}                            & Character Doublet      &                                 &                    & \\ \hline
+\ct{F}                                   & Real Array             &                                 &                    & \\ \hline
+\ct{ID}                                  & Character              &                                 &                    & \\ \hline
+\ct{T}\footnote{Use either \ct{T} or \ct{Z}, but not both.}
+                                         & Real Array             &                                 & s                  & \\ \hline
+\ct{TYPE}                                & Character              &                                 &                    & \\ \hline
+\ct{Z}                                   & Real Array             &                                 & m                  & \\ \hline
+\end{xltabular}
 
 
 \clearpage
@@ -753,7 +856,8 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=0.83\hsize\raggedright\arraybackslash}X|>{\hsize=1.09\hsize\raggedright\arraybackslash}X|>{\hsize=0.58\hsize\raggedright\arraybackslash}X|>{\hsize=1.67\hsize\raggedright\arraybackslash}X|>{\hsize=0.83\hsize\raggedright\arraybackslash}X|}
+\small
+\begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
 \caption[Wall Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
 \label{tbl:WVENT} \\
 \hline
@@ -776,6 +880,8 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
                                          & Real Array             & Section \ref{info:VENT}         &                    & \\ \hline
 \ct{FACE}\footnote{Input for \ct{FACE} must be \ct{RIGHT}, \ct{FRONT}, \ct{LEFT}, or \ct{REAR}. Both \ct{FACE} and \ct{OFFSET} positioning refer to the first compartment specified (\ct{COMP_IDS(1)}).}
                                          & Selection List         & Section \ref{info:VENT}         &                    & \\ \hline
+\ct{FLOW_COEFFICIENT}                    & Real                   & Section \ref{info:VENT}         &                    & 0.7 \\ \hline
+\ct{FYI}                                 & Character              & Section \ref{info:VENT}         &                    & \\ \hline
 \ct{HEIGHT}\footref{req:wallvent}        & Real                   & Section \ref{info:VENT}         & m                  & \\ \hline
 \ct{ID}\footref{req:wallvent}            & Character              & Section \ref{info:VENT}         &                    & \\ \hline
 \ct{OFFSET}                              & Real                   & Section \ref{info:VENT}         & m                  & 0 \\ \hline
@@ -784,11 +890,12 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
                                          & Real                   & Section \ref{info:VENT}         & m                  & 1 \\ \hline
 \ct{SETPOINT}                            & Real                   & Section \ref{info:VENT}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & \\ \hline
 \ct{T}                                   & Real Array             & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{TOP}\footref{req:wallvent} & Real                  & Section \ref{info:VENT}     & m                                  &                                 \\ \hline &  & \\ \hline
+\ct{TOP}\footref{req:wallvent}          & Real                   & Section \ref{info:VENT}         & m                  & \\ \hline
 \ct{TYPE}\footref{req:wallvent}\footnote{Input for \ct{TYPE} must be \ct{WALL} to specify a wall vent.}
                                          & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
 \ct{WIDTH}\footref{req:wallvent}         & Real                   & Section \ref{info:VENT}         & m                  & \\ \hline
 \end{xltabular}
+\normalsize
 
 \graybox{Wall vents (\ct{TYPE='WALL'}) are defined by \ct{BOTTOM}, \ct{TOP}, and \ct{WIDTH}. Location of the vent for visualization is defined by \ct{FACE}, and \ct{OFFSET}.}
 
@@ -804,7 +911,7 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=1.09\hsize\raggedright\arraybackslash}X|>{\hsize=1.43\hsize\raggedright\arraybackslash}X|>{\hsize=0.76\hsize\raggedright\arraybackslash}X|>{\hsize=0.63\hsize\raggedright\arraybackslash}X|>{\hsize=1.09\hsize\raggedright\arraybackslash}X|}
+\begin{xltabular}{\textwidth}{|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|}
 \caption[Ceiling/Floor Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
 \label{tbl:CFVENT} \\
 \hline
@@ -853,7 +960,8 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 
 \noindent
 \renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=0.93\hsize\raggedright\arraybackslash}X|>{\hsize=1.21\hsize\raggedright\arraybackslash}X|>{\hsize=0.49\hsize\raggedright\arraybackslash}X|>{\hsize=1.43\hsize\raggedright\arraybackslash}X|>{\hsize=0.94\hsize\raggedright\arraybackslash}X|}
+\small
+\begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
 \caption[Mechanical Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
 \label{tbl:MVENT} \\
 \hline
@@ -891,6 +999,7 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \ct{TYPE}\footref{req:mvent}\footnote{Input for \ct{TYPE} must be \ct{MECHANICAL} for mechanical vents.}
                                          & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
 \end{xltabular}
+\normalsize
 
 \graybox{Mechanical vents \ct{TYPE='MECHANICAL'} are defined by \ct{AREAS}, \ct{CUTOFFS}, \ct{FLOW}, and \ct{HEIGHTS}. Location of the vent for visualization is defined by \ct{ORIENTATION} and \ct{OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction and by \ct{HEIGHTS(1)} in the z direction. \\
 }
@@ -920,7 +1029,7 @@ At the user's option, CFAST outputs simulation results to one or more comma-deli
 \renewcommand{\arraystretch}{1.0}
 \setlength\LTleft{0in}
 \setlength\LTright{0in}
-\begin{xltabular}{\textwidth}{|>{\hsize=0.37\hsize\raggedright\arraybackslash}X|>{\hsize=1.44\hsize\raggedright\arraybackslash}X|>{\hsize=1.62\hsize\raggedright\arraybackslash}X|>{\hsize=0.57\hsize\raggedright\arraybackslash}X|}
+\begin{xltabular}{\textwidth}{|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
 \caption[Spreadsheet Outputs (\ct{OUTP} namelist group)]{}
 \label{tbl:custom_outputs} \\
 \hline
@@ -934,7 +1043,7 @@ At the user's option, CFAST outputs simulation results to one or more comma-deli
 \hline
 {\bf Device}   & {\bf Measurement}                                    & {\bf Notes}                                                & {\bf Default Spreadsheet} \\ \hline
 \endhead
-Compartments   & Upper Layer Temperature                              & Device is identified by user-specified compartment ID      & \_compartments.csv \\ \hline
+Compartments   & Upper Layer Temperature                              & User-specified ID                                          & \_compartments.csv \\ \hline
                & Lower Layer Temperature                              &                                                            & \\ \hline
                & Layer Height                                         &                                                            & \\ \hline
                & Upper Layer Volume                                   &                                                            & \\ \hline
@@ -1012,7 +1121,7 @@ Vents          & Net Inflow                                           &         
                & Trace Species Flow                                   &                                                            & \\ \hline
                & Trace Species Filtered                               &                                                            & \\ \hline
 
-Fires          & Ignition                                             & Device is identified by user-specified fire ID             & \_fires \\ \hline
+Fires          & Ignition                                             & User-specified ID                                          & \_fires \\ \hline
                & Plume Entrainment Rate                               &                                                            & \\ \hline
                & Pyrolysis Rate                                       &                                                            & \\ \hline
                & HRR Expected                                         &                                                            & \\ \hline
@@ -1025,7 +1134,7 @@ Fires          & Ignition                                             & Device i
                & Total Pyrolysate Released                            &                                                            & \\ \hline
                & Total Trace Species Released                         &                                                            & \\ \hline
 
-Targets        & Target Surrounding Gas Temperature                   & Device is identified by user-specified target ID           & \_devices \\ \hline
+Targets        & Target Surrounding Gas Temperature                   & User-specified ID                                          & \_devices \\ \hline
                & Target Surface Temperature                           &                                                            & \\ \hline
                & Target Internal Temperature                          &                                                            & \\ \hline
                & Target Incident Flux                                 &                                                            & \\ \hline
@@ -1058,7 +1167,7 @@ Targets        & Target Surrounding Gas Temperature                   & Device i
                & Target Radiative Loss Gauge Flux                     & -V option only                                             & \\ \hline
                & Back Target Radiative Loss Gauge Flux                & -V option only                                             & \\ \hline
 
-Detectors      & Sensor Surrounding Gas Temperature                   & Device is identified by user-specified detector ID         & \_devices \\ \hline
+Detectors      & Sensor Surrounding Gas Temperature                   & User-specified ID                                          & \_devices \\ \hline
                & Sensor Surrounding Gas Velocity                      &                                                            & \\ \hline
                & Sensor Obscuration                                   &                                                            & \\ \hline
                & Sensor Temperature                                   &                                                            & \\ \hline

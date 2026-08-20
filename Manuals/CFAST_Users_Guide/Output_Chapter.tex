@@ -3,6 +3,29 @@
 \chapter{Output from CFAST}
 \label{Output_Chapter}
 
+\section{Output Control and Post-Run Calculations}
+\label{info:OUTP}
+
+The \ct{OUTP} namelist controls spreadsheet selection and validation formatting and can request summary calculations after a run. An \ct{OUTP} record containing only output-control parameters applies those options without creating a summary calculation.
+\begin{description}
+\item[\texttt{CRITERION}] Positive threshold used by \ct{TRIGGER_GREATER} or \ct{TRIGGER_LESSER}.
+\item[\texttt{FILE}] Spreadsheet family containing the requested fields, such as \ct{NORMAL}, \ct{FLOW}, \ct{MASS}, \ct{SPECIES}, or \ct{WALL}.
+\item[\texttt{FIRST\_DEVICE}] Legacy name for the first element of \ct{FIRST_FIELD}; retained for compatibility.
+\item[\texttt{FIRST\_MEASUREMENT}] Legacy name for the second element of \ct{FIRST_FIELD}; retained for compatibility.
+\item[\texttt{FIRST\_FIELD}] Required two-string spreadsheet column identifier. The first string identifies the object or category and the second identifies the measurement. For \ct{INTEGRATE}, it identifies simulation time.
+\item[\texttt{FYI}] Optional descriptive text retained with the calculation but not used in the calculation.
+\item[\texttt{ID}] Required unique identifier for a post-run calculation.
+\item[\texttt{NET\_HEAT\_FLUX\_OUTPUT}] If \ct{.TRUE.}, includes net target heat flux in spreadsheet output.
+\item[\texttt{SECOND\_DEVICE}] Legacy name for the first element of \ct{SECOND_FIELD}; retained for compatibility.
+\item[\texttt{SECOND\_MEASUREMENT}] Legacy name for the second element of \ct{SECOND_FIELD}; retained for compatibility.
+\item[\texttt{SECOND\_FIELD}] Comparison or integration field. It is required for trigger and integration calculations.
+\item[\texttt{SPREADSHEET\_OUTPUT}] String of output-category letters that selects and orders spreadsheet outputs. \ct{ALL} selects every category; \ct{NONE} or \ct{OFF} selects none.
+\item[\texttt{TYPE}] Summary operation. Valid choices are \ct{TRIGGER_GREATER}, \ct{TRIGGER_LESSER}, \ct{MINIMUM}, \ct{MAXIMUM}, \ct{INTEGRATE}, and \ct{CHECK_TOTAL_HRR}.
+\item[\texttt{VALIDATION\_OUTPUT}] If \ct{.TRUE.}, writes abbreviated spreadsheet headings intended for automated validation processing.
+\end{description}
+
+The legacy \ct{DUMP} namelist accepts the post-run calculation parameters above but not the three output-control parameters. New files should use \ct{OUTP}.
+
 The output of CFAST includes the temperatures of the upper and lower gas layers within each compartment, the ceiling/wall/floor temperatures within each compartment, the visible smoke and gas species concentrations within each layer, target temperatures and sprinkler activation times.  The amount of information can be very large, especially for complex geometries and long simulations.
 
 \section{Compact Output}

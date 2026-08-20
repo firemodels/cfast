@@ -1,0 +1,34 @@
+% !TEX root = ../CFAST_Users_Guide.tex
+
+% Oblique projection used by the original CFAST compartment diagrams.
+% All vertices below are specified in a single three-dimensional coordinate system.
+\begin{tikzpicture}[
+  x={(0.78cm,0cm)}, y={(0.35cm,0.23cm)}, z={(0cm,0.78cm)},
+  >=Stealth, line cap=round, line join=round,
+  every node/.style={font=\small}
+]
+  \def\W{4}
+  \def\D{4}
+  \def\H{4}
+
+  \draw[line width=1pt]
+    (0,0,0)--(\W,0,0)--(\W,\D,0)--(0,\D,0)--cycle
+    (0,0,\H)--(\W,0,\H)--(\W,\D,\H)--(0,\D,\H)--cycle
+    (0,0,0)--(0,0,\H)
+    (\W,0,0)--(\W,0,\H)
+    (\W,\D,0)--(\W,\D,\H)
+    (0,\D,0)--(0,\D,\H);
+
+  \draw[line width=1.4pt,->] (0,0,0)--(5.4,0,0) node[below right] {$X$};
+  \draw[line width=1.4pt,->] (0,0,0)--(0,6.0,0) node[right] {$Y$};
+  \draw[line width=1.4pt,->] (0,0,0)--(0,0,4.8) node[above right] {$Z$};
+  \node[below left] at (0,0,0) {$(0,0,0)$};
+
+  \node[below] at (2,0,0) {Width};
+  \node[rotate=90] at (-0.42,0,2) {Height};
+  \node[rotate=34] at (4.7,2,0.1) {Depth};
+  \node[red,rotate=34] at (0,1.85,0.4) {Left};
+  \node[red] at (1.5,0,0.3) {Front};
+  \node[red,anchor=east] at (4,4,0.3) {Rear};
+  \path (4,0,4)--(4,4,4) node[pos=0.4,below=-1pt,sloped,text=red] {Right};
+\end{tikzpicture}

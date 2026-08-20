@@ -475,7 +475,7 @@ The combustion model is defined by the following one-step reaction:
    \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nonumber \\[.1in]
    \nu_\COTWO \, \mathrm{CO_2} &+& \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \; + \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} \label{stoich}
 \end{eqnarray}
-It is assumed that all the nitrogen and chlorine in the fuel are converted to HCN and HCl.
+All chlorine in the fuel is converted to HCl. HCN production is limited by both the specified HCN yield and the nitrogen available in the fuel; any remaining nitrogen forms N$_2$.
 
 \begin{figure}[h!]
 \begin{center}
@@ -501,12 +501,27 @@ For a new fire, click on the {\bf Add New} button within the fire definition blo
 \item[Referenced Fire] The name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
 \end{description}
 
-Each instance of a fire can be a unique fire with a different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties. The following parameters define the composition and burning properties of the fire.
+Each instance of a fire can be a unique fire with a different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties.
+
+In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
 \begin{description}
-\item[Fire Properties ID] The selected name must be unique (i.e., not the same as another fire definition in the same simulation). IDs for fire definitions can be the same as ones for fire instances.
-\item[C, H, O, N, Cl] The number of each atom in the fuel molecule. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least carbon and hydrogen and optionally oxygen, nitrogen, and chlorine. All of the specified nitrogen and chlorine is assumed to completely react to form HCN and HCl.
-\item[Heat of Combustion] (default units: kJ/kg, default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
-\item[Radiative Fraction] (default units: none, default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[\texttt{AREA}] (units: m$^2$, default value: 0): Constant area of the fire base. CFAST treats values smaller than the area of a 0.2~m diameter circle as that minimum area. A \ct{TABL} column labeled \ct{AREA} overrides this value.
+\item[\texttt{CARBON}] (default value: 0): Number of carbon atoms in the fuel molecule.
+\item[\texttt{CHLORINE}] (default value: 0): Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
+\item[\texttt{COMP\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. The compartment is specified by \ct{COMP_ID} on the associated \ct{FIRE} line.
+\item[\texttt{CO\_YIELD}] (units: kg/kg, default value: 0): Constant mass of CO produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{CO_YIELD} overrides this value.
+\item[\texttt{FLAMING\_TRANSITION\_TIME}] (units: s, default value: 0): Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
+\item[\texttt{HCN\_YIELD}] (units: kg/kg, default value: 0): Constant mass of HCN produced per unit mass of fuel consumed. Production is limited by the nitrogen available in the fuel. A \ct{TABL} column labeled \ct{HCN_YIELD} overrides this value.
+\item[\texttt{HEAT\_OF\_COMBUSTION}] (units: kJ/kg, default value: 50000): Energy released per unit mass of fuel consumed. It must be greater than zero and is used with the heat release rate to calculate the fuel mass-loss rate.
+\item[\texttt{HRR}] (units: kW, default value: 0): Constant heat release rate. A \ct{TABL} column labeled \ct{HRR} overrides this value.
+\item[\texttt{HYDROGEN}] (default value: 0): Number of hydrogen atoms in the fuel molecule.
+\item[\texttt{ID}] (required): Identifier for the fire definition. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
+\item[\texttt{NITROGEN}] (default value: 0): Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
+\item[\texttt{OXYGEN}] (default value: 0): Number of oxygen atoms in the fuel molecule.
+\item[\texttt{RADIATIVE\_FRACTION}] (default value: 0): Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[\texttt{SOOT\_YIELD}] (units: kg/kg, default value: 0): Constant mass of soot produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{SOOT_YIELD} overrides this value.
+\item[\texttt{TABLE\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. CFAST associates the time history whose \ct{TABL} \ct{ID} matches \ct{CHEM} \ct{ID}.
+\item[\texttt{TRACE\_YIELD}] (units: kg/kg, default value: 0): Constant mass of user-defined trace species produced per unit mass of fuel consumed. The trace species is transported but does not participate in the combustion reaction and should not be a significant contribution to the system mass balance. A \ct{TABL} column labeled \ct{TRACE_YIELD} overrides this value.
 \end{description}
 
 

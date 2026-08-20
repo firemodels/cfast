@@ -145,22 +145,21 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
 \ct{AREA}                                & Real                   & Section \ref{info:FIRE}         & m$^2$              & 0 \\ \hline
-\ct{CARBON}                              & Real                   & Section \ref{info:FIRE}         &                    & 1 \\ \hline
+\ct{CARBON}                              & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{CHLORINE}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{COMP_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \ct{NULL} \\ \hline
 \ct{CO_YIELD}                            & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
-\ct{FLAMING_TRANSITION_TIME}             & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{FLAMING_TRANSITION_TIME}             & Real                   & Section \ref{info:FIRE}         & s                  & 0 \\ \hline
 \ct{HCN_YIELD}                           & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \ct{HEAT_OF_COMBUSTION}                  & Real                   & Section \ref{info:FIRE}         & kJ/kg              & 50000 \\ \hline
 \ct{HRR}                                 & Real                   & Section \ref{info:FIRE}         & kW                 & 0 \\ \hline
-\ct{HYDROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 4 \\ \hline
-\ct{ID}\footnote{Required for each \ct{CHEM} input included in the input file.\label{req:chem}}
-                                         & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{HYDROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{ID}                                  & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
 \ct{NITROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{OXYGEN}                              & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{RADIATIVE_FRACTION}                  & Real                   & Section \ref{info:FIRE}         &                    & 0.35 \\ \hline
+\ct{RADIATIVE_FRACTION}                  & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{SOOT_YIELD}                          & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
-\ct{TABLE_ID}                            & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
+\ct{TABLE_ID}                            & Character              & Section \ref{info:FIRE}         &                    & \ct{NULL} \\ \hline
 \ct{TRACE_YIELD}                         & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \end{xltabular}
 

@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+import time
 
 from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, QUrl, Signal
 from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QPixmap
@@ -1469,15 +1470,18 @@ class CeditMainWindow(QMainWindow):
     def poll_cfast_status(self):
         if self.cfast_status_path is None or not self.cfast_status_path.exists():
             return
+        for qq in range(3):
 
-        try:
-            text = self.cfast_status_path.read_text(
-                encoding="utf-8",
-                errors="replace",
-            ).strip()
-        except OSError:
-            return
-
+           try:
+               text = self.cfast_status_path.read_text(
+                   encoding="utf-8",
+                   errors="replace",
+               ).strip()
+           except PermissionError:
+              time.sleep(0.01)
+           except OSError:
+               return
+           text = self.cfast_status_path.read_text(encoding="utf-8",errors="replace",).strip()
         if not text:
             return
 

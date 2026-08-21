@@ -642,7 +642,7 @@ The components of the source term vector, $c_j$, are given by Eq.~(\ref{ckeq}). 
 
 The configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by surface $j$.  Sixteen configuration factors are required for each compartment. Figure~\ref{configfactorsetup} depicts the system of indices for the wall surfaces and layer interface. In general, these factors may be computed using
 \be
-   F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, dA_j \, dA_i \label{eq:config_factor}
+   F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, \d A_j \, \d A_i \label{eq:config_factor}
 \ee
 where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta_j$ are the angles for surface $i$ and $j$ between the respective normal vectors and the line of integration, and $A_i$ and $A_j$ are the areas of the two surfaces.
 
@@ -796,7 +796,7 @@ During the early stage of a fire before a hot gas layer has formed, the convecti
 \ee
 where $f$ is a friction factor estimated to be 0.03, $r$ is the radial distance to the plume centerline, $H$ is the ceiling height, and $\dQ_{\rm c}$ is the convective fraction of the heat release rate. The average convective heat flux to the ceiling can be obtained by integrating this expression over the entire ceiling:
 \be
-   \dq_{\rm c,avg}'' = \frac{1}{LW} \int_0^{2\pi} \int_0^R \dqc'' \, r \, dr \, d\theta = \frac{0.27 \, \dQ_{\rm c}}{(LW)^{0.68} \, H^{0.64}} \label{eq:cjfluxavg}
+   \dq_{\rm c,avg}'' = \frac{1}{LW} \int_0^{2\pi} \int_0^R \dqc'' \, r \, \d r \, \d\theta = \frac{0.27 \, \dQ_{\rm c}}{(LW)^{0.68} \, H^{0.64}} \label{eq:cjfluxavg}
 \ee
 Note that the integration is carried out over a circle whose area, $\pi R^2$, is taken as equal to the area of the ceiling, $LW$.
 
@@ -906,7 +906,7 @@ where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j
 
 The link temperature of a sprinkler or heat detector is modeled using the differential equation~\cite{Schifiliti:2002}:
 \be
-   \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
+   \frac{\d \TL}{\d t} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
 \ee
 where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and speed are obtained from the plume algorithm (Section~\ref{sec:Plume_Temp_Velocity}) and the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed speed of 0.1~m/s. This value is simply an order of magnitude estimate. The link and gas temperatures and the speed are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
 \be

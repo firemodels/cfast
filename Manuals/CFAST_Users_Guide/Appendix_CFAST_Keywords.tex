@@ -1121,30 +1121,68 @@ Detectors      & Sensor Surrounding Gas Temperature                   & User-spe
 
 
 
-\chapter{Running CFAST from a Command Prompt}
+\chapter{Running CFAST from a Command Prompt or Terminal}
 
-The model CFAST can also be run from a Windows command prompt.  CFAST can be run from any folder, and refer to a data file in any other folder.
+CFAST can be run from a Windows command prompt or a macOS or Linux terminal. The installation bundle includes a platform-specific environment script that defines \texttt{CFAST\_HOME} and adds the CFAST executable, and Smokeview when it is installed, to the command search path. After the environment has been configured, CFAST can be invoked from any folder with the path to an input file in any other folder. Enclose a path in quotation marks when it contains spaces.
 
-\begin{lstlisting}
-[drive1:\][folder1\]cfast [drive2:\][folder2\]project
-\end{lstlisting}
+\section{Windows}
 
-The project name will have extensions appended as needed (see below). For example, to run a test case when the CFAST executable is located in c:$\backslash$firemodels$\backslash$cfast8 and the input data file is located in c:$\backslash$data, the following command could be used:
+During an interactive installation, the Windows installer offers to create a desktop shortcut named \texttt{CMDcfast}. This shortcut opens a command prompt and configures its environment by calling \texttt{bin\textbackslash CFASTVARS.bat}. In a \texttt{CMDcfast} window, run an input file as follows:
 
 \begin{lstlisting}
-c:\firemodels\cfast8\cfast c:\data\testfire0   <<< note that the extension is optional.
+cfast C:\path\to\case.in
 \end{lstlisting}
 
-One or more command line options can follow the name of the file to be run as follows:
+The default installation folder is \texttt{C:\textbackslash Program Files\textbackslash firemodels\textbackslash CFAST8}. To configure an ordinary command prompt instead, first call the environment script. The environment change applies only to that command-prompt window.
+
+\begin{lstlisting}
+call "C:\Program Files\firemodels\CFAST8\bin\CFASTVARS.bat"
+cfast "C:\Program Files\firemodels\CFAST8\Examples\Users_Guide_Example.in"
+\end{lstlisting}
+
+If CFAST was installed in a different folder, use that folder in the command above.
+
+\section{macOS}
+
+The default macOS installation folder is \texttt{/Applications/CFAST8}. Source the environment script before running CFAST from a terminal:
+
+\begin{lstlisting}
+source /Applications/CFAST8/bin/CFASTVARS.sh
+cfast /Applications/CFAST8/Examples/Users_Guide_Example.in
+\end{lstlisting}
+
+To configure future terminal sessions automatically, add the \texttt{source} command to the startup file for the shell: \texttt{\textasciitilde/.zprofile} for zsh, the default macOS shell, or \texttt{\textasciitilde/.bash\_profile} for bash. If CFAST was extracted or installed in a different folder, use the path to its \texttt{bin/CFASTVARS.sh} file.
+
+\section{Linux}
+
+The Linux bundle is distributed as a compressed tar archive. After extracting it, locate the \texttt{CFAST/CFAST8} folder and source its environment script. For example:
+
+\begin{lstlisting}
+source /path/to/CFAST/CFAST8/bin/CFASTVARS.sh
+cfast /path/to/CFAST/CFAST8/Examples/Users_Guide_Example.in
+\end{lstlisting}
+
+To configure future terminal sessions automatically, add the \texttt{source} command, with the actual installation path, to the shell startup file: typically \texttt{\textasciitilde/.bashrc} for bash or \texttt{\textasciitilde/.zshrc} for zsh.
+
+\section{Command Syntax and Options}
+
+The general command syntax is
+
+\begin{lstlisting}
+cfast path/to/project.in [options]
+\end{lstlisting}
+
+The \texttt{.in} extension is optional. CFAST creates its output files in the input file's folder. One or more command-line options can follow the input filename:
 
 \begin{itemize}
-\item -k - no interactive keyboard access
-\item -i - initialization only
-\item -c - compact output
-\item -f - full output (c and f are exclusive). Note the interaction of the f and c option. The default for the console output is -c. The default for the file output is /f. This default action can be overwritten by explicitly including the /f or /c option.
-\item -n - net heat flux option
-\item -o: - limit spreadsheet output to the files specified: C for \_compartments.csv, D for \_devices.csv, M for \_masses.csv, V for \_vents.csv, and W for \_walls.csv. Default is -S:CDMVW for output of all spreadsheet files.
-\item -v - validation output (outputs a modified set of spreadsheet files with different column headers designed to facilitate automated analysis of the output)
+\item \texttt{-k}: Do not access the keyboard interactively.
+\item \texttt{-i}: Perform initialization only.
+\item \texttt{-c}: Use compact text output.
+\item \texttt{-f}: Use full text output. The \texttt{-c} and \texttt{-f} options are mutually exclusive; full output is the default.
+\item \texttt{-l}: List interim output on the console.
+\item \texttt{-n}: Report target heat flux relative to ambient conditions.
+\item \texttt{-o:selection}: Limit spreadsheet output to the selected files. Use \texttt{C} for \texttt{\_compartments.csv}, \texttt{D} for \texttt{\_devices.csv}, \texttt{M} for \texttt{\_masses.csv}, \texttt{V} for \texttt{\_vents.csv}, and \texttt{W} for \texttt{\_walls.csv}; for example, \texttt{-o:CD} selects compartment and device output.
+\item \texttt{-v}: Produce validation output, including modified spreadsheet columns intended for automated analysis.
 \end{itemize}
 
 

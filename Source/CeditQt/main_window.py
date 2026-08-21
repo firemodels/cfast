@@ -262,17 +262,22 @@ def cfast_git_describe() -> str | None:
     return description or None
 
 
-def cedit_window_title() -> str:
+def cedit_window_title(input_path: Path | None = None) -> str:
     description = cfast_git_describe()
     if description is None:
         cfast_version = latest_cfast_version_from_tag()
         if cfast_version is not None:
             description = cfast_version[1]
 
-    if not description:
-        return APP_TITLE
+    if description:
+        title = f"{APP_TITLE} - {description}"
+    else:
+        title = APP_TITLE
 
-    return f"{APP_TITLE} - {description}"
+    if input_path is not None:
+        return f"{title} ({input_path.name})"
+
+    return title
 
 
 def cedit_about_pixmap() -> QPixmap:
@@ -386,10 +391,9 @@ class CeditMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle(cedit_window_title())
-        self.resize(1200, 800)
-
         self.current_path: Path | None = None
+        self.setWindowTitle(cedit_window_title(self.current_path))
+        self.resize(1200, 800)
         self.cfast_process: QProcess | None = None
         self.cfast_process_context = ""
         self.cfast_output_text = ""
@@ -499,7 +503,7 @@ class CeditMainWindow(QMainWindow):
 
         file_menu.addSeparator()
 
-        exit_action = QAction("E&xit", self)
+        exit_action = QAction("&Quit CEdit", self)
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
 
@@ -797,7 +801,7 @@ class CeditMainWindow(QMainWindow):
 
         written_path = self.write_case_to_path(self.current_path)
         if written_path is not None:
-            self.current_path = written_path
+            self.set_current_path(written_path)
             return True
         return False
 
@@ -820,7 +824,7 @@ class CeditMainWindow(QMainWindow):
 
         written_path = self.write_case_to_path(Path(path_text))
         if written_path is not None:
-            self.current_path = written_path
+            self.set_current_path(written_path)
             return True
         return False
 
@@ -855,7 +859,7 @@ class CeditMainWindow(QMainWindow):
         self.reset_to_opening_state()
 
     def reset_to_opening_state(self):
-        self.current_path = None
+        self.set_current_path(None)
         self.extra_namelists = []
         self.cfast_process = None
         self.cfast_output_text = ""
@@ -946,13 +950,10 @@ class CeditMainWindow(QMainWindow):
 
             selected_path = Path(path_text)
 
-            # load_cfast_input may not update self.current_path internally,
-            # so we set it here directly to ensure Save As remembers this file/folder.
-            self.current_path = selected_path
             self.load_cfast_input(selected_path)
 
     def load_single_compartment_example(self):
-        self.current_path = None
+        self.set_current_path(None)
         self.load_case(single_compartment_example())
         self.simulation_tab.set_message(
             "Loaded example: Single Compartment Example.\n"
@@ -970,7 +971,7 @@ class CeditMainWindow(QMainWindow):
             QMessageBox.critical(self, "Open failed", str(exc))
             return
 
-        self.current_path = path
+        self.set_current_path(path)
         message = f"Loaded CFAST input file:\n{path}"
         if result.warnings:
             message += "\n\nImport warnings:\n" + "\n".join(result.warnings)
@@ -1151,6 +1152,10 @@ class CeditMainWindow(QMainWindow):
         self.fires_tab.load_case(case)
         self.refresh_reference_lists()
 
+    def set_current_path(self, path: Path | None):
+        self.current_path = path
+        self.setWindowTitle(cedit_window_title(path))
+
     def get_cfast_executable(self) -> str:
         if self.cfast_executable and executable_file(
             Path(self.cfast_executable).expanduser()
@@ -1301,7 +1306,7 @@ class CeditMainWindow(QMainWindow):
             QMessageBox.critical(self, error_title, str(exc))
             return None
 
-        self.current_path = path
+        self.set_current_path(path)
         if path != original_path:
             self.simulation_tab.set_message(
                 "CFAST input file names cannot contain blanks.\n"

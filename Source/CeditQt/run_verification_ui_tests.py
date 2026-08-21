@@ -11,6 +11,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 _MPLCONFIGDIR = Path(tempfile.gettempdir()) / "cedit-qt-matplotlib"
 _MPLCONFIGDIR.mkdir(parents=True, exist_ok=True)
@@ -72,8 +73,8 @@ class ComparisonResult:
     status: str
     quantity: str
     metric: str
-    error: float | None
-    tolerance: float | None
+    error: Optional[float]
+    tolerance: Optional[float]
     message: str
 
 
@@ -86,9 +87,16 @@ class Series:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Load CFAST verification cases through the CEdit Qt UI, run CFAST, "
-            "and leave generated CSV outputs ready for the official verification script."
+            "Load CFAST cases through the CEdit Qt UI. By default the script runs "
+            "verification cases through CFAST; in rewrite mode it only imports and "
+            "writes input files for UI regression testing."
         )
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["run", "rewrite"],
+        default="run",
+        help="Test mode. 'run' executes CFAST; 'rewrite' only loads and writes inputs.",
     )
     parser.add_argument(
         "--cfast-exe",
@@ -108,6 +116,16 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Case stem or filename to run. May be repeated. "
             "Defaults to all Verification/*/*.in cases."
+        ),
+    )
+    parser.add_argument(
+        "--input",
+        action="append",
+        type=Path,
+        default=[],
+        help=(
+            "Specific input file to load. May be absolute or relative to the repo root. "
+            "May be repeated. Intended for rewrite mode."
         ),
     )
     parser.add_argument(
@@ -164,7 +182,7 @@ def resolve_executable(executable: str) -> str:
     return executable
 
 
-def prepare_work_tree(repo_root: Path, work_dir: Path | None) -> tuple[Path, bool]:
+def prepare_work_tree(repo_root: Path, work_dir: Optional[Path]) -> tuple[Path, bool]:
     if work_dir is None:
         temp_dir = Path(tempfile.mkdtemp(prefix="cedit-qt-verification-"))
         remove_when_done = True
@@ -207,6 +225,19 @@ def select_cases(verification_root: Path, requested: list[str]) -> list[Path]:
         raise RuntimeError("No Verification/*/*.in case matched: " + ", ".join(missing))
 
     return selected
+
+
+def resolve_input_cases(repo_root: Path, requested: list[Path]) -> list[Path]:
+    cases: list[Path] = []
+    for value in requested:
+        path = value.expanduser()
+        if not path.is_absolute():
+            path = repo_root / path
+        path = path.resolve()
+        if not path.is_file():
+            raise RuntimeError(f"Input file not found: {path}")
+        cases.append(path)
+    return cases
 
 
 def patch_message_boxes() -> None:
@@ -289,6 +320,63 @@ def run_case(app: QApplication, cfast_exe: str, case_path: Path, timeout: float)
         app.processEvents()
 
 
+def rewrite_case(app: QApplication, repo_root: Path, output_root: Path, case_path: Path) -> CaseResult:
+    window = CeditMainWindow()
+    start_time = time.monotonic()
+
+    try:
+        window.load_cfast_input(case_path)
+        app.processEvents()
+
+        if window.statusBar().currentMessage() == "Errors":
+            return CaseResult(
+                path=case_path,
+                ok=False,
+                elapsed=time.monotonic() - start_time,
+                message=window.simulation_tab.message_panel.toPlainText().strip(),
+            )
+
+        try:
+            relative_path = case_path.relative_to(repo_root)
+        except ValueError:
+            relative_path = Path(case_path.name)
+
+        output_path = output_root / relative_path
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        written_path = window.write_case_to_path(output_path)
+        app.processEvents()
+
+        if written_path is None:
+            return CaseResult(
+                path=case_path,
+                ok=False,
+                elapsed=time.monotonic() - start_time,
+                message=window.simulation_tab.message_panel.toPlainText().strip(),
+            )
+
+        ok = (
+            window.statusBar().currentMessage() == "No Errors"
+            and written_path.is_file()
+            and written_path.stat().st_size > 0
+        )
+        return CaseResult(
+            path=case_path,
+            ok=ok,
+            elapsed=time.monotonic() - start_time,
+            message=window.simulation_tab.message_panel.toPlainText().strip(),
+        )
+    except Exception as exc:
+        return CaseResult(
+            path=case_path,
+            ok=False,
+            elapsed=time.monotonic() - start_time,
+            message=str(exc),
+        )
+    finally:
+        window.close()
+        app.processEvents()
+
+
 def run_helper_scripts(work_root: Path) -> list[HelperResult]:
     results: list[HelperResult] = []
     verification_root = work_root / "Verification"
@@ -341,7 +429,7 @@ def split_columns(value: str) -> list[str]:
     return [item.strip() for item in value.split("|") if item.strip()]
 
 
-def float_or_none(value: str | None) -> float | None:
+def float_or_none(value: Optional[str]) -> Optional[float]:
     if value is None:
         return None
     text = value.strip()
@@ -401,7 +489,7 @@ def read_series(
     return Series(x=x_values, y=y_values)
 
 
-def filter_series(series: Series, start: float | None, end: float | None) -> Series:
+def filter_series(series: Series, start: Optional[float], end: Optional[float]) -> Series:
     x_values: list[float] = []
     y_values: list[float] = []
 
@@ -416,7 +504,7 @@ def filter_series(series: Series, start: float | None, end: float | None) -> Ser
     return Series(x=x_values, y=y_values)
 
 
-def interpolate(series: Series, x_value: float) -> float | None:
+def interpolate(series: Series, x_value: float) -> Optional[float]:
     if x_value < min(series.x) or x_value > max(series.x):
         return None
 
@@ -449,7 +537,7 @@ def pair_columns(first: list[str], second: list[str]) -> list[tuple[str, str]]:
     raise ValueError(f"Column count mismatch: {first!r} vs {second!r}.")
 
 
-def point_error(expected: float, predicted: float, quantity: str) -> float | None:
+def point_error(expected: float, predicted: float, quantity: str) -> Optional[float]:
     delta = abs(predicted - expected)
     quantity_upper = quantity.upper()
 
@@ -463,7 +551,7 @@ def point_error(expected: float, predicted: float, quantity: str) -> float | Non
     return None
 
 
-def compare_series(expected: Series, predicted: Series, quantity: str, metric: str) -> float | None:
+def compare_series(expected: Series, predicted: Series, quantity: str, metric: str) -> Optional[float]:
     if not expected.x or not predicted.x:
         return None
 
@@ -632,7 +720,13 @@ def print_summary(
     print(f"Cases:      {passed_cases}/{len(case_results)} passed")
 
     for result in case_results:
-        rel = result.path.relative_to(work_root / "Verification")
+        try:
+            rel = result.path.relative_to(repo_root)
+        except ValueError:
+            try:
+                rel = result.path.relative_to(work_root / "Verification")
+            except ValueError:
+                rel = result.path
         status = "PASS" if result.ok else "FAIL"
         print(f"  {status:4} {rel} ({result.elapsed:.1f} s)")
         if not result.ok and result.message:
@@ -664,22 +758,42 @@ def main() -> int:
     patch_message_boxes()
     app = QApplication.instance() or QApplication([])
 
-    work_root, remove_when_done = prepare_work_tree(repo_root, args.work_dir)
+    if args.mode == "rewrite":
+        if args.work_dir is None:
+            work_root = Path(tempfile.mkdtemp(prefix="cedit-qt-rewrite-"))
+            remove_when_done = True
+        else:
+            work_root = args.work_dir.resolve()
+            work_root.mkdir(parents=True, exist_ok=True)
+            remove_when_done = False
+    else:
+        work_root, remove_when_done = prepare_work_tree(repo_root, args.work_dir)
 
     try:
-        verification_root = work_root / "Verification"
-        cases = select_cases(verification_root, args.case)
-        case_results = [
-            run_case(app, cfast_exe, case_path, args.timeout)
-            for case_path in cases
-        ]
+        if args.mode == "rewrite":
+            cases = (
+                resolve_input_cases(repo_root, args.input)
+                if args.input
+                else select_cases(repo_root / "Verification", args.case)
+            )
+            case_results = [
+                rewrite_case(app, repo_root, work_root, case_path)
+                for case_path in cases
+            ]
+        else:
+            verification_root = work_root / "Verification"
+            cases = select_cases(verification_root, args.case)
+            case_results = [
+                run_case(app, cfast_exe, case_path, args.timeout)
+                for case_path in cases
+            ]
 
         helper_results: list[HelperResult] = []
-        if not args.skip_helpers:
+        if args.mode == "run" and not args.skip_helpers:
             helper_results = run_helper_scripts(work_root)
 
         comparison_results: list[ComparisonResult] = []
-        if args.compare_targets:
+        if args.mode == "run" and args.compare_targets:
             comparison_results = compare_targets(work_root)
 
         print_summary(repo_root, work_root, case_results, helper_results, comparison_results)

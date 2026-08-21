@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import copy
+import csv
+import html
+import io
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QByteArray, QMimeData, Qt, Signal
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QFrame,
     QGridLayout,
@@ -14,6 +19,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QSplitter,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -24,12 +30,14 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, FireDefinition, FireProperty, FireRampPoint
+from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
     HEAT_FLUX,
     HOC,
     HRR,
     LENGTH,
+    MASS_FRACTION,
     TEMPERATURE,
     TIME,
     display_value,
@@ -78,6 +86,12 @@ def make_read_only_item(text: str) -> QTableWidgetItem:
     return item
 
 
+def make_summary_item(text: str, editable: bool = True) -> QTableWidgetItem:
+    if not editable:
+        return make_read_only_item(text)
+    return QTableWidgetItem(text)
+
+
 def ignition_setpoint_kind(criterion: str) -> str:
     value = criterion.strip().upper()
     if value == "TEMPERATURE":
@@ -93,10 +107,10 @@ def ramp_headers() -> list[str]:
         f"HRR\n({unit_label(HRR)})",
         f"Height\n({unit_label(LENGTH)})",
         f"Area\n({unit_label(AREA)})",
-        "CO Yield",
-        "Soot Yield",
-        "HCN Yield",
-        "TS Yield",
+        f"CO Yield\n({unit_label(MASS_FRACTION)})",
+        f"Soot Yield\n({unit_label(MASS_FRACTION)})",
+        f"HCN Yield\n({unit_label(MASS_FRACTION)})",
+        f"TS Yield\n({unit_label(MASS_FRACTION)})",
     ]
 
 
@@ -138,6 +152,145 @@ class FirePlotCanvas(FigureCanvas):
         self.draw()
 
 
+class SpreadsheetTableWidget(QTableWidget):
+    pasted = Signal()
+
+    def keyPressEvent(self, event):
+        if event.matches(QKeySequence.StandardKey.Copy):
+            if self.copy_to_clipboard():
+                event.accept()
+                return
+
+        if event.matches(QKeySequence.StandardKey.Paste):
+            if self.paste_from_clipboard():
+                event.accept()
+                return
+
+        super().keyPressEvent(event)
+
+    def copy_to_clipboard(self) -> bool:
+        rows = self.selected_cell_rows()
+        if not rows:
+            return False
+
+        csv_text = self.delimited_text(rows, ",")
+        tab_text = self.delimited_text(rows, "\t")
+
+        mime_data = QMimeData()
+        mime_data.setText(csv_text)
+        mime_data.setData("text/csv", QByteArray(csv_text.encode("utf-8")))
+        mime_data.setData(
+            "text/tab-separated-values",
+            QByteArray(tab_text.encode("utf-8")),
+        )
+        mime_data.setHtml(self.html_table(rows))
+        QApplication.clipboard().setMimeData(mime_data)
+        return True
+
+    def selected_cell_rows(self) -> list[list[str]]:
+        selected = self.selectedIndexes()
+        if not selected:
+            current = self.currentIndex()
+            if not current.isValid():
+                return []
+            selected = [current]
+
+        selected_cells = {(index.row(), index.column()) for index in selected}
+        first_row = min(row for row, _ in selected_cells)
+        last_row = max(row for row, _ in selected_cells)
+        first_col = min(col for _, col in selected_cells)
+        last_col = max(col for _, col in selected_cells)
+
+        rows: list[list[str]] = []
+        for row in range(first_row, last_row + 1):
+            values: list[str] = []
+            for col in range(first_col, last_col + 1):
+                if (row, col) not in selected_cells:
+                    values.append("")
+                    continue
+                item = self.item(row, col)
+                values.append("" if item is None else item.text())
+            rows.append(values)
+        return rows
+
+    @staticmethod
+    def delimited_text(rows: list[list[str]], delimiter: str) -> str:
+        output = io.StringIO(newline="")
+        writer = csv.writer(output, delimiter=delimiter, lineterminator="\n")
+        writer.writerows(rows)
+        return output.getvalue()
+
+    @staticmethod
+    def html_table(rows: list[list[str]]) -> str:
+        table_rows = []
+        for row in rows:
+            cells = "".join(f"<td>{html.escape(value)}</td>" for value in row)
+            table_rows.append(f"<tr>{cells}</tr>")
+        return f"<table>{''.join(table_rows)}</table>"
+
+    def paste_from_clipboard(self) -> bool:
+        text = QApplication.clipboard().text()
+        rows = self.parse_clipboard_text(text)
+        if not rows:
+            return False
+
+        start_row, start_col = self.paste_start_cell()
+        if start_row < 0 or start_col < 0:
+            return False
+
+        needed_rows = start_row + len(rows)
+        if needed_rows > self.rowCount():
+            self.setRowCount(needed_rows)
+
+        self.blockSignals(True)
+        for row_offset, values in enumerate(rows):
+            target_row = start_row + row_offset
+            for col_offset, value in enumerate(values):
+                target_col = start_col + col_offset
+                if target_col >= self.columnCount():
+                    break
+
+                item = self.item(target_row, target_col)
+                if item is None:
+                    item = QTableWidgetItem()
+                    self.setItem(target_row, target_col, item)
+                item.setText(value)
+        self.blockSignals(False)
+        self.pasted.emit()
+        return True
+
+    def paste_start_cell(self) -> tuple[int, int]:
+        selected = self.selectedIndexes()
+        if selected:
+            start_row = min(index.row() for index in selected)
+            start_col = min(index.column() for index in selected)
+            return start_row, start_col
+
+        row = self.currentRow()
+        col = self.currentColumn()
+        if row < 0:
+            row = 0
+        if col < 0:
+            col = 0
+        return row, col
+
+    @staticmethod
+    def parse_clipboard_text(text: str) -> list[list[str]]:
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+        lines = text.split("\n")
+        if lines and lines[-1] == "":
+            lines = lines[:-1]
+
+        rows: list[list[str]] = []
+        for line in lines:
+            values = [value.strip() for value in line.split("\t")]
+            if len(values) == 1 and values[0] == "":
+                continue
+            rows.append(values)
+
+        return rows
+
+
 class FiresTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -149,7 +302,7 @@ class FiresTab(QWidget):
         self.compartment_ids: list[str] = []
         self.target_ids: list[str] = []
 
-        self.summary_table = QTableWidget(0, 11)
+        self.summary_table = HoverEditTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(
             [
                 "Num",
@@ -172,6 +325,7 @@ class FiresTab(QWidget):
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.summary_table.itemSelectionChanged.connect(self.selection_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         self.fire_id_edit = QLineEdit()
         self.compartment_combo = QComboBox()
@@ -195,13 +349,16 @@ class FiresTab(QWidget):
         self.heat_of_combustion_edit = QLineEdit()
         self.radiative_fraction_edit = QLineEdit()
 
-        self.ramp_table = QTableWidget(8, 8)
+        self.ramp_table = SpreadsheetTableWidget(8, 8)
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
         self.ramp_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
         self.ramp_table.verticalHeader().setVisible(True)
+        self.ramp_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+        self.ramp_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectItems)
         self.ramp_table.cellChanged.connect(self.editor_changed)
+        self.ramp_table.pasted.connect(self.editor_changed)
 
         self.plot_canvas = FirePlotCanvas()
 
@@ -347,8 +504,14 @@ class FiresTab(QWidget):
     def build_right_editor(self):
         widget = QWidget()
         layout = QVBoxLayout()
-        layout.addWidget(self.ramp_table, 2)
-        layout.addWidget(self.plot_canvas, 3)
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        splitter.addWidget(self.ramp_table)
+        splitter.addWidget(self.plot_canvas)
+        splitter.setChildrenCollapsible(False)
+        splitter.setStretchFactor(0, 2)
+        splitter.setStretchFactor(1, 3)
+        splitter.setSizes([220, 280])
+        layout.addWidget(splitter, 1)
         widget.setLayout(layout)
         return widget
 
@@ -485,13 +648,15 @@ class FiresTab(QWidget):
         self.update_target_choices()
 
     def update_property_choices(self):
-        current = self.fire_property_combo.currentText()
+        current = self.fire_property_combo.currentText().strip()
+        property_ids = [prop.id for prop in self.fire_properties]
         self.fire_property_combo.blockSignals(True)
         self.fire_property_combo.clear()
-        for prop in self.fire_properties:
-            self.fire_property_combo.addItem(prop.id)
-        if current:
+        self.fire_property_combo.addItems(property_ids)
+        if current in property_ids:
             set_combo_text(self.fire_property_combo, current)
+        else:
+            self.fire_property_combo.setEditText("")
         self.fire_property_combo.blockSignals(False)
 
     def selected_fire(self) -> FireDefinition | None:
@@ -516,32 +681,51 @@ class FiresTab(QWidget):
         self.summary_table.setRowCount(len(self.fires))
 
         for row, fire in enumerate(self.fires):
-            prop = self.find_property(fire.fire_property_id)
-            fuel = prop.fuel_formula() if prop is not None else ""
-            peak_hrr = prop.peak_hrr() if prop is not None else 0.0
-            values = [
-                str(row + 1),
-                fire.comp_id,
-                fire.id,
-                fire.ignition_criterion.title(),
-                format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint),
-                fire.target,
-                format_value(LENGTH, fire.x_position),
-                format_value(LENGTH, fire.y_position),
-                fire.fire_property_id,
-                fuel,
-                format_value(HRR, peak_hrr),
-            ]
+            self.set_summary_row(row, fire)
 
-            for col, value in enumerate(values):
-                self.summary_table.setItem(row, col, make_read_only_item(value))
+        self.summary_table.blockSignals(False)
 
+    def set_summary_row(self, row: int, fire: FireDefinition):
+        values = self.summary_values(row, fire)
+
+        for col, value in enumerate(values):
+            self.summary_table.setItem(
+                row,
+                col,
+                make_summary_item(value, editable=(col not in {0, 9, 10})),
+            )
+
+    def summary_values(self, row: int, fire: FireDefinition) -> list[str]:
+        prop = self.find_property(fire.fire_property_id)
+        fuel = prop.fuel_formula() if prop is not None else ""
+        peak_hrr = prop.peak_hrr() if prop is not None else 0.0
+        return [
+            str(row + 1),
+            fire.comp_id,
+            fire.id,
+            fire.ignition_criterion.title(),
+            format_value(ignition_setpoint_kind(fire.ignition_criterion), fire.setpoint),
+            fire.target,
+            format_value(LENGTH, fire.x_position),
+            format_value(LENGTH, fire.y_position),
+            fire.fire_property_id,
+            fuel,
+            format_value(HRR, peak_hrr),
+        ]
+
+    def update_summary_row(self, row: int):
+        if not 0 <= row < len(self.fires):
+            return
+
+        self.summary_table.blockSignals(True)
+        self.set_summary_row(row, self.fires[row])
         self.summary_table.blockSignals(False)
 
     def select_fire(self, index: int):
         if not self.fires:
             self.current_index = -1
             self.clear_editor()
+            self.update_plot()
             return
 
         index = max(0, min(index, len(self.fires) - 1))
@@ -569,25 +753,86 @@ class FiresTab(QWidget):
         self.current_index = new_index
         self.load_editor(new_index)
 
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.loading:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.fires):
+            return
+
+        try:
+            self.update_fire_from_summary(row)
+        except ValueError:
+            return
+
+        self.update_summary_row(row)
+        if row == self.current_index:
+            self.load_editor(row)
+            self.update_plot()
+
+    def update_fire_from_summary(self, row: int):
+        fire = self.fires[row]
+        criterion = (self.summary_cell(row, 3) or fire.ignition_criterion).upper()
+        prop_id = self.summary_cell(row, 8) or fire.fire_property_id
+
+        fire.comp_id = self.summary_cell(row, 1) or self.default_compartment()
+        fire.id = self.summary_cell(row, 2) or fire.id
+        fire.ignition_criterion = criterion
+        fire.setpoint = parse_value(
+            ignition_setpoint_kind(criterion),
+            self.summary_cell(row, 4),
+            "Set Point",
+            fire.setpoint,
+        )
+        fire.target = self.summary_cell(row, 5)
+        fire.x_position = parse_value(
+            LENGTH,
+            self.summary_cell(row, 6),
+            "X Position",
+            fire.x_position,
+        )
+        fire.y_position = parse_value(
+            LENGTH,
+            self.summary_cell(row, 7),
+            "Y Position",
+            fire.y_position,
+        )
+        fire.fire_property_id = prop_id
+
+        if prop_id and self.find_property(prop_id) is None:
+            self.fire_properties.append(FireProperty(id=prop_id))
+            self.update_property_choices()
+
+    def summary_cell(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
+
     def clear_editor(self):
         self.loading = True
-        for widget in [
-            self.fire_id_edit,
-            self.x_position_edit,
-            self.y_position_edit,
-            self.setpoint_edit,
-            self.property_id_edit,
-            self.carbon_edit,
-            self.hydrogen_edit,
-            self.oxygen_edit,
-            self.nitrogen_edit,
-            self.chlorine_edit,
-            self.heat_of_combustion_edit,
-            self.radiative_fraction_edit,
-        ]:
-            widget.clear()
-        self.ramp_table.clearContents()
-        self.loading = False
+        try:
+            for widget in [
+                self.fire_id_edit,
+                self.x_position_edit,
+                self.y_position_edit,
+                self.setpoint_edit,
+                self.property_id_edit,
+                self.carbon_edit,
+                self.hydrogen_edit,
+                self.oxygen_edit,
+                self.nitrogen_edit,
+                self.chlorine_edit,
+                self.heat_of_combustion_edit,
+                self.radiative_fraction_edit,
+            ]:
+                widget.clear()
+
+            self.compartment_combo.setEditText("")
+            self.target_combo.setEditText("")
+            self.fire_property_combo.setEditText("")
+            self.ramp_table.clearContents()
+        finally:
+            self.loading = False
 
     def load_editor(self, index: int):
         if not 0 <= index < len(self.fires):
@@ -635,10 +880,10 @@ class FiresTab(QWidget):
 
         for row, point in enumerate(prop.sorted_ramp()):
             values = [
-                format_value(TIME, point.time),
-                format_value(HRR, point.hrr),
-                format_value(LENGTH, point.height),
-                format_value(AREA, point.area),
+                format_value(TIME, point.time, include_unit=False),
+                format_value(HRR, point.hrr, include_unit=False),
+                format_value(LENGTH, point.height, include_unit=False),
+                format_value(AREA, point.area, include_unit=False),
                 point.co_yield,
                 point.soot_yield,
                 point.hcn_yield,
@@ -659,12 +904,71 @@ class FiresTab(QWidget):
             return
 
         try:
+            self.ensure_fire_for_ramp_table()
             self.save_current_editor()
             self.rebuild_summary_table()
             self.select_summary_row_without_loading(self.current_index)
             self.update_plot()
         except ValueError:
             pass
+
+    def ensure_fire_for_ramp_table(self):
+        if self.selected_fire() is not None or not self.ramp_table_has_data():
+            return
+
+        number = len(self.fires) + 1
+        fire_id = self.fire_id_edit.text().strip() or f"Fire_{number}"
+        prop_id = (
+            self.property_id_edit.text().strip()
+            or self.fire_property_combo.currentText().strip()
+            or f"{fire_id}_Fire"
+        )
+        prop = self.find_property(prop_id)
+        if prop is None:
+            prop = FireProperty(id=prop_id)
+            self.fire_properties.append(prop)
+
+        fire = FireDefinition(
+            id=fire_id,
+            comp_id=(
+                self.compartment_combo.currentText().strip()
+                or self.default_compartment()
+            ),
+            fire_property_id=prop_id,
+        )
+        self.fires.append(fire)
+        self.current_index = len(self.fires) - 1
+
+        self.loading = True
+        try:
+            self.fire_id_edit.setText(fire.id)
+            set_combo_text(self.compartment_combo, fire.comp_id)
+            set_combo_text(self.ignition_combo, fire.ignition_criterion)
+            self.setpoint_edit.setText(format_value(TIME, fire.setpoint))
+            self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
+            self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
+            self.property_id_edit.setText(prop.id)
+            self.carbon_edit.setText(str(prop.carbon))
+            self.hydrogen_edit.setText(str(prop.hydrogen))
+            self.oxygen_edit.setText(str(prop.oxygen))
+            self.nitrogen_edit.setText(str(prop.nitrogen))
+            self.chlorine_edit.setText(str(prop.chlorine))
+            self.heat_of_combustion_edit.setText(
+                format_value(HOC, prop.heat_of_combustion)
+            )
+            self.radiative_fraction_edit.setText(f"{prop.radiative_fraction:g}")
+            self.update_property_choices()
+            set_combo_text(self.fire_property_combo, prop.id)
+        finally:
+            self.loading = False
+
+    def ramp_table_has_data(self) -> bool:
+        for row in range(self.ramp_table.rowCount()):
+            for col in range(self.ramp_table.columnCount()):
+                if read_table_item(self.ramp_table, row, col):
+                    return True
+
+        return False
 
     def referenced_property_changed(self):
         if self.loading:
@@ -776,10 +1080,10 @@ class FiresTab(QWidget):
                 hrr=parse_value(HRR, values[1], "HRR", 0.0),
                 height=parse_value(LENGTH, values[2], "Height", 0.0),
                 area=parse_value(AREA, values[3], "Area", 0.1),
-                co_yield=parse_number(values[4], "CO Yield", 0.0),
-                soot_yield=parse_number(values[5], "Soot Yield", 0.0),
-                hcn_yield=parse_number(values[6], "HCN Yield", 0.0),
-                trace_yield=parse_number(values[7], "TS Yield", 0.0),
+                co_yield=parse_value(MASS_FRACTION, values[4], "CO Yield", 0.0),
+                soot_yield=parse_value(MASS_FRACTION, values[5], "Soot Yield", 0.0),
+                hcn_yield=parse_value(MASS_FRACTION, values[6], "HCN Yield", 0.0),
+                trace_yield=parse_value(MASS_FRACTION, values[7], "TS Yield", 0.0),
             )
             points.append(point)
 

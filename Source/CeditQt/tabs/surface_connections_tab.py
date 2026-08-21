@@ -24,6 +24,7 @@ from cfast_case import (
     CfastCase,
     WallSurfaceConnection,
 )
+from table_widgets import HoverEditTableWidget
 
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
 
@@ -84,7 +85,7 @@ class SurfaceConnectionsTab(QWidget):
         self.current_floor_index = -1
         self.ceiling_floor_connections: list[CeilingFloorSurfaceConnection] = []
 
-        self.wall_table = QTableWidget(0, 5)
+        self.wall_table = HoverEditTableWidget(0, 5)
         self.wall_table.setHorizontalHeaderLabels(
             ["Num", "Type", "First", "Second", "Fraction"]
         )
@@ -97,7 +98,7 @@ class SurfaceConnectionsTab(QWidget):
         self.wall_table.itemSelectionChanged.connect(self.wall_selection_changed)
         self.wall_table.itemChanged.connect(self.wall_table_changed)
 
-        self.floor_table = QTableWidget(0, 4)
+        self.floor_table = HoverEditTableWidget(0, 4)
         self.floor_table.setHorizontalHeaderLabels(["Num", "Type", "Top", "Bottom"])
         self.floor_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

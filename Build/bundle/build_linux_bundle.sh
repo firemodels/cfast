@@ -1,0 +1,871 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ORIGINAL_ARGS=("$@")
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
+
+APP_NAME="cedit"
+DIST_NAME=""
+OUTPUT_DIR="$REPO_ROOT/Build/bundle/linux"
+STAGE_ROOT="$REPO_ROOT/Build/bundle/stage"
+CFAST_BUILD_TARGET="gnu_linux"
+CFAST_BUILD_TARGET_SET=0
+CFAST_EXE="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET/cfast8_linux"
+CFAST_EXE_SET=0
+CFAST_REPO_URL="${CFAST_REPO_URL:-git@github.com:firemodels/cfast.git}"
+CFAST_TAG="${CFAST_TAG:-}"
+CEDIT_APP="$REPO_ROOT/Build/CeditQt/linux/$APP_NAME"
+EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
+SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_linux/smokeview_linux"
+SMV_EXE_SET=0
+SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
+SMV_BUILD_TARGET="gnu_linux"
+SMV_REPO_URL="${SMV_REPO_URL:-git@github.com:firemodels/smv.git}"
+FDS_REPO_URL="${FDS_REPO_URL:-git@github.com:firemodels/fds.git}"
+INCLUDE_CEDIT=1
+INCLUDE_SMOKEVIEW=1
+BUILD_CFAST=1
+BUILD_SMOKEVIEW=1
+CREATE_TARBALL=1
+UPDATE_REPOS=1
+UPDATE_BRANCH="master"
+BUILD_MANUALS=1
+UPLOAD_MANUALS=1
+if [[ -n "${GH_OWNER:-}" && -n "${GH_REPO:-}" ]]; then
+  MANUALS_UPLOAD_REPO="$GH_OWNER/$GH_REPO"
+else
+  MANUALS_UPLOAD_REPO="firemodels/test_bundles"
+fi
+MANUALS_UPLOAD_TAG="${GH_CFAST_TAG:-CFAST_TEST}"
+MANUALS=(
+  "CFAST_Configuration_Guide"
+  "CFAST_Tech_Ref"
+  "CFAST_Users_Guide"
+  "CFAST_Validation_Guide"
+)
+EXTRA_EXAMPLE_FILES=(
+  "$REPO_ROOT/Utilities/for_bundle/Bin/Data/Large_Building.in"
+)
+
+usage()
+{
+  echo "Usage: build_linux_bundle.sh [options]"
+  echo ""
+  echo "Stages a CFAST Linux bundle and creates a .tar.gz archive."
+  echo ""
+  echo "Options:"
+  echo "  --name name              Distribution folder name"
+  echo "  --output-dir path        Output directory for the tarball"
+  echo "  --stage-dir path         Temporary staging directory"
+  echo "  --cfast-build-target target CFAST build target: gnu_linux or intel_linux"
+  echo "  --cfast-exe path         CFAST executable to bundle"
+  echo "  --cfast-repo-url url     Central CFAST repo URL used for updates"
+  echo "  --cfast-tag tag          Checkout this CFAST tag after updating"
+  echo "  --cedit-app path         CEditQt PyInstaller app directory to bundle"
+  echo "  --example path           Example .in file to bundle"
+  echo "  --smokeview-exe path     Smokeview executable to bundle"
+  echo "  --smokeview-repo-url url Central Smokeview repo URL used for fresh clones"
+  echo "  --smokeview-data path    Smokeview for_bundle directory"
+  echo "  --smokeview-build-target target Smokeview build target: gnu_linux, intel_linux, or clang_linux"
+  echo "  --fds-repo-url url       Central FDS repo URL used for fresh clones"
+  echo "  --update-branch branch   Branch to update before building"
+  echo "  --no-update-repos        Do not sync CFAST or fresh-clone Smokeview/FDS repos"
+  echo "  --no-build-cfast         Do not build CFAST before bundling"
+  echo "  --no-build-smokeview     Do not build Smokeview before bundling"
+  echo "  --no-build-manuals       Do not build the CFAST PDF manuals"
+  echo "  --no-cedit               Do not bundle CEditQt"
+  echo "  --no-smokeview           Do not bundle Smokeview files"
+  echo "  --no-upload-manuals      Do not upload built manual PDFs and CFAST_INFO.txt"
+  echo "  --manuals-upload-repo repo GitHub owner/repo receiving built manuals"
+  echo "  --manuals-upload-tag tag GitHub release tag receiving built manuals"
+  echo "  --no-tarball             Stage files only"
+  echo "  -h, --help               Display this message"
+}
+
+require_file()
+{
+  local file_path="$1"
+  local description="$2"
+
+  if [[ ! -f "$file_path" ]]; then
+    echo "***error: $description not found: $file_path"
+    exit 1
+  fi
+}
+
+require_dir()
+{
+  local dir_path="$1"
+  local description="$2"
+
+  if [[ ! -d "$dir_path" ]]; then
+    echo "***error: $description not found: $dir_path"
+    exit 1
+  fi
+}
+
+run_checked()
+{
+  local description="$1"
+  shift
+
+  if ! "$@"; then
+    echo "***error: $description failed."
+    exit 1
+  fi
+}
+
+copy_file()
+{
+  local from_path="$1"
+  local to_path="$2"
+
+  mkdir -p "$(dirname "$to_path")"
+  cp -p "$from_path" "$to_path"
+}
+
+copy_dir()
+{
+  local from_path="$1"
+  local to_path="$2"
+
+  mkdir -p "$to_path"
+  cp -a "$from_path"/. "$to_path"/
+}
+
+copy_optional_file()
+{
+  local from_path="$1"
+  local to_path="$2"
+
+  if [[ -f "$from_path" ]]; then
+    copy_file "$from_path" "$to_path"
+  fi
+}
+
+copy_optional_dir()
+{
+  local from_path="$1"
+  local to_path="$2"
+
+  if [[ -d "$from_path" ]]; then
+    copy_dir "$from_path" "$to_path"
+  fi
+}
+
+tracked_local_changes()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+  local status_output
+
+  git -C "$repo_dir" update-index --refresh >/dev/null 2>&1 || true
+  status_output="$(git -C "$repo_dir" status --short --untracked-files=no)"
+  if [[ "$status_output" != "" ]]; then
+    if [[ "${STRICT_REVISION:-0}" == "1" ]]; then
+      echo "***error: $repo_name repo has tracked local changes; refusing to update before strict bundle build."
+      echo "         repo: $repo_dir"
+      echo "$status_output"
+      exit 1
+    fi
+    echo "*** Warning: $repo_name repo has tracked local changes; skipping update for this repo."
+    echo "         repo: $repo_dir"
+    echo "$status_output"
+    return 0
+  fi
+  return 1
+}
+
+remote_branch_exists()
+{
+  local repo_dir="$1"
+  local remote_name="$2"
+  local branch_name="$3"
+
+  git -C "$repo_dir" show-ref --verify --quiet "refs/remotes/$remote_name/$branch_name"
+}
+
+update_git_repo()
+{
+  local repo_name="$1"
+  local repo_dir="$2"
+
+  require_dir "$repo_dir/.git" "$repo_name git repository"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
+
+  echo "*** Updating $repo_name repo"
+  echo "    branch: $UPDATE_BRANCH"
+  echo "    repo:   $repo_dir"
+  run_checked "$repo_name checkout $UPDATE_BRANCH" git -C "$repo_dir" checkout "$UPDATE_BRANCH"
+  if tracked_local_changes "$repo_name" "$repo_dir"; then
+    return 1
+  fi
+  run_checked "$repo_name remote update" git -C "$repo_dir" remote update
+
+  if remote_branch_exists "$repo_dir" origin "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge origin/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "origin/$UPDATE_BRANCH"
+  fi
+  if remote_branch_exists "$repo_dir" firemodels "$UPDATE_BRANCH"; then
+    run_checked "$repo_name merge firemodels/$UPDATE_BRANCH" git -C "$repo_dir" merge --ff-only "firemodels/$UPDATE_BRANCH"
+  fi
+}
+
+sync_cfast_repo()
+{
+  require_dir "$REPO_ROOT/.git" "cfast git repository"
+
+  echo "*** Synchronizing cfast repo"
+  echo "    repo:   $REPO_ROOT"
+  echo "    remote: $CFAST_REPO_URL"
+  if [[ "$CFAST_TAG" != "" ]]; then
+    echo "    tag:    $CFAST_TAG"
+  else
+    echo "    branch: $UPDATE_BRANCH"
+  fi
+
+  run_checked "cfast tracked file reset" git -C "$REPO_ROOT" reset --hard
+
+  if [[ "$CFAST_TAG" != "" ]]; then
+    run_checked "cfast central tag fetch" git -C "$REPO_ROOT" fetch --tags "$CFAST_REPO_URL"
+    run_checked "cfast checkout tag $CFAST_TAG" git -C "$REPO_ROOT" checkout --detach "$CFAST_TAG"
+  else
+    run_checked "cfast central branch fetch" git -C "$REPO_ROOT" fetch "$CFAST_REPO_URL" "$UPDATE_BRANCH"
+    run_checked "cfast checkout $UPDATE_BRANCH" \
+      git -C "$REPO_ROOT" checkout -B "$UPDATE_BRANCH" FETCH_HEAD
+  fi
+}
+
+clone_fresh_repo()
+{
+  local repo_name="$1"
+  local repo_url="$2"
+  local repo_dir="$3"
+
+  echo "*** Cloning fresh $repo_name repo"
+  echo "    repo:   $repo_dir"
+  echo "    remote: $repo_url"
+  echo "    branch: $UPDATE_BRANCH"
+
+  rm -rf "$repo_dir"
+  mkdir -p "$(dirname "$repo_dir")"
+  run_checked "$repo_name central clone" git clone --depth 1 --branch "$UPDATE_BRANCH" "$repo_url" "$repo_dir"
+}
+
+update_bundle_repos()
+{
+  local updated_repo=0
+
+  if [[ "$UPDATE_REPOS" != "1" ]]; then
+    return 0
+  fi
+  if [[ "${CFAST_LINUX_BUNDLE_REEXECUTED:-}" == "1" ]]; then
+    return 0
+  fi
+
+  sync_cfast_repo
+  updated_repo=1
+  clone_fresh_repo smv "$SMV_REPO_URL" "$FIREMODELS_ROOT/smv"
+  clone_fresh_repo fds "$FDS_REPO_URL" "$FIREMODELS_ROOT/fds"
+
+  if [[ "$updated_repo" != "1" ]]; then
+    return 0
+  fi
+
+  echo "*** Re-starting Linux bundle script after repo updates"
+  export CFAST_LINUX_BUNDLE_REEXECUTED=1
+  if [[ "${#ORIGINAL_ARGS[@]}" -gt 0 ]]; then
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")" "${ORIGINAL_ARGS[@]}"
+  else
+    exec "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
+  fi
+}
+
+build_smokeview_executable()
+{
+  local libs_dir
+  local smokeview_dir
+
+  if [[ "$INCLUDE_SMOKEVIEW" != "1" || "$BUILD_SMOKEVIEW" != "1" ]]; then
+    return 0
+  fi
+
+  libs_dir="$FIREMODELS_ROOT/smv/Build/LIBS/$SMV_BUILD_TARGET"
+  smokeview_dir="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET"
+  require_file "$libs_dir/make_LIBS.sh" "Smokeview library build script"
+  require_file "$smokeview_dir/make_smokeview.sh" "Smokeview Linux build script"
+
+  echo "*** Building Smokeview Linux libraries ($SMV_BUILD_TARGET)"
+  (cd "$libs_dir" && run_checked "Smokeview $SMV_BUILD_TARGET libraries build" bash ./make_LIBS.sh)
+
+  echo "*** Building Smokeview Linux executable ($SMV_BUILD_TARGET)"
+  (cd "$smokeview_dir" && run_checked "Smokeview $SMV_BUILD_TARGET build" bash ./make_smokeview.sh)
+}
+
+build_cfast_executable()
+{
+  local build_dir
+  local make_script
+
+  if [[ "$BUILD_CFAST" != "1" ]]; then
+    return 0
+  fi
+
+  build_dir="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET"
+  make_script="$build_dir/make_cfast.sh"
+  require_dir "$build_dir" "CFAST build directory for $CFAST_BUILD_TARGET"
+
+  echo "*** Building CFAST Linux executable ($CFAST_BUILD_TARGET)"
+  if [[ -f "$make_script" ]]; then
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" bash ./make_cfast.sh)
+  else
+    run_checked "CFAST $CFAST_BUILD_TARGET build" make -C "$REPO_ROOT/Build/CFAST" "$CFAST_BUILD_TARGET"
+  fi
+}
+
+build_manuals()
+{
+  local manual_name
+  local manual_dir
+  local build_script
+
+  if [[ "$BUILD_MANUALS" != "1" ]]; then
+    return 0
+  fi
+
+  echo "*** Building CFAST manuals"
+  for manual_name in "${MANUALS[@]}"; do
+    manual_dir="$REPO_ROOT/Manuals/$manual_name"
+    build_script="$manual_dir/make_guide.sh"
+    require_file "$build_script" "$manual_name build script"
+    echo "    $manual_name"
+    (cd "$manual_dir" && run_checked "$manual_name build" bash ./make_guide.sh)
+    require_file "$manual_dir/$manual_name.pdf" "$manual_name PDF"
+  done
+}
+
+write_manual_release_info()
+{
+  local info_file="$1"
+  local cfast_hash
+  local cfast_revision
+  local smv_hash
+  local smv_revision
+
+  cfast_hash="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+  cfast_revision="$(git -C "$REPO_ROOT" describe --always --dirty)"
+  smv_hash="$(git -C "$FIREMODELS_ROOT/smv" rev-parse HEAD)"
+  smv_revision="$(git -C "$FIREMODELS_ROOT/smv" describe --always --dirty)"
+
+  {
+    printf "CFAST_HASH     %s\\n" "$cfast_hash"
+    printf "CFAST_REVISION %s\\n" "$cfast_revision"
+    printf "SMV_HASH       %s\\n" "$smv_hash"
+    printf "SMV_REVISION   %s\\n" "$smv_revision"
+  } > "$info_file"
+}
+
+copy_manuals()
+{
+  local documentation_dir="$1"
+  local manual_name
+
+  for manual_name in "${MANUALS[@]}"; do
+    require_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$manual_name PDF"
+    copy_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$documentation_dir/$manual_name.pdf"
+  done
+}
+
+upload_manuals()
+{
+  local upload_dir="$STAGE_ROOT/release-manuals"
+  local manual_name
+  local upload_files=()
+
+  if [[ "$UPLOAD_MANUALS" != "1" ]]; then
+    return 0
+  fi
+  if [[ "$BUILD_MANUALS" != "1" ]]; then
+    echo "***error: manual uploads require manual builds; do not use both --no-build-manuals and manual uploads."
+    exit 1
+  fi
+  if ! command -v gh >/dev/null 2>&1; then
+    echo "***error: gh command not found."
+    exit 1
+  fi
+
+  rm -rf "$upload_dir"
+  mkdir -p "$upload_dir"
+  for manual_name in "${MANUALS[@]}"; do
+    copy_file "$REPO_ROOT/Manuals/$manual_name/$manual_name.pdf" "$upload_dir/$manual_name.pdf"
+    upload_files+=("$upload_dir/$manual_name.pdf")
+  done
+  write_manual_release_info "$upload_dir/CFAST_INFO.txt"
+  upload_files+=("$upload_dir/CFAST_INFO.txt")
+
+  echo "*** Uploading CFAST manuals"
+  echo "    release: $MANUALS_UPLOAD_REPO $MANUALS_UPLOAD_TAG"
+  run_checked "GitHub manual upload" \
+    gh release upload "$MANUALS_UPLOAD_TAG" "${upload_files[@]}" --clobber -R "$MANUALS_UPLOAD_REPO"
+}
+
+infer_cfast_build_target_from_exe()
+{
+  local exe_path="$1"
+  local parent_dir
+
+  parent_dir="$(basename "$(dirname "$exe_path")")"
+  case "$parent_dir" in
+    gnu_linux|intel_linux)
+      printf "%s\n" "$parent_dir"
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+linux_runtime_library_name()
+{
+  local library_name="$1"
+
+  case "$library_name" in
+    libgcc_s.so*|libgfortran.so*|libgomp.so*|libquadmath.so*|libstdc++.so*)
+      return 0
+      ;;
+    libfabric.so*|libiomp5.so*|libimf.so*|libintlc.so*|libirng.so*)
+      return 0
+      ;;
+    libifcore.so*|libifcoremt.so*|libifport.so*|libirc.so*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+copy_linux_runtime_libraries()
+{
+  local binary_path="$1"
+  local lib_dir="$2"
+  local dependency_path
+  local library_name
+  local destination_path
+
+  mkdir -p "$lib_dir"
+
+  while read -r dependency_path; do
+    if [[ "$dependency_path" == "" || ! -f "$dependency_path" ]]; then
+      continue
+    fi
+
+    library_name="$(basename "$dependency_path")"
+    if ! linux_runtime_library_name "$library_name"; then
+      continue
+    fi
+
+    destination_path="$lib_dir/$library_name"
+    if [[ ! -f "$destination_path" ]]; then
+      echo "*** Copying Linux runtime library: $library_name"
+      cp -L -p "$dependency_path" "$destination_path"
+      chmod u+w "$destination_path"
+    fi
+  done < <(
+    ldd "$binary_path" | awk '
+      /=>/ { print $3; next }
+      /^[[:space:]]*\// { print $1; next }
+    '
+  )
+}
+
+bundle_linux_runtime_libraries()
+{
+  local binary_path="$1"
+  local lib_dir="$2"
+
+  copy_linux_runtime_libraries "$binary_path" "$lib_dir"
+}
+
+write_cfast_vars_sh()
+{
+  local out_file="$1"
+
+  cat > "$out_file" <<'EOF'
+# Source this file from bash or zsh to add CFAST, CEditQt, and Smokeview to
+# PATH.
+
+if [ -n "${BASH_VERSION:-}" ] && [ -n "${BASH_SOURCE:-}" ]; then
+    _cfast_vars_file="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    eval '_cfast_vars_file="${(%):-%x}"'
+else
+    _cfast_vars_file="$0"
+fi
+
+_cfast_vars_dir="$(CDPATH= cd -- "$(dirname -- "$_cfast_vars_file")" 2>/dev/null && pwd -P)"
+
+if [ -n "$_cfast_vars_dir" ]; then
+    CFAST_HOME="$(CDPATH= cd -- "$_cfast_vars_dir/.." 2>/dev/null && pwd -P)"
+    export CFAST_HOME
+
+    case ":${PATH:-}:" in
+        *":$CFAST_HOME/bin:"*) ;;
+        *) export PATH="$CFAST_HOME/bin:${PATH:-}" ;;
+    esac
+
+    if [ -d "$CFAST_HOME/SMV6" ]; then
+        case ":${PATH:-}:" in
+            *":$CFAST_HOME/SMV6:"*) ;;
+            *) export PATH="$CFAST_HOME/SMV6:${PATH:-}" ;;
+        esac
+    fi
+
+    if [ -d "$CFAST_HOME/lib" ]; then
+        case ":${LD_LIBRARY_PATH:-}:" in
+            *":$CFAST_HOME/lib:"*) ;;
+            *) export LD_LIBRARY_PATH="$CFAST_HOME/lib:${LD_LIBRARY_PATH:-}" ;;
+        esac
+    fi
+fi
+
+unset _cfast_vars_file _cfast_vars_dir
+EOF
+
+  chmod +x "$out_file"
+}
+
+write_cedit_launcher()
+{
+  local out_file="$1"
+
+  cat > "$out_file" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cfast_home="$(cd "$script_dir/.." && pwd)"
+cedit_exe="$cfast_home/CEditQt/cedit/cedit"
+
+export CFAST_HOME="$cfast_home"
+
+case ":${PATH:-}:" in
+    *":$CFAST_HOME/bin:"*) ;;
+    *) export PATH="$CFAST_HOME/bin:${PATH:-}" ;;
+esac
+
+if [[ -d "$CFAST_HOME/SMV6" ]]; then
+    case ":${PATH:-}:" in
+        *":$CFAST_HOME/SMV6:"*) ;;
+        *) export PATH="$CFAST_HOME/SMV6:${PATH:-}" ;;
+    esac
+fi
+
+if [[ -d "$CFAST_HOME/lib" ]]; then
+    case ":${LD_LIBRARY_PATH:-}:" in
+        *":$CFAST_HOME/lib:"*) ;;
+        *) export LD_LIBRARY_PATH="$CFAST_HOME/lib:${LD_LIBRARY_PATH:-}" ;;
+    esac
+fi
+
+if [[ ! -x "$cedit_exe" ]]; then
+    echo "***error: CEditQt executable not found: $cedit_exe"
+    exit 1
+fi
+
+exec "$cedit_exe" "$@"
+EOF
+
+  chmod +x "$out_file"
+}
+
+write_readme()
+{
+  local out_file="$1"
+
+  cat > "$out_file" <<'EOF'
+CFAST Linux Bundle
+==================
+
+This bundle contains:
+
+- bin/cfast and bin/cfast8_linux
+- bin/CFASTVARS.sh
+- bin/cedit, if CEditQt was available when the bundle was made
+- CEditQt/cedit, if CEditQt was available when the bundle was made
+- Documentation/*.pdf
+- Examples/*.in
+- lib/compiler runtime libraries copied from the build host, if needed
+- SMV6/smokeview, if Smokeview was available when the bundle was made
+
+To use CFAST from bash or zsh:
+
+    source /path/to/CFAST/CFAST8/bin/CFASTVARS.sh
+    cfast /path/to/CFAST/CFAST8/Examples/Users_Guide_Example.in
+
+To launch CEditQt from a terminal:
+
+    cedit
+
+EOF
+}
+
+copy_examples()
+{
+  local examples_dir="$1"
+  local source_file
+
+  copy_file "$EXAMPLE_FILE" "$examples_dir/Users_Guide_Example.in"
+  for source_file in "${EXTRA_EXAMPLE_FILES[@]}"; do
+    require_file "$source_file" "CFAST example $(basename "$source_file")"
+    copy_file "$source_file" "$examples_dir/$(basename "$source_file")"
+  done
+}
+
+sanitize_name()
+{
+  printf "%s" "$1" | tr -cs "[:alnum:]_.-" "-"
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --name)
+      DIST_NAME="$2"
+      shift 2
+      ;;
+    --output-dir)
+      OUTPUT_DIR="$2"
+      shift 2
+      ;;
+    --stage-dir)
+      STAGE_ROOT="$2"
+      shift 2
+      ;;
+    --cfast-build-target)
+      CFAST_BUILD_TARGET="$2"
+      CFAST_BUILD_TARGET_SET=1
+      shift 2
+      ;;
+    --cfast-exe)
+      CFAST_EXE="$2"
+      CFAST_EXE_SET=1
+      if [[ "$CFAST_BUILD_TARGET_SET" == "0" ]]; then
+        CFAST_BUILD_TARGET="$(infer_cfast_build_target_from_exe "$CFAST_EXE" || printf "%s\n" "$CFAST_BUILD_TARGET")"
+      fi
+      shift 2
+      ;;
+    --cfast-repo-url)
+      CFAST_REPO_URL="$2"
+      shift 2
+      ;;
+    --cfast-tag)
+      CFAST_TAG="$2"
+      shift 2
+      ;;
+    --cedit-app)
+      CEDIT_APP="$2"
+      shift 2
+      ;;
+    --example)
+      EXAMPLE_FILE="$2"
+      shift 2
+      ;;
+    --smokeview-exe)
+      SMV_EXE="$2"
+      SMV_EXE_SET=1
+      shift 2
+      ;;
+    --smokeview-repo-url)
+      SMV_REPO_URL="$2"
+      shift 2
+      ;;
+    --smokeview-data)
+      SMV_BUNDLE_DIR="$2"
+      shift 2
+      ;;
+    --smokeview-build-target)
+      SMV_BUILD_TARGET="$2"
+      shift 2
+      ;;
+    --update-branch)
+      UPDATE_BRANCH="$2"
+      shift 2
+      ;;
+    --fds-repo-url)
+      FDS_REPO_URL="$2"
+      shift 2
+      ;;
+    --no-update-repos)
+      UPDATE_REPOS=0
+      shift
+      ;;
+    --no-build-cfast)
+      BUILD_CFAST=0
+      shift
+      ;;
+    --no-build-smokeview)
+      BUILD_SMOKEVIEW=0
+      shift
+      ;;
+    --no-build-manuals)
+      BUILD_MANUALS=0
+      shift
+      ;;
+    --no-cedit)
+      INCLUDE_CEDIT=0
+      shift
+      ;;
+    --no-smokeview)
+      INCLUDE_SMOKEVIEW=0
+      shift
+      ;;
+    --no-upload-manuals)
+      UPLOAD_MANUALS=0
+      shift
+      ;;
+    --manuals-upload-repo)
+      MANUALS_UPLOAD_REPO="$2"
+      shift 2
+      ;;
+    --manuals-upload-tag)
+      MANUALS_UPLOAD_TAG="$2"
+      shift 2
+      ;;
+    --no-tarball)
+      CREATE_TARBALL=0
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "***error: unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ "$(uname)" != "Linux" ]]; then
+  echo "***error: Linux bundles must be built on Linux."
+  exit 1
+fi
+
+case "$CFAST_BUILD_TARGET" in
+  gnu_linux|intel_linux)
+    ;;
+  *)
+    echo "***error: unsupported CFAST Linux build target: $CFAST_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
+case "$SMV_BUILD_TARGET" in
+  gnu_linux|intel_linux|clang_linux)
+    ;;
+  *)
+    echo "***error: unsupported Smokeview Linux build target: $SMV_BUILD_TARGET"
+    exit 1
+    ;;
+esac
+
+if [[ "$CFAST_EXE_SET" == "0" ]]; then
+  CFAST_EXE="$REPO_ROOT/Build/CFAST/$CFAST_BUILD_TARGET/cfast8_linux"
+fi
+
+if [[ "$SMV_EXE_SET" == "0" ]]; then
+  SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET/smokeview_linux"
+fi
+
+update_bundle_repos
+
+if [[ "$DIST_NAME" == "" ]]; then
+  if git -C "$REPO_ROOT" describe --tags --dirty --always >/dev/null 2>&1; then
+    cfast_version="$(git -C "$REPO_ROOT" describe --tags --dirty --always)"
+    if [[ "$cfast_version" == CFAST* ]]; then
+      DIST_NAME="$cfast_version-linux"
+    else
+      DIST_NAME="CFAST-$cfast_version-linux"
+    fi
+  else
+    DIST_NAME="CFAST-linux"
+  fi
+fi
+
+build_cfast_executable
+require_file "$CFAST_EXE" "CFAST executable"
+require_file "$EXAMPLE_FILE" "CFAST example file"
+build_smokeview_executable
+build_manuals
+upload_manuals
+
+mkdir -p "$OUTPUT_DIR"
+
+DIST_DIR="$STAGE_ROOT/$DIST_NAME/CFAST/CFAST8"
+TARBALL_NAME="$(sanitize_name "$DIST_NAME").tar.gz"
+TARBALL_PATH="$OUTPUT_DIR/$TARBALL_NAME"
+
+echo "*** Staging CFAST Linux bundle"
+echo "*** Distribution: $DIST_NAME"
+echo "*** Stage: $DIST_DIR"
+echo "*** Output: $TARBALL_PATH"
+
+rm -rf "$STAGE_ROOT/$DIST_NAME"
+mkdir -p "$DIST_DIR/bin" "$DIST_DIR/Documentation" "$DIST_DIR/Examples"
+
+copy_file "$CFAST_EXE" "$DIST_DIR/bin/cfast8_linux"
+chmod +x "$DIST_DIR/bin/cfast8_linux"
+ln -s cfast8_linux "$DIST_DIR/bin/cfast"
+bundle_linux_runtime_libraries "$DIST_DIR/bin/cfast8_linux" "$DIST_DIR/lib"
+
+copy_examples "$DIST_DIR/Examples"
+copy_manuals "$DIST_DIR/Documentation"
+
+write_cfast_vars_sh "$DIST_DIR/bin/CFASTVARS.sh"
+write_readme "$DIST_DIR/README.txt"
+
+if [[ "$INCLUDE_CEDIT" == "1" ]]; then
+  if [[ -d "$CEDIT_APP" ]]; then
+    echo "*** Adding CEditQt"
+    copy_dir "$CEDIT_APP" "$DIST_DIR/CEditQt/$APP_NAME"
+    write_cedit_launcher "$DIST_DIR/bin/cedit"
+  else
+    echo "*** Warning: CEditQt app not found; continuing without CEditQt."
+    echo "             cedit: $CEDIT_APP"
+  fi
+fi
+
+if [[ "$INCLUDE_SMOKEVIEW" == "1" ]]; then
+  if [[ -f "$SMV_EXE" && -d "$SMV_BUNDLE_DIR" ]]; then
+    echo "*** Adding Smokeview"
+    mkdir -p "$DIST_DIR/SMV6"
+    copy_file "$SMV_EXE" "$DIST_DIR/SMV6/smokeview"
+    chmod +x "$DIST_DIR/SMV6/smokeview"
+    bundle_linux_runtime_libraries "$DIST_DIR/SMV6/smokeview" "$DIST_DIR/lib"
+    copy_optional_file "$SMV_BUNDLE_DIR/objects.svo" "$DIST_DIR/SMV6/objects.svo"
+    copy_optional_file "$SMV_BUNDLE_DIR/volrender.ssf" "$DIST_DIR/SMV6/volrender.ssf"
+    copy_optional_file "$SMV_BUNDLE_DIR/smokeview.ini" "$DIST_DIR/SMV6/smokeview.ini"
+    copy_optional_dir "$SMV_BUNDLE_DIR/colorbars" "$DIST_DIR/SMV6/colorbars"
+    copy_optional_dir "$SMV_BUNDLE_DIR/textures" "$DIST_DIR/SMV6/textures"
+  else
+    echo "*** Warning: Smokeview artifacts not found; continuing without Smokeview."
+    echo "             smokeview: $SMV_EXE"
+    echo "             data:      $SMV_BUNDLE_DIR"
+  fi
+fi
+
+if [[ "$CREATE_TARBALL" == "1" ]]; then
+  rm -f "$TARBALL_PATH"
+  echo "*** Creating tarball"
+  tar -C "$STAGE_ROOT/$DIST_NAME" -czf "$TARBALL_PATH" CFAST
+  echo "*** Tarball created:"
+  echo "    $TARBALL_PATH"
+else
+  echo "*** Bundle staged:"
+  echo "    $STAGE_ROOT/$DIST_NAME"
+fi

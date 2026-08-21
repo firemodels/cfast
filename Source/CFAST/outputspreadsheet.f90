@@ -224,9 +224,9 @@ module spreadsheet_routines
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGLLT_'//trim(cDet), 'Target Lower Layer Temperature', &
                 targptr%id, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGHGT_'//trim(cDet), 'Target Layer Height', &
-                targptr%id, 'C')
+                targptr%id, 'm')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGPRS_'//trim(cDet), 'Target Pressure', &
-                targptr%id, 'C')
+                targptr%id, 'Pa')
             if (validation_flag) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', &
                     targptr%id, 'kW/m^2')
@@ -1612,9 +1612,9 @@ module spreadsheet_routines
         out = ' '
         do i = 1, ic
             if (validation_flag) then
-                write (out(i),"(e19.12)" ) array(i)
+                write (out(i),"(e12.5)" ) array(i)
             else
-                write (out(i),"(e13.6)" ) array(i)
+                write (out(i),"(e12.5)" ) array(i)
             end if
         end do
         write (iounit,"(16384a)") (trim(out(i)) // ',',i=1,ic-1),out(ic)

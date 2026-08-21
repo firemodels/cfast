@@ -66,5 +66,20 @@ fort.3
 __pycache__/
 *.py[cod]
 
+# CEditQt app build output
+Build/CeditQt/icons/
+Build/CeditQt/linux/
+Build/CeditQt/macos/
+Build/CeditQt/pyinstaller-cache/
+Build/CeditQt/pyinstaller-work/
+Build/CeditQt/spec/
+Build/CeditQt/windows/
+
+# bundle build output
+Build/bundle/linux/
+Build/bundle/macos/
+Build/bundle/windows/
+Build/bundle/stage/
+
 # CEditQt generated test files
 Source/CeditQt/cedit_qt_test*

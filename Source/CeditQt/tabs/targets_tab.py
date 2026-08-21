@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import copy
+import math
 from dataclasses import replace
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSignalBlocker, Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFrame,
@@ -20,7 +21,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, Target
+from cfast_case import CfastCase, MaterialProperty, Target
+from table_widgets import HoverEditTableWidget
 from units import (
     CONDUCTIVITY,
     DENSITY,
@@ -83,8 +85,9 @@ class TargetsTab(QWidget):
         self.editor_connections_ready = False
         self.compartment_ids: list[str] = []
         self.material_ids: list[str] = ["OFF", "DEFAULT"]
+        self.materials_by_id: dict[str, MaterialProperty] = {}
 
-        self.summary_table = QTableWidget(0, len(table_columns()))
+        self.summary_table = HoverEditTableWidget(0, len(table_columns()))
         self.summary_table.setHorizontalHeaderLabels(table_columns())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -92,8 +95,8 @@ class TargetsTab(QWidget):
         self.summary_table.verticalHeader().setVisible(False)
         self.summary_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.summary_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
-        self.summary_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.summary_table.itemSelectionChanged.connect(self.summary_selection_changed)
+        self.summary_table.itemChanged.connect(self.summary_item_changed)
 
         add_button = QPushButton("Add")
         duplicate_button = QPushButton("Duplicate")
@@ -221,7 +224,8 @@ class TargetsTab(QWidget):
         self.conductivity_label = QLabel("Conductivity: ")
         self.specific_heat_label = QLabel("Specific Heat: ")
         self.density_label = QLabel("Density: ")
-        self.thickness_label = QLabel("Thickness: ")
+        self.thickness_edit = QLineEdit()
+        self.temperature_depth_label = QLabel()
         self.temperature_depth_edit = QLineEdit()
 
         layout.addWidget(QLabel("Material:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
@@ -229,13 +233,9 @@ class TargetsTab(QWidget):
         layout.addWidget(self.conductivity_label, 1, 0, 1, 2)
         layout.addWidget(self.specific_heat_label, 2, 0, 1, 2)
         layout.addWidget(self.density_label, 3, 0, 1, 2)
-        layout.addWidget(self.thickness_label, 4, 0, 1, 2)
-        layout.addWidget(
-            QLabel("Internal Temperature at:"),
-            5,
-            0,
-            alignment=Qt.AlignmentFlag.AlignRight,
-        )
+        layout.addWidget(QLabel("Thickness:"), 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.thickness_edit, 4, 1)
+        layout.addWidget(self.temperature_depth_label, 5, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.temperature_depth_edit, 5, 1)
 
         group.setLayout(layout)
@@ -267,25 +267,7 @@ class TargetsTab(QWidget):
         self.summary_table.setRowCount(len(self.targets))
 
         for row, target in enumerate(self.targets):
-            values = [
-                str(row + 1),
-                target.id,
-                target.comp_id,
-                format_value(LENGTH, target.x_position),
-                format_value(LENGTH, target.y_position),
-                format_value(LENGTH, target.z_position),
-                format_number(target.x_normal),
-                format_number(target.y_normal),
-                format_number(target.z_normal),
-                target.matl_id,
-                display_target_type(target.target_type),
-            ]
-
-            for col, value in enumerate(values):
-                item = QTableWidgetItem(value)
-                if col == 0:
-                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                self.summary_table.setItem(row, col, item)
+            self.set_summary_row(row, target)
 
         self.updating = False
 
@@ -296,6 +278,38 @@ class TargetsTab(QWidget):
         else:
             self.current_index = -1
             self.load_target_into_editor(None)
+
+    def set_summary_row(self, row: int, target: Target):
+        values = self.summary_values(row, target)
+
+        for col, value in enumerate(values):
+            item = QTableWidgetItem(value)
+            if col == 0:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.summary_table.setItem(row, col, item)
+
+    def summary_values(self, row: int, target: Target) -> list[str]:
+        return [
+            str(row + 1),
+            target.id,
+            target.comp_id,
+            format_value(LENGTH, target.x_position),
+            format_value(LENGTH, target.y_position),
+            format_value(LENGTH, target.z_position),
+            format_number(target.x_normal),
+            format_number(target.y_normal),
+            format_number(target.z_normal),
+            target.matl_id,
+            display_target_type(target.target_type),
+        ]
+
+    def update_summary_row(self, row: int):
+        if not 0 <= row < len(self.targets):
+            return
+
+        self.updating = True
+        self.set_summary_row(row, self.targets[row])
+        self.updating = False
 
     def summary_selection_changed(self):
         if self.updating:
@@ -308,6 +322,23 @@ class TargetsTab(QWidget):
 
         self.current_index = indexes[0].row()
         self.load_target_into_editor(self.targets[self.current_index])
+
+    def summary_item_changed(self, item: QTableWidgetItem):
+        if self.updating:
+            return
+
+        row = item.row()
+        if not 0 <= row < len(self.targets):
+            return
+
+        try:
+            self.targets[row] = self.target_from_summary(row)
+        except ValueError:
+            return
+
+        self.update_summary_row(row)
+        if row == self.current_index:
+            self.load_target_into_editor(self.targets[row])
 
     def load_target_into_editor(self, target: Target | None):
         self.updating = True
@@ -332,7 +363,17 @@ class TargetsTab(QWidget):
         self.ny_edit.setText(format_number(target.y_normal))
         self.nz_edit.setText(format_number(target.z_normal))
         set_combo_text(self.material_combo, target.matl_id)
-        self.temperature_depth_edit.setText(format_value(LENGTH, target.temperature_depth))
+        self.temperature_depth_edit.setText(
+            format_number(target.temperature_depth)
+            if target.depth_units.upper() == "FRACTION"
+            else format_value(LENGTH, target.temperature_depth)
+        )
+        self.thickness_edit.setText(format_value(LENGTH, self.effective_thickness(target)))
+        self.temperature_depth_label.setText(
+            "Internal Temperature at (fraction):"
+            if target.depth_units.upper() == "FRACTION"
+            else f"Internal Temperature at ({unit_label(LENGTH)}):"
+        )
         self.update_material_labels(target)
 
         self.updating = False
@@ -346,9 +387,11 @@ class TargetsTab(QWidget):
         for widget in self.editor_widgets():
             widget.textChanged.connect(self.editor_changed)
 
+        self.thickness_edit.editingFinished.connect(self.commit_thickness)
         for combo in self.editor_combos():
             combo.currentTextChanged.connect(self.editor_changed)
 
+        self.material_combo.currentTextChanged.connect(self.material_changed)
         self.editor_connections_ready = True
 
     def editor_widgets(self):
@@ -367,8 +410,20 @@ class TargetsTab(QWidget):
         return [
             self.compartment_combo,
             self.target_type_combo,
-            self.material_combo,
         ]
+
+    def material_changed(self):
+        if self.updating or self.current_index < 0:
+            return
+
+        target = self.targets[self.current_index]
+        if target.thickness == 0.0:
+            thickness = self.material_properties(
+                self.material_combo.currentText()
+            ).get("thickness", 0.0)
+            self.thickness_edit.setText(format_value(LENGTH, float(thickness)))
+
+        self.editor_changed()
 
     def editor_changed(self):
         if self.updating or self.current_index < 0:
@@ -383,14 +438,32 @@ class TargetsTab(QWidget):
         self.update_material_labels(target)
         self.refresh_summary_table(select_row=self.current_index)
 
+    def commit_thickness(self):
+        """Store Thickness in CFAST units and redisplay it in the active units."""
+        if self.updating or self.current_index < 0:
+            return
+
+        try:
+            thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
+        except ValueError:
+            return
+
+        blocker = QSignalBlocker(self.thickness_edit)
+        self.thickness_edit.setText(format_value(LENGTH, thickness))
+        del blocker
+        self.editor_changed()
+
     def target_from_editor(self) -> Target:
         matl_id = self.material_combo.currentText().strip() or "DEFAULT"
-        material = material_properties(matl_id)
         existing = self.targets[self.current_index] if 0 <= self.current_index < len(self.targets) else None
-        if matl_id.strip().upper() in MATERIAL_LIBRARY:
-            thickness = material.get("thickness", 0.0)
-        else:
-            thickness = existing.thickness if existing is not None else 0.0
+        displayed_thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
+        material_thickness = self.material_properties(matl_id).get("thickness", 0.0)
+        thickness = (
+            0.0
+            if isinstance(material_thickness, (float, int))
+            and math.isclose(displayed_thickness, material_thickness, abs_tol=1.0e-12)
+            else displayed_thickness
+        )
 
         return Target(
             id=self.id_edit.text().strip() or f"Targ {self.current_index + 1}",
@@ -407,11 +480,7 @@ class TargetsTab(QWidget):
             matl_id=matl_id,
             target_type=self.target_type_combo.currentText().strip().upper(),
             thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
-            temperature_depth=parse_value(
-                LENGTH,
-                self.temperature_depth_edit.text(),
-                "Internal Temperature Depth",
-            ),
+            temperature_depth=self.temperature_depth_from_editor(existing),
             depth_units=existing.depth_units if existing is not None else "DISTANCE",
             surface_orientation=(
                 existing.surface_orientation if existing is not None else "USER SPECIFIED"
@@ -427,8 +496,59 @@ class TargetsTab(QWidget):
             fyi=existing.fyi if existing is not None else "",
         )
 
+    def target_from_summary(self, row: int) -> Target:
+        existing = self.targets[row]
+        matl_id = self.summary_text(row, 9) or existing.matl_id or "DEFAULT"
+        thickness = existing.thickness
+
+        return replace(
+            existing,
+            id=self.summary_text(row, 1) or existing.id,
+            comp_id=self.summary_text(row, 2) or self.default_compartment(),
+            x_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 3),
+                "X Position",
+                existing.x_position,
+            ),
+            y_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 4),
+                "Y Position",
+                existing.y_position,
+            ),
+            z_position=parse_value(
+                LENGTH,
+                self.summary_text(row, 5),
+                "Z Position",
+                existing.z_position,
+            ),
+            x_normal=parse_number(
+                self.summary_text(row, 6),
+                "X Normal",
+                existing.x_normal,
+            ),
+            y_normal=parse_number(
+                self.summary_text(row, 7),
+                "Y Normal",
+                existing.y_normal,
+            ),
+            z_normal=parse_number(
+                self.summary_text(row, 8),
+                "Z Normal",
+                existing.z_normal,
+            ),
+            matl_id=matl_id,
+            target_type=(self.summary_text(row, 10) or existing.target_type).upper(),
+            thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
+        )
+
+    def summary_text(self, row: int, col: int) -> str:
+        item = self.summary_table.item(row, col)
+        return "" if item is None else item.text().strip()
+
     def update_material_labels(self, target: Target):
-        material = material_properties(target.matl_id)
+        material = self.material_properties(target.matl_id)
         self.conductivity_label.setText(
             f"Conductivity: {format_property(material.get('conductivity'), CONDUCTIVITY)} {unit_label(CONDUCTIVITY)}"
         )
@@ -438,8 +558,20 @@ class TargetsTab(QWidget):
         self.density_label.setText(
             f"Density: {format_property(material.get('density'), DENSITY)} {unit_label(DENSITY)}"
         )
-        self.thickness_label.setText(
-            f"Thickness: {format_property(material.get('thickness'), LENGTH)} {unit_label(LENGTH)}"
+    def effective_thickness(self, target: Target) -> float:
+        if target.thickness > 0.0:
+            return target.thickness
+
+        thickness = self.material_properties(target.matl_id).get("thickness", 0.0)
+        return float(thickness) if isinstance(thickness, (float, int)) else 0.0
+
+    def temperature_depth_from_editor(self, existing: Target | None) -> float:
+        if existing is not None and existing.depth_units.upper() == "FRACTION":
+            return parse_number(
+                self.temperature_depth_edit.text(), "Internal Temperature Depth"
+            )
+        return parse_value(
+            LENGTH, self.temperature_depth_edit.text(), "Internal Temperature Depth"
         )
 
     def add_target(self):
@@ -561,6 +693,26 @@ class TargetsTab(QWidget):
         if current:
             set_combo_text(self.material_combo, current)
         self.material_combo.blockSignals(False)
+
+    def set_material_properties(self, materials: list[MaterialProperty]):
+        self.materials_by_id = {
+            material.id.strip().upper(): material
+            for material in materials
+            if material.id.strip()
+        }
+        if 0 <= self.current_index < len(self.targets):
+            self.load_target_into_editor(self.targets[self.current_index])
+
+    def material_properties(self, matl_id: str) -> dict:
+        material = self.materials_by_id.get(matl_id.strip().upper())
+        if material is not None:
+            return {
+                "conductivity": material.conductivity,
+                "specific_heat": material.specific_heat,
+                "density": material.density,
+                "thickness": material.thickness,
+            }
+        return material_properties(matl_id)
 
 
 def set_combo_text(combo: QComboBox, text: str):

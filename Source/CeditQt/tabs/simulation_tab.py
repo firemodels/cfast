@@ -16,7 +16,16 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase
+from cfast_syntax_highlighter import CfastSyntaxHighlighter
 from units import PRESSURE, TEMPERATURE, TIME, format_number, format_value, parse_number, parse_value
+
+
+def format_percent(value: float | int) -> str:
+    return f"{format_number(value)} %"
+
+
+def format_mol_fraction(value: float | int) -> str:
+    return f"{format_number(value)} mol/mol"
 
 
 class SimulationTab(QWidget):
@@ -27,17 +36,17 @@ class SimulationTab(QWidget):
 
         self.simulation_time_edit = QLineEdit(format_value(TIME, 3600.0))
         self.print_interval_edit = QLineEdit(format_value(TIME, 60.0))
-        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 60.0))
-        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 60.0))
+        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 15.0))
+        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 15.0))
         self.max_time_step_edit = QLineEdit("Default")
 
         self.interior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
-        self.relative_humidity_edit = QLineEdit("50 %")
+        self.relative_humidity_edit = QLineEdit(format_percent(50.0))
         self.exterior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
         self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
-        self.lower_oxygen_limit_edit = QLineEdit("0.1")
+        self.lower_oxygen_limit_edit = QLineEdit(format_mol_fraction(0.15))
 
         self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
@@ -56,8 +65,10 @@ class SimulationTab(QWidget):
 
         self.message_panel.setPlainText("")
         self.message_panel.setMinimumHeight(140)
+        self.syntax_highlighter = CfastSyntaxHighlighter(self.message_panel.document())
 
         self.build_layout()
+        self.connect_unit_normalizers()
 
     def build_layout(self):
         main_layout = QVBoxLayout()
@@ -96,11 +107,11 @@ class SimulationTab(QWidget):
             "Default" if case.max_time_step is None else format_value(TIME, case.max_time_step)
         )
         self.interior_temperature_edit.setText(format_value(TEMPERATURE, case.interior_temperature))
-        self.relative_humidity_edit.setText(format_number(case.relative_humidity))
+        self.relative_humidity_edit.setText(format_percent(case.relative_humidity))
         self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
         self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
-        self.lower_oxygen_limit_edit.setText(format_number(case.lower_oxygen_limit))
+        self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
 
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
@@ -159,6 +170,63 @@ class SimulationTab(QWidget):
 
         return group
 
+    def connect_unit_normalizers(self):
+        for edit, kind, field_name, allow_default in (
+            (self.simulation_time_edit, TIME, "Simulation Time", False),
+            (self.print_interval_edit, TIME, "Text Output Interval", False),
+            (self.spreadsheet_interval_edit, TIME, "Spreadsheet Output Interval", False),
+            (self.smokeview_interval_edit, TIME, "Smokeview Output Interval", False),
+            (self.max_time_step_edit, TIME, "Maximum Time Step", True),
+            (self.interior_temperature_edit, TEMPERATURE, "Interior Temperature", False),
+            (self.exterior_temperature_edit, TEMPERATURE, "Exterior Temperature", False),
+            (self.pressure_edit, PRESSURE, "Pressure", False),
+        ):
+            edit.editingFinished.connect(
+                lambda edit=edit, kind=kind, field_name=field_name, allow_default=allow_default: (
+                    self.normalize_value_edit(edit, kind, field_name, allow_default)
+                )
+            )
+        self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
+        self.lower_oxygen_limit_edit.editingFinished.connect(self.normalize_lower_oxygen_limit)
+
+    def normalize_value_edit(
+        self,
+        edit: QLineEdit,
+        kind: str,
+        field_name: str,
+        allow_default: bool = False,
+    ):
+        try:
+            value = parse_value(
+                kind,
+                edit.text(),
+                field_name,
+                allow_default=allow_default,
+            )
+        except ValueError:
+            return
+
+        if value is None:
+            edit.setText("Default")
+        else:
+            edit.setText(format_value(kind, value))
+
+    def normalize_relative_humidity(self):
+        try:
+            value = parse_number(self.relative_humidity_edit.text(), "Humidity")
+        except ValueError:
+            return
+
+        self.relative_humidity_edit.setText(format_percent(value))
+
+    def normalize_lower_oxygen_limit(self):
+        try:
+            value = parse_number(self.lower_oxygen_limit_edit.text(), "Lower Oxygen Limit")
+        except ValueError:
+            return
+
+        self.lower_oxygen_limit_edit.setText(format_mol_fraction(value))
+
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"
 
@@ -215,10 +283,12 @@ class SimulationTab(QWidget):
             "Lower Oxygen Limit",
         )
 
-    def set_message(self, text: str):
+    def set_message(self, text: str, syntax_highlight: bool = False):
+        self.syntax_highlighter.set_enabled(syntax_highlight)
         self.message_panel.setPlainText(text)
 
     def append_message(self, text: str):
+        self.syntax_highlighter.set_enabled(False)
         self.message_panel.moveCursor(QTextCursor.MoveOperation.End)
         self.message_panel.insertPlainText(text)
         self.message_panel.ensureCursorVisible()

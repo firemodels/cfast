@@ -121,9 +121,6 @@ module cfast_types
 
         real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
-        
-        logical :: CData_modifying_fire_flag            ! Flag for CData
-        
     contains
         procedure :: pop_table
     end type fire_type

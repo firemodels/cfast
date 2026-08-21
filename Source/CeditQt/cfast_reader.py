@@ -1270,7 +1270,7 @@ def string_triple(
     default: str,
 ) -> tuple[str, str, str]:
     values = string_vector(fields, key, [default])
-    values = pad_strings(values, values[-1] if values else default, 3)
+    values = pad_strings(values, default, 3)
     return (values[0], values[1], values[2])
 
 
@@ -1280,7 +1280,7 @@ def number_triple(
     default: float,
 ) -> tuple[float, float, float]:
     values = number_vector(fields, key, [default])
-    values = pad_numbers(values, values[-1] if values else default, 3)
+    values = pad_numbers(values, default, 3)
     return (values[0], values[1], values[2])
 
 

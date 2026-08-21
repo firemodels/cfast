@@ -1,0 +1,41 @@
+% !TEX root = ../CFAST_Users_Guide.tex
+
+% Oblique projection used by the original CFAST compartment diagrams.
+% The lower and upper boxes are constructed from actual model dimensions and offsets.
+\begin{tikzpicture}[
+  x={(0.72cm,0cm)}, y={(0.34cm,0.22cm)}, z={(0cm,0.72cm)},
+  >=Stealth, line cap=round, line join=round,
+  every node/.style={font=\small}
+]
+  % Lower compartment: 4 m wide, 4 m deep, and 2.3 m high.
+  \draw[line width=1pt]
+    (0,0,0)--(4,0,0)--(4,4,0)--(0,4,0)--cycle
+    (0,0,2.3)--(4,0,2.3)--(4,4,2.3)--(0,4,2.3)--cycle
+    (0,0,0)--(0,0,2.3)
+    (4,0,0)--(4,0,2.3)
+    (4,4,0)--(4,4,2.3)
+    (0,4,0)--(0,4,2.3);
+
+  % Upper compartment: 2 m wide, 5 m deep, and 2.3 m high.
+  % Its front-left-bottom corner is offset 2 m in Y and 2.3 m in Z.
+  \draw[line width=1pt]
+    (0,2,2.3)--(2,2,2.3)--(2,7,2.3)--(0,7,2.3)--cycle
+    (0,2,4.6)--(2,2,4.6)--(2,7,4.6)--(0,7,4.6)--cycle
+    (0,2,2.3)--(0,2,4.6)
+    (2,2,2.3)--(2,2,4.6)
+    (2,7,2.3)--(2,7,4.6)
+    (0,7,2.3)--(0,7,4.6);
+
+  \draw[line width=1.4pt,->] (0,0,0)--(6.1,0,0) node[below right] {$X$};
+  \draw[line width=1.4pt,->] (0,0,0)--(0,5.8,0) node[right] {$Y$};
+  \draw[line width=1.4pt,->] (0,0,0)--(0,0,5.4) node[above right] {$Z$};
+  \node[below left] at (0,0,0) {$(0,0,0)$};
+
+  \node at (2,0,0.30) {4 m};
+  \node[rotate=90] at (0.35,0,1.15) {2.3 m};
+  \node[rotate=33] at (4.5,2.15,0.0) {4 m};
+  \node[rotate=33] at (0,4.50,4.90) {5 m};
+  \node[rotate=90] at (0.35,2,3.45) {2.3 m};
+  \node[rotate=33] at (0,1.0,2.7) {2 m};
+  \node[font=\footnotesize] at (1.5,2,2.58) {2 m};
+\end{tikzpicture}

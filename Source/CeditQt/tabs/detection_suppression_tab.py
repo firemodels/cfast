@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, DetectionDevice
+from table_widgets import HoverEditTableWidget
 from units import (
     LENGTH,
     RTI,
@@ -96,7 +97,7 @@ class DetectionSuppressionTab(QWidget):
         self.devices: list[DetectionDevice] = []
         self.compartment_ids: list[str] = []
 
-        self.summary_table = QTableWidget(0, 10)
+        self.summary_table = HoverEditTableWidget(0, 10)
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

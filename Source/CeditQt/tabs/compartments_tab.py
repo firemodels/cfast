@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRect, QSize, QTimer, Qt, Signal
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QStyle, QStyleOptionHeader
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
@@ -23,7 +25,83 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment
+from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
+
+
+class CompartmentSummaryHeader(QHeaderView):
+    """Two-row header with grouped labels for construction and connections."""
+
+    surface_first_column = 8
+    surface_last_column = 10
+    connection_first_column = 11
+    connection_last_column = 16
+    group_height = 22
+    surface_color = QColor("#e4e4e4")
+    connection_color = QColor("#d8d8d8")
+
+    def group_for_column(self, logical_index: int):
+        if self.surface_first_column <= logical_index <= self.surface_last_column:
+            return (
+                self.surface_first_column,
+                self.surface_last_column,
+                "Surface Construction",
+                self.surface_color,
+            )
+        if self.connection_first_column <= logical_index <= self.connection_last_column:
+            return (
+                self.connection_first_column,
+                self.connection_last_column,
+                "Compartment Connection Counts",
+                self.connection_color,
+            )
+        return None
+
+    def sectionSizeFromContents(self, logical_index: int) -> QSize:
+        size = super().sectionSizeFromContents(logical_index)
+        return QSize(size.width(), size.height() + self.group_height)
+
+    def paintSection(self, painter, rect: QRect, logical_index: int):
+        group = self.group_for_column(logical_index)
+        lower_rect = QRect(
+            rect.x(),
+            rect.y() + self.group_height,
+            rect.width(),
+            rect.height() - self.group_height,
+        )
+        if group is not None:
+            option = QStyleOptionHeader()
+            self.initStyleOption(option)
+            option.rect = lower_rect
+            option.section = logical_index
+            option.text = str(
+                self.model().headerData(
+                    logical_index,
+                    self.orientation(),
+                    Qt.ItemDataRole.DisplayRole,
+                )
+                or ""
+            )
+            option.palette.setColor(QPalette.ColorRole.Button, group[3])
+            self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
+        else:
+            super().paintSection(painter, lower_rect, logical_index)
+
+        if group is None or logical_index != group[0]:
+            return
+
+        group_width = sum(
+            self.sectionSize(column)
+            for column in range(group[0], group[1] + 1)
+        )
+        group_rect = QRect(rect.x(), rect.y(), group_width, self.group_height)
+        option = QStyleOptionHeader()
+        self.initStyleOption(option)
+        option.rect = group_rect
+        option.text = group[2]
+        option.textAlignment = Qt.AlignmentFlag.AlignCenter
+        option.palette.setColor(QPalette.ColorRole.Button, group[3])
+        self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
 
 
 def summary_headers() -> list[str]:
@@ -40,12 +118,12 @@ def summary_headers() -> list[str]:
         "Ceiling",
         "Walls",
         "Floor",
-        "F",
-        "H",
-        "V",
-        "M",
-        "D",
-        "T",
+        "Fire",
+        "Wall",
+        "C/F",
+        "Mech",
+        "Dev",
+        "Targ",
     ]
 
 
@@ -61,6 +139,22 @@ def material_headers() -> list[str]:
     ]
 
 
+CONNECTION_COUNT_TOOLTIPS = {
+    11: "Fires connected to this compartment",
+    12: "Wall vents connected to this compartment",
+    13: "Ceiling/floor vents connected to this compartment",
+    14: "Mechanical vents connected to this compartment",
+    15: "Detection or suppression devices in this compartment",
+    16: "Targets in this compartment",
+}
+
+SURFACE_CONSTRUCTION_TOOLTIPS = {
+    8: "Ceiling construction material or number of material layers",
+    9: "Wall construction material or number of material layers",
+    10: "Floor construction material or number of material layers",
+}
+
+
 def area_headers() -> list[str]:
     return [f"Height\n({unit_label(LENGTH)})", f"Area\n({unit_label(AREA)})"]
 
@@ -74,11 +168,18 @@ def parse_int(text: str, field_name: str) -> int:
     return int(round(value))
 
 
-def first_or_off(values: tuple[str, str, str]) -> str:
-    return values[0] if values and values[0] else "OFF"
+def construction_summary(values: tuple[str, str, str]) -> str:
+    layers = [value for value in values if value and value.upper() != "OFF"]
+    if not layers:
+        return "OFF"
+    if len(layers) == 1:
+        return layers[0]
+    return f"{len(layers)} Layers"
 
 
 class CompartmentsTab(QWidget):
+    materials_referenced = Signal(list)
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -87,8 +188,10 @@ class CompartmentsTab(QWidget):
         self.compartments = self.default_compartments()
         self.material_choices = ["OFF"]
 
-        self.summary_table = QTableWidget(0, len(summary_headers()))
+        self.summary_table = HoverEditTableWidget(0, len(summary_headers()))
+        self.summary_table.setHorizontalHeader(CompartmentSummaryHeader(Qt.Orientation.Horizontal))
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.set_summary_header_tooltips()
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
@@ -187,6 +290,7 @@ class CompartmentsTab(QWidget):
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
         self.compartments = copy.deepcopy(case.compartments)
+        self.update_connection_counts(case)
         self.selected_index = 0 if self.compartments else -1
         self.refresh_summary_table(select_row=0 if self.compartments else None)
         if self.compartments:
@@ -194,10 +298,47 @@ class CompartmentsTab(QWidget):
         else:
             self.clear_detail()
 
+    def update_connection_counts(self, case: CfastCase):
+        """Populate the read-only summary columns from the objects in *case*."""
+        compartments_by_id = {compartment.id: compartment for compartment in self.compartments}
+
+        for compartment in self.compartments:
+            compartment.fire_count = 0
+            compartment.hvent_count = 0
+            compartment.vent_count = 0
+            compartment.mechanical_count = 0
+            compartment.detector_count = 0
+            compartment.target_count = 0
+
+        def increment(compartment_ids: set[str], attribute: str):
+            for compartment_id in compartment_ids:
+                compartment = compartments_by_id.get(compartment_id)
+                if compartment is not None:
+                    setattr(compartment, attribute, getattr(compartment, attribute) + 1)
+
+        for fire in case.fires:
+            increment({fire.comp_id}, "fire_count")
+        for vent in case.wall_vents:
+            increment({vent.first_comp_id, vent.second_comp_id}, "hvent_count")
+        for vent in case.ceiling_floor_vents:
+            increment({vent.first_comp_id, vent.second_comp_id}, "vent_count")
+        for vent in case.mechanical_vents:
+            increment({vent.from_comp_id, vent.to_comp_id}, "mechanical_count")
+        for device in case.detection_devices:
+            increment({device.comp_id}, "detector_count")
+        for target in case.targets:
+            increment({target.comp_id}, "target_count")
+
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
+        self.set_summary_header_tooltips()
         self.materials_table.setHorizontalHeaderLabels(material_headers())
         self.area_table.setHorizontalHeaderLabels(area_headers())
+
+    def set_summary_header_tooltips(self):
+        tooltips = SURFACE_CONSTRUCTION_TOOLTIPS | CONNECTION_COUNT_TOOLTIPS
+        for column, tooltip in tooltips.items():
+            self.summary_table.horizontalHeaderItem(column).setToolTip(tooltip)
 
     def set_material_ids(self, material_ids: list[str]):
         choices = ["OFF"]
@@ -220,9 +361,9 @@ class CompartmentsTab(QWidget):
         return [
             Compartment(
                 id="Comp 1",
-                width=5.0,
-                depth=5.0,
-                height=3.0,
+                width=3.6,
+                depth=2.4,
+                height=2.4,
                 origin_x=0.0,
                 origin_y=0.0,
                 origin_z=0.0,
@@ -230,22 +371,22 @@ class CompartmentsTab(QWidget):
             ),
             Compartment(
                 id="Comp 2",
-                width=5.0,
-                depth=5.0,
-                height=3.0,
-                origin_x=5.0,
+                width=3.6,
+                depth=2.4,
+                height=2.4,
+                origin_x=3.6,
                 origin_y=0.0,
                 origin_z=0.0,
                 **concrete_surface,
             ),
             Compartment(
                 id="Comp 3",
-                width=5.0,
-                depth=5.0,
-                height=3.0,
-                origin_x=5.0,
+                width=3.6,
+                depth=2.4,
+                height=2.4,
+                origin_x=3.6,
                 origin_y=0.0,
-                origin_z=3.0,
+                origin_z=2.4,
                 **concrete_surface,
             ),
         ]
@@ -285,23 +426,31 @@ class CompartmentsTab(QWidget):
         group = QGroupBox("Geometry")
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Width (X):"), 0, 0)
+        layout.addWidget(self.geometry_label("Width (X):"), 0, 0)
         layout.addWidget(self.width_edit, 0, 1)
-        layout.addWidget(QLabel("Position, X:"), 0, 2)
+        layout.addWidget(self.geometry_label("Position, X:"), 0, 2)
         layout.addWidget(self.x_edit, 0, 3)
 
-        layout.addWidget(QLabel("Depth (Y):"), 1, 0)
+        layout.addWidget(self.geometry_label("Depth (Y):"), 1, 0)
         layout.addWidget(self.depth_edit, 1, 1)
-        layout.addWidget(QLabel("Y:"), 1, 2)
+        layout.addWidget(self.geometry_label("Position, Y:"), 1, 2)
         layout.addWidget(self.y_edit, 1, 3)
 
-        layout.addWidget(QLabel("Height (Z):"), 2, 0)
+        layout.addWidget(self.geometry_label("Height (Z):"), 2, 0)
         layout.addWidget(self.height_edit, 2, 1)
-        layout.addWidget(QLabel("Z:"), 2, 2)
+        layout.addWidget(self.geometry_label("Position, Z:"), 2, 2)
         layout.addWidget(self.z_edit, 2, 3)
 
         group.setLayout(layout)
         return group
+
+    @staticmethod
+    def geometry_label(text: str) -> QLabel:
+        label = QLabel(text)
+        label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
+        return label
 
     def build_advanced_group(self) -> QGroupBox:
         group = QGroupBox("Advanced")
@@ -352,9 +501,15 @@ class CompartmentsTab(QWidget):
         for edit in edits:
             edit.editingFinished.connect(self.save_detail_to_selected)
 
-        self.flow_group.buttonClicked.connect(self.save_detail_to_selected)
-        self.area_table.cellChanged.connect(self.save_detail_to_selected)
-        self.materials_table.cellChanged.connect(self.save_detail_to_selected)
+        self.flow_group.buttonClicked.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
+        self.area_table.cellChanged.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
+        self.materials_table.cellChanged.connect(
+            lambda *_args: self.save_detail_to_selected()
+        )
 
     def add_compartment(self):
         self.save_detail_to_selected()
@@ -369,6 +524,7 @@ class CompartmentsTab(QWidget):
         self.compartments.append(compartment)
         self.refresh_summary_table(select_row=len(self.compartments) - 1)
         self.load_detail_from_selected()
+        self.materials_referenced.emit(self.material_ids_for_compartment(compartment))
 
     def duplicate_compartment(self):
         self.save_detail_to_selected()
@@ -379,6 +535,22 @@ class CompartmentsTab(QWidget):
         self.compartments.insert(insert_row, compartment)
         self.refresh_summary_table(select_row=insert_row)
         self.load_detail_from_selected()
+        self.materials_referenced.emit(self.material_ids_for_compartment(compartment))
+
+    def material_ids_for_compartment(self, compartment: Compartment) -> list[str]:
+        material_ids: list[str] = []
+        for values in (
+            compartment.ceiling_matl_id,
+            compartment.wall_matl_id,
+            compartment.floor_matl_id,
+        ):
+            for material_id in values:
+                material_id = material_id.strip()
+                if material_id.upper() in {"", "OFF", "NULL", "DEFAULT"}:
+                    continue
+                if material_id not in material_ids:
+                    material_ids.append(material_id)
+        return material_ids
 
     def move_compartment_up(self):
         self.save_detail_to_selected()
@@ -428,25 +600,26 @@ class CompartmentsTab(QWidget):
 
     def refresh_summary_table(self, select_row: int | None = None):
         self.loading = True
-        self.summary_table.setRowCount(len(self.compartments))
+        try:
+            self.summary_table.setRowCount(len(self.compartments))
 
-        for row, compartment in enumerate(self.compartments):
-            values = self.summary_values(row, compartment)
+            for row, compartment in enumerate(self.compartments):
+                values = self.summary_values(row, compartment)
 
-            for col, value in enumerate(values):
-                item = QTableWidgetItem(value)
+                for col, value in enumerate(values):
+                    item = QTableWidgetItem(value)
 
-                if col in {1, 11, 12, 13, 14, 15, 16}:
-                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    if col in {1, 11, 12, 13, 14, 15, 16}:
+                        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
-                self.summary_table.setItem(row, col, item)
+                    self.summary_table.setItem(row, col, item)
 
-        self.loading = False
-
-        if select_row is not None:
-            select_row = max(0, min(select_row, len(self.compartments) - 1))
-            self.selected_index = select_row
-            self.summary_table.selectRow(select_row)
+            if select_row is not None and self.compartments:
+                select_row = max(0, min(select_row, len(self.compartments) - 1))
+                self.selected_index = select_row
+                self.summary_table.selectRow(select_row)
+        finally:
+            self.loading = False
 
     def summary_values(self, row: int, compartment: Compartment) -> list[str]:
         return [
@@ -458,9 +631,9 @@ class CompartmentsTab(QWidget):
             format_value(LENGTH, compartment.origin_x),
             format_value(LENGTH, compartment.origin_y),
             format_value(LENGTH, compartment.origin_z),
-            first_or_off(compartment.ceiling_matl_id),
-            first_or_off(compartment.wall_matl_id),
-            first_or_off(compartment.floor_matl_id),
+            construction_summary(compartment.ceiling_matl_id),
+            construction_summary(compartment.wall_matl_id),
+            construction_summary(compartment.floor_matl_id),
             str(compartment.fire_count),
             str(compartment.hvent_count),
             str(compartment.vent_count),
@@ -474,7 +647,7 @@ class CompartmentsTab(QWidget):
             return
 
         if previous.isValid():
-            self.save_detail_to_selected(previous.row())
+            self.save_detail_to_selected(previous.row(), refresh_summary=False)
 
         if current.isValid():
             self.selected_index = current.row()
@@ -485,7 +658,17 @@ class CompartmentsTab(QWidget):
             return
 
         row = item.row()
+        # Do not rebuild the table while Qt is still delivering itemChanged.
+        # Replacing the emitting QTableWidgetItem here leaves later signal
+        # handlers with a dangling pointer and crashes PySide on macOS.
+        QTimer.singleShot(0, lambda row=row: self.commit_summary_row(row))
+
+    def commit_summary_row(self, row: int):
+        if row < 0 or row >= len(self.compartments):
+            return
+
         self.update_model_from_summary(row)
+        self.refresh_summary_table(select_row=row)
 
         if row == self.selected_index:
             self.load_detail_from_selected()
@@ -620,9 +803,13 @@ class CompartmentsTab(QWidget):
         combo = QComboBox(self.materials_table)
         combo.setEditable(True)
         self.populate_material_combo(combo, value)
-        combo.activated.connect(lambda _index: self.save_detail_to_selected())
+        combo.activated.connect(
+            lambda _index, combo=combo: self.material_combo_activated(combo)
+        )
         if combo.lineEdit() is not None:
-            combo.lineEdit().editingFinished.connect(self.save_detail_to_selected)
+            combo.lineEdit().editingFinished.connect(
+                lambda combo=combo: self.material_combo_edit_finished(combo)
+            )
         self.materials_table.setCellWidget(row, col, combo)
 
     def populate_material_combo(self, combo: QComboBox, value: str):
@@ -648,6 +835,42 @@ class CompartmentsTab(QWidget):
                 if isinstance(widget, QComboBox):
                     self.populate_material_combo(widget, widget.currentText())
 
+    def material_combo_activated(self, combo: QComboBox):
+        self.save_material_combo_change()
+
+    def material_combo_edit_finished(self, combo: QComboBox):
+        if combo.view().isVisible():
+            return
+        self.save_material_combo_change()
+
+    def save_material_combo_change(self):
+        row = self.selected_index
+        self.save_detail_to_selected(refresh_summary=False)
+        self.update_summary_material_cells(row)
+
+    def update_summary_material_cells(self, row: int):
+        if row < 0 or row >= len(self.compartments):
+            return
+
+        compartment = self.compartments[row]
+        values = (
+            construction_summary(compartment.ceiling_matl_id),
+            construction_summary(compartment.wall_matl_id),
+            construction_summary(compartment.floor_matl_id),
+        )
+
+        self.loading = True
+        try:
+            for col, value in zip((8, 9, 10), values):
+                item = self.summary_table.item(row, col)
+                if item is None:
+                    item = QTableWidgetItem(value)
+                    self.summary_table.setItem(row, col, item)
+                else:
+                    item.setText(value)
+        finally:
+            self.loading = False
+
     def load_area_table(self, compartment: Compartment):
         self.area_table.blockSignals(True)
         self.area_table.clearContents()
@@ -662,7 +885,11 @@ class CompartmentsTab(QWidget):
 
         self.area_table.blockSignals(False)
 
-    def save_detail_to_selected(self, row: int | None = None):
+    def save_detail_to_selected(
+        self,
+        row: int | None = None,
+        refresh_summary: bool = True,
+    ):
         if self.loading or not self.compartments:
             return
 
@@ -712,7 +939,10 @@ class CompartmentsTab(QWidget):
         except ValueError:
             return
 
-        self.refresh_summary_table(select_row=row)
+        if refresh_summary:
+            self.refresh_summary_table(select_row=row)
+            if row == self.selected_index:
+                self.load_detail_from_selected()
 
     def save_materials_from_table(self, compartment: Compartment):
         ceiling_ids: list[str] = []
@@ -769,10 +999,16 @@ class CompartmentsTab(QWidget):
         item = self.area_table.item(row, col)
         return "" if item is None else item.text().strip()
 
-    def add_to_case(self, case: CfastCase):
-        self.save_detail_to_selected()
+    def add_to_case(self, case: CfastCase, require_compartments: bool = True):
+        # Building a case is also used by the live validator.  Do not rebuild
+        # the table editor here: doing so destroys an open material dropdown.
+        self.save_detail_to_selected(refresh_summary=False)
 
         if not self.compartments:
+            case.compartments = []
+            case.comp_id = ""
+            if not require_compartments:
+                return
             raise ValueError("At least one compartment is required.")
 
         ids_seen: set[str] = set()

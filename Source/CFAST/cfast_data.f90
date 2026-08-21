@@ -166,6 +166,7 @@ module material_data
     module namelist_data
 
     use precision_parameters
+    use cparams, only: lbufln
 
     implicit none
     save
@@ -173,7 +174,7 @@ module material_data
     logical :: convert_negative_distances = .true.  ! true to convert negative vent, fire, and target locations
                                                     ! to distance from compartment origin
     integer :: input_file_line_number               ! current line number read in a namelist-format input file
-    character(128) :: input_file_line               ! text of current line read in a namelist-format input file
+    character(len=lbufln) :: input_file_line        ! text of current line read in a namelist-format input file
     logical :: compflag = .false.                   ! true if each namelist type has been read in
     logical :: connflag = .false.
     logical :: devcflag = .false.
@@ -339,8 +340,6 @@ module setup_data
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: listoutput=.false.
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
-    logical :: cdata_accumulator = .false., cdata_preprocessor = .false., cdata_statistics = .true.
-    logical :: cdata_diagnostics = .false.
     integer :: outputformat = 0
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile = " ", datafile

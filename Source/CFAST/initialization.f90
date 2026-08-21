@@ -638,10 +638,6 @@ module initialization_routines
         fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
-        
-        ! For CData
-        fireinfo(1:mxfires)%CData_modifying_fire_flag = .false. 
-
         ! trace species stuff
         fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
         fireinfo(1:mxfires)%total_trace = 0.0_eb
@@ -859,7 +855,7 @@ module initialization_routines
     ! n_matl is a count of the number of tpp data sets in the tpp data structure
 
     integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
+    real(eb) :: thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, n_nodes(mxslb+1)
     character(len=mxthrmplen) :: off = 'OFF', none = 'NONE'
 
@@ -900,16 +896,13 @@ module initialization_routines
         do j = 1, nwal
             roomptr%t_profile(1:nnodes,j) = interior_ambient_temperature
             if (roomptr%surface_on(j)) then
-                k_w(1:mxslb) = roomptr%k_w(1:mxslb,j)
-                c_w(1:mxslb) = roomptr%c_w(1:mxslb,j)
-                rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,j)
                 thick_w(1:mxslb) = roomptr%thick_w(1:mxslb,j)
                 nslab = roomptr%nslab_w(j)
                 thick = roomptr%total_thick_w(j)
                 n_nodes = roomptr%nodes_w(1:mxslb+1,j)
                 wtemps = roomptr%t_profile(1:nnodes,j)
                 walldx = roomptr%walldx(1:nnodes,j)
-                call initialize_wall_nodes(n_nodes,nslab,walldx,slab_splits,k_w,c_w,rho_w,thick_w, &
+                call initialize_wall_nodes(n_nodes,nslab,walldx,slab_splits,thick_w, &
                    thick,wtemps,interior_ambient_temperature,exterior_ambient_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = n_nodes
                 roomptr%t_profile(1:nnodes,j) = wtemps
@@ -993,9 +986,6 @@ module initialization_routines
 !> \param   nslab (input): number of slabs
 !> \param   tstop (input): final simulation time
 !> \param   slab_splits (input): fraction of points assigned to slabs 1, 2 and 3
-!> \param   wk (input): wall thermal conductivity
-!> \param   wspec (input): wall specific heat
-!> \param   wrho (input): wall density
 !> \param   slab_thickness (input): thickness of each slab
 !> \param   tamb (input): ambient temperature seen by interior wall
 !> \param   text (input): ambient temperature seen by exterior wall
@@ -1003,16 +993,15 @@ module initialization_routines
 !> \param   wtemp (output): wall temperature profile
 !> \param   walldx (output): wall node positions
 
-    subroutine initialize_wall_nodes (n_nodes, nslab, walldx, slab_splits, wk, wspec, wrho, slab_thickness, &
-        wall_thickness, wtemp, tamb, text)
+    subroutine initialize_wall_nodes (n_nodes, nslab, walldx, slab_splits, slab_thickness, wall_thickness, wtemp, tamb, text)
 
     integer, intent(in) :: nslab
-    real(eb), intent(in) :: slab_splits(*), wk(*), wspec(*), wrho(*), slab_thickness(*), tamb, text
+    real(eb), intent(in) :: slab_splits(*), slab_thickness(*), tamb, text
     integer, intent(inout) :: n_nodes(*)
     real(eb), intent(out) :: wall_thickness, walldx(*)
 
     integer :: cumpts(10), numpts(10), i, ii, nx, nintx, nsplit, islab, isum, nint, ibeg, iend
-    real(eb) :: wtemp(*), xwall(100), xpos(10), xxnx, errfc05, xkrhoc, alpha, xb, xxnsplit, w, xxim1, xxiim1
+    real(eb) :: wtemp(*), xwall(100), xpos(10), xxnx, xb, xxnsplit, w, xxim1, xxiim1
     real(eb) :: wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, dtdw
 
     nx = n_nodes(1)
@@ -1033,12 +1022,7 @@ module initialization_routines
     wall_thickness = xpos(nslab+1)
 
     ! calculate break point based on first slab's properties
-    errfc05 = 1.30_eb
-    xkrhoc = wk(1)/(wspec(1)*wrho(1))
-    alpha = sqrt(xkrhoc)
-    !xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wall_thickness
     xb = 0.5_eb*wall_thickness
-    if (xb>0.50_eb*wall_thickness) xb = 0.5_eb*wall_thickness
     if (nslab==1) then
 
         ! set up wall node locations for 1 slab case, bunch points at interior and exterior boundary

@@ -1,3 +1,5 @@
+% !TEX root = CFAST_Validation_Guide.tex
+
 \chapter{Surface Temperature}
 
 Solid surfaces  in CFAST are treated as one-dimensional transient conduction problems. This chapter divides solid surfaces into two major categories -- compartment linings (i.e., walls, ceiling, floor) and targets (i.e., anything that is not a wall, ceiling, or floor). Heat transfer to the inside surface of compartment linings and the front and rear faces (as specified by the user) of targets consists of convection (through the use of empirical correlations) and radiation (calculated by the model using view factors for the fire, gas layers, and compartment surfaces). Heat conduction into a solid surface is calculated via a one-dimensional solution of the heat equation in cartesian or cylindrical coordinates.  The latter is particularly useful for predicting the thermal response of electrical cables.
@@ -93,6 +95,5 @@ Figure \ref{fig:Target_Temperature_Scatter} shows a comparison of predicted and 
 \end{center}
 \caption[Summary, Target Temperature]{Summary, Target Temperature.} \label{fig:Target_Temperature_Scatter}
 \end{figure}
-
 
 

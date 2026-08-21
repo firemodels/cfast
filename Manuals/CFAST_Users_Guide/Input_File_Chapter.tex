@@ -1,10 +1,12 @@
+% !TEX root = CFAST_Users_Guide.tex
+
 \chapter{Simulation Environment}
 
 The Environment page defines the initial conditions and simulation time for the CFAST input file.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Environment_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Environment_Tab}
 \caption[The CFAST Simulation Environment Tab]{The CFAST Simulation Environment Tab.}
 \end{figure}
 
@@ -12,10 +14,19 @@ The Environment page defines the initial conditions and simulation time for the 
 \label{info:HEAD}
 
 \begin{description}
-\item[Version] The version of CFAST being used by the user. Version number can be found in the upper left corner in the CEdit user interface as shown in Fig. \ref{Figure 1.1}.
+\item[Version] The version of CFAST being used by the user. The version number can be found in the upper left corner in the CEdit user interface as shown in Fig. \ref{Figure 1.1}.
 
 \item[Title] The first thing to do when setting up an input file is to give the simulation a title. The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string.
 \end{description}
+
+\subsection{Text Input Parameters}
+
+The \ct{HEAD} namelist is required; only the first \ct{HEAD} record is used.
+\begin{description}
+\item[\texttt{TITLE}] Optional descriptive title written to the output files.
+\item[\texttt{VERSION}] CFAST input-file version. CFAST compares its major version with this value and issues a warning when they differ.
+\end{description}
+
 
 
 
@@ -32,7 +43,15 @@ The Environment page defines the initial conditions and simulation time for the 
 
 \item[Smokeview Output Interval] (default units: s, default value: 15 s): CFAST can output a subset of the results in a format compatible with the visualization program Smokeview. This input defines the time interval between outputs of the model results in a Smokeview-compatible format.  A value greater than zero must be used if the Smokeview output is desired.
 
-\item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This parameter places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
+\item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This parameter places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced, which often will allow the simulation to successfully complete.
+\end{description}
+
+The \ct{TIME} namelist is required; only the first \ct{TIME} record is used.
+\begin{description}
+\item[\texttt{PRINT}] Interval in seconds between records in the formatted text output. A value of zero suppresses periodic text output.
+\item[\texttt{SIMULATION}] Simulation duration in seconds.
+\item[\texttt{SMOKEVIEW}] Interval in seconds between Smokeview output records.
+\item[\texttt{SPREADSHEET}] Interval in seconds between spreadsheet output records.
 \end{description}
 
 
@@ -57,16 +76,36 @@ Initial values for ambient O2 mass fraction inside and outside the structure. Th
 The default N2 mass fraction is 1.0 minus the default O2 mass fraction or 0.77 kg/kg.
 \end{description}
 
+The \ct{INIT} namelist parameters are:
+\begin{description}
+\item[\texttt{EXTERIOR\_O2\_MASS\_FRACTION}] Initial exterior oxygen mass fraction, limited by CFAST to the range 0 to 1; nitrogen is the remaining fraction.
+\item[\texttt{EXTERIOR\_TEMPERATURE}] Initial exterior gas temperature in \degc.
+\item[\texttt{INTERIOR\_O2\_MASS\_FRACTION}] Initial interior oxygen mass fraction, limited by CFAST to the range 0 to 1; nitrogen is the remaining fraction.
+\item[\texttt{INTERIOR\_TEMPERATURE}] Initial interior gas temperature in \degc.
+\item[\texttt{PRESSURE}] Ambient absolute pressure in Pa at the station elevation.
+\item[\texttt{RELATIVE\_HUMIDITY}] Initial relative humidity in percent; CFAST converts it to a fraction for the calculation.
+\end{description}
+
 
 \section{Miscellaneous}
 \label{info:MISC}
 
-Keywords associated to global parameters are organized in the miscellaneous namelist group.
+Keywords associated with global parameters are organized in the miscellaneous namelist group.
 
 \begin{description}
 \item[Adiabatic Compartment Surfaces] When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and the materials section of the compartments tab becomes grayed out. This feature is useful when designing an experiment in which it is safe to assume that there is no heat transfer to the walls of the compartments.
 
 \item[Lower Oxygen Limit] (default units: \%, default value: 15~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
+\end{description}
+
+The remaining \ct{MISC} parameters are:
+\begin{description}
+\item[\texttt{ADIABATIC}] If \ct{.TRUE.}, treats all compartment boundaries as adiabatic.
+\item[\texttt{LOWER\_OXYGEN\_LIMIT}] Oxygen mass fraction at which burning is extinguished after a smooth reduction near the limit.
+\item[\texttt{MAX\_ITERATION}] Maximum solver-step count. A negative value, the default, imposes no limit.
+\item[\texttt{MAX\_TIME\_STEP}] Maximum integration time step in seconds.
+\item[\texttt{OVERWRITE}] Controls whether existing output files may be overwritten; the default is \ct{.TRUE.}.
+\item[\texttt{SPECIFIC\_EXTINCTION}] Specific-extinction coefficients for flaming and smoldering soot, respectively, in m$^2$/kg.
 \end{description}
 
 
@@ -79,14 +118,14 @@ The thermophysical properties of materials used for compartment surfaces or targ
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=6.5in]{FIGURES/Thermal_Properties_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Thermal_Properties_Tab}
 \caption[The CFAST Thermal Properties Tab]{The CFAST Thermal Properties Tab.}
 \end{figure}
 
 \section{Adding Thermal Properties}
 \label{info:MATL}
 
-CFAST and CEdit do not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be from other simulations or input directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  Only a single layer per boundary is allowed (some previous versions allowed up to three).
+CFAST and CEdit do not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be taken from other simulations or entered directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  Only a single layer per boundary is allowed (some previous versions allowed up to three).
 
 \begin{description}
 \item[Material] A descriptive name for the material.
@@ -94,9 +133,9 @@ CFAST and CEdit do not include predefined thermal properties for compartment mat
 %% Do we want to change the requirements on the ID. We don't have those requirements in the Name List
 \item[ID] A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
 
-\item[Conductivity] (default units: kW/(m$\cdot$\degc)  or  kW/(m$\cdot$K)): Thermal conductivity for the material.
+\item[Conductivity] (default units: kW/(m$\cdot$K)): Thermal conductivity for the material.
 
-\item[Specific Heat] (default units: kJ/(kg$\cdot$\degc) or kJ/(kg$\cdot$K)): Specific heat for the material.
+\item[Specific Heat] (default units: kJ/(kg$\cdot$K)): Specific heat for the material.
 
 \item[Density] (default units: kg/m$^3$): Density for the material.
 
@@ -105,17 +144,24 @@ CFAST and CEdit do not include predefined thermal properties for compartment mat
 \item[Emissivity] (default units: none, default value: 0.9): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
 \end{description}
 
+The \ct{MATL} namelist parameters are:
+\begin{description}
+\item[\texttt{CONDUCTIVITY}] Required thermal conductivity in kW/(m$\cdot$K).
+\item[\texttt{DENSITY}] Required material density in kg/m$^3$.
+\item[\texttt{EMISSIVITY}] Surface emissivity, with a default of 0.9.
+\item[\texttt{FYI}] Optional descriptive text retained with the material definition but not used in the calculation.
+\item[\texttt{ID}] Required identifier. It must be unique among all identifiers in the input file.
+\item[\texttt{MATERIAL}] Required descriptive material name.
+\item[\texttt{SPECIFIC\_HEAT}] Required specific heat in kJ/(kg$\cdot$K); CFAST converts it to J/(kg$\cdot$K).
+\item[\texttt{THICKNESS}] Required default material thickness in m. A compartment surface may override this value; targets use the material value unless \ct{THICKNESS} is specified on the \ct{DEVC} line.
+\end{description}
+
 
 
 
 \section{Adding Thermal Properties From Another File}
 
-The `From File' button allows you to insert thermal properties from existing CFAST input files to the current simulation.
-
-\begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Insert_Thermal_Properties}
-\caption[Inserting Thermal Properties in CFAST]{Inserting Thermal Properties in CFAST.}
-\end{figure}
+The `From File' button imports thermal properties from one or more existing CFAST input files. Select the desired files with extensions \ct{.in} or \ct{.cfast}. CEdit reads the \ct{MATL} records from all selected files and displays the available materials in a single list. Use the checkboxes or the `Select All' and `Deselect All' buttons to choose the materials to add, then click `OK'. Materials whose IDs already exist in the current case are skipped. CEdit reports the numbers of materials added and duplicate IDs skipped, and identifies any selected files that could not be read. No changes are made if the selection is canceled.
 
 
 
@@ -124,26 +170,26 @@ The `From File' button allows you to insert thermal properties from existing CFA
 \chapter{Compartments}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Compartment_Geometry_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Compartment_Geometry_Tab}
 \caption[The CFAST Compartments Tab]{The CFAST Compartments Tab.}
 \end{center}
 \end{figure}
 
 The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry and thermal properties pages are enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
-In order to model a fire scenario, the size and position of each compartment relavent to the scenario must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is 100. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
+In order to model a fire scenario, the size and position of each compartment relevant to the scenario must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is 100. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
 \begin{figure}[h!]
-\begin{tabular*}{\textwidth}{c@{\extracolsep{\fill}}c}
-\includegraphics[width=2.5in]{FIGURES/CFAST_Coordinates} &
-\includegraphics[width=2.6in]{FIGURES/CFAST_Absolute_Positioning} \\
+\begin{tabular*}{\textwidth}{@{}c@{\extracolsep{\fill}}c@{}}
+\resizebox{3.35in}{!}{\input{FIGURES/CFAST_Coordinates}} &
+\resizebox{3.10in}{!}{\input{FIGURES/CFAST_Absolute_Positioning}} \\
 Compartment Size & Compartment Position
 \end{tabular*}
 \caption[Compartment Orientation and Positioning in CFAST]{Compartment Orientation and Positioning in CFAST.}
 \label{fig:compartment_positioning}
 \end{figure}
 
-In CEdit the default size of a room has width of 3.6 m, depth of 2.4 m, and height of 2.4 m. There are defaults for absolute positioning (0,0,0). All surfaces, i.e., the ceiling, walls and floor, are turned off by default. The fully mixed (single zone) and corridor models are turned off by default.
+In CEdit the default room has a width of 3.6 m, a depth of 2.4 m, a height of 2.4 m, and an absolute position of (0,0,0). The ceiling, walls, and floor are set to \ct{OFF} by default. The normal two-zone model is selected; the shaft (single-zone) and corridor options are off by default.
 
 \label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
@@ -165,10 +211,31 @@ In CEdit the default size of a room has width of 3.6 m, depth of 2.4 m, and heig
 
 \item[Position X] (default units m, default value 0.0 m)  specifies the absolute x coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualization in Smokeview.
 
-\item[Position Y] (default units m, default value 0.0 m)  specifies the absolute y coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualiz
-ation in Smokeview.
+\item[Position Y] (default units m, default value 0.0 m)  specifies the absolute y coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. This is important in positioning the compartments for visualization in Smokeview.
 
 \item[Position Z] (default units m, default value 0.0 m)  specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right in Fig.~\ref{fig:compartment_positioning} would be located at (0,0,0) and (0,2,2.3). All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs.
+\end{description}
+
+The complete \ct{COMP} text input is described below. At least one \ct{COMP} record is required, and \ct{DEPTH}, \ct{HEIGHT}, \ct{ID}, and \ct{WIDTH} are required for every compartment.
+\begin{description}
+\item[\texttt{CEILING\_MATL\_ID}] Up to three ceiling-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the ceiling adiabatic.
+\item[\texttt{CEILING\_THICKNESS}] Ceiling-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
+\item[\texttt{FLOOR\_MATL\_ID}] Up to three floor-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the floor adiabatic.
+\item[\texttt{FLOOR\_THICKNESS}] Floor-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
+\item[\texttt{WALL\_MATL\_ID}] Up to three wall-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the walls adiabatic.
+\item[\texttt{WALL\_THICKNESS}] Wall-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
+\item[\texttt{CROSS\_SECT\_AREAS}] Cross-sectional areas in m$^2$ for a compartment whose area varies with height. Each value corresponds to one height value.
+\item[\texttt{CROSS\_SECT\_HEIGHTS}] Heights in m above the compartment floor associated with the cross-sectional areas.
+\item[\texttt{DEPTH}, \texttt{HEIGHT}, and \texttt{WIDTH}] Required compartment dimensions in m along the Y, Z, and X axes, respectively.
+\item[\texttt{FLOW\_COEFFICIENT}] Orifice flow coefficient for leakage, with a default of 0.07.
+\item[\texttt{FYI}] Optional descriptive text retained with the compartment but not used in the calculation.
+\item[\texttt{GRID}] Numbers of Smokeview sampling points along X, Y, and Z, with a default of 50, 50, 50.
+\item[\texttt{HALL}] If \ct{.TRUE.}, applies the corridor ceiling-jet correlation.
+\item[\texttt{ID}] Required compartment identifier. It must be unique among all identifiers in the input file.
+\item[\texttt{LEAK\_AREA}] Wall and floor leakage areas in m$^2$.
+\item[\texttt{LEAK\_AREA\_RATIO}] Wall and floor leakage-area ratios in m$^2$/m$^2$.
+\item[\texttt{ORIGIN}] X, Y, and Z coordinates in m of the compartment's lower-front-left corner.
+\item[\texttt{SHAFT}] If \ct{.TRUE.}, models the compartment as a single well-mixed zone.
 \end{description}
 
 
@@ -179,7 +246,7 @@ ation in Smokeview.
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
 The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction, convection, and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
 
-The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Propertied tab described in section \ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID
+The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Properties tab described in section \ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID.
 
 \begin{description}
 \item[Ceiling Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the ceiling surface of the compartment. The innermost layer is specified first.
@@ -188,7 +255,7 @@ The thermophysical properties of the materials to be used to define the surfaces
 
 \item[Wall Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the wall surface of the compartment.  The innermost layer is specified first.
 
-\item[Wall Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the ceiling surface.
+\item[Wall Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the wall surface.
 
 \item[Floor Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the floor surface of the compartment.  The innermost layer is specified first.
 
@@ -210,7 +277,7 @@ The back surfaces of compartments are assumed to be exposed to ambient condition
 \label{info:COMP3}
 For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire or in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, or compartments far from the fire.
 
-By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinkler, and targets near the ceiling in corridors.
+By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinklers, and targets near the ceiling in corridors.
 
 \begin{description}
 \item[Normal (Two-zone model)] Conditions in the compartment are calculated with the normal two-zone approach. This is the default model used for a compartment.
@@ -247,8 +314,8 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as a leakage area per unit wall area and/or per unit floor area.
 
 \begin{description}
-\item[Wall Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage are per unit wall area.
-\item[Floor Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage are per unit floor area.
+\item[Wall Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage area per unit wall area.
+\item[Floor Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage area per unit floor area.
 \end {description}
 
 For reference, the following table is taken from the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
@@ -298,7 +365,7 @@ Natural ventilation can occur when two compartments are connected via open doorw
 \label{info:VENT}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Natural_Flow_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Natural_Flow_Tab}
 \caption[The CFAST Wall Vents Tab]{The CFAST Wall Vents Tab.}
 \end{center}
 \end{figure}
@@ -313,14 +380,14 @@ Wall vents are doors or windows that connect compartments that physically overla
 \item[Height] (default units: m, default value: 0 m): Height of the opening relative to the bottom of the opening.
 \item[Width] (default units: m, default value: 0 m): The width of the opening.
 \item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment.
-\item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane (Front and Rear faces are parallel to the X-axis; left and right are parallel to the Y-axis).
+\item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, and Left and are relative to the X-Z plane (Front and Rear faces are parallel to the X-axis; left and right are parallel to the Y-axis).
 \end{description}
 
 Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
 
 \begin{description}
 \item[Time] (default units: s, default values: 0 s): Time during the simulation at which to begin or end a change in the open fraction.
-\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open at the associated time point.
 \end{description}
 
 For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
@@ -341,15 +408,15 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \subsection{Ceiling/Floor Vents}
 \label{info:VENT2}
 \begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Vertical_Flow_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Vertical_Flow_Tab}
 \caption[The CFAST Ceiling/Floor Vents Tab]{The CFAST Ceiling/Floor Vents Tab.}
 \end{figure}
 
-Examples of these openings are scuddles in a ship, or a hole in the roof of a residence. Connections can exist between compartments or between a compartment and the outdoors. Combined buoyancy and pressure-driven flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space greater than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For relatively large cross-vent pressure difference the flow through the vent is unidirectional.
+Examples of these openings are scuttles in a ship, or a hole in the roof of a residence. Connections can exist between compartments or between a compartment and the outdoors. Combined buoyancy and pressure-driven flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space greater than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For a relatively large cross-vent pressure difference, the flow through the vent is unidirectional.
 
 \begin{description}
 \item[ID] The selected name must be unique (i.e., not the same as another vent in the same simulation).
-\item[Top Compartment] Compartment where the vent is in the floor
+\item[Top Compartment] Compartment where the vent is in the floor.
 \item[Bottom Compartment] The adjacent compartment where the vent is in the ceiling.
 \label{Ceil Cross-sectional Area}
 \item[Cross-sectional Area] (default units: m$^2$, default value: 0 m$^2$)
@@ -362,7 +429,7 @@ Vents in CFAST can be opened or closed at user-specified times or by a user-spec
 
 \begin{description}
 \item[Time] (default units: s, default value: 0 s): Time during the simulation at which to begin or end a change in the open fraction.
-\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open at the associated time point.
 \end{description}
 
 For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
@@ -387,7 +454,7 @@ Vertical connections can only be created between compartments that could be phys
 \section{Mechanical Ventilation}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Mechanical_Vent_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Mechanical_Vent_Tab}
 \caption[The CFAST Mechanical Vents Tab]{The CFAST Mechanical Vents Tab.}
 \end{center}
 \end{figure}
@@ -413,7 +480,7 @@ Vents in CFAST can be opened or closed at user-specified times or by a user-spec
 
 \begin{description}
 \item[Time] (default units: s, default values: 0 s): Time during the simulation at which to begin or end a change in the open fraction.
-\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open at the associated time point.
 \end{description}
 
 \graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
@@ -423,7 +490,7 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \begin{description}
 \item[Open/Close Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
 \item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target is placement is specified by the user as part of the associated target definition.
+\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target placement is specified by the user as part of the associated target definition.
 \item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
 \item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
 \end{description}
@@ -448,7 +515,7 @@ CFAST does not include provisions for reverse flow through a fan, or a fan curve
 
 \subsection{Filtering}
 \label{info:VENT5}
-For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off.
+For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially, filtering is off.
 \begin{description}
 \label{Mech Filter Efficiency}
 \item[Filter Efficiency] (default units:~\%, default value: 0\%): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied; that is, all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, you may specify the fraction of the soot and trace species mass to be removed as a percentage.
@@ -456,7 +523,55 @@ For mechanical vents, there are two species that can be filtered out of the gas 
 \item[Begin Filtering At Time] (default units: s, default value: 0 s): Time during the simulation at which the mechanical vent filtering begins.
 \end{description}
 
-\graybox{If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.}
+\graybox{If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to ensure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equations.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units by multiplying by the scaling factor used.}
+
+\section{Text Input Parameters}
+\label{info:VENT6}
+
+Every \ct{VENT} record requires a unique \ct{ID}, two valid \ct{COMP_IDS} (one may be \ct{OUTSIDE}), and a supported \ct{TYPE}. The parameters common to more than one vent type are:
+\begin{description}
+\item[\texttt{COMP\_IDS}] Pair of compartments connected by the vent. For ceiling and floor vents, the first compartment is above the second.
+\item[\texttt{CRITERION}] Opening control: \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}. Time control uses paired \ct{T} and \ct{F} arrays. Temperature and flux control require a target, a set point, and the pre- and post-activation fractions.
+\item[\texttt{DEVC\_ID}] Target identifier used by a temperature- or heat-flux-controlled vent.
+\item[\texttt{F}] Vent-open fractions corresponding to \ct{T}; the two arrays must have the same number of values.
+\item[\texttt{FYI}] Optional descriptive text retained with the vent but not used in the calculation.
+\item[\texttt{ID}] Required identifier, unique among all identifiers in the input file.
+\item[\texttt{POST\_FRACTION}] Dimensionless fraction open after a temperature or flux set point is reached; default 1.
+\item[\texttt{PRE\_FRACTION}] Dimensionless fraction open before a temperature or flux set point is reached; default 1.
+\item[\texttt{SETPOINT}] Trigger time in s, temperature in \degc, or incident heat flux in kW/m$^2$, as selected by \ct{CRITERION}.
+\item[\texttt{T}] Times in s corresponding to the fractions in \ct{F}.
+\item[\texttt{TYPE}] \ct{WALL}, \ct{CEILING}, \ct{FLOOR}, or \ct{MECHANICAL}.
+\end{description}
+
+For a wall vent, geometry is specified with \ct{BOTTOM}, \ct{WIDTH}, and either \ct{TOP} or \ct{HEIGHT}.
+\begin{description}
+\item[\texttt{BOTTOM}] Height in m of the vent sill above the first compartment's floor.
+\item[\texttt{FACE}] Wall containing the vent: \ct{FRONT}, \ct{RIGHT}, \ct{REAR}, or \ct{LEFT}, relative to the first compartment.
+\item[\texttt{FLOW\_COEFFICIENT}] Orifice flow coefficient, with a default of 0.7.
+\item[\texttt{HEIGHT}] Vent height in m. When \ct{TOP} is zero, CFAST sets the soffit to \ct{BOTTOM+HEIGHT}.
+\item[\texttt{OFFSET}] Horizontal distance in m from the origin of the selected \ct{FACE}.
+\item[\texttt{TOP}] Height in m of the vent soffit above the first compartment's floor.
+\item[\texttt{WIDTH}] Vent width in m.
+\end{description}
+
+For a ceiling or floor vent, the additional parameters are:
+\begin{description}
+\item[\texttt{AREA}] Required vent area in m$^2$.
+\item[\texttt{OFFSETS}] X and Y visualization offsets in m from the first compartment's origin.
+\item[\texttt{SHAPE}] Required visualization shape, \ct{ROUND} or \ct{SQUARE}.
+\end{description}
+
+For a mechanical vent, the additional parameters are:
+\begin{description}
+\item[\texttt{AREAS}] Required diffuser areas in m$^2$ at the two ends of the duct.
+\item[\texttt{CUTOFFS}] Pressure differences in Pa at which flow begins to decrease and reaches zero; defaults 200 and 300~Pa.
+\item[\texttt{FILTER\_EFFICIENCY}] Percent of soot and trace species removed after filtering activates; default 0.
+\item[\texttt{FILTER\_TIME}] Time in s at which filter activation begins; CFAST ramps to the specified efficiency over 1~s.
+\item[\texttt{FLOW}] Required nominal volumetric flow rate in m$^3$/s.
+\item[\texttt{HEIGHTS}] Required diffuser heights in m at the two duct ends.
+\item[\texttt{OFFSETS}] X and Y visualization offsets in m.
+\item[\texttt{ORIENTATIONS}] Diffuser orientations at the two duct ends, each \ct{VERTICAL} or \ct{HORIZONTAL}; both default to \ct{VERTICAL}.
+\end{description}
 
 
 
@@ -473,11 +588,11 @@ The combustion model is defined by the following one-step reaction:
    \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nonumber \\[.1in]
    \nu_\COTWO \, \mathrm{CO_2} &+& \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \; + \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} \label{stoich}
 \end{eqnarray}
-It is assumed that all the nitrogen and chlorine in the fuel are converted to HCN and HCl.
+All chlorine in the fuel is converted to HCl. HCN production is limited by both the specified HCN yield and the nitrogen available in the fuel; any remaining nitrogen forms N$_2$.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Fire_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Fire_Tab}
 \caption[The CFAST Fires Tab]{The CFAST Fires Tab.}
 \end{center}
 \end{figure}
@@ -488,40 +603,84 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 \label{sec:fire_inputs}
 Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
-For a new fire , click on the {\bf Add New} button or {\bf Add t$^2$} buttons within the fire definition block of inputs. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
+For a new fire, click on the {\bf Add New} button within the fire definition block of inputs. The {\bf Add t$^2$} button creates a new fire with a seeded quadratic heat release rate curve that can then be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
 \begin{description}
 \item[Fire ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
 \item[Compartment] Name of the compartment where the fire occurs.
 \item[Position X, Y] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front left corner of the compartment.
 \item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
 \item[Set Point] The critical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Ignition Target] User-specified target used to calculate surface temperature or incident heat flux to ignite fire. Target is typically placed at the base of the fire to be ignited.
-\item[Referenced Fire] the name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
+\item[Ignition Target] User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
+\item[Referenced Fire] The name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
 \end{description}
 
-Each instance of a fire can be unique fires with different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties. The following parameters define the composition and burning properties of the fire.
+The \ct{FIRE} namelist parameters are:
 \begin{description}
-\item[Fire Properties ID] The selected name must be unique (i.e., not the same as another fire definition in the same simulation). IDs for fire definitions can be the same as ones for fire instances.
-\item[C, H, O, N, Cl] The number of each atom in the fuel molecule. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least carbon and hydrogen and optionally oxygen, nitrogen, and chlorine. All of the specified nitrogen and chlorine is assumed to completely react to form HCN and HCl.
-\item[Heat of Combustion] (default units: kJ/kg, default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
-\item[Radiative Fraction] (default units: none, default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[\texttt{COMP\_ID}] Required identifier of the compartment containing the fire.
+\item[\texttt{DEVC\_ID}] Target identifier required when \ct{IGNITION_CRITERION} is \ct{TEMPERATURE} or \ct{FLUX}.
+\item[\texttt{FIRE\_ID}] Required identifier of the associated \ct{CHEM} and \ct{TABL} fire definition.
+\item[\texttt{FYI}] Optional descriptive text retained with the fire but not used in the calculation.
+\item[\texttt{ID}] Required fire-instance identifier, unique among all identifiers in the input file.
+\item[\texttt{IGNITION\_CRITERION}] \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}; default \ct{TIME}.
+\item[\texttt{LOCATION}] Required X and Y coordinates in m relative to the compartment origin. Negative coordinates are interpreted from the opposite compartment boundary when that compatibility option is enabled.
+\item[\texttt{SETPOINT}] Ignition time in s, target temperature in \degc, or target incident heat flux in kW/m$^2$. A value not greater than zero ignites the fire initially.
+\end{description}
+
+Each instance of a fire can be a unique fire with a different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties.
+
+In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
+\begin{description}
+\item[\texttt{AREA}] (units: m$^2$, default value: 0): Constant area of the fire base. CFAST treats values smaller than the area of a 0.2~m diameter circle as that minimum area. A \ct{TABL} column labeled \ct{AREA} overrides this value.
+\item[\texttt{CARBON}] (default value: 0): Number of carbon atoms in the fuel molecule.
+\item[\texttt{CHLORINE}] (default value: 0): Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
+\item[\texttt{COMP\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. The compartment is specified by \ct{COMP_ID} on the associated \ct{FIRE} line.
+\item[\texttt{CO\_YIELD}] (units: kg/kg, default value: 0): Constant mass of CO produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{CO_YIELD} overrides this value.
+\item[\texttt{FLAMING\_TRANSITION\_TIME}] (units: s, default value: 0): Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
+\item[\texttt{HCN\_YIELD}] (units: kg/kg, default value: 0): Constant mass of HCN produced per unit mass of fuel consumed. Production is limited by the nitrogen available in the fuel. A \ct{TABL} column labeled \ct{HCN_YIELD} overrides this value.
+\item[\texttt{HEAT\_OF\_COMBUSTION}] (units: kJ/kg, default value: 50000): Energy released per unit mass of fuel consumed. It must be greater than zero and is used with the heat release rate to calculate the fuel mass-loss rate.
+\item[\texttt{HRR}] (units: kW, default value: 0): Constant heat release rate. A \ct{TABL} column labeled \ct{HRR} overrides this value.
+\item[\texttt{HYDROGEN}] (default value: 0): Number of hydrogen atoms in the fuel molecule.
+\item[\texttt{ID}] (required): Identifier for the fire definition. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
+\item[\texttt{NITROGEN}] (default value: 0): Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
+\item[\texttt{OXYGEN}] (default value: 0): Number of oxygen atoms in the fuel molecule.
+\item[\texttt{RADIATIVE\_FRACTION}] (default value: 0): Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[\texttt{SOOT\_YIELD}] (units: kg/kg, default value: 0): Constant mass of soot produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{SOOT_YIELD} overrides this value.
+\item[\texttt{TABLE\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. CFAST associates the time history whose \ct{TABL} \ct{ID} matches \ct{CHEM} \ct{ID}.
+\item[\texttt{TRACE\_YIELD}] (units: kg/kg, default value: 0): Constant mass of user-defined trace species produced per unit mass of fuel consumed. The trace species is transported but does not participate in the combustion reaction and should not be a significant contribution to the system mass balance. A \ct{TABL} column labeled \ct{TRACE_YIELD} overrides this value.
 \end{description}
 
 
 
 \section{Time-Dependent Properties}
 \label{info:FIRE2}
-Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet.
+Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
 \begin{description}
 \item[Time] (default units: s, default values: none): Time from ignition.
 \item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
 \item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
 \item[Area] (default units: m$^2$, default values: calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
-\item[CO Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
-\item[Soot Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
+\item[CO Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of CO produced per unit mass of fuel consumed.
+\item[Soot Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of soot produced per unit mass of fuel consumed.
 %Should this still be there if all the N2 in the fuel is assumed to go to HCN.
-\item[HCN Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
+\item[HCN Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+\item[TS Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
+\end{description}
+
+The time histories are supplied with \ct{TABL} records:
+\begin{description}
+\item[\texttt{DATA}] Numeric row whose values follow the order established by \ct{LABELS}. Each time-history row uses a separate \ct{TABL} record with the same \ct{ID}.
+\item[\texttt{ID}] Required table identifier. For a fire history it must match the associated \ct{CHEM} \ct{ID} and \ct{FIRE} \ct{FIRE_ID}.
+\item[\texttt{LABELS}] Column names for the table. A \ct{TIME} column is required. Supported fire columns are \ct{HRR}, \ct{HEIGHT}, \ct{AREA}, \ct{CO_YIELD}, \ct{SOOT_YIELD}, \ct{HCN_YIELD}, \ct{HCL_YIELD}, and \ct{TRACE_YIELD}; \ct{HCL_YIELD} is retained for compatibility because HCl production is calculated from fuel chlorine.
+\end{description}
+
+The legacy \ct{RAMP} namelist remains accepted for older input files:
+\begin{description}
+\item[\texttt{COMP\_IDS}] Legacy pair of compartment identifiers. The current reader accepts this parameter but does not use it when constructing the ramp.
+\item[\texttt{F}] Required dependent values of the ramp function.
+\item[\texttt{ID}] Ramp identifier.
+\item[\texttt{T}] Time coordinates in s. Specify either \ct{T} or \ct{Z}, not both.
+\item[\texttt{TYPE}] Legacy ramp type. \ct{AREA} uses \ct{Z}; other types use \ct{T}.
+\item[\texttt{Z}] Height coordinates in m for an \ct{AREA} ramp. Specify either \ct{Z} or \ct{T}, and provide the same number of coordinates and \ct{F} values.
 \end{description}
 
 
@@ -532,20 +691,7 @@ Use the `Add t$^2$' button to create a new fire with a heat release rate that gr
    \dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
 \ee
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=5in]{FIGURES/Create_t2}
-\caption[Inserting T-squared Fires in CFAST]{Inserting T-squared Fires in CFAST.}
-\end{center}
-\end{figure}
-
-\begin{description}
-\item[Fire Growth Rate] A set of specific t-squared fires labeled slow, medium, fast, or ultra-fast such that the fire reaches 1054~kW (1000~BTU/s) in 600~s, 300~s, 150~s, and 75~s.  A custom selection allows you to define any growth or decay rate desired.
-\item[Time to Peak] (default units: s, default value: 300 s): The time for the fire to reach the peak HRR.
-\item[Peak HRR] (default units: kW, default value: 1054 kW): The peak heat release rate of the t-squared fire.
-\item[Steady Burning Period] (default units: s, default value: 300 s): Duration of time that the fire continues burning at the rate specified by the peak HRR.
-\item[Decay Time] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
-\end{description}
+The generated fire curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
 
 %Where is the getting fire definitions from files?
 
@@ -563,7 +709,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Target_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Target_Tab}
 \caption[The CFAST Targets Tab]{The CFAST Targets Tab.}
 \end{center}
 \end{figure}
@@ -573,7 +719,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 \item[Compartment] The compartment in which the target is located.
 
-\item[Target Type] Specify Plate, or Cylindrical.  For plate targets, CFAST solves a partial differential equation in cartesian coordinates, and for cylindrical targets, a partial differential equation in cylindrical coordinates.
+\item[Target Type] Specify Plate or Cylindrical.  For plate targets, CFAST solves a partial differential equation in cartesian coordinates, and for cylindrical targets, a partial differential equation in cylindrical coordinates.
 
 \item[Width (X)] (default units: m): Distance from the left wall of the target compartment.
 
@@ -587,6 +733,28 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 %What happens to interanl temperatrue when type is cylindrical
 \item[Internal Temperature] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
+\end{description}
+
+The complete \ct{DEVC} text input covers targets, sprinklers, and detectors:
+\begin{description}
+\item[\texttt{ADIABATIC\_TARGET}] If \ct{.TRUE.}, applies an adiabatic-surface-temperature target calculation. Supply \ct{CONVECTION_COEFFICIENTS} for this calculation.
+\item[\texttt{COMP\_ID}] Required identifier of the compartment containing the device.
+\item[\texttt{CONVECTION\_COEFFICIENTS}] Front- and back-face convection coefficients in kW/(m$^2\cdot$K); CFAST converts them to W/(m$^2\cdot$K).
+\item[\texttt{DEPTH\_UNITS}] \ct{FRACTION}, the default, interprets \ct{TEMPERATURE_DEPTH} as a fraction of target thickness; \ct{M} interprets it in m.
+\item[\texttt{FYI}] Optional descriptive text retained with the device but not used in the calculation.
+\item[\texttt{ID}] Required device identifier, unique among all identifiers in the input file.
+\item[\texttt{LOCATION}] Required X, Y, and Z coordinates in m relative to the compartment origin.
+\item[\texttt{MATL\_ID}] Material identifier for a target. If omitted, CFAST uses its default target material.
+\item[\texttt{NORMAL}] Target front-surface unit normal vector; default (0,0,1).
+\item[\texttt{RTI}] Response Time Index in $\sqrt{\mathrm{m}\cdot\mathrm{s}}$ for a heat detector or sprinkler; default 50.
+\item[\texttt{SETPOINT}] Activation temperature in \degc for a heat detector or sprinkler, or obscuration in \%/m for a smoke detector. The source default is 57~\degc for both heat detectors and sprinklers and 23.93~\%/m for smoke detectors.
+\item[\texttt{SETPOINTS}] Smoldering- and flaming-smoke obscuration set points in \%/m for a dual-threshold smoke detector. If omitted, \ct{SETPOINT} defines a single threshold.
+\item[\texttt{SPRAY\_DENSITY}] Sprinkler spray density in m/s. A value not greater than zero disables suppression.
+\item[\texttt{SURFACE\_ORIENTATION}] Alternative to \ct{NORMAL}: \ct{CEILING}, \ct{FLOOR}, \ct{FRONT WALL}, \ct{REAR WALL}, \ct{LEFT WALL}, \ct{RIGHT WALL}, or the \ct{ID} of a fire toward which the target faces.
+\item[\texttt{SURFACE\_TEMPERATURE}] Initial target surface temperature in \degc; default is the initial interior ambient temperature.
+\item[\texttt{TEMPERATURE\_DEPTH}] Position at which target internal temperature is reported; default 0.5 of the thickness.
+\item[\texttt{THICKNESS}] Target thickness in m. A zero value uses the thickness of the referenced material.
+\item[\texttt{TYPE}] Required device type: \ct{PLATE}, \ct{CYLINDER}, \ct{SPRINKLER}, \ct{HEAT_DETECTOR}, or \ct{SMOKE_DETECTOR}.
 \end{description}
 
 \graybox{
@@ -610,7 +778,7 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Detector_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Detector_Tab}
 \caption[The CFAST Detection/Suppression Tab]{The CFAST Detection/Suppression Tab.}
 \end{center}
 \end{figure}
@@ -618,9 +786,9 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \begin{description}
 \item[ID]  The selected name must be unique (i.e., not the same as another sprinkler or detector in the same simulation).
 
-\item[Type] type of detector, select smoke detector, heat detector, or sprinkler.
+\item[Type] Type of detector; select smoke detector, heat detector, or sprinkler.
 
-\item[Compartment] the compartment in which the detector or sprinkler is located.
+\item[Compartment] The compartment in which the detector or sprinkler is located.
 
 \item[Activation Temperature] (default units: \degc, default value: dependent on type): the temperature at or above which the detector link activates.
 
@@ -649,7 +817,7 @@ Several cautions should be observed when using estimates of sprinkler suppressio
 \label{info:CONN}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Surface_Connection_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Surface_Connection_Tab}
 \caption[The CFAST Surface Connections Tab]{The CFAST Surface Connections Tab.}
 \end{center}
 \end{figure}
@@ -668,6 +836,14 @@ The Surface Connections page allows the user to define heat transfer between com
 \item[Bottom Compartment] The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
 \end{description}
 
+The \ct{CONN} namelist parameters are:
+\begin{description}
+\item[\texttt{COMP\_ID}] Required source compartment. For a wall connection, the fractions apply to this compartment's wall area; for a vertical connection, this is the first compartment.
+\item[\texttt{COMP\_IDS}] Required destination compartment identifiers. A wall connection may list multiple compartments or \ct{OUTSIDE}; a ceiling or floor connection uses the first value.
+\item[\texttt{F}] Wall-area fractions corresponding to \ct{COMP_IDS}; each value must be between 0 and 1. This parameter is not used for ceiling or floor connections.
+\item[\texttt{TYPE}] Required connection type: \ct{WALL}, \ct{CEILING}, or \ct{FLOOR}. The two vertical types are processed identically; \ct{COMP_ID} supplies the upper compartment and \ct{COMP_IDS(1)} the lower compartment.
+\end{description}
+
 \graybox{Consider two compartments that share a single wall. Both compartments are 1 m x 1 m x 1 m in size. The resulting horizontal heat transfer connections would be 0.25 for both compartments since they share 1 m$^2$ of a total wall surface of 4 m$^2$. If the compartments are of different size, then the fraction would be different for the two directions. For example, if compartment 1 is 1 m x 1 m x 1 m and compartment 2 is 2 m x 2 m x 2 m, then the connection from 1$>$2 is 0.25 and the connection from 2$>$1 is 0.125.
 
 For horizontal heat transfer, you must include a connection for each compartment. For example, for a connection between compartment 1 and compartment 2, you must include a connection from 1 to 2 AND a connection from 2 to 1.  For consistency, the fraction for each compartment needs to specify equal areas in the two compartments.  Fractions for connections should add to unity.  An error is generated if the fractions for a compartment add to greater than unity. If the fractions for a compartment add to less than unity, the remaining surface area will be assigned to be connected to the outdoors.}
@@ -681,7 +857,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=6.5in]{FIGURES/Visualizations_Tab}
+\includegraphics[width=6.5in]{SCRIPT_FIGURES/Visualizations_Tab}
 \caption[The CFAST Visualizations Tab]{The CFAST Visualizations Tab.}
 \end{center}
 \end{figure}
@@ -691,15 +867,29 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 \label{info:SLCF}
 
 \begin{description}
-\item[Visualization Type] ( default value: 2-D): The type of visualization to be included. Choose from 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose position can be moved along its respective axis, or Isosurface (a fixed 3-D surface where the gas temperature is equal to the value specified. See the Smokeview documentation \cite{Smokeview_Users_Guide_6} for details on the use of Smokeview.
+\item[Visualization Type] ( default value: 2-D): The type of visualization to be included. Choose from 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose positions can be moved along their respective axes), or Isosurface (a fixed 3-D surface where the gas temperature is equal to the value specified). See the Smokeview documentation \cite{Smokeview_Users_Guide_6} for details on the use of Smokeview.
 
 \item[Compartment] (default value: All): Visualizations can be placed in a single compartment or at the same position and axis in all compartments.
 
-\item[Value] (default units: m, default value: 0 m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
+\item[Value] (default units: m, default value: 0 m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment). See page \pageref{Compartment_Geometry}.
 
-\item[Axis] (default value: X-axis (Width)): Axis perpendicular to the specified slice.  The slice is place perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis, and the X-Y plane for the Z-Axis)
+\item[Axis] (default value: X-axis (Width)): Axis perpendicular to the specified slice.  The slice is placed perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis; and the X-Y plane for the Z-Axis).
 
 \item[Temperature] (default units \degc, default value: none): Specified gas temperature for the selected isosurface.
+\end{description}
+
+An \ct{ISOF} record creates a temperature isosurface:
+\begin{description}
+\item[\texttt{COMP\_ID}] Required identifier of the compartment containing the isosurface.
+\item[\texttt{VALUE}] Required isosurface temperature in \degc.
+\end{description}
+
+An \ct{SLCF} record creates a two- or three-dimensional Smokeview slice:
+\begin{description}
+\item[\texttt{COMP\_ID}] Optional compartment identifier. If omitted, the slice applies to all compartments for which its position is valid.
+\item[\texttt{DOMAIN}] Required slice domain, \ct{2-D} or \ct{3-D}.
+\item[\texttt{PLANE}] For a two-dimensional slice, required plane normal: \ct{X}, \ct{Y}, or \ct{Z}.
+\item[\texttt{POSITION}] For a two-dimensional slice, offset in m from the selected compartment origin. It must lie within the compartment in the selected direction.
 \end{description}
 
 %Not sure what is trying to be said here but I think it is a fail.
@@ -713,11 +903,11 @@ Use the Add Defaults button to add a default set of visualizations for the curre
 By default, slice files are generated with a grid of 50 data points in each direction for each compartment specified. If desired, the grid spacing can be adjusted up or down individually by compartment. Specifying a larger number of data points can \textit{dramatically} slow program execution since the gas temperature and velocity are evaluated at each grid location every time a Smokeview output is specified.  The default value should be appropriate for most simulations.
 
 \begin{description}
-\item[Width (X) Grid] (default unites: n/a, default value: 50): slices included along the X axis for each compartment are uniformly divided into the specified number of data points.
+\item[Width (X) Grid] (default units: n/a, default value: 50): slices included along the X axis for each compartment are uniformly divided into the specified number of data points.
 
-\item[Width (Y) Grid] (default unites: n/a, default value: 50): slices included along the Y axis for each compartment are uniformly divided into the specified number of data points.
+\item[Width (Y) Grid] (default units: n/a, default value: 50): slices included along the Y axis for each compartment are uniformly divided into the specified number of data points.
 
-\item[Width (Z) Grid] (default unites: n/a, default value: 50): slices included along the Z axis for each compartment are divided into the specified number of data points.
+\item[Width (Z) Grid] (default units: n/a, default value: 50): slices included along the Z axis for each compartment are divided into the specified number of data points.
 \end{description}
 
 Sample visualizations are included below.
@@ -725,7 +915,7 @@ Sample visualizations are included below.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/SMV_Sample}
-\caption{example Smokeview Visualization for a Three Compartment Test Case with Two Fires (\ct User\_Guide\_Example.in)}
+\caption[Example Smokeview Visualization for a Three Compartment Test Case]{Example Smokeview Visualization for a Three Compartment Test Case with Two Fires (\ct{Users_Guide_Example.in})}
 \end{center}
 \end{figure}
 
@@ -757,9 +947,42 @@ By default, CFAST generates a set of output files that includes a formatted read
 \begin{description}
     \item[CFAST Validation Output] If checked, this item directs the CFAST model to output abbreviated headings for spreadsheet columns that are better for automated processing of the data.
     \item[Debug Output] If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
-    \item[Show CFAST Window] If checked, this item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
+    \item[Show CFAST Window] If checked, this item allows the user to see the Windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
 \end{description}
 
+\section{Diagnostic Parameters}
+\label{info:DIAG}
 
-
-
+The \ct{DIAG} namelist is intended for model verification and developer diagnostics, not normal scenarios. Unless noted otherwise, the sub-model switches accept \ct{ON} or \ct{OFF}.
+\begin{description}
+\item[\texttt{ADIABATIC\_TARGET\_VERIFICATION}] Enables the adiabatic-surface-temperature verification calculation; default \ct{OFF}. When enabled, \ct{RADIATIVE_INCIDENT_FLUX} supplies the imposed flux.
+\item[\texttt{CEILING\_JET\_SUB\_MODEL}] Enables the ceiling-jet calculation; default \ct{ON}.
+\item[\texttt{CONDUCTION\_SUB\_MODEL}] Enables solid conduction; default \ct{ON}.
+\item[\texttt{CONVECTION\_SUB\_MODEL}] Enables convective heat transfer; default \ct{ON}.
+\item[\texttt{DASSL\_DEBUG\_PRINT}] Enables DASSL diagnostic output; default \ct{OFF}.
+\item[\texttt{DEBUG\_PRINT}] Enables general debug output; default \ct{OFF}.
+\item[\texttt{DOOR\_JET\_FIRE\_SUB\_MODEL}] Enables burning in a door jet; default \ct{ON}.
+\item[\texttt{ENTRAINMENT\_SUB\_MODEL}] Enables plume entrainment; default \ct{ON}.
+\item[\texttt{F}] Gas-temperature values in \degc for the verification history defined at times \ct{T}; both arrays are required together.
+\item[\texttt{FIRE\_SUB\_MODEL}] Enables the fire calculation; default \ct{ON}.
+\item[\texttt{GAS\_ABSORBTION\_SUB\_MODEL}] Selects \ct{CALCULATED} gas absorption, the default, or \ct{CONSTANT}. The parameter name retains its source-code spelling.
+\item[\texttt{GAS\_TEMPERATURE}] Gas temperature in \degc for radiation verification. Use with both partial-pressure parameters below.
+\item[\texttt{HORIZONTAL\_FLOW\_SUB\_MODEL}] Enables horizontal vent flow; default \ct{ON}.
+\item[\texttt{KEYBOARD\_INPUT}] Enables interactive keyboard input during a run; default \ct{ON}.
+\item[\texttt{LAYER\_MIXING\_SUB\_MODEL}] Enables interlayer mixing; default \ct{ON}.
+\item[\texttt{MECHANICAL\_FLOW\_SUB\_MODEL}] Enables mechanical ventilation flow; default \ct{ON}.
+\item[\texttt{MODE}] Reserved compatibility input. The current reader accepts the value but does not use it.
+\item[\texttt{OXYGEN\_TRACKING}] Legacy diagnostic switch. In the current reader, \ct{ON} ensures that the fire sub-model remains enabled.
+\item[\texttt{PARTIAL\_PRESSURE\_CO2}] CO$_2$ partial pressure in Pa for radiation verification.
+\item[\texttt{PARTIAL\_PRESSURE\_H2O}] H$_2$O partial pressure in Pa for radiation verification.
+\item[\texttt{RADIATION\_SUB\_MODEL}] Enables thermal radiation; default \ct{ON}.
+\item[\texttt{RADIATIVE\_INCIDENT\_FLUX}] Imposed incident flux in kW/m$^2$ for adiabatic-target verification; default 0.
+\item[\texttt{RAD\_SOLVER}] Set to \ct{RADNNET} to use the neural-network radiation solver; otherwise the standard solver is used.
+\item[\texttt{RESIDUAL\_DEBUG\_PRINT}] Enables solver-residual diagnostic output; default \ct{OFF}.
+\item[\texttt{STEADY\_STATE\_INITIAL\_CONDITIONS}] Enables steady-state initialization diagnostics; default \ct{OFF}.
+\item[\texttt{T}] Times in s corresponding to the verification temperatures in \ct{F}.
+\item[\texttt{UPPER\_LAYER\_THICKNESS}] Imposed upper-layer thickness in m for radiation verification.
+\item[\texttt{VERIFICATION\_FIRE\_HEAT\_FLUX}] Imposed fire heat flux in kW/m$^2$ for verification.
+\item[\texttt{VERIFICATION\_TIME\_STEP}] Time step in s used by verification calculations; default 0.
+\item[\texttt{VERTICAL\_FLOW\_SUB\_MODEL}] Enables vertical vent flow; default \ct{ON}.
+\end{description}

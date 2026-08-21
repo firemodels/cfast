@@ -228,7 +228,6 @@ sync_cfast_repo()
   fi
 
   run_checked "cfast tracked file reset" git -C "$REPO_ROOT" reset --hard
-  run_checked "cfast untracked file cleanup" git -C "$REPO_ROOT" clean -fd
 
   if [[ "$CFAST_TAG" != "" ]]; then
     run_checked "cfast central tag fetch" git -C "$REPO_ROOT" fetch --tags "$CFAST_REPO_URL"

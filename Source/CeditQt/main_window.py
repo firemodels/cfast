@@ -1470,18 +1470,17 @@ class CeditMainWindow(QMainWindow):
     def poll_cfast_status(self):
         if self.cfast_status_path is None or not self.cfast_status_path.exists():
             return
-        for qq in range(3):
+        try:
+            text = self.cfast_status_path.read_text(
+                encoding="utf-8",
+                errors="replace",
+            ).strip()
+            break
+        except PermissionError:
+           return
+        except OSError:
+            return
 
-           try:
-               text = self.cfast_status_path.read_text(
-                   encoding="utf-8",
-                   errors="replace",
-               ).strip()
-           except PermissionError:
-              time.sleep(0.01)
-           except OSError:
-               return
-           text = self.cfast_status_path.read_text(encoding="utf-8",errors="replace",).strip()
         if not text:
             return
 

@@ -1475,9 +1475,8 @@ class CeditMainWindow(QMainWindow):
                 encoding="utf-8",
                 errors="replace",
             ).strip()
-            break
         except PermissionError:
-           return
+            return
         except OSError:
             return
 

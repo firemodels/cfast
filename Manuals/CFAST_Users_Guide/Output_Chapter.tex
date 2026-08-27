@@ -15,13 +15,13 @@ The \ct{OUTP} namelist controls spreadsheet selection and validation formatting 
 \item[\texttt{FIRST\_FIELD}] Required two-string spreadsheet column identifier. The first string identifies the object or category and the second identifies the measurement. For \ct{INTEGRATE}, it identifies simulation time.
 \item[\texttt{FYI}] Optional descriptive text retained with the calculation but not used in the calculation.
 \item[\texttt{ID}] Required unique identifier for a post-run calculation.
-\item[\texttt{NET\_HEAT\_FLUX\_OUTPUT}] If \ct{.TRUE.}, includes net target heat flux in spreadsheet output.
+\item[\texttt{NET\_HEAT\_FLUX\_OUTPUT}] If \ct{T}, includes net target heat flux in spreadsheet output.
 \item[\texttt{SECOND\_DEVICE}] Legacy name for the first element of \ct{SECOND_FIELD}; retained for compatibility.
 \item[\texttt{SECOND\_MEASUREMENT}] Legacy name for the second element of \ct{SECOND_FIELD}; retained for compatibility.
 \item[\texttt{SECOND\_FIELD}] Comparison or integration field. It is required for trigger and integration calculations.
 \item[\texttt{SPREADSHEET\_OUTPUT}] String of output-category letters that selects and orders spreadsheet outputs. \ct{ALL} selects every category; \ct{NONE} or \ct{OFF} selects none.
 \item[\texttt{TYPE}] Summary operation. Valid choices are \ct{TRIGGER_GREATER}, \ct{TRIGGER_LESSER}, \ct{MINIMUM}, \ct{MAXIMUM}, \ct{INTEGRATE}, and \ct{CHECK_TOTAL_HRR}.
-\item[\texttt{VALIDATION\_OUTPUT}] If \ct{.TRUE.}, writes abbreviated spreadsheet headings intended for automated validation processing.
+\item[\texttt{VALIDATION\_OUTPUT}] If \ct{T}, writes abbreviated spreadsheet headings intended for automated validation processing.
 \end{description}
 
 The legacy \ct{DUMP} namelist accepts the post-run calculation parameters above but not the three output-control parameters. New files should use \ct{OUTP}.
@@ -56,7 +56,7 @@ This prints the initial conditions to the output before the actual run starts.  
 
 \subsubsection{Overview}
 
-The overview gives a general description of the case.  The output is fairly self-explanatory. ``Doors, ...'' is the total number of horizontal natural flow vent connections or wall vents in all compartments of the simulation.  ``Ceil. Vents, ...'' gives the total number of vertical natural flow vent connections or ceiling/floor vents in all compartments of the simulation.  The last header on the line ``MV Connections'' has the total number of mechanical flow connections to all compartments in the simulation. Times in these outputs are the times discussed in section \ref{info:TIME}. All times are in s.
+The overview gives a general description of the case.  The output is fairly self-explanatory. ``Doors, ...'' is the total number of horizontal natural flow vent connections or wall vents in all compartments of the simulation.  ``Ceil. Vents, ...'' gives the total number of vertical natural flow vent connections or ceiling/floor vents in all compartments of the simulation.  The last header on the line ``MV Connections'' has the total number of mechanical flow connections to all compartments in the simulation. Times in these outputs are the times discussed in Sec.~\ref{info:TIME}. All times are in s.
 \begin{lstlisting}[basicstyle=\tiny]
 CFAST
 
@@ -110,7 +110,7 @@ Compartment  Name                Width        Depth        Height       Floor   
     2               Comp 2        5.00         5.00         3.00         0.00         3.00
     3               Comp 3        5.00         5.00         3.00         3.00         6.00
 \end{lstlisting}
-All the information in this table comes from the compartments tab discussed in section  \ref{info:COMP}.
+All the information in this table comes from the compartments tab discussed in Sec.~\ref{info:COMP}.
 
 
 \subsubsection{Wall Vents}
@@ -129,7 +129,7 @@ Comp 1       Outside      1       1.00   0.00    2.00    Time                   
 Comp 1       Comp 2       2       1.00   0.00    2.00    Time                            0.00      1.00       0.00    1.00
 Comp 3       Outside      3       1.00   1.00    2.00    Time                            0.00      1.00       0.00    1.00
 \end{lstlisting}
-From compartment, to compartment, vent number, width, sill height, and soffit height all come directly from the wall vent tab discussed in section \ref{info:VENT}. Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
+From compartment, to compartment, vent number, width, sill height, and soffit height all come directly from the wall vent tab discussed in Sec.~\ref{info:VENT}. Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
 
 \subsubsection{Ceiling and Floor Vents}
 
@@ -144,7 +144,7 @@ Compartment  Compartment  Number                   Type        Value       Targe
 --------------------------------------------------------------------------------------------------------------------------------
 Comp 3       Comp 2        1      Round  1.00      RAMP # 1
 \end{lstlisting}
-Top compartment, bottom compartment, shape, and area come from the Ceiling/Floor Vent tab discussed in section \ref{info:VENT2}. Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the base elevation.  Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
+Top compartment, bottom compartment, shape, and area come from the Ceiling/Floor Vent tab discussed in Sec.~\ref{info:VENT2}. Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the base elevation.  Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
 
 \subsubsection{Mechanical Flow Connections}
 
@@ -160,7 +160,7 @@ Compartment  Compartment   Number                      Type        Value       T
 Outside      Comp 1        1        0.02    0.25       RAMP # 2
 Comp 2       Outside       2        0.02    0.25       RAMP # 3
 \end{lstlisting}
-From compartment, to compartment, fan number, area, and flowrate are all set in the Mechanical Ventilation tab discussed in sections \ref{info:VENT3} and \ref{info:VENT4}.  Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
+From compartment, to compartment, fan number, area, and flowrate are all set in the Mechanical Ventilation tab discussed in Secs.~\ref{info:VENT3} and \ref{info:VENT4}.  Vent opening and closing information can be specified by time, by an associated time/fraction history, or by an associated target that triggers a change in the vent opening based on temperature or heat flux; all are set in the same tab.
 
 
 \subsubsection{Ventilation Opening Time Specifications}
@@ -201,7 +201,7 @@ CONCRETE     1.75           1.000E+03       2.200E+03       0.150           0.94
 DEFAULT     0.120            900.            800.           1.200E-02       0.900
 \end{lstlisting}
 
-Material choices for the ceiling, walls, and floors are discussed in section \ref{info:COMP2}. Setting thermophysical properties is done in the Thermal Properties tab discussed in section \ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
+Material choices for the ceiling, walls, and floors are discussed in Sec.~\ref{info:COMP2}. Setting thermophysical properties is done in the Thermal Properties tab discussed in Sec.~\ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
 
 
 \subsubsection{Fires}
@@ -243,7 +243,7 @@ Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
    540.     1.50E-03  5.00E+07  7.50E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
   1800.     1.50E-03  5.00E+07  7.50E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
 \end{lstlisting}
-All of the inputs for all fires come from the fire specifications set in the Fires tab discussed in section \ref{info:FIRE}.  Units for most values are included in the output.  Fire position is in m, relative humidity is in \%, lower oxygen limit is in volume \%, and pyrolysis temperature is in K.
+All of the inputs for all fires come from the fire specifications set in the Fires tab discussed in Sec.~\ref{info:FIRE}.  Units for most values are included in the output.  Fire position is in m, relative humidity is in \%, lower oxygen limit is in volume \%, and pyrolysis temperature is in K.
 
 
 \subsubsection{Targets}
@@ -276,7 +276,7 @@ Target Compartment Type   Position (x, y, z) Activation  Flaming     Smoldering
   3    Comp 1      HEAT   2.00 2.00 2.97                                         30.00         5.00
 \end{lstlisting}
 
-All of the inputs for detectors and sprinklers come from the Detector / Suppression tab discussed in section \ref{info:DEVC2}. Units for position are all in m.
+All of the inputs for detectors and sprinklers come from the Detector / Suppression tab discussed in Sec.~\ref{info:DEVC2}. Units for position are all in m.
 
 \subsection{Output for Main Variables}
 
@@ -397,7 +397,7 @@ Comp 2         Outside                      0.6667E+02                0.2223E-01
 
 \section{Spreadsheet Output}
 
-CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snapshot of the modeling data at an instant of time. This interval is set on the Simulation tab discussed in section \ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
+CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snapshot of the modeling data at an instant of time. This interval is set on the Simulation tab discussed in Sec.~\ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
 
 Several spreadsheet files are generated with each CFAST simulation:
 

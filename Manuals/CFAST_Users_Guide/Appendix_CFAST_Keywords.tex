@@ -24,7 +24,7 @@ sets various values of parameters contained in the \ct{TIME} namelist group. The
 
 Parameters within a namelist record can be separated by either commas, spaces, or line breaks. It is recommended that you use commas or line breaks, and never use tab stops because they are not explicitly defined in the namelist data structure. CFAST and CEdit expect the first character of the file to be an ampersand, \ct{&}, and by convention the first namelist is the \ct{HEAD} namelist, but any namelist can be the first. Comments and notes can be written into the file between namelists so long as nothing comes before the ampersand except a space and nothing comes between the ampersand and the slash except appropriate parameters corresponding to that particular namelist group. However, it is important to note that any comments in an input file that is opened by CEdit and saved will be lost.
 
-The parameters in the input file can be integers, reals, character strings, or logical parameters. A logical parameter is either \ct{.TRUE.} or \ct{.FALSE.} -- the periods are a Fortran convention. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case-sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
+The parameters in the input file can be integers, reals, character strings, or logical parameters. Enter a logical parameter as either \ct{T} or \ct{F}. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case-sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
 
 Most of the input parameters are simply real or integer scalars, like \ct{PRINT = 50.}, but sometimes the inputs can be arrays.
 
@@ -84,7 +84,7 @@ Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist pa
 \label{tbl:namelistgroups}
 \begin{tabular}{|c|l|c|c|}
 \hline
-Group Name & Namelist Group Description  & Reference Section & Parameter Table \\ \hline
+Group Name & Namelist Group Description  & Reference Sec. & Parameter Table \\ \hline
 \ct{CHEM}  & Fire Chemistry              & \ref{info:FIRE}   & \ref{tbl:FIRE}  \\ \hline
 \ct{COMP}  & Compartments                & \ref{info:COMP}   & \ref{tbl:COMP}  \\ \hline
 \ct{CONN}  & Surface Connections         & \ref{info:CONN}   & \ref{tbl:CONN}  \\ \hline
@@ -103,7 +103,7 @@ Group Name & Namelist Group Description  & Reference Section & Parameter Table \
 \ct{TAIL}  & End of Input File Indicator &                   &                 \\ \hline
 \ct{TABL}  & Table of Time-Based Inputs  & \ref{info:FIRE2}  & \ref{tbl:FIRE3} \\ \hline
 \ct{TIME}  & Simulation Time             & \ref{info:TIME}   & \ref{tbl:TIME}  \\ \hline
-\ct{VENT}  & Vents                       & \ref{info:VENT}   & \ref{tbl:WVENT} \\ \hline
+\ct{VENT}  & Vents                       & \ref{info:VENT}   & \ref{tbl:VENT} \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -113,7 +113,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{itemize}
 \item The \ct{HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use \ct{&TAIL} as the last line at the end of the input file. This completes the file from \ct{&HEAD} to \ct{&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
 \item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
-\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying \ct{ADIABATIC} to be \ct{.TRUE.} triggers the code to treat all compartment surfaces as perfectly insulated.
+\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying \ct{ADIABATIC} to be \ct{T} triggers the code to treat all compartment surfaces as perfectly insulated.
 \item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, \ct{TEMPERATURES}, within the namelist group, \ct{INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
 \item Default input values are assigned to some of the keywords to facilitate the setup of an input file. For instance, Table \ref{tbl:MISC} shows that the \ct{LOWER_OXYGEN_LIMIT} has a default value of \ct{0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
 \end{itemize}
@@ -132,7 +132,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.87\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.61\hsize\raggedright\arraybackslash}X|>{\hsize=1.06\hsize\raggedright\arraybackslash}X|}
-\caption[Fire Parameters (\ct{CHEM} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\caption[Fire Parameters (\ct{CHEM} namelist group)]{For more information see Sec.~\ref{info:FIRE}.}
 \label{tbl:FIRE} \\
 \hline
 \multicolumn{5}{|c|}{\ct{CHEM} (Fire Chemistry Parameters)} \\
@@ -144,31 +144,31 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{AREA}                                & Real                   & Section \ref{info:FIRE}         & m$^2$              & 0 \\ \hline
-\ct{CARBON}                              & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{CHLORINE}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \ct{NULL} \\ \hline
-\ct{CO_YIELD}                            & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
-\ct{FLAMING_TRANSITION_TIME}             & Real                   & Section \ref{info:FIRE}         & s                  & 0 \\ \hline
-\ct{HCN_YIELD}                           & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
-\ct{HEAT_OF_COMBUSTION}                  & Real                   & Section \ref{info:FIRE}         & kJ/kg              & 50000 \\ \hline
-\ct{HRR}                                 & Real                   & Section \ref{info:FIRE}         & kW                 & 0 \\ \hline
-\ct{HYDROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{NITROGEN}                            & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{OXYGEN}                              & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{RADIATIVE_FRACTION}                  & Real                   & Section \ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{SOOT_YIELD}                          & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
-\ct{TABLE_ID}                            & Character              & Section \ref{info:FIRE}         &                    & \ct{NULL} \\ \hline
-\ct{TRACE_YIELD}                         & Real                   & Section \ref{info:FIRE}         & kg/kg              & 0 \\ \hline
+\ct{AREA}                                & Real                   & Sec.~\ref{info:FIRE}         & m$^2$              & 0 \\ \hline
+\ct{CARBON}                              & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{CHLORINE}                            & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \ct{'NULL'} \\ \hline
+\ct{CO_YIELD}                            & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
+\ct{FLAMING_TRANSITION_TIME}             & Real                   & Sec.~\ref{info:FIRE}         & s                  & 0 \\ \hline
+\ct{HCN_YIELD}                           & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
+\ct{HEAT_OF_COMBUSTION}                  & Real                   & Sec.~\ref{info:FIRE}         & kJ/kg              & 50000 \\ \hline
+\ct{HRR}                                 & Real                   & Sec.~\ref{info:FIRE}         & kW                 & 0 \\ \hline
+\ct{HYDROGEN}                            & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{NITROGEN}                            & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{OXYGEN}                              & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{RADIATIVE_FRACTION}                  & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{SOOT_YIELD}                          & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
+\ct{TABLE_ID}                            & Character              & Sec.~\ref{info:FIRE}         &                    & \ct{'NULL'} \\ \hline
+\ct{TRACE_YIELD}                         & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
 &CHEM ID = 'Wood_Wall_Fire'
- CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
- HEAT_OF_COMBUSTION = 18100, RADIATIVE_FRACTION = 0.33 /
+      CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
+      HEAT_OF_COMBUSTION = 18100, RADIATIVE_FRACTION = 0.33 /
 \end{lstlisting}
 
 
@@ -179,7 +179,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.32\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|>{\hsize=0.66\hsize\raggedright\arraybackslash}X|>{\hsize=0.81\hsize\raggedright\arraybackslash}X|>{\hsize=0.96\hsize\raggedright\arraybackslash}X|}
-\caption[Compartment parameters (\ct{COMP} namelist group)]{For more information see Section~\ref{info:COMP}.}
+\caption[Compartment parameters (\ct{COMP} namelist group)]{For more information see Sec.~\ref{info:COMP}.}
 \label{tbl:COMP} \\
 \hline
 \multicolumn{5}{|c|}{\ct{COMP} (Compartment Parameters)} \\
@@ -191,26 +191,26 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{CEILING_MATL_ID}                    & Character Triplet      & Section \ref{info:COMP2}        &                    & \\ \hline
-\ct{CEILING_THICKNESS}                  & Real Triplet           & Section \ref{info:COMP2}        & m                  & \\ \hline
-\ct{CROSS_SECT_AREAS}                   & Real Array             & Section \ref{info:COMP4}        & m$^2$              & \\ \hline
-\ct{CROSS_SECT_HEIGHTS}                  & Real Array             & Section \ref{info:COMP4}        &                    & \\ \hline
-\ct{DEPTH}                               & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
-\ct{FLOOR_MATL_ID}                       & Character Triplet      & Section \ref{info:COMP2}        &                    & \\ \hline
-\ct{FLOOR_THICKNESS}                     & Real Triplet           & Section \ref{info:COMP2}        &                    & \\ \hline
-\ct{FLOW_COEFFICIENT}                    & Real                   & Section \ref{info:COMP}         &                    & 0.07 \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:COMP}         &                    & \\ \hline
-\ct{GRID}                                & Integer Triplet        & Section \ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
-\ct{HALL}                                & Logical                & Section \ref{info:COMP3}        &                    & \ct{.FALSE.} \\ \hline
-\ct{HEIGHT}                              & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:COMP}         &                    & \\ \hline
-\ct{LEAK_AREA}                           & Real Doublet           & Section \ref{info:COMP}         & m$^2$              & 0,0 \\ \hline
-\ct{LEAK_AREA_RATIO}                     & Real Doublet           & Section \ref{info:COMP}         & m$^2$/m$^2$        & 0,0 \\ \hline
-\ct{ORIGIN}                              & Real Triplet           & Section \ref{info:COMP}         & m                  & 0,0,0 \\ \hline
-\ct{SHAFT}                               & Logical                & Section \ref{info:COMP3}        &                    & \ct{.FALSE.} \\ \hline
-\ct{WALL_MATL_ID}                        & Character Triplet      & Section \ref{info:COMP2}        &                    & \\ \hline
-\ct{WALL_THICKNESS}                      & Real Triplet           & Section \ref{info:COMP2}        &                    & \\ \hline
-\ct{WIDTH}                               & Real                   & Section \ref{info:COMP}         & m                  & \\ \hline
+\ct{CEILING_MATL_ID}                    & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{CEILING_THICKNESS}                  & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
+\ct{CROSS_SECT_AREAS}                   & Real Array             & Sec.~\ref{info:COMP4}        & m$^2$              & \\ \hline
+\ct{CROSS_SECT_HEIGHTS}                  & Real Array             & Sec.~\ref{info:COMP4}        &                    & \\ \hline
+\ct{DEPTH}                               & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
+\ct{FLOOR_MATL_ID}                       & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOOR_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOW_COEFFICIENT}                    & Real                   & Sec.~\ref{info:COMP}         &                    & 0.07 \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:COMP}         &                    & \\ \hline
+\ct{GRID}                                & Integer Triplet        & Sec.~\ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
+\ct{HALL}                                & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
+\ct{HEIGHT}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:COMP}         &                    & \\ \hline
+\ct{LEAK_AREA}                           & Real Doublet           & Sec.~\ref{info:COMP}         & m$^2$              & 0,0 \\ \hline
+\ct{LEAK_AREA_RATIO}                     & Real Doublet           & Sec.~\ref{info:COMP}         & m$^2$/m$^2$        & 0,0 \\ \hline
+\ct{ORIGIN}                              & Real Triplet           & Sec.~\ref{info:COMP}         & m                  & 0,0,0 \\ \hline
+\ct{SHAFT}                               & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
+\ct{WALL_MATL_ID}                        & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{WALL_THICKNESS}                      & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{WIDTH}                               & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -234,7 +234,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.22\hsize\raggedright\arraybackslash}X|}
-\caption[Connection Parameters (\ct{CONN} namelist group)]{For more information see Section~\ref{info:CONN}.}
+\caption[Connection Parameters (\ct{CONN} namelist group)]{For more information see Sec.~\ref{info:CONN}.}
 \label{tbl:CONN} \\
 \hline
 \multicolumn{5}{|c|}{\ct{CONN} (Connection Parameters)} \\
@@ -246,10 +246,10 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:CONN}         &                    & \\ \hline
-\ct{COMP_IDS}                            & Character Array        & Section \ref{info:CONN}         &                    & \\ \hline
-\ct{F}                                   & Real Array             & Section \ref{info:CONN}         &                    & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:CONN}         &                    & \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
+\ct{COMP_IDS}                            & Character Array        & Sec.~\ref{info:CONN}         &                    & \\ \hline
+\ct{F}                                   & Real Array             & Sec.~\ref{info:CONN}         &                    & \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -269,7 +269,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \renewcommand\footnoterule{}
 \small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|}
-\caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Section~\ref{info:DEVC}.}
+\caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Sec.~\ref{info:DEVC}.}
 \label{tbl:DEVC} \\
 \hline
 \multicolumn{5}{|c|}{\ct{DEVC} (Device Parameters)} \\
@@ -281,24 +281,24 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{ADIABATIC_TARGET}                    & Logical                & Section \ref{info:DEVC}         &                    & \ct{.FALSE.} \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Section \ref{info:DEVC}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
-\ct{DEPTH_UNITS}                         & Character              & Section \ref{info:DEVC}         & none or m          & \ct{FRACTION} \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{LOCATION}                            & Real Triplet           & Section \ref{info:DEVC}         & m                  & \\ \hline
-\ct{MATL_ID}                             & Character              & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{NORMAL}                              & Real Triplet           & Section \ref{info:DEVC}         &                    & 0,0,1 \\ \hline
-\ct{RTI}                                 & Real                   & Section \ref{info:DEVC2}        & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 50 \\ \hline
-\ct{SETPOINT}                            & Real                   & Section \ref{info:DEVC}         & \degc or \%/m      & \\ \hline
-\ct{SETPOINTS}                           & Real Doublet           & Section \ref{info:DEVC}         & \%/m               & \\ \hline
-\ct{SPRAY_DENSITY}                       & Real                   & Section \ref{info:DEVC2}        & m/s                & \\ \hline
-\ct{SURFACE_ORIENTATION}                 & Selection List         & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{SURFACE_TEMPERATURE}                 & Real                   & Section \ref{info:DEVC}         &                    & \\ \hline
-\ct{TEMPERATURE_DEPTH}                   & Real                   & Section \ref{info:DEVC}         &                    & 0.5 \\ \hline
-\ct{THICKNESS}                           & Real                   & Section \ref{info:DEVC}         &                    & material thickness \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:DEVC}         &                    & \\ \hline
+\ct{ADIABATIC_TARGET}                    & Logical                & Sec.~\ref{info:DEVC}         &                    & \ct{F} \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Sec.~\ref{info:DEVC}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
+\ct{DEPTH_UNITS}                         & Character              & Sec.~\ref{info:DEVC}         & none or m          & \ct{'FRACTION'} \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{LOCATION}                            & Real Triplet           & Sec.~\ref{info:DEVC}         & m                  & \\ \hline
+\ct{MATL_ID}                             & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{NORMAL}                              & Real Triplet           & Sec.~\ref{info:DEVC}         &                    & 0,0,1 \\ \hline
+\ct{RTI}                                 & Real                   & Sec.~\ref{info:DEVC2}        & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 50 \\ \hline
+\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:DEVC}         & \degc or \%/m      & \\ \hline
+\ct{SETPOINTS}                           & Real Doublet           & Sec.~\ref{info:DEVC}         & \%/m               & \\ \hline
+\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}        & m/s                & \\ \hline
+\ct{SURFACE_ORIENTATION}                 & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{SURFACE_TEMPERATURE}                 & Real                   & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{TEMPERATURE_DEPTH}                   & Real                   & Sec.~\ref{info:DEVC}         &                    & 0.5 \\ \hline
+\ct{THICKNESS}                           & Real                   & Sec.~\ref{info:DEVC}         &                    & material thickness \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
 \end{xltabular}
 \normalsize
 
@@ -341,7 +341,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \renewcommand\footnoterule{}
 \scriptsize
 \begin{xltabular}{\textwidth}{|>{\hsize=2.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.75\hsize\raggedright\arraybackslash}X|>{\hsize=0.75\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|}
-\caption[Diagnostic parameters (\ct{DIAG} namelist group)]{For more information see Section~\ref{info:DIAG}.}
+\caption[Diagnostic parameters (\ct{DIAG} namelist group)]{For more information see Sec.~\ref{info:DIAG}.}
 \label{tbl:DIAG} \\
 \hline
 \multicolumn{5}{|c|}{\ct{DIAG} (Diagnostic Parameters)} \\
@@ -353,36 +353,36 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Ref.} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{ADIABATIC_TARGET_VERIFICATION}       & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{CEILING_JET_SUB_MODEL}               & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{CONDUCTION_SUB_MODEL}                & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{CONVECTION_SUB_MODEL}                & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{DASSL_DEBUG_PRINT}                   & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{DEBUG_PRINT}                         & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{DOOR_JET_FIRE_SUB_MODEL}             & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{ENTRAINMENT_SUB_MODEL}               & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{F}                                   & Real Array     & Section \ref{info:DIAG} & \degc    & \\ \hline
-\ct{FIRE_SUB_MODEL}                      & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{GAS_ABSORBTION_SUB_MODEL}            & Selection List & Section \ref{info:DIAG} &          & \ct{CALCULATED} \\ \hline
-\ct{GAS_TEMPERATURE}                     & Real           & Section \ref{info:DIAG} & \degc    & \\ \hline
-\ct{HORIZONTAL_FLOW_SUB_MODEL}           & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{KEYBOARD_INPUT}                      & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{LAYER_MIXING_SUB_MODEL}              & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{MECHANICAL_FLOW_SUB_MODEL}           & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{MODE}                                & Character      & Section \ref{info:DIAG} &          & \\ \hline
-\ct{OXYGEN_TRACKING}                     & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{PARTIAL_PRESSURE_CO2}                & Real           & Section \ref{info:DIAG} & Pa       & \\ \hline
-\ct{PARTIAL_PRESSURE_H2O}                & Real           & Section \ref{info:DIAG} & Pa       & \\ \hline
-\ct{RADIATION_SUB_MODEL}                 & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
-\ct{RADIATIVE_INCIDENT_FLUX}             & Real           & Section \ref{info:DIAG} & kW/m$^2$ & 0 \\ \hline
-\ct{RAD_SOLVER}                          & Selection List & Section \ref{info:DIAG} &          & \\ \hline
-\ct{RESIDUAL_DEBUG_PRINT}                & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{STEADY_STATE_INITIAL_CONDITIONS}     & Selection List & Section \ref{info:DIAG} &          & \ct{OFF} \\ \hline
-\ct{T}                                   & Real Array     & Section \ref{info:DIAG} & s        & \\ \hline
-\ct{UPPER_LAYER_THICKNESS}               & Real           & Section \ref{info:DIAG} & m        & \\ \hline
-\ct{VERIFICATION_FIRE_HEAT_FLUX}         & Real           & Section \ref{info:DIAG} & kW/m$^2$ & \\ \hline
-\ct{VERIFICATION_TIME_STEP}              & Real           & Section \ref{info:DIAG} & s        & 0 \\ \hline
-\ct{VERTICAL_FLOW_SUB_MODEL}             & Selection List & Section \ref{info:DIAG} &          & \ct{ON} \\ \hline
+\ct{ADIABATIC_TARGET_VERIFICATION}       & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{CEILING_JET_SUB_MODEL}               & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{CONDUCTION_SUB_MODEL}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{CONVECTION_SUB_MODEL}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{DASSL_DEBUG_PRINT}                   & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{DEBUG_PRINT}                         & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{DOOR_JET_FIRE_SUB_MODEL}             & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{ENTRAINMENT_SUB_MODEL}               & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{F}                                   & Real Array     & Sec.~\ref{info:DIAG} & \degc    & \\ \hline
+\ct{FIRE_SUB_MODEL}                      & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{GAS_ABSORBTION_SUB_MODEL}            & Character      & Sec.~\ref{info:DIAG} &          & \ct{'CALCULATED'} \\ \hline
+\ct{GAS_TEMPERATURE}                     & Real           & Sec.~\ref{info:DIAG} & \degc    & \\ \hline
+\ct{HORIZONTAL_FLOW_SUB_MODEL}           & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{KEYBOARD_INPUT}                      & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{LAYER_MIXING_SUB_MODEL}              & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{MECHANICAL_FLOW_SUB_MODEL}           & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{MODE}                                & Character      & Sec.~\ref{info:DIAG} &          & \\ \hline
+\ct{OXYGEN_TRACKING}                     & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{PARTIAL_PRESSURE_CO2}                & Real           & Sec.~\ref{info:DIAG} & Pa       & \\ \hline
+\ct{PARTIAL_PRESSURE_H2O}                & Real           & Sec.~\ref{info:DIAG} & Pa       & \\ \hline
+\ct{RADIATION_SUB_MODEL}                 & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{RADIATIVE_INCIDENT_FLUX}             & Real           & Sec.~\ref{info:DIAG} & kW/m$^2$ & 0 \\ \hline
+\ct{RAD_SOLVER}                          & Character      & Sec.~\ref{info:DIAG} &          & \\ \hline
+\ct{RESIDUAL_DEBUG_PRINT}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{STEADY_STATE_INITIAL_CONDITIONS}     & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{T}                                   & Real Array     & Sec.~\ref{info:DIAG} & s        & \\ \hline
+\ct{UPPER_LAYER_THICKNESS}               & Real           & Sec.~\ref{info:DIAG} & m        & \\ \hline
+\ct{VERIFICATION_FIRE_HEAT_FLUX}         & Real           & Sec.~\ref{info:DIAG} & kW/m$^2$ & \\ \hline
+\ct{VERIFICATION_TIME_STEP}              & Real           & Sec.~\ref{info:DIAG} & s        & 0 \\ \hline
+\ct{VERTICAL_FLOW_SUB_MODEL}             & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
 \end{xltabular}
 \normalsize
 
@@ -396,7 +396,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|}
-\caption[Legacy Post-Run Calculation Parameters (\ct{DUMP} namelist group)]{For more information see Section~\ref{info:OUTP}.}
+\caption[Legacy Post-Run Calculation Parameters (\ct{DUMP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
 \label{tbl:DUMP} \\
 \hline
 \multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
@@ -408,17 +408,17 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{CRITERION}                           & Real                   & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FILE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_DEVICE}                        & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_FIELD}                         & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_MEASUREMENT}                   & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_DEVICE}                       & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_FIELD}                        & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_MEASUREMENT}                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
+\ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_DEVICE}                        & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_FIELD}                         & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_MEASUREMENT}                   & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_DEVICE}                       & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_FIELD}                        & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_MEASUREMENT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \end{xltabular}
 
 
@@ -430,7 +430,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \renewcommand\footnoterule{}
 \small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|}
-\caption[Fire Parameters (\ct{FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\caption[Fire Parameters (\ct{FIRE} namelist group)]{For more information see Sec.~\ref{info:FIRE}.}
 \label{tbl:FIRE2} \\
 \hline
 \multicolumn{5}{|c|}{\ct{FIRE} (Individual Instance of a Fire Object)} \\
@@ -442,14 +442,14 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{DEVC_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{FIRE_ID}                             & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:FIRE}         &                    & \\ \hline
-\ct{IGNITION_CRITERION}                  & Selection List         & Section \ref{info:FIRE}         &                    & \ct{TIME} \\ \hline
-\ct{LOCATION}                            & Real Pair              & Section \ref{info:FIRE}         & m                  & \\ \hline
-\ct{SETPOINT}                            & Real                   & Section \ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{DEVC_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{FIRE_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
+\ct{IGNITION_CRITERION}                  & Character              & Sec.~\ref{info:FIRE}         &                    & \ct{'TIME'} \\ \hline
+\ct{LOCATION}                            & Real Pair              & Sec.~\ref{info:FIRE}         & m                  & \\ \hline
+\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s \\ \hline
 \end{xltabular}
 \normalsize
 
@@ -457,8 +457,8 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \noindent Example:
 \begin{lstlisting}
 &FIRE ID = 'Wood_Wall'
- COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
- LOCATION = 2.5, 5 /
+      COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
+      LOCATION = 2.5, 5 /
 \end{lstlisting}
 
 
@@ -469,7 +469,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \noindent
 \setlength{\tabcolsep}{.1in}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.79\hsize\raggedright\arraybackslash}X|>{\hsize=1.36\hsize\raggedright\arraybackslash}X|}
-\caption[Header Parameters (\ct{HEAD} namelist group)]{For more information see Section~\ref{info:HEAD}.}
+\caption[Header Parameters (\ct{HEAD} namelist group)]{For more information see Sec.~\ref{info:HEAD}.}
 \label{tbl:HEAD} \\
 \hline
 \multicolumn{5}{|c|}{\ct{HEAD} (Header Parameters)} \\
@@ -481,8 +481,8 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{TITLE}                               & Character              & Section \ref{info:HEAD}         &                    & \\ \hline
-\ct{VERSION}                             & Integer                & Section \ref{info:HEAD}         &                    & \\ \hline
+\ct{TITLE}                               & Character              & Sec.~\ref{info:HEAD}         &                    & \\ \hline
+\ct{VERSION}                             & Integer                & Sec.~\ref{info:HEAD}         &                    & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -498,7 +498,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 
 \noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=2.02\hsize\raggedright\arraybackslash}X|>{\hsize=0.6\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.6\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|}
-\caption[Initial Conditions (\ct{INIT} namelist group)]{For more information see Section~\ref{info:INIT}.}
+\caption[Initial Conditions (\ct{INIT} namelist group)]{For more information see Sec.~\ref{info:INIT}.}
 \label{tbl:INIT} \\
 \hline
 \multicolumn{5}{|c|}{\ct{INIT} (Initial Conditions)} \\
@@ -510,12 +510,12 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{EXTERIOR_O2_MASS_FRACTION}           & Real                   & Section \ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
-\ct{EXTERIOR_TEMPERATURE}                & Real                   & Section \ref{info:INIT}         & $^\circ$C          & 20 \\ \hline
-\ct{INTERIOR_O2_MASS_FRACTION}           & Real                   & Section \ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
-\ct{INTERIOR_TEMPERATURE}                & Real                   & Section \ref{info:INIT}         & $^\circ$C          & 20 \\ \hline
-\ct{PRESSURE}                            & Real                   & Section \ref{info:INIT}         & Pa                 & 101325 \\ \hline
-\ct{RELATIVE_HUMIDITY}                   & Real                   & Section \ref{info:INIT}         & \%                 & 50 \\ \hline
+\ct{EXTERIOR_O2_MASS_FRACTION}           & Real                   & Sec.~\ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
+\ct{EXTERIOR_TEMPERATURE}                & Real                   & Sec.~\ref{info:INIT}         & $^\circ$C          & 20 \\ \hline
+\ct{INTERIOR_O2_MASS_FRACTION}           & Real                   & Sec.~\ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
+\ct{INTERIOR_TEMPERATURE}                & Real                   & Sec.~\ref{info:INIT}         & $^\circ$C          & 20 \\ \hline
+\ct{PRESSURE}                            & Real                   & Sec.~\ref{info:INIT}         & Pa                 & 101325 \\ \hline
+\ct{RELATIVE_HUMIDITY}                   & Real                   & Sec.~\ref{info:INIT}         & \%                 & 50 \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -532,7 +532,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.79\hsize\raggedright\arraybackslash}X|>{\hsize=1.36\hsize\raggedright\arraybackslash}X|}
-\caption[Isosurface parameters (\ct{ISOF} namelist group)]{For more information see Section~\ref{info:ISOF}.}
+\caption[Isosurface parameters (\ct{ISOF} namelist group)]{For more information see Sec.~\ref{info:ISOF}.}
 \label{tbl:ISOF} \\
 \hline
 \multicolumn{5}{|c|}{\ct{ISOF} (Isosurface Parameters)} \\
@@ -544,8 +544,8 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:ISOF}         &                    & \\ \hline
-\ct{VALUE}                               & Real                   & Section \ref{info:ISOF}         & $^\circ$C          & \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:ISOF}         &                    & \\ \hline
+\ct{VALUE}                               & Real                   & Sec.~\ref{info:ISOF}         & $^\circ$C          & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -563,7 +563,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.16\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=1.07\hsize\raggedright\arraybackslash}X|>{\hsize=1.17\hsize\raggedright\arraybackslash}X|}
-\caption[Thermal Properties (\ct{MATL} namelist group)]{For more information see Section~\ref{info:MATL}.}
+\caption[Thermal Properties (\ct{MATL} namelist group)]{For more information see Sec.~\ref{info:MATL}.}
 \label{tbl:MATL} \\
 \hline
 \multicolumn{5}{|c|}{\ct{MATL} (Material Properties)} \\
@@ -575,14 +575,14 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{CONDUCTIVITY}                        & Real                   & Section \ref{info:MATL}         & kW/(m$\cdot$K)     & \\ \hline
-\ct{DENSITY}                             & Real                   & Section \ref{info:MATL}         & kg/m$^3$           & \\ \hline
-\ct{EMISSIVITY}                          & Real                   & Section \ref{info:MATL}         &                    & 0.9 \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:MATL}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:MATL}         &                    & \\ \hline
-\ct{MATERIAL}                            & Character              & Section \ref{info:MATL}         &                    & \\ \hline
-\ct{SPECIFIC_HEAT}                       & Real                   & Section \ref{info:MATL}         & kJ/(kg$\cdot$K)    & \\ \hline
-\ct{THICKNESS}                           & Real                   & Section \ref{info:MATL}         & m                  & \\ \hline
+\ct{CONDUCTIVITY}                        & Real                   & Sec.~\ref{info:MATL}         & kW/(m$\cdot$K)     & \\ \hline
+\ct{DENSITY}                             & Real                   & Sec.~\ref{info:MATL}         & kg/m$^3$           & \\ \hline
+\ct{EMISSIVITY}                          & Real                   & Sec.~\ref{info:MATL}         &                    & 0.9 \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:MATL}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:MATL}         &                    & \\ \hline
+\ct{MATERIAL}                            & Character              & Sec.~\ref{info:MATL}         &                    & \\ \hline
+\ct{SPECIFIC_HEAT}                       & Real                   & Sec.~\ref{info:MATL}         & kJ/(kg$\cdot$K)    & \\ \hline
+\ct{THICKNESS}                           & Real                   & Sec.~\ref{info:MATL}         & m                  & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -600,7 +600,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 
 \noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=1.57\hsize\raggedright\arraybackslash}X|>{\hsize=0.99\hsize\raggedright\arraybackslash}X|>{\hsize=0.74\hsize\raggedright\arraybackslash}X|>{\hsize=0.62\hsize\raggedright\arraybackslash}X|>{\hsize=1.08\hsize\raggedright\arraybackslash}X|}
-\caption[Miscellaneous Parameters (\ct{MISC} namelist group)]{For more information see Section~\ref{info:MISC}.}
+\caption[Miscellaneous Parameters (\ct{MISC} namelist group)]{For more information see Sec.~\ref{info:MISC}.}
 \label{tbl:MISC} \\
 \hline
 \multicolumn{5}{|c|}{\ct{MISC} (Miscellaneous Parameters)} \\
@@ -612,12 +612,12 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{ADIABATIC}                           & Logical                & Section \ref{info:MISC}         &                    & \ct{.FALSE.} \\ \hline
-\ct{LOWER_OXYGEN_LIMIT}                  & Real                   & Section \ref{info:MISC}         &                    & 0.15 \\ \hline
-\ct{MAX_ITERATION}                       & Real                   & Section \ref{info:MISC}         &                    & Unlimited \\ \hline
-\ct{MAX_TIME_STEP}                       & Real                   & Section \ref{info:MISC}         & s                  & 1 \\ \hline
-\ct{OVERWRITE}                           & Logical                & Section \ref{info:MISC}         &                    & \ct{.TRUE.} \\ \hline
-\ct{SPECIFIC_EXTINCTION}                 & Real Doublet           & Section \ref{info:MISC}         & m$^2$/kg           & 8700,4400 \\ \hline
+\ct{ADIABATIC}                           & Logical                & Sec.~\ref{info:MISC}         &                    & \ct{F} \\ \hline
+\ct{LOWER_OXYGEN_LIMIT}                  & Real                   & Sec.~\ref{info:MISC}         &                    & 0.15 \\ \hline
+\ct{MAX_ITERATION}                       & Real                   & Sec.~\ref{info:MISC}         &                    & Unlimited \\ \hline
+\ct{MAX_TIME_STEP}                       & Real                   & Sec.~\ref{info:MISC}         & s                  & 1 \\ \hline
+\ct{OVERWRITE}                           & Logical                & Sec.~\ref{info:MISC}         &                    & \ct{T} \\ \hline
+\ct{SPECIFIC_EXTINCTION}                 & Real Doublet           & Sec.~\ref{info:MISC}         & m$^2$/kg           & 8700,4400 \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -636,7 +636,7 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \renewcommand\footnoterule{}
 \small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.45\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
-\caption[Output and Post-Run Calculation parameters (\ct{OUTP} namelist group)]{For more information see Section~\ref{info:OUTP}.}
+\caption[Output and Post-Run Calculation parameters (\ct{OUTP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
 \label{tbl:OUTP} \\
 \hline
 \multicolumn{5}{|c|}{\ct{OUTP} (Output and Post-Run Calculation Parameters)} \\
@@ -649,20 +649,20 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \hline \hline
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
 \endhead
-\ct{CRITERION}                           & Real                   & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FILE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_DEVICE}                        & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_FIELD}                         & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_MEASUREMENT}                   & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{NET_HEAT_FLUX_OUTPUT}                & Logical                & Section \ref{info:OUTP}         &                    & \ct{.FALSE.} \\ \hline
-\ct{SECOND_DEVICE}                       & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_FIELD}                        & Character Doublet      & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_MEASUREMENT}                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{SPREADSHEET_OUTPUT}                  & Character              & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:OUTP}         &                    & \\ \hline
-\ct{VALIDATION_OUTPUT}                   & Logical                & Section \ref{info:OUTP}         &                    & \ct{.FALSE.} \\ \hline
+\ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_DEVICE}                        & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_FIELD}                         & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FIRST_MEASUREMENT}                   & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{NET_HEAT_FLUX_OUTPUT}                & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
+\ct{SECOND_DEVICE}                       & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_FIELD}                        & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SECOND_MEASUREMENT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{SPREADSHEET_OUTPUT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
+\ct{VALIDATION_OUTPUT}                   & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
 \end{xltabular}
 \normalsize
 
@@ -700,12 +700,12 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{F}                                   & Real Array             & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{T}                                   & Real Array             & Section \ref{info:FIRE2}        & s                  & \\ \hline
-\ct{TYPE}                                & Character              & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{Z}                                   & Real Array             & Section \ref{info:FIRE2}        & m                  & \\ \hline
+\ct{COMP_IDS}                            & Character Doublet      & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{F}                                   & Real Array             & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{T}                                   & Real Array             & Sec.~\ref{info:FIRE2}        & s                  & \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{Z}                                   & Real Array             & Sec.~\ref{info:FIRE2}        & m                  & \\ \hline
 \end{xltabular}
 
 
@@ -716,7 +716,7 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.86\hsize\raggedright\arraybackslash}X|>{\hsize=1.33\hsize\raggedright\arraybackslash}X|>{\hsize=0.86\hsize\raggedright\arraybackslash}X|>{\hsize=0.71\hsize\raggedright\arraybackslash}X|>{\hsize=1.24\hsize\raggedright\arraybackslash}X|}
-\caption[Slice File parameters (\ct{SLCF} namelist group)]{For more information see Section~\ref{info:SLCF}.}
+\caption[Slice File parameters (\ct{SLCF} namelist group)]{For more information see Sec.~\ref{info:SLCF}.}
 \label{tbl:SLCF} \\
 \hline
 \multicolumn{5}{|c|}{\ct{SLCF} (Slice File Parameters)} \\
@@ -728,10 +728,10 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{COMP_ID}                             & Character              & Section \ref{info:SLCF}         &                    & \\ \hline
-\ct{DOMAIN}                              & Selection List         & Section \ref{info:SLCF}         &                    & \\ \hline
-\ct{PLANE}                               & Selection List         & Section \ref{info:SLCF}         &                    & \\ \hline
-\ct{POSITION}                            & Real                   & Section \ref{info:SLCF}         &                    & \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
+\ct{DOMAIN}                              & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
+\ct{PLANE}                               & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
+\ct{POSITION}                            & Real                   & Sec.~\ref{info:SLCF}         &                    & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -748,7 +748,7 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \noindent
 \renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.22\hsize\raggedright\arraybackslash}X|}
-\caption[Time-Based Fire Chemistry Parameters (\ct{TABL} namelist group)]{For more information see Section~\ref{info:FIRE2}.}
+\caption[Time-Based Fire Chemistry Parameters (\ct{TABL} namelist group)]{For more information see Sec.~\ref{info:FIRE2}.}
 \label{tbl:FIRE3} \\
 \hline
 \multicolumn{5}{|c|}{\ct{TABL} (Time-Based Fire Chemistry Parameters)} \\
@@ -760,15 +760,16 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{DATA}                                & Real Array             & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:FIRE2}        &                    & \\ \hline
-\ct{LABELS}                              & Character Array        & Section \ref{info:FIRE2}        &                    & \\ \hline
+\ct{DATA}                                & Real Array             & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
+\ct{LABELS}                              & Character Array        & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA',
+      'CO_YIELD', 'SOOT_YIELD' /
 &TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.00617, 0.015 /
 &TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.00617, 0.015 /
 \end{lstlisting}
@@ -780,7 +781,7 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 
 \noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.78\hsize\raggedright\arraybackslash}X|>{\hsize=0.94\hsize\raggedright\arraybackslash}X|>{\hsize=0.78\hsize\raggedright\arraybackslash}X|>{\hsize=1.35\hsize\raggedright\arraybackslash}X|}
-\caption[Time Parameters (\ct{TIME} namelist group)]{For more information see Section~\ref{info:TIME}.}
+\caption[Time Parameters (\ct{TIME} namelist group)]{For more information see Sec.~\ref{info:TIME}.}
 \label{tbl:TIME} \\
 \hline
 \multicolumn{5}{|c|}{\ct{TIME} (Time Parameters)} \\
@@ -792,10 +793,10 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{PRINT}                               & Real                   & Section \ref{info:TIME}         & s                  & 60 \\ \hline
-\ct{SIMULATION}                          & Real                   & Section \ref{info:TIME}         & s                  & 900 \\ \hline
-\ct{SMOKEVIEW}                           & Real                   & Section \ref{info:TIME}         & s                  & 15 \\ \hline
-\ct{SPREADSHEET}                         & Real                   & Section \ref{info:TIME}         & s                  & 15 \\ \hline
+\ct{PRINT}                               & Real                   & Sec.~\ref{info:TIME}         & s                  & 60 \\ \hline
+\ct{SIMULATION}                          & Real                   & Sec.~\ref{info:TIME}         & s                  & 900 \\ \hline
+\ct{SMOKEVIEW}                           & Real                   & Sec.~\ref{info:TIME}         & s                  & 15 \\ \hline
+\ct{SPREADSHEET}                         & Real                   & Sec.~\ref{info:TIME}         & s                  & 15 \\ \hline
 \end{xltabular}
 
 \vspace{\baselineskip}
@@ -809,148 +810,52 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \section{\texorpdfstring{{\tt VENT}}{VENT} (Vent Parameters)}
 \label{app:namelist_vent}
 
-\subsection{Wall Vents\texorpdfstring{{\tt ,TYPE='WALL'}}{, TYPE='WALL'}}
-
 \noindent
 \renewcommand\footnoterule{}
 \small
-\begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
-\caption[Wall Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:WVENT} \\
+\begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
+\caption[Vent Parameters (\ct{VENT} namelist group)]{For more information see Secs.~\ref{info:VENT}--\ref{info:VENT6}.}
+\label{tbl:VENT} \\
 \hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='WALL'} (Wall Vent Parameters)} \\
+\multicolumn{5}{|c|}{\ct{VENT} (Vent Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='WALL'} (Wall Vent Parameters)} \\
+\multicolumn{5}{|c|}{\ct{VENT} (Vent Parameters)} \\
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{BOTTOM}                              & Real                   & Section \ref{info:VENT}         & m                  & \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{CRITERION}                           & Selection List         & Section \ref{info:VENT6}        &                    & \ct{TIME} \\ \hline
-\ct{DEVC_ID}                             & Character              & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{F}                                   & Real Array             & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{FACE}                                & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{FLOW_COEFFICIENT}                    & Real                   & Section \ref{info:VENT}         &                    & 0.7 \\ \hline
-\ct{FYI}                                 & Character              & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{HEIGHT}                              & Real                   & Section \ref{info:VENT6}        & m                  & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{OFFSET}                              & Real                   & Section \ref{info:VENT}         & m                  & 0 \\ \hline
-\ct{POST_FRACTION}                       & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{PRE_FRACTION}                        & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{SETPOINT}                            & Real                   & Section \ref{info:VENT}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & \\ \hline
-\ct{T}                                   & Real Array             & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{TOP}                                 & Real                   & Section \ref{info:VENT6}        & m                  & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{WIDTH}                               & Real                   & Section \ref{info:VENT6}        & m                  & \\ \hline
+\ct{AREA}                                & Real                   & Sec.~\ref{info:VENT2}        & m$^2$              & \\ \hline
+\ct{AREAS}                               & Real Doublet           & Sec.~\ref{info:VENT3}        & m$^2$              & \\ \hline
+\ct{BOTTOM}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
+\ct{COMP_IDS}                            & Character Doublet      & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{CRITERION}                           & Character              & Sec.~\ref{info:VENT6}        &                    & \ct{'TIME'} \\ \hline
+\ct{CUTOFFS}                             & Real Doublet           & Sec.~\ref{info:VENT4}        & Pa                 & 200.,300. \\ \hline
+\ct{DEVC_ID}                             & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{F}                                   & Real Array             & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{FACE}                                & Character              & Sec.~\ref{info:VENT}         &                    & \\ \hline
+\ct{FILTER_EFFICIENCY}                   & Real                   & Sec.~\ref{info:VENT5}        & \% removed         & 0.0 \\ \hline
+\ct{FILTER_TIME}                         & Real                   & Sec.~\ref{info:VENT5}        & s                  & 0 \\ \hline
+\ct{FLOW}                                & Real                   & Sec.~\ref{info:VENT4}        & m$^3$/s            & \\ \hline
+\ct{FLOW_COEFFICIENT}                    & Real                   & Sec.~\ref{info:VENT}         &                    & 0.7 \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{HEIGHT}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
+\ct{HEIGHTS}                             & Real Doublet           & Sec.~\ref{info:VENT3}        & m                  & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{OFFSET}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & 0 \\ \hline
+\ct{OFFSETS}                             & Real Doublet           & Secs.~\ref{info:VENT2}, \ref{info:VENT3} & m                  & 0,0 \\ \hline
+\ct{ORIENTATIONS}                        & Character Doublet      & Sec.~\ref{info:VENT3}        & \multicolumn{2}{l|}{\begin{tabular}{@{}p{0.15in}|l@{}} & \ct{'VERTICAL', 'VERTICAL'} \end{tabular}} \\ \hline
+\ct{POST_FRACTION}                       & Real                   & Sec.~\ref{info:VENT6}        &                    & 1 \\ \hline
+\ct{PRE_FRACTION}                        & Real                   & Sec.~\ref{info:VENT6}        &                    & 1 \\ \hline
+\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:VENT6}        & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & \\ \hline
+\ct{SHAPE}                               & Character              & Sec.~\ref{info:VENT2}        &                    & \\ \hline
+\ct{T}                                   & Real Array             & Sec.~\ref{info:VENT6}        & s                  & \\ \hline
+\ct{TOP}                                 & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
+\ct{WIDTH}                               & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
 \end{xltabular}
 \normalsize
-
-\graybox{Wall vents (\ct{TYPE='WALL'}) are defined by \ct{BOTTOM}, \ct{TOP}, and \ct{WIDTH}. Location of the vent for visualization is defined by \ct{FACE}, and \ct{OFFSET}.}
-
-\noindent Example:
-\begin{lstlisting}
-&VENT TYPE = 'WALL', ID = 'HVENT 1', COMP_IDS = 'Comp 1', 'OUTSIDE',
-      WIDTH = 1., TOP = 2., BOTTOM = 0.,
-      OFFSET = 2., FACE = 'FRONT' /
-
-\end{lstlisting}
-
-\subsection{Ceiling / Floor Vents\texorpdfstring{{\tt ,TYPE='CEILING'} or {\tt TYPE='FLOOR'}}{{, TYPE='CEILING'} or {\tt TYPE='FLOOR'}}}
-
-\noindent
-\renewcommand\footnoterule{}
-\begin{xltabular}{\textwidth}{|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|}
-\caption[Ceiling/Floor Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:CFVENT} \\
-\hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='CEILING'} or \ct{TYPE='FLOOR'} (Ceiling/Floor Vent Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='CEILING'} or \ct{TYPE='FLOOR'} (Ceiling/Floor Vent Parameters)} \\
-\hline \hline
-\endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{AREA}                                & Real                   & Section \ref{info:VENT2}        & m$^2$              & \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{CRITERION}                           & Selection List         & Section \ref{info:VENT6}        &                    & \ct{TIME} \\ \hline
-\ct{DEVC_ID}                             & Character              & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{F}                                   & Real Array             & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{OFFSETS}                             & Real Doublet           & Section \ref{info:VENT}         & m                  & 0,0 \\ \hline
-\ct{POST_FRACTION}                       & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{PRE_FRACTION}                        & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{SHAPE}                               & Selection List         & Section \ref{info:VENT2}        &                    & \\ \hline
-\ct{T}                                   & Real Array             & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
-\end{xltabular}
-
-\graybox {Ceiling and floor vents (\ct{TYPE='CEILING'} or \ct{TYPE='FLOOR'}) are defined by \ct{AREA} and \ct{SHAPE}. Location of the vent for visualization is defined by \ct{OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction. It is visualized on the floor of \ct{COMP_IDS(1)}. \\
-}
-
-\noindent Example:
-\begin{lstlisting}
-&VENT TYPE = 'CEILING', ID = 'VVENT 1', COMP_IDS = 'Comp 3', 'Comp 2',
-      AREA = 1., SHAPE = 'ROUND', CRITERION= 'TIME',
-      T = 0., 100., 500.,
-      F = 0., 0.5, 1. /
-
-\end{lstlisting}
-
-\subsection{Mechanical Vents\texorpdfstring{{\tt ,TYPE='MECHANICAL'}}{, TYPE='MECHANICAL'}}
-
-\noindent
-\renewcommand\footnoterule{}
-\small
-\begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
-\caption[Mechanical Vent Parameters (\ct{VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:MVENT} \\
-\hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='MECHANICAL'} (Mechanical Vent Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{\ct{VENT, TYPE='MECHANICAL'} (Mechanical Vent Parameters)} \\
-\hline \hline
-\endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{AREAS}                               & Real Doublet           & Section \ref{info:VENT3}        & m$^2$              & \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{CRITERION}                           & Selection List         & Section \ref{info:VENT6}        &                    & \ct{TIME} \\ \hline
-\ct{CUTOFFS}                             & Real Doublet           & Section \ref{info:VENT4}        & Pa                 & 200.,300. \\ \hline
-\ct{DEVC_ID}                             & Character              & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{F}                                   & Real Array             & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{FILTER_EFFICIENCY}                   & Real                   & Section \ref{info:VENT}         & \% removed         & 0.0 \\ \hline
-\ct{FILTER_TIME}                         & Real                   & Section \ref{info:VENT}         & s                  & 0 \\ \hline
-\ct{FLOW}                                & Real                   & Section \ref{info:VENT4}        & m$^3$/s            & \\ \hline
-\ct{HEIGHTS}                             & Real Doublet           & Section \ref{info:VENT3}        & m                  & \\ \hline
-\ct{ID}                                  & Character              & Section \ref{info:VENT6}        &                    & \\ \hline
-\ct{OFFSETS}                             & Real Doublet           & Section \ref{info:VENT}         & m                  & 0.,0. \\ \hline
-\ct{ORIENTATIONS}                        & Selection List Doublet & Section \ref{info:VENT6}        &                    & {\tiny VERTICAL,VERTICAL} \\ \hline
-\ct{POST_FRACTION}                       & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{PRE_FRACTION}                        & Real                   & Section \ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{SETPOINT}                            & Real                   & Section \ref{info:VENT}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & \\ \hline
-\ct{T}                                   & Real Array             & Section \ref{info:VENT}         &                    & \\ \hline
-\ct{TYPE}                                & Selection List         & Section \ref{info:VENT6}        &                    & \\ \hline
-\end{xltabular}
-\normalsize
-
-\graybox{Mechanical vents \ct{TYPE='MECHANICAL'} are defined by \ct{AREAS}, \ct{CUTOFFS}, \ct{FLOW}, and \ct{HEIGHTS}. Location of the vent for visualization is defined by \ct{ORIENTATION} and \ct{OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction and by \ct{HEIGHTS(1)} in the z direction. \\
-}
-
-\noindent Example:
-\begin{lstlisting}
-&VENT TYPE = 'MECHANICAL', ID = 'MVENT_1',
-      COMP_IDS = 'OUTSIDE', 'Comp 1', AREAS = 0.25, 0.25,
-      HEIGHTS = 2.75, 2.75, FLOW = 0.02,
-      CUTOFFS = 200., 300., ORIENTATION='VERTICAL', OFFSETS = 0., 4. /
-
-\end{lstlisting}
 
 
 \clearpage

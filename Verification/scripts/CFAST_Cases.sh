@@ -17,7 +17,7 @@ $RUNCFAST -d NRC_Users_Guide/B_Cabinet_Fire_in_Switchgear Initial_fire_only.in
 $RUNCFAST -d NRC_Users_Guide/D_MCC_Fire_in_Switchgear MCC_in_switchgear.in
 $RUNCFAST -d NRC_Users_Guide/D_MCC_Fire_in_Switchgear MCC_in_switchgear_one_compartment.in
 $RUNCFAST -d NRC_Users_Guide/E_Trash_Fire_in_Cable_Spreading_Room Trash_fire_in_cable_spreading_room.in
-$RUNCFAST -d NRC_Users_Guide/G_Transient_Fire_in_Corridor "Transient in Corridor.in"
+$RUNCFAST -d NRC_Users_Guide/G_Transient_Fire_in_Corridor Transient_in_Corridor.in
 
 $RUNCFAST -d Radiation radiation_1.in
 $RUNCFAST -d Radiation radiation_2.in

@@ -81,12 +81,24 @@ esac
 #shift
 done
 
-OS=`uname`
-if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx
-else
-  PLATFORM=linux
-fi
+# Capture the operating system string
+
+OS="$(uname)"
+
+case "$OS" in
+    "Darwin")
+        PLATFORM="osx"
+        ;;
+    Linux)
+        PLATFORM="linux"
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        PLATFORM="win"
+        ;;
+    *)
+        PLATFORM="unknown"
+        ;;
+esac
 PLATFORM2=$PLATFORM
 
 if [ "$PLATFORM2" == "osx" ]; then

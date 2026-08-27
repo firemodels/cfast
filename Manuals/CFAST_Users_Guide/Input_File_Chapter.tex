@@ -100,11 +100,11 @@ Keywords associated with global parameters are organized in the miscellaneous na
 
 The remaining \ct{MISC} parameters are:
 \begin{description}
-\item[\texttt{ADIABATIC}] If \ct{.TRUE.}, treats all compartment boundaries as adiabatic.
+\item[\texttt{ADIABATIC}] If \ct{T}, treats all compartment boundaries as adiabatic.
 \item[\texttt{LOWER\_OXYGEN\_LIMIT}] Oxygen mass fraction at which burning is extinguished after a smooth reduction near the limit.
 \item[\texttt{MAX\_ITERATION}] Maximum solver-step count. A negative value, the default, imposes no limit.
 \item[\texttt{MAX\_TIME\_STEP}] Maximum integration time step in seconds.
-\item[\texttt{OVERWRITE}] Controls whether existing output files may be overwritten; the default is \ct{.TRUE.}.
+\item[\texttt{OVERWRITE}] Controls whether existing output files may be overwritten; the default is \ct{T}.
 \item[\texttt{SPECIFIC\_EXTINCTION}] Specific-extinction coefficients for flaming and smoldering soot, respectively, in m$^2$/kg.
 \end{description}
 
@@ -230,12 +230,12 @@ The complete \ct{COMP} text input is described below. At least one \ct{COMP} rec
 \item[\texttt{FLOW\_COEFFICIENT}] Orifice flow coefficient for leakage, with a default of 0.07.
 \item[\texttt{FYI}] Optional descriptive text retained with the compartment but not used in the calculation.
 \item[\texttt{GRID}] Numbers of Smokeview sampling points along X, Y, and Z, with a default of 50, 50, 50.
-\item[\texttt{HALL}] If \ct{.TRUE.}, applies the corridor ceiling-jet correlation.
+\item[\texttt{HALL}] If \ct{T}, applies the corridor ceiling-jet correlation.
 \item[\texttt{ID}] Required compartment identifier. It must be unique among all identifiers in the input file.
 \item[\texttt{LEAK\_AREA}] Wall and floor leakage areas in m$^2$.
 \item[\texttt{LEAK\_AREA\_RATIO}] Wall and floor leakage-area ratios in m$^2$/m$^2$.
 \item[\texttt{ORIGIN}] X, Y, and Z coordinates in m of the compartment's lower-front-left corner.
-\item[\texttt{SHAFT}] If \ct{.TRUE.}, models the compartment as a single well-mixed zone.
+\item[\texttt{SHAFT}] If \ct{T}, models the compartment as a single well-mixed zone.
 \end{description}
 
 
@@ -246,7 +246,7 @@ The complete \ct{COMP} text input is described below. At least one \ct{COMP} rec
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
 The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction, convection, and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
 
-The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Properties tab described in section \ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID.
+The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Properties tab described in Sec.~\ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID.
 
 \begin{description}
 \item[Ceiling Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the ceiling surface of the compartment. The innermost layer is specified first.
@@ -603,7 +603,7 @@ All chlorine in the fuel is converted to HCl. HCN production is limited by both 
 \label{sec:fire_inputs}
 Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
-For a new fire, click on the {\bf Add New} button within the fire definition block of inputs. The {\bf Add t$^2$} button creates a new fire with a seeded quadratic heat release rate curve that can then be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
+For a new fire, click on the {\bf Add New} button within the fire definition block of inputs. The {\bf Add t$^2$} button creates a new fire with a seeded quadratic heat release rate curve that can then be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details. For each fire instance, specify the following properties:
 \begin{description}
 \item[Fire ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
 \item[Compartment] Name of the compartment where the fire occurs.
@@ -737,7 +737,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 The complete \ct{DEVC} text input covers targets, sprinklers, and detectors:
 \begin{description}
-\item[\texttt{ADIABATIC\_TARGET}] If \ct{.TRUE.}, applies an adiabatic-surface-temperature target calculation. Supply \ct{CONVECTION_COEFFICIENTS} for this calculation.
+\item[\texttt{ADIABATIC\_TARGET}] If \ct{T}, applies an adiabatic-surface-temperature target calculation. Supply \ct{CONVECTION_COEFFICIENTS} for this calculation.
 \item[\texttt{COMP\_ID}] Required identifier of the compartment containing the device.
 \item[\texttt{CONVECTION\_COEFFICIENTS}] Front- and back-face convection coefficients in kW/(m$^2\cdot$K); CFAST converts them to W/(m$^2\cdot$K).
 \item[\texttt{DEPTH\_UNITS}] \ct{FRACTION}, the default, interprets \ct{TEMPERATURE_DEPTH} as a fraction of target thickness; \ct{M} interprets it in m.

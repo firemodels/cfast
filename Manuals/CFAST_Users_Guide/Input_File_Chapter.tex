@@ -355,11 +355,10 @@ Construction Element   & Leakage                        & \shortstack{Leakage Ar
 
 
 \chapter{Vents}
+
 \section{Natural Ventilation}
 
-%% Do we want to be more technically correct in our definition?  E.g., two compartments not directly connected to each other by a vent but both connected to a third compartment are not
-%% isolated from each other but they are remote from each other. Do we care?
-Natural ventilation can occur when two compartments are connected via open doorways or windows (\textbf{Wall Vents}); or when two compartments are connected via \textbf{Floor/Ceiling Vents}. If no vents are specified between two compartments, they are assumed to be isolated from each other.
+Natural ventilation occurs when two compartments are connected via open doorways or windows (\textbf{Wall Vents}); or when two compartments are connected via \textbf{Floor/Ceiling Vents}. If no vents are specified between two compartments, they are assumed to be isolated from each other.
 
 \subsection{Wall Vents}
 \label{info:VENT}
@@ -371,7 +370,6 @@ Natural ventilation can occur when two compartments are connected via open doorw
 \end{figure}
 
 Wall vents are doors or windows that connect compartments that physically overlap in elevation, or that connect to the outside. Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors.
-
 \begin{description}
 \item[ID] The selected name must be unique (i.e., not the same as another vent in the same simulation).
 \item[First Compartment] First of the two compartments connected by a door or window. All specifications of the vent are made relative to the floor of the first compartment.
@@ -379,28 +377,21 @@ Wall vents are doors or windows that connect compartments that physically overla
 \item[Bottom] (default units: m, default value: 0 m): Position of the bottom of the opening relative to the floor of the first compartment.
 \item[Height] (default units: m, default value: 0 m): Height of the opening relative to the bottom of the opening.
 \item[Width] (default units: m, default value: 0 m): The width of the opening.
-\item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment.
+\item[Initial Open] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
 \item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, and Left and are relative to the X-Z plane (Front and Rear faces are parallel to the X-axis; left and right are parallel to the Y-axis).
+\item[Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment.
 \end{description}
+Natural vents can be opened or closed based on several \textbf{Open/Close Criteria}. To control the opening based on \textbf{Time}, input the desired \textbf{Time} points and the corresponding opening \textbf{Fraction} values ranging from 0 (fully closed) to 1 (fully open). A linear transition is assumed between time points. If the specified \textbf{Time} values do not span the entire simulation, the first and/or last opening \textbf{Fraction} shall be extended to the beginning and/or end of the simulation.
 
-Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
 
-\begin{description}
-\item[Time] (default units: s, default values: 0 s): Time during the simulation at which to begin or end a change in the open fraction.
-\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open at the associated time point.
-\end{description}
+%For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
+%\begin{description}
+%\item[Open/Close Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
+%\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
+%\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target placement is specified by the user as part of the associated target definition.
+%\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation value is assumed to occur over one second beginning when the specified set point value is reached.
+%\end{description}
 
-For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
-
-\begin{description}
-\item[Open/Close Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
-\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target placement is specified by the user as part of the associated target definition.
-\item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
-\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation value is assumed to occur over one second beginning when the specified set point value is reached.
-\end{description}
-
-\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
 
 
 
@@ -449,7 +440,7 @@ CFAST allows only a single ceiling/floor connection between any pair of compartm
 Vertical connections can only be created between compartments that could be physically stacked based on specified floor and ceiling elevations for the compartments.  Some overlap between the absolute floor height of one compartment and the absolute ceiling height of another compartment is allowed.  However, whether the compartments are stacked or overlap somewhat, the ceiling/floor absolute elevations must be within 0.01 m of each other. The check is not done when the connection is to the outside.}
 
 
-
+\newpage
 
 \section{Mechanical Ventilation}
 \begin{figure}[h!]

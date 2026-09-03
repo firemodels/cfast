@@ -78,21 +78,6 @@ def scheduled_values(vent) -> tuple[list[float], list[float]]:
     return t_values, f_values
 
 
-def wall_vent_schedule(vent) -> tuple[list[float], list[float]]:
-    t_values, f_values = scheduled_values(vent)
-
-    if not t_values:
-        if abs(vent.initial_open - 1.0) > 1.0e-12:
-            return [0.0], [vent.initial_open]
-        return [], []
-
-    if abs(t_values[0]) > 1.0e-12:
-        t_values.insert(0, 0.0)
-        f_values.insert(0, vent.initial_open)
-
-    return t_values, f_values
-
-
 def validate_fire_property(prop) -> None:
     if prop.heat_of_combustion <= 0.0:
         raise ValueError(
@@ -283,7 +268,29 @@ def validate_case(case: CfastCase) -> None:
                     f"Wall vent {vent.id!r}: it extends below the floor or above the "
                     f"ceiling of compartment {vent.second_comp_id!r}."
                 )
-        validate_vent_schedule("Wall vent", vent)
+        criterion = vent.criterion.upper()
+        if criterion == "TIME":
+            validate_vent_schedule("Wall vent", vent)
+        elif criterion in {"TEMPERATURE", "FLUX"}:
+            target_ids = {target.id for target in getattr(case, "targets", [])}
+            if vent.target not in target_ids:
+                raise ValueError(
+                    f"Wall vent {vent.id!r}: opening by {criterion.lower()} requires "
+                    "an existing target."
+                )
+            for label, fraction in (
+                ("prior", vent.pre_fraction),
+                ("subsequent", vent.post_fraction),
+            ):
+                if not 0.0 <= fraction <= 1.0:
+                    raise ValueError(
+                        f"Wall vent {vent.id!r}: {label} opening fraction must be 0 to 1."
+                    )
+        else:
+            raise ValueError(
+                f"Wall vent {vent.id!r}: opening criterion must be TIME, "
+                "TEMPERATURE, or FLUX."
+            )
 
     for vent in getattr(case, "ceiling_floor_vents", []):
         top_compartment = None
@@ -681,13 +688,28 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"WIDTH = {cfast_number(vent.width)}",
             ]
 
-            t_values, f_values = wall_vent_schedule(vent)
-            if t_values and f_values:
+            criterion = vent.criterion.upper()
+            if criterion == "TIME":
+                t_values, f_values = scheduled_values(vent)
+            else:
+                t_values, f_values = [], []
+
+            if criterion == "TIME" and t_values and f_values:
                 fields.extend(
                     [
                         f"CRITERION = {cfast_string(vent.criterion)}",
                         f"T = {cfast_vector(t_values)}",
                         f"F = {cfast_vector(f_values)}",
+                    ]
+                )
+            elif criterion in {"TEMPERATURE", "FLUX"}:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(criterion)}",
+                        f"SETPOINT = {cfast_number(vent.setpoint)}",
+                        f"DEVC_ID = {cfast_string(vent.target)}",
+                        f"PRE_FRACTION = {cfast_number(vent.pre_fraction)}",
+                        f"POST_FRACTION = {cfast_number(vent.post_fraction)}",
                     ]
                 )
 

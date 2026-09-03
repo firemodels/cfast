@@ -64,10 +64,13 @@ class WallVent:
     bottom: float = 0.0
     height: float = 2.0
     width: float = 1.0
-    initial_open: float = 1.0
     face: str = "FRONT"
     offset: float = 2.0
     criterion: str = "TIME"
+    setpoint: float = 0.0
+    target: str = ""
+    pre_fraction: float = 1.0
+    post_fraction: float = 1.0
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
     fyi: str = ""

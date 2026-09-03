@@ -33,7 +33,6 @@ def summary_headers() -> list[str]:
         f"Bottom\n({length})",
         f"Height\n({length})",
         f"Width\n({length})",
-        "Initial Open",
         "Face",
         f"Offset\n({length})",
     ]
@@ -43,6 +42,16 @@ def normalize_compartment(value: str) -> str:
     return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value.strip()
 
 
+def criterion_code(value: str) -> str:
+    value = value.strip().upper()
+    return "FLUX" if value == "HEAT FLUX" else value
+
+
+def criterion_display(value: str) -> str:
+    value = value.strip().upper()
+    return "Heat Flux" if value == "FLUX" else value.capitalize()
+
+
 class WallVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,8 +59,9 @@ class WallVentsTab(QWidget):
         self.records: list[dict] = []
         self.loading = False
         self.compartment_ids: list[str] = []
+        self.target_ids: list[str] = []
 
-        self.summary_table = HoverEditTableWidget(0, 10)
+        self.summary_table = HoverEditTableWidget(0, 9)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -75,17 +85,22 @@ class WallVentsTab(QWidget):
             combo.addItems(["Outside"])
 
         self.face_combo.addItems(["Front", "Rear", "Right", "Left"])
-        self.criterion_combo.addItems(["Time"])
+        self.criterion_combo.addItems(["Time", "Temperature", "Heat Flux"])
 
         self.bottom_edit = QLineEdit()
         self.height_edit = QLineEdit()
         self.width_edit = QLineEdit()
-        self.initial_open_edit = QLineEdit()
         self.offset_edit = QLineEdit()
+        self.setpoint_label = QLabel("Setpoint (°C):")
+        self.setpoint_edit = QLineEdit()
+        self.target_combo = QComboBox()
+        self.target_combo.setEditable(True)
+        self.pre_fraction_edit = QLineEdit()
+        self.post_fraction_edit = QLineEdit()
 
         self.schedule_table = QTableWidget(8, 2)
         self.schedule_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
         self.schedule_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -119,10 +134,13 @@ class WallVentsTab(QWidget):
             "bottom": format_value(LENGTH, vent.bottom),
             "height": format_value(LENGTH, vent.height),
             "width": format_value(LENGTH, vent.width),
-            "initial_open": format_number(vent.initial_open),
             "face": vent.face.strip().capitalize(),
             "offset": format_value(LENGTH, vent.offset),
-            "criterion": vent.criterion.strip().capitalize(),
+            "criterion": criterion_display(vent.criterion),
+            "setpoint": format_number(vent.setpoint),
+            "target": vent.target,
+            "pre_fraction": format_number(vent.pre_fraction),
+            "post_fraction": format_number(vent.post_fraction),
             "schedule": [
                 (format_value(TIME, time_value), format_number(fraction_value))
                 for time_value, fraction_value in zip(vent.t_values, vent.f_values)
@@ -193,7 +211,6 @@ class WallVentsTab(QWidget):
             ("Bottom:", self.bottom_edit),
             ("Height:", self.height_edit),
             ("Width:", self.width_edit),
-            ("Initial Open:", self.initial_open_edit),
             ("Vent Offset:", self.offset_edit),
             ("Face:", self.face_combo),
         ]
@@ -219,6 +236,40 @@ class WallVentsTab(QWidget):
 
         layout.addLayout(criterion_layout)
         layout.addWidget(self.schedule_table)
+
+        self.condition_widget = QWidget()
+        condition_layout = QGridLayout()
+        condition_layout.addWidget(
+            self.setpoint_label,
+            0,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.setpoint_edit, 0, 1)
+        condition_layout.addWidget(
+            QLabel("Trigger Target:"),
+            1,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.target_combo, 1, 1)
+        condition_layout.addWidget(
+            QLabel("Prior Opening Fraction:"),
+            2,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.pre_fraction_edit, 2, 1)
+        condition_layout.addWidget(
+            QLabel("Subsequent Opening Fraction:"),
+            3,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.post_fraction_edit, 3, 1)
+        self.condition_widget.setLayout(condition_layout)
+        layout.addWidget(self.condition_widget)
+
         group.setLayout(layout)
         return group
 
@@ -228,8 +279,10 @@ class WallVentsTab(QWidget):
             self.bottom_edit,
             self.height_edit,
             self.width_edit,
-            self.initial_open_edit,
             self.offset_edit,
+            self.setpoint_edit,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]:
             widget.textChanged.connect(self.update_current_record)
 
@@ -237,10 +290,11 @@ class WallVentsTab(QWidget):
             self.first_comp_combo,
             self.second_comp_combo,
             self.face_combo,
-            self.criterion_combo,
+            self.target_combo,
         ]:
             combo.currentTextChanged.connect(self.update_current_record)
 
+        self.criterion_combo.currentTextChanged.connect(self.criterion_changed)
         self.schedule_table.cellChanged.connect(self.update_current_record)
 
     def make_default_record(self, index: int) -> dict:
@@ -251,10 +305,13 @@ class WallVentsTab(QWidget):
             "bottom": format_value(LENGTH, 0.0),
             "height": format_value(LENGTH, 2.0),
             "width": format_value(LENGTH, 1.0),
-            "initial_open": "1",
             "face": "Front",
             "offset": format_value(LENGTH, 2.0),
             "criterion": "Time",
+            "setpoint": "0",
+            "target": "",
+            "pre_fraction": "1",
+            "post_fraction": "1",
             "schedule": [],
         }
 
@@ -282,7 +339,6 @@ class WallVentsTab(QWidget):
             record["bottom"],
             record["height"],
             record["width"],
-            record["initial_open"],
             record["face"],
             record["offset"],
         ]
@@ -339,9 +395,8 @@ class WallVentsTab(QWidget):
         record["bottom"] = self.summary_cell(row, 4)
         record["height"] = self.summary_cell(row, 5)
         record["width"] = self.summary_cell(row, 6)
-        record["initial_open"] = self.summary_cell(row, 7)
-        record["face"] = self.summary_cell(row, 8)
-        record["offset"] = self.summary_cell(row, 9)
+        record["face"] = self.summary_cell(row, 7)
+        record["offset"] = self.summary_cell(row, 8)
         self.normalize_record_units(record)
 
     def summary_cell(self, row: int, col: int) -> str:
@@ -388,11 +443,15 @@ class WallVentsTab(QWidget):
         self.bottom_edit.clear()
         self.height_edit.clear()
         self.width_edit.clear()
-        self.initial_open_edit.clear()
         self.offset_edit.clear()
+        self.setpoint_edit.clear()
+        self.set_combo_text(self.target_combo, "")
+        self.pre_fraction_edit.clear()
+        self.post_fraction_edit.clear()
         self.set_combo_text(self.face_combo, "Front")
         self.set_combo_text(self.criterion_combo, "Time")
         self.schedule_table.clearContents()
+        self.update_open_close_editor()
         self.set_editor_enabled(False)
 
         self.editor_group.setTitle("Vent Geometry")
@@ -406,11 +465,14 @@ class WallVentsTab(QWidget):
             self.bottom_edit,
             self.height_edit,
             self.width_edit,
-            self.initial_open_edit,
             self.offset_edit,
             self.face_combo,
             self.criterion_combo,
             self.schedule_table,
+            self.setpoint_edit,
+            self.target_combo,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]:
             widget.setEnabled(enabled)
 
@@ -433,6 +495,30 @@ class WallVentsTab(QWidget):
             self.set_combo_text(combo, current)
             combo.blockSignals(False)
 
+    def set_target_ids(self, target_ids: list[str]):
+        self.target_ids = [target_id for target_id in target_ids if target_id]
+        current = self.target_combo.currentText()
+        self.target_combo.blockSignals(True)
+        self.target_combo.clear()
+        self.target_combo.addItems(self.target_ids)
+        self.set_combo_text(self.target_combo, current)
+        self.target_combo.blockSignals(False)
+
+    def criterion_changed(self, _value: str):
+        if not self.loading:
+            self.update_current_record()
+        self.update_open_close_editor()
+
+    def update_open_close_editor(self):
+        criterion = criterion_code(self.criterion_combo.currentText())
+        time_control = criterion == "TIME"
+        self.schedule_table.setVisible(time_control)
+        self.condition_widget.setVisible(not time_control)
+        if criterion == "FLUX":
+            self.setpoint_label.setText("Setpoint (kW/m²):")
+        else:
+            self.setpoint_label.setText("Setpoint (°C):")
+
     def default_first_compartment(self) -> str:
         return self.compartment_ids[0] if self.compartment_ids else ""
 
@@ -448,10 +534,14 @@ class WallVentsTab(QWidget):
         self.bottom_edit.setText(record["bottom"])
         self.height_edit.setText(record["height"])
         self.width_edit.setText(record["width"])
-        self.initial_open_edit.setText(record["initial_open"])
         self.offset_edit.setText(record["offset"])
         self.set_combo_text(self.face_combo, record["face"])
         self.set_combo_text(self.criterion_combo, record["criterion"])
+        self.setpoint_edit.setText(record["setpoint"])
+        self.set_combo_text(self.target_combo, record["target"])
+        self.pre_fraction_edit.setText(record["pre_fraction"])
+        self.post_fraction_edit.setText(record["post_fraction"])
+        self.update_open_close_editor()
 
         self.schedule_table.clearContents()
         self.schedule_table.setRowCount(max(8, len(record["schedule"])))
@@ -473,10 +563,13 @@ class WallVentsTab(QWidget):
         record["bottom"] = self.bottom_edit.text().strip()
         record["height"] = self.height_edit.text().strip()
         record["width"] = self.width_edit.text().strip()
-        record["initial_open"] = self.initial_open_edit.text().strip()
         record["offset"] = self.offset_edit.text().strip()
         record["face"] = self.face_combo.currentText().strip()
         record["criterion"] = self.criterion_combo.currentText().strip()
+        record["setpoint"] = self.setpoint_edit.text().strip()
+        record["target"] = self.target_combo.currentText().strip()
+        record["pre_fraction"] = self.pre_fraction_edit.text().strip()
+        record["post_fraction"] = self.post_fraction_edit.text().strip()
         record["schedule"] = self.extract_schedule_strings()
         self.normalize_record_units(record)
         self.update_summary_row(row, record)
@@ -585,7 +678,7 @@ class WallVentsTab(QWidget):
                 record["second_compartment"] or "Outside"
             )
             face = record["face"].strip().upper()
-            criterion = record["criterion"].strip().upper() or "TIME"
+            criterion = criterion_code(record["criterion"] or "TIME")
 
             if not vent_id:
                 raise ValueError(f"Wall Vents row {row + 1}: ID is required.")
@@ -608,7 +701,6 @@ class WallVentsTab(QWidget):
             bottom = parse_value(LENGTH, record["bottom"], "Wall vent bottom")
             height = parse_value(LENGTH, record["height"], "Wall vent height")
             width = parse_value(LENGTH, record["width"], "Wall vent width")
-            initial_open = parse_number(record["initial_open"], "Initial Open")
             offset = parse_value(LENGTH, record["offset"], "Wall vent offset")
 
             if bottom < 0.0:
@@ -620,36 +712,65 @@ class WallVentsTab(QWidget):
             if width <= 0.0:
                 raise ValueError(f"Wall Vents row {row + 1}: width must be positive.")
 
-            if not 0.0 <= initial_open <= 1.0:
-                raise ValueError(
-                    f"Wall Vents row {row + 1}: Initial Open must be 0 to 1."
-                )
-
             t_values: list[float] = []
             f_values: list[float] = []
+            setpoint = 0.0
+            target = ""
+            pre_fraction = 1.0
+            post_fraction = 1.0
 
-            for schedule_row, (time_text, fraction_text) in enumerate(record["schedule"]):
-                if not time_text or not fraction_text:
-                    raise ValueError(
-                        f"Wall Vents row {row + 1}, schedule row {schedule_row + 1}: "
-                        "time and fraction are both required."
-                    )
+            if criterion == "TIME":
+                for schedule_row, (time_text, fraction_text) in enumerate(
+                    record["schedule"]
+                ):
+                    if not time_text or not fraction_text:
+                        raise ValueError(
+                            f"Wall Vents row {row + 1}, schedule row "
+                            f"{schedule_row + 1}: time and fraction are both required."
+                        )
 
-                time_value = parse_value(TIME, time_text, "Opening time")
-                fraction_value = parse_number(fraction_text, "Opening fraction")
+                    time_value = parse_value(TIME, time_text, "Opening time")
+                    fraction_value = parse_number(fraction_text, "Opening fraction")
 
-                if time_value < 0.0:
-                    raise ValueError(
-                        f"Wall Vents row {row + 1}: opening times must be non-negative."
-                    )
+                    if time_value < 0.0:
+                        raise ValueError(
+                            f"Wall Vents row {row + 1}: opening times must be "
+                            "non-negative."
+                        )
 
-                if not 0.0 <= fraction_value <= 1.0:
-                    raise ValueError(
-                        f"Wall Vents row {row + 1}: opening fractions must be 0 to 1."
-                    )
+                    if not 0.0 <= fraction_value <= 1.0:
+                        raise ValueError(
+                            f"Wall Vents row {row + 1}: opening fractions must be "
+                            "0 to 1."
+                        )
 
-                t_values.append(time_value)
-                f_values.append(fraction_value)
+                    t_values.append(time_value)
+                    f_values.append(fraction_value)
+            elif criterion in {"TEMPERATURE", "FLUX"}:
+                setpoint = parse_number(record["setpoint"], "Setpoint")
+                target = record["target"].strip()
+                pre_fraction = parse_number(
+                    record["pre_fraction"],
+                    "Prior Opening Fraction",
+                )
+                post_fraction = parse_number(
+                    record["post_fraction"],
+                    "Subsequent Opening Fraction",
+                )
+
+                for label, fraction in (
+                    ("Prior Opening Fraction", pre_fraction),
+                    ("Subsequent Opening Fraction", post_fraction),
+                ):
+                    if not 0.0 <= fraction <= 1.0:
+                        raise ValueError(
+                            f"Wall Vents row {row + 1}: {label} must be 0 to 1."
+                        )
+            else:
+                raise ValueError(
+                    f"Wall Vents row {row + 1}: Open/Close Criterion must be "
+                    "Time, Temperature, or Heat Flux."
+                )
 
             vents.append(
                 WallVent(
@@ -659,10 +780,13 @@ class WallVentsTab(QWidget):
                     bottom=bottom,
                     height=height,
                     width=width,
-                    initial_open=initial_open,
                     face=face,
                     offset=offset,
                     criterion=criterion,
+                    setpoint=setpoint,
+                    target=target,
+                    pre_fraction=pre_fraction,
+                    post_fraction=post_fraction,
                     t_values=t_values,
                     f_values=f_values,
                 )
@@ -673,5 +797,5 @@ class WallVentsTab(QWidget):
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.schedule_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )

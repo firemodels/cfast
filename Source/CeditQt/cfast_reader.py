@@ -926,10 +926,6 @@ def wall_vent_from_fields(fields: dict[str, list[Any]]) -> WallVent:
     t_values = number_vector(fields, "T", [])
     f_values = number_vector(fields, "F", [])
 
-    initial_open = number_field(fields, "INITIAL_OPEN", 1.0)
-    if t_values and f_values and abs(t_values[0]) < 1.0e-12:
-        initial_open = f_values[0]
-
     return WallVent(
         id=required_string(fields, "ID", "wall vent ID"),
         first_comp_id=comp_ids[0] if comp_ids else "",
@@ -937,10 +933,13 @@ def wall_vent_from_fields(fields: dict[str, list[Any]]) -> WallVent:
         bottom=number_field(fields, "BOTTOM", 0.0),
         height=number_field(fields, "HEIGHT", 2.0),
         width=number_field(fields, "WIDTH", 1.0),
-        initial_open=initial_open,
         face=string_field(fields, "FACE", "FRONT").upper(),
         offset=number_field(fields, "OFFSET", 0.0),
         criterion=string_field(fields, "CRITERION", "TIME").upper(),
+        setpoint=number_field(fields, "SETPOINT", 0.0),
+        target=string_field(fields, "DEVC_ID", ""),
+        pre_fraction=number_field(fields, "PRE_FRACTION", 1.0),
+        post_fraction=number_field(fields, "POST_FRACTION", 1.0),
         t_values=t_values,
         f_values=f_values,
         fyi=string_field(fields, "FYI", ""),

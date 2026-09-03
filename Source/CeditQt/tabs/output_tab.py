@@ -31,7 +31,7 @@ AXIS_LABELS = {
 EDITOR_FIELD_WIDTH = 220
 GRID_FIELD_WIDTH = 120
 VISUAL_COLUMN_WIDTHS = (55, 90, 150, 100, 100)
-RESOLUTION_COLUMN_WIDTHS = (150, 55, 95, 95, 95)
+RESOLUTION_COLUMN_WIDTHS = (205, 95, 95, 95)
 
 
 def parse_int(text: str, field_name: str) -> int:
@@ -83,7 +83,7 @@ class OutputTab(QWidget):
         self.visual_table.setHorizontalHeaderLabels(visual_headers())
         self.visual_table.verticalHeader().setVisible(False)
 
-        self.resolution_table = QTableWidget(10, 5)
+        self.resolution_table = QTableWidget(10, 4)
         self.resolution_table.setHorizontalHeaderLabels(resolution_headers())
         self.resolution_table.verticalHeader().setVisible(False)
         self.resolution_table.setEditTriggers(
@@ -132,7 +132,6 @@ class OutputTab(QWidget):
         self.load_output_option_defaults()
         self.connect_signals()
         self.refresh_visual_numbers()
-        self.refresh_resolution_numbers()
         self.select_first_rows()
 
     def set_compartment_ids(self, compartment_ids: list[str]):
@@ -158,9 +157,9 @@ class OutputTab(QWidget):
         for row in range(self.resolution_table.rowCount()):
             comp_id = self.cell_text(self.resolution_table, row, 0)
             grid = (
+                self.cell_text(self.resolution_table, row, 1) or "50",
                 self.cell_text(self.resolution_table, row, 2) or "50",
                 self.cell_text(self.resolution_table, row, 3) or "50",
-                self.cell_text(self.resolution_table, row, 4) or "50",
             )
             if comp_id:
                 existing_by_id[comp_id] = grid
@@ -177,7 +176,7 @@ class OutputTab(QWidget):
                 comp_id,
                 existing_by_row.get(row, ("50", "50", "50")),
             )
-            values = [comp_id, "", *grid]
+            values = [comp_id, *grid]
             for col, value in enumerate(values):
                 self.set_cell_text(
                     self.resolution_table,
@@ -189,12 +188,11 @@ class OutputTab(QWidget):
 
         self.prepare_resolution_table()
         self.updating = False
-        self.refresh_resolution_numbers()
 
         if active_ids:
             self.resolution_table.setCurrentCell(
                 min(max(current_row, 0), len(active_ids) - 1),
-                2,
+                1,
             )
             self.resolution_row_to_editor(self.resolution_table.currentRow())
         else:
@@ -225,7 +223,6 @@ class OutputTab(QWidget):
         for row, compartment in enumerate(case.compartments):
             values = [
                 compartment.id,
-                "",
                 str(compartment.grid[0]),
                 str(compartment.grid[1]),
                 str(compartment.grid[2]),
@@ -255,7 +252,6 @@ class OutputTab(QWidget):
         self.updating = False
         self.update_spreadsheet_select_all()
         self.refresh_visual_numbers()
-        self.refresh_resolution_numbers()
         self.select_first_rows()
 
     def build_layout(self):
@@ -266,7 +262,8 @@ class OutputTab(QWidget):
         left_layout.addWidget(self.build_visualizations_group(), 1)
         left_layout.addWidget(self.build_resolution_group(), 1)
 
-        right_layout.addSpacing(110)
+        right_layout.addWidget(self.build_spreadsheet_group())
+        right_layout.addSpacing(35)
         right_layout.addWidget(self.net_heat_flux_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.validation_checkbox)
@@ -274,8 +271,6 @@ class OutputTab(QWidget):
         right_layout.addWidget(self.debug_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.show_cfast_window_checkbox)
-        right_layout.addSpacing(35)
-        right_layout.addWidget(self.build_spreadsheet_group())
         right_layout.addStretch(1)
 
         main_layout.addLayout(left_layout, 1)
@@ -440,9 +435,9 @@ class OutputTab(QWidget):
 
         self.updating = True
         resolutions = [
-            ["Comp 1", "", "50", "50", "50"],
-            ["Comp 2", "", "50", "50", "50"],
-            ["Comp 3", "", "50", "50", "50"],
+            ["Comp 1", "50", "50", "50"],
+            ["Comp 2", "50", "50", "50"],
+            ["Comp 3", "50", "50", "50"],
         ]
         for row, values in enumerate(resolutions):
             for col, value in enumerate(values):
@@ -506,7 +501,7 @@ class OutputTab(QWidget):
         if self.visual_table.rowCount() > 0:
             self.visual_table.setCurrentCell(0, 1)
         if self.resolution_table.rowCount() > 0:
-            self.resolution_table.setCurrentCell(0, 2)
+            self.resolution_table.setCurrentCell(0, 1)
             self.resolution_row_to_editor(self.resolution_table.currentRow())
 
     def clear_table(self, table: QTableWidget):
@@ -602,18 +597,6 @@ class OutputTab(QWidget):
                 number += 1
             else:
                 self.set_cell_text(self.visual_table, row, 0, "", editable=False)
-        self.updating = False
-
-    def refresh_resolution_numbers(self):
-        self.updating = True
-        number = 1
-        for row in range(self.resolution_table.rowCount()):
-            comp_id = self.cell_text(self.resolution_table, row, 0)
-            if comp_id:
-                self.set_cell_text(self.resolution_table, row, 1, str(number), editable=False)
-                number += 1
-            else:
-                self.set_cell_text(self.resolution_table, row, 1, "", editable=False)
         self.updating = False
 
     def visual_row_changed(self, current_row, current_col, previous_row, previous_col):
@@ -723,7 +706,6 @@ class OutputTab(QWidget):
     def resolution_cell_changed(self, row, col):
         if self.updating:
             return
-        self.refresh_resolution_numbers()
         if row == self.resolution_table.currentRow():
             self.resolution_row_to_editor(row)
 
@@ -743,9 +725,9 @@ class OutputTab(QWidget):
 
         self.updating = True
         self.set_resolution_editor_enabled(True)
-        self.width_grid_edit.setText(self.cell_text(self.resolution_table, row, 2) or "50")
-        self.depth_grid_edit.setText(self.cell_text(self.resolution_table, row, 3) or "50")
-        self.height_grid_edit.setText(self.cell_text(self.resolution_table, row, 4) or "50")
+        self.width_grid_edit.setText(self.cell_text(self.resolution_table, row, 1) or "50")
+        self.depth_grid_edit.setText(self.cell_text(self.resolution_table, row, 2) or "50")
+        self.height_grid_edit.setText(self.cell_text(self.resolution_table, row, 3) or "50")
         self.updating = False
 
     def set_resolution_editor_enabled(self, enabled: bool):
@@ -767,21 +749,21 @@ class OutputTab(QWidget):
         self.set_cell_text(
             self.resolution_table,
             row,
-            2,
+            1,
             self.width_grid_edit.text(),
             editable=False,
         )
         self.set_cell_text(
             self.resolution_table,
             row,
-            3,
+            2,
             self.depth_grid_edit.text(),
             editable=False,
         )
         self.set_cell_text(
             self.resolution_table,
             row,
-            4,
+            3,
             self.height_grid_edit.text(),
             editable=False,
         )
@@ -837,9 +819,9 @@ class OutputTab(QWidget):
                 continue
 
             grid_by_compartment[comp_id] = (
-                parse_int(self.cell_text(self.resolution_table, row, 2) or "50", "Width Grid"),
-                parse_int(self.cell_text(self.resolution_table, row, 3) or "50", "Depth Grid"),
-                parse_int(self.cell_text(self.resolution_table, row, 4) or "50", "Height Grid"),
+                parse_int(self.cell_text(self.resolution_table, row, 1) or "50", "Width Grid"),
+                parse_int(self.cell_text(self.resolution_table, row, 2) or "50", "Depth Grid"),
+                parse_int(self.cell_text(self.resolution_table, row, 3) or "50", "Height Grid"),
             )
 
         for compartment in case.compartments:
@@ -866,7 +848,6 @@ def visual_headers() -> list[str]:
 def resolution_headers() -> list[str]:
     return [
         "Compartment",
-        "Num",
         "Width\n(cells)",
         "Depth\n(cells)",
         "Height\n(cells)",

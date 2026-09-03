@@ -2,32 +2,21 @@
 
 \chapter{Simulation Environment}
 
-The Environment page defines the initial conditions and simulation time for the CFAST input file.
+The \textbf{Simulation} tab defines initial conditions, numerical parameters, and other global miscellaneous parameters.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=6.5in]{SCRIPT_FIGURES/Environment_Tab}
-\caption[The CFAST Simulation Environment Tab]{The CFAST Simulation Environment Tab.}
+\caption[The Simulation Tab]{The Simulation Tab.}
 \end{figure}
 
-\section{Version and Title}
+\section{Title}
 \label{info:HEAD}
 
 \begin{description}
-\item[Version] The version of CFAST being used by the user. The version number can be found in the upper left corner in the CEdit user interface as shown in Fig. \ref{Figure 1.1}.
-
-\item[Title] The first thing to do when setting up an input file is to give the simulation a title. The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string.
+\item[Title] (namelist: \ct{TITLE}) Optional title that may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string. Note that the \textbf{Title} is not used to name the text input file.
 \end{description}
-
-\subsection{Text Input Parameters}
-
-The \ct{HEAD} namelist is required; only the first \ct{HEAD} record is used.
-\begin{description}
-\item[\texttt{TITLE}] Optional descriptive title written to the output files.
-\item[\texttt{VERSION}] CFAST input-file version. CFAST compares its major version with this value and issues a warning when they differ.
-\end{description}
-
-
+The \ct{HEAD} line of the input file will contain the \textbf{Title} and a \ct{VERSION} number that is used to detect older versions of the software.
 
 
 
@@ -35,77 +24,51 @@ The \ct{HEAD} namelist is required; only the first \ct{HEAD} record is used.
 \label{info:TIME}
 
 \begin{description}
-\item[Simulation Time] (default units: s, default value, 900 s): The length of time over which the simulation takes place. The maximum value for this input is 86400 s (1 day).
+\item[Simulation Time] (default: 900 s; namelist: \ct{SIMULATION}): Duration of the simulation. The maximum value for this input is 86400~s (1~day).
 
-\item[Text Output Interval] (default units: s, default value, 60 s): The time interval between each printing of the output data.  If equal to zero, no output values will appear.
+\item[Text Output Interval] (default: 60 s; namelist: \ct{PRINT}): Time interval between diagnostic outputs. If equal to zero, no output values will appear.
 
-\item[Spreadsheet Output Interval] (default units: s, default value, 15 s): CFAST can output the results of the simulation in a set of comma-delimited spreadsheet files. This parameter defines the time interval between these outputs. A value greater than zero must be used if the spreadsheet files are desired.
+\item[Spreadsheet Output Interval] (default: 15 s; namelist: \ct{SPREADSHEET}): Time interval between outputs to comma-delimited spreadsheet files. A value greater than zero must be used if the spreadsheet files are desired.
 
-\item[Smokeview Output Interval] (default units: s, default value: 15 s): CFAST can output a subset of the results in a format compatible with the visualization program Smokeview. This input defines the time interval between outputs of the model results in a Smokeview-compatible format.  A value greater than zero must be used if the Smokeview output is desired.
+\item[Smokeview Output Interval] (default: 15 s; namelist: \ct{SMOKEVIEW}): Time interval between outputs to the visualization program Smokeview.  A value greater than zero must be used if the Smokeview output is desired.
 
-\item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This parameter places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced, which often will allow the simulation to successfully complete.
+\item[Maximum Time Step] (default: 1 s; namelist: \ct{MAX_TIME_STEP}): CFAST automatically adjusts the time step for the solution of the differential equations to satisfy pre-defined error tolerances. This parameter caps the time step and is normally left at the default value. For cases where the solver fails to converge to a solution, the value can be reduced which might allow the simulation to successfully complete.
 \end{description}
-
-The \ct{TIME} namelist is required; only the first \ct{TIME} record is used.
-\begin{description}
-\item[\texttt{PRINT}] Interval in seconds between records in the formatted text output. A value of zero suppresses periodic text output.
-\item[\texttt{SIMULATION}] Simulation duration in seconds.
-\item[\texttt{SMOKEVIEW}] Interval in seconds between Smokeview output records.
-\item[\texttt{SPREADSHEET}] Interval in seconds between spreadsheet output records.
-\end{description}
-
-
 
 
 \section{Simulation Conditions}
 \label{info:INIT}
 
-Ambient conditions define the environment at which the scenario begins. Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. It is convenient to choose the base of a structure to be at zero height and then reference the height of the structure with respect to that height.  The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is minor. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes.
-
+Ambient conditions define the starting environment. The initial pressure profile is calculated using a lapse rate based on the NOAA/NASA tables~\cite{GPO:Atmosphere}. The specified ambient pressure is taken at relative height of zero. The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is minor. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes.
 \begin{description}
-\item[Temperature] (default units: \degc, default value: 20 \degc): Initial ambient temperature inside the structure at the station elevation.
+\item[Interior Temperature] (default: 20 \degc; namelist: \ct{INTERIOR_TEMPERATURE}): Initial temperature inside the structure at the station elevation.
 
-\item[Humidity] (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
+\item[Humidity] (default: 50 \%; namelist: \ct{RELATIVE_HUMIDITY}): The initial relative humidity, only specified for the interior.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
 
-\item[Temperature] (default units: \degc, default value: 20 \degc): Initial ambient temperature outside the structure at the station elevation.
+\item[Exterior Temperature] (default: 20 \degc; namelist: \ct{EXTERIOR_TEMPERATURE}): Initial temperature outside the structure at the station elevation.
 
-\item[Pressure] (default units: Pa, default value: 101325 Pa): Initial values for ambient atmospheric pressure inside and outside the structure at the station elevation. The default value is standard atmospheric pressure at sea level.
+\item[Pressure] (default: 101325 Pa; namelist: \ct{PRESSURE}): Initial pressure inside and outside the structure at the station elevation.
 
-\item[O2 mass fraction] (default units: kg/kg, default value: 0.23 kg/kg):
-Initial values for ambient O2 mass fraction inside and outside the structure. The default value is 0.23 kg/kg.
-The default N2 mass fraction is 1.0 minus the default O2 mass fraction or 0.77 kg/kg.
+\item[O$_2$ mass fraction] (default: 0.23 kg/kg; namelist: \ct{INTERIOR_O2_MASS_FRACTION} and \ct{EXTERIOR_O2_MASS_FRACTION}):
+Initial values for ambient oxygen mass fraction inside and outside the structure. The default nitrogen mass fraction is one minus the default oxygen mass fraction.
 \end{description}
 
-The \ct{INIT} namelist parameters are:
-\begin{description}
-\item[\texttt{EXTERIOR\_O2\_MASS\_FRACTION}] Initial exterior oxygen mass fraction, limited by CFAST to the range 0 to 1; nitrogen is the remaining fraction.
-\item[\texttt{EXTERIOR\_TEMPERATURE}] Initial exterior gas temperature in \degc.
-\item[\texttt{INTERIOR\_O2\_MASS\_FRACTION}] Initial interior oxygen mass fraction, limited by CFAST to the range 0 to 1; nitrogen is the remaining fraction.
-\item[\texttt{INTERIOR\_TEMPERATURE}] Initial interior gas temperature in \degc.
-\item[\texttt{PRESSURE}] Ambient absolute pressure in Pa at the station elevation.
-\item[\texttt{RELATIVE\_HUMIDITY}] Initial relative humidity in percent; CFAST converts it to a fraction for the calculation.
-\end{description}
 
 
 \section{Miscellaneous}
 \label{info:MISC}
 
 Keywords associated with global parameters are organized in the miscellaneous namelist group.
-
 \begin{description}
-\item[Adiabatic Compartment Surfaces] When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and the materials section of the compartments tab becomes grayed out. This feature is useful when designing an experiment in which it is safe to assume that there is no heat transfer to the walls of the compartments.
+\item[Adiabatic Compartment Surfaces] (default: False; namelist: \ct{ADIABATIC}) When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and material properties are ignored. This feature is useful when designing an experiment in which it is assumed that there is no heat transfer to the walls of the compartments.
 
-\item[Lower Oxygen Limit] (default units: \%, default value: 15~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
-\end{description}
+\item[Lower Oxygen Limit] (default: 15~\%; namelist: \ct{LOWER_OXYGEN_LIMIT}):  Oxygen volume fraction below which combustion is suppressed following a smooth transitional curve.
 
-The remaining \ct{MISC} parameters are:
-\begin{description}
-\item[\texttt{ADIABATIC}] If \ct{T}, treats all compartment boundaries as adiabatic.
-\item[\texttt{LOWER\_OXYGEN\_LIMIT}] Oxygen mass fraction at which burning is extinguished after a smooth reduction near the limit.
-\item[\texttt{MAX\_ITERATION}] Maximum solver-step count. A negative value, the default, imposes no limit.
-\item[\texttt{MAX\_TIME\_STEP}] Maximum integration time step in seconds.
-\item[\texttt{OVERWRITE}] Controls whether existing output files may be overwritten; the default is \ct{T}.
-\item[\texttt{SPECIFIC\_EXTINCTION}] Specific-extinction coefficients for flaming and smoldering soot, respectively, in m$^2$/kg.
+\item[Maximum Solver Iterations] (default: $-1$ (unlimited); namelist: \ct{MAX_ITERATION}) Maximum number of iterations for the equation solver.
+
+\item[Overwrite] (default: True; namelist: \ct{OVERWRITE}) Controls whether existing output files may be overwritten.
+
+\item[Extinction Coefficient] (default: 8700 (flaming), 4400 m$^2$/kg (smoldering); namelist: \ct{SPECIFIC_EXTINCTION(2)}) Specific-extinction coefficients for flaming and smoldering combustion, respectively.
 \end{description}
 
 

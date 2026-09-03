@@ -374,7 +374,34 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\of}{\frac{1}{4}}
 \newcommand{\twth}{\frac{2}{3}}
 
+\newcommand{\nopart}{\expandafter\def\csname Parent-1\endcsname{}} % To fix table of contents in pdf.
 \newcommand{\ct}[1]{\lstinline{#1}}
+\newcommand{\tct}[1]{\lstinline[basicstyle=\scriptsize\ttfamily]!#1!}
+
+\lstset{
+    tabsize=4,
+    rulecolor=,
+    language=Fortran,
+        basicstyle=\small\ttfamily,
+        upquote=true,
+        aboveskip={\baselineskip},
+        belowskip={\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+        breaklines=true,
+        breakatwhitespace=true,
+        frame=none,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,0},
+        commentstyle=\color[rgb]{0,0,0},
+        stringstyle=\color[rgb]{0,0,0},
+        literate={\_}{}{0\discretionary{\_}{}{\_}}
+                 {/}{}{0\discretionary{/}{}{/}}%
+}
+
 
 \newcommand{\rb}[1]{\raisebox{1.5ex}[0pt]{#1}}
 

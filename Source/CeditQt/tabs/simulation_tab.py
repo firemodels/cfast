@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QFontDatabase, QTextCursor
 from PySide6.QtWidgets import (
@@ -47,6 +49,12 @@ class SimulationTab(QWidget):
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
         self.lower_oxygen_limit_edit = QLineEdit(format_mol_fraction(0.15))
+        self.max_iteration_edit = QLineEdit("-1")
+        self.max_iteration_edit.setToolTip("Use -1 for unlimited solver iterations.")
+        self.overwrite_checkbox = QCheckBox("Overwrite Existing Output Files")
+        self.overwrite_checkbox.setChecked(True)
+        self.flaming_extinction_edit = QLineEdit("8700")
+        self.smoldering_extinction_edit = QLineEdit("4400")
 
         self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
@@ -90,6 +98,7 @@ class SimulationTab(QWidget):
 
         main_layout.addSpacing(15)
         main_layout.addLayout(middle_layout)
+        main_layout.addWidget(self.build_misc_group())
         main_layout.addSpacing(15)
 
         self.message_panel.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Sunken)
@@ -112,6 +121,10 @@ class SimulationTab(QWidget):
         self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
         self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
+        self.max_iteration_edit.setText(str(case.max_iteration))
+        self.overwrite_checkbox.setChecked(case.overwrite)
+        self.flaming_extinction_edit.setText(format_number(case.specific_extinction[0]))
+        self.smoldering_extinction_edit.setText(format_number(case.specific_extinction[1]))
 
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
@@ -122,7 +135,6 @@ class SimulationTab(QWidget):
             ("Text Output Interval:", self.print_interval_edit),
             ("Spreadsheet Output Interval:", self.spreadsheet_interval_edit),
             ("Smokeview Output Interval:", self.smokeview_interval_edit),
-            ("Maximum Time Step:", self.max_time_step_edit),
         ]
 
         for row, (label, widget) in enumerate(labels_and_widgets):
@@ -156,18 +168,33 @@ class SimulationTab(QWidget):
         exterior_layout.addWidget(self.pressure_edit, 0, 3)
         exterior_group.setLayout(exterior_layout)
 
-        misc_layout = QGridLayout()
-        misc_layout.addWidget(self.adiabatic_checkbox, 0, 0, 1, 2)
-        misc_layout.addWidget(QLabel("Lower Oxygen Limit:"), 1, 0)
-        misc_layout.addWidget(self.lower_oxygen_limit_edit, 1, 1)
-
         outer_layout.addWidget(interior_group)
         outer_layout.addWidget(exterior_group)
-        outer_layout.addLayout(misc_layout)
 
         group.setLayout(outer_layout)
         group.setMinimumWidth(380)
 
+        return group
+
+    def build_misc_group(self):
+        group = QGroupBox("Miscellaneous")
+        layout = QGridLayout()
+        layout.addWidget(self.adiabatic_checkbox, 0, 0, 1, 2)
+        layout.addWidget(self.overwrite_checkbox, 0, 2, 1, 2)
+        fields = [
+            ("Lower Oxygen Limit:", self.lower_oxygen_limit_edit, 1, 0),
+            ("Maximum Solver Iterations:", self.max_iteration_edit, 2, 0),
+            ("Maximum Time Step:", self.max_time_step_edit, 3, 0),
+            ("Flaming Extinction Coefficient (m²/kg):", self.flaming_extinction_edit, 1, 2),
+            ("Smoldering Extinction Coefficient (m²/kg):", self.smoldering_extinction_edit, 2, 2),
+        ]
+        for label, widget, row, col in fields:
+            layout.addWidget(QLabel(label), row, col, alignment=Qt.AlignmentFlag.AlignRight)
+            layout.addWidget(widget, row, col + 1)
+        layout.setColumnStretch(1, 1)
+        layout.setColumnStretch(3, 1)
+        layout.setHorizontalSpacing(20)
+        group.setLayout(layout)
         return group
 
     def connect_unit_normalizers(self):
@@ -282,6 +309,22 @@ class SimulationTab(QWidget):
             self.lower_oxygen_limit_edit.text(),
             "Lower Oxygen Limit",
         )
+
+        iterations = parse_number(self.max_iteration_edit.text(), "Maximum Solver Iterations")
+        if not math.isfinite(iterations) or not iterations.is_integer() or iterations < -1:
+            raise ValueError("Maximum Solver Iterations must be -1 (unlimited) or a non-negative integer.")
+        case.max_iteration = int(iterations)
+        case.overwrite = self.overwrite_checkbox.isChecked()
+        extinction = []
+        for edit, name in (
+            (self.flaming_extinction_edit, "Flaming Extinction Coefficient"),
+            (self.smoldering_extinction_edit, "Smoldering Extinction Coefficient"),
+        ):
+            value = parse_number(edit.text(), name)
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f"{name} must be a finite, non-negative number.")
+            extinction.append(value)
+        case.specific_extinction = tuple(extinction)
 
     def set_message(self, text: str, syntax_highlight: bool = False):
         self.syntax_highlighter.set_enabled(syntax_highlight)

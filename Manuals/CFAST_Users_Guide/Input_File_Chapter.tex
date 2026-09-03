@@ -31,8 +31,6 @@ The \ct{HEAD} line of the input file will contain the \textbf{Title} and a \ct{V
 \item[Spreadsheet Output Interval] (default: 15 s; namelist: \ct{SPREADSHEET}): Time interval between outputs to comma-delimited spreadsheet files. A value greater than zero must be used if the spreadsheet files are desired.
 
 \item[Smokeview Output Interval] (default: 15 s; namelist: \ct{SMOKEVIEW}): Time interval between outputs to the visualization program Smokeview.  A value greater than zero must be used if the Smokeview output is desired.
-
-\item[Maximum Time Step] (default: 1 s; namelist: \ct{MAX_TIME_STEP}): CFAST automatically adjusts the time step for the solution of the differential equations to satisfy pre-defined error tolerances. This parameter caps the time step and is normally left at the default value. For cases where the solver fails to converge to a solution, the value can be reduced which might allow the simulation to successfully complete.
 \end{description}
 
 
@@ -65,6 +63,8 @@ Keywords associated with global parameters are organized in the miscellaneous na
 \item[Lower Oxygen Limit] (default: 15~\%; namelist: \ct{LOWER_OXYGEN_LIMIT}):  Oxygen volume fraction below which combustion is suppressed following a smooth transitional curve.
 
 \item[Maximum Solver Iterations] (default: $-1$ (unlimited); namelist: \ct{MAX_ITERATION}) Maximum number of iterations for the equation solver.
+
+\item[Maximum Time Step] (default: 1 s; namelist: \ct{MAX_TIME_STEP}): CFAST automatically adjusts the time step for the solution of the differential equations to satisfy pre-defined error tolerances. This parameter caps the time step and is normally left at the default value. For cases where the solver fails to converge to a solution, the value can be reduced which might allow the simulation to successfully complete.
 
 \item[Overwrite] (default: True; namelist: \ct{OVERWRITE}) Controls whether existing output files may be overwritten.
 

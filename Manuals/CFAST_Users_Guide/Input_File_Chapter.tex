@@ -88,49 +88,37 @@ The thermophysical properties of materials used for compartment surfaces or targ
 \section{Adding Thermal Properties}
 \label{info:MATL}
 
-CFAST and CEdit do not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be taken from other simulations or entered directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  Only a single layer per boundary is allowed (some previous versions allowed up to three).
-
+CFAST does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be taken from other simulations or entered directly from reference sources or test results. Clicking the \textbf{Add} button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  
 \begin{description}
-\item[Material] A descriptive name for the material.
+\item[Material] (namelist: \ct{MATERIAL}) A descriptive name for the material.
 
-%% Do we want to change the requirements on the ID. We don't have those requirements in the Name List
-\item[ID] A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
+\item[ID] (namelist: \ct{ID}) A one-word (no more than 8 characters) {\it unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
 
-\item[Conductivity] (default units: kW/(m$\cdot$K)): Thermal conductivity for the material.
+\item[Conductivity] (default units: kW/(m$\cdot$K); namelist: \ct{CONDUCTIVITY}) Thermal conductivity for the material. Note the units---this property is often listed in units of W/(m$\cdot$K).
 
-\item[Specific Heat] (default units: kJ/(kg$\cdot$K)): Specific heat for the material.
+\item[Specific Heat] (default units: kJ/(kg$\cdot$K); namelist: \ct{SPECIFIC_HEAT}) Specific heat for the material.
 
-\item[Density] (default units: kg/m$^3$): Density for the material.
+\item[Density] (default units: kg/m$^3$; namelist: \ct{DENSITY}) Density of the material.
 
-\item[Thickness] (default units: m): Thickness of the material.  Note that if two materials with identical thermal properties but with different thicknesses are desired, two separate materials must be defined.
+\item[Thickness] (default units: m; namelist: \ct{THICKNESS}) Thickness of the material. A compartment surface may override this value; targets use the material value unless an alternative value is given.
 
-\item[Emissivity] (default units: none, default value: 0.9): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
+\item[Emissivity] (default: 0.9; namelist: \ct{EMISSIVITY}) Emissivity of the material surface; that is, the fraction of the radiative flux that is absorbed by the material.
+    
+\item[FYI] (namelist: \ct{FYI}) Optional note, for example, a reference.
 \end{description}
-
-The \ct{MATL} namelist parameters are:
-\begin{description}
-\item[\texttt{CONDUCTIVITY}] Required thermal conductivity in kW/(m$\cdot$K).
-\item[\texttt{DENSITY}] Required material density in kg/m$^3$.
-\item[\texttt{EMISSIVITY}] Surface emissivity, with a default of 0.9.
-\item[\texttt{FYI}] Optional descriptive text retained with the material definition but not used in the calculation.
-\item[\texttt{ID}] Required identifier. It must be unique among all identifiers in the input file.
-\item[\texttt{MATERIAL}] Required descriptive material name.
-\item[\texttt{SPECIFIC\_HEAT}] Required specific heat in kJ/(kg$\cdot$K); CFAST converts it to J/(kg$\cdot$K).
-\item[\texttt{THICKNESS}] Required default material thickness in m. A compartment surface may override this value; targets use the material value unless \ct{THICKNESS} is specified on the \ct{DEVC} line.
-\end{description}
-
 
 
 
 \section{Adding Thermal Properties From Another File}
 
-The `From File' button imports thermal properties from one or more existing CFAST input files. Select the desired files with extensions \ct{.in} or \ct{.cfast}. CEdit reads the \ct{MATL} records from all selected files and displays the available materials in a single list. Use the checkboxes or the `Select All' and `Deselect All' buttons to choose the materials to add, then click `OK'. Materials whose IDs already exist in the current case are skipped. CEdit reports the numbers of materials added and duplicate IDs skipped, and identifies any selected files that could not be read. No changes are made if the selection is canceled.
+The \textbf{From File} button imports thermal properties from one or more existing CFAST input files. Select the desired files with extensions \ct{.in} or \ct{.cfast}. CEdit reads the \ct{MATL} records from all selected files and displays the available materials in a single list. Use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the materials to add, then click \textbf{OK}. Materials whose \ct{ID}s already exist in the current case are skipped. CEdit reports the numbers of materials added and duplicate \ct{ID}s are skipped.
 
 
 
 
 
 \chapter{Compartments}
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{SCRIPT_FIGURES/Compartment_Geometry_Tab}

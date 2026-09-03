@@ -585,11 +585,13 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     misc_fields = [
         f"ADIABATIC = {cfast_logical(case.adiabatic_surfaces)}",
         f"LOWER_OXYGEN_LIMIT = {cfast_number(case.lower_oxygen_limit)}",
-        "OVERWRITE = .TRUE.",
+        f"MAX_ITERATION = {cfast_number(case.max_iteration)}",
+        f"OVERWRITE = {cfast_logical(case.overwrite)}",
+        f"SPECIFIC_EXTINCTION = {cfast_vector(case.specific_extinction)}",
     ]
 
     if case.max_time_step is not None:
-        misc_fields.insert(1, f"MAX_TIME_STEP = {cfast_number(case.max_time_step)}")
+        misc_fields.insert(3, f"MAX_TIME_STEP = {cfast_number(case.max_time_step)}")
 
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")

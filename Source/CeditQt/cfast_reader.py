@@ -766,6 +766,11 @@ def apply_record(
             "LOWER_OXYGEN_LIMIT",
             case.lower_oxygen_limit,
         )
+        case.max_iteration = int(number_field(fields, "MAX_ITERATION", case.max_iteration))
+        case.overwrite = bool_field(fields, "OVERWRITE", case.overwrite)
+        case.specific_extinction = tuple(number_vector(
+            fields, "SPECIFIC_EXTINCTION", list(case.specific_extinction), length=2,
+        ))
         if "MAX_TIME_STEP" in fields:
             case.max_time_step = number_field(fields, "MAX_TIME_STEP", 0.0)
     elif name == "DIAG":

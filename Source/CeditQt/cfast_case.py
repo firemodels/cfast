@@ -318,6 +318,9 @@ class CfastCase:
 
     adiabatic_surfaces: bool = False
     lower_oxygen_limit: float = 0.15
+    max_iteration: int = -1
+    overwrite: bool = True
+    specific_extinction: tuple[float, float] = (8700.0, 4400.0)
 
     materials: list[MaterialProperty] = field(default_factory=list)
     compartments: list[Compartment] = field(default_factory=list)

@@ -315,6 +315,8 @@ class CfastCase:
     relative_humidity: float = 50.0
     interior_temperature: float = 20.0
     exterior_temperature: float = 20.0
+    interior_o2_mass_fraction: float = 0.23
+    exterior_o2_mass_fraction: float = 0.23
 
     adiabatic_surfaces: bool = False
     lower_oxygen_limit: float = 0.15

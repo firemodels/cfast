@@ -30,6 +30,10 @@ def format_mol_fraction(value: float | int) -> str:
     return f"{format_number(value)} mol/mol"
 
 
+def format_mass_fraction(value: float | int) -> str:
+    return f"{format_number(value)} kg/kg"
+
+
 class SimulationTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -46,6 +50,8 @@ class SimulationTab(QWidget):
         self.relative_humidity_edit = QLineEdit(format_percent(50.0))
         self.exterior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
         self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
+        self.interior_o2_mass_fraction_edit = QLineEdit("0.23 kg/kg")
+        self.exterior_o2_mass_fraction_edit = QLineEdit("0.23 kg/kg")
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
         self.lower_oxygen_limit_edit = QLineEdit(format_mol_fraction(0.15))
@@ -119,6 +125,12 @@ class SimulationTab(QWidget):
         self.relative_humidity_edit.setText(format_percent(case.relative_humidity))
         self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
         self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
+        self.interior_o2_mass_fraction_edit.setText(
+            format_mass_fraction(case.interior_o2_mass_fraction)
+        )
+        self.exterior_o2_mass_fraction_edit.setText(
+            format_mass_fraction(case.exterior_o2_mass_fraction)
+        )
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
         self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
         self.max_iteration_edit.setText(str(case.max_iteration))
@@ -149,29 +161,21 @@ class SimulationTab(QWidget):
         return group
 
     def build_conditions_group(self):
-        group = QGroupBox("Simulation Conditions")
-        outer_layout = QVBoxLayout()
+        group = QGroupBox("Ambient Conditions")
+        layout = QGridLayout()
+        fields = [
+            ("Interior Temperature:", self.interior_temperature_edit),
+            ("Exterior Temperature:", self.exterior_temperature_edit),
+            ("Humidity:", self.relative_humidity_edit),
+            ("Pressure:", self.pressure_edit),
+            ("Interior O₂ Mass Fraction:", self.interior_o2_mass_fraction_edit),
+            ("Exterior O₂ Mass Fraction:", self.exterior_o2_mass_fraction_edit),
+        ]
+        for row, (label, widget) in enumerate(fields):
+            layout.addWidget(QLabel(label), row, 0, alignment=Qt.AlignmentFlag.AlignRight)
+            layout.addWidget(widget, row, 1)
 
-        interior_group = QGroupBox("Interior")
-        interior_layout = QGridLayout()
-        interior_layout.addWidget(QLabel("Temperature:"), 0, 0)
-        interior_layout.addWidget(self.interior_temperature_edit, 0, 1)
-        interior_layout.addWidget(QLabel("Humidity:"), 0, 2)
-        interior_layout.addWidget(self.relative_humidity_edit, 0, 3)
-        interior_group.setLayout(interior_layout)
-
-        exterior_group = QGroupBox("Exterior")
-        exterior_layout = QGridLayout()
-        exterior_layout.addWidget(QLabel("Temperature:"), 0, 0)
-        exterior_layout.addWidget(self.exterior_temperature_edit, 0, 1)
-        exterior_layout.addWidget(QLabel("Pressure:"), 0, 2)
-        exterior_layout.addWidget(self.pressure_edit, 0, 3)
-        exterior_group.setLayout(exterior_layout)
-
-        outer_layout.addWidget(interior_group)
-        outer_layout.addWidget(exterior_group)
-
-        group.setLayout(outer_layout)
+        group.setLayout(layout)
         group.setMinimumWidth(380)
 
         return group
@@ -215,6 +219,12 @@ class SimulationTab(QWidget):
             )
         self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
         self.lower_oxygen_limit_edit.editingFinished.connect(self.normalize_lower_oxygen_limit)
+        self.interior_o2_mass_fraction_edit.editingFinished.connect(
+            self.normalize_o2_mass_fractions
+        )
+        self.exterior_o2_mass_fraction_edit.editingFinished.connect(
+            self.normalize_o2_mass_fractions
+        )
 
     def normalize_value_edit(
         self,
@@ -253,6 +263,17 @@ class SimulationTab(QWidget):
             return
 
         self.lower_oxygen_limit_edit.setText(format_mol_fraction(value))
+
+    def normalize_o2_mass_fractions(self):
+        for edit, field_name in (
+            (self.interior_o2_mass_fraction_edit, "Interior O₂ Mass Fraction"),
+            (self.exterior_o2_mass_fraction_edit, "Exterior O₂ Mass Fraction"),
+        ):
+            try:
+                value = parse_number(edit.text(), field_name)
+            except ValueError:
+                continue
+            edit.setText(format_mass_fraction(value))
 
     def add_to_case(self, case: CfastCase):
         case.title = self.title_edit.text().strip() or "CFAST Simulation"
@@ -303,6 +324,14 @@ class SimulationTab(QWidget):
             self.pressure_edit.text(),
             "Pressure",
         )
+        case.interior_o2_mass_fraction = self.o2_mass_fraction_value(
+            self.interior_o2_mass_fraction_edit,
+            "Interior O₂ Mass Fraction",
+        )
+        case.exterior_o2_mass_fraction = self.o2_mass_fraction_value(
+            self.exterior_o2_mass_fraction_edit,
+            "Exterior O₂ Mass Fraction",
+        )
 
         case.adiabatic_surfaces = self.adiabatic_checkbox.isChecked()
         case.lower_oxygen_limit = parse_number(
@@ -325,6 +354,13 @@ class SimulationTab(QWidget):
                 raise ValueError(f"{name} must be a finite, non-negative number.")
             extinction.append(value)
         case.specific_extinction = tuple(extinction)
+
+    @staticmethod
+    def o2_mass_fraction_value(edit: QLineEdit, field_name: str) -> float:
+        value = parse_number(edit.text(), field_name)
+        if not 0.0 <= value <= 1.0:
+            raise ValueError(f"{field_name} must be between 0 and 1 kg/kg.")
+        return value
 
     def set_message(self, text: str, syntax_highlight: bool = False):
         self.syntax_highlighter.set_enabled(syntax_highlight)

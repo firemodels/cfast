@@ -579,6 +579,8 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             f"RELATIVE_HUMIDITY = {cfast_number(case.relative_humidity)}",
             f"INTERIOR_TEMPERATURE = {cfast_number(case.interior_temperature)}",
             f"EXTERIOR_TEMPERATURE = {cfast_number(case.exterior_temperature)}",
+            f"INTERIOR_O2_MASS_FRACTION = {cfast_number(case.interior_o2_mass_fraction)}",
+            f"EXTERIOR_O2_MASS_FRACTION = {cfast_number(case.exterior_o2_mass_fraction)}",
         ],
     )
 

@@ -160,7 +160,6 @@ module cfast_types
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
         
         real(eb), dimension(2) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls and (2) floor
-        real(eb), dimension(2) :: leak_areas            ! leakage area in m^2; (1) walls and (2) floor
         real(eb)               :: cvent                 ! leak vent flow coefficient. Default is 0.7
 
         ! cross-sectional area variables

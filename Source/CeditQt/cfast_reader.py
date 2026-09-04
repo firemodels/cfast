@@ -76,7 +76,6 @@ CFAST_NAMELIST_PARAMETERS: dict[str, set[str]] = {
         "SHAFT",
         "WIDTH",
         "LEAK_AREA_RATIO",
-        "LEAK_AREA",
         "FLOW_COEFFICIENT",
     },
     "DEVC": {
@@ -889,8 +888,6 @@ def compartment_from_fields(fields: dict[str, list[Any]]) -> Compartment:
         [0.0, 0.0],
         length=2,
     )
-    leak_area = number_vector(fields, "LEAK_AREA", [0.0, 0.0], length=2)
-
     return Compartment(
         id=comp_id,
         width=number_field(fields, "WIDTH", 1.0),
@@ -911,8 +908,6 @@ def compartment_from_fields(fields: dict[str, list[Any]]) -> Compartment:
         flow_coefficient=number_field(fields, "FLOW_COEFFICIENT", 0.07),
         wall_leak_area_ratio=leak_area_ratio[0],
         floor_leak_area_ratio=leak_area_ratio[1],
-        wall_leak_area=leak_area[0],
-        floor_leak_area=leak_area[1],
         cross_section_heights=number_vector(fields, "CROSS_SECT_HEIGHTS", []),
         cross_section_areas=number_vector(fields, "CROSS_SECT_AREAS", []),
         fyi=string_field(fields, "FYI", ""),

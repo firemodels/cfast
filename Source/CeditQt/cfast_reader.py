@@ -755,6 +755,16 @@ def apply_record(
             "EXTERIOR_TEMPERATURE",
             case.exterior_temperature,
         )
+        case.interior_o2_mass_fraction = number_field(
+            fields,
+            "INTERIOR_O2_MASS_FRACTION",
+            case.interior_o2_mass_fraction,
+        )
+        case.exterior_o2_mass_fraction = number_field(
+            fields,
+            "EXTERIOR_O2_MASS_FRACTION",
+            case.exterior_o2_mass_fraction,
+        )
     elif name == "MISC":
         case.adiabatic_surfaces = bool_field(
             fields,

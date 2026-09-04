@@ -1,9 +1,15 @@
 % !TEX root = ../CFAST_Users_Guide.tex
+%
+% Requires:
+%   %
+% CFAST compartment coordinate system.
+% The face lettering is transformed with the plane itself, rather
+% than merely rotated in the page.
 
-% Oblique projection used by the original CFAST compartment diagrams.
-% All vertices below are specified in a single three-dimensional coordinate system.
 \begin{tikzpicture}[
-  x={(0.78cm,0cm)}, y={(0.35cm,0.23cm)}, z={(0cm,0.78cm)},
+  x={(0.78cm,0cm)},
+  y={(0.35cm,0.23cm)},
+  z={(0cm,0.78cm)},
   >=Stealth, line cap=round, line join=round,
   every node/.style={font=\small}
 ]
@@ -11,24 +17,93 @@
   \def\D{4}
   \def\H{4}
 
-  \draw[line width=1pt]
-    (0,0,0)--(\W,0,0)--(\W,\D,0)--(0,\D,0)--cycle
-    (0,0,\H)--(\W,0,\H)--(\W,\D,\H)--(0,\D,\H)--cycle
-    (0,0,0)--(0,0,\H)
-    (\W,0,0)--(\W,0,\H)
-    (\W,\D,0)--(\W,\D,\H)
-    (0,\D,0)--(0,\D,\H);
+  % ------------------------------------------------------------
+  % BOX
+  %
+  % From this viewpoint the y=0 (Front) and x=W (Right) faces
+  % are visible.  The x=0 (Left) and y=D (Rear) faces are hidden.
+  % Consequently, their complete perimeter edges are dashed.
+  % ------------------------------------------------------------
 
-  \draw[line width=1.4pt,->] (0,0,0)--(5.4,0,0) node[below right] {$X$};
-  \draw[line width=1.4pt,->] (0,0,0)--(0,6.0,0) node[right] {$Y$};
-  \draw[line width=1.4pt,->] (0,0,0)--(0,0,4.8) node[above right] {$Z$};
+  % Hidden edges: the bottom-left-to-rear edge, the rear-left
+  % vertical edge, and the entire rear bottom edge are hidden.
+  \draw[dashed, line width=1pt]
+    (0,0,0)--(0,\D,0)
+    (0,\D,0)--(0,\D,\H)
+    (0,\D,0)--(\W,\D,0);
+
+  % Visible edges: all top edges are visible from this viewpoint.
+  \draw[line width=1pt]
+    % Front face
+    (0,0,0)--(\W,0,0)
+    (\W,0,0)--(\W,0,\H)
+    (\W,0,\H)--(0,0,\H)
+    (0,0,\H)--(0,0,0)
+    % Right face
+    (\W,0,0)--(\W,\D,0)
+    (\W,\D,0)--(\W,\D,\H)
+    (\W,\D,\H)--(\W,0,\H)
+    % visible top/rear edges
+    (0,0,\H)--(0,\D,\H)
+    (0,\D,\H)--(\W,\D,\H);
+
+  % ------------------------------------------------------------
+  % COORDINATE AXES
+  % ------------------------------------------------------------
+
+  \draw[line width=1.4pt,->]
+    (0,0,0)--(5.4,0,0)
+    node[below right] {$X$};
+
+  \draw[line width=1.4pt,->]
+    (0,0,0)--(0,6.0,0)
+    node[right] {$Y$};
+
+  \draw[line width=1.4pt,->]
+    (0,0,0)--(0,0,4.8)
+    node[above right] {$Z$};
+
   \node[below left] at (0,0,0) {$(0,0,0)$};
+
+  % ------------------------------------------------------------
+  % DIMENSIONS
+  % ------------------------------------------------------------
 
   \node[below] at (2,0,0) {Width};
   \node[rotate=90] at (-0.42,0,2) {Height};
-  \node[rotate=34] at (4.7,2,0.1) {Depth};
-  \node[red,rotate=34] at (0,1.85,0.4) {Left};
-  \node[red] at (1.5,0,0.3) {Front};
-  \node[red,anchor=east] at (4,4,0.3) {Rear};
-  \path (4,0,4)--(4,4,4) node[pos=0.4,below=-1pt,sloped,text=red] {Right};
+    \begin{scope}[canvas is yz plane at x=4.7]
+    \node[transform shape] at (2,0.15) {Depth};
+  \end{scope}
+
+  % ------------------------------------------------------------
+  % FACE LABELS
+  %
+  % "transform shape" is essential: it causes the glyphs themselves
+  % to undergo the affine transformation of the plane.  Thus the
+  % labels look like they are printed on the corresponding faces.
+  %
+  % Front/Rear are X-Z planes.
+  % Left/Right are Y-Z planes.
+  % ------------------------------------------------------------
+
+  % Front: visible face y=0
+  \begin{scope}[canvas is xz plane at y=0]
+    \node[red, font=\Large, transform shape] at (1.35,1.75) {Front};
+  \end{scope}
+
+  % Rear: hidden face y=D
+  \begin{scope}[canvas is xz plane at y=\D]
+    \node[red, font=\Large, transform shape] at (1.35,2.35) {Rear};
+  \end{scope}
+
+  % Left: hidden face x=0
+  \begin{scope}[canvas is yz plane at x=0]
+    \node[red, font=\Large, transform shape] at (2,2) {Left};
+  \end{scope}
+
+  % Right: visible face x=W
+  \begin{scope}[canvas is yz plane at x=\W]
+    \node[red, font=\Large, transform shape] at (2,2) {Right};
+  \end{scope}
+
 \end{tikzpicture}

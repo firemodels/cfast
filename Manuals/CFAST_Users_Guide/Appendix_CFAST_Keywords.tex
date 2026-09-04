@@ -194,37 +194,25 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \ct{CEILING_MATL_ID}                    & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
 \ct{CEILING_THICKNESS}                  & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
 \ct{CROSS_SECT_AREAS}                   & Real Array             & Sec.~\ref{info:COMP4}        & m$^2$              & \\ \hline
-\ct{CROSS_SECT_HEIGHTS}                  & Real Array             & Sec.~\ref{info:COMP4}        &                    & \\ \hline
-\ct{DEPTH}                               & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
-\ct{FLOOR_MATL_ID}                       & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{FLOOR_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{FLOW_COEFFICIENT}                    & Real                   & Sec.~\ref{info:COMP}         &                    & 0.07 \\ \hline
-\ct{FYI}                                 & Character              & Sec.~\ref{info:COMP}         &                    & \\ \hline
-\ct{GRID}                                & Integer Triplet        & Sec.~\ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
-\ct{HALL}                                & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
-\ct{HEIGHT}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:COMP}         &                    & \\ \hline
-\ct{LEAK_AREA}                           & Real Doublet           & Sec.~\ref{info:COMP}         & m$^2$              & 0,0 \\ \hline
-\ct{LEAK_AREA_RATIO}                     & Real Doublet           & Sec.~\ref{info:COMP}         & m$^2$/m$^2$        & 0,0 \\ \hline
-\ct{ORIGIN}                              & Real Triplet           & Sec.~\ref{info:COMP}         & m                  & 0,0,0 \\ \hline
-\ct{SHAFT}                               & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
-\ct{WALL_MATL_ID}                        & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{WALL_THICKNESS}                      & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{WIDTH}                               & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
+\ct{CROSS_SECT_HEIGHTS}                 & Real Array             & Sec.~\ref{info:COMP4}        &                    & \\ \hline
+\ct{DEPTH}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
+\ct{FLOOR_MATL_ID}                      & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOOR_THICKNESS}                    & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOW_COEFFICIENT}                   & Real                   & Sec.~\ref{info:COMP}         &                    & 0.07 \\ \hline
+\ct{FYI}                                & Character              & Sec.~\ref{info:COMP6}        &                    & \\ \hline
+\ct{GRID}                               & Integer Triplet        & Sec.~\ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
+\ct{HALL}                               & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
+\ct{HEIGHT}                             & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
+\ct{ID}                                 & Character              & Sec.~\ref{info:COMP}         &                    & \\ \hline
+\ct{LEAK_AREA_RATIO}                    & Real Doublet           & Sec.~\ref{info:COMP}         & m$^2$/m$^2$        & 0,0 \\ \hline
+\ct{ORIGIN}                             & Real Triplet           & Sec.~\ref{info:COMP}         & m                  & 0,0,0 \\ \hline
+\ct{SHAFT}                              & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
+\ct{WALL_MATL_ID}                       & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{WALL_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{WIDTH}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&COMP ID = 'Comp 1'
-      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
-      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.025
-      WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
-      WALL_THICKNESS = 0.013, 0.03, 0.61
-      FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
-      FLOOR_THICKNESS = 0.013, 0.03, 0.61
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0005 /
-\end{lstlisting}
+
 
 
 \clearpage
@@ -585,13 +573,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \ct{THICKNESS}                           & Real                   & Sec.~\ref{info:MATL}         & m                  & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&MATL ID = 'CONCRETE', MATERIAL = 'Light weight concrete',
-      CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1.,
-      DENSITY = 2200., EMISSIVITY = 0.94, THICKNESS = 0.15 /
-\end{lstlisting}
+
 
 
 \clearpage

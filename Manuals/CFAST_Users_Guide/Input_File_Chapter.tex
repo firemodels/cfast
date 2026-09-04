@@ -88,7 +88,7 @@ The thermophysical properties of materials used for compartment surfaces or targ
 \section{Adding Thermal Properties}
 \label{info:MATL}
 
-CFAST does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be taken from other simulations or entered directly from reference sources or test results. Clicking the \textbf{Add} button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  
+CFAST does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be taken from other simulations or entered directly from reference sources or test results. Clicking the \textbf{Add} button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.
 \begin{description}
 \item[Material] (namelist: \ct{MATERIAL}) A descriptive name for the material.
 
@@ -103,7 +103,7 @@ CFAST does not include predefined thermal properties for compartment materials. 
 \item[Thickness] (default units: m; namelist: \ct{THICKNESS}) Thickness of the material. A compartment surface may override this value; targets use the material value unless an alternative value is given.
 
 \item[Emissivity] (default: 0.9; namelist: \ct{EMISSIVITY}) Emissivity of the material surface; that is, the fraction of the radiative flux that is absorbed by the material.
-    
+
 \item[FYI] (namelist: \ct{FYI}) Optional note, for example, a reference.
 \end{description}
 
@@ -126,9 +126,7 @@ The \textbf{From File} button imports thermal properties from one or more existi
 \end{center}
 \end{figure}
 
-The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry and thermal properties pages are enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
-
-In order to model a fire scenario, the size and position of each compartment relevant to the scenario must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is 100. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
+The \textbf{Compartments} tab defines the geometry and lining materials of the compartments, which at a minimum require a width, depth, and height. The maximum number of compartments is 100. The usual assumption is that compartments are rectangular parallelepipeds, but other shapes can be modeled via equivalent floor area and perimeter.
 
 \begin{figure}[h!]
 \begin{tabular*}{\textwidth}{@{}c@{\extracolsep{\fill}}c@{}}
@@ -140,102 +138,52 @@ Compartment Size & Compartment Position
 \label{fig:compartment_positioning}
 \end{figure}
 
-In CEdit the default room has a width of 3.6 m, a depth of 2.4 m, a height of 2.4 m, and an absolute position of (0,0,0). The ceiling, walls, and floor are set to \ct{OFF} by default. The normal two-zone model is selected; the shaft (single-zone) and corridor options are off by default.
-
-\label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
-
-\begin{description}
-\item[ ID:] Compartments are identified by a unique alphanumeric name.  This may be as simple as a single character or number, or a description of the compartment.
-\end{description}
-
-
-
+In CEdit the default room has a width of 3.6~m, a depth of 2.4~m, a height of 2.4~m, and an absolute position of (0,0,0). The ceiling, walls, and floor are set to \ct{OFF} by default, meaning no materials are assigned. The normal two-zone model is selected; the shaft (single-zone) and corridor options are off by default.
 
 \section{Geometry}
 \label{info:COMP}
+\label{Compartment_Geometry} 
+
+Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
+
 \begin{description}
-\item[Width] (default units m, default value 3.6 m) specifies the width of the compartment as measured on the X axis from the origin (0,0,0) of the compartment.
+\item[ ID:] (namelist: \ct{ID}) Compartments are identified by a unique name, for which spaces are allowed.
 
-\item[Depth]  (default units m, default value 2.4 m) specifies the depth of the compartment as measured on the Y axis from the origin (0,0,0) of the compartment.
+\item[Width] (default: 3.6 m; namelist: \ct{WIDTH}) Compartment width as measured on the $x$ axis from the origin of the compartment.
 
-\item[Height] (default units m, default value 2.4 m)  specifies the height of the compartment as measured on the Z axis from the origin (0,0,0) of the compartment.
+\item[Depth] (default: 2.4 m; namelist: \ct{DEPTH}) Compartment depth as measured on the $y$ axis from the origin of the compartment.
 
-\item[Position X] (default units m, default value 0.0 m)  specifies the absolute x coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualization in Smokeview.
+\item[Height] (default: 2.4 m; namelist: \ct{HEIGHT})  Compartment height as measured on the $z$ axis from the origin of the compartment.
 
-\item[Position Y] (default units m, default value 0.0 m)  specifies the absolute y coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. This is important in positioning the compartments for visualization in Smokeview.
-
-\item[Position Z] (default units m, default value 0.0 m)  specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right in Fig.~\ref{fig:compartment_positioning} would be located at (0,0,0) and (0,2,2.3). All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs.
+\item[X Position, Y Position, Z Position] (default: (0,0,0) m; namelist: \ct{ORIGIN(1:3)}) Coordinates of the lower, left, front corner of the compartment. All coordinates for all compartments must be greater than or equal to zero to facilitate visualization by Smokeview.
 \end{description}
-
-The complete \ct{COMP} text input is described below. At least one \ct{COMP} record is required, and \ct{DEPTH}, \ct{HEIGHT}, \ct{ID}, and \ct{WIDTH} are required for every compartment.
-\begin{description}
-\item[\texttt{CEILING\_MATL\_ID}] Up to three ceiling-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the ceiling adiabatic.
-\item[\texttt{CEILING\_THICKNESS}] Ceiling-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
-\item[\texttt{FLOOR\_MATL\_ID}] Up to three floor-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the floor adiabatic.
-\item[\texttt{FLOOR\_THICKNESS}] Floor-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
-\item[\texttt{WALL\_MATL\_ID}] Up to three wall-material identifiers, ordered from the compartment-facing layer outward. The default \ct{OFF} makes the walls adiabatic.
-\item[\texttt{WALL\_THICKNESS}] Wall-layer thicknesses in m. A zero value uses the thickness from the referenced material definition.
-\item[\texttt{CROSS\_SECT\_AREAS}] Cross-sectional areas in m$^2$ for a compartment whose area varies with height. Each value corresponds to one height value.
-\item[\texttt{CROSS\_SECT\_HEIGHTS}] Heights in m above the compartment floor associated with the cross-sectional areas.
-\item[\texttt{DEPTH}, \texttt{HEIGHT}, and \texttt{WIDTH}] Required compartment dimensions in m along the Y, Z, and X axes, respectively.
-\item[\texttt{FLOW\_COEFFICIENT}] Orifice flow coefficient for leakage, with a default of 0.07.
-\item[\texttt{FYI}] Optional descriptive text retained with the compartment but not used in the calculation.
-\item[\texttt{GRID}] Numbers of Smokeview sampling points along X, Y, and Z, with a default of 50, 50, 50.
-\item[\texttt{HALL}] If \ct{T}, applies the corridor ceiling-jet correlation.
-\item[\texttt{ID}] Required compartment identifier. It must be unique among all identifiers in the input file.
-\item[\texttt{LEAK\_AREA}] Wall and floor leakage areas in m$^2$.
-\item[\texttt{LEAK\_AREA\_RATIO}] Wall and floor leakage-area ratios in m$^2$/m$^2$.
-\item[\texttt{ORIGIN}] X, Y, and Z coordinates in m of the compartment's lower-front-left corner.
-\item[\texttt{SHAFT}] If \ct{T}, models the compartment as a single well-mixed zone.
-\end{description}
-
 
 
 
 \section{Materials}
 \label{info:COMP2}
-To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
-The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction, convection, and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
 
-The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Properties tab described in Sec.~\ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID.
+To calculate heat loss through the ceiling, walls, and floor of a compartment, material properties must be specified. Separate properties can be specified for the ceiling and floor, but the four walls all must have the same set of properties. The thermophysical properties are described in Sec.~\ref{info:MATL}. If the thermophysical properties of the surfaces are not specified, they will be treated as adiabatic, i.e. no heat transfer. The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections to specify heat transfer connections between compartments).
 
 \begin{description}
-\item[Ceiling Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the ceiling surface of the compartment. The innermost layer is specified first.
+\item[Surface Construction: Ceiling, Walls, Floor] (namelist: \ct{CEILING_MATL_ID}, \ct{WALL_MATL_ID}, \ct{FLOOR_MATL_ID}) As many as three layers of materials can make up the compartment linings, with the surface layer specified first.
 
-\item[Ceiling Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the ceiling surface.
-
-\item[Wall Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the wall surface of the compartment.  The innermost layer is specified first.
-
-\item[Wall Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the wall surface.
-
-\item[Floor Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the floor surface of the compartment.  The innermost layer is specified first.
-
-\item[Floor Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the floor surface.
+\item[Ceiling, Walls, Floor Thickness] (default: Materials tab \textbf{Thickness}; namelist: \ct{CEILING_THICKNESS}, \ct{WALL_THICKNESS}, \ct{FLOOR_THICKNESS}): Thickness of each of the layers of the compartment surfaces.
 \end{description}
 
-\graybox{
-If the thermophysical properties of the enclosing surfaces are not included, CFAST will treat them as adiabatic (no heat transfer). \\
-
-If a name is used which is not in the input file, the model should stop with an error message. \\
-
-The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections to specify heat transfer connections between compartments).
-}
 
 
 
 
 \section{Modeling a Compartment as a Tall Shaft or Long Corridor}
 \label{info:COMP3}
-For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire or in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, or compartments far from the fire.
-
-By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinklers, and targets near the ceiling in corridors.
 
 \begin{description}
 \item[Normal (Two-zone model)] Conditions in the compartment are calculated with the normal two-zone approach. This is the default model used for a compartment.
 
-\item[Shaft (Single-zone model)] Conditions in the compartment are calculated as a single well-mixed zone.
+\item[Shaft (Single-zone model)] (namelist: \ct{SHAFT=T}) Conditions in the compartment are calculated as a single well-mixed zone. A single zone approximation may be appropriate for compartments away from the fire, where the two-zone layer stratification is less pronounced than in compartments near the fire, or in situations where the stratification does not occur, such as elevators, shafts, or stairwells.
 
-\item[Corridor (Revised ceiling jet)] Conditions in the compartment are calculated with the normal two-zone approach. Ceiling jet temperatures in the compartment are calculated with a revised empirical correlation specific to corridors.
+\item[Corridor (Revised ceiling jet)] (namelist: \ct{HALL=T}) Conditions in the compartment are calculated with the normal two-zone approach, but ceiling jet temperatures are calculated with an empirical model that constrains the upper layer to a narrow passage. This feature will impact, for example, detectors, sprinklers, and targets near the ceiling in corridors.
 \end{description}
 
 
@@ -243,17 +191,13 @@ By specifying the compartment as a corridor, the ceiling jet temperature is calc
 
 \section{Defining Variable Compartment Area}
 \label{info:COMP4}
-The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values for a chosen compartment are entered in a spreadsheet.
+
+The \textbf{Compartments} tab includes a table entitled \textbf{Variable Cross-sectional Area} for defining a compartment whose horizontal cross-sectional area is a function of height:
 \begin{description}
-\item[Height Value(s)] (default units: m): Height off the floor of the compartment.
-\item[Area Value(s)] (default units m$^2$): Cross-sectional area at the corresponding Height.
+\item[Height] (namelist: \ct{CROSS_SECT_HEIGHTS(:)}) Height (m) off the floor of the compartment.
+\item[Area] (namelist: \ct{CROSS_SECT_AREAS(:)}) Cross-sectional area (m$^2$) at the corresponding height.
 \end{description}
-
-Once the total compartment volume is determined from the set of cross-sectional area and height inputs, an effective width and depth are calculated (maintaining the original user input for compartment height) so the compartment volume matches the actual total volume of the compartment. The aspect ratio (width/depth) is maintained.
-
-Cross-sectional area values should be input in order by ascending height. If the first height value is not zero (i.e., at floor level), the cross-sectional area is assumed constant from the floor to the height specified in the first cross-sectional area value.
-% Isn't the highest value by definition the ceiling hieght? Should that paragraph go away?
-Similarly, if the last height value is not at the ceiling height, the cross-sectional area is assumed constant from the height specified in the last cross-sectional area value to the ceiling. Between any two adjacent cross-sectional area data values in the input list, the area is assumed to be a pyramidal section (which by definition maintains the same width to depth aspect ratio for the compartment from floor to ceiling).
+Cross-sectional area values should be input in order by ascending height. If the first height value is not zero (i.e., at floor level), the cross-sectional area is assumed constant from the floor to the height specified in the first cross-sectional area value. Similarly, if the last height value is not at the specified ceiling height, the cross-sectional area is assumed constant from the height specified in the last cross-sectional area value to the ceiling. Between any two adjacent cross-sectional area data values, the area is assumed to be a pyramidal section (which by definition maintains the same width to depth aspect ratio for the compartment from floor to ceiling).
 
 CFAST uses the variable cross-sectional area inputs to determine the layer height. The equations solved by CFAST determine the volume of the upper layer. For a normal rectangular room, this corresponds directly to a layer height. For a variable cross-sectional area compartment, a numerical integration of the area inputs beginning at the ceiling is used to determine the height at which the upper layer occupies the calculated volume of the upper layer.
 
@@ -262,15 +206,13 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 
 \section{Modeling Compartment Leakage}
 \label{info:COMP5}
-CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as a leakage area per unit wall area and/or per unit floor area.
 
+CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as a leakage area per unit wall area and per unit floor area.
 \begin{description}
-\item[Wall Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage area per unit wall area.
-\item[Floor Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage area per unit floor area.
-\end {description}
-
-For reference, the following table is taken from the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
-
+\item[Wall Leak Area Ratio, Floor Leak Area Ratio] (default: (0,0); namelist: \ct{LEAK_AREA_RATIO(1:2)}): Leakage area ratio input as the leakage area per unit wall and floor area.
+\item[Flow Coefficient] (default: 0.07; namelist: \ct{FLOW_COEFFICIENT}) Orifice flow coefficient for leakage.
+\end{description}
+For reference, the following table is taken from the \textit{Handbook of Smoke Control Engineering}~\cite{Klote:2012}.
 \begin{table}[ht]
 \begin{center}
 \caption{Sample Flow Area of Walls and Floors of Commercial Buildings from the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}, used with permission}
@@ -279,29 +221,51 @@ For reference, the following table is taken from the \textit{Handbook of Smoke C
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|c|c|}
 \hline
-Construction Element   & Leakage                        & \shortstack{Leakage Area (m$^2$/m$^2$) \\ Leakage Area per Unit Wall Area}   \\ \hline
-\multirow{4}{*}{\shortstack[l]{\textbf{Exterior building walls} \\ \\ {\small (includes construction cracks} \\ {\small and cracks around windows and doors)}}}             & Tight      & $5.0 \times 10^{-5}$   \\
-                                                                                                                                                                      & Average    & $1.7 \times 10^{-4}$ \\
-                                                                                                                                                                      & Loose      & $3.5 \times 10^{-4}$ \\
-                                                                                                                                                                      & Very Loose & $1.2 \times 10^{-3}$ \\ \hline
+Construction Element   & Leakage   & \shortstack{Leakage Area (m$^2$/m$^2$) \\ Leakage Area per Unit Wall Area}   \\ \hline
+\multirow{4}{*}{\shortstack[l]{\textbf{Exterior building walls} \\ \\ {\small (includes construction cracks} \\ {\small and cracks around windows and doors)}}}             & Tight      & $5.0 \times 10^{-5}$ \\
+& Average    & $1.7 \times 10^{-4}$ \\
+& Loose      & $3.5 \times 10^{-4}$ \\
+& Very Loose & $1.2 \times 10^{-3}$ \\ \hline
 
 \multirow{3}{*}{\shortstack[l]{\textbf{Stairwell walls} \\ \\ {\small (includes construction cracks but} \\ {\small not cracks around windows and doors)}}}                & Tight      & $1.4 \times 10^{-5}$   \\
-                                                                                                                                                                      & Average    & $1.1 \times 10^{-4}$ \\
-                                                                                                                                                                      & Loose      & $3.5 \times 10^{-4}$ \\ \hline
+& Average    & $1.1 \times 10^{-4}$ \\
+& Loose      & $3.5 \times 10^{-4}$ \\ \hline
 
 \multirow{3}{*}{\shortstack[l]{\textbf{Elevator shaft walls} \\ \\ {\small (includes construction cracks but} \\ {\small not cracks around doors)}}}                       & Tight      & $1.8 \times 10^{-4}$   \\
-                                                                                                                                                                      & Average    & $8.4 \times 10^{-4}$ \\
-                                                                                                                                                                      & Loose      & $1.8 \times 10^{-3}$ \\ \hline \hline
+& Average    & $8.4 \times 10^{-4}$ \\
+& Loose      & $1.8 \times 10^{-3}$ \\ \hline \hline
 Construction Element   & Leakage                        & \shortstack{Leakage Area (m$^2$/m$^2$) \\ Leakage Area per Unit Floor Area}   \\ \hline
 
 \multirow{3}{*}{\shortstack[l]{\textbf{Floors} \\ {\small (includes construction cracks and} \\ {\small gaps around penetrations)}}}                                    & Tight      & $6.6 \times 10^{-6}$   \\
-                                                                                                                                                                      & Average    & $5.2 \times 10^{-5}$ \\
-                                                                                                                                                                      & Loose      & $1.7 \times 10^{-4}$ \\ \hline
-
+& Average    & $5.2 \times 10^{-5}$ \\
+& Loose      & $1.7 \times 10^{-4}$ \\ \hline
 \end{tabular}
 \endgroup
 \end{center}
 \end{table}
+
+
+\section{Miscellaneous Compartment Parameters}
+\label{info:COMP6}
+
+
+\begin{description}
+\item[FYI] Optional descriptive text retained with the compartment but not used in the calculation.
+\item[GRID] (default: 50,50,50; namelist: \ct{GRID(1:3)} Number of Smokeview sampling points along $x$, $y$, and $z$ axes. These parameters are purely for visualization within Smokeview for depicting plume and ceiling jet profiles.
+\end{description}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

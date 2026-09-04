@@ -238,8 +238,6 @@ class CompartmentsTab(QWidget):
         self.flow_coefficient_edit = QLineEdit()
         self.wall_leak_area_ratio_edit = QLineEdit()
         self.floor_leak_area_ratio_edit = QLineEdit()
-        self.wall_leak_area_edit = QLineEdit()
-        self.floor_leak_area_edit = QLineEdit()
 
         self.area_table = QTableWidget(6, 2)
         self.area_table.setHorizontalHeaderLabels(area_headers())
@@ -466,8 +464,6 @@ class CompartmentsTab(QWidget):
         form_layout.addRow("Flow Coefficient:", self.flow_coefficient_edit)
         form_layout.addRow("Wall Leak Area Ratio:", self.wall_leak_area_ratio_edit)
         form_layout.addRow("Floor Leak Area Ratio:", self.floor_leak_area_ratio_edit)
-        form_layout.addRow("Wall Leak Area:", self.wall_leak_area_edit)
-        form_layout.addRow("Floor Leak Area:", self.floor_leak_area_edit)
         flow_layout.addLayout(form_layout)
         flow_box.setLayout(flow_layout)
 
@@ -493,8 +489,6 @@ class CompartmentsTab(QWidget):
             self.flow_coefficient_edit,
             self.wall_leak_area_ratio_edit,
             self.floor_leak_area_ratio_edit,
-            self.wall_leak_area_edit,
-            self.floor_leak_area_edit,
             self.fyi_edit,
         ]
 
@@ -735,8 +729,6 @@ class CompartmentsTab(QWidget):
         self.flow_coefficient_edit.setText(format_number(c.flow_coefficient))
         self.wall_leak_area_ratio_edit.setText(format_number(c.wall_leak_area_ratio))
         self.floor_leak_area_ratio_edit.setText(format_number(c.floor_leak_area_ratio))
-        self.wall_leak_area_edit.setText(format_value(AREA, c.wall_leak_area))
-        self.floor_leak_area_edit.setText(format_value(AREA, c.floor_leak_area))
 
         self.load_materials_table(c)
         self.load_area_table(c)
@@ -759,8 +751,6 @@ class CompartmentsTab(QWidget):
             self.flow_coefficient_edit,
             self.wall_leak_area_ratio_edit,
             self.floor_leak_area_ratio_edit,
-            self.wall_leak_area_edit,
-            self.floor_leak_area_edit,
             self.fyi_edit,
         ):
             edit.clear()
@@ -922,16 +912,6 @@ class CompartmentsTab(QWidget):
             c.floor_leak_area_ratio = parse_number(
                 self.floor_leak_area_ratio_edit.text() or "0",
                 "Floor Leak Area Ratio",
-            )
-            c.wall_leak_area = parse_value(
-                AREA,
-                self.wall_leak_area_edit.text() or "0",
-                "Wall Leak Area",
-            )
-            c.floor_leak_area = parse_value(
-                AREA,
-                self.floor_leak_area_edit.text() or "0",
-                "Floor Leak Area",
             )
             c.fyi = self.fyi_edit.text().strip()
             self.save_materials_from_table(c)

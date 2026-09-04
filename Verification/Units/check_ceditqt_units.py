@@ -151,8 +151,6 @@ def resolve_field(case, field: str) -> Quantity:
             "origin_x": ("origin_x", LENGTH),
             "origin_y": ("origin_y", LENGTH),
             "origin_z": ("origin_z", LENGTH),
-            "wall_leak_area": ("wall_leak_area", AREA),
-            "floor_leak_area": ("floor_leak_area", AREA),
         }[parts[2]]
         return Quantity(getattr(compartment, attr), kind)
 

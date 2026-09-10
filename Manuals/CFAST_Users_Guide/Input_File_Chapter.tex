@@ -321,6 +321,7 @@ For vent opening changes based on \textbf{Temperature} or \textbf{Heat Flux}, sp
 \newpage
 
 \section{Mechanical Ventilation}
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{SCRIPT_FIGURES/Mechanical_Vent_Tab}
@@ -328,119 +329,61 @@ For vent opening changes based on \textbf{Temperature} or \textbf{Heat Flux}, sp
 \end{center}
 \end{figure}
 
-Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the  \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
+Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information is presented in  Klote and Milke~\cite{Klote:2002} and the  \textit{Handbook of Smoke Control Engineering}~\cite{Klote:2012}.
 
 CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
 
 \subsection{Connections to Compartments}
 \label{info:VENT3}
-\begin{description}
-\item[ID]  The selected name must be unique (i.e., not the same as another mechanical ventilation system in the same simulation).
-\item[First Compartment] The compartment from which the fan flow originates.
-\item[Second Compartment] The compartment to which the fan flow terminates.
-\item[Area] (default units: \unit{m^2}, default value: 0~\unit{m^2}): Cross-sectional area of the opening.
-\label{Mech Height}
-\item[Center Height] (default units: \unit{m}, default value: 0~\unit{m}): Height of the midpoint of the duct opening above the floor.
-\item[Orientation] (default vertical) A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
-\item[Vent Offset] (default units: \unit{m}, Default value: 0~\unit{m}): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment. See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
-\end{description}
 
+\begin{description}
+\item[ID] (namelist: \ct{ID})  Unique name, i.e. not the same as another mechanical ventilation system in the same simulation.
+\item[From Compartment] (namelist: \ct{COMP_IDS(1)}) The compartment \underline{from} which the fan flow originates.
+\item[To Compartment] (namelist: \ct{COMP_IDS(2)}) The compartment \underline{to} which the fan flow terminates.
+\item[Area] (default: 0.25~\unit{m^2}; namelist: \ct{AREA}): Cross-sectional area of the opening.
+\item[Center Height] (default: 0~m; namelist: \ct{HEIGHT}): Height of the midpoint of the duct opening above the floor.
+\item[Orientation] (default: \textbf{Vertical}; namelist: \ct{ORIENTATIONS(1:2)}) A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
+\item[Vent Offset] (default: 0~m; namelist: \ct{OFFSETS(1:2)}): For visualization only, the horizontal distances between the center of the vent and the origin of the $x$ and $y$ axes in the first compartment.
+\end{description}
 Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
-
 \begin{description}
-\item[Time] (default units: s, default values: 0 s): Time during the simulation at which to begin or end a change in the open fraction.
-\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open at the associated time point.
+\item[Time] (namelist: \ct{T(:)}) Time points at which to change the opening fraction. A linear transition between points is assumed. If the time points do not span the entire simulation time, the beginning and end points shall be extended to the beginning and end points of the simulation.
+\item[Fraction] (namelist: \ct{F(:)}) Opening fraction of the vent.
 \end{description}
-
-\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
-
 For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
 
 \begin{description}
-\item[Open/Close Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
-\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target placement is specified by the user as part of the associated target definition.
-\item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
-\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
+\item[Open/Close Criterion] (namelist: \ct{CRITERION}) The change in opening fraction can be set as a function of \textbf{Time} or a target's \textbf{Temperature} or incident \textbf{Heat Flux}.
+\item[Setpoint] (namelist: \ct{SETPOINT}) The value at which the vent opening change occurs. 
+\item[Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. 
+\item[Pre-Activation Fraction] (default 1; namelist: \ct{PRE_FRACTION}) Opening fraction of the vent area before the setpoint is reached.
+\item[Post-Activation Fraction] (default: 1, namelist: \ct{POST_FRACTION}) Opening fraction following the setpoint being reached. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
 \end{description}
-
-
 
 
 \subsection{Fans}
 \label{info:VENT4}
-CFAST does not include provisions for reverse flow through a fan, or a fan curve. Rather, you may specify a pressure above which the flow linearly decreases to zero.
-\begin{description}
-\label{Mech Flow Rate}
-\item[Flow Rate] (default units: \unit{m^3/s}, default value: 0~\unit{m^3/s}): Constant flow rate of the fan.
-\label{Mech Begin Drop Off Pressure}
-\item[Begin Drop Off Pressure] (default units: \unit{Pa}, default value: 200~\unit{Pa}): Above this pressure, the flow begins a drop-off to zero. A hyperbolic tangent function is used to ensure a smooth transition from full flow at the ``Begin Drop Off Pressure'' to zero flow at the ``Zero Flow Pressure''.
-\label{Mech Zero Flow Pressure}
-\item[Zero Flow Pressure] (default units: \unit{Pa}, default value: 300~\unit{Pa}): The pressure above which the flow is zero.
-\end{description}
 
+CFAST does not allow reverse flow through a fan or a fan curve. Rather, you may specify a pressure above which the flow linearly decreases to zero.
+\begin{description}
+\item[Flow Rate] (default: 0.02~\unit{m^3/s}; namelist: \ct{FLOW}) Constant flow rate of the fan.
+\item[Begin Drop Off Pressure] (default: 200~Pa; namelist: \ct{CUTOFFS(1)}) Above this pressure, the flow begins a drop-off to zero. A hyperbolic tangent function is used to ensure a smooth transition from full flow at the ``Begin Drop Off Pressure'' to zero flow at the ``Zero Flow Pressure''.
+\item[Zero Flow Pressure] (default: 300~Pa; namelist: \ct{CUTOFFS(2)}) The pressure above which the flow is zero.
+\end{description}
 
 
 
 \subsection{Filtering}
 \label{info:VENT5}
+
 For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially, filtering is off.
 \begin{description}
-\label{Mech Filter Efficiency}
-\item[Filter Efficiency] (default units:~\%, default value: 0\%): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied; that is, all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, you may specify the fraction of the soot and trace species mass to be removed as a percentage.
-\label{Mech Begin Filtering At Time}
-\item[Begin Filtering At Time] (default units: s, default value: 0 s): Time during the simulation at which the mechanical vent filtering begins.
+\item[Filter Efficiency] (default: 0~\%; namelist: \ct{FILTER_EFFICIENCY}) Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent. By default, there is no filtering applied; that is, all of the soot and trace species mass in the vent flow is passed through the vent.   If desired, you may specify the fraction of the soot and trace species mass to be removed as a percentage.
+\item[Begin Filtering At Time] (default: 0 s; namelist: \ct{FILTER_TIME}) Time at which the mechanical vent filtering begins.
 \end{description}
+If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to ensure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equations.  For large production rates of trace species, scaling factors can be used (e.g. divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units by multiplying by the scaling factor used.
 
-\graybox{If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to ensure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equations.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units by multiplying by the scaling factor used.}
 
-\section{Text Input Parameters}
-\label{info:VENT6}
-
-Every \ct{VENT} record requires a unique \ct{ID}, two valid \ct{COMP_IDS} (one may be \ct{OUTSIDE}), and a supported \ct{TYPE}. The parameters common to more than one vent type are:
-\begin{description}
-\item[\texttt{COMP\_IDS}] Pair of compartments connected by the vent. For ceiling and floor vents, the first compartment is above the second.
-\item[\texttt{CRITERION}] Opening control: \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}. Time control uses paired \ct{T} and \ct{F} arrays. Temperature and flux control require a target, a set point, and the pre- and post-activation fractions.
-\item[\texttt{DEVC\_ID}] Target identifier used by a temperature- or heat-flux-controlled vent.
-\item[\texttt{F}] Vent-open fractions corresponding to \ct{T}; the two arrays must have the same number of values.
-\item[\texttt{FYI}] Optional descriptive text retained with the vent but not used in the calculation.
-\item[\texttt{ID}] Required identifier, unique among all identifiers in the input file.
-\item[\texttt{POST\_FRACTION}] Dimensionless fraction open after a temperature or flux set point is reached; default 1.
-\item[\texttt{PRE\_FRACTION}] Dimensionless fraction open before a temperature or flux set point is reached; default 1.
-\item[\texttt{SETPOINT}] Trigger time in s, temperature in \unit{\degreeCelsius}, or incident heat flux in \unit{kW/m^2}, as selected by \ct{CRITERION}.
-\item[\texttt{T}] Times in s corresponding to the fractions in \ct{F}.
-\item[\texttt{TYPE}] \ct{WALL}, \ct{CEILING}, \ct{FLOOR}, or \ct{MECHANICAL}.
-\end{description}
-
-For a wall vent, geometry is specified with \ct{BOTTOM}, \ct{WIDTH}, and either \ct{TOP} or \ct{HEIGHT}.
-\begin{description}
-\item[\texttt{BOTTOM}] Height in m of the vent sill above the first compartment's floor.
-\item[\texttt{FACE}] Wall containing the vent: \ct{FRONT}, \ct{RIGHT}, \ct{REAR}, or \ct{LEFT}, relative to the first compartment.
-\item[\texttt{FLOW\_COEFFICIENT}] Orifice flow coefficient, with a default of 0.7.
-\item[\texttt{HEIGHT}] Vent height in m. When \ct{TOP} is zero, CFAST sets the soffit to \ct{BOTTOM+HEIGHT}.
-\item[\texttt{OFFSET}] Horizontal distance in m from the origin of the selected \ct{FACE}.
-\item[\texttt{TOP}] Height in m of the vent soffit above the first compartment's floor.
-\item[\texttt{WIDTH}] Vent width in m.
-\end{description}
-
-For a ceiling or floor vent, the additional parameters are:
-\begin{description}
-\item[\texttt{AREA}] Required vent area in \unit{m^2}.
-\item[\texttt{OFFSETS}] X and Y visualization offsets in m from the first compartment's origin.
-\item[\texttt{SHAPE}] Required visualization shape, \ct{ROUND} or \ct{SQUARE}.
-\end{description}
-
-For a mechanical vent, the additional parameters are:
-\begin{description}
-\item[\texttt{AREAS}] Required diffuser areas in \unit{m^2} at the two ends of the duct.
-\item[\texttt{CUTOFFS}] Pressure differences in Pa at which flow begins to decrease and reaches zero; defaults 200 and 300~\unit{Pa}.
-\item[\texttt{FILTER\_EFFICIENCY}] Percent of soot and trace species removed after filtering activates; default 0.
-\item[\texttt{FILTER\_TIME}] Time in s at which filter activation begins; CFAST ramps to the specified efficiency over 1~s.
-\item[\texttt{FLOW}] Required nominal volumetric flow rate in \unit{m^3/s}.
-\item[\texttt{HEIGHTS}] Required diffuser heights in m at the two duct ends.
-\item[\texttt{OFFSETS}] X and Y visualization offsets in m.
-\item[\texttt{ORIENTATIONS}] Diffuser orientations at the two duct ends, each \ct{VERTICAL} or \ct{HORIZONTAL}; both default to \ct{VERTICAL}.
-\end{description}
 
 
 

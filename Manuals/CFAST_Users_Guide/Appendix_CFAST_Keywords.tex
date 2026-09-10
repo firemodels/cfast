@@ -125,12 +125,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 This chapter lists all CFAST input parameters in separate tables grouped by namelist. The namelist sections and the parameters within each table are arranged alphabetically. These tables are intended as a quick reference and do not replace the detailed descriptions in the main body of this guide. See Table~\ref{tbl:namelistgroups} for cross-references to the relevant sections and tables.
 
-\clearpage
 \section{\texorpdfstring{{\tt CHEM}}{CHEM} (Fire Chemistry Parameters)}
 \label{app:namelist_chem}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.87\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.61\hsize\raggedright\arraybackslash}X|>{\hsize=1.06\hsize\raggedright\arraybackslash}X|}
 \caption[Fire Parameters (\ct{CHEM} namelist group)]{For more information see Sec.~\ref{info:FIRE}.}
 \label{tbl:FIRE} \\
@@ -143,7 +140,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \multicolumn{5}{|c|}{\ct{CHEM} (Fire Chemistry Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{AREA}                                & Real                   & Sec.~\ref{info:FIRE}         & m$^2$              & 0 \\ \hline
 \ct{CARBON}                              & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{CHLORINE}                            & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
@@ -163,21 +160,11 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \ct{TRACE_YIELD}                         & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&CHEM ID = 'Wood_Wall_Fire'
-      CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
-      HEAT_OF_COMBUSTION = 18100, RADIATIVE_FRACTION = 0.33 /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt COMP}}{COMP} (Compartment Parameters)}
 \label{app:namelist_comp}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.32\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|>{\hsize=0.66\hsize\raggedright\arraybackslash}X|>{\hsize=0.81\hsize\raggedright\arraybackslash}X|>{\hsize=0.96\hsize\raggedright\arraybackslash}X|}
 \caption[Compartment parameters (\ct{COMP} namelist group)]{For more information see Sec.~\ref{info:COMP}.}
 \label{tbl:COMP} \\
@@ -190,7 +177,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \multicolumn{5}{|c|}{\ct{COMP} (Compartment Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{CEILING_MATL_ID}                    & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
 \ct{CEILING_THICKNESS}                  & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
 \ct{CROSS_SECT_AREAS}                   & Real Array             & Sec.~\ref{info:COMP4}        & m$^2$              & \\ \hline
@@ -213,14 +200,10 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \end{xltabular}
 
 
-
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt CONN}}{CONN} (Compartment Connection Parameters)}
 \label{app:namelist_conn}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.22\hsize\raggedright\arraybackslash}X|}
 \caption[Connection Parameters (\ct{CONN} namelist group)]{For more information see Sec.~\ref{info:CONN}.}
 \label{tbl:CONN} \\
@@ -233,29 +216,19 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \multicolumn{5}{|c|}{\ct{CONN} (Connection Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \ct{COMP_IDS}                            & Character Array        & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \ct{F}                                   & Real Array             & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \ct{TYPE}                                & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt DEVC}}{DEVC} (Device Parameters)}
 \label{app:namelist_devc}
-
 \label{info:DEVC3}
 
-\noindent
-\renewcommand\footnoterule{}
-\small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|}
 \caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Sec.~\ref{info:DEVC}.}
 \label{tbl:DEVC} \\
@@ -268,7 +241,7 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \multicolumn{5}{|c|}{\ct{DEVC} (Device Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{ADIABATIC_TARGET}                    & Logical                & Sec.~\ref{info:DEVC}         &                    & \ct{F} \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
 \ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Sec.~\ref{info:DEVC}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
@@ -288,46 +261,15 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \ct{THICKNESS}                           & Real                   & Sec.~\ref{info:DEVC}         &                    & material thickness \\ \hline
 \ct{TYPE}                                & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
 \end{xltabular}
-\normalsize
-
-\graybox{
-\ct{PLATE} and \ct{CYLINDER} targets are defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{TEMPERATURE_DEPTH}, \ct{DEPTH_UNITS}, and \ct{NORMAL}.
-
-A sprinkler is defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{RTI}, \ct{SETPOINT}, and \ct{SPRAY_DENSITY}.
-
-A smoke detector is defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, and \ct{SETPOINT} or \ct{SETPOINTS}. The latter tracks smoulder smoke and flaming smoke separately.
-
-A heat detector is defined by \ct{COMP_ID}, \ct{TYPE}, \ct{ID}, \ct{LOCATION}, \ct{RTI}, and \ct{SETPOINT}.
-}
-
-% \vspace{\baselineskip}
-\clearpage
-\noindent Examples:
-\begin{lstlisting}
-&DEVC ID = 'Targ 1', COMP_ID = 'Comp 1', TYPE = 'PLATE',
-      LOCATION = 2.2, 1.88, 2.34., NORMAL = 0., 0., 1.,
-      MATL_ID = 'CONCRETE', TEMPERATURE_DEPTH = 0.1, DEPTH_UNITS = 'M' /
-
-&DEVC ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
-      TYPE = 'SPRINKLER',
-      LOCATION = 3., 3., 2.97,
-      SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
-
-&DEVC ID = 'Adiabatic Targ', COMP_ID = 'Comp 1', TYPE = 'PLATE',
-      LOCATION = 2.2, 1.88, 2.34., NORMAL = 0., 0., 1.,
-      MATL_ID = 'CONCRETE',
-      ADIABATIC_TARGET = 'TRUE', CONVECTION_COEFFICIENTS = 3.E-3, 5.E-3 /
-\end{lstlisting}
 
 
-\clearpage
+
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt DIAG}}{DIAG} (Diagnostic Parameters)}
 
 These inputs are for internal diagnostic purposes used to test and verify specific model functions.  They are included in this appendix for completeness but are never used in typical CFAST scenarios.
 
-\noindent
-\renewcommand\footnoterule{}
-\scriptsize
+
 \begin{xltabular}{\textwidth}{|>{\hsize=2.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.75\hsize\raggedright\arraybackslash}X|>{\hsize=0.75\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|}
 \caption[Diagnostic parameters (\ct{DIAG} namelist group)]{For more information see Sec.~\ref{info:DIAG}.}
 \label{tbl:DIAG} \\
@@ -340,7 +282,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \multicolumn{5}{|c|}{\ct{DIAG} (Diagnostic Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Ref.} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Ref.} & {\bf Units} & {\bf Default} \\ \hline
 \ct{ADIABATIC_TARGET_VERIFICATION}       & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
 \ct{CEILING_JET_SUB_MODEL}               & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
 \ct{CONDUCTION_SUB_MODEL}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
@@ -372,17 +314,14 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{VERIFICATION_TIME_STEP}              & Real           & Sec.~\ref{info:DIAG} & s        & 0 \\ \hline
 \ct{VERTICAL_FLOW_SUB_MODEL}             & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
 \end{xltabular}
-\normalsize
 
 
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt DUMP}}{DUMP} (Legacy Post-Run Calculation Parameters)}
 \label{app:namelist_dump}
 
 The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. New input files should use \ct{OUTP}; \ct{DUMP} remains accepted for compatibility.
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|}
 \caption[Legacy Post-Run Calculation Parameters (\ct{DUMP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
 \label{tbl:DUMP} \\
@@ -395,7 +334,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{FIRST_DEVICE}                        & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
@@ -410,13 +349,10 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \end{xltabular}
 
 
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt FIRE}}{FIRE} (Fire Parameters)}
 \label{app:namelist_fire}
 
-\noindent
-\renewcommand\footnoterule{}
-\small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|}
 \caption[Fire Parameters (\ct{FIRE} namelist group)]{For more information see Sec.~\ref{info:FIRE}.}
 \label{tbl:FIRE2} \\
@@ -429,7 +365,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{FIRE} (Individual Instance of a Fire Object)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
 \ct{DEVC_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
 \ct{FIRE_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
@@ -439,23 +375,12 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \ct{LOCATION}                            & Real Pair              & Sec.~\ref{info:FIRE}         & m                  & \\ \hline
 \ct{SETPOINT}                            & Real                   & Sec.~\ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s \\ \hline
 \end{xltabular}
-\normalsize
-
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&FIRE ID = 'Wood_Wall'
-      COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
-      LOCATION = 2.5, 5 /
-\end{lstlisting}
 
 
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt HEAD}}{HEAD} (Header Parameters)}
 \label{app:namelist_head}
 
-\noindent
-\setlength{\tabcolsep}{.1in}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.79\hsize\raggedright\arraybackslash}X|>{\hsize=1.36\hsize\raggedright\arraybackslash}X|}
 \caption[Header Parameters (\ct{HEAD} namelist group)]{For more information see Sec.~\ref{info:HEAD}.}
 \label{tbl:HEAD} \\
@@ -468,23 +393,15 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{HEAD} (Header Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{TITLE}                               & Character              & Sec.~\ref{info:HEAD}         &                    & \\ \hline
 \ct{VERSION}                             & Integer                & Sec.~\ref{info:HEAD}         &                    & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&HEAD VERSION = 7300, TITLE = 'Users Guide Example Case' /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt INIT}}{INIT} (Initial Conditions)}
 \label{app:namelist_init}
-
-\noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=2.02\hsize\raggedright\arraybackslash}X|>{\hsize=0.6\hsize\raggedright\arraybackslash}X|>{\hsize=0.73\hsize\raggedright\arraybackslash}X|>{\hsize=0.6\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|}
 \caption[Initial Conditions (\ct{INIT} namelist group)]{For more information see Sec.~\ref{info:INIT}.}
 \label{tbl:INIT} \\
@@ -497,7 +414,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{INIT} (Initial Conditions)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{EXTERIOR_O2_MASS_FRACTION}           & Real                   & Sec.~\ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
 \ct{EXTERIOR_TEMPERATURE}                & Real                   & Sec.~\ref{info:INIT}         & $^\circ$C          & 20 \\ \hline
 \ct{INTERIOR_O2_MASS_FRACTION}           & Real                   & Sec.~\ref{info:INIT}         & kg/kg              & 0.23 \\ \hline
@@ -506,19 +423,11 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \ct{RELATIVE_HUMIDITY}                   & Real                   & Sec.~\ref{info:INIT}         & \%                 & 50 \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&INIT INTERIOR_TEMPERATURE = 20., EXTERIOR_TEMPERATURE = 20. /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt ISOF}}{ISOF} (Isosurface Parameters)}
 \label{app:namelist_isof}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|>{\hsize=0.79\hsize\raggedright\arraybackslash}X|>{\hsize=1.36\hsize\raggedright\arraybackslash}X|}
 \caption[Isosurface parameters (\ct{ISOF} namelist group)]{For more information see Sec.~\ref{info:ISOF}.}
 \label{tbl:ISOF} \\
@@ -531,25 +440,16 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{ISOF} (Isosurface Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:ISOF}         &                    & \\ \hline
 \ct{VALUE}                               & Real                   & Sec.~\ref{info:ISOF}         & $^\circ$C          & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
 
-\noindent Example:
-\begin{lstlisting}
-&ISOF COMP_ID = 'COMP_1', VALUE = 100. /
-\end{lstlisting}
-
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt MATL}}{MATL} (Material Properties)}
 \label{app:namelist_matl}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.16\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=1.07\hsize\raggedright\arraybackslash}X|>{\hsize=1.17\hsize\raggedright\arraybackslash}X|}
 \caption[Thermal Properties (\ct{MATL} namelist group)]{For more information see Sec.~\ref{info:MATL}.}
 \label{tbl:MATL} \\
@@ -562,7 +462,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{MATL} (Material Properties)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{CONDUCTIVITY}                        & Real                   & Sec.~\ref{info:MATL}         & kW/(m$\cdot$K)     & \\ \hline
 \ct{DENSITY}                             & Real                   & Sec.~\ref{info:MATL}         & kg/m$^3$           & \\ \hline
 \ct{EMISSIVITY}                          & Real                   & Sec.~\ref{info:MATL}         &                    & 0.9 \\ \hline
@@ -574,13 +474,10 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \end{xltabular}
 
 
-
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt MISC}}{MISC} (Miscellaneous Parameters)}
 \label{app:namelist_misc}
 
-\noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=1.57\hsize\raggedright\arraybackslash}X|>{\hsize=0.99\hsize\raggedright\arraybackslash}X|>{\hsize=0.74\hsize\raggedright\arraybackslash}X|>{\hsize=0.62\hsize\raggedright\arraybackslash}X|>{\hsize=1.08\hsize\raggedright\arraybackslash}X|}
 \caption[Miscellaneous Parameters (\ct{MISC} namelist group)]{For more information see Sec.~\ref{info:MISC}.}
 \label{tbl:MISC} \\
@@ -593,7 +490,7 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \multicolumn{5}{|c|}{\ct{MISC} (Miscellaneous Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{ADIABATIC}                           & Logical                & Sec.~\ref{info:MISC}         &                    & \ct{F} \\ \hline
 \ct{LOWER_OXYGEN_LIMIT}                  & Real                   & Sec.~\ref{info:MISC}         &                    & 0.15 \\ \hline
 \ct{MAX_ITERATION}                       & Real                   & Sec.~\ref{info:MISC}         &                    & Unlimited \\ \hline
@@ -602,34 +499,25 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \ct{SPECIFIC_EXTINCTION}                 & Real Doublet           & Sec.~\ref{info:MISC}         & m$^2$/kg           & 8700,4400 \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&MISC LOWER_OXYGEN_LIMIT = 0.10 /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt OUTP}}{OUTP} (Output and Post-Run Calculation Parameters)}
 
 CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and written in CEdit.
 
-\noindent
-\renewcommand\footnoterule{}
-\small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.45\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
 \caption[Output and Post-Run Calculation parameters (\ct{OUTP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
 \label{tbl:OUTP} \\
 \hline
 \multicolumn{5}{|c|}{\ct{OUTP} (Output and Post-Run Calculation Parameters)} \\
 \hline \hline
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
 \multicolumn{5}{|c|}{\ct{OUTP} (CALCULATION Parameters)} \\
 \hline \hline
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \endhead
 \ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
@@ -646,29 +534,14 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{VALIDATION_OUTPUT}                   & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
 \end{xltabular}
-\normalsize
-
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&OUTP ID = 'Total Time Completed'
-     FILE = 'NORMAL'  TYPE = 'MAXIMUM'
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
-&OUTP ID = 'Fire Room Ion Detector'
-     FILE = 'NORMAL'  TYPE = 'TRIGGER_GREATER'  CRITERION = 1
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
-     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
-\end{lstlisting}
 
 
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt RAMP}}{RAMP} (Legacy Ramp Parameters)}
 \label{app:namelist_ramp}
 
 The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with legacy input files.
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|}
 \caption[Legacy Ramp Parameters (\ct{RAMP} namelist group)]{Legacy ramp parameters accepted by CFAST.}
 \label{tbl:RAMP} \\
@@ -681,7 +554,7 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \multicolumn{5}{|c|}{\ct{RAMP} (Legacy Ramp Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{COMP_IDS}                            & Character Doublet      & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \ct{F}                                   & Real Array             & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \ct{ID}                                  & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
@@ -691,12 +564,10 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \end{xltabular}
 
 
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt SLCF}}{SLCF} (Slice File Parameters)}
 \label{app:namelist_slcf}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.86\hsize\raggedright\arraybackslash}X|>{\hsize=1.33\hsize\raggedright\arraybackslash}X|>{\hsize=0.86\hsize\raggedright\arraybackslash}X|>{\hsize=0.71\hsize\raggedright\arraybackslash}X|>{\hsize=1.24\hsize\raggedright\arraybackslash}X|}
 \caption[Slice File parameters (\ct{SLCF} namelist group)]{For more information see Sec.~\ref{info:SLCF}.}
 \label{tbl:SLCF} \\
@@ -709,26 +580,18 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \multicolumn{5}{|c|}{\ct{SLCF} (Slice File Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
 \ct{DOMAIN}                              & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
 \ct{PLANE}                               & Character              & Sec.~\ref{info:SLCF}         &                    & \\ \hline
 \ct{POSITION}                            & Real                   & Sec.~\ref{info:SLCF}         &                    & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt TABL}}{TABL} (Time-Based Fire Chemistry Parameters)}
 \label{app:namelist_tabl}
 
-\noindent
-\renewcommand\footnoterule{}
 \begin{xltabular}{\textwidth}{|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.22\hsize\raggedright\arraybackslash}X|}
 \caption[Time-Based Fire Chemistry Parameters (\ct{TABL} namelist group)]{For more information see Sec.~\ref{info:FIRE2}.}
 \label{tbl:FIRE3} \\
@@ -741,27 +604,17 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \multicolumn{5}{|c|}{\ct{TABL} (Time-Based Fire Chemistry Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \ct{DATA}                                & Real Array             & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \ct{ID}                                  & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \ct{LABELS}                              & Character Array        & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA',
-      'CO_YIELD', 'SOOT_YIELD' /
-&TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.00617, 0.015 /
-&TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.00617, 0.015 /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt TIME}}{TIME} (Time Parameters)}
 \label{app:namelist_time}
 
-\noindent
 \begin{xltabular}{\textwidth}{|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.78\hsize\raggedright\arraybackslash}X|>{\hsize=0.94\hsize\raggedright\arraybackslash}X|>{\hsize=0.78\hsize\raggedright\arraybackslash}X|>{\hsize=1.35\hsize\raggedright\arraybackslash}X|}
 \caption[Time Parameters (\ct{TIME} namelist group)]{For more information see Sec.~\ref{info:TIME}.}
 \label{tbl:TIME} \\
@@ -774,29 +627,20 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \multicolumn{5}{|c|}{\ct{TIME} (Time Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
+{\bf Parameter}                          & {\bf Type}             & {\bf Reference}              & {\bf Units}        & {\bf Default}      \\ \hline
 \ct{PRINT}                               & Real                   & Sec.~\ref{info:TIME}         & s                  & 60 \\ \hline
 \ct{SIMULATION}                          & Real                   & Sec.~\ref{info:TIME}         & s                  & 900 \\ \hline
 \ct{SMOKEVIEW}                           & Real                   & Sec.~\ref{info:TIME}         & s                  & 15 \\ \hline
 \ct{SPREADSHEET}                         & Real                   & Sec.~\ref{info:TIME}         & s                  & 15 \\ \hline
 \end{xltabular}
 
-\vspace{\baselineskip}
-\noindent Example:
-\begin{lstlisting}
-&TIME SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
-\end{lstlisting}
 
-
-\clearpage
+\Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt VENT}}{VENT} (Vent Parameters)}
 \label{app:namelist_vent}
 
-\noindent
-\renewcommand\footnoterule{}
-\small
 \begin{xltabular}{\textwidth}{|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
-\caption[Vent Parameters (\ct{VENT} namelist group)]{For more information see Secs.~\ref{info:VENT}--\ref{info:VENT6}.}
+\caption[Vent Parameters (\ct{VENT} namelist group)]{For more information see Secs.~\ref{info:VENT}--\ref{info:VENT5}.}
 \label{tbl:VENT} \\
 \hline
 \multicolumn{5}{|c|}{\ct{VENT} (Vent Parameters)} \\
@@ -807,40 +651,39 @@ The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with
 \multicolumn{5}{|c|}{\ct{VENT} (Vent Parameters)} \\
 \hline \hline
 \endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default Value} \\ \hline
-\ct{AREA}                                & Real                   & Sec.~\ref{info:VENT2}        & m$^2$              & \\ \hline
-\ct{AREAS}                               & Real Doublet           & Sec.~\ref{info:VENT3}        & m$^2$              & \\ \hline
-\ct{BOTTOM}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{CRITERION}                           & Character              & Sec.~\ref{info:VENT6}        &                    & \ct{'TIME'} \\ \hline
-\ct{CUTOFFS}                             & Real Doublet           & Sec.~\ref{info:VENT4}        & Pa                 & 200.,300. \\ \hline
-\ct{DEVC_ID}                             & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{F}                                   & Real Array             & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{FACE}                                & Character              & Sec.~\ref{info:VENT}         &                    & \\ \hline
-\ct{FILTER_EFFICIENCY}                   & Real                   & Sec.~\ref{info:VENT5}        & \% removed         & 0.0 \\ \hline
-\ct{FILTER_TIME}                         & Real                   & Sec.~\ref{info:VENT5}        & s                  & 0 \\ \hline
-\ct{FLOW}                                & Real                   & Sec.~\ref{info:VENT4}        & m$^3$/s            & \\ \hline
-\ct{FLOW_COEFFICIENT}                    & Real                   & Sec.~\ref{info:VENT}         &                    & 0.7 \\ \hline
-\ct{FYI}                                 & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{HEIGHT}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
-\ct{HEIGHTS}                             & Real Doublet           & Sec.~\ref{info:VENT3}        & m                  & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{OFFSET}                              & Real                   & Sec.~\ref{info:VENT}         & m                  & 0 \\ \hline
-\ct{OFFSETS}                             & Real Doublet           & Secs.~\ref{info:VENT2}, \ref{info:VENT3} & m                  & 0,0 \\ \hline
-\ct{ORIENTATIONS}                        & Character Doublet      & Sec.~\ref{info:VENT3}        & \multicolumn{2}{l|}{\begin{tabular}{@{}p{0.15in}|l@{}} & \ct{'VERTICAL', 'VERTICAL'} \end{tabular}} \\ \hline
-\ct{POST_FRACTION}                       & Real                   & Sec.~\ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{PRE_FRACTION}                        & Real                   & Sec.~\ref{info:VENT6}        &                    & 1 \\ \hline
-\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:VENT6}        & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & \\ \hline
-\ct{SHAPE}                               & Character              & Sec.~\ref{info:VENT2}        &                    & \\ \hline
-\ct{T}                                   & Real Array             & Sec.~\ref{info:VENT6}        & s                  & \\ \hline
-\ct{TOP}                                 & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:VENT6}        &                    & \\ \hline
-\ct{WIDTH}                               & Real                   & Sec.~\ref{info:VENT}         & m                  & \\ \hline
+{\bf Parameter}             & {\bf Type}             & {\bf Reference}              & {\bf Units} & {\bf Default}          \\ \hline
+\ct{AREA}                   & Real                   & Sec.~\ref{info:VENT2}        & m$^2$              &                 \\ \hline
+\ct{AREAS(1:2)}             & Real                   & Sec.~\ref{info:VENT3}        & m$^2$              &                 \\ \hline
+\ct{BOTTOM}                 & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
+\ct{COMP_IDS(1:2)}          & Character              & Sec.~\ref{info:VENT3}        &                    &                 \\ \hline
+\ct{CRITERION}              & Character              & Sec.~\ref{info:VENT3b}       &                    & \ct{'TIME'}     \\ \hline
+\ct{CUTOFFS(1:2)}           & Real                   & Sec.~\ref{info:VENT4}        & Pa                 & 200, 300        \\ \hline
+\ct{DEVC_ID}                & Character              & Sec.~\ref{info:VENT3b}       &                    &                 \\ \hline
+\ct{F(:)}                   & Real Array             & Sec.~\ref{info:VENT3b}       &                    &                 \\ \hline
+\ct{FACE}                   & Character              & Sec.~\ref{info:VENT}         &                    &                 \\ \hline
+\ct{FILTER_EFFICIENCY}      & Real                   & Sec.~\ref{info:VENT5}        & \% removed         & 0               \\ \hline
+\ct{FILTER_TIME}            & Real                   & Sec.~\ref{info:VENT5}        & s                  & 0               \\ \hline
+\ct{FLOW}                   & Real                   & Sec.~\ref{info:VENT4}        & m$^3$/s            &                 \\ \hline
+\ct{FLOW_COEFFICIENT}       & Real                   & Sec.~\ref{info:VENT}         &                    & 0.7             \\ \hline
+\ct{FYI}                    & Character              & Sec.~\ref{info:VENT}         &                    &                 \\ \hline
+\ct{HEIGHT}                 & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
+\ct{HEIGHTS(1:2)}           & Real                   & Sec.~\ref{info:VENT3}        & m                  &                 \\ \hline
+\ct{ID}                     & Character              & Sec.~\ref{info:VENT3}        &                    &                 \\ \hline
+\ct{OFFSET}                 & Real                   & Sec.~\ref{info:VENT}         & m                  & 0               \\ \hline
+\ct{OFFSETS(1:2)}           & Real                   & Secs.~\ref{info:VENT2}       & m                  & 0,0             \\ \hline
+\ct{ORIENTATIONS(1:2)}      & Character              & Sec.~\ref{info:VENT3}        &                    & \ct{'VERTICAL'} \\ \hline
+\ct{POST_FRACTION}          & Real                   & Sec.~\ref{info:VENT3b}       &                    & 1               \\ \hline
+\ct{PRE_FRACTION}           & Real                   & Sec.~\ref{info:VENT3b}       &                    & 1               \\ \hline
+\ct{SETPOINT}               & Real                   & Sec.~\ref{info:VENT3b}       & s, $^\circ$C, kW/m$^2$ &             \\ \hline
+\ct{SHAPE}                  & Character              & Sec.~\ref{info:VENT2}        &                    &                 \\ \hline
+\ct{T(:)}                   & Real Array             & Sec.~\ref{info:VENT3b}       & s                  &                 \\ \hline
+\ct{TOP}                    & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
+\ct{TYPE}                   & Character              & Sec.~\ref{info:VENT}         &                    &                 \\ \hline
+\ct{WIDTH}                  & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
 \end{xltabular}
-\normalsize
 
 
-\clearpage
+
 
 \chapter{CFAST Spreadsheet Outputs}
 

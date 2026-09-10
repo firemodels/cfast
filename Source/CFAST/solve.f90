@@ -71,11 +71,14 @@ module solve_routines
     integer, parameter :: mxalg = 4*mxrooms+mxnode+mxbranch
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrwork = (3*mxalg**2+13*mxalg)/2
-    real(eb) :: work(lrwork)
+    real(eb), allocatable :: work(:)
     integer :: ires, iopt, nalg1, nprint, i, info, n_odes
     real(eb) :: tol
 
     type(room_type), pointer :: roomptr
+
+    ! Keep the large solver workspace off the stack in recursive debug builds.
+    allocate(work(lrwork))
 
     ires = 0
 1   continue
@@ -226,7 +229,8 @@ module solve_routines
     integer, parameter :: liw = 20+maxeq
     integer, parameter :: all = 1, some = 0
 
-    real(eb) :: rwork(lrwork), rpar(1)
+    real(eb), allocatable :: rwork(:)
+    real(eb) :: rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
     real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
@@ -238,6 +242,9 @@ module solve_routines
     integer :: stopunit, ios
     
     type(fire_type), pointer :: fireptr
+
+    ! Keep the large solver workspace off the stack in recursive debug builds.
+    allocate(rwork(lrwork))
 
     call cptime(toff)
     ires = 0

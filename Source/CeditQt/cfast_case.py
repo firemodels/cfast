@@ -79,13 +79,16 @@ class CeilingFloorVent:
     id: str
     first_comp_id: str
     second_comp_id: str
-    vent_type: str = "CEILING"
+    vent_type: str = "FLOOR"
     area: float = 1.0
     shape: str = "ROUND"
-    initial_open: float = 1.0
     offset_x: float = 2.5
     offset_y: float = 1.0
     criterion: str = "TIME"
+    setpoint: float = 0.0
+    target: str = ""
+    pre_fraction: float = 1.0
+    post_fraction: float = 1.0
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
     fyi: str = ""
@@ -95,13 +98,16 @@ class CeilingFloorVent:
         id: str,
         first_comp_id: str | None = None,
         second_comp_id: str | None = None,
-        vent_type: str = "CEILING",
+        vent_type: str = "FLOOR",
         area: float = 1.0,
         shape: str = "ROUND",
-        initial_open: float = 1.0,
         offset_x: float = 2.5,
         offset_y: float = 1.0,
         criterion: str = "TIME",
+        setpoint: float = 0.0,
+        target: str = "",
+        pre_fraction: float = 1.0,
+        post_fraction: float = 1.0,
         t_values: list[float] | None = None,
         f_values: list[float] | None = None,
         fyi: str = "",
@@ -114,10 +120,13 @@ class CeilingFloorVent:
         self.vent_type = vent_type
         self.area = area
         self.shape = shape
-        self.initial_open = initial_open
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.criterion = criterion
+        self.setpoint = setpoint
+        self.target = target
+        self.pre_fraction = pre_fraction
+        self.post_fraction = post_fraction
         self.t_values = list(t_values) if t_values is not None else []
         self.f_values = list(f_values) if f_values is not None else []
         self.fyi = fyi
@@ -158,6 +167,10 @@ class MechanicalVent:
     filter_efficiency: float = 0.0
     filter_time: float = 0.0
     criterion: str = "TIME"
+    setpoint: float = 0.0
+    target: str = ""
+    pre_fraction: float = 1.0
+    post_fraction: float = 1.0
     t_values: list[float] = field(default_factory=list)
     f_values: list[float] = field(default_factory=list)
     fyi: str = ""

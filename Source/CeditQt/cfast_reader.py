@@ -965,10 +965,6 @@ def ceiling_floor_vent_from_fields(
     t_values = number_vector(fields, "T", [])
     f_values = number_vector(fields, "F", [])
 
-    initial_open = number_field(fields, "INITIAL_OPEN", 1.0)
-    if t_values and f_values and abs(t_values[0]) < 1.0e-12:
-        initial_open = f_values[0]
-
     return CeilingFloorVent(
         id=required_string(fields, "ID", "ceiling/floor vent ID"),
         first_comp_id=comp_ids[0] if comp_ids else "",
@@ -976,10 +972,13 @@ def ceiling_floor_vent_from_fields(
         vent_type=vent_type,
         area=number_field(fields, "AREA", 1.0),
         shape=string_field(fields, "SHAPE", "ROUND").upper(),
-        initial_open=initial_open,
         offset_x=offsets[0],
         offset_y=offsets[1],
         criterion=string_field(fields, "CRITERION", "TIME").upper(),
+        setpoint=number_field(fields, "SETPOINT", 0.0),
+        target=string_field(fields, "DEVC_ID", ""),
+        pre_fraction=number_field(fields, "PRE_FRACTION", 1.0),
+        post_fraction=number_field(fields, "POST_FRACTION", 1.0),
         t_values=t_values,
         f_values=f_values,
         fyi=string_field(fields, "FYI", ""),
@@ -1013,6 +1012,10 @@ def mechanical_vent_from_fields(fields: dict[str, list[Any]]) -> MechanicalVent:
         filter_efficiency=number_field(fields, "FILTER_EFFICIENCY", 0.0),
         filter_time=number_field(fields, "FILTER_TIME", 0.0),
         criterion=string_field(fields, "CRITERION", "TIME").upper(),
+        setpoint=number_field(fields, "SETPOINT", 0.0),
+        target=string_field(fields, "DEVC_ID", ""),
+        pre_fraction=number_field(fields, "PRE_FRACTION", 1.0),
+        post_fraction=number_field(fields, "POST_FRACTION", 1.0),
         t_values=number_vector(fields, "T", []),
         f_values=number_vector(fields, "F", []),
         fyi=string_field(fields, "FYI", ""),

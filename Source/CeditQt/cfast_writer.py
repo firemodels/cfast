@@ -128,12 +128,6 @@ def validate_case(case: CfastCase) -> None:
         return compartments[comp_id]
 
     def validate_vent_schedule(vent_type: str, vent) -> None:
-        initial_open = getattr(vent, "initial_open", 1.0)
-        if not 0.0 <= initial_open <= 1.0:
-            raise ValueError(
-                f"{vent_type} {vent.id!r}: initial opening fraction must be 0 to 1."
-            )
-
         t_values, f_values = scheduled_values(vent)
         for index, (time_value, fraction_value) in enumerate(zip(t_values, f_values)):
             if time_value < 0.0:
@@ -148,6 +142,32 @@ def validate_case(case: CfastCase) -> None:
                 raise ValueError(
                     f"{vent_type} {vent.id!r}: opening fractions must be 0 to 1."
                 )
+
+    def validate_vent_opening(vent_type: str, vent) -> None:
+        criterion = vent.criterion.upper()
+        if criterion == "TIME":
+            validate_vent_schedule(vent_type, vent)
+        elif criterion in {"TEMPERATURE", "FLUX"}:
+            target_ids = {target.id for target in getattr(case, "targets", [])}
+            if vent.target not in target_ids:
+                raise ValueError(
+                    f"{vent_type} {vent.id!r}: opening by {criterion.lower()} "
+                    "requires an existing target."
+                )
+            for label, fraction in (
+                ("prior", vent.pre_fraction),
+                ("subsequent", vent.post_fraction),
+            ):
+                if not 0.0 <= fraction <= 1.0:
+                    raise ValueError(
+                        f"{vent_type} {vent.id!r}: {label} opening fraction must be "
+                        "0 to 1."
+                    )
+        else:
+            raise ValueError(
+                f"{vent_type} {vent.id!r}: opening criterion must be TIME, "
+                "TEMPERATURE, or FLUX."
+            )
 
     def material_is_defined(material_id: str) -> bool:
         material_id = material_id.strip()
@@ -268,29 +288,7 @@ def validate_case(case: CfastCase) -> None:
                     f"Wall vent {vent.id!r}: it extends below the floor or above the "
                     f"ceiling of compartment {vent.second_comp_id!r}."
                 )
-        criterion = vent.criterion.upper()
-        if criterion == "TIME":
-            validate_vent_schedule("Wall vent", vent)
-        elif criterion in {"TEMPERATURE", "FLUX"}:
-            target_ids = {target.id for target in getattr(case, "targets", [])}
-            if vent.target not in target_ids:
-                raise ValueError(
-                    f"Wall vent {vent.id!r}: opening by {criterion.lower()} requires "
-                    "an existing target."
-                )
-            for label, fraction in (
-                ("prior", vent.pre_fraction),
-                ("subsequent", vent.post_fraction),
-            ):
-                if not 0.0 <= fraction <= 1.0:
-                    raise ValueError(
-                        f"Wall vent {vent.id!r}: {label} opening fraction must be 0 to 1."
-                    )
-        else:
-            raise ValueError(
-                f"Wall vent {vent.id!r}: opening criterion must be TIME, "
-                "TEMPERATURE, or FLUX."
-            )
+        validate_vent_opening("Wall vent", vent)
 
     for vent in getattr(case, "ceiling_floor_vents", []):
         top_compartment = None
@@ -333,7 +331,7 @@ def validate_case(case: CfastCase) -> None:
                     f"{vent.top_comp_id!r} must align with the ceiling of bottom compartment "
                     f"{vent.bottom_comp_id!r}."
                 )
-        validate_vent_schedule("Ceiling/floor vent", vent)
+        validate_vent_opening("Ceiling/floor vent", vent)
 
     for vent in getattr(case, "mechanical_vents", []):
         from_compartment = None
@@ -372,7 +370,7 @@ def validate_case(case: CfastCase) -> None:
                         f"Mechanical vent {vent.id!r}: the {location} diffuser extends "
                         f"below the floor or above the ceiling of compartment {comp.id!r}."
                     )
-        validate_vent_schedule("Mechanical vent", vent)
+        validate_vent_opening("Mechanical vent", vent)
 
     for target in getattr(case, "targets", []):
         if target.comp_id not in compartment_ids:
@@ -738,13 +736,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     if getattr(case, "ceiling_floor_vents", []):
         lines.append("!! Ceiling/Floor Vents")
         for vent in case.ceiling_floor_vents:
-            t_values, f_values = scheduled_values(vent)
-            initial_open = getattr(vent, "initial_open", 1.0)
-            vent_type = getattr(vent, "vent_type", "CEILING").upper()
-
-            if not t_values and abs(initial_open - 1.0) > 1.0e-12:
-                t_values = [0.0]
-                f_values = [initial_open]
+            vent_type = getattr(vent, "vent_type", "FLOOR").upper()
+            criterion = vent.criterion.upper()
+            if criterion == "TIME":
+                t_values, f_values = scheduled_values(vent)
+            else:
+                t_values, f_values = [], []
 
             fields = [
                 f"TYPE = {cfast_string(vent_type)}",
@@ -755,12 +752,22 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
             ]
 
-            if t_values and f_values:
+            if criterion == "TIME" and t_values and f_values:
                 fields.extend(
                     [
-                        f"CRITERION = {cfast_string(vent.criterion)}",
+                        f"CRITERION = {cfast_string(criterion)}",
                         f"T = {cfast_vector(t_values)}",
                         f"F = {cfast_vector(f_values)}",
+                    ]
+                )
+            elif criterion in {"TEMPERATURE", "FLUX"}:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(criterion)}",
+                        f"SETPOINT = {cfast_number(vent.setpoint)}",
+                        f"DEVC_ID = {cfast_string(vent.target)}",
+                        f"PRE_FRACTION = {cfast_number(vent.pre_fraction)}",
+                        f"POST_FRACTION = {cfast_number(vent.post_fraction)}",
                     ]
                 )
 
@@ -774,7 +781,11 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     if getattr(case, "mechanical_vents", []):
         lines.append("!! Mechanical Ventilation")
         for vent in case.mechanical_vents:
-            t_values, f_values = scheduled_values(vent)
+            criterion = vent.criterion.upper()
+            if criterion == "TIME":
+                t_values, f_values = scheduled_values(vent)
+            else:
+                t_values, f_values = [], []
             fields = [
                 "TYPE = 'MECHANICAL'",
                 f"ID = {cfast_string(vent.id)}",
@@ -789,12 +800,22 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"FILTER_TIME = {cfast_number(vent.filter_time)}",
             ]
 
-            if t_values and f_values:
+            if criterion == "TIME" and t_values and f_values:
                 fields.extend(
                     [
-                        f"CRITERION = {cfast_string(vent.criterion)}",
+                        f"CRITERION = {cfast_string(criterion)}",
                         f"T = {cfast_vector(t_values)}",
                         f"F = {cfast_vector(f_values)}",
+                    ]
+                )
+            elif criterion in {"TEMPERATURE", "FLUX"}:
+                fields.extend(
+                    [
+                        f"CRITERION = {cfast_string(criterion)}",
+                        f"SETPOINT = {cfast_number(vent.setpoint)}",
+                        f"DEVC_ID = {cfast_string(vent.target)}",
+                        f"PRE_FRACTION = {cfast_number(vent.pre_fraction)}",
+                        f"POST_FRACTION = {cfast_number(vent.post_fraction)}",
                     ]
                 )
 

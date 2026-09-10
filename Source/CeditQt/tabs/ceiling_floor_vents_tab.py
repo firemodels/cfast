@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QGridLayout,
     QGroupBox,
@@ -43,6 +42,16 @@ def normalize_compartment(value: str) -> str:
     return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value.strip()
 
 
+def criterion_code(value: str) -> str:
+    value = value.strip().upper()
+    return "FLUX" if value == "HEAT FLUX" else value
+
+
+def criterion_display(value: str) -> str:
+    value = value.strip().upper()
+    return "Heat Flux" if value == "FLUX" else value.capitalize()
+
+
 def summary_item(text: str, editable: bool = True) -> QTableWidgetItem:
     item = QTableWidgetItem(text)
     if not editable:
@@ -57,7 +66,9 @@ class CeilingFloorVentsTab(QWidget):
         self.current_row = -1
         self.loading_editor = False
         self.compartment_ids: list[str] = []
+        self.target_ids: list[str] = []
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
+        self.opening_details: dict[int, dict[str, str]] = {}
 
         self.summary_table = HoverEditTableWidget(8, len(self.summary_headers()))
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
@@ -85,23 +96,25 @@ class CeilingFloorVentsTab(QWidget):
         self.first_comp_edit.setEditable(True)
         self.second_comp_edit = QComboBox()
         self.second_comp_edit.setEditable(True)
-        self.type_combo = QComboBox()
-        self.type_combo.addItems(["CEILING", "FLOOR"])
         self.shape_combo = QComboBox()
         self.shape_combo.addItems(["ROUND", "SQUARE"])
         self.area_edit = QLineEdit()
-        self.initial_open_edit = QLineEdit()
         self.offset_x_edit = QLineEdit()
         self.offset_y_edit = QLineEdit()
         self.fyi_edit = QLineEdit()
 
         self.criterion_combo = QComboBox()
-        self.criterion_combo.addItems(["TIME"])
+        self.criterion_combo.addItems(["Time", "Temperature", "Heat Flux"])
+        self.setpoint_label = QLabel("Setpoint (°C):")
+        self.setpoint_edit = QLineEdit()
+        self.target_combo = QComboBox()
+        self.target_combo.setEditable(True)
+        self.pre_fraction_edit = QLineEdit()
+        self.post_fraction_edit = QLineEdit()
 
-        self.use_time_fraction_checkbox = QCheckBox("Use Time Opening Fraction")
         self.fraction_table = QTableWidget(5, 2)
         self.fraction_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
         self.fraction_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -129,6 +142,7 @@ class CeilingFloorVentsTab(QWidget):
         self.summary_table.clearContents()
         self.summary_table.setRowCount(max(8, len(vents)))
         self.schedules = {}
+        self.opening_details = {}
 
         for row, vent in enumerate(vents):
             self.set_summary_row(
@@ -138,15 +152,21 @@ class CeilingFloorVentsTab(QWidget):
                     vent.id,
                     vent.first_comp_id,
                     vent.second_comp_id,
-                    vent.vent_type,
                     vent.shape,
                     format_value(AREA, vent.area),
-                    format_number(vent.initial_open),
                     format_value(LENGTH, vent.offset_x),
                     format_value(LENGTH, vent.offset_y),
                 ],
             )
             self.schedules[row] = (list(vent.t_values), list(vent.f_values))
+            self.opening_details[row] = {
+                "criterion": criterion_display(vent.criterion),
+                "setpoint": format_number(vent.setpoint),
+                "target": vent.target,
+                "pre_fraction": format_number(vent.pre_fraction),
+                "post_fraction": format_number(vent.post_fraction),
+                "fyi": vent.fyi,
+            }
 
         self.summary_table.blockSignals(False)
         self.renumber_rows()
@@ -200,12 +220,10 @@ class CeilingFloorVentsTab(QWidget):
         layout = QGridLayout()
 
         rows = [
-            ("First Compartment:", self.first_comp_edit),
-            ("Second Compartment:", self.second_comp_edit),
-            ("Type:", self.type_combo),
+            ("Top Compartment:", self.first_comp_edit),
+            ("Bottom Compartment:", self.second_comp_edit),
             ("Shape:", self.shape_combo),
             ("Area:", self.area_edit),
-            ("Initial Open:", self.initial_open_edit),
             ("X Offset:", self.offset_x_edit),
             ("Y Offset:", self.offset_y_edit),
             ("FYI:", self.fyi_edit),
@@ -229,6 +247,15 @@ class CeilingFloorVentsTab(QWidget):
             set_combo_text(combo, current)
             combo.blockSignals(False)
 
+    def set_target_ids(self, target_ids: list[str]):
+        self.target_ids = [target_id for target_id in target_ids if target_id]
+        current = self.target_combo.currentText()
+        self.target_combo.blockSignals(True)
+        self.target_combo.clear()
+        self.target_combo.addItems(self.target_ids)
+        set_combo_text(self.target_combo, current)
+        self.target_combo.blockSignals(False)
+
     def default_first_compartment(self) -> str:
         return self.compartment_ids[0] if self.compartment_ids else ""
 
@@ -236,6 +263,32 @@ class CeilingFloorVentsTab(QWidget):
         if len(self.compartment_ids) > 1:
             return self.compartment_ids[1]
         return "Outside"
+
+    @staticmethod
+    def default_opening_details() -> dict[str, str]:
+        return {
+            "criterion": "Time",
+            "setpoint": "0",
+            "target": "",
+            "pre_fraction": "1",
+            "post_fraction": "1",
+            "fyi": "",
+        }
+
+    def criterion_changed(self, _value: str):
+        if not self.loading_editor:
+            self.save_current_editor()
+        self.update_open_close_editor()
+
+    def update_open_close_editor(self):
+        criterion = criterion_code(self.criterion_combo.currentText())
+        time_control = criterion == "TIME"
+        self.fraction_table.setVisible(time_control)
+        self.condition_widget.setVisible(not time_control)
+        if criterion == "FLUX":
+            self.setpoint_label.setText("Setpoint (kW/m²):")
+        else:
+            self.setpoint_label.setText("Setpoint (°C):")
 
     def build_opening_group(self):
         group = QGroupBox("Opening Fraction")
@@ -246,8 +299,34 @@ class CeilingFloorVentsTab(QWidget):
         criterion_layout.addWidget(self.criterion_combo)
         layout.addLayout(criterion_layout)
 
-        layout.addWidget(self.use_time_fraction_checkbox)
         layout.addWidget(self.fraction_table)
+
+        self.condition_widget = QWidget()
+        condition_layout = QGridLayout()
+        condition_layout.addWidget(
+            self.setpoint_label, 0, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
+        condition_layout.addWidget(self.setpoint_edit, 0, 1)
+        condition_layout.addWidget(
+            QLabel("Trigger Target:"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
+        condition_layout.addWidget(self.target_combo, 1, 1)
+        condition_layout.addWidget(
+            QLabel("Prior Opening Fraction:"),
+            2,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.pre_fraction_edit, 2, 1)
+        condition_layout.addWidget(
+            QLabel("Subsequent Opening Fraction:"),
+            3,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.post_fraction_edit, 3, 1)
+        self.condition_widget.setLayout(condition_layout)
+        layout.addWidget(self.condition_widget)
 
         group.setLayout(layout)
         return group
@@ -256,18 +335,20 @@ class CeilingFloorVentsTab(QWidget):
         for widget in [
             self.id_edit,
             self.area_edit,
-            self.initial_open_edit,
             self.offset_x_edit,
             self.offset_y_edit,
             self.fyi_edit,
+            self.setpoint_edit,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]:
             widget.editingFinished.connect(self.save_current_editor)
 
         self.first_comp_edit.currentTextChanged.connect(self.save_current_editor)
         self.second_comp_edit.currentTextChanged.connect(self.save_current_editor)
-        self.type_combo.currentTextChanged.connect(self.save_current_editor)
         self.shape_combo.currentTextChanged.connect(self.save_current_editor)
-        self.use_time_fraction_checkbox.stateChanged.connect(self.save_current_editor)
+        self.target_combo.currentTextChanged.connect(self.save_current_editor)
+        self.criterion_combo.currentTextChanged.connect(self.criterion_changed)
         self.fraction_table.itemChanged.connect(self.save_current_editor)
 
     def load_demo_data(self):
@@ -279,14 +360,13 @@ class CeilingFloorVentsTab(QWidget):
                 "CFVent_1",
                 self.default_first_compartment(),
                 self.default_second_compartment(),
-                "FLOOR",
                 "ROUND",
                 format_value(AREA, 1.0),
-                "1",
                 format_value(LENGTH, 0.0),
                 format_value(LENGTH, 0.0),
             ],
         )
+        self.opening_details[0] = self.default_opening_details()
         self.summary_table.blockSignals(False)
 
     def set_summary_row(self, row: int, values: list[str]):
@@ -297,9 +377,9 @@ class CeilingFloorVentsTab(QWidget):
     def normalized_summary_values(self, values: list[str]) -> list[str]:
         normalized = list(values)
         for col, kind, field_name in (
-            (6, AREA, "Area"),
-            (8, LENGTH, "X Offset"),
-            (9, LENGTH, "Y Offset"),
+            (5, AREA, "Area"),
+            (6, LENGTH, "X Offset"),
+            (7, LENGTH, "Y Offset"),
         ):
             if col >= len(normalized):
                 continue
@@ -367,14 +447,21 @@ class CeilingFloorVentsTab(QWidget):
         self.id_edit.setText(table_item_text(self.summary_table, row, 1))
         set_combo_text(self.first_comp_edit, table_item_text(self.summary_table, row, 2))
         set_combo_text(self.second_comp_edit, table_item_text(self.summary_table, row, 3))
-        self.type_combo.setCurrentText(table_item_text(self.summary_table, row, 4) or "CEILING")
-        self.shape_combo.setCurrentText(table_item_text(self.summary_table, row, 5) or "ROUND")
-        self.area_edit.setText(table_item_text(self.summary_table, row, 6))
-        self.initial_open_edit.setText(table_item_text(self.summary_table, row, 7))
-        self.offset_x_edit.setText(table_item_text(self.summary_table, row, 8))
-        self.offset_y_edit.setText(table_item_text(self.summary_table, row, 9))
+        self.shape_combo.setCurrentText(table_item_text(self.summary_table, row, 4) or "ROUND")
+        self.area_edit.setText(table_item_text(self.summary_table, row, 5))
+        self.offset_x_edit.setText(table_item_text(self.summary_table, row, 6))
+        self.offset_y_edit.setText(table_item_text(self.summary_table, row, 7))
+
+        details = self.opening_details.get(row, self.default_opening_details())
+        set_combo_text(self.criterion_combo, details["criterion"])
+        self.setpoint_edit.setText(details["setpoint"])
+        set_combo_text(self.target_combo, details["target"])
+        self.pre_fraction_edit.setText(details["pre_fraction"])
+        self.post_fraction_edit.setText(details["post_fraction"])
+        self.fyi_edit.setText(details["fyi"])
 
         self.load_schedule_for_row(row)
+        self.update_open_close_editor()
         self.update_detail_title(row)
         self.loading_editor = False
 
@@ -383,16 +470,20 @@ class CeilingFloorVentsTab(QWidget):
         for widget in [
             self.id_edit,
             self.area_edit,
-            self.initial_open_edit,
             self.offset_x_edit,
             self.offset_y_edit,
             self.fyi_edit,
+            self.setpoint_edit,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]:
             widget.clear()
         set_combo_text(self.first_comp_edit, "")
         set_combo_text(self.second_comp_edit, "")
+        set_combo_text(self.target_combo, "")
+        set_combo_text(self.criterion_combo, "Time")
         self.fraction_table.clearContents()
-        self.use_time_fraction_checkbox.setChecked(False)
+        self.update_open_close_editor()
         self.detail_group.setTitle("Vent 0 (of 0) Geometry")
         self.loading_editor = False
 
@@ -424,7 +515,6 @@ class CeilingFloorVentsTab(QWidget):
             self.first_comp_edit.currentText().strip(),
             self.second_comp_edit.currentText().strip(),
             self.area_edit.text().strip(),
-            self.initial_open_edit.text().strip(),
             self.offset_x_edit.text().strip(),
             self.offset_y_edit.text().strip(),
         ]
@@ -434,6 +524,7 @@ class CeilingFloorVentsTab(QWidget):
                 self.summary_table.setItem(row, col, QTableWidgetItem(""))
             self.summary_table.blockSignals(False)
             self.schedules.pop(row, None)
+            self.opening_details.pop(row, None)
             self.renumber_rows()
             return
 
@@ -443,22 +534,25 @@ class CeilingFloorVentsTab(QWidget):
             self.id_edit.text().strip(),
             self.first_comp_edit.currentText().strip(),
             self.second_comp_edit.currentText().strip(),
-            self.type_combo.currentText().strip(),
             self.shape_combo.currentText().strip(),
             self.area_edit.text().strip(),
-            self.initial_open_edit.text().strip(),
             self.offset_x_edit.text().strip(),
             self.offset_y_edit.text().strip(),
         ]
         self.set_summary_row(row, values)
         self.summary_table.blockSignals(False)
+        self.opening_details[row] = {
+            "criterion": self.criterion_combo.currentText().strip(),
+            "setpoint": self.setpoint_edit.text().strip(),
+            "target": self.target_combo.currentText().strip(),
+            "pre_fraction": self.pre_fraction_edit.text().strip(),
+            "post_fraction": self.post_fraction_edit.text().strip(),
+            "fyi": self.fyi_edit.text().strip(),
+        }
         self.save_schedule_for_row(row)
         self.renumber_rows()
 
     def editor_has_schedule(self) -> bool:
-        if not self.use_time_fraction_checkbox.isChecked():
-            return False
-
         for table_row in range(self.fraction_table.rowCount()):
             t_text = table_item_text(self.fraction_table, table_row, 0)
             f_text = table_item_text(self.fraction_table, table_row, 1)
@@ -481,16 +575,9 @@ class CeilingFloorVentsTab(QWidget):
             self.fraction_table.setItem(idx, 0, QTableWidgetItem(format_value(TIME, time_value)))
             self.fraction_table.setItem(idx, 1, QTableWidgetItem(str(fraction_value)))
 
-        self.use_time_fraction_checkbox.blockSignals(True)
-        self.use_time_fraction_checkbox.setChecked(bool(t_values))
-        self.use_time_fraction_checkbox.blockSignals(False)
         self.fraction_table.blockSignals(False)
 
     def save_schedule_for_row(self, row: int):
-        if not self.use_time_fraction_checkbox.isChecked():
-            self.schedules[row] = ([], [])
-            return
-
         t_values: list[float] = []
         f_values: list[float] = []
 
@@ -525,14 +612,13 @@ class CeilingFloorVentsTab(QWidget):
                 f"CFVent_{num}",
                 self.default_first_compartment(),
                 self.default_second_compartment(),
-                "FLOOR",
                 "ROUND",
                 format_value(AREA, 1.0),
-                "1",
                 format_value(LENGTH, 0.0),
                 format_value(LENGTH, 0.0),
             ],
         )
+        self.opening_details[row] = self.default_opening_details()
         self.summary_table.setCurrentCell(row, 0)
         self.renumber_rows()
 
@@ -551,7 +637,11 @@ class CeilingFloorVentsTab(QWidget):
             self.summary_table.insertRow(new_row)
 
         self.set_summary_row(new_row, values)
-        self.schedules[new_row] = self.schedules.get(row, ([], []))
+        t_values, f_values = self.schedules.get(row, ([], []))
+        self.schedules[new_row] = (list(t_values), list(f_values))
+        self.opening_details[new_row] = dict(
+            self.opening_details.get(row, self.default_opening_details())
+        )
         self.summary_table.setCurrentCell(new_row, 0)
         self.renumber_rows()
 
@@ -580,6 +670,10 @@ class CeilingFloorVentsTab(QWidget):
             self.schedules.get(new_row, ([], [])),
             self.schedules.get(row, ([], [])),
         )
+        self.opening_details[row], self.opening_details[new_row] = (
+            self.opening_details.get(new_row, self.default_opening_details()),
+            self.opening_details.get(row, self.default_opening_details()),
+        )
 
         self.summary_table.setCurrentCell(new_row, 0)
         self.renumber_rows()
@@ -595,6 +689,11 @@ class CeilingFloorVentsTab(QWidget):
             (schedule_row if schedule_row < row else schedule_row - 1): schedule
             for schedule_row, schedule in self.schedules.items()
             if schedule_row != row
+        }
+        self.opening_details = {
+            (details_row if details_row < row else details_row - 1): details
+            for details_row, details in self.opening_details.items()
+            if details_row != row
         }
 
         if self.summary_table.rowCount() == 0:
@@ -638,37 +737,66 @@ class CeilingFloorVentsTab(QWidget):
 
             ids_seen.add(vent_id)
 
-            t_values, f_values = self.schedules.get(row, ([], []))
+            details = self.opening_details.get(row, self.default_opening_details())
+            criterion = criterion_code(details["criterion"] or "TIME")
+            t_values: list[float] = []
+            f_values: list[float] = []
+            setpoint = 0.0
+            target = ""
+            pre_fraction = 1.0
+            post_fraction = 1.0
+
+            if criterion == "TIME":
+                t_values, f_values = self.schedules.get(row, ([], []))
+            elif criterion in {"TEMPERATURE", "FLUX"}:
+                setpoint = parse_number(details["setpoint"], "Setpoint")
+                target = details["target"].strip()
+                pre_fraction = parse_number(
+                    details["pre_fraction"], "Prior Opening Fraction"
+                )
+                post_fraction = parse_number(
+                    details["post_fraction"], "Subsequent Opening Fraction"
+                )
+                for label, fraction in (
+                    ("Prior Opening Fraction", pre_fraction),
+                    ("Subsequent Opening Fraction", post_fraction),
+                ):
+                    if not 0.0 <= fraction <= 1.0:
+                        raise ValueError(
+                            f"Ceiling/Floor Vents row {row + 1}: {label} must be 0 to 1."
+                        )
+            else:
+                raise ValueError(
+                    f"Ceiling/Floor Vents row {row + 1}: Open/Close Criterion must "
+                    "be Time, Temperature, or Heat Flux."
+                )
 
             vent = CeilingFloorVent(
                 id=vent_id,
                 first_comp_id=first_comp,
                 second_comp_id=second_comp,
-                vent_type=(table_item_text(self.summary_table, row, 4) or "CEILING").upper(),
-                shape=(table_item_text(self.summary_table, row, 5) or "ROUND").upper(),
-                area=parse_value(AREA, table_item_text(self.summary_table, row, 6), "Area"),
-                initial_open=parse_number(
-                    table_item_text(self.summary_table, row, 7) or "1",
-                    "Initial Open",
-                ),
+                vent_type="FLOOR",
+                shape=(table_item_text(self.summary_table, row, 4) or "ROUND").upper(),
+                area=parse_value(AREA, table_item_text(self.summary_table, row, 5), "Area"),
                 offset_x=parse_value(
                     LENGTH,
-                    table_item_text(self.summary_table, row, 8) or "0",
+                    table_item_text(self.summary_table, row, 6) or "0",
                     "X Offset",
                 ),
                 offset_y=parse_value(
                     LENGTH,
-                    table_item_text(self.summary_table, row, 9) or "0",
+                    table_item_text(self.summary_table, row, 7) or "0",
                     "Y Offset",
                 ),
+                criterion=criterion,
+                setpoint=setpoint,
+                target=target,
+                pre_fraction=pre_fraction,
+                post_fraction=post_fraction,
                 t_values=t_values,
                 f_values=f_values,
+                fyi=details["fyi"],
             )
-
-            if vent.vent_type not in {"CEILING", "FLOOR"}:
-                raise ValueError(
-                    f"Ceiling/Floor Vents row {row + 1}: type must be CEILING or FLOOR."
-                )
 
             if vent.shape not in {"ROUND", "SQUARE"}:
                 raise ValueError(
@@ -678,11 +806,6 @@ class CeilingFloorVentsTab(QWidget):
             if vent.area <= 0.0:
                 raise ValueError(f"Ceiling/Floor Vents row {row + 1}: area must be positive.")
 
-            if not 0.0 <= vent.initial_open <= 1.0:
-                raise ValueError(
-                    f"Ceiling/Floor Vents row {row + 1}: initial open must be between 0 and 1."
-                )
-
             vents.append(vent)
 
         case.ceiling_floor_vents = vents
@@ -690,7 +813,7 @@ class CeilingFloorVentsTab(QWidget):
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.fraction_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
 
     @staticmethod
@@ -698,12 +821,10 @@ class CeilingFloorVentsTab(QWidget):
         return [
             "Num",
             "ID",
-            "First Compartment",
-            "Second Compartment",
-            "Type",
+            "Top Compartment",
+            "Bottom Compartment",
             "Shape",
             f"Area\n({unit_label(AREA)})",
-            "Initial Open",
             f"X Offset\n({unit_label(LENGTH)})",
             f"Y Offset\n({unit_label(LENGTH)})",
         ]

@@ -64,6 +64,16 @@ def internal_compartment(value: str) -> str:
     return "OUTSIDE" if value.strip().upper() == "OUTSIDE" else value
 
 
+def criterion_code(value: str) -> str:
+    value = value.strip().upper()
+    return "FLUX" if value == "HEAT FLUX" else value
+
+
+def criterion_display(value: str) -> str:
+    value = value.strip().upper()
+    return "Heat Flux" if value == "FLUX" else value.capitalize()
+
+
 class MechanicalVentsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -72,6 +82,7 @@ class MechanicalVentsTab(QWidget):
         self.current_index = -1
         self.updating = False
         self.compartment_ids: list[str] = []
+        self.target_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 11)
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
@@ -111,11 +122,17 @@ class MechanicalVentsTab(QWidget):
         self.filter_time_edit = QLineEdit()
 
         self.criterion_combo = QComboBox()
-        self.criterion_combo.addItems(["Time", "Temperature", "Flux"])
+        self.criterion_combo.addItems(["Time", "Temperature", "Heat Flux"])
+        self.setpoint_label = QLabel("Setpoint (°C):")
+        self.setpoint_edit = QLineEdit()
+        self.target_combo = QComboBox()
+        self.target_combo.setEditable(True)
+        self.pre_fraction_edit = QLineEdit()
+        self.post_fraction_edit = QLineEdit()
 
         self.schedule_table = QTableWidget(8, 2)
         self.schedule_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
         self.schedule_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -248,6 +265,33 @@ class MechanicalVentsTab(QWidget):
         layout.addWidget(self.criterion_combo, 0, 1)
         layout.addWidget(self.schedule_table, 1, 0, 1, 2)
 
+        self.condition_widget = QWidget()
+        condition_layout = QGridLayout()
+        condition_layout.addWidget(
+            self.setpoint_label, 0, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
+        condition_layout.addWidget(self.setpoint_edit, 0, 1)
+        condition_layout.addWidget(
+            QLabel("Trigger Target:"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight
+        )
+        condition_layout.addWidget(self.target_combo, 1, 1)
+        condition_layout.addWidget(
+            QLabel("Prior Opening Fraction:"),
+            2,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.pre_fraction_edit, 2, 1)
+        condition_layout.addWidget(
+            QLabel("Subsequent Opening Fraction:"),
+            3,
+            0,
+            alignment=Qt.AlignmentFlag.AlignRight,
+        )
+        condition_layout.addWidget(self.post_fraction_edit, 3, 1)
+        self.condition_widget.setLayout(condition_layout)
+        layout.addWidget(self.condition_widget, 1, 0, 1, 2)
+
         group.setLayout(layout)
         return group
 
@@ -265,6 +309,9 @@ class MechanicalVentsTab(QWidget):
             self.offset_y_edit,
             self.filter_efficiency_edit,
             self.filter_time_edit,
+            self.setpoint_edit,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]
 
         for edit in line_edits:
@@ -274,8 +321,24 @@ class MechanicalVentsTab(QWidget):
         self.to_compartment_edit.currentTextChanged.connect(self.store_current_vent)
         self.from_orientation_combo.currentIndexChanged.connect(self.store_current_vent)
         self.to_orientation_combo.currentIndexChanged.connect(self.store_current_vent)
-        self.criterion_combo.currentIndexChanged.connect(self.store_current_vent)
+        self.target_combo.currentTextChanged.connect(self.store_current_vent)
+        self.criterion_combo.currentTextChanged.connect(self.criterion_changed)
         self.schedule_table.cellChanged.connect(self.store_current_vent)
+
+    def criterion_changed(self, _value: str):
+        if not self.updating:
+            self.store_current_vent()
+        self.update_open_close_editor()
+
+    def update_open_close_editor(self):
+        criterion = criterion_code(self.criterion_combo.currentText())
+        time_control = criterion == "TIME"
+        self.schedule_table.setVisible(time_control)
+        self.condition_widget.setVisible(not time_control)
+        if criterion == "FLUX":
+            self.setpoint_label.setText("Setpoint (kW/m²):")
+        else:
+            self.setpoint_label.setText("Setpoint (°C):")
 
     def load_demo_data(self):
         self.vents = [
@@ -423,7 +486,12 @@ class MechanicalVentsTab(QWidget):
         self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
         self.filter_efficiency_edit.setText(f"{format_number(vent.filter_efficiency)} %")
         self.filter_time_edit.setText(format_value(TIME, vent.filter_time))
-        self.set_combo_text(self.criterion_combo, self.display_criterion(vent.criterion))
+        self.set_combo_text(self.criterion_combo, criterion_display(vent.criterion))
+        self.setpoint_edit.setText(format_number(vent.setpoint))
+        self.set_combo_text(self.target_combo, vent.target)
+        self.pre_fraction_edit.setText(format_number(vent.pre_fraction))
+        self.post_fraction_edit.setText(format_number(vent.post_fraction))
+        self.update_open_close_editor()
 
         self.schedule_table.blockSignals(True)
         self.schedule_table.clearContents()
@@ -454,11 +522,17 @@ class MechanicalVentsTab(QWidget):
             self.offset_y_edit,
             self.filter_efficiency_edit,
             self.filter_time_edit,
+            self.setpoint_edit,
+            self.pre_fraction_edit,
+            self.post_fraction_edit,
         ]:
             widget.clear()
         self.set_combo_text(self.from_compartment_edit, "")
         self.set_combo_text(self.to_compartment_edit, "")
+        self.set_combo_text(self.target_combo, "")
+        self.set_combo_text(self.criterion_combo, "Time")
         self.schedule_table.clearContents()
+        self.update_open_close_editor()
         self.editor_group.setTitle("Vent 0 (of 0) Geometry")
         self.updating = False
 
@@ -498,8 +572,23 @@ class MechanicalVentsTab(QWidget):
 
         vent.from_orientation = self.internal_orientation(self.from_orientation_combo.currentText())
         vent.to_orientation = self.internal_orientation(self.to_orientation_combo.currentText())
-        vent.criterion = self.internal_criterion(self.criterion_combo.currentText())
-        vent.t_values, vent.f_values = self.extract_schedule()
+        vent.criterion = criterion_code(self.criterion_combo.currentText())
+        if vent.criterion == "TIME":
+            vent.t_values, vent.f_values = self.extract_schedule()
+        else:
+            try:
+                vent.setpoint = parse_number(self.setpoint_edit.text(), "Setpoint")
+                vent.pre_fraction = parse_number(
+                    self.pre_fraction_edit.text(), "Prior Opening Fraction"
+                )
+                vent.post_fraction = parse_number(
+                    self.post_fraction_edit.text(), "Subsequent Opening Fraction"
+                )
+            except ValueError:
+                return
+            vent.target = self.target_combo.currentText().strip()
+            vent.t_values = []
+            vent.f_values = []
 
         self.refresh_summary_table()
         self.summary_table.selectRow(self.current_index)
@@ -560,6 +649,10 @@ class MechanicalVentsTab(QWidget):
             filter_efficiency=source.filter_efficiency,
             filter_time=source.filter_time,
             criterion=source.criterion,
+            setpoint=source.setpoint,
+            target=source.target,
+            pre_fraction=source.pre_fraction,
+            post_fraction=source.post_fraction,
             t_values=list(source.t_values),
             f_values=list(source.f_values),
             fyi=source.fyi,
@@ -633,6 +726,15 @@ class MechanicalVentsTab(QWidget):
             self.set_combo_text(combo, current)
             combo.blockSignals(False)
 
+    def set_target_ids(self, target_ids: list[str]):
+        self.target_ids = [target_id for target_id in target_ids if target_id]
+        current = self.target_combo.currentText()
+        self.target_combo.blockSignals(True)
+        self.target_combo.clear()
+        self.target_combo.addItems(self.target_ids)
+        self.set_combo_text(self.target_combo, current)
+        self.target_combo.blockSignals(False)
+
     def default_compartment(self) -> str:
         return self.compartment_ids[0] if self.compartment_ids else ""
 
@@ -644,16 +746,8 @@ class MechanicalVentsTab(QWidget):
     def internal_orientation(value: str) -> str:
         return value.strip().upper()
 
-    @staticmethod
-    def display_criterion(value: str) -> str:
-        return value.strip().capitalize()
-
-    @staticmethod
-    def internal_criterion(value: str) -> str:
-        return value.strip().upper()
-
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(summary_headers())
         self.schedule_table.setHorizontalHeaderLabels(
-            [f"Time\n({unit_label(TIME)})", "Fraction"]
+            [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )

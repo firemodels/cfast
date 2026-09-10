@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, MechanicalVent
+from cfast_case import CfastCase, Compartment, MechanicalVent
 from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
@@ -82,6 +82,7 @@ class MechanicalVentsTab(QWidget):
         self.current_index = -1
         self.updating = False
         self.compartment_ids: list[str] = []
+        self.compartment_heights: dict[str, float] = {}
         self.target_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 11)
@@ -145,6 +146,7 @@ class MechanicalVentsTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
+        self.set_compartments(case.compartments)
         self.vents = copy.deepcopy(case.mechanical_vents)
         self.refresh_summary_table()
 
@@ -615,13 +617,17 @@ class MechanicalVentsTab(QWidget):
     def add_vent(self):
         new_index = len(self.vents) + 1
         self.store_current_vent()
-        self.vents.append(
-            MechanicalVent(
-                id=f"MechanicalVent_{new_index}",
-                from_comp_id="OUTSIDE",
-                to_comp_id=self.default_compartment(),
-            )
+        vent = MechanicalVent(
+            id=f"MechanicalVent_{new_index}",
+            from_comp_id="OUTSIDE",
+            to_comp_id=self.default_compartment(),
         )
+        height = self.compartment_heights.get(vent.to_comp_id)
+        if height is not None:
+            # Start both ends at the connected compartment's mid-height.
+            vent.from_height = height / 2.0
+            vent.to_height = height / 2.0
+        self.vents.append(vent)
         self.refresh_summary_table()
         self.select_row(len(self.vents) - 1)
 
@@ -714,6 +720,10 @@ class MechanicalVentsTab(QWidget):
             combo.setCurrentIndex(index)
         else:
             combo.setEditText(text)
+
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartment_heights = {comp.id: comp.height for comp in compartments if comp.id}
+        self.set_compartment_ids([comp.id for comp in compartments])
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]

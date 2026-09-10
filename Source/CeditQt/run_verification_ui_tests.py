@@ -876,6 +876,71 @@ def check_adiabatic_target():
         window.deleteLater()
 
 
+def check_mechanical_vent_defaults():
+    """Regression for #2467: newly added diffusers fit their compartment."""
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+    from units import LENGTH, format_value, unit_system
+
+    window = CeditMainWindow()
+    tab = window.mechanical_vents_tab
+    original_units = dict(unit_system.selected)
+    try:
+        for length_unit in (0, 3):  # metres and feet
+            unit_system.set_index(LENGTH, length_unit)
+            for height in (2.4, 1.0, 4.0):
+                case = opening_case()
+                case.compartments[0].height = height
+                window.load_case(case)
+                tab.add_vent()
+                vent = tab.vents[-1]
+                assert vent.from_comp_id == "OUTSIDE"
+                assert vent.to_comp_id == case.compartments[0].id
+                assert math.isclose(vent.from_height, height / 2.0)
+                assert math.isclose(vent.to_height, height / 2.0)
+                assert tab.to_height_edit.text() == format_value(LENGTH, height / 2.0)
+                window.update_live_validation()
+                assert window.statusBar().currentMessage() == "No Errors"
+
+        unit_system.set_index(LENGTH, 0)
+        window.load_case(opening_case())
+        window.tabs.setCurrentWidget(window.compartments_tab)
+        window.compartments_tab.height_edit.setText("1.6 m")
+        window.compartments_tab.save_detail_to_selected()
+        window.tabs.setCurrentWidget(tab)
+        tab.add_vent()
+        assert math.isclose(tab.vents[-1].to_height, 0.8)
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
+
+        # Loading, duplicating, and writing a vent must preserve edited heights.
+        tab.from_height_edit.setText("0.6 m")
+        tab.to_height_edit.setText("0.7 m")
+        tab.store_current_vent()
+        case = window.build_cfast_case()
+        with tempfile.TemporaryDirectory(prefix="cedit-mechanical-defaults-") as directory:
+            path = Path(directory) / "mechanical.in"
+            write_cfast_input(case, path)
+            window.load_case(read_cfast_input(path))
+            window.refresh_reference_lists()
+            tab.duplicate_vent()
+            for vent in tab.vents:
+                assert math.isclose(vent.from_height, 0.6)
+                assert math.isclose(vent.to_height, 0.7)
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
+
+        # Explicitly invalid heights must still be rejected.
+        tab.to_height_edit.setText("2.75 m")
+        tab.store_current_vent()
+        window.update_live_validation()
+        assert "diffuser extends" in window.statusBar().currentMessage()
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -885,6 +950,7 @@ def main() -> int:
     app = QApplication.instance() or QApplication([])
     check_target_material_initialization()
     check_adiabatic_target()
+    check_mechanical_vent_defaults()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

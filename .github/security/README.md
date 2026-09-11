@@ -16,11 +16,27 @@ forks. Organization membership can remain private.
 1. Commit the security files and workflow to the default branch and each branch
    accepting PRs (normally `master`). Enable workflows in the fork's **Actions**
    tab if GitHub displays a disabled-workflows notice.
-2. In **Settings > Actions > General**, allow GitHub-authored actions (including
-   `actions/checkout`). Under **Fork pull request workflows from outside
-   collaborators**, select **Require approval for all outside collaborators**.
-   Keep default **Workflow permissions** read-only; the trusted workflow requests
-   `statuses: write` only for identity/status jobs. No additional secrets are needed.
+2. Click the repository's **Settings** tab in the top navigation row. In the
+   settings sidebar, under **Code and automation**, expand **Actions** and select
+   **General**. This is separate from the top-level **Actions** tab, which shows
+   workflow runs. Direct links: [upstream](https://github.com/firemodels/cfast/settings/actions)
+   or [Randy's fork](https://github.com/rmcdermo/cfast/settings/actions); other
+   developers should substitute their fork owner. Repository admin access is required.
+   Allow GitHub-authored actions (including `actions/checkout`) and apply the
+   settings below, clicking **Save** in each section:
+
+   | Setting | Value |
+   | --- | --- |
+   | Require actions to be pinned to a full-length commit SHA | Checked; the workflow already pins its action |
+   | Artifact and log retention | 90 days |
+   | Approval for running fork pull request workflows from contributors | Require approval for all external contributors |
+   | Workflow permissions | Read repository contents and packages permissions |
+   | Allow GitHub Actions to create and approve pull requests | Unchecked |
+
+   The trusted workflow explicitly requests `statuses: write` for identity/status
+   jobs; the read-only default does not prevent this. No additional secrets are
+   needed. GitHub's external-contributor approval setting controls PR-supplied
+   workflows; our developer list separately controls who waits for ClamAV.
 3. Open a small test PR so GitHub registers `CFAST / PR admission` for selection
    as a required status. A listed author and sender should receive admission
    before the scan finishes.

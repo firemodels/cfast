@@ -1,0 +1,79 @@
+name: PR security
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+permissions:
+  contents: read
+concurrency:
+  group: pr-security-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+env:
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  developer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    outputs:
+      trusted: ${{ steps.check.outputs.trusted }}
+      base_sha: ${{ steps.check.outputs.base_sha }}
+      merge_sha: ${{ steps.check.outputs.merge_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Check trusted developers and publish initial admission
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/security/pr_security.py prepare
+
+  scan:
+    needs: developer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Install ClamAV and update signatures
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y clamav
+          sudo systemctl stop clamav-freshclam.service
+          sudo freshclam
+      - name: Scan submitted and merge files without executing them
+        env:
+          MERGE_SHA: ${{ needs.developer.outputs.merge_sha }}
+        run: python3 .github/security/pr_security.py scan
+
+  report:
+    needs: [developer, scan]
+    if: always() && needs.developer.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Report scan and admit outside PRs only on success
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRUSTED: ${{ needs.developer.outputs.trusted }}
+          BASE_SHA: ${{ needs.developer.outputs.base_sha }}
+          SCAN_RESULT: ${{ needs.scan.result }}
+        run: python3 .github/security/pr_security.py report

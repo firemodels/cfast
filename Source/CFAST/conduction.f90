@@ -37,10 +37,10 @@ module conduction_routines
 
     real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes), walldx(nnodes)
 
-    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
+    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
     integer :: nslab_w, n_nodes(mxslb+1)
-    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, jj, j
+    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb
 
     type(room_type), pointer :: roomptr
 
@@ -72,48 +72,10 @@ module conduction_routines
 
             ! compute flux seen by exterior of wall
             if (iwb==3) then
-
                 ! back wall is connected to the outside
                 call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
                 wfluxout = wfluxout + sigma*(tgas**4-twext**4)
                 wfluxsave = wfluxout
-
-                ! back wall is connected to rooms defined by hheat_connections with fractions defined by heat_frac.
-                if (roomptr%iheat/=0.and.iwall/=1.and.iwall/=2) then
-                    wfluxout = 0.0_eb
-                    do jj = 1, roomptr%nheats
-                        j = roomptr%hheat_connections(jj)
-                        frac = roomptr%heat_frac(j)
-                        if (iwall==3) then
-                            yb = roomptr%depth(l)
-                            yt = roomptr%z1
-                        else if (iwall==4) then
-                            yb = 0.0_eb
-                            yt = roomptr%depth(l)
-                        end if
-                        dflor = roominfo(j)%z0 - roomptr%z0
-                        yy = roominfo(j)%depth(l) + dflor
-                        if (j/=n_rooms+1) then
-                            if (yy>yt) then
-                                fu = 0.0_eb
-                            else if (yy<yb) then
-                                fu = 1.0_eb
-                            else
-                                if (yb/=yt) then
-                                    fu = (yt-yy)/(yt-yb)
-                                else
-                                    fu = 0.0_eb
-                                end if
-                            end if
-                            fluxu = fu*fluxes_total(j,3)
-                            fluxl = (1.0_eb-fu)*fluxes_total(j,4)
-                        else
-                            fluxu = wfluxsave
-                            fluxl = 0.0_eb
-                        end if
-                        wfluxout = wfluxout + frac*(fluxu + fluxl)
-                    end do
-                end if
             end if
             k_w(1:mxslb) = roomptr%k_w(1:mxslb,iwall)
             c_w(1:mxslb) = roomptr%c_w(1:mxslb,iwall)

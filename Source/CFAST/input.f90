@@ -28,7 +28,7 @@
     use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
@@ -50,14 +50,14 @@
 
     logical, intent(in), optional :: open_outputs
     logical :: do_open_outputs
-    real(eb) :: temparea(mxpts), temphgt(mxpts), deps1, dwall1, dwall2, rti
-    real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
-    integer :: ios, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
-    integer :: iwall1, iwall2, itype, npts, ioff, ioff2
+    real(eb) :: temparea(mxpts), temphgt(mxpts), deps1, rti
+    real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx
+    integer :: ios, i, j, itop, ibot, iroom
+    integer :: itype, npts, ioff, ioff2
 
     type(detector_type), pointer :: dtectptr
     type(fire_type), pointer :: fireptr
-    type(room_type), pointer :: roomptr, roomptr2
+    type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(material_type), pointer :: thrmpptr
     type(vent_type), pointer :: ventptr    
@@ -200,72 +200,6 @@
         roomptr%cvolume = roomptr%floor_area*roomptr%cheight
     end do
 
-
-    ! check room to room heat transfer parameters (VHEAT command)
-    nswall2 = n_vcons
-    ii = 0
-    do i = 1, n_vcons
-        iroom1 = vertical_connections(i,w_from_room)
-        iroom2 = vertical_connections(i,w_to_room)
-
-        ! room numbers must be between 1 and n_rooms. outside is n_rooms+1
-        if (iroom1<1.or.iroom2<1.or.iroom1>n_rooms+1.or.iroom2>n_rooms+1) then
-            write (errormessage,'(a,i0,a,i0,a)')  '***Error, Invalid VHEAT specification:',' one or both of rooms ', &
-                iroom1,'-',iroom2,' do not exist'
-            call cfastexit('readinputfile',9)
-            stop
-        end if
-
-        ! if room is connected to the outside then ignore it
-        if (iroom1==n_rooms+1.or.iroom2==n_rooms+1) then
-            nswall2 = nswall2 - 1
-            cycle
-        else
-            ii = ii + 1
-            if (i/=ii) then
-                vertical_connections(ii,w_from_room) = vertical_connections(i,w_from_room)
-                vertical_connections(ii,w_from_wall) = vertical_connections(i,w_from_wall)
-                vertical_connections(ii,w_to_room) = vertical_connections(i,w_to_room)
-                vertical_connections(ii,w_to_wall) = vertical_connections(i,w_to_wall)
-            end if
-        end if
-
-        ! floor of one room must be adjacent to ceiling of the other
-        dwall1 = abs(roominfo(iroom1)%z0 - roominfo(iroom2)%z1)
-        dwall2 = abs(roominfo(iroom2)%z0 - roominfo(iroom1)%z1)
-        if (dwall1<mx_vsep.or.dwall2<=mx_vsep) then
-            if (dwall1<mx_vsep) then
-                vertical_connections(ii,w_from_wall) = 2
-                vertical_connections(ii,w_to_wall) = 1
-            else
-                vertical_connections(ii,w_from_wall) = 1
-                vertical_connections(ii,w_to_wall) = 2
-            end if
-        else
-            write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification: ceiling and floor of rooms', &
-                iroom1,'-',iroom2,' are not connected'
-                call cfastexit('readinputfile',10)
-            stop
-        end if
-
-        ! walls must be turned on, ie surface_on must be set
-        ! for the ceiling in the lower room and the floor of the upper room
-        iwall1 = vertical_connections(ii,w_from_wall)
-        iwall2 = vertical_connections(ii,w_to_wall)
-        if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
-            if (.not.roominfo(iroom1)%surface_on(iwall1)) then
-                write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall1,' of room ', &
-                    iroom1,' is adiabatic'
-            else
-                write (errormessage,'(a,i0,a,i0,a)') '***Error, Invalid VHEAT specification. Wall ',iwall2,' of room ', &
-                    iroom2,' is adiabatic'
-            end if
-            call cfastexit('readinputfile',11)
-            stop
-        end if
-    end do
-    n_vcons = nswall2
-
     ! check variable cross-sectional area specs and convert to volume
     do i = 1, n_rooms
         roomptr => roominfo(i)
@@ -391,51 +325,6 @@
 103         format('***Error, Invalid DETECTOR specification - type= ',i0,' is not a valid')
             call cfastexit('readinputfile',16)
             stop
-        end if
-    end do
-
-    ! check room to room heat transfer
-
-    !iheat may have one of three values, 0, 1, 2.
-    ! 0 = no room to room heat transfer
-    ! 1 = fractions are determined by what rooms are connected by vents
-    ! For example, if room 1 is connected to rooms 2, 3, 4 and the outside
-    ! by vents then the first row of heat_frac will have the values
-    ! 0. .25 .25 .25 .25
-
-    do i = 1, n_rooms
-        roomptr => roominfo(i)
-        ! force heat transfer between rooms connected by vents.
-        if (roomptr%iheat==1) then
-            do j = 1, n_hvents
-                ventptr => hventinfo(j)
-                if (ventptr%room2==j) then
-                    roomptr2 => roominfo(j)
-                    ! if the back wall of to room is not active then don't consider its contribution
-                    if (j<n_rooms+1.and.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 1.0_eb
-                end if
-            end do
-        end if
-
-        ! normalize heat_frac fraction matrix so that rows sum to one
-        if (roomptr%iheat/=0) then
-            sum = 0.0_eb
-            do j = 1, n_rooms+1
-                sum = sum + roomptr%heat_frac(j)
-            end do
-            if (sum<1.e-5_eb) then
-                roomptr%heat_frac(1:n_rooms) = 0.0_eb
-                roomptr%heat_frac(n_rooms+1) = 1.0_eb
-            else
-                roomptr%heat_frac(1:n_rooms+1) = roomptr%heat_frac(1:n_rooms+1)/sum
-            end if
-            roomptr%nheats = 0
-            do j = 1, n_rooms + 1
-                if (roomptr%heat_frac(j)/=0.0_eb) then
-                    roomptr%nheats = roomptr%nheats + 1
-                    roomptr%hheat_connections(roomptr%nheats) = j
-                end if
-            end do
         end if
     end do
 

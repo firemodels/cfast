@@ -42,7 +42,4 @@
 &TABL ID = '200kW_Fire', DATA = 5110, 200, 0.2, 0.25, 0.000381965, 0, 0, 0, 0 /
 &TABL ID = '200kW_Fire', DATA = 5111, 0, 0.2, 0.25, 0.000381965, 0, 0, 0, 0 /
  
-!! Surface Connections
-&CONN TYPE = 'FLOOR' COMP_ID = 'Plenum' COMP_IDS = 'Lower Test Cell' / 
- 
 &TAIL /

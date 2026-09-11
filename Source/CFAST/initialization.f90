@@ -25,7 +25,7 @@ module initialization_routines
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, &
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_cons, nnodes, nwpts, &
         slab_splits, alloc_room, init_room, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
@@ -380,9 +380,6 @@ module initialization_routines
 
         adiabatic_walls = .false.
     
-        ! room to room heat transfer
-        n_vcons = 0
-
         do i = 1, mxrooms
             roomptr => roominfo(i)
         
@@ -391,11 +388,6 @@ module initialization_routines
             roomptr%var_volume(1:mxpts) = 0.0_eb
             roomptr%var_area(1:mxpts) = 0.0_eb
             roomptr%var_height(1:mxpts) = 0.0_eb
-        
-            ! initialize inter-compartment heat transfer fractions
-            roomptr%iheat = 0
-            roomptr%hheat_connections(1:mxrooms) = 0
-            roomptr%heat_frac(1:mxrooms) = 0
         
             !initialize surface opening fraction
             roomptr%chi(1:10) = 0._eb
@@ -854,7 +846,7 @@ module initialization_routines
     ! matl contains the name of the thermal data set in the tpp data structure
     ! n_matl is a count of the number of tpp data sets in the tpp data structure
 
-    integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    integer :: i, j, k
     real(eb) :: thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, n_nodes(mxslb+1)
     character(len=mxthrmplen) :: off = 'OFF', none = 'NONE'
@@ -862,7 +854,7 @@ module initialization_routines
     ! tp is the pointer into the data base for each material
     integer tp
 
-    type(room_type), pointer :: roomptr, from_roomptr, to_roomptr
+    type(room_type), pointer :: roomptr
     type(material_type), pointer :: thrmpptr
 
     ! map the thermal data into its appropriate wall specification
@@ -912,70 +904,6 @@ module initialization_routines
         end do
     end do
 
-    ! concatenate slab properties of wall nodes that are connected to each other
-    do i = 1, n_vcons
-        ifromr = vertical_connections(i,w_from_room)
-        ifromw = vertical_connections(i,w_from_wall)
-        itor = vertical_connections(i,w_to_room)
-        itow = vertical_connections(i,w_to_wall)
-        from_roomptr => roominfo(ifromr)
-        to_roomptr => roominfo(itor)
-
-        nslabf = from_roomptr%nslab_w(ifromw)
-        nslabt = to_roomptr%nslab_w(itow)
-        from_roomptr%nslab_w(ifromw) = nslabf + nslabt
-        to_roomptr%nslab_w(itow) = nslabf + nslabt
-
-        nptsf = from_roomptr%nodes_w(1,ifromw)
-        nptst = to_roomptr%nodes_w(1,itow)
-        to_roomptr%nodes_w(1,itow) = nptsf + nptst - 1
-        from_roomptr%nodes_w(1,ifromw) = nptsf + nptst - 1
-
-        wfrom = int(from_roomptr%total_thick_w(ifromw))
-        wto = int(to_roomptr%total_thick_w(itow))
-        from_roomptr%total_thick_w(ifromw) = wfrom + wto
-        to_roomptr%total_thick_w(itow) = wfrom + wto
-
-        jj = nslabt + 1
-        do j = nslabf+1, nslabf+nslabt
-            jj = jj - 1
-            from_roomptr%k_w(j,ifromw) = to_roomptr%k_w(jj,itow)
-            from_roomptr%c_w(j,ifromw) = to_roomptr%c_w(jj,itow)
-            from_roomptr%rho_w(j,ifromw) = to_roomptr%rho_w(jj,itow)
-            from_roomptr%thick_w(j,ifromw) = to_roomptr%thick_w(jj,itow)
-            from_roomptr%nodes_w(j+1,ifromw) = to_roomptr%nodes_w(jj+1,itow)
-        end do
-
-        jj = nslabf + 1
-        do j = nslabt+1, nslabt+nslabf
-            jj = jj - 1
-            to_roomptr%k_w(j,itow) = from_roomptr%k_w(jj,ifromw)
-            to_roomptr%c_w(j,itow) = from_roomptr%c_w(jj,ifromw)
-            to_roomptr%rho_w(j,itow) = from_roomptr%rho_w(jj,ifromw)
-            to_roomptr%thick_w(j,itow) = from_roomptr%thick_w(jj,ifromw)
-            to_roomptr%nodes_w(j+1,itow) = from_roomptr%nodes_w(jj+1,ifromw)
-        end do
-
-        do j = 1,nptsf
-            from_roomptr%t_profile(j,ifromw) = interior_ambient_temperature
-            to_roomptr%t_profile(j,itow) = interior_ambient_temperature
-        end do
-        jj = nptst
-        do j = nptsf+1,nptsf+nptst - 1
-            jj = jj - 1
-            from_roomptr%t_profile(j,ifromw) = interior_ambient_temperature
-            from_roomptr%walldx(j-1,ifromw) = to_roomptr%walldx(jj,itow)
-        end do
-
-        jj = nptsf
-        do j = nptst+1,nptst+nptsf - 1
-            jj = jj - 1
-            to_roomptr%t_profile(j,itow) = interior_ambient_temperature
-            to_roomptr%walldx(j-1,itow) = from_roomptr%walldx(jj,ifromw)
-        end do
-    end do
-
-    return
     end subroutine initialize_walls
 
 ! --------------------------- initialize_wall_nodes -------------------------------------------

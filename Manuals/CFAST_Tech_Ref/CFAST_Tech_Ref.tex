@@ -880,17 +880,7 @@ The internal temperature profile, $\Ti$, is then obtained with a tri-diagonal li
 
 To illustrate the method, consider a one room case with one active wall.  There are four gas phase equations (pressure, upper layer volume, upper and lower layer temperatures) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profiles at the current time step, $t$, and at the next time step, $t + \Delta t$.  Given the profile at time $t$ and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time $t$ to $t + \Delta t$.  The temperature gradient at the wall surface is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
 
-Heat transfer between connected compartments is modeled by merging the back surfaces of the connected ceiling and floor of the compartments or the back wall surfaces of the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
 
-For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiation configuration factors. For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 0.5. Once these fractions are determined, an average flux, $\dq_{\rm avg}''$, is calculated using
-\be
-   \dq_{\rm avg}'' = \sum_{\rm walls} \, F_{i-j} \, \dq_j''
-\ee
-where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $\dq_j''$ is the flux striking wall $j$.
-
-%
-% -------------------  Fire Protection Devices ------------------------
-%
 
 \chapter{Fire Protection Calculations}
 

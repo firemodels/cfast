@@ -165,7 +165,7 @@ Compartments in CFAST are most typically defined by a width, depth, and height. 
 \section{Materials}
 \label{info:COMP2}
 
-To calculate heat loss through the ceiling, walls, and floor of a compartment, material properties must be specified. Separate properties can be specified for the ceiling and floor, but the four walls all must have the same set of properties. The thermophysical properties are described in Sec.~\ref{info:MATL}. If the thermophysical properties of the surfaces are not specified, they will be treated as adiabatic, i.e. no heat transfer. The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections to specify heat transfer connections between compartments).
+To calculate heat loss through the ceiling, walls, and floor of a compartment, material properties must be specified. Separate properties can be specified for the ceiling and floor, but the four walls all must have the same set of properties. The thermophysical properties are described in Sec.~\ref{info:MATL}. If the thermophysical properties of the surfaces are not specified, they will be treated as adiabatic, i.e. no heat transfer. The back surfaces of compartments are assumed to be exposed to ambient conditions.
 
 \begin{description}
 \item[Surface Construction: Ceiling, Walls, Floor] (namelist: \ct{CEILING_MATL_ID}, \ct{WALL_MATL_ID}, \ct{FLOOR_MATL_ID}) As many as three layers of materials can make up the compartment linings, with the surface layer specified first.
@@ -627,48 +627,6 @@ Targets, sprinklers, and detector inputs are written to the \ct{DEVC} namelist.
     \item[\texttt{TEMPERATURE\_DEPTH}] Position at which target internal temperature is reported; default 0.5 of the thickness.
     \item[\texttt{THICKNESS}] Target thickness in m. A zero value uses the thickness of the referenced material.
     \item[\texttt{TYPE}] Required device type: \ct{PLATE}, \ct{CYLINDER}, \ct{SPRINKLER}, \ct{HEAT_DETECTOR}, or \ct{SMOKE_DETECTOR}.
-\end{description}
-
-\chapter{Surface Connections}
-
-The Surface Connections tab allows the user to define heat transfer between compartments in a simulation. Energy can be transferred from compartment to compartment through solid boundaries (walls, ceilings and floors) by means of conduction. The heat transfer between connected compartments is modeled by setting the boundary condition for the outside surface of a compartment to the temperature of the outside surface of the  connected compartment.  As before, temperatures are determined by the solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
-
-\label{info:CONN}
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{SCRIPT_FIGURES/Surface_Connection_Tab}
-\caption[The CFAST Surface Connections Tab]{The CFAST Surface Connections Tab.}
-\end{center}
-\end{figure}
-
-
-For wall connections the inputs are:
-
-\begin{description}
-    \item[First Compartment] First of the compartments whose walls are connected.
-
-    \item[Second Compartment] Second of the compartments whose walls are connected.
-
-    \item[Fraction] Specifies the fraction of the vertical surface areas of the compartments which are connected. The fraction specifies the fraction of the vertical surface area of the first compartment that connects the first and second compartment pair.
-\end{description}
-
-When specifying a horizontal connection, a connection must be defined for both directions. The specified area fractions should result in the same connected area. Additionally, for any single compartment the sum of area fractions for all the connected vertical surfaces cannot exceed unity. If the sum is less than unity, the unallocated fraction is assumed to be connected to the ambient. As an example consider two compartments that share a wall where the first compartment is 1~\unit{m} x 1~\unit{m} x 1~\unit{m}  and the second compartment is 2~\unit{m} x 2~\unit{m}  x 2~\unit{m} . The total wall area for the first compartment is 4~\unit{m^2}. The total wall area for the second compartment is 16~\unit{m^2}. If the first compartment shares one entire wall, then the fraction would be 0.25 (1~\unit{m^2}/4~\unit{m^2}).  For the second compartment the fraction would be 0.0625 (1~\unit{m^2}/16~\unit{m^2}).
-
-For ceiling/floor connections the inputs are:
-
-\begin{description}
-    \item[Top Compartment] The top of the two compartments to be connected by a ceiling/floor heat transfer connection. The connection is through the floor of this compartment.
-
-    \item[Bottom Compartment] The bottom of the two compartments to be connected by a ceiling/floor heat transfer connection. The connection is through the ceiling of this compartment.
-\end{description}
-
-Connection inputs are written to the \ct{CONN} namelist. The available parameters are:
-
-\begin{description}
-\item[\texttt{COMP\_ID}] The source compartment. For a ceiling/floor connection, this is the upper compartment.
-\item[\texttt{COMP\_IDS}] An array of destination compartment identifiers. A wall connection may list multiple compartments or \ct{OUTSIDE} for the ambient. A ceiling/floor connection uses only the first value and it corresponds to the lower compartment.
-\item[\texttt{F}] An array of wall-area fractions corresponding to \ct{COMP_IDS}; each value must be between 0 and 1. These fractions are based on the wall area for \ct{COMP\_ID}. This parameter is not used for ceiling or floor connections. Up to 200 connections can be defined for each compartment.
-\item[\texttt{TYPE}] An array of connection types: \ct{WALL}, \ct{CEILING}, or \ct{FLOOR} corresponding to \ct{COMP_IDS}. The two vertical types are processed identically (i.e., \ct{COMP_ID} is always the upper compartment).
 \end{description}
 
 

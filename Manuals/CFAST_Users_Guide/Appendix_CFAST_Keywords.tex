@@ -66,8 +66,6 @@ The general structure of an input file is shown below, with many lines of the or
 &TABL ID = 'Wood_Wall_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
 &TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.006171682, 0.015, 0, 0, 0 /
 &TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.006171682, 0.015, 0, 0, 0 /
-!! Surface Connections
-&CONN TYPE = 'FLOOR' COMP_ID = 'Comp 3' COMP_IDS = 'Comp 2' /
 !! Visualizations
 &SLCF DOMAIN = '2-D'  POSITION = 2.5, PLANE = 'X' /
 &TAIL /
@@ -87,7 +85,6 @@ Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist pa
 Group Name & Namelist Group Description  & Reference Sec. & Parameter Table \\ \hline
 \ct{CHEM}  & Fire Chemistry              & \ref{info:FIRE}   & \ref{tbl:FIRE}  \\ \hline
 \ct{COMP}  & Compartments                & \ref{info:COMP}   & \ref{tbl:COMP}  \\ \hline
-\ct{CONN}  & Surface Connections         & \ref{info:CONN}   & \ref{tbl:CONN}  \\ \hline
 \ct{DEVC}  & Devices                     & \ref{info:DEVC}   & \ref{tbl:DEVC}  \\ \hline
 \ct{DIAG}  & Diagnostics                 & \ref{info:DIAG}   & \ref{tbl:DIAG}  \\ \hline
 \ct{DUMP}  & Legacy Post-Run Calculations & \ref{info:OUTP}  & \ref{tbl:DUMP}  \\ \hline
@@ -197,30 +194,6 @@ This chapter lists all CFAST input parameters in separate tables grouped by name
 \ct{WALL_MATL_ID}                       & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
 \ct{WALL_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
 \ct{WIDTH}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
-\end{xltabular}
-
-
-\Needspace{6\baselineskip}
-\section{\texorpdfstring{{\tt CONN}}{CONN} (Compartment Connection Parameters)}
-\label{app:namelist_conn}
-
-\begin{xltabular}{\textwidth}{|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=1.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.84\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.22\hsize\raggedright\arraybackslash}X|}
-\caption[Connection Parameters (\ct{CONN} namelist group)]{For more information see Sec.~\ref{info:CONN}.}
-\label{tbl:CONN} \\
-\hline
-\multicolumn{5}{|c|}{\ct{CONN} (Connection Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{\ct{CONN} (Connection Parameters)} \\
-\hline \hline
-\endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
-\ct{COMP_ID}                             & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
-\ct{COMP_IDS}                            & Character Array        & Sec.~\ref{info:CONN}         &                    & \\ \hline
-\ct{F}                                   & Real Array             & Sec.~\ref{info:CONN}         &                    & \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:CONN}         &                    & \\ \hline
 \end{xltabular}
 
 

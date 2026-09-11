@@ -29,7 +29,7 @@
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, &
         relative_humidity, adiabatic_walls, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
@@ -69,7 +69,6 @@
     call read_fire (iofili)
     call read_chem (iofili)
     call read_vent (iofili)
-    call read_conn (iofili)
     call read_isof (iofili)
     call read_slcf (iofili)
     call read_diag (iofili)
@@ -2163,192 +2162,6 @@ continue
     end  subroutine find_comp_idxes
 
     end subroutine read_vent
-
-
-    ! --------------------------- read_conn -------------------------------------------
-    
-!> \brief   read in &CONN namelist that includes surface heat transfer connection specifications
-    
-!> \param   lu (input): logical input unit number for the open input file
-    
-    subroutine read_conn (lu)
-
-    integer, intent(in) :: lu
-
-    integer :: ios, ifrom, ito, i, k, jj, i1, i2, counter1
-    real(eb), dimension(mxpts) :: frac
-    character(len=64) :: compartment_id
-    integer :: nmlcount                             ! count of number of each namelist type read in so far
-
-    type(room_type), pointer :: roomptrfrm, roomptrto
-
-    real(eb), dimension(mxpts) :: f
-    character(len=64), dimension(mxpts) :: comp_ids
-    character(len=64) :: comp_id, type
-    namelist /CONN/ comp_id, comp_ids, f, type
-
-    ios = 1
-
-    rewind (unit=lu)
-    input_file_line_number = 0
-
-    ! Scan entire file to look for 'CONN'
-    nmlcount = 0
-    conn_loop: do
-        call checkread ('CONN', lu, ios)
-        if (ios==0) connflag=.true.
-        if (ios==1) then
-            exit conn_loop
-        end if
-        read(lu,CONN,err=34,iostat=ios)
-        if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) n_vcons = n_vcons + 1
-        if (trim(type) == trim('WALL')) nmlcount = nmlcount + 1
-34      if (ios>0) then
-            write(errormessage, '(a,i0)') 'Error, Invalid specification in &CONN inputs. Check &CONN input, ' , n_vcons+nmlcount
-            call cfastexit('read_conn',1)
-        end if
-    end do conn_loop
-
-    conn_flag: if (connflag) then
-
-        rewind (lu)
-        input_file_line_number = 0
-
-        counter1 = 0
-
-        countloop : do k = 1, nmlcount + n_vcons
-
-            call checkread('CONN',lu,ios)
-            call set_defaults
-            read(lu,CONN)
-
-            if (trim(type) == 'WALL') then
-                frac(:)=-101
-                compartment_id = ' '
-                compartment_id = comp_id
-                ifrom = -101
-
-                searching: do jj=1,n_rooms
-                    roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
-                        ifrom = roomptrfrm%compartment
-                        exit searching
-                    end if
-                end do searching
-
-                if (ifrom == -101) then
-                    write (errormessage,'(2a)') '***Error, Compartment not found for from room. ', comp_id
-                    call cfastexit('read_conn',2)
-                end if
-
-                roomptrfrm => roominfo(ifrom)
-                roomptrfrm%iheat = 2
-
-                frac(:) = f(:)
-
-                do i = 1, count(frac /= -1001._eb)
-                    compartment_id = ' '
-                    compartment_id = comp_ids(i)
-                    ito=-101
-
-                   searching_2: do jj=1,n_rooms
-                        roomptrto => roominfo(jj)
-                        if (trim(compartment_id) == 'OUTSIDE') then
-                            ito = n_rooms+1
-                            exit searching_2
-                        end if
-                        if (trim(compartment_id) == trim(roomptrto%id)) then
-                            ito = roomptrto%compartment
-                            exit searching_2
-                        end if
-                    end do searching_2
-
-                    if (ito == -101) then
-                        write (errormessage,'(2a)') '***Error, COMP_IDS do not match existing compartments. ', comp_ids(i)
-                        call cfastexit('read_conn',3)
-                    end if
-
-                    if (ito<1.or.ito==ifrom.or.ito>n_rooms+1) then
-                        write (errormessage, 5356) ifrom, ito
-                        call cfastexit('read_conn',4)
-                    end if
-                    if (f(i)<0.0_eb.or.f(i)>1.0_eb) then
-                        write (errormessage, 5357) ifrom, ito, f(i)
-                        call cfastexit('read_conn',5)
-                    end if
-                    roomptrfrm%heat_frac(ito) = f(i)
-                end do
-
-            else if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') then
-                counter1 = counter1 + 1
-
-                compartment_id = ' '
-                compartment_id = comp_id
-                i1 = -101
-
-                searching_3: do jj = 1, n_rooms
-                    roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
-                        i1 = roomptrfrm%compartment
-                        exit searching_3
-                    end if
-                end do searching_3
-
-                if (i1 == -101) then
-                    write (errormessage,'(a,a)') '***Error, COMP_ID not found. ', comp_id
-                    call cfastexit('read_conn',6)
-                end if
-
-                compartment_id = ' '
-                compartment_id = comp_ids(1)
-                i2 = -101
-
-                searching_4: do jj = 1, n_rooms
-                    roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
-                        i2 = roomptrfrm%compartment
-                        exit searching_4
-                    end if
-                end do searching_4
-
-                if (i2 == -101) then
-                    write (errormessage,'(2a)') '***Error, Compartment not found for to room. ', comp_ids(1)
-                    call cfastexit('read_conn',7)
-                end if
-
-                if (i1<1.or.i2<1.or.i1>n_rooms+1.or.i2>n_rooms+1) then
-                    write (errormessage,5345) i1, i2
-                    call cfastexit('read_conn',8)
-                end if
-
-                vertical_connections(counter1,w_from_room) = i1
-                vertical_connections(counter1,w_from_wall) = 2
-                vertical_connections(counter1,w_to_room) = i2
-                vertical_connections(counter1,w_to_wall) = 1
-            end if
-
-        end do countloop
-
-    end if conn_flag
-
-5356 format ('***Error, Bad CONN input. CONN specification error in compartment pairs: ',2i3)
-5357 format ('***Error, Bad CONN input. Error in fraction for CONN:',2i3,f6.3)
-5345 format ('***Error, Bad VHEAT input. A referenced compartment does not exist')
-
-
-
-    contains
-
-    subroutine set_defaults
-
-    comp_id           = 'NULL'
-    comp_ids(:)       = 'NULL'
-    f(:)              = -1001._eb
-    type              = 'NULL'
-
-    end subroutine set_defaults
-
-    end subroutine read_conn
 
 
     ! --------------------------- read_isof --------------------------------------------

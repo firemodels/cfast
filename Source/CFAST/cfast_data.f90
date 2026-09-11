@@ -310,12 +310,6 @@ module room_data
                                                         !   3 = to room number
                                                         !   4 = to wall number
                                                         !   5 = boundary condition type for exterior surface
-    integer :: n_vcons
-    integer, dimension(mxwal,4) :: vertical_connections ! list of connected compartments for vertical heat transfer
-                                                        !   1 = from room number
-                                                        !   2 = from wall number (ceiling, upper walls, lower walls, floor)
-                                                        !   3 = to room number
-                                                        !   4 = to wall number
 
     logical :: adiabatic_walls  ! true if all surfaces are adiabatic
 

@@ -45,7 +45,4 @@
 &TABL ID = 'Propane_Fire', DATA = 5998, 2.5, 0.0508, 0.01, 0, 0.015, 0, 0, 0 /
 &TABL ID = 'Propane_Fire', DATA = 6000, 0, 0.0508, 0.01, 0, 0.015, 0, 0, 0 /
  
-!! Surface Connections
-&CONN TYPE = 'FLOOR' COMP_ID = 'Comp 2' COMP_IDS = 'Comp 1' / 
- 
 &TAIL /

@@ -35,7 +35,7 @@ module solve_routines
     use option_data, only: option, mxopt, on, off, iprtalg, ovtime, tovtime, tottime, prttime, numjac, numstep, numresd, fpdassl, &
         stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn, fkeyeval
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: n_rooms, roominfo, n_cons, surface_connections, n_vcons, vertical_connections, &
+    use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
@@ -1167,7 +1167,7 @@ module solve_routines
 
 
     integer :: iroom, lsp, layer, i, itstop, ieq, iwall, ii
-    integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
+    integer :: iwfar, itor, itow, ieqfrom, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isof
     real(eb) :: wtemp
     real(eb) :: xdelt, tstop, zzu, zzl
@@ -1358,24 +1358,6 @@ module solve_routines
                     i_wallmap(iroom,iwall) = 0
                 end if
             end do
-        end do
-
-        ! update surface_connections for ceiling/floors that are connected
-        do i = 1, n_vcons
-            ifromr = vertical_connections(i,w_from_room)
-            ifromw = vertical_connections(i,w_from_wall)
-            itor = vertical_connections(i,w_to_room)
-            itow = vertical_connections(i,w_to_wall)
-            ieqfrom = i_wallmap(ifromr,ifromw) - nofwt
-            ieqto = i_wallmap(itor,itow) - nofwt
-
-            surface_connections(ieqfrom,w_to_room) = itor
-            surface_connections(ieqfrom,w_to_wall) = itow
-            surface_connections(ieqfrom,w_boundary_condition) = 1
-
-            surface_connections(ieqto,w_to_room) = ifromr
-            surface_connections(ieqto,w_to_wall) = ifromw
-            surface_connections(ieqto,w_boundary_condition) = 1
         end do
 
         jacdim = nofprd - nofp

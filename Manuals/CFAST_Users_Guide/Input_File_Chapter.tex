@@ -395,7 +395,7 @@ If the simulation includes mechanical ventilation filtering, care should be take
 
 
 \chapter{Fires}
-A fire in CFAST is specified via a time-dependent heat release rate (HRR). The specified heat of combustion is used to calculate the mass loss rate of fuel, from which the production rate of combustion products can be calculated using specified product yields. The heat release and the corresponding product generation rates go to zero when the lower oxygen limit is reached, and are replaced by the appropriate production rate of unburned fuel gas which is transported from zone to zone until there is sufficient oxygen and a high enough temperature to support combustion.
+A fire in CFAST is specified via a time-dependent heat release rate (HRR). The specified heat of combustion is used to calculate the mass loss rate of fuel, from which the production rate of combustion products can be calculated using specified product yields. The heat release and the corresponding product generation rates go to zero when the lower oxygen limit is reached, and are replaced by the appropriate production rate of unburned fuel gas which is transported from zone to zone until there is sufficient oxygen.
 
 The model can simulate multiple fires in one or more compartments. These fires are treated as totally separate entities, with no interaction of the plumes. These fires can be ignited at a prescribed time, or when a corresponding target (see Chapter~\ref{chapter:targets}) reaches a specified temperature or heat flux.
 
@@ -417,62 +417,46 @@ All chlorine in the fuel is converted to HCl. HCN production is limited by both 
 \section{Adding Fires}
 \label{info:FIRE}
 \label{sec:fire_inputs}
-Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
-For a new fire, click on the {\bf Add New} button within the fire definition block of inputs. The {\bf Add t$^2$} button creates a new fire with a seeded quadratic heat release rate curve that can then be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details. For each fire instance, specify the following properties:
+Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details. 
+
+In the text input file, the following parameters are stored within the namelist group \ct{FIRE}:
 \begin{description}
-\item[Fire ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
-\item[Compartment] Name of the compartment where the fire occurs.
-\item[Position X, Y] (default units: \unit{m}, default value: compartment center): Position of the center of the base of the fire relative to the front left corner of the compartment.
-\item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
-\item[Set Point] The critical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Ignition Target] User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
-\item[Referenced Fire] The name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
+\item[ID] (namelist: \ct{ID}) Unique name of the fire.
+\item[Compartment] (namelist: \ct{COMP_ID}) Name of the compartment where the fire occurs.
+\item[Position X, Y] (default: compartment center; namelist: \ct{LOCATION(1:2)}) Position of the center of the base of the fire relative to the front left corner of the compartment.
+\item[Ignition Criterion] (namelist: \ct{IGNITION_CRITERION}) Ignition can be controlled by a user-specified \textbf{Time}, target's \textbf{Temperature}, or incident \textbf{Heat Flux}.
+\item[Set Point] (namelist: \ct{SETPOINT}) The critical value of temperature or heat flux at which ignition will occur.
+\item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
+\item[Referenced Fire] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
 \end{description}
 
-The \ct{FIRE} namelist parameters are:
-\begin{description}
-\item[\texttt{COMP\_ID}] Required identifier of the compartment containing the fire.
-\item[\texttt{DEVC\_ID}] Target identifier required when \ct{IGNITION_CRITERION} is \ct{TEMPERATURE} or \ct{FLUX}.
-\item[\texttt{FIRE\_ID}] Required identifier of the associated \ct{CHEM} and \ct{TABL} fire definition.
-\item[\texttt{FYI}] Optional descriptive text retained with the fire but not used in the calculation.
-\item[\texttt{ID}] Required fire-instance identifier, unique among all identifiers in the input file.
-\item[\texttt{IGNITION\_CRITERION}] \ct{TIME}, \ct{TEMPERATURE}, or \ct{FLUX}; default \ct{TIME}.
-\item[\texttt{LOCATION}] Required X and Y coordinates in \unit{m} relative to the compartment origin. Negative coordinates are interpreted from the opposite compartment boundary when that compatibility option is enabled.
-\item[\texttt{SETPOINT}] Ignition time in s, target temperature in \unit{\degreeCelsius}, or target incident heat flux in \unit{kW/m^2}. A value not greater than zero ignites the fire initially.
-\end{description}
+\section{Fire Properties}
 
-Each instance of a fire can be a unique fire with a different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties.
+Each fire can have a different chemical composition and time-dependent properties. Alternatively, two or more fires can reference the same set of properties.
 
 In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
 \begin{description}
-\item[\texttt{AREA}] (units: \unit{m^2}, default value: 0~\unit{m^2}): Constant area of the fire base. CFAST treats values smaller than the area of a 0.2~m diameter circle as that minimum area. A \ct{TABL} column labeled \ct{AREA} overrides this value.
-\item[\texttt{CARBON}] (default value: 0): Number of carbon atoms in the fuel molecule.
-\item[\texttt{CHLORINE}] (default value: 0): Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
-\item[\texttt{COMP\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. The compartment is specified by \ct{COMP_ID} on the associated \ct{FIRE} line.
-\item[\texttt{CO\_YIELD}] (units: kg/kg, default value: 0): Constant mass of CO produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{CO_YIELD} overrides this value.
-\item[\texttt{FLAMING\_TRANSITION\_TIME}] (units: s, default value: 0): Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
-\item[\texttt{HCN\_YIELD}] (units: kg/kg, default value: 0): Constant mass of HCN produced per unit mass of fuel consumed. Production is limited by the nitrogen available in the fuel. A \ct{TABL} column labeled \ct{HCN_YIELD} overrides this value.
-\item[\texttt{HEAT\_OF\_COMBUSTION}] (units: kJ/kg, default value: 50000): Energy released per unit mass of fuel consumed. It must be greater than zero and is used with the heat release rate to calculate the fuel mass-loss rate.
-\item[\texttt{HRR}] (units: kW, default value: 0): Constant heat release rate. A \ct{TABL} column labeled \ct{HRR} overrides this value.
-\item[\texttt{HYDROGEN}] (default value: 0): Number of hydrogen atoms in the fuel molecule.
-\item[\texttt{ID}] (required): Identifier for the fire definition. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
-\item[\texttt{NITROGEN}] (default value: 0): Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
-\item[\texttt{OXYGEN}] (default value: 0): Number of oxygen atoms in the fuel molecule.
-\item[\texttt{RADIATIVE\_FRACTION}] (default value: 0): Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
-\item[\texttt{SOOT\_YIELD}] (units: kg/kg, default value: 0): Constant mass of soot produced per unit mass of fuel consumed. A \ct{TABL} column labeled \ct{SOOT_YIELD} overrides this value.
-\item[\texttt{TABLE\_ID}] (default value: \ct{NULL}): Legacy input accepted by the parser but not used in the current calculation. CFAST associates the time history whose \ct{TABL} \ct{ID} matches \ct{CHEM} \ct{ID}.
-\item[\texttt{TRACE\_YIELD}] (units: kg/kg, default value: 0): Constant mass of user-defined trace species produced per unit mass of fuel consumed. The trace species is transported but does not participate in the combustion reaction and should not be a significant contribution to the system mass balance. A \ct{TABL} column labeled \ct{TRACE_YIELD} overrides this value.
+\item[Fire Propties ID] (namelist: \ct{FIRE_ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
+\item[C] (default: 1; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule.
+\item[H] (default: 4, namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
+\item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.
+\item[N] (default: 0; namelist: \ct{N}) Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
+\item[Cl] (default: 0; namelist: \ct{CHLORINE}) Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
+\item[Heat of Combustion] (default: 50000 kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed. 
+\item[Radiative Fraction] (default: 0.3; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
 \end{description}
 
 
 
 \section{Time-Dependent Properties}
 \label{info:FIRE2}
+
 Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
 \begin{description}
 \item[Time] (default units: s, default values: none): Time from ignition.
-\item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
+\item[HRR] (namelist: \ct{HRR}) Heat release rate as a function of time (kW).
 \item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
 \item[Area] (default units: \unit{m^2}, default values: calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
 \item[CO Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of CO produced per unit mass of fuel consumed.

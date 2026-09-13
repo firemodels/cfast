@@ -422,13 +422,13 @@ Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} butto
 
 In the text input file, the following parameters are stored within the namelist group \ct{FIRE}:
 \begin{description}
-\item[ID] (namelist: \ct{ID}) Unique name of the fire.
+\item[Fire ID] (namelist: \ct{ID}) Unique name of the fire.
 \item[Compartment] (namelist: \ct{COMP_ID}) Name of the compartment where the fire occurs.
 \item[Position X, Y] (default: compartment center; namelist: \ct{LOCATION(1:2)}) Position of the center of the base of the fire relative to the front left corner of the compartment.
 \item[Ignition Criterion] (namelist: \ct{IGNITION_CRITERION}) Ignition can be controlled by a user-specified \textbf{Time}, target's \textbf{Temperature}, or incident \textbf{Heat Flux}.
 \item[Set Point] (namelist: \ct{SETPOINT}) The critical value of temperature or heat flux at which ignition will occur.
 \item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
-\item[Referenced Fire] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
+\item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
 \end{description}
 
 \section{Fire Properties}
@@ -453,49 +453,27 @@ In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associ
 \section{Time-Dependent Properties}
 \label{info:FIRE2}
 
-Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
+Time-dependent fire quantities are listed in the table. Data points are linearly interpolated. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
 \begin{description}
-\item[Time] (default units: s, default values: none): Time from ignition.
-\item[HRR] (namelist: \ct{HRR}) Heat release rate as a function of time (kW).
-\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
-\item[Area] (default units: \unit{m^2}, default values: calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
-\item[CO Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of CO produced per unit mass of fuel consumed.
-\item[Soot Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of soot produced per unit mass of fuel consumed.
-%Should this still be there if all the N2 in the fuel is assumed to go to HCN.
-\item[HCN Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (default units: selected mass/mass units; kg/kg in SI, default value: 0): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
-\end{description}
-
-The time histories are supplied with \ct{TABL} records:
-\begin{description}
-\item[\texttt{DATA}] Numeric row whose values follow the order established by \ct{LABELS}. Each time-history row uses a separate \ct{TABL} record with the same \ct{ID}.
-\item[\texttt{ID}] Required table identifier. For a fire history it must match the associated \ct{CHEM} \ct{ID} and \ct{FIRE} \ct{FIRE_ID}.
-\item[\texttt{LABELS}] Column names for the table. A \ct{TIME} column is required. Supported fire columns are \ct{HRR}, \ct{HEIGHT}, \ct{AREA}, \ct{CO_YIELD}, \ct{SOOT_YIELD}, \ct{HCN_YIELD}, \ct{HCL_YIELD}, and \ct{TRACE_YIELD}; \ct{HCL_YIELD} is retained for compatibility because HCl production is calculated from fuel chlorine.
-\end{description}
-
-The legacy \ct{RAMP} namelist remains accepted for older input files:
-\begin{description}
-\item[\texttt{COMP\_IDS}] Legacy pair of compartment identifiers. The current reader accepts this parameter but does not use it when constructing the ramp.
-\item[\texttt{F}] Required dependent values of the ramp function.
-\item[\texttt{ID}] Ramp identifier.
-\item[\texttt{T}] Time coordinates in s. Specify either \ct{T} or \ct{Z}, not both.
-\item[\texttt{TYPE}] Legacy ramp type. \ct{AREA} uses \ct{Z}; other types use \ct{T}.
-\item[\texttt{Z}] Height coordinates in m for an \ct{AREA} ramp. Specify either \ct{Z} or \ct{T}, and provide the same number of coordinates and \ct{F} values.
+\item[Time] (units: s; namelist: \ct{'TIME'}) Time from ignition.
+\item[HRR] (units: kW; namelist: \ct{'HRR'}) Heat release rate as a function of time.
+\item[Height] (units: m; namelist: \ct{'HEIGHT'}) Height of the base of the fire above the floor of the compartment.
+\item[Area] (units: \unit{m^2}; namelist: \ct{'AREA'}) Area of the base of the fire.  The Fire Froude number is defined $$\dot{Q}^* = \dot{Q}/(\rho_\infty c_p T_\infty \sqrt{gD} D^2)$$ It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+\item[CO Yield] (units: kg/kg; namelist: \ct{'CO_YIELD'}) Mass of CO produced per unit mass of fuel consumed.
+\item[Soot Yield] (units: kg/kg; namelist: \ct{'SOOT_YIELD'}) Mass of soot produced per unit mass of fuel consumed.
+\item[HCN Yield] (units: kg/kg; namelist: \ct{'HCN_YIELD'}) Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+\item[TS Yield] (units: kg/kg; namelist: \ct{'TS_YIELD'}) Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
 \end{description}
 
 
 \section{Special Topic: t-Squared Fires}
 \label{tsq}
+
 Use the `Add t$^2$' button to create a new fire with a heat release rate that grows as a function of the time squared~\cite{Schifiliti:2002}:
 \be
    \dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
 \ee
-
-The generated fire curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
-
-%Where is the getting fire definitions from files?
-
-
+The curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
 
 
 

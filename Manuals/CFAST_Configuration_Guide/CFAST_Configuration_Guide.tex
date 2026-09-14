@@ -353,6 +353,15 @@ In addition to the identified configuration items included in the CFAST reposito
 
 NIST management approval is required prior to destruction of old or out-of-date records. Records are typically maintained for a minimum of 25 years.
 
+\section[Virus Scanning of Pull Requests]{Virus Scanning of Pull Requests}
+\label{sec:pr_screening}
+
+GitHub Actions use ClamAV to scan pull requests to CFAST and participating developers' forks. Security code and approved account IDs come from the receiving repository's trusted revision. When both the author and event sender are approved developers, scanning proceeds in the background, including after merging; other pull requests must pass scanning before admission.
+
+Disposable GitHub-hosted runners update virus signatures and scan the submitted and merge snapshots without executing submitted code. Scan jobs use read-only permissions and receive no project secrets. Detections, errors, timeouts, and incomplete scans block outside contributions. These checks examine repository content and do not replace installation-bundle scans.
+
+Each receiving repository must require \texttt{CFAST / PR admission} through branch protection, require workflow approval for all external contributors, and require maintainer review of security changes. The separate \texttt{CFAST / ClamAV scan} status reports scan results without delaying approved developers' merges. External testing systems must independently verify admission for the exact submitted commit before executing outside code. A clean scan does not replace code review or isolated testing. Repository settings and operating details are maintained in \texttt{.github/security/README.md}.
+
 \section{Training}
 
 No specific training is identified for use of this plan.  Details of training requirements for use of the model included in the CFAST user's guide are applicable to developers of the model as well.

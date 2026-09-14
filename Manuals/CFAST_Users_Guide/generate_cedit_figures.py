@@ -33,7 +33,6 @@ TAB_FIGURES = (
     TabFigure("Fires", "Fire_Tab.png"),
     TabFigure("Targets", "Target_Tab.png"),
     TabFigure("Detection / Suppression", "Detector_Tab.png"),
-    TabFigure("Surface Connections", "Surface_Connection_Tab.png"),
     TabFigure("Output", "Visualizations_Tab.png"),
 )
 

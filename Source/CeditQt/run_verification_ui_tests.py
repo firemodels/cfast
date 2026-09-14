@@ -941,6 +941,50 @@ def check_mechanical_vent_defaults():
         window.deleteLater()
 
 
+def check_surface_connections_removed():
+    """Legacy surface connections must not be exposed or saved by the UI."""
+    from dataclasses import replace
+
+    from cfast_case import CeilingFloorSurfaceConnection, WallSurfaceConnection
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+
+    window = CeditMainWindow()
+    try:
+        tab_names = [window.tabs.tabText(i) for i in range(window.tabs.count())]
+        assert "Surface Connections" not in tab_names
+        assert tab_names[-1] == "Output"
+
+        case = opening_case()
+        first_id = case.compartments[0].id
+        second_id = "Comp 2"
+        case.compartments.append(replace(case.compartments[0], id=second_id))
+        case.wall_surface_connections = [WallSurfaceConnection(first_id, second_id)]
+        case.ceiling_floor_surface_connections = [
+            CeilingFloorSurfaceConnection(first_id, second_id, connection_type=kind)
+            for kind in ("FLOOR", "CEILING")
+        ]
+
+        with tempfile.TemporaryDirectory(prefix="cedit-qt-connections-") as tmp:
+            legacy_path = Path(tmp) / "legacy.in"
+            write_cfast_input(case, legacy_path)
+            assert legacy_path.read_text().count("&CONN") == 3
+            window.load_cfast_input(legacy_path)
+            window.update_live_validation()
+            assert window.statusBar().currentMessage() == "No Errors"
+
+            output_path = Path(tmp) / "saved.in"
+            assert window.write_case_to_path(output_path) == output_path
+            assert "&CONN" not in output_path.read_text()
+            saved = read_cfast_input(output_path)
+            assert [comp.id for comp in saved.compartments] == [first_id, second_id]
+            assert not saved.wall_surface_connections
+            assert not saved.ceiling_floor_surface_connections
+    finally:
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -951,6 +995,7 @@ def main() -> int:
     check_target_material_initialization()
     check_adiabatic_target()
     check_mechanical_vent_defaults()
+    check_surface_connections_removed()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

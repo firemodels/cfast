@@ -2,6 +2,9 @@
 
 Python/PySide6 interface for editing and running CFAST input files.
 
+Surface connections are no longer supported by CFAST and have no editor tab.
+Legacy `CONN` entries are omitted when input files are saved through CEdit Qt.
+
 ## Running
 
 The Python environment must provide PySide6 and matplotlib.

@@ -19,7 +19,7 @@ forks. Organization membership can remain private.
 2. Click the repository's **Settings** tab in the top navigation row. In the
    settings sidebar, under **Code and automation**, expand **Actions** and select
    **General**. This is separate from the top-level **Actions** tab, which shows
-   workflow runs. Direct links: [upstream](https://github.com/firemodels/cfast/settings/actions)
+   workflow runs. Direct link: [upstream](https://github.com/firemodels/cfast/settings/actions)
    ; other developers should substitute their fork owner. Repository admin access is required.
    Allow GitHub-authored actions (including `actions/checkout`) and apply the
    settings below, clicking **Save** in each section:

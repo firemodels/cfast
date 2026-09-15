@@ -1065,6 +1065,70 @@ def check_surface_connections_removed():
         window.deleteLater()
 
 
+def check_output_visualizations():
+    from PySide6.QtCore import QSignalBlocker
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+    from units import LENGTH, TEMPERATURE, format_value, unit_system
+
+    window = CeditMainWindow()
+    tab = window.output_tab
+    original_units = dict(unit_system.selected)
+    try:
+        for length_unit, temperature_unit in ((0, 0), (3, 2)):
+            unit_system.set_index(LENGTH, length_unit)
+            unit_system.set_index(TEMPERATURE, temperature_unit)
+            case = opening_case()
+            case.compartments[0].width = 1.0
+            case.compartments[0].depth = 1.0
+            case.compartments[0].height = 1.0
+            case.output_visualizations = []
+            window.load_case(case)
+            tab.add_visualization()
+            assert tab.visual_position_edit.text() == format_value(LENGTH, 0.0)
+            assert not tab.visual_temperature_edit.isEnabled()
+            for axis in range(3):
+                tab.axis_combo.setCurrentIndex(axis)
+                window.update_live_validation()
+                assert window.statusBar().currentMessage() == "No Errors"
+
+            tab.visualization_type_combo.setCurrentText("ISOF")
+            assert tab.visual_temperature_edit.isEnabled()
+            assert not tab.visual_position_edit.isEnabled()
+            assert not tab.axis_combo.isEnabled()
+            tab.visual_temperature_edit.setText("212 F")
+            tab.visual_temperature_edit.editingFinished.emit()
+            tab.duplicate_visualization()
+            tab.visual_compartment_edit.setCurrentText(case.compartments[0].id)
+            with tempfile.TemporaryDirectory(prefix="cedit-isof-") as directory:
+                path = Path(directory) / "output.in"
+                write_cfast_input(window.build_cfast_case(), path)
+                assert path.read_text().count("&ISOF") == 2
+                loaded = read_cfast_input(path)
+                assert not loaded.extra_namelists
+                assert all(vis.visualization_type == "ISOF" and math.isclose(vis.value, 100.0)
+                           for vis in loaded.output_visualizations)
+                window.load_case(loaded)
+                tab.visual_table.setCurrentCell(0, 1)
+                tab.visual_row_to_editor(0)
+                assert tab.visual_temperature_edit.text() == format_value(TEMPERATURE, 100.0)
+
+            # A table type edit must reset temperature to a valid slice position.
+            with QSignalBlocker(tab.visual_table):
+                tab.visual_table.item(0, 1).setText("2-D")
+            tab.visual_cell_changed(0, 1)
+            assert tab.visual_position_edit.text() == format_value(LENGTH, 0.0)
+            assert not tab.visual_temperature_edit.isEnabled()
+            tab.visualization_type_combo.setCurrentText("3-D")
+            assert not tab.visual_position_edit.isEnabled()
+            window.update_live_validation()
+            assert window.statusBar().currentMessage() == "No Errors"
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -1077,6 +1141,7 @@ def main() -> int:
     check_adiabatic_target()
     check_mechanical_vent_defaults()
     check_surface_connections_removed()
+    check_output_visualizations()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

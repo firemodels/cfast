@@ -246,7 +246,7 @@ class OutputVisualization:
     visualization_type: str = "2-D"
     comp_id: str = "All"
     axis: str = "X"
-    value: float = 2.5
+    value: float = 0.0
     fyi: str = ""
 
 

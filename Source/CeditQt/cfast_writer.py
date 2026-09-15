@@ -483,9 +483,9 @@ def validate_case(case: CfastCase) -> None:
             )
 
         vis_type = vis.visualization_type.upper()
-        if vis_type not in {"2-D", "3-D"}:
+        if vis_type not in {"2-D", "3-D", "ISOF"}:
             raise ValueError(
-                f"Visualization output: type must be 2-D or 3-D, got "
+                f"Visualization output: type must be 2-D, 3-D, or ISOF, got "
                 f"{vis.visualization_type!r}."
             )
 
@@ -1002,7 +1002,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             comp_id = vis.comp_id.strip()
             comp_value = "NULL" if comp_id.upper() in {"ALL", "NULL", ""} else comp_id
 
-            if vis_type == "2-D":
+            if vis_type == "ISOF":
+                add_wrapped_namelist(lines, "ISOF", [
+                    f"COMP_ID = {cfast_string(comp_value)}",
+                    f"VALUE = {cfast_number(vis.value)}",
+                ])
+            elif vis_type == "2-D":
                 axis = vis.axis.upper()[0:1]
                 add_wrapped_namelist(
                     lines,

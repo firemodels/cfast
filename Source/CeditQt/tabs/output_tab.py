@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment, OutputVisualization
-from units import LENGTH, format_value, parse_number, parse_value, unit_label
+from units import LENGTH, TEMPERATURE, format_value, parse_number, parse_value
 
 
 AXIS_LABELS = {
@@ -94,12 +94,14 @@ class OutputTab(QWidget):
         )
 
         self.visualization_type_combo = QComboBox()
-        self.visualization_type_combo.addItems(["2-D", "3-D"])
+        self.visualization_type_combo.addItems(["2-D", "3-D", "ISOF"])
 
         self.visual_compartment_edit = QComboBox()
         self.visual_compartment_edit.setEditable(True)
         self.visual_compartment_edit.addItems(["All"])
-        self.visual_position_edit = QLineEdit(format_value(LENGTH, 2.5))
+        self.visual_position_edit = QLineEdit(format_value(LENGTH, 0.0))
+        self.visual_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
+        self.visual_temperature_edit.setEnabled(False)
 
         self.axis_combo = QComboBox()
         self.axis_combo.addItems(["X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"])
@@ -208,12 +210,13 @@ class OutputTab(QWidget):
         self.visual_table.setRowCount(max(10, len(case.output_visualizations)))
         for row, vis in enumerate(case.output_visualizations):
             is_3d = vis.visualization_type.upper() == "3-D"
+            is_isof = vis.visualization_type.upper() == "ISOF"
             values = [
                 "",
                 vis.visualization_type,
                 display_compartment(vis.comp_id),
-                "-" if is_3d else AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
-                "-" if is_3d else format_value(LENGTH, vis.value),
+                "-" if is_3d or is_isof else AXIS_LABELS.get(vis.axis.upper()[0:1], "X-Axis"),
+                "-" if is_3d else format_value(TEMPERATURE if is_isof else LENGTH, vis.value),
             ]
             for col, value in enumerate(values):
                 self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
@@ -283,6 +286,7 @@ class OutputTab(QWidget):
             self.visualization_type_combo,
             self.visual_compartment_edit,
             self.visual_position_edit,
+            self.visual_temperature_edit,
             self.axis_combo,
         ):
             widget.setMaximumWidth(EDITOR_FIELD_WIDTH)
@@ -349,6 +353,8 @@ class OutputTab(QWidget):
         layout.addWidget(self.visual_position_edit, 2, 1)
         layout.addWidget(QLabel("Axis:"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.axis_combo, 3, 1)
+        layout.addWidget(QLabel("Temperature:"), 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.visual_temperature_edit, 4, 1)
         return layout
 
     def build_resolution_group(self):
@@ -386,6 +392,7 @@ class OutputTab(QWidget):
         self.visualization_type_combo.currentTextChanged.connect(self.editor_to_visual_row)
         self.visual_compartment_edit.currentTextChanged.connect(self.editor_to_visual_row)
         self.visual_position_edit.editingFinished.connect(self.editor_to_visual_row)
+        self.visual_temperature_edit.editingFinished.connect(self.editor_to_visual_row)
         self.axis_combo.currentTextChanged.connect(self.editor_to_visual_row)
 
         self.width_grid_edit.editingFinished.connect(self.editor_to_resolution_row)
@@ -545,12 +552,13 @@ class OutputTab(QWidget):
     def add_visualization(self):
         row = self.first_empty_row(self.visual_table)
         self.updating = True
-        values = ["", "2-D", "All", "X-Axis", format_value(LENGTH, 2.5)]
+        values = ["", "2-D", "All", "X-Axis", format_value(LENGTH, 0.0)]
         for col, value in enumerate(values):
             self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
         self.updating = False
         self.refresh_visual_numbers()
         self.visual_table.setCurrentCell(row, 1)
+        self.visual_row_to_editor(row)
 
     def duplicate_visualization(self):
         source_row = self.visual_table.currentRow()
@@ -605,6 +613,14 @@ class OutputTab(QWidget):
     def visual_cell_changed(self, row, col):
         if self.updating:
             return
+        if col == 1:
+            vis_type = self.cell_text(self.visual_table, row, 1).upper()
+            self.updating = True
+            self.set_cell_text(self.visual_table, row, 3, "X-Axis" if vis_type == "2-D" else "-")
+            kind = TEMPERATURE if vis_type == "ISOF" else LENGTH
+            value = format_value(kind, 20.0 if vis_type == "ISOF" else 0.0)
+            self.set_cell_text(self.visual_table, row, 4, "-" if vis_type == "3-D" else value)
+            self.updating = False
         if col == 4:
             self.normalize_visual_position(row)
         self.refresh_visual_numbers()
@@ -612,15 +628,17 @@ class OutputTab(QWidget):
             self.visual_row_to_editor(row)
 
     def normalize_visual_position(self, row: int):
-        if self.cell_text(self.visual_table, row, 1).upper() == "3-D":
+        vis_type = self.cell_text(self.visual_table, row, 1).upper()
+        if vis_type == "3-D":
             return
+        kind = TEMPERATURE if vis_type == "ISOF" else LENGTH
 
         text = self.cell_text(self.visual_table, row, 4)
         if not text:
             return
 
         try:
-            value = parse_value(LENGTH, text, "Visualization Value")
+            value = parse_value(kind, text, "Visualization Value")
         except ValueError:
             return
 
@@ -629,7 +647,7 @@ class OutputTab(QWidget):
             self.visual_table,
             row,
             4,
-            format_value(LENGTH, value),
+            format_value(kind, value),
         )
         self.updating = False
 
@@ -644,9 +662,10 @@ class OutputTab(QWidget):
         self.updating = True
         vis_type = values[0] or "2-D"
         is_3d = vis_type.upper() == "3-D"
+        is_isof = vis_type.upper() == "ISOF"
         self.visualization_type_combo.setCurrentText(vis_type)
         set_combo_text(self.visual_compartment_edit, values[1] or "All")
-        if is_3d:
+        if is_3d or is_isof:
             self.axis_combo.setCurrentText("X-axis (Width)")
             self.visual_position_edit.clear()
         else:
@@ -658,9 +677,14 @@ class OutputTab(QWidget):
             else:
                 self.axis_combo.setCurrentText("Z-axis (Height)")
             self.visual_position_edit.setText(values[3] or "0")
-        self.axis_combo.setEnabled(not is_3d)
-        self.visual_position_edit.setEnabled(not is_3d)
+        self.visual_temperature_edit.setText(values[3] if is_isof else format_value(TEMPERATURE, 20.0))
+        self.set_visual_editor_enabled(vis_type)
         self.updating = False
+
+    def set_visual_editor_enabled(self, vis_type: str):
+        self.axis_combo.setEnabled(vis_type.upper() == "2-D")
+        self.visual_position_edit.setEnabled(vis_type.upper() == "2-D")
+        self.visual_temperature_edit.setEnabled(vis_type.upper() == "ISOF")
 
     def editor_to_visual_row(self):
         if self.updating:
@@ -672,31 +696,33 @@ class OutputTab(QWidget):
 
         vis_type = self.visualization_type_combo.currentText()
         is_3d = vis_type.upper() == "3-D"
+        is_isof = vis_type.upper() == "ISOF"
         if is_3d:
             axis_text = "-"
             position_text = "-"
         else:
-            position_text = self.visual_position_edit.text()
+            value_edit = self.visual_temperature_edit if is_isof else self.visual_position_edit
+            kind = TEMPERATURE if is_isof else LENGTH
+            position_text = value_edit.text()
             try:
                 position_value = parse_value(
-                    LENGTH,
+                    kind,
                     position_text,
                     "Visualization Value",
                     0.0,
                 )
-                position_text = format_value(LENGTH, position_value)
-                self.visual_position_edit.setText(position_text)
+                position_text = format_value(kind, position_value)
+                value_edit.setText(position_text)
             except ValueError:
                 pass
-            axis_text = AXIS_LABELS[axis_code(self.axis_combo.currentText())]
+            axis_text = "-" if is_isof else AXIS_LABELS[axis_code(self.axis_combo.currentText())]
 
         self.updating = True
         self.set_cell_text(self.visual_table, row, 1, vis_type)
         self.set_cell_text(self.visual_table, row, 2, self.visual_compartment_edit.currentText())
         self.set_cell_text(self.visual_table, row, 3, axis_text)
         self.set_cell_text(self.visual_table, row, 4, position_text)
-        self.axis_combo.setEnabled(not is_3d)
-        self.visual_position_edit.setEnabled(not is_3d)
+        self.set_visual_editor_enabled(vis_type)
         self.updating = False
         self.refresh_visual_numbers()
 
@@ -786,6 +812,9 @@ class OutputTab(QWidget):
             if vis_type.upper() == "3-D":
                 axis = "X"
                 value = 0.0
+            elif vis_type.upper() == "ISOF":
+                axis = "X"
+                value = parse_value(TEMPERATURE, values[3], "Isosurface Temperature")
             else:
                 axis = axis_code(values[2] or "X")
                 value = parse_value(LENGTH, values[3] or "0", "Visualization Value")
@@ -842,7 +871,7 @@ def set_combo_text(combo: QComboBox, text: str) -> None:
 
 
 def visual_headers() -> list[str]:
-    return ["Num", "Type", "Compartment", "Axis", f"Value\n({unit_label(LENGTH)})"]
+    return ["Num", "Type", "Compartment", "Axis", "Value"]
 
 
 def resolution_headers() -> list[str]:

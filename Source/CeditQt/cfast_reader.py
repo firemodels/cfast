@@ -836,6 +836,12 @@ def apply_record(
         add_connection(case, fields)
     elif name == "SLCF":
         case.output_visualizations.append(output_visualization_from_fields(fields))
+    elif name == "ISOF":
+        case.output_visualizations.append(OutputVisualization(
+            visualization_type="ISOF",
+            comp_id=string_field(fields, "COMP_ID", "All"),
+            value=number_field(fields, "VALUE", -1001.0),
+        ))
     elif name == "TAIL":
         return
     else:

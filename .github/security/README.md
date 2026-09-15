@@ -26,11 +26,16 @@ forks. Organization membership can remain private.
 
    | Setting | Value |
    | --- | --- |
-   | Require actions to be pinned to a full-length commit SHA | Checked; the workflow already pins its action |
+   | Require actions to be pinned to a full-length commit SHA | Leave unchecked unless every workflow's external actions use full commit SHAs |
    | Artifact and log retention | 90 days |
    | Approval for running fork pull request workflows from contributors | Require approval for all external contributors |
    | Workflow permissions | Read repository contents and packages permissions |
    | Allow GitHub Actions to create and approve pull requests | Unchecked |
+
+   SHA enforcement applies to all workflows, not just scanning. The security
+   workflow pins its action, but enabling this setting blocks any other workflow
+   that uses action version tags. This setting is not required for PR scanning
+   or admission.
 
    The trusted workflow explicitly requests `statuses: write` for identity/status
    jobs; the read-only default does not prevent this. No additional secrets are

@@ -820,6 +820,48 @@ def check_target_material_initialization():
         window.deleteLater()
 
 
+def check_target_material_validation():
+    """Regression for #2458: OFF targets report an error before saving/running."""
+    from PySide6.QtTest import QTest
+
+    from main_window import default_concrete_material, opening_case
+
+    window = CeditMainWindow()
+    tab = window.targets_tab
+    try:
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
+        tab.add_target()
+        assert window.live_validation_timer.isActive()
+        QTest.qWait(250)
+        assert "OFF is not a valid target material" in window.statusBar().currentMessage()
+        assert "#b00020" in window.statusBar().styleSheet()
+
+        with tempfile.TemporaryDirectory(prefix="cedit-target-material-") as directory:
+            path = Path(directory) / "target.in"
+            assert window.write_case_to_path(path) is None
+            assert not path.exists()
+
+        case = opening_case()
+        material = default_concrete_material()
+        case.materials = [material]
+        case.targets = list(tab.targets)
+        window.load_case(case)
+        tab.material_combo.setCurrentText(material.id)
+        QTest.qWait(250)
+        assert window.statusBar().currentMessage() == "No Errors"
+        assert window.statusBar().styleSheet() == ""
+
+        tab.material_combo.setCurrentText("OFF")
+        QTest.qWait(250)
+        assert "OFF is not a valid target material" in window.statusBar().currentMessage()
+        tab.remove_target()
+        QTest.qWait(250)
+        assert window.statusBar().currentMessage() == "No Errors"
+    finally:
+        window.deleteLater()
+
+
 def check_adiabatic_target():
     from cfast_reader import read_cfast_input
     from cfast_writer import write_cfast_input
@@ -870,8 +912,11 @@ def check_adiabatic_target():
         tab.material_combo.setCurrentText("OFF")
         tab.adiabatic_checkbox.setChecked(False)
         window.update_live_validation()
-        assert window.statusBar().currentMessage() == "No Errors"
+        assert "OFF is not a valid target material" in window.statusBar().currentMessage()
         assert not tab.targets[0].adiabatic
+        tab.material_combo.setCurrentText(material.id)
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
     finally:
         window.deleteLater()
 
@@ -993,6 +1038,7 @@ def main() -> int:
     patch_message_boxes()
     app = QApplication.instance() or QApplication([])
     check_target_material_initialization()
+    check_target_material_validation()
     check_adiabatic_target()
     check_mechanical_vent_defaults()
     check_surface_connections_removed()

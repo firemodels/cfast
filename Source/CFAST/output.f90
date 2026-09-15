@@ -6,7 +6,6 @@ module output_routines
     use exit_routines, only: cfastexit
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use opening_fractions, only: find_vent_opening_ramp
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, material_type, vent_type
     

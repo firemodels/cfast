@@ -150,28 +150,30 @@ module exit_routines
 
 ! --------------------------- delete_output_files -------------------------------------------
 
-    subroutine delete_output_files (outputfile)
+    subroutine delete_output_files(outputfile)
 
     character(len=*), intent(in) :: outputfile
     integer :: fileunit, ios
-    logical doesthefileexist
+    logical :: doesthefileexist
 
-    inquire (file=outputfile, exist=doesthefileexist)
-    if (DoesTheFileExist) then
-        open (newunit=fileunit, iostat=ios, file=outputfile, status='old')
-        if (ios==0) then
-            close(fileunit, status='delete', iostat=ios)
-            if (ios/=0) then
-                write (errormessage,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
-                    '. File may be in use by another application.'
-                call cfastexit('delete_output_files',1)
-            end if
+    inquire(file=outputfile, exist=doesthefileexist)
+    
+    if (doesthefileexist) then  ! attempt to open the existing file
+        open(newunit=fileunit, file=outputfile, status='old', iostat=ios)
+        if (ios /= 0) then  ! if we can't open it, it's likely locked by another app
+            write(errormessage,'(a,i0)') 'Error: Could not open file for deletion. Status = ', ios
+            call cfastexit('delete_output_files', 1)
+        end if
+        close(fileunit, status='delete', iostat=ios)  ! close the file and delete it
+        if (ios /= 0) then
+            write(errormessage,'(a,i0)') 'Error: Could not delete file. Status = ', ios
+            call cfastexit('delete_output_files', 1)
         end if
     end if
 
-    return
     end subroutine delete_output_files
-    
+
+
     !---------------------closeoutputfiles------------------------------------------------------
     
     subroutine closeoutputfiles

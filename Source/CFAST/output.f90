@@ -7,14 +7,13 @@ module output_routines
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
 
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, material_type, vent_type
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
         w_from_room, w_from_wall, idx_tempf_trg, mx_dumps, cjetvelocitymin
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
-    use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction

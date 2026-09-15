@@ -98,8 +98,6 @@ CFAST_NAMELIST_PARAMETERS: dict[str, set[str]] = {
         "CONVECTION_COEFFICIENTS",
         "FYI",
     },
-    # Recognize legacy RAMP records so old inputs can be opened and cleaned on save.
-    "RAMP": {"F", "ID", "T", "Z", "TYPE", "COMP_IDS"},
     "TABL": {"ID", "LABELS", "DATA"},
     "FIRE": {
         "COMP_ID",
@@ -831,11 +829,6 @@ def apply_record(
         fire_properties_by_id[prop.id] = prop
     elif name == "TABL":
         add_table_data(fire_properties_by_id, fields)
-    elif name == "RAMP":
-        warnings.append(
-            f"Line {record.line}: &RAMP is obsolete and was ignored; "
-            "it will not be saved."
-        )
     elif name == "DEVC":
         add_device(case, fields, warnings)
     elif name == "CONN":

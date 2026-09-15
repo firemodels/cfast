@@ -12,6 +12,7 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 ## Changes, tests, and commits
 
 - Keep changes small, focused, and organized. Commit early and often when commits are requested, and avoid mixing unrelated work.
+- Do not treat README files as commit logs. Keep them focused on enduring setup and usage instructions; do not append notes about individual fixes, removed features, or verification runs unless explicitly requested.
 - Add or update a verification test for each code change whenever practical. A code change without a test has no guarantee of surviving later development.
 - Add new verification and validation cases to the applicable guides.
 - Update the theory/technical reference, validation guide, user guide, configuration guide, and release notes as applicable. Mark beta features clearly; documented features are generally expected to be available in the next release.

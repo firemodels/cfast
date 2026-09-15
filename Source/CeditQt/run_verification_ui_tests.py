@@ -1078,50 +1078,19 @@ def check_surface_connections_removed():
         window.deleteLater()
 
 
-def check_legacy_ramps_removed():
-    """Regression for #2484: discard &RAMP while retaining fire &TABL data."""
-    from cfast_reader import read_cfast_input_with_warnings
-    from cfast_writer import write_cfast_input
-    from main_window import single_compartment_example
+def check_unrecognized_namelists():
+    from cfast_reader import parse_namelists
 
-    window = CeditMainWindow()
-    try:
-        case = single_compartment_example()
-        with tempfile.TemporaryDirectory(prefix="cedit-qt-ramps-") as tmp:
-            legacy_path = Path(tmp) / "legacy.in"
-            write_cfast_input(case, legacy_path)
-            legacy_path.write_text(
-                legacy_path.read_text()
-                + "\n&RAMP ID='Legacy', T=0.0, F=0.0 /\n"
-                + "&ramp ID='Legacy', T=60.0, F=1.0 /\n"
-                + "&DIAG DEBUG_PRINT=.FALSE. /\n"
+    for name in ("RAMP", "ramp", "UNKNOWN"):
+        try:
+            parse_namelists(f"&{name} ID='Test' /\n")
+        except ValueError as exc:
+            assert str(exc) == (
+                f"Line 1: &{name.upper()} is not a valid CFAST or CData namelist "
+                "for the current version."
             )
-            imported = read_cfast_input_with_warnings(legacy_path)
-            assert len(imported.case.extra_namelists) == 1
-            assert imported.case.extra_namelists[0].startswith("&DIAG")
-            ramp_warnings = [warning for warning in imported.warnings if "&RAMP" in warning]
-            assert len(ramp_warnings) == 2
-            assert all("ignored" in warning and "not be saved" in warning
-                       for warning in ramp_warnings)
-
-            # Exercise both direct writing and the UI load/save path.
-            direct_path = Path(tmp) / "direct.in"
-            write_cfast_input(imported.case, direct_path)
-            assert "&RAMP" not in direct_path.read_text().upper()
-            window.load_cfast_input(legacy_path)
-            window.update_live_validation()
-            assert window.statusBar().currentMessage() == "No Errors"
-            output_path = Path(tmp) / "saved.in"
-            assert window.write_case_to_path(output_path) == output_path
-            assert "&RAMP" not in output_path.read_text().upper()
-            saved = read_cfast_input_with_warnings(output_path)
-            assert saved.case.fire_properties == case.fire_properties
-            assert saved.case.fires == case.fires
-            assert saved.case.wall_vents == case.wall_vents
-            assert saved.case.extra_namelists == imported.case.extra_namelists
-            assert not any("&RAMP" in warning for warning in saved.warnings)
-    finally:
-        window.deleteLater()
+        else:
+            raise AssertionError(f"&{name} should be rejected")
 
 
 def check_output_visualizations():
@@ -1201,7 +1170,7 @@ def main() -> int:
     check_adiabatic_target()
     check_mechanical_vent_defaults()
     check_surface_connections_removed()
-    check_legacy_ramps_removed()
+    check_unrecognized_namelists()
     check_output_visualizations()
 
     if args.mode == "rewrite":

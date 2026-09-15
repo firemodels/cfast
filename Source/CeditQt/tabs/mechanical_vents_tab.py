@@ -83,6 +83,7 @@ class MechanicalVentsTab(QWidget):
         self.updating = False
         self.compartment_ids: list[str] = []
         self.compartment_heights: dict[str, float] = {}
+        self.compartment_sizes: dict[str, tuple[float, float]] = {}
         self.target_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 11)
@@ -426,6 +427,7 @@ class MechanicalVentsTab(QWidget):
 
     def update_vent_from_summary(self, row: int):
         vent = self.vents[row]
+        previous_offsets = self.centered_offsets(vent)
         values = [self.summary_cell(row, col) for col in range(self.summary_table.columnCount())]
 
         vent.id = values[1] or vent.id
@@ -447,6 +449,7 @@ class MechanicalVentsTab(QWidget):
             values[9] or self.display_orientation(vent.to_orientation)
         )
         vent.flow = parse_value(FLOWRATE, values[10], "Flow Rate", vent.flow)
+        self.update_centered_offsets(vent, previous_offsets)
 
     def summary_cell(self, row: int, col: int) -> str:
         item = self.summary_table.item(row, col)
@@ -546,6 +549,7 @@ class MechanicalVentsTab(QWidget):
             return
 
         vent = self.vents[self.current_index]
+        previous_offsets = self.centered_offsets(vent)
         vent.id = self.id_edit.text().strip() or vent.id
         vent.from_comp_id = internal_compartment(
             self.from_compartment_edit.currentText().strip() or "OUTSIDE"
@@ -592,6 +596,9 @@ class MechanicalVentsTab(QWidget):
             vent.t_values = []
             vent.f_values = []
 
+        if self.update_centered_offsets(vent, previous_offsets):
+            self.offset_x_edit.setText(format_value(LENGTH, vent.offset_x))
+            self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
         self.refresh_summary_table()
         self.summary_table.selectRow(self.current_index)
 
@@ -627,6 +634,9 @@ class MechanicalVentsTab(QWidget):
             # Start both ends at the connected compartment's mid-height.
             vent.from_height = height / 2.0
             vent.to_height = height / 2.0
+        offsets = self.centered_offsets(vent)
+        if offsets is not None:
+            vent.offset_x, vent.offset_y = offsets
         self.vents.append(vent)
         self.refresh_summary_table()
         self.select_row(len(self.vents) - 1)
@@ -723,7 +733,28 @@ class MechanicalVentsTab(QWidget):
 
     def set_compartments(self, compartments: list[Compartment]):
         self.compartment_heights = {comp.id: comp.height for comp in compartments if comp.id}
+        self.compartment_sizes = {comp.id: (comp.width, comp.depth) for comp in compartments if comp.id}
         self.set_compartment_ids([comp.id for comp in compartments])
+
+    def centered_offsets(self, vent: MechanicalVent) -> tuple[float, float] | None:
+        # Match Smokeview: use the first indoor compartment and first orientation.
+        size = self.compartment_sizes.get(vent.from_comp_id) or self.compartment_sizes.get(vent.to_comp_id)
+        if size is None:
+            return None
+        width, depth = size
+        return (width / 2.0 if vent.from_orientation == "HORIZONTAL" else 0.0, depth / 2.0)
+
+    def update_centered_offsets(self, vent: MechanicalVent, previous: tuple[float, float] | None) -> bool:
+        offsets = self.centered_offsets(vent)
+        if previous is None or offsets is None or previous == offsets:
+            return False
+        # Compare displayed values to tolerate unit conversion rounding and retain custom offsets.
+        current = (vent.offset_x, vent.offset_y)
+        if any(format_value(LENGTH, value) != format_value(LENGTH, default)
+               for value, default in zip(current, previous)):
+            return False
+        vent.offset_x, vent.offset_y = offsets
+        return True
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]

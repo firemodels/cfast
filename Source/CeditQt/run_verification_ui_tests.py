@@ -923,6 +923,8 @@ def check_adiabatic_target():
 
 def check_mechanical_vent_defaults():
     """Regression for #2467: newly added diffusers fit their compartment."""
+    from PySide6.QtCore import QSignalBlocker
+
     from cfast_reader import read_cfast_input
     from cfast_writer import write_cfast_input
     from main_window import opening_case
@@ -934,9 +936,11 @@ def check_mechanical_vent_defaults():
     try:
         for length_unit in (0, 3):  # metres and feet
             unit_system.set_index(LENGTH, length_unit)
-            for height in (2.4, 1.0, 4.0):
+            for height, width, depth in ((2.4, 5.0, 2.4), (1.0, 3.0, 1.8), (4.0, 7.0, 6.0)):
                 case = opening_case()
                 case.compartments[0].height = height
+                case.compartments[0].width = width
+                case.compartments[0].depth = depth
                 window.load_case(case)
                 tab.add_vent()
                 vent = tab.vents[-1]
@@ -945,6 +949,20 @@ def check_mechanical_vent_defaults():
                 assert math.isclose(vent.from_height, height / 2.0)
                 assert math.isclose(vent.to_height, height / 2.0)
                 assert tab.to_height_edit.text() == format_value(LENGTH, height / 2.0)
+                assert math.isclose(vent.offset_x, 0.0)
+                assert math.isclose(vent.offset_y, depth / 2.0)
+                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
+                tab.from_orientation_combo.setCurrentText("Horizontal")
+                tab.to_orientation_combo.setCurrentText("Horizontal")
+                assert tab.offset_x_edit.text() == format_value(LENGTH, width / 2.0)
+                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
+                # Editing the summary must apply the same defaults as the detail controls.
+                with QSignalBlocker(tab.summary_table):
+                    item = tab.summary_table.item(0, 5)
+                    item.setText("Vertical")
+                tab.summary_item_changed(item)
+                assert tab.offset_x_edit.text() == format_value(LENGTH, 0.0)
+                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
                 window.update_live_validation()
                 assert window.statusBar().currentMessage() == "No Errors"
 
@@ -952,17 +970,32 @@ def check_mechanical_vent_defaults():
         window.load_case(opening_case())
         window.tabs.setCurrentWidget(window.compartments_tab)
         window.compartments_tab.height_edit.setText("1.6 m")
+        window.compartments_tab.width_edit.setText("6 m")
+        window.compartments_tab.depth_edit.setText("2.4 m")
         window.compartments_tab.save_detail_to_selected()
         window.tabs.setCurrentWidget(tab)
         tab.add_vent()
         assert math.isclose(tab.vents[-1].to_height, 0.8)
+        assert math.isclose(tab.vents[-1].offset_y, 1.2)
+        tab.from_orientation_combo.setCurrentText("Horizontal")
+        tab.to_orientation_combo.setCurrentText("Horizontal")
+        with tempfile.TemporaryDirectory(prefix="cedit-centered-vent-") as directory:
+            path = Path(directory) / "mechanical.in"
+            write_cfast_input(window.build_cfast_case(), path)
+            vent = read_cfast_input(path).mechanical_vents[0]
+            assert math.isclose(vent.offset_x, 3.0)
+            assert math.isclose(vent.offset_y, 1.2)
         window.update_live_validation()
         assert window.statusBar().currentMessage() == "No Errors"
 
-        # Loading, duplicating, and writing a vent must preserve edited heights.
+        # Orientation changes, loading, duplicating, and writing preserve custom offsets.
         tab.from_height_edit.setText("0.6 m")
         tab.to_height_edit.setText("0.7 m")
+        tab.offset_x_edit.setText("0.3 m")
+        tab.offset_y_edit.setText("0.4 m")
         tab.store_current_vent()
+        tab.from_orientation_combo.setCurrentText("Vertical")
+        tab.to_orientation_combo.setCurrentText("Vertical")
         case = window.build_cfast_case()
         with tempfile.TemporaryDirectory(prefix="cedit-mechanical-defaults-") as directory:
             path = Path(directory) / "mechanical.in"
@@ -973,6 +1006,8 @@ def check_mechanical_vent_defaults():
             for vent in tab.vents:
                 assert math.isclose(vent.from_height, 0.6)
                 assert math.isclose(vent.to_height, 0.7)
+                assert math.isclose(vent.offset_x, 0.3)
+                assert math.isclose(vent.offset_y, 0.4)
         window.update_live_validation()
         assert window.statusBar().currentMessage() == "No Errors"
 

@@ -95,7 +95,6 @@ Group Name & Namelist Group Description  & Reference Sec. & Parameter Table \\ \
 \ct{MATL}  & Material Properties         & \ref{info:MATL}   & \ref{tbl:MATL}  \\ \hline
 \ct{MISC}  & Miscellaneous               & \ref{info:MISC}   & \ref{tbl:MISC}  \\ \hline
 \ct{OUTP}  & Output and Post-Run Calculations & \ref{info:OUTP} & \ref{tbl:OUTP} \\ \hline
-\ct{RAMP}  & Legacy Ramp Functions       &                   & \ref{tbl:RAMP}  \\ \hline
 \ct{SLCF}  & Slice File Outputs          & \ref{info:SLCF}   & \ref{tbl:SLCF}  \\ \hline
 \ct{TAIL}  & End of Input File Indicator &                   &                 \\ \hline
 \ct{TABL}  & Table of Time-Based Inputs  & \ref{info:FIRE2}  & \ref{tbl:FIRE3} \\ \hline
@@ -506,34 +505,6 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \ct{SPREADSHEET_OUTPUT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{VALIDATION_OUTPUT}                   & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
-\end{xltabular}
-
-
-\Needspace{6\baselineskip}
-\section{\texorpdfstring{{\tt RAMP}}{RAMP} (Legacy Ramp Parameters)}
-\label{app:namelist_ramp}
-
-The \ct{RAMP} namelist is deprecated but remains accepted for compatibility with legacy input files.
-
-\begin{xltabular}{\textwidth}{|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=1.15\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.25\hsize\raggedright\arraybackslash}X|}
-\caption[Legacy Ramp Parameters (\ct{RAMP} namelist group)]{Legacy ramp parameters accepted by CFAST.}
-\label{tbl:RAMP} \\
-\hline
-\multicolumn{5}{|c|}{\ct{RAMP} (Legacy Ramp Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{\ct{RAMP} (Legacy Ramp Parameters)} \\
-\hline \hline
-\endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
-\ct{COMP_IDS}                            & Character Doublet      & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
-\ct{F}                                   & Real Array             & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
-\ct{T}                                   & Real Array             & Sec.~\ref{info:FIRE2}        & s                  & \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:FIRE2}        &                    & \\ \hline
-\ct{Z}                                   & Real Array             & Sec.~\ref{info:FIRE2}        & m                  & \\ \hline
 \end{xltabular}
 
 

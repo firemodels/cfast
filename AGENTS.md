@@ -16,6 +16,7 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 - Add new verification and validation cases to the applicable guides.
 - Update the theory/technical reference, validation guide, user guide, configuration guide, and release notes as applicable. Mark beta features clearly; documented features are generally expected to be available in the next release.
 - Use the repository makefiles. Before handing off new source code, build a debug target and require no compiler errors or warnings. Test with GNU and Intel compilers when they are available.
+- For CeditQt changes, test the Python source directly. The user runs CeditQt from Python on macOS; do not build or package the standalone app unless explicitly requested. CeditQt-only changes do not require a compiled debug build.
 - Before committing, synchronize with the central branch and rerun the relevant debug build and tests. **Pull, merge, rebase, push, and commit operations are human-only; agents must not perform them.**
 - Pull requests should contain no merge commits. Keep them to a few coherent commits when possible; coordinate in advance when a large series is unavoidable.
 - Do not commit generated binaries or other unintended build artifacts. Treat release PDFs as release-only artifacts.

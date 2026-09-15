@@ -382,6 +382,11 @@ def validate_case(case: CfastCase) -> None:
                 f"Adiabatic target {target.id!r}: select a material defined in "
                 "Thermal Properties for its emissivity."
             )
+        if target.matl_id.strip().upper() == "OFF":
+            raise ValueError(
+                f"Target {target.id!r}: OFF is not a valid target material. "
+                "Select a material defined in Thermal Properties."
+            )
         if not material_is_defined(target.matl_id):
             raise ValueError(
                 f"Target {target.id!r}: material {target.matl_id!r} is not "

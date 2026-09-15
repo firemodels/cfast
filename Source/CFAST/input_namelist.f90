@@ -4,10 +4,10 @@
 
     use exit_routines, only: cfastexit
     use fire_routines, only: flame_height
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
+    use cfast_types, only: detector_type, fire_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type
     
-    use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
+    use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
         w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
@@ -23,11 +23,10 @@
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
         tablinfo, init_fire
     use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
-        compflag, devcflag, rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, &
+        compflag, devcflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, &
         dumpflag, convert_negative_distances
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
-    use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, &
         relative_humidity, adiabatic_walls, &
@@ -62,7 +61,6 @@
     call read_init (iofili)
     call read_misc (iofili)
     call read_matl (iofili)
-    call read_ramp (iofili)
     call read_comp (iofili)
     call read_devc (iofili)
     call read_tabl (iofili)
@@ -1071,113 +1069,6 @@
     end subroutine set_defaults
 
     end subroutine read_devc
-
-
-    ! --------------------------- read_ramp -------------------------------------------
-    
-!> \brief   read in &RAMP namelist that includes time ramp specifications (deprecated at this point)
-    
-!> \param   lu (input): logical input unit number for the open input file
-    
-    subroutine read_ramp (lu)
-
-    integer, intent(in) :: lu
-    
-    integer :: ii, ios
-
-    type(ramp_type), pointer :: rampptr
-
-    real(eb), dimension(mxpts) :: f, t, z
-    character(len=64) :: type,id
-    character(len=64), dimension(2) :: comp_ids
-    namelist /RAMP/ f, id ,t, z, type, comp_ids
-
-    ios = 1
-
-    rewind (unit=lu)
-    input_file_line_number = 0
-
-    ! Scan entire file to look for 'RAMP'
-    n_ramps = 0
-    ramp_loop: do
-        call checkread ('RAMP',lu,ios)
-        if (ios==0) rampflag=.true.
-        if (ios==1) then
-            exit ramp_loop
-        end if
-        read(lu,RAMP,iostat=ios)
-        n_ramps =n_ramps + 1
-        if (ios>0) then
-            write(errormessage, '(a,i0)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', n_ramps
-            call cfastexit('read_ramp',1)
-        end if
-    end do ramp_loop
-
-    if (n_ramps>mxramps) then
-        write (errormessage,'(a,i0)') '***Error, Too many ramps in input data file. Limit is ', mxramps
-        call cfastexit('read_ramp',2)
-    end if
-
-    ramp_flag: if (rampflag) then
-
-        rewind (lu)
-        input_file_line_number = 0
-
-        ! Assign value to CFAST variables for further calculations
-        read_ramp_loop: do ii = 1,n_ramps
-
-            call checkread('RAMP',lu,ios)
-            call set_defaults
-            read(lu,RAMP)
-
-            rampptr => rampinfo(ii)
-            rampptr%id = id
-            if (count(z/=-1001._eb)>0 .and. count(t/=-1001._eb)>0) then
-                write (errormessage,'(a,i0)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
-                call cfastexit('read_ramp',3)
-            else if (count(z/=-1001._eb)==0 .and. count(t/=-1001._eb)==0) then
-                write (errormessage,'(a,i0)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
-                call cfastexit('read_ramp',4)
-            end if
-            
-            if (type=='AREA' .and. count(z/=-1001._eb)>0) then
-                rampptr%x(1:mxpts)  = z(1:mxpts)
-            else
-                rampptr%x(1:mxpts) = t(1:mxpts)
-            end if
-            rampptr%f_of_x(1:mxpts) = f(1:mxpts)
-
-            if (count(rampptr%x/=-1001._eb) /= count(rampptr%f_of_x/=-1001._eb)) then
-                if (type=='AREA') then
-                    write (errormessage,'(a,i0)') &
-                        '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
-                    call cfastexit('read_ramp',5)
-                else
-                    write (errormessage,'(a,i0)') &
-                        '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
-                    call cfastexit('read_ramp',6)
-                end if
-            end if
-            rampptr%npoints=count(rampptr%x/=-1001._eb)
-
-        end do read_ramp_loop
-
-    end if ramp_flag
-
-
-    contains
-
-    subroutine set_defaults
-
-    type                    = 'NULL'
-    t(:)                    = -1001._eb
-    f(:)                    = -1001._eb
-    z(:)                    = -1001._eb
-    id                      = 'NULL'
-
-    end subroutine set_defaults
-
-    end subroutine read_ramp
 
 
     ! --------------------------- read_tabl ------------------------

@@ -55,7 +55,6 @@
     integer, parameter :: mxext = mxitems           ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
-    integer, parameter :: mxramps = mxitems         ! maximum number of possible time-based ramps
     integer, parameter :: mxdiscon = mxitems        ! maximum number of DASSL discontinuities
     integer, parameter :: initial_time = 1          ! indicies for simple vent opening data
     integer, parameter :: initial_fraction = 2

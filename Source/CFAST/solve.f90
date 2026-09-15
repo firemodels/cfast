@@ -21,7 +21,7 @@ module solve_routines
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
-    use cfast_types, only: fire_type, ramp_type, room_type, target_type, vent_type
+    use cfast_types, only: fire_type, room_type, target_type, vent_type
     
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
     use cparams, only: u, l, m, q, mxrooms, mxtarg, mxnode, mxbranch, mxdiscon, maxeq, ns, check_state, set_state, update_state, &
@@ -34,7 +34,6 @@ module solve_routines
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
     use option_data, only: option, mxopt, on, off, iprtalg, ovtime, tovtime, tottime, prttime, numjac, numstep, numresd, fpdassl, &
         stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn, fkeyeval
-    use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
@@ -1178,7 +1177,6 @@ module solve_routines
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
-    type(ramp_type), pointer :: rampptr
 
     if (n_furn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,n_furn,stime,1,wtemp)
@@ -1319,14 +1317,6 @@ module solve_routines
 10          format('***Error, Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
         end if
         
-        do i = 1, n_ramps
-            rampptr => rampinfo(i)
-            do ii = 1, rampptr%npoints
-                discon(ndisc+ii-1) = rampptr%x(ii)
-            end do
-            ndisc = ndisc + rampptr%npoints
-        end do
-
         ! put the discontinuity array into order
         call shellsort (discon(0), ndisc+1)
         

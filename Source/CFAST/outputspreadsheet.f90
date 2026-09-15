@@ -9,7 +9,7 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist, readcsvformat, tointstring
     
-    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, dump_type, ssout_type, vent_type
+    use cfast_types, only: fire_type, room_type, detector_type, target_type, vent_type, dump_type, ssout_type, vent_type
 
     use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
         ns, soot, soot_flaming, soot_smolder, smoked, mx_dumps, mxss, cjetvelocitymin, &
@@ -19,7 +19,6 @@ module spreadsheet_routines
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
-    use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, pressure_ref
     use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions, errormessage

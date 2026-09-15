@@ -125,13 +125,6 @@ module cfast_types
         procedure :: pop_table
     end type fire_type
 
-    ! ramp data structure
-    type, extends(cfast_type) :: ramp_type
-        character(len=128) :: type  
-        integer :: room1, room2, counter, npoints
-        real(eb) :: x(mxpts), f_of_x(mxpts)
-    end type ramp_type
-
     ! room data structure
     type, extends(cfast_type) :: room_type
         ! These are room definitions from or calculated from user input
@@ -282,7 +275,6 @@ module cfast_types
     ! vent data structure
     type, extends(cfast_type) :: vent_type
         character(len=1) :: vtype           ! 'H', 'V'. or 'M', set in initialization
-        character(len=128) :: ramp_id       ! ramp id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...

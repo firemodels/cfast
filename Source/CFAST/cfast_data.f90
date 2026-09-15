@@ -186,7 +186,6 @@ module material_data
     logical :: isofflag = .false.
     logical :: matlflag = .false.
     logical :: miscflag = .false.
-    logical :: rampflag = .false.
     logical :: slcfflag = .false.
     logical :: timeflag = .false.
     logical :: ventflag = .false. 
@@ -248,25 +247,6 @@ module option_data
     integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0, total_steps = 0
 
       end module option_data
-
-! --------------------------- ramp_data -------------------------------------------
-
-module ramp_data
-
-    use precision_parameters
-    
-    use cfast_types, only: ramp_type
-    
-    use cparams, only: mxramps
-    
-    implicit none
-    save
-
-    ! ramping variables
-    integer :: n_ramps = 0
-    type(ramp_type), target :: rampinfo(mxramps)
-
-end module ramp_data
 
 ! --------------------------- room_data -------------------------------------------
 

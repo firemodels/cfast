@@ -115,7 +115,7 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help=(
             "Case stem or filename to run. May be repeated. "
-            "Defaults to all Verification/*/*.in cases."
+            "Defaults to all .in cases recursively under Verification/."
         ),
     )
     parser.add_argument(
@@ -208,7 +208,7 @@ def prepare_work_tree(repo_root: Path, work_dir: Optional[Path]) -> tuple[Path, 
 
 
 def select_cases(verification_root: Path, requested: list[str]) -> list[Path]:
-    cases = sorted(verification_root.glob("*/*.in"))
+    cases = sorted(verification_root.rglob("*.in"))
     if not requested:
         return cases
 
@@ -222,7 +222,7 @@ def select_cases(verification_root: Path, requested: list[str]) -> list[Path]:
 
     missing = sorted(set(requested_normalized) - {item for path in selected for item in {path.name.lower(), path.stem.lower(), str(path.relative_to(verification_root)).lower()}})
     if missing:
-        raise RuntimeError("No Verification/*/*.in case matched: " + ", ".join(missing))
+        raise RuntimeError("No Verification .in case matched: " + ", ".join(missing))
 
     return selected
 
@@ -750,6 +750,19 @@ def print_summary(
                 )
 
 
+def check_verification_case_discovery():
+    """Include nested cases such as the NRC Users Guide examples."""
+    with tempfile.TemporaryDirectory(prefix="cedit-qt-discovery-") as tmp:
+        root = Path(tmp)
+        paths = [root / "Fires" / "fire.in", root / "NRC_Users_Guide" / "Example" / "nrc.in"]
+        for path in paths:
+            path.parent.mkdir(parents=True)
+            path.touch()
+        assert select_cases(root, []) == paths
+        assert select_cases(root, ["NRC_Users_Guide/Example/nrc.in"]) == [paths[1]]
+        assert select_cases(root, ["nrc"]) == [paths[1]]
+
+
 def check_target_material_initialization():
     """Regression for #2458: no demo or implicit default target material."""
     from cfast_case import Target
@@ -1065,6 +1078,52 @@ def check_surface_connections_removed():
         window.deleteLater()
 
 
+def check_legacy_ramps_removed():
+    """Regression for #2484: discard &RAMP while retaining fire &TABL data."""
+    from cfast_reader import read_cfast_input_with_warnings
+    from cfast_writer import write_cfast_input
+    from main_window import single_compartment_example
+
+    window = CeditMainWindow()
+    try:
+        case = single_compartment_example()
+        with tempfile.TemporaryDirectory(prefix="cedit-qt-ramps-") as tmp:
+            legacy_path = Path(tmp) / "legacy.in"
+            write_cfast_input(case, legacy_path)
+            legacy_path.write_text(
+                legacy_path.read_text()
+                + "\n&RAMP ID='Legacy', T=0.0, F=0.0 /\n"
+                + "&ramp ID='Legacy', T=60.0, F=1.0 /\n"
+                + "&DIAG DEBUG_PRINT=.FALSE. /\n"
+            )
+            imported = read_cfast_input_with_warnings(legacy_path)
+            assert len(imported.case.extra_namelists) == 1
+            assert imported.case.extra_namelists[0].startswith("&DIAG")
+            ramp_warnings = [warning for warning in imported.warnings if "&RAMP" in warning]
+            assert len(ramp_warnings) == 2
+            assert all("ignored" in warning and "not be saved" in warning
+                       for warning in ramp_warnings)
+
+            # Exercise both direct writing and the UI load/save path.
+            direct_path = Path(tmp) / "direct.in"
+            write_cfast_input(imported.case, direct_path)
+            assert "&RAMP" not in direct_path.read_text().upper()
+            window.load_cfast_input(legacy_path)
+            window.update_live_validation()
+            assert window.statusBar().currentMessage() == "No Errors"
+            output_path = Path(tmp) / "saved.in"
+            assert window.write_case_to_path(output_path) == output_path
+            assert "&RAMP" not in output_path.read_text().upper()
+            saved = read_cfast_input_with_warnings(output_path)
+            assert saved.case.fire_properties == case.fire_properties
+            assert saved.case.fires == case.fires
+            assert saved.case.wall_vents == case.wall_vents
+            assert saved.case.extra_namelists == imported.case.extra_namelists
+            assert not any("&RAMP" in warning for warning in saved.warnings)
+    finally:
+        window.deleteLater()
+
+
 def check_output_visualizations():
     from PySide6.QtCore import QSignalBlocker
     from cfast_reader import read_cfast_input
@@ -1136,11 +1195,13 @@ def main() -> int:
 
     patch_message_boxes()
     app = QApplication.instance() or QApplication([])
+    check_verification_case_discovery()
     check_target_material_initialization()
     check_target_material_validation()
     check_adiabatic_target()
     check_mechanical_vent_defaults()
     check_surface_connections_removed()
+    check_legacy_ramps_removed()
     check_output_visualizations()
 
     if args.mode == "rewrite":

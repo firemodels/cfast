@@ -608,7 +608,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 \label{info:SLCF}
 
 \begin{description}
-\item[Visualization Type] (default value: 2-D): The type of visualization to be included. The CEdit Output tab offers 2-D (a single plane slice of temperature at the position and axis specified) and 3-D (a set of three animated slices whose positions can be moved along their respective axes). See the Smokeview documentation \cite{Smokeview_Users_Guide_6} for details on the use of Smokeview.
+\item[Visualization Type] (default value: 2-D): The type of visualization to be included. The CEdit Output tab offers 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose positions can be moved along their respective axes), and ISOF (a surface of constant gas temperature). See the Smokeview documentation \cite{Smokeview_Users_Guide_6} for details on the use of Smokeview.
 
 \item[Compartment] (default value: All): Visualizations can be placed in a single compartment or at the same position and axis in all compartments.
 
@@ -617,7 +617,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 \item[Axis] (default value: X-axis (Width)): Axis perpendicular to the specified slice.  The slice is placed perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis; and the X-Y plane for the Z-Axis).
 \end{description}
 
-Temperature isosurfaces are not configured in the CEdit Output tab. To request a surface of constant gas temperature, specify an \ct{ISOF} record in the input file:
+For ISOF, enter the desired temperature in the Temperature field below Axis; Position and Axis are disabled. The saved \ct{ISOF} record contains:
 \begin{description}
 \item[\texttt{COMP\_ID}] Required identifier of the compartment containing the isosurface.
 \item[\texttt{VALUE}] Required isosurface temperature in \unit{\degreeCelsius}.

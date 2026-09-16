@@ -350,7 +350,7 @@ CFAST models mechanical ventilation in terms of user-specified volume flows at v
 \subsection{Opening Fraction}
 \label{info:VENT3b}
 
-Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. 
+Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux.
 \begin{description}
 \item[Open/Close Criterion] (namelist: \ct{CRITERION}) The change in opening fraction can be set as a function of \textbf{Time} or a target's \textbf{Temperature} or incident \textbf{Heat Flux}.
 \item[Time] (namelist: \ct{T(:)}) Time points at which to change the opening fraction. A linear transition between points is assumed. If the time points do not span the entire simulation time, the beginning and end points shall be extended to the beginning and end points of the simulation.
@@ -358,8 +358,8 @@ Vents in CFAST can be opened or closed at user-specified times or by a user-spec
 \end{description}
 For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
 \begin{description}
-\item[Setpoint] (namelist: \ct{SETPOINT}) The value at which the vent opening change occurs. 
-\item[Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. 
+\item[Setpoint] (namelist: \ct{SETPOINT}) The value at which the vent opening change occurs.
+\item[Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change.
 \item[Pre-Activation Fraction] (default 1; namelist: \ct{PRE_FRACTION}) Opening fraction of the vent area before the setpoint is reached.
 \item[Post-Activation Fraction] (default: 1, namelist: \ct{POST_FRACTION}) Opening fraction following the setpoint being reached. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
 \end{description}
@@ -418,7 +418,7 @@ All chlorine in the fuel is converted to HCl. HCN production is limited by both 
 \label{info:FIRE}
 \label{sec:fire_inputs}
 
-Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details. 
+Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details.
 
 In the text input file, the following parameters are stored within the namelist group \ct{FIRE}:
 \begin{description}
@@ -443,7 +443,7 @@ In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associ
 \item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.
 \item[N] (default: 0; namelist: \ct{N}) Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
 \item[Cl] (default: 0; namelist: \ct{CHLORINE}) Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
-\item[Heat of Combustion] (default: 50000 kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed. 
+\item[Heat of Combustion] (default: 50000 kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed.
 \item[Radiative Fraction] (default: 0.3; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
 \item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
 \end{description}
@@ -483,7 +483,7 @@ The curve is written directly into the fire table, where the time, heat release 
 \section{Targets}
 \label{chapter:targets}
 
-A target is an object in the simulation subject to radiative and convective heat transfer. If a material is defined, heat conduction into the target is performed via a one-dimensional heat conduction calculation in either Cartesian or cylindrical coordinates allowing the target temperature to change over time. Targets are defined using the Targets tab.
+A target is any object heated by thermal radiation and convection. If a target is assigned a material, a one-dimensional heat conduction calculation is performed in either Cartesian or cylindrical coordinates.
 
 \begin{figure}[h!]
 \begin{center}
@@ -493,44 +493,32 @@ A target is an object in the simulation subject to radiative and convective heat
 \end{figure}
 
 \begin{description}
-\item[ID] The selected name must be unique (i.e., not the same as another target, sprinkler, or detector in the same simulation).
-
-\item[Compartment] The compartment in which the target is located.
-
-\item[Target Type] Specify Plate or Cylinder.  For plate targets, CFAST solves the heat conduction equation equation in Cartesian coordinates, and for cylinder targets, CFAST solves a the equation in cylindrical coordinates.
-
-\item[Width (X)] (default units: \unit{m}): Distance from the left wall of the target compartment.
-
-\item[Depth (Y)] (default units: \unit{m}): Distance from the front wall of the target compartment.
-
-\item[Height (Z)] (default units: \unit{m}): Height of the target above the floor.
-
-\item[Normal Vector (X,Y,Z)]: specifies a vector of unit length perpendicular to the exposed surface of the target. For example, the vector (-1,0,0) indicates that the target is facing the left (-x) wall. The vector (0,0,1) is facing the ceiling.
-
-\item[Material] The material the target is made of. Any material defined on the Thermal Properties tab (Section~\ref{info:MATL}) may be used here. Each target must have a material assigned. There can be only one material per target.
-
-\item[Thickness] (default units: \unit{m}) The thickness of the target. For a plate target this is the total thickness. For a cylinder target this is the radius.
-
-%What happens to interanl temperatrue when type is cylindrical
-\item[Internal Temperature] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
-\end{description}
-
-
-For a plate target, both sides are exposed to the compartment. The target normal vector determines which face of the target sees any fire and the view factors for the compartment surfaces.
-
-If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify no material or arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.
-
-The normal vectors in the $x$, $y$, and $z$ directions from a target at [$x$, $y$, $z$] to a location [$x_L$, $y_L$, $z_L$] are:
+\item[ID] (namelist: \ct{ID}) The unique name of the device or target (i.e. not the same as another target, sprinkler, or detector in the same simulation).
+\item[Compartment] (namelist: \ct{COMP_ID}) The compartment in which the target is located.
+\item[Target Type] (namelist: \ct{TYPE}) Specify \textbf{Plate} or \textbf{Cylinder}.  For plate targets, the heat conduction equation is solved in Cartesian coordinates; and for cylinder targets, cylindrical coordinates. For a plate target, both sides are exposed. The target normal vector determines which face of the target sees any fire and the view factors for the compartment surfaces.
+\item[Width (X)] (units: \unit{m}; namelist: \ct{LOCATION(1)}) Distance from the left wall of the target compartment.
+\item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the target compartment.
+\item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Height of the target above the floor.
+\item[Normal (X,Y,Z)] (namelist: \ct{NORMAL(1:3)}) Vector of unit length perpendicular to the exposed surface of the target. For example, the vector (-1,0,0) indicates that the target is facing the left ($-x$) wall. The vector (0,0,1) is facing the ceiling. The normal vectors in the $x$, $y$, and $z$ directions from a target at [$x$, $y$, $z$] to a location [$x_L$, $y_L$, $z_L$] are:
 \begin{eqnarray}
 x_N &=& \frac{x_L - x}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}} \\[.1in]
 y_N &=& \frac{y_L - y}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}} \\[.1in]
 z_N &=& \frac{z_L - z}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}}
 \end{eqnarray}
+\item[Surface Orientation] (namelist: \ct{SURFACE\_ORIENTATION}) Alternative to \textbf{NORMAL}. A character string indicating what the target faces: \textbf{CEILING}, \textbf{FLOOR}, \textbf{FRONT WALL}, \textbf{REAR WALL}, \textbf{LEFT WALL}, \textbf{RIGHT WALL}, or the \textbf{ID} of a fire toward which the target faces.
+\item[Material] (namelist: \ct{MATL_ID}) The material the target is made of. Any material defined on the Thermal Properties tab (Section~\ref{info:MATL}) may be used here. Each target must have a material assigned. There can be only one material per target. If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify no material or arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.
+\item[Thickness] (units: \unit{m}; namelist: \ct{THICKNESS}) The thickness of the target. For a plate target this is the total thickness. For a cylinder target this is the radius.
+\item[Internal Temperature at] (default: 0.5; namelist: \ct{TEMPERATURE_DEPTH}) By default, the reported internal temperature is the temperature at the center of the target, e.g. equidistant from the front and back faces of the target. This parameter overrides this default. 
+\item[Depth Units] (namelist: \ct{DEPTH_UNITS}) Character string defining how \ct{TEMPERATURE_DEPTH} is interpreted. If \ct{FRACTION}, \ct{TEMPERATURE_DEPTH} is a fraction of target thickness. If \ct{M}, \ct{TEMPERATURE_DEPTH} is the actual depth in \unit{m}.
+\item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, applies an adiabatic-surface-temperature target calculation using the emissivity of the assigned \ct{MATL_ID}. Supply \ct{CONVECTION_COEFFICIENTS(1:2)} for the front and back surface \unit{kW/(m^2 K)}. 
+\item[Surface Temperature] (namelist: \ct{SURFACE_TEMPERATURE}) Initial target surface temperature in \unit{\degreeCelsius}; default is the initial interior ambient temperature.
+\end{description}
+
 
 \section{Sprinklers and Detectors}
 \label{info:DEVC2}
-Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  These inputs are specified using the Detection/Suppression tab.
 
+Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  These inputs are specified using the Detection/Suppression tab.
 
 \begin{figure}[h!]
 \begin{center}
@@ -540,59 +528,28 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \end{figure}
 
 \begin{description}
-\item[ID]  The selected name must be unique (i.e., not the same as another target, sprinkler, or detector in the same simulation).
-
-\item[Type] Type of detector; select smoke (detector), heat (detector), or sprinkler.
-
-\item[Compartment] The compartment in which the detector or sprinkler is located.
-
-\item[Activation Temperature] (default units: \unit{\degreeCelsius}, default value: dependent on type): the temperature at or above which the detector link activates.
-
-\item[Activation Obscuration] (default units: \unit{\%/m}, default value: 23.93~\unit{\%/m} (8 ~\unit{\%/ft})): the obscuration at or above which the detector link activates.
-
-\item[Width (X)] Position (default units: \unit{m}, default value: none): position of the object as a distance from the left wall of the compartment (X direction).
-
-\item[Depth (Y)] Position (default units: \unit{m}, default value: none): position of the detector or sprinkler as a distance from the front wall of the compartment (Y direction).
-
-\item[Height (Z)] Position (default units: \unit{m}, default value: none): position of the object as a distance from the floor of the compartment (Z direction).
-
-\item[RTI] (default units: \unit{(m.s)\tothe{1/2}}, default value: 100~\unit{(m.s)\tothe{1/2}}): the Response Time Index (RTI) for the sprinkler or detection device.
-
-\item[Spray Density] (default units: \unit{m/s}, default value: 7E-5~\unit{m/s}): the amount of water dispersed by a sprinkler.  The units for spray density are length/time, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
-
-\item[FYI]  Optional descriptive text retained with the device but not used in the calculatio.
-
+\item[ID]  (namelist: \ct{ID}) Unique name of the device (i.e. not the same as another target, sprinkler, or detector in the same simulation).
+\item[Type] (namelist: \ct{TYPE}) Type of detector; select \textbf{Smoke} (detector), \textbf{Heat} (detector), or \textbf{Sprinkler}.
+\item[Compartment] (namelist: \ct{COMP_ID}) The compartment in which the detector or sprinkler is located.
+\item[Activation Temperature] (units: \unit{\degreeCelsius}; namelist: \ct{SETPOINT}) Temperature at or above which the detector link activates.
+\item[Activation Obscuration] (default: 23.93~\unit{\%/m}; namelist: \ct{SETPOINT} or \ct{SETPOINTS(1:2)}) Obscuration at or above which the detector link activates. For a dual-threshold smoke detector both smoldering and flaming smoke obscuration set points are given.
+\item[Width (X)] (units: \unit{m}; namelist: \ct{LOCATION(1)}) Distance from the left wall of the compartment.
+\item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
+\item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.
+\item[RTI] (default: 100~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
+\item[Spray Density] (default: $7\times 10^{-5}$~\unit{m/s}) Rate of water dispersed by a sprinkler, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
+\item[FYI]  Optional descriptive text retained with the device but not used in the calculation.
 \end{description}
+Smoke detectors activate based on the average smoke concentration of the upper layer of the compartment, not the ceiling jet. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments~\cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponds to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805~\cite{NRCNUREG1805}. \\
 
-\graybox{
-Care should be taken when specifying detectors to activate based on smoke obscuration since the only calculation included in CFAST is a simple two-zone calculation of soot concentration that does not include the impact of an initial ceiling layer as is done for temperature-based calculations. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805 \cite{NRCNUREG1805}. \\
+\noindent Note the following on sprinkler suppression:
+\begin{enumerate}
+\item The first sprinkler activated controls the heat release rate of the fire. Subsequent sprinkler activations have no additional effect.
+\item The water spray has no effect on the gas temperature or secondary sprinkler activation times.
+\item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system. 
+\end{enumerate}
 
-Several cautions should be observed when using estimates of sprinkler suppression within the model: 1)~The first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2)~The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3)~The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.}
 
-\section{DEVC Inputs}
-
-Targets, sprinklers, and detector inputs are written to the \ct{DEVC} namelist.
-
-\begin{description}
-    \item[\texttt{ADIABATIC\_TARGET}] If \ct{T}, applies an adiabatic-surface-temperature target calculation using the emissivity of the assigned \ct{MATL_ID}. Supply \ct{CONVECTION_COEFFICIENTS} for this calculation. This input is not available via Cedit.
-    \item[\texttt{COMP\_ID}] Required identifier of the compartment containing the device.
-    \item[\texttt{CONVECTION\_COEFFICIENTS}] Front- and back-face convection coefficients in \unit{kW/(m^2 K)}. This input is not available via Cedit.
-    \item[\texttt{DEPTH\_UNITS}] Character string defining how \ct{TEMPERATURE_DEPTH} is interpreted. If \ct{FRACTION}, \ct{TEMPERATURE_DEPTH} is a fraction of target thickness. If \ct{M}, \ct{TEMPERATURE_DEPTH} is the actual depth in \unit{m}. Only the \ct{FRACTION} option is available in Cedit.
-    \item[\texttt{FYI}] Optional descriptive text retained with the device but not used in the calculation. This input is not available via Cedit for targets.
-    \item[\texttt{ID}] Required device identifier, unique among all \ct{DEVC} identifiers in the input file.
-    \item[\texttt{LOCATION}] Required X, Y, and Z coordinates in \unit{m} relative to the compartment origin.
-    \item[\texttt{MATL\_ID}] Material identifier for a target. If omitted, CFAST uses its default target material (emissivity = 0.9, density = 800~\unit{kg/m^3}, conductivity = 0.12~\unit{W/(m.K)}, specific heat = 900~\unit{J/(kg.K)}, and thickness = 0.012~\unit{m}).
-    \item[\texttt{NORMAL}] Target front-surface unit normal vector; default (0,0,1).
-    \item[\texttt{RTI}] Response Time Index in \unit{(m.s)\tothe{1/2}} for a heat detector or sprinkler; default 50~\unit{(m.s)\tothe{1/2}}.
-    \item[\texttt{SETPOINT}] Activation temperature in \unit{\degreeCelsius} for a heat detector or sprinkler, or obscuration in \unit{\%/m} for a smoke detector. The source default is 57~\unit{\degreeCelsius} for both heat detectors and sprinklers and 23.93~\unit{\%/m} for smoke detectors.
-    \item[\texttt{SETPOINTS}] Smoldering- and flaming-smoke obscuration set points in \unit{\%/m} for a dual-threshold smoke detector. If omitted, \ct{SETPOINT} defines a single threshold. This input is not available via Cedit; only the single value via \ct{SETPOINT}.
-    \item[\texttt{SPRAY\_DENSITY}] Sprinkler spray density in \unit{m/s}. A value not greater than zero disables suppression.
-    \item[\texttt{SURFACE\_ORIENTATION}] Alternative to \ct{NORMAL}: \ct{CEILING}, \ct{FLOOR}, \ct{FRONT WALL}, \ct{REAR WALL}, \ct{LEFT WALL}, \ct{RIGHT WALL}, or the \ct{ID} of a fire toward which the target faces.
-    \item[\texttt{SURFACE\_TEMPERATURE}] Initial target surface temperature in \unit{\degreeCelsius}; default is the initial interior ambient temperature. This input is not available via Cedit.
-    \item[\texttt{TEMPERATURE\_DEPTH}] Position at which target internal temperature is reported; default 0.5 of the thickness.
-    \item[\texttt{THICKNESS}] Target thickness in m. A zero value uses the thickness of the referenced material.
-    \item[\texttt{TYPE}] Required device type: \ct{PLATE}, \ct{CYLINDER}, \ct{SPRINKLER}, \ct{HEAT_DETECTOR}, or \ct{SMOKE_DETECTOR}.
-\end{description}
 
 
 \chapter{Visualization}

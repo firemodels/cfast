@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from cfast_case import CfastCase, FireDefinition, FireProperty, FireRampPoint
+from cfast_case import CfastCase, Compartment, FireDefinition, FireProperty, FireRampPoint
 from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
@@ -300,6 +300,7 @@ class FiresTab(QWidget):
         self.fires: list[FireDefinition] = []
         self.fire_properties: list[FireProperty] = []
         self.compartment_ids: list[str] = []
+        self.compartment_sizes: dict[str, tuple[float, float]] = {}
         self.target_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 11)
@@ -624,6 +625,10 @@ class FiresTab(QWidget):
         else:
             self.compartment_combo.setEditText("")
         self.compartment_combo.blockSignals(False)
+
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartment_sizes = {comp.id: (comp.width, comp.depth) for comp in compartments if comp.id}
+        self.set_compartment_ids([comp.id for comp in compartments])
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
@@ -1095,6 +1100,7 @@ class FiresTab(QWidget):
 
     def add_new_fire(self):
         self.save_current_editor()
+        width, depth = self.compartment_sizes.get(self.default_compartment(), (0.0, 0.0))
         number = len(self.fires) + 1
         fire_id = f"Fire_{number}"
         prop_id = f"{fire_id}_Fire"
@@ -1116,8 +1122,8 @@ class FiresTab(QWidget):
             fire_property_id=prop_id,
             ignition_criterion="TIME",
             setpoint=0.0,
-            x_position=2.5,
-            y_position=2.5,
+            x_position=width / 2.0,
+            y_position=depth / 2.0,
         )
         self.fire_properties.append(prop)
         self.fires.append(fire)
@@ -1126,6 +1132,7 @@ class FiresTab(QWidget):
 
     def add_t_squared_fire(self):
         self.save_current_editor()
+        width, depth = self.compartment_sizes.get(self.default_compartment(), (0.0, 0.0))
         number = len(self.fires) + 1
         fire_id = f"T2_Fire_{number}"
         prop_id = f"{fire_id}_Fire"
@@ -1151,8 +1158,8 @@ class FiresTab(QWidget):
             fire_property_id=prop_id,
             ignition_criterion="TIME",
             setpoint=0.0,
-            x_position=2.5,
-            y_position=2.5,
+            x_position=width / 2.0,
+            y_position=depth / 2.0,
         )
         self.fire_properties.append(prop)
         self.fires.append(fire)

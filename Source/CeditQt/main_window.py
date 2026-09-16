@@ -770,7 +770,7 @@ class CeditMainWindow(QMainWindow):
         self.compartments_tab.set_material_ids(material_ids)
         self.wall_vents_tab.set_compartment_ids(compartment_ids)
         self.wall_vents_tab.set_target_ids(target_ids)
-        self.ceiling_floor_vents_tab.set_compartment_ids(compartment_ids)
+        self.ceiling_floor_vents_tab.set_compartments(self.compartments_tab.compartments)
         self.ceiling_floor_vents_tab.set_target_ids(target_ids)
         self.mechanical_vents_tab.set_compartments(self.compartments_tab.compartments)
         self.mechanical_vents_tab.set_target_ids(target_ids)

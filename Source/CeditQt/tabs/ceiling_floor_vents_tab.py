@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CeilingFloorVent, CfastCase
+from cfast_case import CeilingFloorVent, CfastCase, Compartment
 from table_widgets import HoverEditTableWidget
 from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
@@ -66,6 +66,7 @@ class CeilingFloorVentsTab(QWidget):
         self.current_row = -1
         self.loading_editor = False
         self.compartment_ids: list[str] = []
+        self.compartment_sizes: dict[str, tuple[float, float]] = {}
         self.target_ids: list[str] = []
         self.schedules: dict[int, tuple[list[float], list[float]]] = {}
         self.opening_details: dict[int, dict[str, str]] = {}
@@ -235,6 +236,10 @@ class CeilingFloorVentsTab(QWidget):
 
         group.setLayout(layout)
         return group
+
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartment_sizes = {comp.id: (comp.width, comp.depth) for comp in compartments if comp.id}
+        self.set_compartment_ids([comp.id for comp in compartments])
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
@@ -605,6 +610,11 @@ class CeilingFloorVentsTab(QWidget):
             self.summary_table.insertRow(row)
 
         num = self.next_vent_number()
+        width, depth = (
+            self.compartment_sizes.get(self.default_first_compartment())
+            or self.compartment_sizes.get(self.default_second_compartment())
+            or (0.0, 0.0)
+        )
         self.set_summary_row(
             row,
             [
@@ -614,8 +624,8 @@ class CeilingFloorVentsTab(QWidget):
                 self.default_second_compartment(),
                 "ROUND",
                 format_value(AREA, 1.0),
-                format_value(LENGTH, 0.0),
-                format_value(LENGTH, 0.0),
+                format_value(LENGTH, width / 2.0),
+                format_value(LENGTH, depth / 2.0),
             ],
         )
         self.opening_details[row] = self.default_opening_details()

@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, DetectionDevice
+from cfast_case import CfastCase, Compartment, DetectionDevice
 from table_widgets import HoverEditTableWidget
 from units import (
     LENGTH,
@@ -26,6 +26,7 @@ from units import (
     SMOKE,
     TEMPERATURE,
     VELOCITY,
+    display_value,
     format_value,
     parse_value,
     unit_label,
@@ -68,6 +69,10 @@ def make_table_item(text: str, editable: bool = True) -> QTableWidgetItem:
     return item
 
 
+def format_activation_temperature(value: float) -> str:
+    return f"{display_value(TEMPERATURE, value):.2f} {unit_label(TEMPERATURE)}"
+
+
 class DetectionSuppressionTab(QWidget):
     """CEdit-style detector/sprinkler editor.
 
@@ -95,6 +100,7 @@ class DetectionSuppressionTab(QWidget):
         self.updating_table = False
         self.current_index = -1
         self.devices: list[DetectionDevice] = []
+        self.compartments: list[Compartment] = []
         self.compartment_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 10)
@@ -128,7 +134,6 @@ class DetectionSuppressionTab(QWidget):
 
         self.build_layout()
         self.connect_editor_signals()
-        self.load_demo_data()
         self.rebuild_summary_table()
         self.select_device(0)
 
@@ -306,8 +311,9 @@ class DetectionSuppressionTab(QWidget):
             self.compartment_combo.setEditText("")
         self.compartment_combo.blockSignals(False)
 
-    def set_compartment_ids(self, compartment_ids: list[str]):
-        self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartments = compartments
+        self.compartment_ids = [comp.id for comp in compartments if comp.id]
         self.update_compartment_choices()
 
     def default_compartment(self) -> str:
@@ -335,7 +341,9 @@ class DetectionSuppressionTab(QWidget):
             format_value(LENGTH, device.x_position),
             format_value(LENGTH, device.y_position),
             format_value(LENGTH, device.z_position),
-            format_value(activation_kind, self.device_activation_value(device)),
+            format_value(SMOKE, device.activation_obscuration)
+            if activation_kind == SMOKE
+            else format_activation_temperature(device.activation_temperature),
             format_value(RTI, device.rti),
             format_value(VELOCITY, device.spray_density),
         ]
@@ -460,7 +468,7 @@ class DetectionSuppressionTab(QWidget):
         self.y_edit.setText(format_value(LENGTH, device.y_position))
         self.z_edit.setText(format_value(LENGTH, device.z_position))
         self.activation_temperature_edit.setText(
-            format_value(TEMPERATURE, device.activation_temperature)
+            format_activation_temperature(device.activation_temperature)
         )
         self.activation_obscuration_edit.setText(
             format_value(SMOKE, device.activation_obscuration)
@@ -564,7 +572,9 @@ class DetectionSuppressionTab(QWidget):
         )
         if device.device_type.upper() == "SMOKE_DETECTOR":
             device.activation_obscuration = activation
-        else:
+        elif self.table_text(row, self.COL_ACTIVATION) != format_activation_temperature(
+            device.activation_temperature
+        ):
             device.activation_temperature = activation
 
         device.rti = parse_value(
@@ -594,12 +604,16 @@ class DetectionSuppressionTab(QWidget):
         device.x_position = parse_value(LENGTH, self.x_edit.text(), "X Position", 0.0)
         device.y_position = parse_value(LENGTH, self.y_edit.text(), "Y Position", 0.0)
         device.z_position = parse_value(LENGTH, self.z_edit.text(), "Z Position", 0.0)
-        device.activation_temperature = parse_value(
-            TEMPERATURE,
-            self.activation_temperature_edit.text(),
-            "Activation Temperature",
-            73.88998,
-        )
+        # Keep the stored precision when the rounded display has not been edited.
+        if self.activation_temperature_edit.text().strip() != format_activation_temperature(
+            device.activation_temperature
+        ):
+            device.activation_temperature = parse_value(
+                TEMPERATURE,
+                self.activation_temperature_edit.text(),
+                "Activation Temperature",
+                73.88998,
+            )
         device.activation_obscuration = parse_value(
             SMOKE,
             self.activation_obscuration_edit.text(),
@@ -623,10 +637,19 @@ class DetectionSuppressionTab(QWidget):
             pass
 
         number = len(self.devices) + 1
+        compartment = next(
+            (comp for comp in self.compartments if comp.id == self.default_compartment()),
+            None,
+        )
         device = DetectionDevice(
             id=f"Sprinkler_{number}",
             comp_id=self.default_compartment(),
             device_type="SPRINKLER",
+            x_position=compartment.width / 2 if compartment else 0.0,
+            y_position=compartment.depth / 2 if compartment else 0.0,
+            z_position=compartment.height if compartment else 0.0,
+            rti=130.0,
+            spray_density=1.4e-4,
         )
         self.devices.append(device)
         self.rebuild_summary_table()

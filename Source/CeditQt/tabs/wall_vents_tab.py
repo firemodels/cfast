@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, WallVent
+from cfast_case import CfastCase, Compartment, WallVent
 from table_widgets import HoverEditTableWidget
 from units import LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
@@ -59,6 +59,7 @@ class WallVentsTab(QWidget):
         self.records: list[dict] = []
         self.loading = False
         self.compartment_ids: list[str] = []
+        self.compartment_sizes: dict[str, tuple[float, float]] = {}
         self.target_ids: list[str] = []
 
         self.summary_table = HoverEditTableWidget(0, 9)
@@ -298,15 +299,17 @@ class WallVentsTab(QWidget):
         self.schedule_table.cellChanged.connect(self.update_current_record)
 
     def make_default_record(self, index: int) -> dict:
+        wall_width, wall_height = self.compartment_sizes.get(self.default_first_compartment(), (1.0, 2.0))
+        width, height = min(1.0, wall_width), min(2.0, wall_height)
         return {
             "id": f"WallVent_{index}",
             "first_compartment": self.default_first_compartment(),
             "second_compartment": "Outside",
-            "bottom": format_value(LENGTH, 0.0),
-            "height": format_value(LENGTH, 2.0),
-            "width": format_value(LENGTH, 1.0),
+            "bottom": format_value(LENGTH, (wall_height - height) / 2.0),
+            "height": format_value(LENGTH, height),
+            "width": format_value(LENGTH, width),
             "face": "Front",
-            "offset": format_value(LENGTH, 2.0),
+            "offset": format_value(LENGTH, (wall_width - width) / 2.0),
             "criterion": "Time",
             "setpoint": "0",
             "target": "",
@@ -483,6 +486,10 @@ class WallVentsTab(QWidget):
             combo.setCurrentIndex(index)
         else:
             combo.setEditText(text)
+
+    def set_compartments(self, compartments: list[Compartment]):
+        self.compartment_sizes = {comp.id: (comp.width, comp.height) for comp in compartments if comp.id}
+        self.set_compartment_ids([comp.id for comp in compartments])
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]

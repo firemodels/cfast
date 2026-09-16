@@ -552,7 +552,11 @@ class OutputTab(QWidget):
     def add_visualization(self):
         row = self.first_empty_row(self.visual_table)
         self.updating = True
-        values = ["", "2-D", "All", "X-Axis", format_value(LENGTH, 0.0)]
+        compartment = self.compartments[0] if self.compartments else None
+        values = [
+            "", "2-D", compartment.id if compartment else "All", "X-Axis",
+            format_value(LENGTH, compartment.width / 2.0 if compartment else 0.0),
+        ]
         for col, value in enumerate(values):
             self.set_cell_text(self.visual_table, row, col, value, editable=(col != 0))
         self.updating = False

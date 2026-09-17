@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import math
+import os
+import sys
+from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QFontDatabase, QTextCursor
@@ -32,6 +35,29 @@ def format_mol_fraction(value: float | int) -> str:
 
 def format_mass_fraction(value: float | int) -> str:
     return f"{format_number(value)} kg/kg"
+
+
+def fixed_width_font() -> QFont:
+    if sys.platform == "win32":
+        # Preserve Windows' Courier appearance without the offscreen bitmap fallback.
+        font_dir = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
+        font_path = font_dir / "cour.ttf"
+        font_id = QFontDatabase.addApplicationFont(str(font_path))
+        families = QFontDatabase.applicationFontFamilies(font_id)
+        if not families:
+            raise RuntimeError(f"Could not load Courier New TrueType font {font_path}")
+        if (font_dir / "courbd.ttf").is_file():
+            QFontDatabase.addApplicationFont(str(font_dir / "courbd.ttf"))
+        font = QFont(families[0])
+    elif "Menlo" in QFontDatabase.families():
+        font = QFont("Menlo")
+    else:
+        font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+    font.setPointSize(12)
+    font.setStyleHint(QFont.StyleHint.Monospace)
+    font.setFixedPitch(True)
+    font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias | QFont.StyleStrategy.PreferOutline)
+    return font
 
 
 class SimulationTab(QWidget):
@@ -66,16 +92,7 @@ class SimulationTab(QWidget):
         self.message_panel.setReadOnly(True)
         self.message_panel.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
 
-        fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-
-        if "Menlo" in QFontDatabase.families():
-            fixed_font = QFont("Menlo")
-
-        fixed_font.setStyleHint(QFont.StyleHint.Monospace)
-        fixed_font.setFixedPitch(True)
-        fixed_font.setPointSize(12)
-
-        self.message_panel.setFont(fixed_font)
+        self.message_panel.setFont(fixed_width_font())
 
         self.message_panel.setPlainText("")
         self.message_panel.setMinimumHeight(140)

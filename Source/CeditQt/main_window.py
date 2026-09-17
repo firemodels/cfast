@@ -8,7 +8,7 @@ from pathlib import Path
 import time
 
 from PySide6.QtCore import QProcess, QSettings, QTimer, Qt, QUrl, Signal
-from PySide6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QPixmap
+from PySide6.QtGui import QAction, QDesktopServices, QPixmap
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -56,7 +56,7 @@ from tabs.fires_tab import FiresTab
 from tabs.mechanical_vents_tab import MechanicalVentsTab
 from tabs.output_tab import OutputTab
 from tabs.placeholder_tab import PlaceholderTab
-from tabs.simulation_tab import SimulationTab
+from tabs.simulation_tab import SimulationTab, fixed_width_font
 from tabs.targets_tab import TargetsTab
 from tabs.thermal_properties_tab import ThermalPropertiesTab
 from tabs.wall_vents_tab import WallVentsTab
@@ -1893,7 +1893,7 @@ class RunMonitorDialog(QDialog):
         self.errors_edit.setReadOnly(True)
         self.errors_edit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.errors_edit.setMinimumHeight(120)
-        self.errors_edit.setFont(self.fixed_width_font())
+        self.errors_edit.setFont(fixed_width_font())
 
         self.close_button = QPushButton("Close")
         self.stop_button = QPushButton("Stop")
@@ -1923,22 +1923,6 @@ class RunMonitorDialog(QDialog):
         layout.addWidget(splitter, 1)
         layout.addLayout(button_layout)
         self.setLayout(layout)
-
-    @staticmethod
-    def fixed_width_font() -> QFont:
-        import matplotlib
-
-        # Use the same bundled TrueType font in the UI and headless captures.
-        font_path = Path(matplotlib.get_data_path()) / "fonts" / "ttf" / "DejaVuSansMono.ttf"
-        font_id = QFontDatabase.addApplicationFont(str(font_path))
-        families = QFontDatabase.applicationFontFamilies(font_id)
-        if not families:
-            raise RuntimeError(f"Could not load the monospace font {font_path}")
-        font = QFont(families[0], 12)
-        font.setStyleHint(QFont.StyleHint.Monospace)
-        font.setFixedPitch(True)
-        font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias | QFont.StyleStrategy.PreferOutline)
-        return font
 
     def summary_headers(self) -> list[str]:
         return [

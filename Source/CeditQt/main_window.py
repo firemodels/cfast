@@ -1926,14 +1926,18 @@ class RunMonitorDialog(QDialog):
 
     @staticmethod
     def fixed_width_font() -> QFont:
-        font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        import matplotlib
 
-        if "Menlo" in QFontDatabase.families():
-            font = QFont("Menlo")
-
+        # Use the same bundled TrueType font in the UI and headless captures.
+        font_path = Path(matplotlib.get_data_path()) / "fonts" / "ttf" / "DejaVuSansMono.ttf"
+        font_id = QFontDatabase.addApplicationFont(str(font_path))
+        families = QFontDatabase.applicationFontFamilies(font_id)
+        if not families:
+            raise RuntimeError(f"Could not load the monospace font {font_path}")
+        font = QFont(families[0], 12)
         font.setStyleHint(QFont.StyleHint.Monospace)
         font.setFixedPitch(True)
-        font.setPointSize(12)
+        font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias | QFont.StyleStrategy.PreferOutline)
         return font
 
     def summary_headers(self) -> list[str]:

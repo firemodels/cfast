@@ -16,6 +16,10 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 os.environ.setdefault("QT_API", "PySide6")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+if sys.platform == "win32":
+    windows_fonts = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
+    os.environ.setdefault("QT_QPA_FONTDIR", str(windows_fonts))
+
 
 @dataclass(frozen=True)
 class TabFigure:

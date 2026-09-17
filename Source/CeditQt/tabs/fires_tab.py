@@ -539,7 +539,6 @@ class FiresTab(QWidget):
             self.compartment_combo,
             self.ignition_combo,
             self.target_combo,
-            self.fire_property_combo,
         ]
 
         for combo in combos:
@@ -655,6 +654,9 @@ class FiresTab(QWidget):
     def update_property_choices(self):
         current = self.fire_property_combo.currentText().strip()
         property_ids = [prop.id for prop in self.fire_properties]
+        # Live validation saves the editor while the dropdown may be open.
+        if property_ids == [self.fire_property_combo.itemText(i) for i in range(self.fire_property_combo.count())]:
+            return
         self.fire_property_combo.blockSignals(True)
         self.fire_property_combo.clear()
         self.fire_property_combo.addItems(property_ids)

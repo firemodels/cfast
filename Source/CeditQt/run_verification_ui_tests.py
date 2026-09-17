@@ -1114,7 +1114,8 @@ def check_output_visualizations():
             case.output_visualizations = []
             window.load_case(case)
             tab.add_visualization()
-            assert tab.visual_position_edit.text() == format_value(LENGTH, 0.0)
+            assert tab.visual_position_edit.text() == format_value(LENGTH, case.compartments[0].width / 2.0)
+            assert tab.visual_compartment_edit.currentText() == case.compartments[0].id
             assert not tab.visual_temperature_edit.isEnabled()
             for axis in range(3):
                 tab.axis_combo.setCurrentIndex(axis)

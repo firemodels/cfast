@@ -19,6 +19,10 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 if sys.platform == "win32":
     windows_fonts = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
     os.environ.setdefault("QT_QPA_FONTDIR", str(windows_fonts))
+    # Keep offscreen captures independent of the desktop's display scaling.
+    os.environ.setdefault("QT_FONT_DPI", "96")
+    os.environ.setdefault("QT_SCALE_FACTOR", "1")
+    os.environ.setdefault("QT_SCREEN_SCALE_FACTORS", "1")
 
 
 @dataclass(frozen=True)
@@ -41,6 +45,24 @@ TAB_FIGURES = (
 )
 
 _QT_MESSAGE_HANDLER = None
+
+
+def configure_windows_font(app, font_dir: Path) -> None:
+    from PySide6.QtGui import QFont, QFontDatabase
+
+    # Register an outline font explicitly; offscreen's default font may be bitmap.
+    for regular, bold in (("segoeui.ttf", "segoeuib.ttf"), ("arial.ttf", "arialbd.ttf")):
+        font_id = QFontDatabase.addApplicationFont(str(font_dir / regular))
+        families = QFontDatabase.applicationFontFamilies(font_id)
+        if not families:
+            continue
+        if (font_dir / bold).is_file():
+            QFontDatabase.addApplicationFont(str(font_dir / bold))
+        font = QFont(families[0], 9)
+        font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias | QFont.StyleStrategy.PreferOutline)
+        app.setFont(font)
+        return
+    raise RuntimeError(f"Could not load Segoe UI or Arial TrueType fonts from {font_dir}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -347,6 +369,8 @@ def main() -> int:
     patch_message_boxes(QMessageBox)
 
     app = QApplication.instance() or QApplication([])
+    if sys.platform == "win32":
+        configure_windows_font(app, windows_fonts)
     window = CeditMainWindow()
     window.resize(args.width, args.height)
     window.load_cfast_input(input_path)

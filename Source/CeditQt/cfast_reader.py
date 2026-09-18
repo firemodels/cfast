@@ -1102,7 +1102,7 @@ def add_device(
 def target_from_fields(fields: dict[str, list[Any]], target_type: str) -> Target:
     location = number_vector(fields, "LOCATION", [0.0, 0.0, 0.0], length=3)
     normal = number_vector(fields, "NORMAL", [0.0, 0.0, 1.0], length=3)
-    convection = number_vector(fields, "CONVECTION_COEFFICIENTS", [0.0, 0.0], length=2)
+    convection = number_vector(fields, "CONVECTION_COEFFICIENTS", [0.01, 0.01], length=2)
 
     return Target(
         id=required_string(fields, "ID", "target ID"),

@@ -8,6 +8,7 @@ from PySide6.QtCore import QSignalBlocker, Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
+    QFormLayout,
     QFrame,
     QGridLayout,
     QGroupBox,
@@ -26,6 +27,7 @@ from cfast_case import CfastCase, MaterialProperty, Target
 from table_widgets import HoverEditTableWidget
 from units import (
     CONDUCTIVITY,
+    CONVECTION_COEFFICIENT,
     DENSITY,
     LENGTH,
     SPECIFIC_HEAT,
@@ -224,6 +226,16 @@ class TargetsTab(QWidget):
         self.material_combo.addItems(self.material_ids)
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic")
+        self.convection_group = QGroupBox("Convection Coefficients")
+        self.convection_front_edit = QLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
+        self.convection_back_edit = QLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
+        convection_layout = QFormLayout(self.convection_group)
+        self.convection_front_label = QLabel(f"Front (1), {unit_label(CONVECTION_COEFFICIENT)}:")
+        self.convection_back_label = QLabel(f"Back (2), {unit_label(CONVECTION_COEFFICIENT)}:")
+        convection_layout.addRow(self.convection_front_label, self.convection_front_edit)
+        convection_layout.addRow(self.convection_back_label, self.convection_back_edit)
+        self.convection_group.setVisible(False)
+        self.adiabatic_checkbox.toggled.connect(self.convection_group.setVisible)
         self.adiabatic_checkbox.setToolTip("Use the selected material’s emissivity for the adiabatic target.")
 
         self.conductivity_label = QLabel("Conductivity: ")
@@ -249,6 +261,7 @@ class TargetsTab(QWidget):
         layout.setRowMinimumHeight(6, 18)
         layout.setRowStretch(6, 1)
         layout.addWidget(self.adiabatic_checkbox, 7, 0, 1, 2)
+        layout.addWidget(self.convection_group, 8, 0, 1, 2)
         group.setLayout(layout)
         return group
 
@@ -338,6 +351,8 @@ class TargetsTab(QWidget):
             for widget in self.editor_widgets():
                 widget.clear()
             self.adiabatic_checkbox.setChecked(False)
+            self.convection_front_edit.setText(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
+            self.convection_back_edit.setText(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
             set_combo_text(self.material_combo, "OFF")
             self.thickness_edit.clear()
             self.temperature_depth_label.setText("Internal Temperature at (fraction):")
@@ -360,6 +375,12 @@ class TargetsTab(QWidget):
         self.ny_edit.setText(format_number(target.y_normal))
         self.nz_edit.setText(format_number(target.z_normal))
         self.adiabatic_checkbox.setChecked(target.adiabatic)
+        self.convection_front_edit.setText(
+            format_value(CONVECTION_COEFFICIENT, target.convection_coefficient_front, include_unit=False)
+        )
+        self.convection_back_edit.setText(
+            format_value(CONVECTION_COEFFICIENT, target.convection_coefficient_back, include_unit=False)
+        )
         set_combo_text(self.material_combo, target.matl_id)
         self.temperature_depth_edit.setText(
             format_number(target.temperature_depth)
@@ -393,6 +414,18 @@ class TargetsTab(QWidget):
         self.material_combo.currentTextChanged.connect(self.material_changed)
         self.editor_connections_ready = True
 
+    def convection_coefficients_from_editor(self) -> tuple[float, float]:
+        try:
+            values = (
+                parse_value(CONVECTION_COEFFICIENT, self.convection_front_edit.text(), "Front convection coefficient"),
+                parse_value(CONVECTION_COEFFICIENT, self.convection_back_edit.text(), "Back convection coefficient"),
+            )
+            if any(not math.isfinite(value) or value < 0.0 for value in values):
+                raise ValueError
+        except ValueError:
+            raise ValueError("Convection coefficients must be finite, nonnegative numbers.") from None
+        return values
+
     def editor_widgets(self):
         return [
             self.id_edit,
@@ -403,6 +436,8 @@ class TargetsTab(QWidget):
             self.ny_edit,
             self.nz_edit,
             self.temperature_depth_edit,
+            self.convection_front_edit,
+            self.convection_back_edit,
         ]
 
     def editor_combos(self):
@@ -456,6 +491,7 @@ class TargetsTab(QWidget):
         self.editor_changed()
 
     def target_from_editor(self) -> Target:
+        convection_coefficients = self.convection_coefficients_from_editor()
         matl_id = self.material_combo.currentText().strip() or "OFF"
         existing = self.targets[self.current_index] if 0 <= self.current_index < len(self.targets) else None
         displayed_thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
@@ -489,12 +525,8 @@ class TargetsTab(QWidget):
             ),
             surface_temperature=existing.surface_temperature if existing is not None else None,
             adiabatic=self.adiabatic_checkbox.isChecked(),
-            convection_coefficient_front=(
-                existing.convection_coefficient_front if existing is not None else 0.0
-            ),
-            convection_coefficient_back=(
-                existing.convection_coefficient_back if existing is not None else 0.0
-            ),
+            convection_coefficient_front=convection_coefficients[0],
+            convection_coefficient_back=convection_coefficients[1],
             fyi=existing.fyi if existing is not None else "",
         )
 
@@ -589,6 +621,7 @@ class TargetsTab(QWidget):
         )
 
     def add_target(self):
+        convection_coefficients = self.convection_coefficients_from_editor()
         next_number = len(self.targets) + 1
         base = self.targets[-1] if self.targets else None
 
@@ -601,6 +634,8 @@ class TargetsTab(QWidget):
                 z_position=0.0,
                 matl_id=self.material_combo.currentText().strip() or "OFF",
                 adiabatic=self.adiabatic_checkbox.isChecked(),
+                convection_coefficient_front=convection_coefficients[0],
+                convection_coefficient_back=convection_coefficients[1],
             )
         else:
             target = replace(base, id=f"Targ {next_number}")
@@ -652,6 +687,8 @@ class TargetsTab(QWidget):
         self.refresh_summary_table(select_row=min(self.current_index, len(self.targets) - 1))
 
     def add_to_case(self, case: CfastCase):
+        if self.adiabatic_checkbox.isChecked():
+            self.convection_coefficients_from_editor()
         if not self.targets and self.adiabatic_checkbox.isChecked():
             if self.material_combo.currentText().strip() not in {m.id for m in case.materials}:
                 raise ValueError("Adiabatic target: select a material defined in Thermal Properties for its emissivity.")
@@ -684,6 +721,8 @@ class TargetsTab(QWidget):
 
     def refresh_unit_labels(self):
         self.summary_table.setHorizontalHeaderLabels(table_columns())
+        self.convection_front_label.setText(f"Front (1), {unit_label(CONVECTION_COEFFICIENT)}:")
+        self.convection_back_label.setText(f"Back (2), {unit_label(CONVECTION_COEFFICIENT)}:")
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]

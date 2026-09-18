@@ -510,7 +510,7 @@ z_N &=& \frac{z_L - z}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brac
 \item[Thickness] (units: \unit{m}; namelist: \ct{THICKNESS}) The thickness of the target. For a plate target this is the total thickness. For a cylinder target this is the radius.
 \item[Internal Temperature at] (default: 0.5; namelist: \ct{TEMPERATURE_DEPTH}) By default, the reported internal temperature is the temperature at the center of the target, e.g. equidistant from the front and back faces of the target. This parameter overrides this default. 
 \item[Depth Units] (namelist: \ct{DEPTH_UNITS}) Character string defining how \ct{TEMPERATURE_DEPTH} is interpreted. If \ct{FRACTION}, \ct{TEMPERATURE_DEPTH} is a fraction of target thickness. If \ct{M}, \ct{TEMPERATURE_DEPTH} is the actual depth in \unit{m}.
-\item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, applies an adiabatic-surface-temperature target calculation using the emissivity of the assigned \ct{MATL_ID}. Supply \ct{CONVECTION_COEFFICIENTS(1:2)} for the front and back surface \unit{kW/(m^2 K)}. 
+\item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, calculates the adiabatic surface temperature of the target using the emissivity of the assigned \ct{MATL_ID}. Checking this box prompts the user for the front and back convection coefficients, each 10~\unit{W/(m^2 K)} by default. These values are converted to \unit{kW/(m^2 K)} when writing \ct{CONVECTION_COEFFICIENTS(1:2)} to the input file.
 \item[Surface Temperature] (namelist: \ct{SURFACE_TEMPERATURE}) Initial target surface temperature in \unit{\degreeCelsius}; default is the initial interior ambient temperature.
 \end{description}
 

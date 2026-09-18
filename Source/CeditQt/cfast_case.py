@@ -194,8 +194,8 @@ class Target:
     surface_orientation: str = "USER SPECIFIED"
     surface_temperature: float | None = None
     adiabatic: bool = False
-    convection_coefficient_front: float = 0.0
-    convection_coefficient_back: float = 0.0
+    convection_coefficient_front: float = 0.01  # kW/(m2 K), equivalent to 10 W/(m2 K)
+    convection_coefficient_back: float = 0.01
     fyi: str = ""
 
 

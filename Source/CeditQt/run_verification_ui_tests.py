@@ -934,6 +934,67 @@ def check_adiabatic_target():
         window.deleteLater()
 
 
+def check_adiabatic_convection_coefficients():
+    """Regression for #2503: inline fields follow engineering units and preserve input units."""
+    from cfast_case import Target
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import default_concrete_material, opening_case
+    from units import ENERGY, LENGTH, TEMPERATURE, TIME, unit_system
+
+    window = CeditMainWindow()
+    original_units = dict(unit_system.selected)
+    tab = window.targets_tab
+    case = opening_case()
+    material = default_concrete_material()
+    case.materials = [material]
+    case.targets = [Target(id="Target 1", comp_id="Comp 1", matl_id=material.id)]
+    scenarios = [
+        ({ENERGY: 0, TIME: 0, LENGTH: 0, TEMPERATURE: 0}, 10.0, "W/(m² °C)"),
+        ({ENERGY: 1, TIME: 0, LENGTH: 0, TEMPERATURE: 0}, 10.0, "W/(m² °C)"),
+        ({ENERGY: 3, TIME: 2, LENGTH: 3, TEMPERATURE: 2},
+         10.0 * 3600.0 * 0.3048 ** 2 * (5.0 / 9.0) / 1054.35, "BTU/(h ft² °F)"),
+    ]
+    try:
+        for indices, expected, label in scenarios:
+            unit_system.set_indices(indices)
+            window.load_case(case)
+            assert tab.convection_group.isHidden()
+            tab.adiabatic_checkbox.click()
+            assert not tab.convection_group.isHidden()
+            assert QApplication.activeModalWidget() is None
+            assert label in tab.convection_front_label.text()
+            assert label in tab.convection_back_label.text()
+            assert math.isclose(float(tab.convection_front_edit.text()), expected, rel_tol=1e-9)
+            assert math.isclose(float(tab.convection_back_edit.text()), expected, rel_tol=1e-9)
+            # Bare numbers use the selected units; explicit units also work.
+            tab.convection_front_edit.setText(str(2.0 * expected))
+            assert math.isclose(tab.targets[0].convection_coefficient_front, 0.02, rel_tol=1e-9)
+            tab.convection_front_edit.setText("12.5 W/(m2 C)")
+            tab.convection_back_edit.setText("7 W/(m2 C)")
+            with tempfile.TemporaryDirectory(prefix="cedit-convection-") as directory:
+                path = Path(directory) / "target.in"
+                write_cfast_input(window.build_cfast_case(), path)
+                assert "CONVECTION_COEFFICIENTS = 0.0125, 0.007" in path.read_text()
+                window.load_case(read_cfast_input(path))
+                assert math.isclose(float(tab.convection_front_edit.text()), expected * 1.25, rel_tol=1e-9)
+                assert math.isclose(float(tab.convection_back_edit.text()), expected * 0.7, rel_tol=1e-9)
+                # Switching unit selections must retain the physical coefficients.
+                saved = window.build_cfast_case()
+                unit_system.set_indices(scenarios[1][0])
+                window.load_case(saved)
+                assert math.isclose(float(tab.convection_front_edit.text()), 12.5, rel_tol=1e-9)
+                assert math.isclose(float(tab.convection_back_edit.text()), 7.0, rel_tol=1e-9)
+                tab.adiabatic_checkbox.click()
+                assert tab.convection_group.isHidden()
+                write_cfast_input(window.build_cfast_case(), path)
+                assert "ADIABATIC_TARGET" not in path.read_text()
+                assert "CONVECTION_COEFFICIENTS" not in path.read_text()
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def check_mechanical_vent_defaults():
     """Regression for #2467: newly added diffusers fit their compartment."""
     from PySide6.QtCore import QSignalBlocker
@@ -1169,6 +1230,7 @@ def main() -> int:
     check_target_material_initialization()
     check_target_material_validation()
     check_adiabatic_target()
+    check_adiabatic_convection_coefficients()
     check_mechanical_vent_defaults()
     check_surface_connections_removed()
     check_unrecognized_namelists()

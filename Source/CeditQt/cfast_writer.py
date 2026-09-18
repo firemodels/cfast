@@ -844,9 +844,13 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"THICKNESS = {cfast_number(target.thickness)}",
                 f"TEMPERATURE_DEPTH = {cfast_number(target.temperature_depth)}",
                 f"DEPTH_UNITS = {cfast_string(target.depth_units.upper())}",
-                f"ADIABATIC_TARGET = {cfast_logical(target.adiabatic)}",
-                f"CONVECTION_COEFFICIENTS = {cfast_vector((target.convection_coefficient_front, target.convection_coefficient_back))}",
             ]
+
+            if target.adiabatic:
+                fields.extend([
+                    "ADIABATIC_TARGET = .TRUE.",
+                    f"CONVECTION_COEFFICIENTS = {cfast_vector((target.convection_coefficient_front, target.convection_coefficient_back))}",
+                ])
 
             if target.surface_orientation != "USER SPECIFIED":
                 fields.append(

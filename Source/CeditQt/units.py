@@ -26,6 +26,7 @@ HOC = "hoc"
 HOG = "hog"
 HEAT_FLUX = "heat_flux"
 CONDUCTIVITY = "conductivity"
+CONVECTION_COEFFICIENT = "convection_coefficient"
 SPECIFIC_HEAT = "specific_heat"
 
 
@@ -280,6 +281,13 @@ class UnitSystem:
         elif conductivity_prefix == "MJ/(s ":
             conductivity_prefix = "MW/("
 
+        # Convection coefficients use W rather than kW in the standard engineering units.
+        convection_prefix = conductivity_prefix
+        convection_power_multiplier = energy.multiplier / time.multiplier
+        if convection_prefix == "kW/(":
+            convection_prefix = "W/("
+            convection_power_multiplier = 1.0
+
         self.conversions = {
             TIME: Conversion(time.multiplier, 0.0, l_time),
             TEMPERATURE: Conversion(
@@ -340,6 +348,11 @@ class UnitSystem:
                 / (time.multiplier * length.multiplier * temperature.multiplier),
                 0.0,
                 f"{conductivity_prefix}{l_length} {l_temperature})",
+            ),
+            CONVECTION_COEFFICIENT: Conversion(
+                convection_power_multiplier / (length.multiplier ** 2 * temperature.multiplier),
+                0.0,
+                f"{convection_prefix}{l_area} {l_temperature})",
             ),
             SPECIFIC_HEAT: Conversion(
                 energy.multiplier / (mass.multiplier * temperature.multiplier),
@@ -547,11 +560,12 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                         )
 
                 for temperature in BASE_UNITS[TEMPERATURE]:
-                    if kind == CONDUCTIVITY:
+                    if kind in {CONDUCTIVITY, CONVECTION_COEFFICIENT}:
+                        length_power = 2 if kind == CONVECTION_COEFFICIENT else 1
                         for label in conductivity_unit_labels(
                             energy.label,
                             time.label,
-                            length.label,
+                            power_label(length.label, 2) if length_power == 2 else length.label,
                             temperature.label,
                         ):
                             register_unit(
@@ -561,7 +575,7 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                                     energy.multiplier
                                     / (
                                         time.multiplier
-                                        * length.multiplier
+                                        * length.multiplier ** length_power
                                         * temperature.multiplier
                                     ),
                                     0.0,
@@ -614,6 +628,7 @@ _MODEL_TO_SI_FACTOR = {
     HOC: 1000.0,  # CFAST input uses kJ/kg.
     HOG: 1000.0,
     HEAT_FLUX: 1000.0,  # CFAST input uses kW/m².
+    CONVECTION_COEFFICIENT: 1000.0,  # CFAST input uses kW/(m2 K).
     SPECIFIC_HEAT: 1000.0,  # CFAST input uses kJ/(kg K).
 }
 

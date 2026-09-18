@@ -875,6 +875,76 @@ def check_target_material_validation():
         window.deleteLater()
 
 
+def check_target_orientation():
+    """Issue #2504: select one orientation and write only the chosen normal form."""
+    from dataclasses import replace
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from cfast_case import FireDefinition, FireProperty, FireRampPoint, Target
+    from cfast_reader import parse_namelists, read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import default_concrete_material, opening_case
+
+    case = opening_case()
+    room = case.compartments[0]
+    case.compartments.append(replace(room, id="Other room"))
+    case.materials = [default_concrete_material()]
+    case.targets = [Target(id="Target", comp_id=room.id, matl_id=case.materials[0].id)]
+    case.fire_properties = [FireProperty(id="Fuel", ramp=[FireRampPoint(0, 0), FireRampPoint(60, 100)])]
+    case.fires = [FireDefinition("Local fire", room.id, "Fuel"), FireDefinition("Other fire", "Other room", "Fuel")]
+    for fire in case.fires:
+        fire.x_position, fire.y_position = room.width / 2, room.depth / 2
+    window = CeditMainWindow()
+    tab = window.targets_tab
+    try:
+        window.load_case(case)
+        window.tabs.setCurrentWidget(tab)
+        window.show()
+        combo = tab.surface_orientation_combo
+        assert tab.normal_mode_combo.currentText() == "Specify Normal"
+        assert tab.nx_edit.isEnabled() and not combo.isEnabled()
+        assert combo.findText("Local fire") >= 0 and combo.findText("Other fire") == -1
+        tab.normal_mode_combo.setCurrentText("Specify Direction")
+        assert combo.isEnabled() and not tab.nx_edit.isEnabled()
+        with tempfile.TemporaryDirectory(prefix="cedit-target-orientation-") as directory:
+            path = Path(directory) / "target.in"
+            for direction in ("CEILING", "FLOOR", "LEFT WALL", "RIGHT WALL", "FRONT WALL", "BACK WALL", "Local fire"):
+                combo.showPopup()
+                QTest.qWait(10)
+                index = combo.model().index(combo.findText(direction), 0)
+                combo.view().setCurrentIndex(index)
+                window.schedule_live_validation()
+                QTest.qWait(250)
+                assert combo.view().currentIndex() == index
+                QTest.mouseClick(combo.view().viewport(), Qt.LeftButton, pos=combo.view().visualRect(index).center())
+                write_cfast_input(window.build_cfast_case(), path)
+                fields = next(record.fields for record in parse_namelists(path.read_text()) if record.name == "DEVC")
+                assert fields["SURFACE_ORIENTATION"] == [direction] and "NORMAL" not in fields
+                window.load_case(read_cfast_input(path))
+                assert combo.currentText() == direction and combo.isEnabled()
+            tab.compartment_combo.setCurrentText("Other room")
+            assert combo.findText("Local fire") == -1 and combo.findText("Other fire") >= 0
+            assert combo.currentIndex() == -1
+            try:
+                window.build_cfast_case()
+            except ValueError as exc:
+                assert "select a surface orientation" in str(exc)
+            else:
+                raise AssertionError("Changing compartments must not silently retain an unavailable fire")
+            combo.setCurrentText("Other fire")
+            assert window.build_cfast_case().targets[0].surface_orientation == "Other fire"
+            tab.normal_mode_combo.setCurrentText("Specify Normal")
+            tab.nx_edit.setText("1")
+            tab.nz_edit.setText("0")
+            write_cfast_input(window.build_cfast_case(), path)
+            fields = next(record.fields for record in parse_namelists(path.read_text()) if record.name == "DEVC")
+            assert fields["NORMAL"] == [1, 0, 0] and "SURFACE_ORIENTATION" not in fields
+            window.load_case(read_cfast_input(path))
+            assert tab.nx_edit.isEnabled() and not combo.isEnabled()
+    finally:
+        window.deleteLater()
+
+
 def check_adiabatic_target():
     from cfast_reader import read_cfast_input
     from cfast_writer import write_cfast_input
@@ -1229,6 +1299,7 @@ def main() -> int:
     check_verification_case_discovery()
     check_target_material_initialization()
     check_target_material_validation()
+    check_target_orientation()
     check_adiabatic_target()
     check_adiabatic_convection_coefficients()
     check_mechanical_vent_defaults()

@@ -771,6 +771,7 @@ class CeditMainWindow(QMainWindow):
         self.fires_tab.set_compartments(self.compartments_tab.compartments)
         self.fires_tab.set_target_ids(target_ids)
         self.targets_tab.set_compartment_ids(compartment_ids)
+        self.targets_tab.set_fires(self.fires_tab.fires)
         self.targets_tab.set_material_ids(material_ids)
         self.targets_tab.set_material_properties(
             self.thermal_properties_tab.materials_from_table()

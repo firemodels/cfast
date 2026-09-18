@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from cfast_case import CfastCase, MaterialProperty, Target
+from cfast_case import CfastCase, FireDefinition, MaterialProperty, Target
 from table_widgets import HoverEditTableWidget
 from units import (
     CONDUCTIVITY,
@@ -87,6 +87,7 @@ class TargetsTab(QWidget):
         self.updating = False
         self.editor_connections_ready = False
         self.compartment_ids: list[str] = []
+        self.fires: list[FireDefinition] = []
         self.material_ids: list[str] = ["OFF"]
         self.materials_by_id: dict[str, MaterialProperty] = {}
 
@@ -137,6 +138,7 @@ class TargetsTab(QWidget):
 
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
+        self.set_fires(case.fires)
         self.targets = copy.deepcopy(case.targets)
         self.current_index = 0 if self.targets else -1
         self.refresh_summary_table(select_row=0 if self.targets else None)
@@ -189,7 +191,12 @@ class TargetsTab(QWidget):
         self.y_edit = QLineEdit()
         self.z_edit = QLineEdit()
         self.normal_mode_combo = QComboBox()
-        self.normal_mode_combo.addItems(["User Specified"])
+        self.normal_mode_combo.addItems(["Specify Normal", "Specify Direction"])
+        self.surface_orientation_combo = QComboBox()
+        self.surface_orientation_combo.addItems([
+            "CEILING", "FLOOR", "LEFT WALL", "RIGHT WALL", "FRONT WALL", "BACK WALL",
+        ])
+        self.surface_orientation_combo.setEnabled(False)
         self.nx_edit = QLineEdit()
         self.ny_edit = QLineEdit()
         self.nz_edit = QLineEdit()
@@ -199,6 +206,7 @@ class TargetsTab(QWidget):
 
         layout.addWidget(QLabel("Width (X):"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.x_edit, 1, 1)
+        layout.addWidget(QLabel("Method:"), 1, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.normal_mode_combo, 1, 3)
 
         layout.addWidget(QLabel("Depth (Y):"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
@@ -213,6 +221,8 @@ class TargetsTab(QWidget):
 
         layout.addWidget(QLabel("Normal (Z):"), 4, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.nz_edit, 4, 3)
+        layout.addWidget(QLabel("Surface Orientation:"), 5, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.surface_orientation_combo, 5, 3)
 
         group.setLayout(layout)
         return group
@@ -350,6 +360,8 @@ class TargetsTab(QWidget):
             self.editor_group.setTitle("Target Geometry")
             for widget in self.editor_widgets():
                 widget.clear()
+            self.normal_mode_combo.setCurrentText("Specify Normal")
+            self.update_normal_controls()
             self.adiabatic_checkbox.setChecked(False)
             self.convection_front_edit.setText(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
             self.convection_back_edit.setText(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
@@ -374,6 +386,13 @@ class TargetsTab(QWidget):
         self.nx_edit.setText(format_number(target.x_normal))
         self.ny_edit.setText(format_number(target.y_normal))
         self.nz_edit.setText(format_number(target.z_normal))
+        self.update_surface_orientation_choices()
+        specify_direction = target.surface_orientation != "USER SPECIFIED"
+        self.normal_mode_combo.setCurrentText("Specify Direction" if specify_direction else "Specify Normal")
+        self.surface_orientation_combo.setCurrentIndex(
+            self.surface_orientation_combo.findText(target.surface_orientation) if specify_direction else 0
+        )
+        self.update_normal_controls()
         self.adiabatic_checkbox.setChecked(target.adiabatic)
         self.convection_front_edit.setText(
             format_value(CONVECTION_COEFFICIENT, target.convection_coefficient_front, include_unit=False)
@@ -403,6 +422,8 @@ class TargetsTab(QWidget):
         if self.editor_connections_ready:
             return
 
+        self.compartment_combo.currentTextChanged.connect(self.update_surface_orientation_choices)
+        self.normal_mode_combo.currentTextChanged.connect(self.update_normal_controls)
         for widget in self.editor_widgets():
             widget.textChanged.connect(self.editor_changed)
 
@@ -444,7 +465,32 @@ class TargetsTab(QWidget):
         return [
             self.compartment_combo,
             self.target_type_combo,
+            self.normal_mode_combo,
+            self.surface_orientation_combo,
         ]
+
+    def update_normal_controls(self):
+        specify_direction = self.normal_mode_combo.currentText() == "Specify Direction"
+        self.surface_orientation_combo.setEnabled(specify_direction)
+        for widget in (self.nx_edit, self.ny_edit, self.nz_edit):
+            widget.setEnabled(not specify_direction)
+
+    def set_fires(self, fires: list[FireDefinition]):
+        self.fires = list(fires)
+        self.update_surface_orientation_choices()
+
+    def update_surface_orientation_choices(self):
+        combo = self.surface_orientation_combo
+        choices = ["CEILING", "FLOOR", "LEFT WALL", "RIGHT WALL", "FRONT WALL", "BACK WALL"]
+        choices.extend(fire.id for fire in self.fires if fire.comp_id == self.compartment_combo.currentText())
+        if choices == [combo.itemText(i) for i in range(combo.count())]:
+            return
+        current = combo.currentText()
+        blocker = QSignalBlocker(combo)
+        combo.clear()
+        combo.addItems(choices)
+        combo.setCurrentIndex(combo.findText(current))
+        del blocker
 
     def material_changed(self):
         if self.updating:
@@ -494,6 +540,9 @@ class TargetsTab(QWidget):
         convection_coefficients = self.convection_coefficients_from_editor()
         matl_id = self.material_combo.currentText().strip() or "OFF"
         existing = self.targets[self.current_index] if 0 <= self.current_index < len(self.targets) else None
+        specify_direction = self.normal_mode_combo.currentText() == "Specify Direction"
+        if specify_direction and not self.surface_orientation_combo.currentText():
+            raise ValueError("Target: select a surface orientation or a fire in its compartment.")
         displayed_thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
         material_thickness = self.material_properties(matl_id).get("thickness", 0.0)
         thickness = (
@@ -512,16 +561,16 @@ class TargetsTab(QWidget):
             x_position=parse_value(LENGTH, self.x_edit.text(), "X Position"),
             y_position=parse_value(LENGTH, self.y_edit.text(), "Y Position"),
             z_position=parse_value(LENGTH, self.z_edit.text(), "Z Position"),
-            x_normal=parse_number(self.nx_edit.text(), "X Normal"),
-            y_normal=parse_number(self.ny_edit.text(), "Y Normal"),
-            z_normal=parse_number(self.nz_edit.text(), "Z Normal"),
+            x_normal=existing.x_normal if specify_direction and existing else parse_number(self.nx_edit.text(), "X Normal"),
+            y_normal=existing.y_normal if specify_direction and existing else parse_number(self.ny_edit.text(), "Y Normal"),
+            z_normal=existing.z_normal if specify_direction and existing else parse_number(self.nz_edit.text(), "Z Normal"),
             matl_id=matl_id,
             target_type=self.target_type_combo.currentText().strip().upper(),
             thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
             temperature_depth=self.temperature_depth_from_editor(existing),
             depth_units=existing.depth_units if existing is not None else "DISTANCE",
             surface_orientation=(
-                existing.surface_orientation if existing is not None else "USER SPECIFIED"
+                self.surface_orientation_combo.currentText() if specify_direction else "USER SPECIFIED"
             ),
             surface_temperature=existing.surface_temperature if existing is not None else None,
             adiabatic=self.adiabatic_checkbox.isChecked(),
@@ -693,6 +742,8 @@ class TargetsTab(QWidget):
             if self.material_combo.currentText().strip() not in {m.id for m in case.materials}:
                 raise ValueError("Adiabatic target: select a material defined in Thermal Properties for its emissivity.")
         if self.current_index >= 0:
+            if self.normal_mode_combo.currentText() == "Specify Direction" and not self.surface_orientation_combo.currentText():
+                raise ValueError("Target: select a surface orientation or a fire in its compartment.")
             try:
                 self.targets[self.current_index] = self.target_from_editor()
             except ValueError:

@@ -839,7 +839,11 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"ID = {cfast_string(target.id)}",
                 f"COMP_ID = {cfast_string(target.comp_id)}",
                 f"LOCATION = {cfast_vector((target.x_position, target.y_position, target.z_position))}",
-                f"NORMAL = {cfast_vector((target.x_normal, target.y_normal, target.z_normal))}",
+                (
+                    f"NORMAL = {cfast_vector((target.x_normal, target.y_normal, target.z_normal))}"
+                    if target.surface_orientation == "USER SPECIFIED"
+                    else f"SURFACE_ORIENTATION = {cfast_string(target.surface_orientation)}"
+                ),
                 f"MATL_ID = {cfast_string(target.matl_id)}",
                 f"THICKNESS = {cfast_number(target.thickness)}",
                 f"TEMPERATURE_DEPTH = {cfast_number(target.temperature_depth)}",
@@ -851,11 +855,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                     "ADIABATIC_TARGET = .TRUE.",
                     f"CONVECTION_COEFFICIENTS = {cfast_vector((target.convection_coefficient_front, target.convection_coefficient_back))}",
                 ])
-
-            if target.surface_orientation != "USER SPECIFIED":
-                fields.append(
-                    f"SURFACE_ORIENTATION = {cfast_string(target.surface_orientation)}"
-                )
 
             if target.surface_temperature is not None:
                 fields.append(

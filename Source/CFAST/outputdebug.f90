@@ -57,7 +57,6 @@ module debug_routines
     do i = 1, mxfslab
         call ssaddtolist(position, dirs12(i)*qslab(i), outarray)
     end do
-    return
 
     end subroutine spreadsheetfslabs
 
@@ -71,8 +70,6 @@ module debug_routines
     call ssprintresid (ioslab, position, array)
     nwline = .true.
 
-    return
-
     end subroutine ssprintslab
 
 ! --------------------------- ssprintresid -------------------------------------------
@@ -85,7 +82,6 @@ module debug_routines
     integer i
 
     write (iounit,"(16384(e20.13,','))" ) (array(i),i=1,ic)
-    return
 
     end subroutine ssprintresid
 
@@ -191,7 +187,6 @@ module debug_routines
 
     call ssprintresid (ioresid, position, outarray)
 
-    return
     end subroutine output_spreadsheet_residuals
 
 end module debug_routines

@@ -210,7 +210,6 @@ module initialization_routines
         end do
     end if
 
-    return
     end subroutine initialize_ambient
 
 ! --------------------------- initialize_leakage -------------------------------------------
@@ -585,7 +584,6 @@ module initialization_routines
         dumpinfo(1:mx_dumps)%criterion = -1
     end if
 
-    return
     end subroutine initialize_memory
     
 
@@ -650,7 +648,6 @@ module initialization_routines
         tablinfo(1:mxtabls)%n_columns = 0
     end if
 
-    return
     end subroutine initialize_fires
 
 ! --------------------------- initialize_species -------------------------------------------
@@ -726,7 +723,6 @@ module initialization_routines
         i_speciesmap(ip) = iprod + 2
     end do
 
-    return
     end subroutine initialize_species
 
 ! --------------------------- initialize_targets -------------------------------------------
@@ -825,7 +821,6 @@ module initialization_routines
         targptr%emissivity = thrmpptr%eps
     end do
 
-    return
     end subroutine initialize_targets
 
 ! --------------------------- initialize_walls  -------------------------------------------
@@ -1046,7 +1041,7 @@ module initialization_routines
     do i = 2, nx-1
         wtemp(i) = tamb + (xwall(i)-xwall(2))*dtdw
     end do
-    return
+
     end subroutine initialize_wall_nodes
 
 ! --------------------------- initialize_solver_vector -------------------------------------------
@@ -1113,7 +1108,6 @@ module initialization_routines
     nofprd = nofwt + n_cons
     nequals = nofprd + 2*n_rooms*ns
 
-    return
     end subroutine initialize_solver_vector
 
 end module initialization_routines

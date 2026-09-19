@@ -74,11 +74,6 @@
 
     close (iofili)
     
-    return
-
-    ! read format list
-
-
     end subroutine namelist_input
 
     ! --------------------------- read_head --------------------------------------
@@ -311,7 +306,6 @@
 
     rewind (unit=lu)
     input_file_line_number = 0
-    return
 
     contains
 
@@ -1637,8 +1631,6 @@ continue
         end if
     end do
 
-    return
-
     end subroutine set_heat_of_combustion
 
     end subroutine read_chem
@@ -2621,7 +2613,6 @@ continue
         end do read_dump_loop
 
     end if
-    return
 
     contains
 
@@ -2767,7 +2758,6 @@ continue
     enddo
     
     newid = .true.
-    return
     
     end function newid
     end module namelist_input_routines

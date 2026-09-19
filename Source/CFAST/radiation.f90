@@ -100,7 +100,6 @@ module radiation_routines
         flows_radiation(i,2) = qlay(2)
     end do
 
-    return
     end subroutine radiation
 
 ! --------------------------- rad4 -------------------------------------------
@@ -310,7 +309,6 @@ module radiation_routines
     qlay(l) = qllay
     qlay(l) = factor_l*qlay(l)
 
-    return
     end subroutine rad4
 
 ! --------------------------- rdflux -------------------------------------------
@@ -410,7 +408,7 @@ module radiation_routines
             qllay = qllay + factl*qfflux*area(k)
         end do
     end do
-    return
+
     end subroutine rdflux
 
 ! --------------------------- rabs -------------------------------------------
@@ -455,7 +453,6 @@ module radiation_routines
         end do
     end do
 
-    return
     end subroutine rabs
 
 ! --------------------------- rdparfig -------------------------------------------
@@ -481,7 +478,7 @@ module radiation_routines
     f4 = xx*atan(xx)
     f5 = yy*atan(yy)
     rdparfig = 2.0_eb*(f1+f2+f3-f4-f5)/(pi*xx*yy)
-    return
+
     end function rdparfig
 
 ! --------------------------- getvrel -------------------------------------------
@@ -497,7 +494,7 @@ module radiation_routines
     if (norm.ne.0._eb) then
         vrel(1:3) = vrel(1:3)/norm
     end if
-    return
+
     end subroutine getvrel
 
 ! --------------------------- rdfang -------------------------------------------
@@ -567,7 +564,7 @@ module radiation_routines
             firang(3,i) = solid_angle_layer - firang(4,i)
         end if
     end do
-    return
+
    end  subroutine rdfang
 
 ! --------------------------- rdftran -------------------------------------------
@@ -628,7 +625,7 @@ module radiation_routines
             end if
         end do
     end do
-    return
+
     end subroutine rdftran
 
 ! --------------------------- rdrtran -------------------------------------------
@@ -731,7 +728,7 @@ module radiation_routines
             taul(j,i) = taul(i,j)
         end do
     end do
-    return
+
     end subroutine rdrtran
 
 ! --------------------------- solid_angle_triangle -------------------------------------------
@@ -941,8 +938,6 @@ module radiation_routines
     vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
-    return
-
     end function absorb
 
 ! --------------------------- linterp -------------------------------------------
@@ -1043,7 +1038,6 @@ module radiation_routines
     zval = zval + z(i+1,j+1)*(xval - x(i))*(yval-y(j))
     zval = zval/((x(i+1)-x(i))*(y(j+1)-y(j)))
 
-    return
     end subroutine linterp
 
 end module radiation_routines

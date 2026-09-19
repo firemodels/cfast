@@ -136,7 +136,7 @@ module solve_routines
     do i = 1, n_cons
         pdold(i+nofwt) = 0.0_eb
     end do
-    return
+
     end subroutine initial_solution
 
 ! --------------------------- gres -------------------------------------------
@@ -193,7 +193,7 @@ module solve_routines
         write (iofilo,*)' '
         read (*,*)
     end if
-    return
+
     end subroutine gres
     
 ! --------------------------- solve_simulation -------------------------------------------
@@ -681,8 +681,6 @@ module solve_routines
         end if
     end do
 
-    return
-
     end subroutine solve_simulation
 
 ! --------------------------- update_solution -------------------------------------------
@@ -716,8 +714,6 @@ module solve_routines
     if (ns>0) call synchronize_species_mass (p,n_odes+1)
 
     pold(1:nequals) = p(1:nequals)
-
-    return
 
     end subroutine update_solution
 
@@ -776,7 +772,6 @@ module solve_routines
         end if
     end if
 
-    return
 5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
     end subroutine keyboard_interaction
 
@@ -806,7 +801,6 @@ module solve_routines
         write (iofilo,*) 'continuing'
         write (iofilo,*)
     end if
-    return
 
     end function output_interactive_help
 
@@ -838,7 +832,6 @@ module solve_routines
     ! setting jacobian flag
     info(5) = 0
     info(11) = 1
-    return
 
     end subroutine set_info_flags
 
@@ -1139,8 +1132,6 @@ module solve_routines
     end if
 
     if (ipar(2)==some) nprod = nprodsv
-
-    return
 
     end subroutine calculate_residuals
 
@@ -1626,7 +1617,6 @@ module solve_routines
             end if
         end do
     end if
-    return
 
     end subroutine update_data
 

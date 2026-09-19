@@ -52,8 +52,6 @@ module spreadsheet_routines
     
     if (radi_verification_flag) call output_spreadsheet_diag(time)
 
-    return
-
     end subroutine output_spreadsheet
 
 ! --------------------------- output_spreadsheet_compartments ------------------------------------
@@ -177,7 +175,6 @@ module spreadsheet_routines
     end do
     
     call ssprintresults (iofilssc, position, outarray)
-    return
     
     end subroutine output_spreadsheet_compartments
 
@@ -320,7 +317,6 @@ module spreadsheet_routines
     end do
 
     call ssprintresults (iofilssd, position, outarray)
-    return
 
     end subroutine output_spreadsheet_devices
 
@@ -457,7 +453,6 @@ module spreadsheet_routines
     end do
     
     call ssprintresults (iofilssm, position, outarray)
-    return
     
     end subroutine output_spreadsheet_masses
 
@@ -630,8 +625,6 @@ module spreadsheet_routines
 
     call ssprintresults (iofilssv, position, outarray)
     
-    return
-    
     end subroutine output_spreadsheet_vents
 
 ! --------------------------- output_spreadsheet_walls ------------------------------------
@@ -683,7 +676,6 @@ module spreadsheet_routines
     end do
 
     call ssprintresults (iofilssw, position, outarray)
-    return
 
     end subroutine output_spreadsheet_walls
 
@@ -707,8 +699,6 @@ module spreadsheet_routines
         ssptr%device = location
         ssptr%units = units
     end if
-    
-    return
     
     end subroutine ssaddtoheader
 
@@ -1593,8 +1583,6 @@ module spreadsheet_routines
         stop
     end select
     
-    return
-
     end subroutine ssaddvaluetooutput
 
     subroutine ssprintresults (iounit, ic, array)
@@ -1619,8 +1607,6 @@ module spreadsheet_routines
         write (iounit,"(16384a)") (trim(out(i)) // ',',i=1,ic-1),out(ic)
     end if
     
-    return
-
     end subroutine ssprintresults
 
 ! --------------------------- output_spreadsheet_smokeview -------------------------------------------
@@ -1751,7 +1737,6 @@ module spreadsheet_routines
     end if
     call ssprintresults (iofilsmvzone, position, outarray)
 
-    return
     end subroutine output_spreadsheet_smokeview
     
     ! --------------------------- output_spreadsheet_diag -------------------------------------------
@@ -1788,7 +1773,6 @@ module spreadsheet_routines
 
     call ssprintresults (iofilssdiag, position, outarray)
     
-    return
     end subroutine output_spreadsheet_diag
     
     !--------------------------output_spreadsheet_dump-----------------------------------------------------------
@@ -1838,7 +1822,6 @@ module spreadsheet_routines
     end if      
     call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
     
-    return
     end subroutine output_spreadsheet_dump
     
     !--------------------do_csvfile---------------------------------------
@@ -1994,7 +1977,6 @@ module spreadsheet_routines
         end if
     end do 
     
-    return
     end subroutine do_csvfile
         
     !-----------------------------fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)-----------------------------------
@@ -2028,8 +2010,6 @@ module spreadsheet_routines
             end if
         end if
     end do
-    
-    return
     
     end subroutine fnd_col
     
@@ -2074,7 +2054,6 @@ module spreadsheet_routines
         write(iunit,'(A)') buf(1:ic)
     end do
     
-    return
     end subroutine writecsvformat
 
 end module spreadsheet_routines

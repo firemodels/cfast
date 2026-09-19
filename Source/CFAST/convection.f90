@@ -77,7 +77,6 @@
 
     end do
 
-    return
     end subroutine convection
 
 ! --------------------------- convective_flux -------------------------------------------
@@ -104,7 +103,6 @@
     end if
 
     qdinl = h * (tg - tw)
-    return
 
     end subroutine convective_flux
 

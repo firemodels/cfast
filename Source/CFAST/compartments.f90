@@ -67,7 +67,6 @@
         end if
     end do
 
-    return
     end subroutine layer_mixing
 
 ! --------------------------- synchronize_species_mass -------------------------------------------
@@ -172,8 +171,6 @@
         end do
     end do
 
-    return
-
     end subroutine synchronize_species_mass
 
 ! --------------------------- room_connections -------------------------------------------
@@ -254,7 +251,6 @@
         end if
     end do
 
-    return
     end subroutine room_connections
 
 ! ---------------------------- wall_opening_fraction -------------------------------------------
@@ -514,7 +510,6 @@
         roomptr%chi(:) = a_opening(:)/a_total(:)
     end do
 
-    return
     end subroutine wall_opening_fraction
 
     end module compartment_routines

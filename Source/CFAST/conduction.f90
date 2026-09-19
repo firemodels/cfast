@@ -107,7 +107,6 @@ module conduction_routines
         end do
     end if
 
-    return
     end subroutine conduction
 
 ! --------------------------- conductive_flux -------------------------------------------
@@ -268,7 +267,6 @@ module conduction_routines
     tgrad(1) = (ddif(1)-ddif(2)*walldx(1))
     tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
     tderv = tderiv(2)
-    return
 
     end subroutine conductive_flux
 
@@ -383,7 +381,6 @@ module conduction_routines
 
     tgrad(1) = (ddif(1)-ddif(2)*dr)
     tgrad(2) = (wtemp(nnodes-1)-wtemp(nnodes))/dr
-    return
 
     end subroutine cylindrical_conductive_flux
 

@@ -1324,8 +1324,7 @@
     call xerrwv(msg,len_trim(msg),801,0,0,0,0,0,0.0d0,0.0d0)
     msg = '***Fatal Error, dassl--  run terminated. apparent infinite loop'
     call xerrwv(msg,len_trim(msg),802,1,0,0,0,0,0.0d0,0.0d0)
-    return
-    !-----------end of subroutine ddassl------------------------------------
+
     end subroutine ddassl
 
     ! --------------------------- ddawts -------------------------------------------
@@ -1363,8 +1362,7 @@
         end if
         wt(i)=rtoli*abs(y(i))+atoli
     end do
-    return
-    !-----------end of subroutine ddawts------------------------------------
+
     end subroutine ddawts
 
     ! --------------------------- ddanrm -------------------------------------------
@@ -1405,8 +1403,7 @@
     end do
     ddanrm = vmax*sqrt(sum/neq)
 30  continue
-    return
-    !------end of function ddanrm------
+
     end function ddanrm
 
     ! --------------------------- ddaini -------------------------------------------
@@ -1729,9 +1726,7 @@
             ypout(i)=ypout(i)+d*phi(i,j)
         end do
     end do
-    return
-    !
-    !------end of subroutine ddatrp------
+
     end subroutine ddatrp
 
     ! --------------------------- ddastp -------------------------------------------
@@ -2541,8 +2536,7 @@
     !     added by par 01/08/93
     !     removed by gpf 2/2/96 (obsolete)
 600 continue
-    return
-    !------end of subroutine ddajac------
+
     end subroutine ddajac
 
     ! --------------------------- ddaslv -------------------------------------------
@@ -2983,10 +2977,7 @@
     if (info == 5) info = 4
 20  continue
     if (info == 0) call xerror( 'snsqe  -- invalid input parameter.',34,2,1)
-    return
-    !
-    !     last card of subroutine snsqe.
-    !
+
     end subroutine snsqe
 
     ! --------------------------- dogleg -------------------------------------------
@@ -3162,10 +3153,7 @@
         x(j) = temp*wa1(j) + alpha*x(j)
     end do
 140 continue
-    return
-    !
-    !     last card of subroutine dogleg.
-    !
+
     end subroutine dogleg
 
     ! --------------------------- enorm -------------------------------------------
@@ -3275,10 +3263,7 @@
     enorm = x3max*sqrt(s3)
 120 continue
 130 continue
-    return
-    !
-    !     last card of function enorm.
-    !
+
     end function enorm
 
     ! --------------------------- fdjac1 -------------------------------------------
@@ -3428,10 +3413,7 @@
     end do
 100 continue
 110 continue
-    return
-    !
-    !     last card of subroutine fdjac1.
-    !
+
     end subroutine fdjac1
 
     ! --------------------------- qform -------------------------------------------
@@ -3529,10 +3511,7 @@
         end do
 110     continue
     end do
-    return
-    !
-    !     last card of subroutine qform.
-    !
+
     end subroutine qform
 
     ! --------------------------- qrfac -------------------------------------------
@@ -3696,10 +3675,7 @@
 100     continue
         sigma(j) = -ajnorm
     end do
-    return
-    !
-    !     last card of subroutine qrfac.
-    !
+
     end subroutine qrfac
 
     ! --------------------------- r1mpyq -------------------------------------------
@@ -3793,10 +3769,7 @@
         end do
     end do
 50  continue
-    return
-    !
-    !     last card of subroutine r1mpyq.
-    !
+
     end subroutine r1mpyq
 
     ! --------------------------- r1updt -------------------------------------------
@@ -4002,10 +3975,7 @@
         l = l + 1
     end do
     if (s(jj) == zero) sing = .true.
-    return
-    !
-    !     last card of subroutine r1updt.
-    !
+
     end subroutine r1updt
 
     ! --------------------------- snsq -------------------------------------------
@@ -4718,10 +4688,7 @@
     if (info == 2) call xerror( 'snsq   -- too many function evaluations.',40,9,1)
     if (info == 3) call xerror( 'snsq   -- xtol too small. no further improvement possible.',58,3,1)
     if (info > 4) call xerror( 'snsq   -- iteration not making good progress.',45,1,0)
-    return
-    !
-    !     last card of subroutine snsq.
-    !
+
     end subroutine snsq
 
     ! --------------------------- idamax -------------------------------------------
@@ -4795,7 +4762,7 @@
         dmax = xmag
 30      continue
     end do
-    return
+
     end function idamax
 
     ! --------------------------- dasum -------------------------------------------
@@ -4866,7 +4833,7 @@
     do i = mp1,n,6
         dasum = dasum + abs(dx(i)) + abs(dx(i+1)) + abs(dx(i+2)) + abs(dx(i+3)) + abs(dx(i+4)) + abs(dx(i+5))
     end do
-    return
+
     end function dasum
 
     ! --------------------------- daxpy -------------------------------------------
@@ -4967,7 +4934,7 @@
     do i=1,ns,incx
         dy(i) = da*dx(i) + dy(i)
     end do
-    return
+
     end subroutine daxpy
 
     ! --------------------------- ddot -------------------------------------------
@@ -5067,7 +5034,7 @@
     do i=1,ns,incx
         ddot = ddot + dx(i)*dy(i)
     end do
-    return
+
     end function ddot
 
     ! --------------------------- dnrm2 -------------------------------------------
@@ -5134,10 +5101,7 @@
     end if
     !
     dnrm2 = norm
-    return
-    !
-    !     end of dnrm2.
-    !
+
     end function dnrm2
     ! --------------------------- dscal -------------------------------------------
 
@@ -5211,7 +5175,7 @@
         dx(i + 3) = da*dx(i + 3)
         dx(i + 4) = da*dx(i + 4)
     end do
-    return
+
     end subroutine dscal
 
     ! --------------------------- dgefa -------------------------------------------
@@ -5318,7 +5282,7 @@
     end if
     ipvt(n) = n
     if (a(n,n)==0.0d0) info = n
-    return
+
     end subroutine dgefa
 
     ! --------------------------- dgesl -------------------------------------------
@@ -5439,7 +5403,7 @@
             end do
         end if
     end if
-    return
+
     end subroutine dgesl
 
     ! --------------------------- dgbfa -------------------------------------------
@@ -5617,7 +5581,7 @@
     end if
     ipvt(n) = n
     if (abd(m,n)==0.0d0) info = n
-    return
+
     end subroutine dgbfa
 
     ! --------------------------- dgbsl -------------------------------------------
@@ -5758,7 +5722,7 @@
             end if
         end if
     end if
-    return
+
     end subroutine dgbsl
 
     ! --------------------------- gjac -------------------------------------------
@@ -5845,7 +5809,7 @@
     implicit none
 
     jacd = jacdim
-    return
+
     end function jacd
 
     ! --------------------------- setderv -------------------------------------------
@@ -5875,7 +5839,7 @@
     integer :: j
     !
     if (j>-10) jaccol = j
-    return
+
     end subroutine setderv
 
     ! --------------------------- xerror -------------------------------------------
@@ -5927,7 +5891,6 @@
         call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0d0,0.0d0)
     end if
 
-    return
     end subroutine xerror
 
     ! --------------------------- xerrwv -------------------------------------------
@@ -6005,7 +5968,6 @@
         write (*,5002) nerr,r1,r2
         write (iofill,5002) nerr,r1,r2
     end if
-    return
 
 5000 format(a)
 5001 format('ierror,r1 =',i5,2d14.4)

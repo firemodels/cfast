@@ -146,7 +146,7 @@ module target_routines
         targptr%fed_heat = targptr%fed_heat + fed_heat_increment
         targptr%fed_obs = roomptr%species_output(ilayer,soot)
     end do
-    return
+
     end subroutine target
 
 ! --------------------------- target_flux -------------------------------------------
@@ -380,7 +380,6 @@ module target_routines
             targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
     end do
 
-    return
     end subroutine target_flux
 
 ! ---------------------------- target_nodes -----------------------------------
@@ -409,8 +408,6 @@ module target_routines
         do i = 1, nnodes_trg-1
             x_node(i) = x_node(i)/sum
         end do
-
-        return
 
     end subroutine target_nodes
 
@@ -652,7 +649,7 @@ module target_routines
     end if
     yl = yl*s
     yu = s - yl
-    return
+
     end subroutine getylyu
 
 ! --------------------------- get_target_temperature -------------------------------------------
@@ -726,8 +723,6 @@ module target_routines
 
         end if
     end do
-
-    return
 
     end subroutine get_target_temperatures
 
@@ -879,7 +874,7 @@ module target_routines
         dtectptr%temp_gas_o = tjet
         dtectptr%velocity_o = vel
     end do
-    return
+
     end subroutine update_detectors
 
     ! --------------------------- detector_temp_and_velocity -------------------------------------------
@@ -916,8 +911,6 @@ module target_routines
         end if
     end do
 
-    return
-
     end subroutine get_detector_temp_and_velocity
 
     ! --------------------------- smv_device_activated -------------------------------------------
@@ -935,7 +928,6 @@ module target_routines
 
     write (iofilsmv, "(a)") "DEVICE_ACT"
     write (iofilsmv, "(i6,f10.2,i6)") idtect, tdtect, istate
-    return
 
     end subroutine device_activated
 
@@ -974,7 +966,6 @@ module target_routines
            AST = (emis*qinc/(emis*sigma))**0.25_eb
         end if
 
-        return
     end subroutine adiabatic_surface_temperature
 
 end module target_routines

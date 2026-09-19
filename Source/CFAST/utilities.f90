@@ -35,7 +35,6 @@
     else
         array(ic) = valu
     end if
-    return
 
     end subroutine ssaddtolist
 
@@ -64,7 +63,7 @@
         string = 'error'
     end if
     istring = trim(string)
-    return
+
     end subroutine toIntString
 
     ! --------------------------- get_filenumber ---------------------------------------
@@ -91,7 +90,6 @@
     f = min(max(0.5_eb + 0.5025_eb*tanh(6.0_eb/(xmax-xmin)*(x-xmin)-3.0_eb),0.0_eb),1.0_eb)
     tanhsmooth = f*(ymax-ymin)+ymin
 
-    return
     end function tanhsmooth
 
     ! --------------------------- d1mach -------------------------------------------
@@ -146,7 +144,7 @@
         write (errormessage,'(''***Error, Internal error, illegal call to d1mach '',i0)') i
         call cfastexit('d1mach',1) 
     end select
-    return
+
     end function d1mach
 
     ! --------------------------- cmdline -------------------------------------------
@@ -244,7 +242,7 @@
             end if
         end do
     end if
-    return
+
     end subroutine cmdline
 
     ! --------------------------- cmove -------------------------------------------
@@ -271,7 +269,7 @@
     temp(i1:i2) = cmdlin(i3:i4)
     temp(i5:i5) = chr
     cmdlin = temp
-    return
+
     end subroutine cmove
 
     ! --------------------------- getcl -------------------------------------------
@@ -306,7 +304,7 @@
             end if
         end do
     end if
-    return
+
     end subroutine getcl
 
     ! --------------------------- cptime -------------------------------------------
@@ -319,7 +317,7 @@
     real(eb), intent(out) :: cputim
 
     call CPU_TIME(cputim)
-    return
+
     end subroutine cptime
 
     ! --------------------------- mat2mult -------------------------------------------
@@ -353,7 +351,7 @@
             mat1(i,j) = mat2(i,j)
         end do
     end do
-    return
+
     end subroutine mat2mult
 
     ! --------------------------- indexi -------------------------------------------
@@ -396,7 +394,7 @@
         indx(i+1) = itemp
     end do
     if (iswitch==1) go to 5
-    return
+
     end subroutine indexi
 
     ! --------------------------- interp -------------------------------------------
@@ -468,7 +466,6 @@
     dydx = (y(imid+1)-y(imid))/(x(imid+1)-x(imid))
     yint = y(imid) + dydx*(t-x(imid))
     ilast = imid
-    return
 
     end subroutine interp
 
@@ -544,9 +541,7 @@
     if (cmdflag('C',iopt)/=0) outputformat = 1
     if (cmdflag('F',iopt)/=0) outputformat = 2
 
-    return
-
-    end   subroutine read_command_options
+    end subroutine read_command_options
 
     ! --------------------------- shellsort -------------------------------------------
 
@@ -575,8 +570,8 @@
 4       ra(j) = rra
     enddo
     if (inc>1) go to 2
-    return
-    end  subroutine shellsort
+
+    end subroutine shellsort
 
     ! --------------------------- sstrng -------------------------------------------
 
@@ -644,8 +639,6 @@
 
     fmix = (1.0_fb-f)*a + f*b
 
-    return
-
     end function fmix
 
     ! ------------------ emix ------------------------
@@ -655,8 +648,6 @@
     real(eb), intent(in) :: f, a, b
 
     emix = (1.0_eb-f)*a + f*b
-
-    return
 
     end function emix
     
@@ -774,7 +765,6 @@
 100 continue
     lend = .true. 
 
-    return
     end subroutine readcsvformat
 
     end module utility_routines
@@ -915,7 +905,6 @@
 !        ventptr => mventinfo(vent_index)
 !        fraction = vfraction(venttype,ventptr, time)
 !    end if
-    return
 
     end subroutine get_vent_opening
 
@@ -1009,7 +998,6 @@
             end if
         end if
     end if
-    return
 
     end function vfraction
 

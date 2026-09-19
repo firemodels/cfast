@@ -31,7 +31,5 @@
         end if
     end if
 
-    return
-    
     end subroutine grabky
 

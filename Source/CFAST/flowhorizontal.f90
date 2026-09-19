@@ -149,7 +149,7 @@ module hflow_routines
     if (prnslab) then
         call SSprintslab (position, outarray)
     end if
-    return
+
     end subroutine wall_flow
 
     ! --------------------------- leakage_flow -------------------------------------------
@@ -251,7 +251,6 @@ module hflow_routines
 
     end do
 
-    return
     end subroutine leakage_flow
 
     ! --------------------------- spill_plume -------------------------------------------
@@ -366,7 +365,7 @@ module hflow_routines
             end if
         end if
     end do
-    return
+
     end subroutine spill_plume
 
     ! --------------------------- poreh_plume -------------------------------------------
@@ -391,7 +390,7 @@ module hflow_routines
     hdot = cp*(tu-tl)*mdot
     rhol = 352.981915_eb/tl
     entrainment_rate = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * z
-    return
+
     end subroutine poreh_plume
 
     ! --------------------------- ventw -------------------------------------------
@@ -572,8 +571,8 @@ module hflow_routines
             end if
         end if
     end do
-    return
-        end subroutine ventw
+
+    end subroutine ventw
 
     ! --------------------------- get_slab_elevations -------------------------------------------
     
@@ -622,7 +621,7 @@ module hflow_routines
             yelev(4) = yvtop
         end if
     end if
-    return
+
     end subroutine get_slab_elevations
 
     ! --------------------------- get_wall_flow_variables -------------------------------------------
@@ -687,7 +686,6 @@ module hflow_routines
             conu(iprod,i) = roomptr%species_fraction(u,ip)
         end do
     end do
-    return
 
     end subroutine get_wall_flow_variables
 
@@ -793,7 +791,7 @@ module hflow_routines
         end do
 
     end do
-    return
+
     end subroutine flogo
 
     ! --------------------------- delp -------------------------------------------
@@ -856,7 +854,7 @@ module hflow_routines
             dp(i) = dpold
         end if
     end do
-    return
+
     end subroutine delp
     
 end module hflow_routines

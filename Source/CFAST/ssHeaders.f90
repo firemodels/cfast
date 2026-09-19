@@ -209,7 +209,7 @@ module spreadsheet_header_routines
     write (iofilsmv,'(a)') 'DEVICE'
     write (iofilsmv,'(4x,a)') trim(string)
     write (iofilsmv,'(1x,3f6.1)') 0.,0.,0.
-    return
+
     end subroutine smvDeviceTag
 
 ! --------------------------- ssHeaders_resid -------------------------------------------

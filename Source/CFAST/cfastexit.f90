@@ -96,7 +96,7 @@ module exit_routines
     end do
     mxcol = ipad+n_dumps
     call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
-    return
+
     end subroutine post_process
     
     !   copied from outputspreadsheet because of make problems trying to 
@@ -141,7 +141,6 @@ module exit_routines
         write(iunit,'(A)') buf(1:ic)
     end do
     
-    return
     end subroutine writecsvformat
     
     !call output_spreadsheet_dump (name, errorcode, stime, total_steps)

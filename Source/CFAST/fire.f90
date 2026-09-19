@@ -110,7 +110,6 @@ module fire_routines
 !10      format(e13.6,1x,e15.8,1x,e15.8,1x,e15.8,1x,e15.8,1x,e15.8)
     end do
 
-    return
     end subroutine fire
 
 ! --------------------------- interpolate_pyrolysis -------------------------------------------
@@ -241,8 +240,6 @@ module fire_routines
         qdot_t = qdot_t*factor
     end if
 
-    return
-    
     end subroutine interpolate_pyrolysis
 
 ! --------------------------- do_fire -------------------------------------------
@@ -446,7 +443,6 @@ module fire_routines
     species_mass_rate(u,1:ns) = species_mass_rate(u,1:ns) + entrainment_rate*species_mass(l,1:ns)/xtemp
     species_mass_rate(l,1:ns) = species_mass_rate(l,1:ns) - entrainment_rate*species_mass(l,1:ns)/xtemp
     
-    return
     end subroutine do_fire
 
 ! --------------------------- heskestad plume -------------------------------------------
@@ -670,7 +666,6 @@ module fire_routines
             ventptr%mflow(1,l)*ventptr%species_fraction(l,ts)*(1.0_eb-fraction)*deltt
     end do
 
-    return
     end subroutine integrate_mass
 
 ! --------------------------- vent_jets -------------------------------------------
@@ -760,7 +755,7 @@ module fire_routines
         roomptr => roominfo(i)
         roomptr%qdot_doorjet = flows_doorjets(i,q,u) + flows_doorjets(i,q,l)
     end do
-    return
+
     end subroutine vent_jets
 
 ! --------------------------- vent_jet_fire -------------------------------------------
@@ -839,7 +834,7 @@ module fire_routines
         species_mass_rate(u,fuel_hcl) = -flowfrac*room2ptr%species_mass(u,fuel_hcl)
         species_mass_rate(u,fuel_h2o) = -flowfrac*room2ptr%species_mass(u,fuel_h2o)
     end if
-    return
+
     end subroutine vent_jet_fire
 
 ! --------------------------- flame_height -------------------------------------------
@@ -869,7 +864,6 @@ module fire_routines
         flame_height = f_height
     end if
     
-    return
     end function flame_height
 
 
@@ -961,7 +955,6 @@ module fire_routines
         end if
     end do
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
-    return
 
     end subroutine get_gas_temp_and_velocity
 
@@ -1050,7 +1043,6 @@ module fire_routines
         end if
     end if
 
-    return
     end subroutine get_ceiling_jet_temp_and_velocity
 
 ! --------------------------- get_plume_temp_and_velocity -------------------------------------------
@@ -1133,7 +1125,7 @@ module fire_routines
             uplume = uplume*exp(-(r/sigma_u)**2)
         end if
     end if
-    return
+
     end subroutine get_plume_temp_and_velocity
 
 ! --------------------------- update_species (toxict) -------------------------------------------
@@ -1223,7 +1215,6 @@ module fire_routines
 
     end do
 
-    return
     end subroutine update_species
 
 ! --------------------------- collect_fire_data_for_smokeview -------------------------------------------
@@ -1252,7 +1243,7 @@ module fire_routines
         smv_height(i) = f_height
         smv_room(i) = fireptr%room
     end do
-    return
+
     end subroutine collect_fire_data_for_smokeview
 
 ! --------------------------- update_fire_ignition -------------------------------------------
@@ -1344,7 +1335,6 @@ module fire_routines
         end do
     end if
 
-    return
     end subroutine update_fire_ignition
 
 ! --------------------------- check_fire_ignition -------------------------------------------
@@ -1395,8 +1385,6 @@ module fire_routines
         tmpob(1) = 0.0_eb
         tmpob(2) = told + 2.0_eb*dt
     end if
-
-    return
 
     end subroutine check_fire_ignition
 

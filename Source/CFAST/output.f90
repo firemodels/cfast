@@ -67,7 +67,6 @@ module output_routines
     write (iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
     write (iunit,'(A,A)')                    'Compiler         : ',TRIM(COMPILER_VERSION())
     write (iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
-    return
 
     end subroutine output_version
 
@@ -94,7 +93,6 @@ module output_routines
         iminor = modulo(version,100)/10
         iminorrev = modulo(version,10)
     end if
-    return
 
     end subroutine splitversion
 
@@ -117,8 +115,6 @@ module output_routines
         call output_initial_targets
         call output_initial_detectors
     end if
-
-    return
 
 5000 format ('Data file: ',a,/,'Title: ',a)
     end subroutine output_initial_conditions
@@ -162,7 +158,6 @@ module output_routines
     else if (outputformat==1) then
         call results_compressed (iofilo)
     end if
-    return
 
 4090 format (//,28('*'))
 5000 format ('* Time = ',f8.1,' seconds. *')
@@ -196,7 +191,6 @@ module output_routines
                 ivolpercent, roomptr%absorb(u),roomptr%absorb(l), roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
-    return
 
 5000 format (' ')
 5010 format ('Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure')
@@ -261,8 +255,6 @@ module output_routines
         end if
     end do
     
-    return
-
 5000 format (//,'FIRES',//,&
          'Compartment    Fire          Ign   Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
          'Convec.   Radiat.    Pyrolysate  Trace',/, &
@@ -325,7 +317,6 @@ module output_routines
             end do
         end do
     end if
-    return
 
 5000 format (a10)
 5010 format (' ')
@@ -537,7 +528,6 @@ module output_routines
             write (iounit,5020) roomptr%qdot_doorjet
         end if
     end do
-    return
 
 5000 format (' ')
 5010 format (' Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure',/, &
@@ -602,8 +592,6 @@ module output_routines
         end do
     end if
 
-    return
-    
     5000 format (//,'SURFACES AND TARGETS',//, &
     'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     ', &
     'Net          Gas         Heat',/, &
@@ -663,8 +651,6 @@ module output_routines
         end do
     end if
 
-    return
-
 5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
     '                                      Sensor         Smoke',//, &
     'Number  Compartment        Type       Temp (C)       Temp (C)      Vel (m/s)     Obs (1/m)          Activated',/, &
@@ -700,7 +686,6 @@ module output_routines
     write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
        exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset, &
        interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction
-    return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
     'Interior       Interior       Exterior       Exterior       Interior       Exterior',/, &
@@ -755,8 +740,6 @@ module output_routines
             end do
         end do
     end if
-    
-    return
     
 5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling    ', &
@@ -997,8 +980,6 @@ module output_routines
          end do
     end if
 
-     return
-  
 5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')
 5160 format (//,'VENT RAMPS',//, &
     'Type  From           To              Vent      ',/, &
@@ -1043,7 +1024,6 @@ module output_routines
         end do
     end do
     write (iofilo,5060)
-    return
 
 5000 format (//,'All compartment surfaces are adiabatic.')
      5010 format (//,'THERMAL PROPERTIES',//,'Name',4X,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
@@ -1093,7 +1073,7 @@ module output_routines
             end do
         end do
     end if
-    return
+
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
      5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
@@ -1135,7 +1115,7 @@ module output_routines
             (targptr%normal(j),j=1,3), targptr%depth_loc,  targptr%thickness, trim(targptr%material)
 5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),f8.3,11x,f8.3,6x,a)
     end do
-    return
+
     end subroutine output_initial_targets
 
 ! --------------------------- output_initial_detectors -------------------------------------------
@@ -1182,7 +1162,7 @@ module output_routines
 
         write (iofilo,'(a)') trim(outbuf)
     end do
-    return
+
     end subroutine output_initial_detectors
 
 ! --------------------------- flwout -------------------------------------------
@@ -1239,7 +1219,6 @@ module output_routines
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
         if (validation_flag.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
-    return
 
 5000 format (2x,1pg11.3)
 5010 format (f6.0,7x)
@@ -1293,7 +1272,6 @@ module output_routines
         end if
     end if
 
-    return
     end subroutine write_error_component
 
 ! --------------------------- output_debug -------------------------------------------
@@ -1411,7 +1389,6 @@ module output_routines
             end do
         end if
     end if
-    return
 
 5000 format (' T = ',1pg12.4,' DT = ',1pg12.4)
 5010 format (' For room ',i3,' at time      T ')
@@ -1443,7 +1420,6 @@ module output_routines
     call results_compressed (iofilstat)
     flush (unit=iofilstat)
 10  continue
-    return
 
 5001 FORMAT('Status at T = ',1pg11.2, ' DT = ',g11.3, ' STEPS = ',i0)
     end subroutine output_status

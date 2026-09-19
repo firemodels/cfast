@@ -332,7 +332,6 @@
     call setup_slice_iso
 
     close (iofili)
-    return
 
 5022 format ('***Error, Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
@@ -490,8 +489,6 @@
     call delete_output_files (residcsv)
     call delete_output_files (slabcsv)
 
-    return
-
     end subroutine open_files
 
     ! --------------------------- exehandle -------------------------------------------)
@@ -589,8 +586,6 @@
         stop
     end if
     
-    return
-
     end subroutine exehandle
 
     ! --------------------------- setup_slice_iso -------------------------------------------
@@ -827,7 +822,7 @@
     else
         get_igrid=-1
     end if
-    return
+
     end function get_igrid
 
     ! --------------------------- set_grid -------------------------------------------

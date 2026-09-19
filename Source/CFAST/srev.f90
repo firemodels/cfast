@@ -17,6 +17,4 @@
     write (revision_date,'(A)') TRIM(GITDATE_PP)
     write (compile_date,'(A)')  TRIM(BUILDDATE_PP)
 
-    return
-
     end subroutine get_info

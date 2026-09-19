@@ -177,7 +177,6 @@ module mflow_routines
 
     end do
 
-    return
     end subroutine mechanical_flow
 
 ! --------------------------- mv_fan -------------------------------------------
@@ -272,7 +271,6 @@ module mflow_routines
     else
         mv_fraction = min(1.0_eb,max(fraction,0.0_eb))
     end if
-    return
     
     end function mv_fraction
 

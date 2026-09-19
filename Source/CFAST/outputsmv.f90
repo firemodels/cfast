@@ -247,7 +247,6 @@
     ! zone model devices
     call ssheaders_smv(.false.)
 
-    return
     end subroutine output_smokeview
 
     ! ---------------------------------- get_vent_info -------------------------------------------------
@@ -369,8 +368,6 @@
     vred = 1.0_eb
     vgreen = 1.0_eb
     vblue = 1.0_eb
-
-    return
 
     end subroutine get_vent_info
 
@@ -573,7 +570,7 @@
     write (iofilsmvplt) version
     write (iofilsmvplt) nrm
     write (iofilsmvplt) nfires
-    return
+
     end subroutine output_smokeview_header
 
     ! --------------------------- getabsdetector -------------------------------------------
@@ -598,8 +595,6 @@
     positionvector(5) = 0.0_eb
     positionvector(6) = -1.0_eb
 
-    return
-
     end subroutine getabsdetector
 
 ! --------------------------- getabstarget -------------------------------------------
@@ -623,8 +618,6 @@
     positionvector(1) = positionvector(1) + roomptr%x0
     positionvector(2) = positionvector(2) + roomptr%y0
     positionvector(3) = positionvector(3) + roomptr%z0
-
-    return
 
     end subroutine getabstarget
 

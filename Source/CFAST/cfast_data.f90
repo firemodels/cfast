@@ -6,7 +6,6 @@ module cenviro
     use precision_parameters
     
     implicit none
-    save
 
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
     
@@ -21,13 +20,10 @@ end module cenviro
 module devc_data
 
     use precision_parameters
-
     use  cfast_types, only: target_type, detector_type
-    
     use cparams, only: mxthrmplen, mxtarg, mxdtect
     
     implicit none
-    save
 
     ! variables for calculation of flux to a target
 
@@ -51,7 +47,6 @@ module  diag_data
     use precision_parameters
     
     implicit none
-    save
 
     logical :: residprn, jacprn
     logical :: residfirst = .true.
@@ -81,13 +76,10 @@ end module diag_data
 module dump_data
     
     use precision_parameters
-    
     use cfast_types, only: dump_type
-    
     use cparams, only: mx_dumps, mxitems
     
     implicit none
-    save
     
     integer, parameter :: num_csvfiles = 5 
     integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
@@ -108,14 +100,11 @@ module dump_data
 module fire_data
 
     use precision_parameters
-    
     use cfast_types, only: fire_type, table_type
-    
     use cparams, only: mxpts
     use defaults, only: default_sigma_s
     
     implicit none
-    save
 
     ! fire variables
 
@@ -143,13 +132,10 @@ module fire_data
 module material_data
 
     use precision_parameters
-
     use cfast_types, only: material_type
-    
     use cparams, only : mxmatl
     
     implicit none
-    save
 
     integer n_matl                                                              ! number of thermal properties in the simulation
     type (material_type), allocatable, dimension(:), target  :: material_info   ! structured thermal property data
@@ -160,13 +146,12 @@ module material_data
     
 ! --------------------------- namelist_data -------------------------------------------
 
-    module namelist_data
+module namelist_data
 
     use precision_parameters
     use cparams, only: lbufln
 
     implicit none
-    save
     
     logical :: convert_negative_distances = .true.  ! true to convert negative vent, fire, and target locations
                                                     ! to distance from compartment origin
@@ -189,7 +174,7 @@ module material_data
     logical :: diagflag = .false.
     logical :: dumpflag = .false.
 
-    end module namelist_data
+end module namelist_data
     
 ! --------------------------- option_data -------------------------------------------
 
@@ -198,7 +183,6 @@ module option_data
     use precision_parameters
     
     implicit none
-    save
 
     integer, parameter :: mxopt = 18
 
@@ -238,13 +222,10 @@ module option_data
 module room_data
 
     use precision_parameters
-    
     use cfast_types, only: room_type
-    
     use cparams, only: nnodes, ns, mxwal
     
     implicit none
-    save
 
     ! compartment variables
 
@@ -287,7 +268,6 @@ module setup_data
     use precision_parameters
     
     implicit none
-    save
     
     integer :: i_time_end, i_time_step
     real(eb) :: ss_out_interval = 0, print_out_interval = 0, smv_out_interval = 0, time_end
@@ -332,7 +312,6 @@ module smkview_data
     use cparams, only: mxfires, mxrooms, mxslice
     
     implicit none
-    save
 
     integer, dimension (mxfires) :: smv_room
     real(eb), dimension(mxfires) :: smv_qdot, smv_zfire, smv_xfire, smv_yfire, smv_height
@@ -360,7 +339,7 @@ module solver_data
     use defaults, only: default_stpmax  
     
     implicit none
-    save
+
     ! default solver tolerences
     real(eb) :: aptol = 1.0e-6_eb               ! absolute pressure tolerance
     real(eb) :: rptol = 1.0e-6_eb               ! relative pressure tolerance
@@ -437,13 +416,10 @@ end module spreadsheet_output_data
 module vent_data
 
     use precision_parameters
-
     use cfast_types, only: vent_type
-    
     use cparams, only: mxhvents, mxfslab
     
     implicit none
-    save
 
     ! hvent variables
     integer :: n_hvents                                                 ! number of horizontal vents

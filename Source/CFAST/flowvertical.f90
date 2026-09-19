@@ -177,7 +177,6 @@ module vflow_routines
         end do
     end do
 
-    return
     end subroutine vertical_flow
 
 ! --------------------------- ventcf -------------------------------------------
@@ -333,7 +332,7 @@ module vflow_routines
             temperature_vent(i) = exterior_ambient_temperature
         end if
     end do
-    return
+
     end subroutine ventcf
 
 end module vflow_routines

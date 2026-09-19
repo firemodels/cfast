@@ -9,7 +9,7 @@ module vflow_routines
     
     use cenviro, only: cp, rgas
     use cparams, only: u, l, m, q, deltatemp_min, pp, mxrooms
-    use option_data, only: fvflow, option, on
+    use option_data, only: option, on
     use room_data, only: n_rooms, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, &
                         exterior_abs_pressure
     use vent_data, only: n_vvents, vventinfo
@@ -45,7 +45,6 @@ module vflow_routines
 
     uflw_vf(1:n_rooms+1,1:ns+2,u) = 0.0_eb
     uflw_vf(1:n_rooms+1,1:ns+2,l) = 0.0_eb
-    if (option(fvflow)/=on) return
     if (n_vvents==0) return
 
     do i = 1, n_vvents

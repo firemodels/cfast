@@ -6,7 +6,7 @@
     
     use cparams, only: u, l, w_from_room, w_from_wall, mxrooms, nwal
     use fire_data, only: n_fires, fireinfo
-    use option_data, only: fconvec, option, on
+    use option_data, only: option, on
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections
 
     implicit none
@@ -40,8 +40,6 @@
     flows_convection(1:n_rooms,u) = 0.0_eb
     flows_convection(1:n_rooms,l) = 0.0_eb
     fluxes_convection(1:n_rooms,1:nwal) = 0.0_eb
-
-    if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms
     do iw = 1, n_cons

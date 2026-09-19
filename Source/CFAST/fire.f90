@@ -14,7 +14,7 @@ module fire_routines
         mx_hsep, t_max, ns_mass, flaming, smoldering, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, &
         check_state, set_state
     use fire_data, only: n_fires, fireinfo, lower_o2_limit, summed_total_trace, tgignt, sigma_s
-    use option_data, only: ffire, option, fdfire, on, off
+    use option_data, only: option, on, off
     use room_data, only: n_rooms, ns, roominfo, interior_ambient_temperature, adiabatic_walls
     use setup_data, only: iofill, iofilo, errormessage
     use smkview_data, only: smv_room, smv_height, smv_qdot, smv_xfire, smv_yfire, smv_zfire
@@ -56,8 +56,6 @@ module fire_routines
     flows_fires(1:n_rooms+1,1:ns+2,u) = 0.0_eb
     flows_fires(1:n_rooms+1,1:ns+2,l) = 0.0_eb
     nfire = 0
-
-    if (option(ffire)==off) return
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
@@ -703,8 +701,8 @@ module fire_routines
     flows_doorjets(1:n_rooms+1,1:ns+2,u) = 0.0_eb
     roominfo(1:n_rooms+1)%qdot_doorjet = 0.0_eb
     djetflg = .false.
-  !  return
-    if (option(fdfire)/=on.or.n_fires<=0) return
+
+    if (n_fires<=0) return
 
     ! if no vents have a vent jet fire then exit
     do i = 1, n_hvents

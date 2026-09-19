@@ -16,8 +16,8 @@
         default_min_cutoff_relp, default_max_cutoff_relp, default_o2_mass_fraction
     
     use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo, init_devc
-    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
-        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
+    use diag_data, only: partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
+        verification_time_step, verification_fire_heat_flux, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
@@ -25,8 +25,8 @@
     use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
         compflag, devcflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, &
         dumpflag, convert_negative_distances
-    use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
-        fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
+    use option_data, only: option, on, off, frad, &
+        fdebug, fpsteady, fpdassl, fresidprn
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, &
         relative_humidity, adiabatic_walls, &
@@ -2311,21 +2311,14 @@ continue
     integer :: ios, i
     integer, intent(in) :: lu
 
-    character(len=8) :: mode
-    character(len=3) :: horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
-        ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
-        conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
-        steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, residual_debug_print, &
-        layer_mixing_sub_model, adiabatic_target_verification
-    character(len=10) :: gas_absorbtion_sub_model
+    character(len=3) :: radiation_sub_model, debug_print, &
+        steady_state_initial_conditions, dassl_debug_print, residual_debug_print, &
+        adiabatic_target_verification
     real(eb), dimension(mxpts) :: t, f
     real(eb) :: radiative_incident_flux
-    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
-        horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
-        ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
-        conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
-        steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
-        residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux, &
+    namelist /DIAG/ partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
+        radiation_sub_model, debug_print, steady_state_initial_conditions, dassl_debug_print, &
+        residual_debug_print, adiabatic_target_verification, radiative_incident_flux, &
         upper_layer_thickness, verification_time_step, verification_fire_heat_flux
 
     ios = 1
@@ -2357,8 +2350,6 @@ continue
         call set_defaults
         read(lu,DIAG)
 
-        if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.   
-        
         if (upper_layer_thickness/=-1001._eb) radi_verification_flag = .true.
         if (partial_pressure_h2o/=-1001._eb) radi_verification_flag = .true.
         if (partial_pressure_co2/=-1001._eb) radi_verification_flag = .true.
@@ -2378,41 +2369,11 @@ continue
                 end if
             end do
         end if
-        if (fire_sub_model == 'OFF') then
-            option(ffire) = off
-        end if 
-        if (horizontal_flow_sub_model == 'OFF') then
-            option(fhflow) = off
-        end if 
-        if (entrainment_sub_model == 'OFF') then
-            option(fentrain) = off
-        end if 
-        if (vertical_flow_sub_model == 'OFF') then
-            option(fvflow) = off
-        end if 
-        if (ceiling_jet_sub_model == 'OFF') then
-            option(fcjet) = off
-        end if 
-        if (door_jet_fire_sub_model == 'OFF') then
-            option(fdfire) = off
-        end if 
-        if (convection_sub_model == 'OFF') then
-            option(fconvec) = off
-        end if 
         if (radiation_sub_model == 'OFF') then
             option(frad) = off
         end if 
-        if (conduction_sub_model == 'OFF') then
-            option(fconduc) = off
-        end if 
         if (trim(debug_print) == 'ON') then
             option(fdebug) = on
-        end if 
-        if (mechanical_flow_sub_model == 'OFF') then
-            option(fmflow) = off
-        end if 
-        if (keyboard_input == 'OFF') then
-            option(fkeyeval) = off
         end if 
         if (trim(steady_state_initial_conditions) == 'ON') then
             option(fpsteady) = on
@@ -2420,18 +2381,9 @@ continue
         if (trim(dassl_debug_print) == 'ON') then
             option(fpdassl) = on
         end if 
-        if (trim(oxygen_tracking) == 'ON') then
-            option(ffire) = on
-        end if 
-        if (trim(gas_absorbtion_sub_model) == 'CONSTANT') then
-            option(fgasabsorb) = off
-        end if 
         if (trim(residual_debug_print) == 'ON') then
             option(fresidprn) = on
         end if 
-        if (trim(layer_mixing_sub_model) == 'OFF') then
-            option(flayermixing) = off
-        end if         
         if (trim(adiabatic_target_verification) == 'ON') then 
             verification_ast = .true.
             radiative_incident_flux_AST = radiative_incident_flux*1000._eb ! W/m^2 is used in the calculation
@@ -2445,30 +2397,16 @@ continue
 
     subroutine set_defaults
 
-    rad_solver                      = 'NULL'
     partial_pressure_h2o            = -1001._eb
     partial_pressure_co2            = -1001._eb
     gas_temperature                 = -1001._eb
     t                               = -1001._eb
     f                               = -1001._eb
-    fire_sub_model                  = 'ON'
-    horizontal_flow_sub_model       = 'ON'
-    entrainment_sub_model           = 'ON'
-    vertical_flow_sub_model         = 'ON'
-    ceiling_jet_sub_model           = 'ON'
-    door_jet_fire_sub_model         = 'ON'
-    convection_sub_model            = 'ON'
     radiation_sub_model             = 'ON'
-    conduction_sub_model            = 'ON'
     debug_print                     = 'OFF'
-    mechanical_flow_sub_model       = 'ON'
-    keyboard_input                  = 'ON'
     steady_state_initial_conditions = 'OFF'
     dassl_debug_print               = 'OFF'
-    oxygen_tracking                 = 'OFF'
-    gas_absorbtion_sub_model        = 'CALCULATED'
     residual_debug_print            = 'OFF'
-    layer_mixing_sub_model          = 'ON'
     adiabatic_target_verification   = 'OFF'
     radiative_incident_flux         = 0._eb
     upper_layer_thickness           = -1001._eb

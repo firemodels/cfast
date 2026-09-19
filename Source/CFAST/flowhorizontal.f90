@@ -11,7 +11,7 @@ module hflow_routines
     use cenviro, only: cp
     use cparams, only: l, u, m, q, mxrooms, mxhvents, mxfslab, deltatemp_min
     use diag_data, only: dbtime, prnslab
-    use option_data, only: fhflow, fentrain, option, on
+    use option_data, only: option, on
     use room_data, only: n_rooms, ns, roominfo
     use spreadsheet_output_data, only: outarray
     use solver_data, only: i_wallmap, i_speciesmap
@@ -64,7 +64,6 @@ module hflow_routines
     vsas(1:2,1:mxhvents) = 0.0_eb
     vasa(1:2,1:mxhvents) = 0.0_eb
     
-    if (option(fhflow)/=on) return
     if (n_hvents==0) return
 
     do i = 1, n_hvents
@@ -124,15 +123,9 @@ module hflow_routines
 
             !  calculate entrainment type mixing at the vents
 
-            if (option(fentrain)==on) then
-                call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,&
-                    uflw3,vsas(1,i),vasa(1,i))
-                ventptr%h_mflow_mix(1,1:2) = uflw3(1,m,1:2)
-                ventptr%h_mflow_mix(2,1:2) = uflw3(2,m,1:2)
-            else
-                ventptr%h_mflow_mix(1,1:2) = 0.0_eb
-                ventptr%h_mflow_mix(2,1:2) = 0.0_eb
-            end if
+            call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas(1,i),vasa(1,i))
+            ventptr%h_mflow_mix(1,1:2) = uflw3(1,m,1:2)
+            ventptr%h_mflow_mix(2,1:2) = uflw3(2,m,1:2)
 
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
@@ -140,18 +133,14 @@ module hflow_routines
             if (iroom1>=1.and.iroom1<=n_rooms) then
                 uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
                 uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
-                if (option(fentrain)==on) then
-                    uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw3(1,1:ns+2,l)
-                    uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw3(1,1:ns+2,u)
-                end if
+                uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw3(1,1:ns+2,l)
+                uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw3(1,1:ns+2,u)
             end if
             if (iroom2>=1.and.iroom2<=n_rooms) then
                 uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
                 uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
-                if (option(fentrain)==on) then
-                    uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw3(2,1:ns+2,l)
-                    uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw3(2,1:ns+2,u)
-                end if
+                uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw3(2,1:ns+2,l)
+                uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw3(2,1:ns+2,u)
             end if
         end if
 
@@ -194,8 +183,6 @@ module hflow_routines
     uflw_lk(1:n_rooms,1:ns+2,l) = 0.0_eb
     uflw_lk(1:n_rooms,1:ns+2,u) = 0.0_eb
 
-    
-    if (option(fhflow)/=on) return
     if (n_leaks==0) return
 
     do i = 1, n_leaks

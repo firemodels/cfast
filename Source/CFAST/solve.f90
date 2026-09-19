@@ -33,7 +33,7 @@ module solve_routines
         partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
     use option_data, only: option, mxopt, on, off, iprtalg, ovtime, tovtime, tottime, prttime, numjac, numstep, numresd, fpdassl, &
-        stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn, fkeyeval
+        stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
@@ -744,38 +744,34 @@ module solve_routines
             icode = 1
             return
         else if (hit>1) then
-            if (option(fkeyeval)==on) then
-                if (ch==59) then
-                    write (*,5010) t, dt
-                    if (output_interactive_help ()) icode = 1
-                else if (ch==60) then
-                    if (option(fdebug)==on) then
-                        option(fdebug) = off
-                        write (*,*) 'debug is now off'
-                        write (*,*)
-                    else
-                        option(fdebug) = on
-                    end if
-                else if (ch==62) then
-                    call output_debug(1,t,dt,ieqmax)
-                else if (ch==63) then
-                    write (*,5010) t, dt
-                else if (ch==64) then
-                    write (*,5010) t, dt
-                    write (*,*) 'enter time at which to pause: '
-                    read (*,*) rcode
-                    tpaws = rcode
-                    tout = min(tpaws,tout)
-                else if (ch==65) then
-                    if (option(fpdassl)==on) then
-                        option(fpdassl) = off
-                        write (*,*) 'dassl debug is now off'
-                    else
-                        option(fpdassl) = on
-                    end if
-                end if
-            else
+            if (ch==59) then
                 write (*,5010) t, dt
+                if (output_interactive_help ()) icode = 1
+            else if (ch==60) then
+                if (option(fdebug)==on) then
+                    option(fdebug) = off
+                    write (*,*) 'debug is now off'
+                    write (*,*)
+                else
+                    option(fdebug) = on
+                end if
+            else if (ch==62) then
+                call output_debug(1,t,dt,ieqmax)
+            else if (ch==63) then
+                write (*,5010) t, dt
+            else if (ch==64) then
+                write (*,5010) t, dt
+                write (*,*) 'enter time at which to pause: '
+                read (*,*) rcode
+                tpaws = rcode
+                tout = min(tpaws,tout)
+            else if (ch==65) then
+                if (option(fpdassl)==on) then
+                    option(fpdassl) = off
+                    write (*,*) 'dassl debug is now off'
+                else
+                    option(fpdassl) = on
+                end if
             end if
         end if
     end if

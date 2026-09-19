@@ -16,7 +16,7 @@ module target_routines
     use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
         idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd, cjetvelocitymin
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
-    use option_data, only: fcjet, option, off
+    use option_data, only: option, off
     use room_data, only: roominfo, exterior_ambient_temperature
     use setup_data, only: iofill, iofilsmv, iofilsmvplt, iofilsmvzone
 
@@ -901,34 +901,18 @@ module target_routines
         xloc = dtectptr%center(1)
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)
-        if (option(fcjet)==off) then
-            ! if ceiling jet option is off, things default to appropriate layer temperature
-            if (zloc>roomptr%depth(l)) then
-                dtectptr%temp_gas = roomptr%temp(u)
-                dtectptr%obscuration = roomptr%species_output(u,soot)
-                dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
-                dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
-            else
-                dtectptr%temp_gas = roomptr%temp(l)
-                dtectptr%obscuration = roomptr%species_output(l,soot)
-                dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
-                dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
-            end if
-            dtectptr%velocity = 0.1_eb
+        !  temeperature is determined by plume and ceiling jet algorithms
+        call get_gas_temp_and_velocity (iroom,xloc,yloc,zloc,tg,vg)
+        dtectptr%temp_gas = tg
+        dtectptr%velocity = vg(4)
+        if (zloc>roomptr%depth(l)) then
+            dtectptr%obscuration = roomptr%species_output(u,soot)
+            dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
+            dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
         else
-            ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
-            call get_gas_temp_and_velocity (iroom,xloc,yloc,zloc,tg,vg)
-            dtectptr%temp_gas = tg
-            dtectptr%velocity = vg(4)
-            if (zloc>roomptr%depth(l)) then
-                dtectptr%obscuration = roomptr%species_output(u,soot)
-                dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
-                dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
-            else
-                dtectptr%obscuration = roomptr%species_output(l,soot)
-                dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
-                dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
-            end if
+            dtectptr%obscuration = roomptr%species_output(l,soot)
+            dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
+            dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
         end if
     end do
 

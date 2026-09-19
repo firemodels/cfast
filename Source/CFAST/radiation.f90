@@ -9,7 +9,7 @@ module radiation_routines
 
     use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot, radiation_fix, vminfrac
     use fire_data, only: n_fires, fireinfo
-    use option_data, only: frad, fgasabsorb, option, on, off
+    use option_data, only: frad, option, on, off
     use room_data, only: n_rooms, roominfo
     use setup_data, only: iofill
 
@@ -84,13 +84,8 @@ module radiation_routines
             end if
         end do
         if (.not.black) then
-            if (option(fgasabsorb)==off) then
-                roomptr%absorb(u) = defabsup
-                roomptr%absorb(l) = defabslow
-            else
-                roomptr%absorb(u) = absorb(i, u)
-                roomptr%absorb(l) = absorb(i, l)
-            end if
+            roomptr%absorb(u) = absorb(i, u)
+            roomptr%absorb(l) = absorb(i, l)
         end if
         rabsorb(1) = roomptr%absorb(u)
         rabsorb(2) = roomptr%absorb(l)

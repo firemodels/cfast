@@ -66,9 +66,6 @@ module  diag_data
     real(eb) :: verification_time_step = 0._eb
     ! Diagnostic variables for radiative properties
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
-    ! Diagnostic veriables for radiation solver
-    character(len=64) :: rad_solver
-    logical :: radi_radnnet_flag = .false.
     ! Diagnostic variables for adiabatic target surface temperature
     logical :: verification_ast=.false.
     real(eb) :: radiative_incident_flux_AST = 0._eb
@@ -208,24 +205,12 @@ module option_data
     integer, parameter :: off = 0
     integer, parameter :: on = 1
 
-    integer, parameter :: ffire = 1
-    integer, parameter :: fhflow = 2
-    integer, parameter :: fentrain = 3
-    integer, parameter :: fvflow = 4
-    integer, parameter :: fcjet = 5
-    integer, parameter :: fdfire = 6
-    integer, parameter :: fconvec = 7
     integer, parameter :: frad = 8
-    integer, parameter :: fconduc = 9
     integer, parameter :: fdebug = 10
-    integer, parameter :: fgasabsorb = 11
-    integer, parameter :: fmflow = 12
-    integer, parameter :: fkeyeval = 13
     integer, parameter :: fpsteady = 14
     integer, parameter :: fpdassl = 15
     integer, parameter :: foxygen = 16
     integer, parameter :: fresidprn = 17
-    integer, parameter :: flayermixing = 18
 
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet

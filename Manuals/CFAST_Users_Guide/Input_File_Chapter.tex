@@ -655,36 +655,21 @@ By default, CFAST generates a set of output files that includes a formatted read
 \section{Diagnostic Parameters}
 \label{info:DIAG}
 
-The \ct{DIAG} namelist is intended for model verification and developer diagnostics, not normal scenarios. Unless noted otherwise, the sub-model switches accept \ct{ON} or \ct{OFF}.
+The \ct{DIAG} namelist is intended for model verification and developer diagnostics, not normal scenarios. These parameters can only be entered manually in the input file using a single \ct{DIAG} namelist record.
 \begin{description}
 \item[\texttt{ADIABATIC\_TARGET\_VERIFICATION}] Enables the adiabatic-surface-temperature verification calculation; default \ct{OFF}. When enabled, \ct{RADIATIVE_INCIDENT_FLUX} supplies the imposed flux.
-\item[\texttt{CEILING\_JET\_SUB\_MODEL}] Enables the ceiling-jet calculation; default \ct{ON}.
-\item[\texttt{CONDUCTION\_SUB\_MODEL}] Enables solid conduction; default \ct{ON}.
-\item[\texttt{CONVECTION\_SUB\_MODEL}] Enables convective heat transfer; default \ct{ON}.
 \item[\texttt{DASSL\_DEBUG\_PRINT}] Enables DASSL diagnostic output; default \ct{OFF}.
 \item[\texttt{DEBUG\_PRINT}] Enables general debug output; default \ct{OFF}.
-\item[\texttt{DOOR\_JET\_FIRE\_SUB\_MODEL}] Enables burning in a door jet; default \ct{ON}.
-\item[\texttt{ENTRAINMENT\_SUB\_MODEL}] Enables plume entrainment; default \ct{ON}.
 \item[\texttt{F}] Gas-temperature values in \unit{\degreeCelsius} for the verification history defined at times \ct{T}; both arrays are required together.
-\item[\texttt{FIRE\_SUB\_MODEL}] Enables the fire calculation; default \ct{ON}.
-\item[\texttt{GAS\_ABSORBTION\_SUB\_MODEL}] Selects \ct{CALCULATED} gas absorption, the default, or \ct{CONSTANT}. The parameter name retains its source-code spelling.
 \item[\texttt{GAS\_TEMPERATURE}] Gas temperature in \unit{\degreeCelsius} for radiation verification. Use with both partial-pressure parameters below.
-\item[\texttt{HORIZONTAL\_FLOW\_SUB\_MODEL}] Enables horizontal vent flow; default \ct{ON}.
-\item[\texttt{KEYBOARD\_INPUT}] Enables interactive keyboard input during a run; default \ct{ON}.
-\item[\texttt{LAYER\_MIXING\_SUB\_MODEL}] Enables interlayer mixing; default \ct{ON}.
-\item[\texttt{MECHANICAL\_FLOW\_SUB\_MODEL}] Enables mechanical ventilation flow; default \ct{ON}.
-\item[\texttt{MODE}] Reserved compatibility input. The current reader accepts the value but does not use it.
-\item[\texttt{OXYGEN\_TRACKING}] Legacy diagnostic switch. In the current reader, \ct{ON} ensures that the fire sub-model remains enabled.
 \item[\texttt{PARTIAL\_PRESSURE\_CO2}] CO$_2$ partial pressure in Pa for radiation verification.
 \item[\texttt{PARTIAL\_PRESSURE\_H2O}] H$_2$O partial pressure in Pa for radiation verification.
 \item[\texttt{RADIATION\_SUB\_MODEL}] Enables thermal radiation; default \ct{ON}.
 \item[\texttt{RADIATIVE\_INCIDENT\_FLUX}] Imposed incident flux in \unit{kW/m^2} for adiabatic-target verification; default 0~\unit{kW/m^2}.
-\item[\texttt{RAD\_SOLVER}] Set to \ct{RADNNET} to use the neural-network radiation solver; otherwise the standard solver is used.
 \item[\texttt{RESIDUAL\_DEBUG\_PRINT}] Enables solver-residual diagnostic output; default \ct{OFF}.
 \item[\texttt{STEADY\_STATE\_INITIAL\_CONDITIONS}] Enables steady-state initialization diagnostics; default \ct{OFF}.
 \item[\texttt{T}] Times in s corresponding to the verification temperatures in \ct{F}.
 \item[\texttt{UPPER\_LAYER\_THICKNESS}] Imposed upper-layer thickness in m for radiation verification.
 \item[\texttt{VERIFICATION\_FIRE\_HEAT\_FLUX}] Imposed fire heat flux in \unit{kW/m^2} for verification.
-\item[\texttt{VERIFICATION\_TIME\_STEP}] Time step in s used by verification calculations; default 0~S.
-\item[\texttt{VERTICAL\_FLOW\_SUB\_MODEL}] Enables vertical vent flow; default \ct{ON}.
+\item[\texttt{VERIFICATION\_TIME\_STEP}] Time step in s used by verification calculations; default 0~s.
 \end{description}

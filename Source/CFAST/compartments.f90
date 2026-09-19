@@ -9,7 +9,7 @@
     use room_data, only: n_rooms, roominfo, ns
     use vent_data, only: hventinfo, vventinfo, mventinfo, n_hvents, n_vvents, n_mvents
     use diag_data, only: radi_verification_flag, upper_layer_thickness
-    use option_data, only: flayermixing, option, off
+    use option_data, only: option, off
     use utility_routines, only: tanhsmooth, mat2mult
     use opening_fractions, only : get_vent_opening
 
@@ -41,8 +41,6 @@
 
     flows_layer_mixing(1:n_rooms,1:ns+2,u) = 0.0_eb
     flows_layer_mixing(1:n_rooms,1:ns+2,l) = 0.0_eb
-
-    if (option(flayermixing)==off) return
 
     do iroom = 1, n_rooms
         roomptr => roominfo(iroom)

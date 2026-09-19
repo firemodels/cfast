@@ -9,7 +9,7 @@ module mflow_routines
     
     use cenviro, only: cp
     use cparams, only: u, l, m, q, soot, soot_flaming, soot_smolder, ts, mxrooms
-    use option_data, only: fmflow, option, off
+    use option_data, only: option, off
     use room_data, only: n_rooms, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
     use vent_data, only: n_mvents, mventinfo
 
@@ -48,7 +48,6 @@ module mflow_routines
     uflw_filtered(1:n_rooms+1,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:n_rooms+1,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
-    if (option(fmflow)==off) return
 
     do i = 1, n_mvents
         ventptr => mventinfo(i)

@@ -500,16 +500,14 @@ A target is any object heated by thermal radiation and convection. If a target i
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the target compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Height of the target above the floor.
 \item[Method] Under \textbf{Normal Vector Points to}, choose \textbf{Specify Normal} to enter the three normal-vector components, or \textbf{Specify Direction} to enable the \textbf{Surface Orientation} dropdown. The input file contains only the selected form, either \ct{NORMAL} or \ct{SURFACE\_ORIENTATION}.
-\item[Normal (X,Y,Z)] (namelist: \ct{NORMAL(1:3)}) Vector of unit length perpendicular to the exposed surface of the target. For example, the vector (-1,0,0) indicates that the target is facing the left ($-x$) wall. The vector (0,0,1) is facing the ceiling. The normal vectors in the $x$, $y$, and $z$ directions from a target at [$x$, $y$, $z$] to a location [$x_L$, $y_L$, $z_L$] are:
-\begin{eqnarray}
-x_N &=& \frac{x_L - x}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}} \\[.1in]
-y_N &=& \frac{y_L - y}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}} \\[.1in]
-z_N &=& \frac{z_L - z}{\sqrt{\brackets{x_L - x}^2 + \brackets{y_L - y}^2 + \brackets{z_L - z}^2}}
-\end{eqnarray}
+\item[Normal (X,Y,Z)] (namelist: \ct{NORMAL(1:3)}) Vector of unit length perpendicular to the exposed surface of the target. For example, the vector (-1,0,0) indicates that the target is facing the left ($-x$) wall. The vector (0,0,1) is facing the ceiling. The normal vector from a target at position $(x,y,z)$ pointing towards an object at location $(x_{\sss L},y_{\sss L},z_{\sss L})$ is:
+\begin{equation}
+(x_{\sss N}, y_{\sss N}, z_{\sss N} ) = \frac{ (x_{\sss L}-x \, , \, y_{\sss L}-y \, , \, z_{\sss L}-z)}{\sqrt{\brackets{x_{\sss L} - x}^2 + \brackets{y_{\sss L} - y}^2 + \brackets{z_{\sss L} - z}^2}}
+\end{equation}
 \item[Surface Orientation] (namelist: \ct{SURFACE\_ORIENTATION}) Available when \textbf{Specify Direction} is selected. Choose one direction from the dropdown: \textbf{CEILING}, \textbf{FLOOR}, \textbf{LEFT WALL}, \textbf{RIGHT WALL}, \textbf{FRONT WALL}, \textbf{BACK WALL}, or the \textbf{ID} of a fire in the target's compartment. The target normal points toward the selected surface or fire.
 \item[Material] (namelist: \ct{MATL_ID}) The material the target is made of. Any material defined on the Thermal Properties tab (Section~\ref{info:MATL}) may be used here. Each target must have a material assigned. There can be only one material per target. If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify no material or arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.
 \item[Thickness] (units: \unit{m}; namelist: \ct{THICKNESS}) The thickness of the target. For a plate target this is the total thickness. For a cylinder target this is the radius.
-\item[Internal Temperature at] (default: 0.5; namelist: \ct{TEMPERATURE_DEPTH}) By default, the reported internal temperature is the temperature at the center of the target, e.g. equidistant from the front and back faces of the target. This parameter overrides this default. 
+\item[Internal Temperature at] (default: 0.5; namelist: \ct{TEMPERATURE_DEPTH}) By default, the reported internal temperature is the temperature at the center of the target, e.g. equidistant from the front and back faces of the target. This parameter overrides this default.
 \item[Depth Units] (namelist: \ct{DEPTH_UNITS}) Character string defining how \ct{TEMPERATURE_DEPTH} is interpreted. If \ct{FRACTION}, \ct{TEMPERATURE_DEPTH} is a fraction of target thickness. If \ct{M}, \ct{TEMPERATURE_DEPTH} is the actual depth in \unit{m}.
 \item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, calculates the adiabatic surface temperature of the target using the emissivity of the assigned \ct{MATL_ID}. Checking this box prompts the user for the front and back convection coefficients, each 10~\unit{W/(m^2 K)} by default. These values are converted to \unit{kW/(m^2 K)} when writing \ct{CONVECTION_COEFFICIENTS(1:2)} to the input file.
 \item[Surface Temperature] (namelist: \ct{SURFACE_TEMPERATURE}) Initial target surface temperature in \unit{\degreeCelsius}; default is the initial interior ambient temperature.
@@ -547,7 +545,7 @@ Smoke detectors activate based on the average smoke concentration of the upper l
 \begin{enumerate}
 \item The first sprinkler activated controls the heat release rate of the fire. Subsequent sprinkler activations have no additional effect.
 \item The water spray has no effect on the gas temperature or secondary sprinkler activation times.
-\item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system. 
+\item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system.
 \end{enumerate}
 
 

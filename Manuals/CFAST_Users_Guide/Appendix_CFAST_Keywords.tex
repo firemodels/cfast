@@ -255,36 +255,21 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Ref.} & {\bf Units} & {\bf Default} \\ \hline
-\ct{ADIABATIC_TARGET_VERIFICATION}       & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{CEILING_JET_SUB_MODEL}               & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{CONDUCTION_SUB_MODEL}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{CONVECTION_SUB_MODEL}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{DASSL_DEBUG_PRINT}                   & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{DEBUG_PRINT}                         & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{DOOR_JET_FIRE_SUB_MODEL}             & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{ENTRAINMENT_SUB_MODEL}               & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{F}                                   & Real Array     & Sec.~\ref{info:DIAG} & \degc    & \\ \hline
-\ct{FIRE_SUB_MODEL}                      & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{GAS_ABSORBTION_SUB_MODEL}            & Character      & Sec.~\ref{info:DIAG} &          & \ct{'CALCULATED'} \\ \hline
-\ct{GAS_TEMPERATURE}                     & Real           & Sec.~\ref{info:DIAG} & \degc    & \\ \hline
-\ct{HORIZONTAL_FLOW_SUB_MODEL}           & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{KEYBOARD_INPUT}                      & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{LAYER_MIXING_SUB_MODEL}              & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{MECHANICAL_FLOW_SUB_MODEL}           & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{MODE}                                & Character      & Sec.~\ref{info:DIAG} &          & \\ \hline
-\ct{OXYGEN_TRACKING}                     & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{PARTIAL_PRESSURE_CO2}                & Real           & Sec.~\ref{info:DIAG} & Pa       & \\ \hline
-\ct{PARTIAL_PRESSURE_H2O}                & Real           & Sec.~\ref{info:DIAG} & Pa       & \\ \hline
-\ct{RADIATION_SUB_MODEL}                 & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
-\ct{RADIATIVE_INCIDENT_FLUX}             & Real           & Sec.~\ref{info:DIAG} & kW/m$^2$ & 0 \\ \hline
-\ct{RAD_SOLVER}                          & Character      & Sec.~\ref{info:DIAG} &          & \\ \hline
-\ct{RESIDUAL_DEBUG_PRINT}                & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{STEADY_STATE_INITIAL_CONDITIONS}     & Character      & Sec.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
-\ct{T}                                   & Real Array     & Sec.~\ref{info:DIAG} & s        & \\ \hline
-\ct{UPPER_LAYER_THICKNESS}               & Real           & Sec.~\ref{info:DIAG} & m        & \\ \hline
-\ct{VERIFICATION_FIRE_HEAT_FLUX}         & Real           & Sec.~\ref{info:DIAG} & kW/m$^2$ & \\ \hline
-\ct{VERIFICATION_TIME_STEP}              & Real           & Sec.~\ref{info:DIAG} & s        & 0 \\ \hline
-\ct{VERTICAL_FLOW_SUB_MODEL}             & Character      & Sec.~\ref{info:DIAG} &          & \ct{'ON'} \\ \hline
+\ct{ADIABATIC_TARGET_VERIFICATION}       & Character      & Chap.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{DASSL_DEBUG_PRINT}                   & Character      & Chap.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{DEBUG_PRINT}                         & Character      & Chap.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{F}                                   & Real Array     & Chap.~\ref{info:DIAG} & \degc    &            \\ \hline
+\ct{GAS_TEMPERATURE}                     & Real           & Chap.~\ref{info:DIAG} & \degc    &            \\ \hline
+\ct{PARTIAL_PRESSURE_CO2}                & Real           & Chap.~\ref{info:DIAG} & Pa       &            \\ \hline
+\ct{PARTIAL_PRESSURE_H2O}                & Real           & Chap.~\ref{info:DIAG} & Pa       &            \\ \hline
+\ct{RADIATION_SUB_MODEL}                 & Character      & Chap.~\ref{info:DIAG} &          & \ct{'ON'}  \\ \hline
+\ct{RADIATIVE_INCIDENT_FLUX}             & Real           & Chap.~\ref{info:DIAG} & kW/m$^2$ & 0          \\ \hline
+\ct{RESIDUAL_DEBUG_PRINT}                & Character      & Chap.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{STEADY_STATE_INITIAL_CONDITIONS}     & Character      & Chap.~\ref{info:DIAG} &          & \ct{'OFF'} \\ \hline
+\ct{T}                                   & Real Array     & Chap.~\ref{info:DIAG} & s        &            \\ \hline
+\ct{UPPER_LAYER_THICKNESS}               & Real           & Chap.~\ref{info:DIAG} & m        &            \\ \hline
+\ct{VERIFICATION_FIRE_HEAT_FLUX}         & Real           & Chap.~\ref{info:DIAG} & kW/m$^2$ &            \\ \hline
+\ct{VERIFICATION_TIME_STEP}              & Real           & Chap.~\ref{info:DIAG} & s        &            \\ \hline
 \end{xltabular}
 
 

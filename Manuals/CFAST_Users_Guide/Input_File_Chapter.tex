@@ -650,10 +650,12 @@ By default, CFAST generates a set of output files that includes a formatted read
     \item[Show CFAST Window] If checked, this item allows the user to see the Windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
 \end{description}
 
-\section{Diagnostic Parameters}
+
+
+\chapter{Advanced Diagnostics}
 \label{info:DIAG}
 
-The \ct{DIAG} namelist is intended for model verification and developer diagnostics, not normal scenarios. These parameters can only be entered manually in the input file using a single \ct{DIAG} namelist record.
+The following miscellaneous parameters are used for diagnostics and testing, not typical fire scenarios. They can only be entered manually in the input file using a single \ct{DIAG} namelist record.
 \begin{description}
 \item[\texttt{ADIABATIC\_TARGET\_VERIFICATION}] Enables the adiabatic-surface-temperature verification calculation; default \ct{OFF}. When enabled, \ct{RADIATIVE_INCIDENT_FLUX} supplies the imposed flux.
 \item[\texttt{DASSL\_DEBUG\_PRINT}] Enables DASSL diagnostic output; default \ct{OFF}.
@@ -669,5 +671,5 @@ The \ct{DIAG} namelist is intended for model verification and developer diagnost
 \item[\texttt{T}] Times in s corresponding to the verification temperatures in \ct{F}.
 \item[\texttt{UPPER\_LAYER\_THICKNESS}] Imposed upper-layer thickness in m for radiation verification.
 \item[\texttt{VERIFICATION\_FIRE\_HEAT\_FLUX}] Imposed fire heat flux in \unit{kW/m^2} for verification.
-\item[\texttt{VERIFICATION\_TIME\_STEP}] Time step in s used by verification calculations; default 0~s.
+\item[\texttt{VERIFICATION\_TIME\_STEP}] Time step used by verification calculations.
 \end{description}

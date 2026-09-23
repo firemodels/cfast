@@ -220,7 +220,6 @@ module solve_routines
     !     is presently used by DASSL. The important point is that N_ODES is set to
     !     NOFPRD
 
-    external post_process
     real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5
@@ -548,7 +547,6 @@ module solve_routines
                 call write_error_component (ieqmax)
                 write (*,'(a,i0)') '***Error, dassl - idid = ', idid
                 write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-                call post_process
                 stop
             end if
 
@@ -629,7 +627,6 @@ module solve_routines
                         write (*,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                         write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                         write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
-                        call post_process
                         write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
                         call cfastexit ('solve_simulation', 3)
                         stop

@@ -21,7 +21,7 @@
     use namelist_data, only: input_file_line
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
-        ssdiag, sscalculation, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        ssdiag, sscalculation, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase, errormessage
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -29,7 +29,6 @@
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho
-    use dump_data, only: n_dumps, dumpinfo
 
     implicit none
     external get_info

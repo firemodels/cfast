@@ -13,7 +13,7 @@ module spreadsheet_header_routines
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: n_rooms, roominfo, room_type
-    use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssdiag
+    use setup_data, only: validation_output, iofilsmvzone, iofilsmv, iofilssdiag
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
 
     implicit none

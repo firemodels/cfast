@@ -4,11 +4,10 @@ module exit_routines
     
     use cparams, only: mx_dumps 
     use namelist_data, only: input_file_line, input_file_line_number
-    use setup_data, only: validation_flag, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    use setup_data, only: validation_output, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
         ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, &
         errormessage, stime, project, extension
     use option_data, only: total_steps
-    use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
     
     implicit none
 
@@ -27,13 +26,12 @@ module exit_routines
     integer exitcode
 
     exitcode = errorcode
-    if (errorcode/=0) call post_process
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
             ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
             !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
-            if (.not.validation_flag) write (*, '(''Maximum iteration exit from '',a)') program_name
+            if (.not.validation_output) write (*, '(''Maximum iteration exit from '',a)') program_name
             if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'',a)') program_name
             exitcode = 0
         else
@@ -50,7 +48,7 @@ module exit_routines
             end if
         end if
     else
-        if (.not.validation_flag) write (*, '(''Normal exit from '',a)') program_name
+        if (.not.validation_output) write (*, '(''Normal exit from '',a)') program_name
         if (iofill/=0) write (iofill, '(''Normal exit from '',a)') program_name
     end if
     
@@ -65,43 +63,6 @@ module exit_routines
     stop
     
     contains 
-    
-    subroutine post_process
-    
-    integer, parameter :: nr = 2, ipad = 5, nc = mx_dumps + ipad
-    real(eb) :: dumparray(nr, nc)
-    character(len=128) :: dumpcarray(nr, nc)
-    integer :: i, mxcol
-    
-    if (n_dumps<=0) return
-    dumparray(1, 1:nc) = 0
-    dumparray(2, 2:nc) = -1001
-    dumpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    dumparray(2,1) = 0
-    dumpcarray(1,1) = 'File Name'
-    dumpcarray(2,1) = trim(project) // trim(extension)
-    dumpcarray(1,2) = 'Exit Code'
-    dumparray(2,2) = errorcode
-    dumpcarray(2,2) = '0'
-    dumpcarray(1,3) = 'Exit Routine'
-    dumpcarray(2,3) = trim(name)
-    dumparray(2,3) = 0
-    dumpcarray(1,4) = 'Simulation Time Completed'
-    dumparray(2,4) = stime
-    dumpcarray(1,5) = 'Total Steps Completed'
-    dumparray(2,5) = total_steps
-    
-    do i = 1, n_dumps
-        dumpcarray(1, ipad + i) = trim(dumpinfo(i)%id)
-    end do
-    mxcol = ipad+n_dumps
-    call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
-
-    end subroutine post_process
-    
-    !   copied from outputspreadsheet because of make problems trying to 
-    !       include outputspreadsheet in cfastexit. A better solution should be
-    !       found. 
     
     subroutine writecsvformat (iunit, x, c, nr, nc, nstart, mxr, mxc)
 
@@ -142,8 +103,6 @@ module exit_routines
     end do
     
     end subroutine writecsvformat
-    
-    !call output_spreadsheet_dump (name, errorcode, stime, total_steps)
     
     end subroutine cfastexit
 

@@ -35,12 +35,11 @@ use solve_routines, only : solve_simulation
 use utility_routines, only : cptime, read_command_options
 
 use option_data, only: total_steps
-use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
+use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_output, &
     program_name, errormessage
 
 implicit none
 
-external post_process
 real(eb) :: xdelt, tstop, tbeg, tend
 
 program_name = 'CFAST'
@@ -60,7 +59,7 @@ call initialize_memory
 call read_command_options
 call open_files
 
-if (.not.validation_flag) call output_version(output_unit,'CFAST',cfast_version)
+if (.not.validation_output) call output_version(output_unit,'CFAST',cfast_version)
 call output_version(iofill,'CFAST',cfast_version)
 
 call read_input_file
@@ -80,10 +79,8 @@ call cptime(tbeg)
 call solve_simulation (tstop)
 call cptime(tend)
 
-if (.not.validation_flag) call output_runtime_diagnostics(output_unit,tend-tbeg,total_steps)
+if (.not.validation_output) call output_runtime_diagnostics(output_unit,tend-tbeg,total_steps)
 call output_runtime_diagnostics(iofill,tend-tbeg,total_steps)
-
-call post_process('CFAST',0)
 
 call cfastexit ('CFAST', 0)
 
@@ -101,21 +98,4 @@ subroutine output_runtime_diagnostics(lu, elapsed_time, nsteps)
 end subroutine output_runtime_diagnostics
 
 end program cfast
-
-subroutine post_process (name, errorcode)
-
-use spreadsheet_routines, only : output_spreadsheet_dump
-use dump_data, only: n_dumps
-use option_data, only: total_steps
-use setup_data, only: stime
-
-character(len=*), intent(in) :: name
-integer, intent(in) :: errorcode
-
-! create the spreadsheet file of calculation results if necessary
-if (n_dumps/=0) then
-    call output_spreadsheet_dump (name, errorcode, stime, total_steps)
-end if
-
-end subroutine  post_process
 

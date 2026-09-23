@@ -17,8 +17,6 @@ module initialization_routines
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo, alloc_devc, init_devc
-    use dump_data, only: n_dumps, dumpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices, &
-        alloc_dump, init_dump
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace, &
         alloc_fire, init_fire
     use material_data, only: n_matl, material_info, alloc_matl, init_matl
@@ -566,24 +564,6 @@ module initialization_routines
         n_ssvent = 0
     end if
     
-    ! post-run calculation data
-    if (alloc_dump) then
-        alloc_dump = .false.
-        allocate (dumpinfo(mx_dumps))
-    end if
-    if (init_dump) then
-        init_dump = .false.
-        n_dumps = 0
-        dumpinfo(1:mx_dumps)%file = ' '
-        dumpinfo(1:mx_dumps)%type = ' '
-        dumpinfo(1:mx_dumps)%first_field(1) = ' '
-        dumpinfo(1:mx_dumps)%first_field(2) = ' '
-        dumpinfo(1:mx_dumps)%second_field(1) = ' '
-        dumpinfo(1:mx_dumps)%second_field(2) = ' '
-        dumpinfo(1:mx_dumps)%relative_column = -1
-        dumpinfo(1:mx_dumps)%criterion = -1
-    end if
-
     end subroutine initialize_memory
     
 

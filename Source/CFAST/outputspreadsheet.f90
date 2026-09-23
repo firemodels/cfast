@@ -9,7 +9,7 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist, readcsvformat, tointstring
     
-    use cfast_types, only: fire_type, room_type, detector_type, target_type, vent_type, dump_type, ssout_type, vent_type
+    use cfast_types, only: fire_type, room_type, detector_type, target_type, vent_type, ssout_type, vent_type
 
     use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
         ns, soot, soot_flaming, soot_smolder, smoked, mx_dumps, mxss, cjetvelocitymin, &
@@ -20,12 +20,11 @@ module spreadsheet_routines
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use room_data, only: n_rooms, roominfo, pressure_ref
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
+    use setup_data, only: validation_output, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions, errormessage
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
     
@@ -33,7 +32,7 @@ module spreadsheet_routines
 
     private
 
-    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_dump
+    public output_spreadsheet, output_spreadsheet_smokeview
 
     contains
     
@@ -88,7 +87,7 @@ module spreadsheet_routines
             call ssaddtoheader (sscompinfo, n_sscomp, 'VOL_'//trim(cRoom), 'Upper Layer Volume', roomptr%id, 'm^3')
             call ssaddtoheader (sscompinfo, n_sscomp, 'PRS_'//trim(cRoom), 'Pressure', roomptr%id, 'Pa')
             call ssaddtoheader (sscompinfo, n_sscomp, 'APRS_'//trim(cRoom), 'Absolute Pressure', roomptr%id, 'Pa')
-            if (validation_flag) then
+            if (validation_output) then
                 species_units = 'mol_frac'
                 smoke_units = 'mg/m^3'
             else
@@ -223,7 +222,7 @@ module spreadsheet_routines
                 targptr%id, 'm')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGPRS_'//trim(cDet), 'Target Pressure', &
                 targptr%id, 'Pa')
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', &
                     targptr%id, 'kW/m^2')
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXC_'//trim(cDet), 'Target Convective Flux', &
@@ -246,7 +245,7 @@ module spreadsheet_routines
                     targptr%id, 'kW/m^2')
             end if
             ! back surface
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXI_'//trim(cDet), 'Back Target Incident Flux', &
                     targptr%id, 'kW/m^2')
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXT_'//trim(cDet), 'Back Target Net Flux', &
@@ -363,7 +362,7 @@ module spreadsheet_routines
                 roomptr%id,'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', &
                 roomptr%id,'kg')
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMF_'//trim(cRoom), 'Fuel Upper Layer Mass', roomptr%id, 'mole')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPQ_'//trim(cRoom), 'Potential Total Heat Upper Layer', &
                     roomptr%id, 'J')
@@ -402,7 +401,7 @@ module spreadsheet_routines
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', &
                     roomptr%id,'kg')
-                if (validation_flag) then
+                if (validation_output) then
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMF_'//trim(cRoom), 'Fuel Lower Layer Mass', roomptr%id, 'mole')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPQ_'//trim(cRoom), 'Potential Total Heat Lower Layer', &
                         roomptr%id, 'J')
@@ -500,7 +499,7 @@ module spreadsheet_routines
                 'Net Inflow',ventptr%id,'kg/s')
             call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s')  
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
@@ -534,7 +533,7 @@ module spreadsheet_routines
                 'Net Inflow',ventptr%id,'kg/s')
             call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s')  
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
@@ -572,7 +571,7 @@ module spreadsheet_routines
                 'Trace Species Filtered',ventptr%id,'kg')
             call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            if (validation_flag) then
+            if (validation_output) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s') 
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
@@ -811,7 +810,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,n2)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,n2)
                 end if
@@ -826,7 +825,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,o2)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,o2)
                 end if
@@ -841,7 +840,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,co2)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,co2)
                 end if
@@ -856,7 +855,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,co)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,co)
                 end if
@@ -871,7 +870,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,hcn)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,hcn)
                 end if
@@ -886,7 +885,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,hcl)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,hcl)
                 end if
@@ -902,7 +901,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,fuel)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,fuel)
                 end if
@@ -917,7 +916,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,h2o)
-                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                    if (validation_output) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                 else
                     ssvalue = roomptr%species_mass(layer,h2o)
                 end if
@@ -933,7 +932,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot)
-                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                    if (validation_output) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot)
                 end if
@@ -949,7 +948,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot_flaming)
-                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                    if (validation_output) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot_flaming)
                 end if
@@ -965,7 +964,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot_smolder)
-                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                    if (validation_output) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot_smolder)
                 end if
@@ -1598,7 +1597,7 @@ module spreadsheet_routines
     if (ic>0) then
         out = ' '
         do i = 1, ic
-            if (validation_flag) then
+            if (validation_output) then
                 write (out(i),"(e12.5)" ) array(i)
             else
                 write (out(i),"(e12.5)" ) array(i)
@@ -1775,285 +1774,4 @@ module spreadsheet_routines
     
     end subroutine output_spreadsheet_diag
     
-    !--------------------------output_spreadsheet_dump-----------------------------------------------------------
-    
-    subroutine output_spreadsheet_dump (name, errorcode, stime, total_steps)
-    
-    character(len=*), intent(in) :: name
-    integer, intent(in) :: errorcode, total_steps
-    real(eb) :: stime
-    
-    integer, parameter :: nr = 2, ipad = 5, nc = mx_dumps + ipad
-    real(eb) :: dumparray(nr, nc)
-    character(len=128) :: dumpcarray(nr, nc)
-    integer :: i, icount, mxcol
-    
-    if (n_dumps<=0) return
-    dumparray(1, 1:nc) = 0
-    dumparray(2, 2:nc) = -1001
-    dumpcarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    dumparray(2,1) = 0
-    dumpcarray(1,1) = 'File Name'
-    dumpcarray(2,1) = trim(project) // trim(extension)
-    dumpcarray(1,2) = 'Exit Code'
-    dumparray(2,2) = errorcode
-    dumpcarray(2,2) = '0'
-    dumpcarray(1,3) = 'Exit Routine'
-    dumpcarray(2,3) = trim(name)
-    dumparray(2,3) = 0
-    dumpcarray(1,4) = 'Simulation Time Completed'
-    dumparray(2,4) = stime
-    dumpcarray(1,5) = 'Total Steps Completed'
-    dumparray(2,5) = total_steps
-    mxcol = 0 
-    if (ss_out_interval>0 .and. n_dumps > 0 .and. errorcode == 0) then 
-        icount = n_dumps
-        do i = 1, num_csvfiles
-            if (icount>0) then
-                call do_csvfile(nr, nc, dumparray, dumpcarray, ipad, i, icount, mxcol)
-            else 
-                exit
-            end if
-        end do
-    else if (n_dumps > 0) then
-        do i = 1, n_dumps
-            dumpcarray(1, ipad + i) = trim(dumpinfo(i)%id)
-        end do
-    end if      
-    call writecsvformat(iofilcalc, dumparray, dumpcarray, nr, nc, 1, 2, mxcol)
-    
-    end subroutine output_spreadsheet_dump
-    
-    !--------------------do_csvfile---------------------------------------
-    
-    subroutine do_csvfile(nr, nc, dumparray, dumpcarray, ipad, idx, icount, mxcol)
-    
-    integer, intent(in) :: nr, nc, idx, ipad
-    integer, intent(inout) :: mxcol, icount
-    real(eb), intent(inout) :: dumparray(nr, nc)
-    character(len=*), intent(inout) :: dumpcarray(nr, nc)
-    
-    integer :: i
-    type(dump_type), pointer :: dumpptr
-    logical :: first, lend
-    
-    integer, parameter :: numr = 3, numc = 32000
-    real(eb) :: lastval(2, mx_dumps), lasttime(mx_dumps), x(numr, numc)
-    character(len=128) :: header(numr, numc), c(numr, numc)
-    
-    integer :: relcol, mxhr, mxhc, ic, cols(mx_dumps), icol, num_entries
-    integer :: primecol(mx_dumps), seccol(2, mx_dumps), mxr, mxc
-    real(eb) :: dummy(2, mx_dumps)
-    
-    lastval = 0.0_eb
-    lasttime = 0.0_eb
-    x = 0.0_eb
-    header = ' '
-    c = ' '
-    cols = 0
-    primecol = 0
-    seccol = 0
-    dummy = 0.0_eb
-    
-    first = .true.
-    num_entries = 0
-    icol = 0
-    do i = 1, n_dumps
-        if (icount>0)  then
-            dumpptr => dumpinfo(i)
-            dumpptr%found = .false.
-            if (dumpptr%file==csvnames(idx)) then
-                num_entries = num_entries + 1
-                relcol = dumpptr%relative_column + ipad
-                icount = icount - 1
-                icol = icol + 1
-                cols(icol) = i
-                mxcol = max(mxcol, relcol)
-                dumpcarray(1,relcol) = dumpptr%id
-                if (first) then
-                    rewind(iocsv(idx))
-                    call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend)
-                    first = .false. 
-                    if (lend) then 
-                        return
-                    end if
-                end if 
-                call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%first_field(1), dumpptr%first_field(2))
-                primecol(cols(icol)) = ic
-                if (ic>0) then
-                    dumpptr%found = .true.
-                end if
-                if ((dumpptr%type(1:8) == 'TRIGGER_' .or. &
-                        dumpptr%type(1:9) == 'INTEGRATE').and.dumpptr%found) then 
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
-                                    dumpptr%second_field(2))
-                    seccol(1,cols(icol)) = ic
-                    if (ic<1) then
-                        dumpptr%found = .false.
-                    end if
-                else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.dumpptr%found) then
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
-                                    dumpptr%second_field(2))
-                    seccol(1,cols(icol)) = ic
-                    if (ic<1) then
-                        dumpptr%found = .false.
-                    end if
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, dumpptr%second_field(1), &
-                                    'HRR Expected')
-                    seccol(2,cols(icol)) = ic
-                    if (ic<1) then
-                        dumpptr%found = .false.
-                    end if
-                end if
-            end if
-        end if
-    end do
-    
-    call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend) 
-    if (.not.lend) then
-        do i = 1, icol
-            dumpptr => dumpinfo(cols(i))
-            if (dumpptr%found) then
-                relcol = dumpptr%relative_column + ipad
-                if (dumpptr%type(1:1) == 'M') then
-                    dumparray(2,relcol) = x(1, primecol(cols(i)))
-                else if (dumpptr%type(1:8) == 'TRIGGER_') then
-                    dumparray(2,relcol) = -1
-                else if (dumpptr%type(1:9) == 'INTEGRATE') then
-                    dumparray(2,relcol) = -1
-                    lasttime(i) = x(1, primecol(cols(i)))
-                    lastval(1,i) = x(1, seccol(1,cols(i)))
-                else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
-                    dumparray(2,relcol) = -1
-                    dummy(1:2,i) = 0
-                    lasttime(i) = x(1, primecol(cols(i)))
-                    lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
-                else
-                    dumparray(2,relcol) = -1001
-                end if
-            end if 
-        end do 
-    else
-        return
-    end if
-    
-    do while (.not.lend)
-        call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend)
-        if (.not.lend) then
-            do i = 1, icol
-                dumpptr => dumpinfo(cols(i))
-                if (dumpptr%found) then
-                    relcol = dumpptr%relative_column + ipad
-                    if (dumpptr%type(1:3) == 'MAX') then
-                        dumparray(2,relcol) = max(dumparray(2,relcol),x(1, primecol(cols(i))))
-                    else if (dumpptr%type(1:3) == 'MIN') then
-                        dumparray(2,relcol) = min(dumparray(2,relcol),x(1, primecol(cols(i))))
-                    else if (dumpptr%type(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(1,cols(i)))>=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
-                            dumparray(2,relcol) = x(1, primecol(cols(i)))
-                        end if
-                    else if (dumpptr%type(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(1,i))<=dumpptr%criterion.and.dumparray(2,relcol)== -1) then
-                            dumparray(2,relcol) = x(1, primecol(cols(i)))
-                        end if
-                    else if (dumpptr%type(1:9) == 'INTEGRATE') then
-                        dumparray(2,relcol) = dumparray(2,relcol) + &
-                            (x(1, seccol(1,cols(i)))+lastval(1,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
-                        lasttime(i) = x(1, primecol(cols(i)))
-                        lastval(1,i) = x(1, seccol(1,cols(i)))
-                    else if (dumpptr%type(1:15) == 'CHECK_TOTAL_HRR') then
-                        dummy(1:2,i) = dummy(1:2,i) + &
-                            (x(1, seccol(1:2,cols(i)))+lastval(1:2,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
-                        if (dummy(2,i)>0) then
-                            dumparray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
-                        end if 
-                        lasttime(i) = x(1, primecol(cols(i)))
-                        lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
-                    else
-                        dumparray(2,relcol) = -1001
-                    end if
-                end if
-            end do
-        end if
-    end do 
-    
-    end subroutine do_csvfile
-        
-    !-----------------------------fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)-----------------------------------
-    
-    subroutine fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)
-
-    integer, intent(out) :: ic
-    integer, intent(in) :: nr, nc, mxr, mxc
-    character(len=*), intent(in) :: c(nr, nc), instrument, measurement
-    
-    ! note that we read in the headers ignoring the first row (short names) so the row below are one less that the actual row
-    integer, parameter :: instrumentRow = 2, measurementRow = 1, timeColumn = 1
-    integer :: i
-    
-    ic = -1
-    if (trim(instrument)=='Time') then
-        ic = timeColumn
-        return
-    end if 
-    
-    if (mxr < 2) then
-        write(errormessage,*)'Error, need at least two rows to use fnd_col mxr = ',mxr
-        !call cfastexit('fnd_col',1)
-        stop
-    end if
-    do i = 1, mxc
-        if (trim(instrument) == trim(c(instrumentRow,i))) then
-            if (trim(measurement) == trim(c(measurementRow,i))) then
-                ic = i
-                return
-            end if
-        end if
-    end do
-    
-    end subroutine fnd_col
-    
-    
-    ! --------------------------- writecsvformat -------------------------------------------
-
-    subroutine writecsvformat (iunit, x, c, nr, nc, nstart, mxr, mxc)
-
-    !     routine: writecsvformat
-    !     purpose:writess a comma-delimited file as generated by Micorsoft Excel, assuming that all
-    !              the data is in the form of real numbers
-    !     arguments: iunit  = logical unit, already open to .csv file
-    !                x      = array of dimension (numr,numc) for values in spreadsheet
-    !                c      = character array of same dimenaion as x for character values in spreadsheet
-    !                nr     = # of rows of arrays x and c
-    !                nc     = # of columns of arrays x and c
-    !                nstart = starting row of spreadsheet to read
-    !                mxr    = actual number of rows read
-    !                mxc    = actual number of columns read
-    
-    integer, intent(in) :: iunit, nr, nc, nstart, mxr, mxc
-
-    real(eb), intent(in) :: x(nr,nc)
-    character(len=*), intent(inout) :: c(nr,nc)
-
-    character(len=204800) :: buf
-    integer :: i, j, ic, ie
-    
-    do i = nstart, mxr
-        buf = '                    '
-        ic = 1
-        do j = 1, mxc
-            if (x(i,j) /= 0.0) then
-                write(c(i,j),'(e16.9)') x(i,j)
-            end if
-            ie = ic + len_trim(c(i,j))
-            buf(ic:ie) = trim(c(i,j))
-            ic = ie+1
-            buf(ic:ic) = ','
-            ic = ic+1
-        end do
-        write(iunit,'(A)') buf(1:ic)
-    end do
-    
-    end subroutine writecsvformat
-
 end module spreadsheet_routines

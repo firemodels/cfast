@@ -20,14 +20,14 @@ module output_routines
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, listoutput, &
-        outputfile, statusfile, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
+        outputfile, statusfile, title, outputformat, validation_output, net_heat_flux_output, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
+    use dump_data, only: iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
     use iso_fortran_env, only: compiler_version
 
     implicit none
@@ -567,7 +567,7 @@ module output_routines
                     tctemp = targptr%tinternal
                     gasfed = targptr%fed_gas
                     heatfed = targptr%fed_heat
-                    if (validation_flag.or.netheatflux) then
+                    if (validation_output.or.net_heat_flux_output) then
                         itotal = targptr%flux_incident_front
                         total = targptr%flux_net_gauge(1)
                     else
@@ -1217,7 +1217,7 @@ module output_routines
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
         end if
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
-        if (validation_flag.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
+        if (validation_output.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
 
 5000 format (2x,1pg11.3)
@@ -1487,11 +1487,6 @@ module output_routines
         iocsv(iocsv_vents) = iofilssv
         if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw
-        
-        if (n_dumps/=0) then
-           iofilcalc = get_filenumber()
-            open (iofilcalc, file=sscalculation,form='formatted')
-        end if
         
         if (radi_verification_flag) then
             iofilssdiag = get_filenumber()

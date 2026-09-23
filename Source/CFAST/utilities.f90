@@ -6,8 +6,8 @@
 
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
-    use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
-        netheatflux, ssoutoptions, errormessage, listoutput
+    use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_output, outputformat, &
+        net_heat_flux_output, ssoutoptions, errormessage, listoutput
 
     implicit none
 
@@ -520,8 +520,8 @@
     if (cmdflag('L',iopt)/=0) listoutput = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
     if (cmdflag('D',iopt)/=0) debugging = .true.
-    if (cmdflag('V',iopt)/=0) validation_flag = .true.
-    if (cmdflag('N',iopt)/=0) netheatflux = .true.
+    if (cmdflag('V',iopt)/=0) validation_output = .true.
+    if (cmdflag('N',iopt)/=0) net_heat_flux_output = .true.
     if (cmdflag('O',iopt)/=0) then
         ssoutoptions = 0
         ssselected(1:26) = trim(strs(cmdflag('O',iopt)))

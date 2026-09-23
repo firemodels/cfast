@@ -76,7 +76,6 @@ end module diag_data
 module dump_data
     
     use precision_parameters
-    use cfast_types, only: dump_type
     use cparams, only: mx_dumps, mxitems
     
     implicit none
@@ -87,9 +86,6 @@ module dump_data
     character(len=24), parameter, dimension(num_csvfiles) :: csvnames = &
         (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
     integer, dimension(num_csvfiles) :: iocsv
-    
-    integer :: n_dumps
-    type (dump_type), allocatable, dimension(:), target :: dumpinfo
     
     logical :: alloc_dump = .true., init_dump = .true.
     
@@ -278,7 +274,7 @@ module setup_data
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: listoutput=.false.
-    logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
+    logical :: debugging = .false., validation_output = .false., net_heat_flux_output = .false.
     integer :: outputformat = 0
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile = " ", datafile

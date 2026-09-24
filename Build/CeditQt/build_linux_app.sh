@@ -168,6 +168,7 @@ pyinstaller_args=(
   --exclude-module PyQt5
   --exclude-module PyQt6
   --exclude-module PySide2
+  --add-data "$ASSET_DIR:assets"
 )
 
 if [[ "$APP_ICON" != "" ]]; then

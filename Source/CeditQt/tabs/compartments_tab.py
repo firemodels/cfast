@@ -3,7 +3,6 @@ from __future__ import annotations
 import copy
 
 from PySide6.QtCore import QRect, QSize, QTimer, Qt, Signal
-from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QStyle, QStyleOptionHeader
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -37,8 +36,6 @@ class CompartmentSummaryHeader(QHeaderView):
     connection_first_column = 11
     connection_last_column = 16
     group_height = 22
-    surface_color = QColor("#e4e4e4")
-    connection_color = QColor("#d8d8d8")
 
     def group_for_column(self, logical_index: int):
         if self.surface_first_column <= logical_index <= self.surface_last_column:
@@ -46,14 +43,12 @@ class CompartmentSummaryHeader(QHeaderView):
                 self.surface_first_column,
                 self.surface_last_column,
                 "Surface Construction",
-                self.surface_color,
             )
         if self.connection_first_column <= logical_index <= self.connection_last_column:
             return (
                 self.connection_first_column,
                 self.connection_last_column,
                 "Compartment Connection Counts",
-                self.connection_color,
             )
         return None
 
@@ -69,23 +64,7 @@ class CompartmentSummaryHeader(QHeaderView):
             rect.width(),
             rect.height() - self.group_height,
         )
-        if group is not None:
-            option = QStyleOptionHeader()
-            self.initStyleOption(option)
-            option.rect = lower_rect
-            option.section = logical_index
-            option.text = str(
-                self.model().headerData(
-                    logical_index,
-                    self.orientation(),
-                    Qt.ItemDataRole.DisplayRole,
-                )
-                or ""
-            )
-            option.palette.setColor(QPalette.ColorRole.Button, group[3])
-            self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
-        else:
-            super().paintSection(painter, lower_rect, logical_index)
+        super().paintSection(painter, lower_rect, logical_index)
 
         if group is None or logical_index != group[0]:
             return
@@ -100,7 +79,7 @@ class CompartmentSummaryHeader(QHeaderView):
         option.rect = group_rect
         option.text = group[2]
         option.textAlignment = Qt.AlignmentFlag.AlignCenter
-        option.palette.setColor(QPalette.ColorRole.Button, group[3])
+        # Keep the style's paired background/text colors in light and dark themes.
         self.style().drawControl(QStyle.ControlElement.CE_Header, option, painter, self)
 
 

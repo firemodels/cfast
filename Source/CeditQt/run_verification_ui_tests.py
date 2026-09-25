@@ -763,6 +763,57 @@ def check_verification_case_discovery():
         assert select_cases(root, ["nrc"]) == [paths[1]]
 
 
+def check_compartment_header_palettes():
+    """Grouped headers must remain readable when the inherited palette changes."""
+    from PySide6.QtCore import QRect, Qt
+    from PySide6.QtGui import QColor, QImage, QPainter, QPalette
+    from PySide6.QtWidgets import QStyleFactory, QTableWidget
+
+    from tabs.compartments_tab import CompartmentSummaryHeader, summary_headers
+
+    def luminance(color):
+        channels = [color.redF(), color.greenF(), color.blueF()]
+        linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+        return sum(c * weight for c, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
+
+    table = QTableWidget(0, len(summary_headers()))
+    header = CompartmentSummaryHeader(Qt.Orientation.Horizontal)
+    table.setHorizontalHeader(header)
+    table.setHorizontalHeaderLabels(summary_headers())
+    # Fusion is available on Linux and renders directly from the Qt palette.
+    style = QStyleFactory.create("Fusion")
+    header.setStyle(style)
+    header.setDefaultSectionSize(120)
+    try:
+        for background, foreground in (("#efefef", "#202020"), ("#353535", "#eeeeee"),
+                                       ("#efefef", "#202020")):
+            palette = QPalette(table.palette())
+            palette.setColor(QPalette.ColorRole.Button, QColor(background))
+            palette.setColor(QPalette.ColorRole.ButtonText, QColor(foreground))
+            table.setPalette(palette)
+            image = QImage(header.length(), 60, QImage.Format.Format_ARGB32)
+            image.fill(QColor(background))
+            painter = QPainter(image)
+            try:
+                for column in range(table.columnCount()):
+                    header.paintSection(painter, QRect(header.sectionPosition(column), 0,
+                                                      header.sectionSize(column), 60), column)
+            finally:
+                painter.end()
+            text_luminance = luminance(QColor(foreground))
+            for column in range(header.surface_first_column, table.columnCount()):
+                # Sample away from labels and borders in both header rows.
+                for y in (3, header.group_height + 3):
+                    color = image.pixelColor(header.sectionPosition(column) + 5, y)
+                    background_luminance = luminance(color)
+                    contrast = ((max(text_luminance, background_luminance) + 0.05)
+                                / (min(text_luminance, background_luminance) + 0.05))
+                    assert contrast >= 4.5, (background, column, y, contrast)
+    finally:
+        header.setStyle(None)
+        table.deleteLater()
+
+
 def check_target_material_initialization():
     """Regression for #2458: no demo or implicit default target material."""
     from cfast_case import Target
@@ -1297,6 +1348,7 @@ def main() -> int:
     patch_message_boxes()
     app = QApplication.instance() or QApplication([])
     check_verification_case_discovery()
+    check_compartment_header_palettes()
     check_target_material_initialization()
     check_target_material_validation()
     check_target_orientation()

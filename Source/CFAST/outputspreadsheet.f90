@@ -466,7 +466,7 @@ module spreadsheet_routines
     logical :: firstc = .true.
     integer :: position, i, ifrom, ito, counter
     character(len=35) :: cifrom, cito, cvent
-    character(len=40) :: clto, clfrom
+    character(len=40) :: clfrom
     type(vent_type), pointer :: ventptr
     type(ssout_type), pointer :: ssptr
     
@@ -489,8 +489,6 @@ module spreadsheet_routines
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==n_rooms+1) cito = 'Outside'
-            clto = 'Room_' //cito
-            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -523,8 +521,6 @@ module spreadsheet_routines
             ito = ventptr%room1
             call tointstring(ito,cito)
             if (ito==n_rooms+1) cito = 'Outside'
-            clto = 'Room_' //cito
-            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -557,8 +553,6 @@ module spreadsheet_routines
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==n_rooms+1) cito = 'Outside'
-            clto = 'Room_' //cito
-            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -595,8 +589,6 @@ module spreadsheet_routines
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==n_rooms+1) cito = 'Outside'
-            clto = 'Room_' //cito
-            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)

@@ -19,7 +19,7 @@
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: input_file_line
-    use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
+    use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssdiag, sscalculation, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase, errormessage
@@ -341,46 +341,41 @@
 
     ! --------------------------- open_files -------------------------------------------
 
-!> \brief   get the paths and project base name open the input file for reading, delete the output files, and open the log file
+    !> \brief get the paths and project base name open the input file for reading, delete the output files, and open the log file
 
     subroutine open_files ()
 
-
     logical ex
-    integer :: lp, ld, le, ios
+    integer :: ld, ios
     character(len=256) :: revision, revision_date, compile_date, buf
     
     ! get the input file parts
-    call exehandle (exepath, datapath, project, extension)
+    call exehandle (exepath, inputfile, project, extension)
     
     ! form the file names for datafiles
-    lp = len_trim (datapath)
     ld = len_trim (project)
-    le = len_trim (extension)
-    inputfile = datapath(1:lp) // project(1:ld) // extension(1:le)
-    outputfile = datapath(1:lp) // project(1:ld) // '.out'
-    smvhead = datapath(1:lp) // project(1:ld) // '.smv'
-    smvdata = datapath(1:lp) // project(1:ld) // '.plt'
-    smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
-    smvsinfo = datapath(1:lp) // project(1:ld) // '.sinfo'
+    outputfile    = project(1:ld) // '.out'
+    smvhead       = project(1:ld) // '.smv'
+    smvdata       = project(1:ld) // '.plt'
+    smvcsv        =  project(1:ld)// '_zone.csv'
+    smvsinfo      = project(1:ld) // '.sinfo'
     
     ! spreadsheet output files
-    sscompartment = datapath(1:lp) // project(1:ld) // '_compartments.csv'
-    ssdevice = datapath(1:lp) // project(1:ld) // '_devices.csv'
-    sswall = datapath(1:lp) // project(1:ld) // '_walls.csv'
-    ssmasses = datapath(1:lp) // project(1:ld) // '_masses.csv'
-    ssvent = datapath(1:lp) // project(1:ld) // '_vents.csv'
-    
-    ssdiag = datapath(1:lp) // project(1:ld) // '_diagnostics.csv'
-    gitfile = datapath(1:lp) // project(1:ld) // '_git.txt'
-    errorlogging = datapath(1:lp) // project(1:ld) // '.log'
-    stopfile = datapath(1:lp) // project(1:ld) // '.stop'
-    residfile = datapath(1:lp) // project(1:ld) // '.debug'
-    residcsv = datapath(1:lp) // project(1:ld) // '_resid.csv'
-    queryfile = datapath(1:lp) // project(1:ld) // '.query'
-    statusfile = datapath(1:lp) // project(1:ld) // '.status'
-    slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
-    sscalculation = datapath(1:lp) // project(1:ld) // '_calculations.csv'
+    sscompartment = project(1:ld) // '_compartments.csv'
+    ssdevice      = project(1:ld) // '_devices.csv'
+    sswall        = project(1:ld) // '_walls.csv'
+    ssmasses      = project(1:ld) // '_masses.csv'
+    ssvent        = project(1:ld) // '_vents.csv'
+    ssdiag        = project(1:ld) // '_diagnostics.csv'
+    gitfile       = project(1:ld) // '_git.txt'
+    errorlogging  = project(1:ld) // '.log'
+    stopfile      = project(1:ld) // '.stop'
+    residfile     = project(1:ld) // '.debug'
+    residcsv      = project(1:ld) // '_resid.csv'
+    queryfile     = project(1:ld) // '.query'
+    statusfile    = project(1:ld) // '.status'
+    slabcsv       = project(1:ld) // '_slab.csv'
+    sscalculation = project(1:ld) // '_calculations.csv'
 
     !open input file and check to see if it's a new (namelist) format file
 
@@ -492,97 +487,35 @@
 
     ! --------------------------- exehandle -------------------------------------------)
 
-!> \brief   get the arguments used to call the main program
-
-!> \param   exepath (output): path (without the name) to the folder where the executable resides
-!> \param   datapath (output): path (without a file name) to the folder where the project data file resides
-!> \param   project  (output): name of the project - this name cannot exceed 64 charcters. the total length
-!>          of datapath + project cannot exceed 256 characters
-!> \param   extension (output): file extension of input file
+    !> \brief   read the input file
+    !> \param   exepath (output): full path name of the executable
+    !> \param   inputfile (output): input file name
+    !> \param   project  (output): root of input file name
+    !> \param   extension (output): file extension of input file
     
-    subroutine exehandle (exepath, datapath, project, extension)
+    subroutine exehandle (exepath, inputfile, project, extension)
 
-    character(len=*), intent(out) :: exepath, datapath, project, extension
-
-    integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2), idx(2)
-    character(len=256) :: buf, xname
-    character (len=64) :: name(2)
-    character(len=3) :: drive(2)
-    character(len=256) :: dir(2)
-    character(len=64) :: ext(2)
-    integer(kind=4) :: length, pathcount, splitpathqq, ilen
-    logical :: DoesTheFileExist
+    character(len=*), intent(out) :: exepath, inputfile, project, extension
+    integer :: status, nargs, dot_pos, ilen
     
-    external splitpathqq
-
     nargs = command_argument_count() + 1
 
     if (nargs<2) then
         write (errormessage,'(a)') &
-            'The program was called with insufficient arguments on the command line.  At least an input file is required.'
+            'The program requires an input file.'
         call cfastexit('exehandle',1)
     end if
 
-    ! get the calling program and arguments
+    call get_command_argument(0, exepath, ilen, status)
+    call get_command_argument(1, inputfile, ilen, status)
 
-    exepath = ' '
-    datapath = ' '
-    project = ' '
-    extension = ' '
-    
-    ! only look at the first two arguments (1 = executable name, 2 =cfast input file name)
-    idx(1) = 1
-    idx(2) = 2
-    do i = 1, 2
-        loop = idx(i) - 1
-        call get_command_argument(loop, buf, ilen, status)
-        if (ilen>0) then
-            xname = buf
-
-            ! Split out the components
-            drive(i) = ' '
-            dir(i) = ' '
-            name(i) = ' '
-            ext(i) = ' '
-            length = splitpathqq(xname, drive(i), dir(i), name(i), ext(i))
-            ld(i) = len_trim(drive(i))
-            li(i) = len_trim(dir(i))
-            ln(i) = len_trim(name(i))
-            le(i) = len_trim(ext(i))
-
-            pathcount = 5 + ln(i) + li(i) +ld(i) + le(i)
-
-            if (pathcount>255.or.ln(i)>64) then
-                write (errormessage,'(2a)') 'Total file name length including path must be less than 256 characters. ', &
-                    'Individual filenames must be less than 64 characters.'
-                call cfastexit('exehandle',2)
-            end if
-        end if
-    end do
-
-    ! Now check that the cfast input file exists = this is the data file
-    buf = ' '
-    if (le(2)/=0) then
-        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+    dot_pos = index(inputfile, '.', back=.true.)
+    if (dot_pos > 0) then
+        project = inputfile(:dot_pos - 1)
+        extension = inputfile(dot_pos + 1:ilen)
     else
-        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
-    end if
-
-    inquire (file=buf(1:len_trim(buf)), exist=doesthefileexist)
-    if (doesthefileexist) then
-        ! The project file exists
-        exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
-        datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
-        project = name(2)(1:ln(2))
-        if (le(2)/=0) then
-            extension = ext(2)(1:le(2))
-        else
-            extension = '.in'
-        end if
-    else
-        write (errormessage,*) ' Input file does not exist: ', trim(buf)
-        call cfastexit('exehandle',3)
-        stop
+        project = inputfile(:ilen)
+        extension = ""
     end if
     
     end subroutine exehandle
@@ -758,7 +691,6 @@
                 sliceptr%menu_label = trim(menu_label)
                 sliceptr%colorbar_label = trim(colorbar_label)
                 sliceptr%unit_label = trim(unit_label)
-                sliceptr%xb = xb
                 sliceptr%ijk = ijkslice
                 islice = islice + 1
             end do

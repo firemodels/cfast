@@ -692,7 +692,6 @@ module target_routines
 
             targptr%tfront = targptr%temperature(nx)
             targptr%tinternal = tempx
-            targptr%tback = targptr%temperature(1)
         else
 
             ! flat targets calculate as a function of depth from the surface
@@ -719,7 +718,6 @@ module target_routines
             end if
             targptr%tfront = targptr%temperature(1)
             targptr%tinternal = tempx
-            targptr%tback = targptr%temperature(nx)
 
         end if
     end do
@@ -822,10 +820,8 @@ module target_routines
             end if
         end if
         if (imode>0) then
-            dtectptr%value_o = tlinko
             dtectptr%value = tlink
             if (dtectptr%dual_detector) then
-                dtectptr%value_o_smolder = tlinko_smld
                 dtectptr%value_smolder = tlink_smld
             end if
         end if
@@ -945,13 +941,12 @@ module target_routines
         
         ! intermediate paramenters
         real(eb) :: aaa, bbb, ccc, alp, bet, gam, &
-                    mmm, sr3, onth, fttot, eionth, tmpm
+                    mmm, sr3, onth, fttot, eionth
         
         sr3    = sqrt(3._eb)
         onth   = 1._eb/3._eb
         fttot  = 4._eb*(2._eb/3._eb)**(1._eb/3._eb)
         eionth = 18._eb**(1._eb/3._eb)
-        tmpm   = 273.15_eb
 
         if (h > 0._eb) then
            aaa = emis*sigma

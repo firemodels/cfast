@@ -48,7 +48,7 @@ module  diag_data
     
     implicit none
 
-    logical :: residprn, jacprn
+    logical :: residprn
     logical :: residfirst = .true.
     logical :: nwline=.true.
     logical :: prnslab
@@ -106,7 +106,6 @@ module fire_data
 
     real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and vent jets
     real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
-    real(eb) :: summed_total_trace                      ! total trace species released by all fires
     real(eb), dimension(2) :: sigma_s = default_sigma_s ! extinction coefficient for flaming and smoldering smoke
 
     integer :: n_fires                                  ! number of fires in the current simulation
@@ -154,7 +153,6 @@ module namelist_data
     integer :: input_file_line_number               ! current line number read in a namelist-format input file
     character(len=lbufln) :: input_file_line        ! text of current line read in a namelist-format input file
     logical :: compflag = .false.                   ! true if each namelist type has been read in
-    logical :: connflag = .false.
     logical :: devcflag = .false.
     logical :: tablflag = .false.
     logical :: insfflag = .false.
@@ -206,10 +204,10 @@ module option_data
         !   oxygen dassl solve    Residual print   convection between layers
             off,                  off,                  on  /)
 
-    real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
+    real(eb) :: stptime
 
-    integer :: iprtalg = 0, jacchk = 0
-    integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0, total_steps = 0
+    integer :: iprtalg = 0
+    integer :: total_steps = 0
 
       end module option_data
 
@@ -272,12 +270,9 @@ module setup_data
     
     integer :: cfast_version = 7705     ! current cfast version
 
-    logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: listoutput=.false.
-    logical :: debugging = .false., validation_output = .false., net_heat_flux_output = .false.
+    logical :: overwrite_testcase=.true.
+    logical :: validation_output = .true., net_heat_flux_output = .false.
     integer :: outputformat = 0
-    integer, dimension(3) :: rundat
-    character(len=60) :: nnfile = " ", datafile
     logical :: init_scalars = .true.  
     character(len=5) :: program_name
     integer, dimension(26) :: ssoutoptions = (/1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26/)
@@ -287,13 +282,8 @@ module setup_data
     integer :: iofill, iofili, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(len=64) :: project, extension
-    character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
+    character(len=256) :: exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
         sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, sscalculation
-
-    ! Work arrays for the csv input routines
-    integer, parameter :: nrow = 10000, ncol = 100
-    real(eb) :: rarray(nrow,ncol)
-    character(len=128) :: carray(nrow,ncol)
 
 end module setup_data
 
@@ -344,10 +334,6 @@ module solver_data
     real(eb) :: awtol = 1.0e-2_eb               ! absolute wall tolerance
     real(eb) :: rwtol = 1.0e-2_eb               ! relative wall tolerance
     real(eb) :: algtol = 1.0e-8_eb              ! initialization tolerance
-    real(eb) :: ahvptol = 1.0e-6_eb             ! absolute HVAC pressure tolerance
-    real(eb) :: rhvptol = 1.0e-6_eb             ! relative HVAC pressure tolerance
-    real(eb) :: ahvttol = 1.0e-5_eb             ! absolute HVAC temperature tolerance
-    real(eb) :: rhvttol = 1.0e-5_eb             ! relative HVAC temperature tolerance
 
     real(eb), dimension(nt) :: pinit
     real(eb), dimension(1) :: rpar2
@@ -363,14 +349,13 @@ module solver_data
     integer :: stpmin_cnt_max                   ! maximum number of time steps below stpmin before DASSL calls it quits
     
     ! solver variables
-    integer :: nofp, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, nofhvpr, nequals
+    integer :: nofp, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, nequals
     real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
 
     integer, dimension(ns+2) :: i_speciesmap    ! maps species to corresponding DASSL equations
     integer, dimension(mxrooms,4) :: i_wallmap  ! maps wall surface temperatures to corresponding DASSL equations
     
-    integer :: jaccol
     integer :: jacdim
                              
     integer :: ndisc                            ! number of discontinuities fed to DASSL

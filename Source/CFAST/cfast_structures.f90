@@ -28,8 +28,6 @@ module cfast_types
         ! these are the results of the detector calculations that are used for printout and spreadsheet output
         real(eb) :: value               ! current link temperature or detector obscuration (calculated)
         real(eb) :: value_smolder       ! current detectore obscuration due to smoldering smoke (calculated)
-        real(eb) :: value_o             ! link temperature or detector obscuration from previous time step (calculated)
-        real(eb) :: value_o_smolder     ! detector obscuration from previous time step for smoldering smoke (calculated)
         real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
         real(eb) :: temp_gas_o          ! gas temperature near detector from previous time step (calculated)
         real(eb) :: velocity            ! current gas velocity near detector (calculated)
@@ -39,7 +37,6 @@ module cfast_types
         real(eb) :: obscuration_smolder ! smoke obscuration due to smoldering fires (calculated)
         real(eb) :: activation_time     ! time of detector activation (calculated)
         real(eb) :: tau                 ! characteristice quencing time (calculated)
-        real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
         logical :: activated            ! true if detector has activated (calculated)
         logical :: reported             ! true if detector activation has already been reported (calculated)
         logical :: dual_detector        ! true if smoke detector with different triggers for flaming and smoldering smoke 
@@ -98,7 +95,6 @@ module cfast_types
         real(eb) :: mdot_actual                         ! actual mdot corresponding to qdot_actual
         real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
         real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)
-        real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
         real(eb), dimension(2) :: qdot_layers           ! HRR into each layer (1=upper layer, 2=lower layer)
 
         real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
@@ -132,7 +128,6 @@ module cfast_types
         real(eb) :: exterior_den_initial                ! initial value for exterior density at base of compartment
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
-        logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
         
         real(eb), dimension(2) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls and (2) floor
         real(eb)               :: cvent                 ! leak vent flow coefficient. Default is 0.7
@@ -156,9 +151,6 @@ module cfast_types
         real(eb), dimension(nnodes,nwal) :: walldx      ! thickness of each node in each slab
 
         real(eb), dimension(10) :: chi                  ! surface opening ratio of a particular surface based on 10-wall model
-        integer, dimension(mxrooms) :: room_connections ! list of connected compartments, number of compartments to travel through
-                                                        ! to get to each compartment from the current compartment
-
 
         ! These are calculated results for the current time step
         real(eb) :: relp                                ! pressure at floor level relative to exterior
@@ -179,7 +171,6 @@ module cfast_types
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
 
         real(eb), dimension(4) :: wall_area4            ! area of 4 compartment surfaces (ceiling, upper wall, lower wall, floor)
-        real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
         real(eb), dimension(nnodes,nwal) :: t_profile   ! temperature profile within compartment surfaces
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
@@ -191,7 +182,6 @@ module cfast_types
         character(len=128), dimension(ns+3) :: labels   ! column labels for columns of data in the table
         real(eb), dimension(mxpts,ns+3) :: data         ! actual input data for the table
         integer :: n_points                             ! number of data points (rows) in the table
-        integer :: n_columns                            ! number of columns of data in the table
     end type table_type
 
     ! target data structure
@@ -216,7 +206,6 @@ module cfast_types
         character(len=128) :: room_id   ! compartment id 
         integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input)
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
-        integer :: wall                 ! wall surface the target is located on. Normal wall numbering
 
         ! These are calculated results for the current time step
         real(eb) :: flux_incident_front ! incident heat flux to front surface of target (calculated)
@@ -225,7 +214,6 @@ module cfast_types
         real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
         real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
         
-        integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc
         real(eb) :: fed_gas             ! accumulated gas tenability at target location
@@ -235,8 +223,6 @@ module cfast_types
         real(eb) :: fed_obs             ! current smoke obscuration at target location
         real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate,
                                         !                                   = ...%temperature(nnodes_trg) for cylinder)
-        real(eb) :: tback               ! target back surface temperature  (= ...%temperature(nnodes_trg) for plate,
-                                        !                                   = ...%temperature(1) for cylinder)
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
         real(eb), dimension(2) :: h_conv ! user-defined convective heat transfer coefficient for adiabatic surface temperature
@@ -265,8 +251,6 @@ module cfast_types
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
         real(eb) :: opening_criterion       ! open/close criterion for vent change based on temperature or flux
         logical :: opening_triggered        ! true if opening_criterion has been met
-        real(eb) :: opening_temperature     ! current temeprature of target associate with vent
-        real(eb) :: opening_flux            ! current incident flux of target associate with vent
         real(eb) :: opening_initial_time    ! beginning time of vent opening fraction change
         real(eb) :: opening_initial_fraction! beginning fraction for vent opening (vent fraction up to initial time)
         real(eb) :: opening_final_time      ! ending time for vent opening fraction change
@@ -290,8 +274,7 @@ module cfast_types
         real(eb) :: absolute_soffit                     ! absolute height of the soffit
         real(eb), dimension(2) :: offset                ! vent offset from wall origin (1 = from room, 2 = to room)
 
-        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)    ! (1>2 or 2>1, u or l, in or out)
-        
+        real(eb) :: h_mflow(2,2,2)                      ! (1>2 or 2>1, u or l, in or out)
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
 
@@ -302,7 +285,6 @@ module cfast_types
         integer :: orientation(2)                       ! orientation of vent diffusers (1 = V, 2 = H)
         real(eb) :: height(2)                           ! center height of vent diffusers
         real(eb) :: diffuser_area(2)                    ! cross-sectional area of vent diffusers
-        integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
         real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
         real(eb) :: maxflow                             ! peak specified fan flow in mv system (m^3/s)
         real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
@@ -314,7 +296,6 @@ module cfast_types
 
         real(eb) :: relp                                ! pressure difference across vent (room2 - room1)
         real(eb), dimension(2) :: temp                  ! temperature at compartment connection (u,l)
-        real(eb), dimension(2) :: flow_fraction         ! fraction of flow to or from each layer (<-> u, <-> l)
         real(eb), dimension(2) :: total_flow            ! total mass flow at compartment connection (<-> u, <-> l)
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
@@ -339,7 +320,6 @@ module cfast_types
     type slice_type
        character(len=256) :: filename
        character(len=64) :: menu_label, colorbar_label, unit_label
-       real(eb) :: xb(6)
        integer :: ijk(6), roomnum, skip
     end type slice_type
 

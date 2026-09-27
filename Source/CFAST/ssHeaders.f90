@@ -13,7 +13,7 @@ module spreadsheet_header_routines
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: n_rooms, roominfo, room_type
-    use setup_data, only: validation_output, iofilsmvzone, iofilsmv, iofilssdiag
+    use setup_data, only: iofilsmvzone, iofilsmv, iofilssdiag
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
 
     implicit none
@@ -220,7 +220,7 @@ module spreadsheet_header_routines
 
     integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms + 8*mxrooms + 2*4*mxrooms
     character(len=35) :: headertext(3,maxhead), Labels(25), LabelUnits(8), Layers(6), Species(9)
-    integer position, i, j, k, l, tmp
+    integer position, i, j, k, l
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', &
@@ -238,7 +238,6 @@ module spreadsheet_header_routines
     headertext(1,1) = Labels(1)
     headertext(2,1) = Labels(1)
     headertext(3,1) = LabelUnits(1)
-    tmp = maxhead
 
     position = 1
 

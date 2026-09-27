@@ -6,8 +6,7 @@
 
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, slab_splits, iwbound
-    use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_output, outputformat, &
-        net_heat_flux_output, ssoutoptions, errormessage, listoutput
+    use setup_data, only: iofill, errormessage
 
     implicit none
 
@@ -147,166 +146,6 @@
 
     end function d1mach
 
-    ! --------------------------- cmdline -------------------------------------------
-
-    subroutine cmdline (nargs,strs,iarg,iopt)
-
-    ! gets argument list and options from command line. options may be of the form c:<string> where <c>
-    !          is the desired option a-z and <string> is a character string associated with that option.
-    ! arguments: nargs maximum number of arguments expected (dimension limit on input, actual number on output.
-    !            strs  returned strings of arguments and options
-    !            iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
-    !            iopt  returned list of pointers to elements in strs corresponding to options a-z
-
-    integer, intent(inout) :: nargs
-    integer, intent(out) :: iarg(nargs), iopt(26)
-    character(len=*), intent(out) :: strs(nargs)
-
-    integer :: ic, ia, i
-    character(len=127) :: cmdlin
-    character(len=1) :: optsep
-
-    optsep = '-'
-
-    do ic = 1, max(nargs,26)
-        if (ic<=nargs) then
-            strs(ic) = ' '
-            iarg(ic) = 0
-        end if
-        iopt(ic) = 0
-    end do
-
-    ! get the command line to decipher
-    call getcl(cmdlin)
-    if (cmdlin/=' ') then
-
-        ! get rid of extra spaces in the command line
-        ic = 1
-20      if (cmdlin(ic:ic+1)=='  ') then
-            call cmove(cmdlin,ic,126,ic+1,127,127,' ')
-        else
-            ic = ic + 1
-        end if
-        if (cmdlin(ic:127)/=' '.and.ic<=126) go to 20
-        if (cmdlin(1:1)==' ') then
-            call cmove(cmdlin,1,126,2,127,127,' ')
-        end if
-
-        ! put in commas where appropriate to delimit all fields
-        ic = 2
-30      if (cmdlin(ic:ic)==' ') then
-            if (cmdlin(ic-1:ic-1)/=','.and.cmdlin(ic+1:ic+1)/=',') then
-                cmdlin(ic:ic) = ','
-                ic = ic + 1
-            else
-                call cmove(cmdlin,ic,126,ic+1,127,127,' ')
-            end if
-        else if ((cmdlin(ic:ic)==optsep).and.cmdlin(ic-1:ic-1)/=',') then
-            call cmove(cmdlin,ic+1,127,ic,126,ic,',')
-            ic = ic + 2
-        else
-            ic = ic + 1
-        end if
-        if (cmdlin(ic:127)/=' '.and.ic<=126) go to 30
-    end if
-
-    ! parse command line into separate fields and process options
-    ia = 0
-40  ic = index(cmdlin,',')
-    if (ic==0.and.cmdlin/=' ') ic = index(cmdlin,' ')
-    if (ic/=0) then
-        ia = ia + 1
-        strs(ia) = ' '
-        if (ic>1) strs(ia) = cmdlin(1:ic-1)
-        call cmove(cmdlin,1,127,ic+1,127,127,' ')
-        go to 40
-    end if
-
-    ! assign the parsed fields to appropriate arguments and options
-    nargs = 0
-    if (ia>0) then
-        do i = 1, ia
-            if (strs(i)(1:1)==optsep) then
-                if (strs(i)(2:2)>='A'.and.strs(i)(2:2)<='Z') then
-                    iopt(ichar(strs(i)(2:2))-ichar('A')+1) = i
-                else if (strs(i)(2:2)>='a'.and.strs(i)(2:2)<='z') then
-                    iopt(ichar(strs(i)(2:2))-ichar('a')+1) = i
-                end if
-                cmdlin = strs(i)
-                call cmove(cmdlin,1,127,3,127,127,' ')
-                if (cmdlin(1:1)==':') call cmove(cmdlin,1,127,2,127,127,' ')
-                strs(i) = cmdlin
-            else
-                nargs = nargs + 1
-                iarg(nargs) = i
-            end if
-        end do
-    end if
-
-    end subroutine cmdline
-
-    ! --------------------------- cmove -------------------------------------------
-
-    subroutine cmove(cmdlin,i1,i2,i3,i4,i5,chr)
-
-    ! cmove a substring in the command line to remove spaces.
-    ! arguments: cmdlin command line string
-    !            i1     beginning of substring to be moved
-    !            i2     end of substring to be moved
-    !            i3     beginning of destination
-    !            i4     end of destination
-    !            i5     position of newly vacated space in the string
-    !            chr    character to fill that space
-
-    character(len=1), intent(in) :: chr
-    integer, intent(in) :: i1, i2, i3, i4, i5
-
-    character(len=*), intent(inout) :: cmdlin
-
-    character(len=127) :: temp
-
-    temp = cmdlin
-    temp(i1:i2) = cmdlin(i3:i4)
-    temp(i5:i5) = chr
-    cmdlin = temp
-
-    end subroutine cmove
-
-    ! --------------------------- getcl -------------------------------------------
-
-    subroutine getcl (cmdlin)
-
-    ! get command line as a single string
-    ! arguments: cmdlin - command line
-
-    character(len=*), intent(out) :: cmdlin
-
-    integer first, last, lpoint
-    integer maxarg, iar, i, ic
-    logical valid
-
-    maxarg = 5 + 2
-    lpoint = 0
-    iar = command_argument_count()
-
-    if (iar==0) then
-        cmdlin = ' '
-    else
-        cmdlin = ' '
-        do i = 1, min(iar,maxarg)
-            call get_command_argument(i,lbuf)
-            call sstrng(lbuf,60,1,first,last,valid)
-            if (valid) then
-                ic = last - first + 1
-                lpoint = lpoint + 1
-                cmdlin(lpoint:lpoint+ic) = lbuf(first:last)
-                lpoint = lpoint + ic
-            end if
-        end do
-    end if
-
-    end subroutine getcl
-
     ! --------------------------- cptime -------------------------------------------
 
     subroutine cptime (cputim)
@@ -353,49 +192,6 @@
     end do
 
     end subroutine mat2mult
-
-    ! --------------------------- indexi -------------------------------------------
-
-    subroutine indexi (n,arrin,indx)
-
-    ! sorts the array arrin passively via the permuation array indx. the elements arrin(indx(i)), i=1, ..., n 
-    ! are in increasing order. this routine uses a bubble sort.  it should not be used for large n (n>30), 
-    ! since bubble sorts are not efficient.
-    ! arguments: n     number of elements in arrin
-    !            arrin array to be passively sorted
-    !            indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
-
-    integer, intent(in) :: n, arrin(*)
-    integer, intent(out) :: indx(*)
-
-    integer ai, aip1, i, iswitch, itemp
-
-    do i = 1, n
-        indx(i) = i
-    end do
-5   continue
-    iswitch = 0
-    do i = 1, n-1, 2
-        ai = arrin(indx(i))
-        aip1 = arrin(indx(i+1))
-        if (ai<=aip1) cycle
-        iswitch = 1
-        itemp = indx(i)
-        indx(i) = indx(i+1)
-        indx(i+1) = itemp
-    end do
-    do  i = 2, n-1, 2
-        ai = arrin(indx(i))
-        aip1 = arrin(indx(i+1))
-        if (ai<=aip1) cycle
-        iswitch = 1
-        itemp = indx(i)
-        indx(i) = indx(i+1)
-        indx(i+1) = itemp
-    end do
-    if (iswitch==1) go to 5
-
-    end subroutine indexi
 
     ! --------------------------- interp -------------------------------------------
 
@@ -469,77 +265,16 @@
 
     end subroutine interp
 
-    ! --------------------------- cmdflag -------------------------------------------
-
-    integer function cmdflag (ic,iopt)
-
-    character(len=1), intent(in) :: ic
-    integer, intent(in) :: iopt(26)
-
-    cmdflag = iopt(ichar(ic)-ichar('A')+1)
-
-    end function cmdflag
-
     ! --------------------------- read_command_options -------------------------------------------
 
     subroutine read_command_options
 
-    ! retrieve and process command line options and date
+    ! retrieve date
 
-    ! unit numbers defined in read_command_options, open_output_files, read_input_file
-
-    ! options
-    !     d to turn on debugging writes
-    !     f/c = printed output options, full/compact. default is full
-    !     i = do initialization only
-    !     k = do not access keyboard
-    !     l = list interim output to the screen
-    !     n = output just target fluxes relative to ambient (like -v but smoke still in od)
-    !     o = output "solver.ini" options into the file solve.ini
-    !     v = output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
-
-    integer :: year, month, day, iarg(8), iopt(26), nargs, values(8), i
-    character(len=60) :: strs(8)
+    integer :: values(8)
     character(len=10) :: big_ben(3)
-    character(len=26) :: ssselected
 
-    ! current date
     call date_and_time(big_ben(1),big_ben(2),big_ben(3),values)
-    year=values(1)
-    month=values(2)
-    day = values(3)
-    rundat(3) = day
-    rundat(2) = month
-    rundat(1) = year
-
-    ! command line arguments
-    nargs = 8
-    call cmdline(nargs,strs,iarg,iopt)
-
-    if (cmdflag('K',iopt)/=0) nokbd = .true.
-    if (cmdflag('L',iopt)/=0) listoutput = .true.
-    if (cmdflag('I',iopt)/=0) initializeonly = .true.
-    if (cmdflag('D',iopt)/=0) debugging = .true.
-    if (cmdflag('V',iopt)/=0) validation_output = .true.
-    if (cmdflag('N',iopt)/=0) net_heat_flux_output = .true.
-    if (cmdflag('O',iopt)/=0) then
-        ssoutoptions = 0
-        ssselected(1:26) = trim(strs(cmdflag('O',iopt)))
-        do i = 1,len(trim(ssselected))
-            if (ssselected(i:i)>='A'.and.ssselected(i:i)<='Z') then
-                ssoutoptions(ichar(ssselected(i:i))-ichar('A')+1) = i
-            else if (ssselected(i:i)>='a'.and.ssselected(i:i)<='z') then
-                ssoutoptions(ichar(ssselected(i:i))-ichar('a')+1) = i
-            end if
-        end do
-    end if
-    if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
-        write (errormessage,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
-        call cfastexit('read_command_options',1)
-        stop
-    end if
-    if (cmdflag('C',iopt)/=0) outputformat = 1
-    if (cmdflag('F',iopt)/=0) outputformat = 2
 
     end subroutine read_command_options
 
@@ -890,115 +625,6 @@
     else
     end if
 
-    ! This is for backwards compatibility with the older EVENT format for single vent changes!
-!    fraction = 1.0_eb
-!    if (venttype=="H") then
-!        ventptr => hventinfo(vent_index)
-!        fraction = vfraction(venttype,ventptr, time)
-!    else if (venttype=="V") then
-!        ventptr => vventinfo(vent_index)
-!        fraction = vfraction(venttype,ventptr, time)
-!    else if (venttype=="M") then
-!        ventptr => mventinfo(vent_index)
-!        fraction = vfraction(venttype,ventptr, time)
-!    else if (venttype=="F") then
-!        ventptr => mventinfo(vent_index)
-!        fraction = vfraction(venttype,ventptr, time)
-!    end if
-
     end subroutine get_vent_opening
-
-    ! --------------------------- vfraction -------------------------------------------
-
-    real(eb) function vfraction (vtype, ventptr, time)
-
-    !	This is the open/close function for vent flow
-
-    type(vent_type) :: ventptr
-    type(target_type), pointer :: targptr
-    real(eb), intent(in) :: time
-    character(len=1), intent(in) :: vtype
-    character(len=128) room1c, room2c, vtypec
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (vtype=="F") then
-        if (time<ventptr%filter_initial_time) then
-            vfraction = ventptr%filter_initial_fraction
-        else if (time>ventptr%filter_final_time) then
-            vfraction = ventptr%filter_final_fraction
-        else
-            dt = max(ventptr%filter_final_time - ventptr%filter_initial_time, mintime)
-            deltat = max(time - ventptr%filter_initial_time, mintime)
-            dy = ventptr%filter_final_fraction - ventptr%filter_initial_fraction
-            dydt = dy/dt
-            vfraction = ventptr%filter_initial_fraction + dydt*deltat
-        end if
-    else
-        vfraction = ventptr%opening_initial_fraction
-        ! check normal vent triggering by time
-        if (ventptr%opening_type==trigger_by_time) then
-            if (time<ventptr%opening_initial_time) then
-                vfraction = ventptr%opening_initial_fraction
-            else if (time>ventptr%opening_final_time) then
-                vfraction = ventptr%opening_final_fraction
-            else
-                dt = max(ventptr%opening_final_time - ventptr%opening_initial_time, mintime)
-                deltat = max(time - ventptr%opening_initial_time, mintime)
-                dy = ventptr%opening_final_fraction - ventptr%opening_initial_fraction
-                dydt = dy/dt
-                vfraction = ventptr%opening_initial_fraction + dydt*deltat
-            end if
-            ! check vent triggering by temperature. if tripped, turn it into a time-based change
-        else if (ventptr%opening_type==trigger_by_temp.and..not.ventptr%opening_triggered) then
-            targptr => targetinfo(ventptr%opening_target)
-            if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
-                ventptr%opening_initial_time = time
-                ventptr%opening_final_time = time + 1.0_eb
-                ventptr%opening_type = trigger_by_time
-                ventptr%opening_triggered = .true.
-                room1c = roominfo(ventptr%room1)%id
-                if (ventptr%room1>n_rooms) room1c = 'Outside'
-                room2c = roominfo(ventptr%room2)%id
-                if (ventptr%room2>n_rooms) room2c = 'Outside'
-                vtypec = 'Unknown '
-                if (ventptr%vtype=='H') vtypec = 'Wall'
-                if (ventptr%vtype=='V') vtypec = 'Ceiling/Floor'
-                if (ventptr%vtype=='M') vtypec = 'Mechanical'
-                write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
-                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
-                    '), opening change triggered by temperature at ',time,' s'
-                write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
-                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
-                    '), opening change triggered by temperature at ',time,' s'
-            end if
-            ! check vent triggering by flux. if tripped, turn it into a time-based change
-        else if (ventptr%opening_type==trigger_by_flux.and..not.ventptr%opening_triggered) then
-            targptr => targetinfo(ventptr%opening_target)
-            if (targptr%flux_incident_front>ventptr%opening_criterion) then
-                ventptr%opening_initial_time = time
-                ventptr%opening_final_time = time + 1.0_eb
-                ventptr%opening_type = trigger_by_time
-                ventptr%opening_triggered = .true.
-                room1c = roominfo(ventptr%room1)%id
-                if (ventptr%room1>n_rooms) room1c = 'Outside'
-                room2c = roominfo(ventptr%room2)%id
-                if (ventptr%room2>n_rooms) room2c = 'Outside'
-                vtypec = 'Unknown '
-                if (vtype=='H') vtypec = 'Wall'
-                if (vtype=='V') vtypec = 'Ceiling/Floor'
-                if (vtype=='M') vtypec = 'Mechanical'
-                write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
-                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
-                    '), opening change triggered by heat flux at ',time,' s'
-                write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
-                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
-                    '), opening change triggered by heat flux at ',time,' s'
-            end if
-        end if
-    end if
-
-    end function vfraction
 
     end module opening_fractions

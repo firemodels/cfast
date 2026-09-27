@@ -19,7 +19,7 @@ module output_routines
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssdiag, inputfile, iofilcalc, listoutput, &
+        iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, title, outputformat, validation_output, net_heat_flux_output, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
@@ -31,7 +31,7 @@ module output_routines
     use iso_fortran_env, only: compiler_version
 
     implicit none
-    external grabky, get_info
+    external get_info
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
@@ -40,7 +40,7 @@ module output_routines
     private
 
     public output_version, output_initial_conditions, output_results, open_output_files, &
-        output_status, output_debug, write_error_component
+        output_status, write_error_component
 
     contains
 
@@ -135,16 +135,7 @@ module output_routines
     !       results_vent_flows  wall, ceiling/floor, and mechanical vents
 
     real(eb), intent(in) :: time
-    integer :: i
 
-    if (listoutput) then
-      write (6,'("time: ", f8.1)') time
-      if (n_fires > 0) then
-        write (6,'("fire hrr: ", 10(1x,1pg10.3))') (fireinfo(i)%qdot_actual, i=1,MIN(n_fires,10))
-      endif
-      write (6,'("ul temps: ", 10(1x,f6.1))') (roominfo(i)%temp(u)-kelvin_c_offset, i=1,MIN(n_rooms,10))
-      write (6,'("")')
-    endif
     write (iofilo,4090)
     write (iofilo,5000) time
     write (iofilo,5010)
@@ -1273,142 +1264,6 @@ module output_routines
     end if
 
     end subroutine write_error_component
-
-! --------------------------- output_debug -------------------------------------------
-
-!> \brief   output requested details of model calculations at the current time
-    
-!> \param   ikey (input): function key pressed
-!> \param   t (input): current simulation time (s)
-!> \param   dt (input): current time step (s)
-!> \param   ieqmax (input):  number of equations in solution vector
-
-    subroutine output_debug (ikey,t,dt,ieqmax)
-
-    integer, intent(in) :: ikey, ieqmax
-    real(eb), intent(in) :: t, dt
-
-    real(eb) :: xqf
-    integer :: i, iprod, il, iroom, iobj, itarg
-    integer(2) :: ch, hit
-    character(len=5) :: spname(ns_mass+4) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
-       '   OD', ' OD_f', ' OD_s', '   CT', '   TS'/)
-    character(len=3) :: ccc
-
-    type(room_type), pointer :: roomptr
-    type(fire_type), pointer :: fireptr
-    type(detector_type), pointer :: dtectptr
-
-    type(target_type), pointer :: targptr
-
-    if (ikey==1) then
-        write (*,*) 'Pause at time = ', T,',  Press any key to continue'
-40      call grabky(ch,hit)
-        if (hit==0) go to 40
-        write (*,*) 'Continuing'
-        write (*,*)
-    else if (ikey==2) then
-        write (iofilo,5000) t, dt
-        do i = 1, n_rooms
-            roomptr => roominfo(i)
-            write (*,5010) i
-            write (*,5020) '   Upper temp(K)', roomptr%temp(u)
-            write (*,5020) '   Lower temp(K)', roomptr%temp(l)
-            write (*,5020) ' Interface ht(m)', roomptr%depth(l)
-            write (*,5020) '   Pressure (pa)', roomptr%relp
-            if (ns>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
-            do iprod = 1, ns_mass+4
-                write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
-            end do
-            if (n_cons/=0) write (*,*) ' Wall temperatures'
-            if (roomptr%surface_on(1)) then
-                write (*,5040) roomptr%t_surfaces(1,1)
-            end if
-            if (roomptr%surface_on(3)) then
-                write (*,5060) roomptr%t_surfaces(1,3)
-            end if
-            if (roomptr%surface_on(4)) then
-                write (*,5070) roomptr%t_surfaces(1,4)
-            end if
-            if (roomptr%surface_on(2)) then
-                write (*,5050) roomptr%t_surfaces(1,2)
-            end if
-        end do
-        write (*,*) ' '
-        if (n_detectors/=0) then
-            write (*,*)'Detector info'
-            write (*,100)
-100         format('  #  ',3X,'D temp',6X,'J temp',6X,' Act')
-            do i = 1, n_detectors
-                dtectptr => detectorinfo(i)
-                iroom = dtectptr%room
-                roomptr => roominfo(iroom)
-                if (roomptr%sprinkler_activated==i) then
-                    ccc='***'
-                else
-                    ccc = '   '
-                end if
-                write (*,102)i,dtectptr%value,dtectptr%temp_gas,dtectptr%velocity,dtectptr%activation_time,ccc
-102             format(1x,i2,1x,4(e11.4,1x),a3)
-            end do
-        end if
-        write (*,*) ' '
-    else if (ikey==3) then
-        write (*,5090) t, dt
-        call write_error_component (ieqmax)
-        write (*,6030)
-        do iroom = 1, n_rooms
-            roomptr => roominfo(iroom)
-            write (*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
-               roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
-        end do
-        write (*,6070)
-        do iroom = 1, n_rooms
-            roomptr => roominfo(iroom)
-            xqf = 0.
-            do iobj = 1, n_fires
-                fireptr => fireinfo(iobj)
-                if (iroom==fireptr%room) xqf = xqf + fireptr%qdot_actual
-            end do
-            xqf = xqf + roomptr%qdot_doorjet
-            write (*,6060) iroom, roomptr%t_surfaces(interior,1), roomptr%t_surfaces(interior,3), &
-                roomptr%t_surfaces(interior,4), roomptr%t_surfaces(interior,2), xqf
-        end do
-        if (n_fires>0) then
-            write (*,6080)
-            do iobj = 1, n_fires
-                fireptr => fireinfo(iobj)
-                write (*,6085) iobj, fireptr%qdot_layers(l), fireptr%qdot_layers(u)
-            end do
-        end if
-        if (n_targets>0) then
-            write (*,6090)
-            do itarg = 1, n_targets
-                targptr => targetinfo(itarg)
-                write (*,6095) itarg, targptr%temperature(idx_tempf_trg)
-            end do
-        end if
-    end if
-
-5000 format (' T = ',1pg12.4,' DT = ',1pg12.4)
-5010 format (' For room ',i3,' at time      T ')
-5020 format (a16,5x,e14.7,3x,e14.7)
-5030 format (15x,a5,1x,2(e14.7,3x))
-5040 format ('  Ceiling temp(K) ',f12.2)
-5050 format ('  Floor   temp(K) ',f12.2)
-5060 format ('  Up wall temp(K) ',f12.2)
-5070 format (' Low wall temp(K) ',e12.2)
-5090 format (' Returned from dassl at T = ',1pg14.6,',  dt = ',1pg12.4)
-6000 format (1x,i3,1x,6e13.6)
-6030 format (t2,'Room',t9,'Pressure',t20,'Layer height',t35,'L. temp',t48,'U. temp',t62,'L. oxy',t75,'U. oxy')
-6060 format (1x,i3,1x,5e13.6)
-6070 format (t2,'Room',t11,'Ceiling',t21,'Upper Wall',t36,'Lower Wall',t49,'Floor',t61,'Fire Size')
-6080 format (t2,'Object',t11,'Heat in lower ',t26,'Heat in upper')
-6085 format (1x,i2,4x,2e13.6)
-6090 format(t2,'Target',t11,'Temp')
-6095 format(1x,i2,4x,e13.6)
-
-    end subroutine output_debug
 
     subroutine output_status (T, dT)
 

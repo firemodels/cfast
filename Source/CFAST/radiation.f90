@@ -32,7 +32,7 @@ module radiation_routines
     real(eb), intent(out), dimension(mxrooms,2) :: flows_radiation
     real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, f_height, rabsorb(2)
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), f_height, rabsorb(2)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     
@@ -49,9 +49,6 @@ module radiation_routines
 
     if (option(frad)==off) return
     black = .false.
-
-    defabsup = 0.50_eb
-    defabslow = 0.01_eb
 
     do i = 1, n_rooms
         roomptr => roominfo(i)

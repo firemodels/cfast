@@ -37,8 +37,8 @@ module vflow_routines
 
     real(eb) :: velocity_vent(2), mass_flow_vent(2), temperature_vent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
-    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
-    real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
+    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape
+    real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_lower
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -52,7 +52,6 @@ module vflow_routines
         ventptr%mflow(1:2,1:2) = 0.0_eb
         itop = ventptr%room1
         ibot = ventptr%room2
-        icount = ventptr%counter
         call get_vent_opening (ventptr,tsec,fraction)
         area = fraction * ventptr%area
         ventptr%opening_fraction = fraction
@@ -133,7 +132,6 @@ module vflow_routines
 
             ! determine mass and enthalpy fractions for the to room
             roomptr => roominfo(ito)
-            temp_upper = roomptr%temp(u)
             temp_lower = roomptr%temp(l)
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb

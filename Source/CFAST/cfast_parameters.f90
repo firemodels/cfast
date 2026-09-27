@@ -49,17 +49,12 @@
     integer, parameter :: mxfan = int(real(mxmvents,eb)/2._eb)     ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
-    integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system
     integer, parameter :: mxduct = mxfan+2          ! maximum number of ducts in a mechanical ventilation system
     integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system
     integer, parameter :: mxext = mxitems           ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
     integer, parameter :: mxdiscon = mxitems        ! maximum number of DASSL discontinuities
-    integer, parameter :: initial_time = 1          ! indicies for simple vent opening data
-    integer, parameter :: initial_fraction = 2
-    integer, parameter :: final_time = 3
-    integer, parameter :: final_fraction = 4
     integer, parameter :: face_front = 1            ! indicates wall face where a wall vent is located
     integer, parameter :: face_right = 2
     integer, parameter :: face_back = 3
@@ -85,9 +80,6 @@
     integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
     integer, parameter :: idx_tempf_trg = 1                 ! position of front temperature of target (front surface temperature)
     integer, parameter :: idx_tempb_trg = idx_tempf_trg+nnodes_trg-1 ! position of back temperature of target
-    ! (back surface temperature)
-    integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array
-    integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
 
     integer, parameter :: mxdtect=mxitems                   ! maximum number of detectors
 

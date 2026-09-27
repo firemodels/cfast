@@ -5,7 +5,6 @@ module initialization_routines
     use exit_routines, only: cfastexit
     use numerics_routines, only: dnrm2, dscal
     use solve_routines, only : update_data
-    use utility_routines, only: indexi    
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
 
@@ -17,8 +16,7 @@ module initialization_routines
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo, alloc_devc, init_devc
-    use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace, &
-        alloc_fire, init_fire
+    use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, alloc_fire, init_fire
     use material_data, only: n_matl, material_info, alloc_matl, init_matl
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
@@ -27,9 +25,9 @@ module initialization_routines
         slab_splits, alloc_room, init_room, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
-    use setup_data, only: iofill, debugging, deltat, init_scalars, errormessage
+    use setup_data, only: iofill, deltat, init_scalars, errormessage
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
-        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol, stp_cnt_max
+        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, stp_cnt_max
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
         n_ssmass, ssmassinfo, n_ssvent, ssventinfo, alloc_ss, init_ss
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, alloc_vent, init_vent
@@ -168,16 +166,13 @@ module initialization_routines
             dtectptr%quench = .false.
         end if
         dtectptr%spray_density = tdspray
-        dtectptr%half_life = tdrate*log(2.0_eb)
         dtectptr%tau = tdrate
 
         ! set initial ceiling jet and detector link temperatures to ambient
         if (dtectptr%dtype==smoked) then
             dtectptr%value = 0.0_eb
-            dtectptr%value_o = 0.0_eb
         else
             dtectptr%value = interior_ambient_temperature
-            dtectptr%value_o = interior_ambient_temperature
         end if
         dtectptr%temp_gas = interior_ambient_temperature
         dtectptr%temp_gas_o = interior_ambient_temperature
@@ -292,9 +287,6 @@ module initialization_routines
 
     if (init_scalars) then
         init_scalars = .false.
-        ! simple control stuff
-        debugging = .false.
-        jaccol = -2
 
         ! DASSL forcing functions
         p(1:maxteq) = 0.0_eb
@@ -604,14 +596,11 @@ module initialization_routines
         fireinfo(1:mxfires)%chirad = default_radiative_fraction
         fireinfo(1:mxfires)%flaming_transition_time = 0._eb
 
-        fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
-        fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
         ! trace species stuff
         fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
         fireinfo(1:mxfires)%total_trace = 0.0_eb
-        summed_total_trace = 0.0_eb
     
         ! no data for fires without user input
         n_tabls = 0
@@ -625,7 +614,6 @@ module initialization_routines
             end do
         end do
         tablinfo(1:mxtabls)%n_points = 0
-        tablinfo(1:mxtabls)%n_columns = 0
     end if
 
     end subroutine initialize_fires

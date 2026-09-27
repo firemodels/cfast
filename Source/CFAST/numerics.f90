@@ -8,7 +8,7 @@
 
     private
 
-    public ddassl, ddot, dnrm2, dgefa, dgesl, jac, setderv, snsqe, gjac, dscal
+    public ddassl, ddot, dnrm2, dgefa, dgesl, jac, snsqe, gjac, dscal
 
     contains
     ! --------------------------- ddassl -------------------------------------------
@@ -1519,10 +1519,8 @@
     !*** we're about to compute a jacobian so set the iderv
     !    flag, telling res to compute jacobian elements
     !
-    call setderv(0)
     !
     call res(x,y,yprime,delta,ires,rpar,ipar)
-    call setderv(0)
 
     if (ires<0) go to 430
     !
@@ -1980,10 +1978,8 @@
     !*** we're about to compute a jacobian so set the iderv
     !    flag, telling res to compute jacobian elements
     !
-    call setderv(0)
     !
     call res(x,y,yprime,delta,ires,rpar,ipar)
-    call setderv(0)
     if (ires < 0) go to 380
     !
     !
@@ -2453,7 +2449,6 @@
         ypsave=yprime(i)
         y(i)=y(i)+del
         yprime(i)=yprime(i)+cj*del
-        call setderv(i)
         call res(x,y,yprime,e,ires,rpar,ipar)
         if (ires < 0) return
         delinv=1.0d0/del
@@ -2464,7 +2459,6 @@
         y(i)=ysave
         yprime(i)=ypsave
     end do
-    call setderv(-1)
     !
     !
     !     do dense-matrix lu decomposition on pd
@@ -4765,77 +4759,6 @@
 
     end function idamax
 
-    ! --------------------------- dasum -------------------------------------------
-
-    real(8) function dasum(n,dx,incx)
-    !***begin prologue  dasum
-    !***date written   791001   (yymmdd)
-    !***revision date  820801   (yymmdd)
-    !***category no.  d1a3a
-    !***keywords  add,blas,real(8),linear algebra,magnitude,sum,
-    !             vector
-    !***author  lawson, c. l., (jpl)
-    !           hanson, r. j., (snla)
-    !           kincaid, d. r., (u. of texas)
-    !           krogh, f. t., (jpl)
-    !***purpose  sum of magnitudes of d.p. vector components
-    !***description
-    !
-    !                b l a s  subprogram
-    !    description of parameters
-    !
-    !     --input--
-    !        n  number of elements in input vector(s)
-    !       dx  real(8) vector with n elements
-    !     incx  storage spacing between elements of dx
-    !
-    !     --output--
-    !    dasum  real(8) result (zero if n <= 0)
-    !
-    !     returns sum of magnitudes of real(8) dx.
-    !     dasum = sum from 0 to n-1 of abs(dx(1+i*incx))
-    !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
-    !                 *basic linear algebra subprograms for fortran usage*,
-    !                 algorithm no. 539, transactions on mathematical
-    !                 software, volume 5, number 3, september 1979, 308-323
-    !***routines called  (none)
-    !***end prologue  dasum
-    !
-    implicit none
-    real(8) :: dx(*)
-    integer :: n, i, m, mp1, ns, incx
-
-    !***first executable statement  dasum
-    dasum = 0.d0
-    if (n<=0)return
-    if (incx==1)goto 20
-    !
-    !        code for increments not equal to 1.
-    !
-    ns = n*incx
-    do i=1,ns,incx
-        dasum = dasum + abs(dx(i))
-    end do
-    return
-    !
-    !        code for increments equal to 1.
-    !
-    !
-    !        clean-up loop so remaining vector length is a multiple of 6.
-    !
-20  m = modulo(n,6)
-    if ( m == 0 ) go to 40
-    do i = 1,m
-        dasum = dasum + abs(dx(i))
-    end do
-    if ( n < 6 ) return
-40  mp1 = m + 1
-    do i = mp1,n,6
-        dasum = dasum + abs(dx(i)) + abs(dx(i+1)) + abs(dx(i+2)) + abs(dx(i+3)) + abs(dx(i+4)) + abs(dx(i+5))
-    end do
-
-    end function dasum
-
     ! --------------------------- daxpy -------------------------------------------
 
     subroutine daxpy(n,da,dx,incx,dy,incy)
@@ -5811,36 +5734,6 @@
     jacd = jacdim
 
     end function jacd
-
-    ! --------------------------- setderv -------------------------------------------
-
-    subroutine setderv(j)
-    !
-    !--------------------------------- nist/bfrl ---------------------------------
-    !
-    !     routine:     setderv
-    !
-    !     source file: jacs.sor
-    !
-    !     functional class:
-    !
-    !     description: this routine sets the value of jaccol for use by dassl.
-    !
-    !     arguments: j       value to be copied into jaccol
-    !
-    !     revision history:
-    !        created:  2/14/1993 by gpf
-    !        modified: 2/2/1995 by gpf  removed iderv set option
-    !
-    !---------------------------- all rights reserved ----------------------------
-
-    use solver_data, only: jaccol
-    implicit none
-    integer :: j
-    !
-    if (j>-10) jaccol = j
-
-    end subroutine setderv
 
     ! --------------------------- xerror -------------------------------------------
 

@@ -10,9 +10,9 @@ module solve_routines
     use isosurface, only: output_isodata
     use hflow_routines, only: wall_flow, leakage_flow
     use mflow_routines, only: mechanical_flow
-    use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
+    use numerics_routines, only : ddassl, jac, snsqe, gjac
     use opening_fractions, only : get_vent_opening
-    use output_routines, only: output_results, output_status, output_debug, write_error_component
+    use output_routines, only: output_results, output_status, write_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
@@ -32,14 +32,14 @@ module solve_routines
     use diag_data, only: radi_verification_flag, verification_time_step, upper_layer_thickness, dbtime, gas_temperature, &
         partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
-    use option_data, only: option, mxopt, on, off, iprtalg, ovtime, tovtime, tottime, prttime, numjac, numstep, numresd, fpdassl, &
+    use option_data, only: option, mxopt, on, off, iprtalg, fpdassl, &
         stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
-    use setup_data, only: iofilo, iofill, initializeonly, stime, i_time_step, time_end, deltat, print_out_interval, &
-        smv_out_interval, ss_out_interval, nokbd, stopfile, queryfile, cfast_version, errormessage
+    use setup_data, only: iofilo, iofill, stime, i_time_step, time_end, deltat, print_out_interval, &
+        smv_out_interval, ss_out_interval, stopfile, queryfile, cfast_version, errormessage
     use smkview_data, only: smv_room, smv_xfire, smv_yfire, smv_zfire, smv_relp, smv_zlay, smv_tu, smv_tl, smv_qdot, smv_height
     use solver_data, only: maxteq, rpar2, ipar2, p, pold, pdold, pinit, told, dt, aptol, atol, rtol, rptol, awtol, rwtol, algtol, &
         nofp, nequals, nofprd, nofwt, noftu, noftl, nofvu, nofoxyu, nofoxyl, ndisc, discon, stpmin, stpminflag, stpmin_cnt, &
@@ -47,11 +47,10 @@ module solve_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
-    external grabky
 
     private
 
-    public solve_simulation, calculate_residuals, output_interactive_help, update_data
+    public solve_simulation, calculate_residuals, update_data
 
     contains
 
@@ -87,7 +86,6 @@ module solve_routines
     rpar2(1) = rpar(1)
     ipar2(1) = ipar(1)
     ipar2(2) = ipar(2)
-    call setderv(-1)
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar2,ipar2)
     iopt = 2
     tol = algtol
@@ -328,11 +326,6 @@ module solve_routines
         vrtol(i+nofwt) = rwtol
     end do
 
-    ovtime = 0.0_eb
-    tovtime = 0.0_eb
-    tottime = 0.0_eb
-    prttime = 0.0_eb
-
     ! Set number of equations solved by DASSL
     n_odes = nofprd
     ipar(1) = n_odes
@@ -352,33 +345,12 @@ module solve_routines
     call integrate_mass (dt)
     call update_species (0.0_eb)
 
-    ! If we are running only an initialization test then we do not need to solve anything
-    if (initializeonly) then
-        ! normally, this only needs to be done while running. however, if we are doing an initialonly run
-        ! then we need the output now
-        call collect_fire_data_for_smokeview (nfires)
-        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, n_rooms,  &
-             nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, 0.0_eb, 1)
-        icode = 0
-        write (*, '(a)') 'Initialize only'
-        write (iofill, '(a)') 'Initialize only'
-        return
-    end if
-
     ! main solve loop
-    numjac = 0
-    numstep = 0
-    numresd = 0
 
     do while (idid>=0 .and. t+0.000001_eb<=tstop)
 
         ! DASSL equation with most error
         ieqmax = 0
-
-        ! Check for interactive commands
-        ! if a key has been pressed (and we are watching the keyboard) figure out what to do
-        ! The escape key returns a code of 1
-        if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
 
         ! Check for stop file that overrides maximum iteration count
         inquire (file=stopfile, exist=exists)
@@ -439,10 +411,6 @@ module solve_routines
                 call output_results (t)
                 call output_status (t, dt)
                 tprint = tprint + dprint
-                numjac = 0
-                numstep = 0
-                numresd = 0
-                prttime = 0.0_eb
             end if
 
             ! smokeview output
@@ -489,7 +457,6 @@ module solve_routines
             if (t+0.0001_eb>tpaws) then
                 i_time_step = int(tpaws)
                 call output_results (t)
-                call output_debug (1,t,dt,ieqmax)
                 tpaws = tstop + 1.0_eb
                 call output_status (t, dt)
             end if
@@ -526,21 +493,14 @@ module solve_routines
             idset = 0
             ipar(2) = some
             told = t
-            call setderv(-1)
             call cptime(ton)
             call ddassl (calculate_residuals,n_odes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
             ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
-            call setderv(-2)
             ieqmax = ipar(3)
-            if (option(fpdassl)==on) call output_debug (3,t,dt,ieqmax)
             ostptime = ton - toff
             call cptime(toff)
             stime = t
             stptime = toff - ton
-            prttime = prttime + stptime
-            tottime = tottime + stptime
-            ovtime = ovtime + ostptime
-            tovtime = tovtime + ostptime
 
             ! make sure dassl is happy
             if (idid<0) then
@@ -667,8 +627,6 @@ module solve_routines
             ! calculate gas dosage
             call update_species (dt)
 
-            if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
-            numstep = numstep + 1
             total_steps = total_steps + 1
             if (stp_cnt_max>=0.and.total_steps>stp_cnt_max) then
                 call delete_output_files (stopfile)
@@ -713,93 +671,6 @@ module solve_routines
     pold(1:nequals) = p(1:nequals)
 
     end subroutine update_solution
-
-! --------------------------- keyboard_interaction -------------------------------------------
-
-    subroutine keyboard_interaction (t,icode,tpaws,tout,ieqmax)
-
-    ! keyboard routine for user interaction during simulation
-
-    integer, intent(in) :: ieqmax
-    real(eb), intent(in) :: t
-
-    integer, intent(out) :: icode
-    real(eb), intent(out) :: tpaws
-    real(eb), intent(inout) :: tout
-
-    integer(2) :: ch, hit
-    real(eb) :: rcode
-
-    icode = 0
-    call grabky(ch,hit)
-    if (hit>0) then
-        if (ch==27) then
-            icode = 1
-            return
-        else if (hit>1) then
-            if (ch==59) then
-                write (*,5010) t, dt
-                if (output_interactive_help ()) icode = 1
-            else if (ch==60) then
-                if (option(fdebug)==on) then
-                    option(fdebug) = off
-                    write (*,*) 'debug is now off'
-                    write (*,*)
-                else
-                    option(fdebug) = on
-                end if
-            else if (ch==62) then
-                call output_debug(1,t,dt,ieqmax)
-            else if (ch==63) then
-                write (*,5010) t, dt
-            else if (ch==64) then
-                write (*,5010) t, dt
-                write (*,*) 'enter time at which to pause: '
-                read (*,*) rcode
-                tpaws = rcode
-                tout = min(tpaws,tout)
-            else if (ch==65) then
-                if (option(fpdassl)==on) then
-                    option(fpdassl) = off
-                    write (*,*) 'dassl debug is now off'
-                else
-                    option(fpdassl) = on
-                end if
-            end if
-        end if
-    end if
-
-5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
-    end subroutine keyboard_interaction
-
-! --------------------------- output_interactive_help -------------------------------------------
-
-    logical function output_interactive_help()
-
-    ! quick output of keyboard shortcuts available during simulaiton
-
-    integer(2) :: ch, hit
-    integer :: ii
-
-    write (iofilo,*) '***Options Set***'
-    write (iofilo,'(1x,20i3)') (option(ii),ii = 1,mxopt)
-    write (iofilo,*) '************************************************************'
-    write (iofilo,*) '1=Help,2=debug,3=flow,4=pause,5=time,6=pause time,7=dassl(t)'
-    write (iofilo,*) 'Press <esc> to quit, any other key to continue'
-    write (iofilo,*) '************************************************************'
-
-10  call grabky(ch,hit)
-    if (hit==0) go to 10
-    if (ch==27) then
-        output_interactive_help = .true.
-        write (iofilo,*) 'Run terminated at user request'
-    else
-        output_interactive_help = .false.
-        write (iofilo,*) 'continuing'
-        write (iofilo,*)
-    end if
-
-    end function output_interactive_help
 
 ! --------------------------- set_info_flags -------------------------------------------
 
@@ -903,7 +774,6 @@ module solve_routines
     ires = ires ! just to get rid of a warning message
     nprod = ns
     dt = tsec - told
-    numresd = numresd + 1
     stime = tsec
 
     call update_data (y_vector,odevara)
@@ -1336,18 +1206,6 @@ module solve_routines
 
         jacdim = nofprd - nofp
 
-        ! indicate which rooms are connected to an hvac system
-        roominfo(1:n_rooms)%is_hvac = .false.
-        do i = 1, n_mvents
-            ventptr => mventinfo(i)
-            ii = ventptr%room1
-            roomptr => roominfo(ii)
-            roomptr%is_hvac = .true.
-            ii = ventptr%room2
-            roomptr => roominfo(ii)
-            roomptr%is_hvac = .true.
-        end do
-
     else if (iflag==odevara) then
         do iroom = 1, n_rooms
             roomptr=>roominfo(iroom)
@@ -1407,16 +1265,6 @@ module solve_routines
             ymax = roomptr%cdepth
             zzu = roomptr%depth(u)
             zzl = roomptr%depth(l)
-            roomptr%wall_area10(1) = roomptr%floor_area
-            roomptr%wall_area10(2) = zzu*xmax
-            roomptr%wall_area10(3) = zzu*ymax
-            roomptr%wall_area10(4) = zzu*xmax
-            roomptr%wall_area10(5) = zzu*ymax
-            roomptr%wall_area10(6) = zzl*xmax
-            roomptr%wall_area10(7) = zzl*ymax
-            roomptr%wall_area10(8) = zzl*xmax
-            roomptr%wall_area10(9) = zzl*ymax
-            roomptr%wall_area10(10) = roomptr%floor_area
 
             ! compute area of 4 wall segments
             roomptr%wall_area4(1) = roomptr%floor_area
@@ -1465,11 +1313,6 @@ module solve_routines
             roomptr => roominfo(iroom)
             zlay = roomptr%depth(l)
             ztarg = targptr%center(3)
-            if (ztarg>=zlay) then
-                targptr%layer = u
-            else
-                targptr%layer = l
-            end if
         end do
 
         ! define surface wall temperatures (interior=1,exterior=2)

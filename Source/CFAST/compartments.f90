@@ -184,7 +184,7 @@
     subroutine room_connections
 
     real(eb) :: fraction, height, width, avent
-    integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
+    integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, matiter
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -201,9 +201,6 @@
 
         iroom1 = ventptr%room1
         iroom2 = ventptr%room2
-        ik = ventptr%counter
-        im = min(iroom1,iroom2)
-        ix = max(iroom1,iroom2)
         fraction = ventptr%opening_fraction
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
@@ -219,7 +216,6 @@
         ventptr => vventinfo(i)
         iroom1 = ventptr%room1
         iroom2 = ventptr%room2
-        ik = ventptr%counter
         fraction = ventptr%opening_fraction
         avent = ventptr%area*fraction
         if (ventptr%current_area/=0.0_eb) then

@@ -117,7 +117,7 @@ fi
 
 if [ "$TIME" == "" ]; then
   if [ "$TEST_UI" == "" ]; then
-    export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -V -e $CFAST "
+    export RUNCFAST="$SVNROOT/Validation/scripts/qcfast.sh $queue $JOBPREFIX -e $CFAST "
   else
     export RUNCFAST="$SVNROOT/Validation/scripts/qcedit.sh $queue $JOBPREFIX "
   fi

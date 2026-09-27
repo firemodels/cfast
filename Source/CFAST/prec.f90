@@ -13,7 +13,6 @@ integer, parameter :: eb = selected_real_kind(12)
 
 real(eb), parameter :: pi = 4.0_eb*atan(1.0_eb)
 real(eb), parameter :: fourpi = 4.0_eb*pi
-real(eb), parameter :: pio2 = pi/2.0_eb
 real(eb), parameter :: pio4 = pi/4.0_eb
 
 real(eb), parameter :: sigma = 5.67e-8_eb

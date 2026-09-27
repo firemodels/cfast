@@ -46,7 +46,7 @@ module hflow_routines
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,ns),pslab(mxfslab,ns)
     real(eb) :: fraction, height, width
-    integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
+    integer :: islab, i, iroom1, iroom2, ik, nslab
     real(eb) :: yvbot, yvtop, avent
     integer :: position
 
@@ -77,8 +77,6 @@ module hflow_routines
         ventptr%h_mflow(2,1:2,1) = 0.0_eb
         ventptr%h_mflow(1,1:2,2) = 0.0_eb
         ventptr%h_mflow(2,1:2,2) = 0.0_eb
-        ventptr%h_mflow_mix(1,1:2) = 0.0_eb
-        ventptr%h_mflow_mix(2,1:2) = 0.0_eb
 
         ventptr%temp_slab(1:mxfslab) = 0.0_eb
         ventptr%flow_slab(1:mxfslab) = 0.0_eb
@@ -95,8 +93,6 @@ module hflow_routines
         zlay(2) = zlay(2) + zflor(2)
 
         !  use new interpolator to find vent opening fraction
-        im = min(iroom1,iroom2)
-        ix = max(iroom1,iroom2)
         call get_vent_opening (ventptr,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width*fraction
@@ -124,8 +120,6 @@ module hflow_routines
             !  calculate entrainment type mixing at the vents
 
             call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas(1,i),vasa(1,i))
-            ventptr%h_mflow_mix(1,1:2) = uflw3(1,m,1:2)
-            ventptr%h_mflow_mix(2,1:2) = uflw3(2,m,1:2)
 
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
@@ -174,11 +168,8 @@ module hflow_routines
     real(eb) :: height, width
     integer :: islab, i, iroom1, iroom2, nslab
     real(eb) :: yvbot, yvtop, avent
-    integer :: position
 
     type(vent_type), pointer :: ventptr
-
-    position = 0
 
     uflw_lk(1:n_rooms,1:ns+2,l) = 0.0_eb
     uflw_lk(1:n_rooms,1:ns+2,u) = 0.0_eb
@@ -195,8 +186,6 @@ module hflow_routines
         ventptr%h_mflow(2,1:2,1) = 0.0_eb
         ventptr%h_mflow(1,1:2,2) = 0.0_eb
         ventptr%h_mflow(2,1:2,2) = 0.0_eb
-        ventptr%h_mflow_mix(1,1:2) = 0.0_eb
-        ventptr%h_mflow_mix(2,1:2) = 0.0_eb
 
         ventptr%temp_slab(1:mxfslab) = 0.0_eb
         ventptr%flow_slab(1:mxfslab) = 0.0_eb
@@ -232,9 +221,6 @@ module hflow_routines
             end do
 
             call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfslab,ventptr%h_mflow,uflw2)
-
-            ventptr%h_mflow_mix(1,1:2) = 0.0_eb
-            ventptr%h_mflow_mix(2,1:2) = 0.0_eb
 
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
@@ -443,7 +429,7 @@ module hflow_routines
     integer :: nneut, nelev, i, jroom, iprod
 
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
-    real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, area, r1m8, sum, ys
+    real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, area, r1m8, ys
 
     ! create initial elevation height array (ignoring neutral planes)
     call get_slab_elevations(yvbot,yvtop,zlay,yelev,nelev)
@@ -536,11 +522,10 @@ module hflow_routines
             r1m8 = 8.0_eb*r1
             xmslab(i) = cvent*sqrt(r1m8)*area*(p2+p1rt*p2rt+p1)/(p2rt+p1rt)/3.0_eb
             qslab(i) = cp*xmslab(i)*tslab(i)
-            sum = 0.0_eb
             do iprod = 1, ns
                 pslab(i,iprod) = cslab(i,iprod)*xmslab(i)
-                sum = sum + pslab(i,iprod)
             end do
+
         end if
 
         ! construct cfast data structures ss, sa, as, aa

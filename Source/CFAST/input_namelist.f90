@@ -22,7 +22,7 @@
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
         tablinfo, init_fire
     use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
-        compflag, devcflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, &
+        compflag, devcflag, tablflag, insfflag, fireflag, ventflag, diagflag, slcfflag, isofflag, &
         convert_negative_distances
     use option_data, only: option, on, off, frad, &
         fdebug, fpsteady, fpdassl, fresidprn
@@ -826,7 +826,6 @@
                 tcname = matl_id
                 if (tcname=='NULL') tcname = 'DEFAULT'
                 targptr%material = tcname
-                targptr%wall = 0
 
                 ! equation type, pde or cyl.  ode is outdated and changed to pde if it's in an input file.
                 if (type=='PLATE') then
@@ -1069,11 +1068,9 @@
                 if (id==tablptr%id) then
                     if(labels(1)/='NULL') then
                         ! input is column headings
-                        tablptr%n_columns = 0
                         do i = 1,mxtablcols
                             if (labels(i)/='NULL') then
                                 tablptr%labels(i) = labels(i)
-                                tablptr%n_columns = tablptr%n_columns + 1
                             end if
                         end do
                     else
@@ -1306,7 +1303,7 @@ continue
     integer, intent(in) :: lu
     
     integer :: ios, i, ii, jj, kk, n_defs, ifire !, np
-    real(eb) :: tmpcond, max_hrr, f_height, hrrpm3, max_area, ohcomb
+    real(eb) :: max_hrr, f_height, hrrpm3, max_area, ohcomb
 
     type(fire_type),   pointer :: fireptr
     type(table_type),   pointer :: tablptr
@@ -1321,7 +1318,6 @@ continue
         table_id, trace_yield, flaming_transition_time
 
     ios = 1
-    tmpcond = 0.0
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1580,7 +1576,7 @@ continue
     integer, intent(in) :: lu
 
     integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts, ic
-    integer :: ios, abort_vent, from_room, to_room
+    integer :: ios, abort_vent
     character(len=64) :: compartment_id
 
     type(room_type), pointer :: from_roomptr, to_roomptr
@@ -1693,13 +1689,9 @@ continue
                 ! absolute positions are always relative to the floor of the "inside" room
                 if (imin == n_rooms+1) then
                     from_roomptr => roominfo(jmax)
-                    from_room    = jmax
-                    to_room      = n_rooms + 1
                 else
                     from_roomptr => roominfo(imin)
                     to_roomptr   => roominfo(jmax)
-                    from_room     = imin
-                    to_room       = jmax
                 end if
 
                 ventptr%cvent = flow_coefficient
@@ -1785,7 +1777,6 @@ continue
                 ventptr%height(2) = heights(2)
                 ventptr%diffuser_area(2) = areas(2)
 
-                ventptr%n_coeffs = 1
                 ventptr%coeff = 0.0_eb
                 ventptr%coeff(1) = real(flow)
                 ventptr%maxflow = real(flow)

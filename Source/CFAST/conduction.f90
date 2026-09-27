@@ -37,7 +37,7 @@ module conduction_routines
 
     real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes), walldx(nnodes)
 
-    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, tderv
+    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
     integer :: nslab_w, n_nodes(mxslb+1)
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb
@@ -75,7 +75,6 @@ module conduction_routines
                 ! back wall is connected to the outside
                 call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
                 wfluxout = wfluxout + sigma*(tgas**4-twext**4)
-                wfluxsave = wfluxout
             end if
             k_w(1:mxslb) = roomptr%k_w(1:mxslb,iwall)
             c_w(1:mxslb) = roomptr%c_w(1:mxslb,iwall)

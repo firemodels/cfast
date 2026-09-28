@@ -18,9 +18,9 @@ Be aware that CFAST will simply overwrite the output files of a given case if it
 
 Parameters are specified within the input file by using {\em namelist} formatted records. Each namelist record begins with the ampersand character, \ct{&}, followed immediately by the name of the namelist group, then a comma-delimited list of the input parameters, and finally a forward slash, \ct{/}. For example, the line
 \begin{lstlisting}
-&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
+&TIME  SIMULATION=3600., PRINT=50., SMOKEVIEW=50., SPREADSHEET=50. /
 \end{lstlisting}
-sets various values of parameters contained in the \ct{TIME} namelist group. The meanings of these various parameters are explained in this guide. The namelist records can span multiple lines in the input file, but just be sure to end the record with a slash or else the data will not be understood. Do not add anything to a namelist line other than the parameters and values appropriate for that group. Otherwise, CFAST will stop immediately upon execution.
+sets various values of parameters contained in the \ct{TIME} namelist group. The meanings of these various parameters are explained in this guide. The namelist records can span multiple lines in the input file, but just be sure to end the record with a slash or else the data will not be understood. Do not add anything to a namelist line other than the parameters and values appropriate for that group.
 
 Parameters within a namelist record can be separated by either commas, spaces, or line breaks. It is recommended that you use commas or line breaks, and never use tab stops because they are not explicitly defined in the namelist data structure. CFAST and CEdit expect the first character of the file to be an ampersand, \ct{&}, and by convention the first namelist is the \ct{HEAD} namelist, but any namelist can be the first. Comments and notes can be written into the file between namelists so long as nothing comes before the ampersand except a space and nothing comes between the ampersand and the slash except appropriate parameters corresponding to that particular namelist group. However, it is important to note that any comments in an input file that is opened by CEdit and saved will be lost.
 
@@ -28,7 +28,7 @@ The parameters in the input file can be integers, reals, character strings, or l
 
 Most of the input parameters are simply real or integer scalars, like \ct{PRINT = 50.}, but sometimes the inputs can be arrays.
 
-Note that character strings can be enclosed either by single or double quotation marks; however, CEdit only recognizes the single quotation mark. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or Mac OS~X because of the difference in line endings between Windows and Unix/Linux operating systems. The editor WordPad typically works better, but try a simple case first.
+Note that character strings can be enclosed either by single or double quotation marks. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or macOS because of the difference in line endings between Windows and Unix/Linux operating systems. The editor WordPad typically works better, but try a simple case first.
 
 
 \section{Input File Structure}
@@ -41,40 +41,7 @@ as the last line at the end of the input file. This completes the file from \ct{
 
 The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
 
-%\clearpage
-\begin{lstlisting}[basicstyle=\tiny]
-&HEAD VERSION = 7300, TITLE = 'Users Guide Example Case' /
-!! Scenario Configuration
-&TIME SIMULATION = 3600 PRINT = 50 SMOKEVIEW = 50 SPREADSHEET = 50 /
-&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.1 /
-!! Material Properties
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)',
-      CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
-!! Compartments
-&COMP ID = 'Comp 1'
-      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'CONCRETE' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
-!! Devices
-&DEVC ID = 'HeatDetector_3' COMP_ID = 'Comp 1' LOCATION = 2, 2, 2.97 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1
-      FACE = 'FRONT' OFFSET = 2 /
-!! Fires
-&FIRE ID = 'Wood_Wall' COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'  LOCATION = 2.5, 5 /
-&CHEM ID = 'Wood_Wall_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 18100 RADIATIVE_FRACTION = 0.33 /
-&TABL ID = 'Wood_Wall_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
-&TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.006171682, 0.015, 0, 0, 0 /
-&TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.006171682, 0.015, 0, 0, 0 /
-!! Visualizations
-&SLCF DOMAIN = '2-D'  POSITION = 2.5, PLANE = 'X' /
-&TAIL /
-
-\end{lstlisting}
-When looking at a new scenario, it is recommended that you first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
-
 Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters, the section where each is introduced in the document, and the table containing all of the keywords for each group.
-
 
 \begin{table}[ht]
 \begin{center}
@@ -82,44 +49,26 @@ Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist pa
 \label{tbl:namelistgroups}
 \begin{tabular}{|c|l|c|c|}
 \hline
-Group Name & Namelist Group Description  & Reference Sec. & Parameter Table \\ \hline
+Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \\ \hline
 \ct{CHEM}  & Fire Chemistry              & \ref{info:FIRE}   & \ref{tbl:FIRE}  \\ \hline
 \ct{COMP}  & Compartments                & \ref{info:COMP}   & \ref{tbl:COMP}  \\ \hline
 \ct{DEVC}  & Devices                     & \ref{info:DEVC}   & \ref{tbl:DEVC}  \\ \hline
 \ct{DIAG}  & Diagnostics                 & \ref{info:DIAG}   & \ref{tbl:DIAG}  \\ \hline
-\ct{DUMP}  & Legacy Post-Run Calculations & \ref{info:OUTP}  & \ref{tbl:DUMP}  \\ \hline
 \ct{FIRE}  & Fire Placement              & \ref{info:FIRE}   & \ref{tbl:FIRE2} \\ \hline
 \ct{HEAD}  & Input File Header           & \ref{info:HEAD}   & \ref{tbl:HEAD}  \\ \hline
 \ct{INIT}  & Initial Conditions          & \ref{info:INIT}   & \ref{tbl:INIT}  \\ \hline
 \ct{ISOF}  & Isosurface File Outputs     & \ref{info:ISOF}   & \ref{tbl:ISOF}  \\ \hline
 \ct{MATL}  & Material Properties         & \ref{info:MATL}   & \ref{tbl:MATL}  \\ \hline
 \ct{MISC}  & Miscellaneous               & \ref{info:MISC}   & \ref{tbl:MISC}  \\ \hline
-\ct{OUTP}  & Output and Post-Run Calculations & \ref{info:OUTP} & \ref{tbl:OUTP} \\ \hline
+\ct{OUTP}  & Output                      & \ref{info:OUTP}   & \ref{tbl:OUTP}  \\ \hline
 \ct{SLCF}  & Slice File Outputs          & \ref{info:SLCF}   & \ref{tbl:SLCF}  \\ \hline
-\ct{TAIL}  & End of Input File Indicator &                   &                 \\ \hline
 \ct{TABL}  & Table of Time-Based Inputs  & \ref{info:FIRE2}  & \ref{tbl:FIRE3} \\ \hline
 \ct{TIME}  & Simulation Time             & \ref{info:TIME}   & \ref{tbl:TIME}  \\ \hline
-\ct{VENT}  & Vents                       & \ref{info:VENT}   & \ref{tbl:VENT} \\ \hline
+\ct{VENT}  & Vents                       & \ref{info:VENT}   & \ref{tbl:VENT}  \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file \ct{Users_Guide_Example.in} included with the CFAST distribution. Following are some general rules about the CFAST input file:
-
-\begin{itemize}
-\item The \ct{HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use \ct{&TAIL} as the last line at the end of the input file. This completes the file from \ct{&HEAD} to \ct{&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
-\item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
-\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying \ct{ADIABATIC} to be \ct{T} triggers the code to treat all compartment surfaces as perfectly insulated.
-\item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, \ct{TEMPERATURES}, within the namelist group, \ct{INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
-\item Default input values are assigned to some of the keywords to facilitate the setup of an input file. For instance, Table \ref{tbl:MISC} shows that the \ct{LOWER_OXYGEN_LIMIT} has a default value of \ct{0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15~\%. Users should review the applicability of any default values for their simulation.
-\end{itemize}
-
-
-\clearpage
-\chapter{Alphabetical List of Input Parameters}
-\label{info:namelists}
-
-This chapter lists all CFAST input parameters in separate tables grouped by namelist. The namelist sections and the parameters within each table are arranged alphabetically. These tables are intended as a quick reference and do not replace the detailed descriptions in the main body of this guide. See Table~\ref{tbl:namelistgroups} for cross-references to the relevant sections and tables.
 
 \section{\texorpdfstring{{\tt CHEM}}{CHEM} (Fire Chemistry Parameters)}
 \label{app:namelist_chem}
@@ -272,38 +221,6 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{VERIFICATION_TIME_STEP}              & Real           & Chap.~\ref{info:DIAG} & s        &            \\ \hline
 \end{xltabular}
 
-
-\Needspace{6\baselineskip}
-\section{\texorpdfstring{{\tt DUMP}}{DUMP} (Legacy Post-Run Calculation Parameters)}
-\label{app:namelist_dump}
-
-The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. New input files should use \ct{OUTP}; \ct{DUMP} remains accepted for compatibility.
-
-\begin{xltabular}{\textwidth}{|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=1.3\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.95\hsize\raggedright\arraybackslash}X|}
-\caption[Legacy Post-Run Calculation Parameters (\ct{DUMP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
-\label{tbl:DUMP} \\
-\hline
-\multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{\ct{DUMP} (Legacy Post-Run Calculation Parameters)} \\
-\hline \hline
-\endhead
-{\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
-\ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_DEVICE}                        & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_FIELD}                         & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_MEASUREMENT}                   & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FYI}                                 & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_DEVICE}                       & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_FIELD}                        & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_MEASUREMENT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\end{xltabular}
 
 
 \Needspace{6\baselineskip}
@@ -460,10 +377,9 @@ The \ct{DUMP} namelist is the legacy form of the post-run calculation inputs. Ne
 \Needspace{6\baselineskip}
 \section{\texorpdfstring{{\tt OUTP}}{OUTP} (Output and Post-Run Calculation Parameters)}
 
-CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and written in CEdit.
 
 \begin{xltabular}{\textwidth}{|>{\hsize=1.45\hsize\raggedright\arraybackslash}X|>{\hsize=1.2\hsize\raggedright\arraybackslash}X|>{\hsize=1.05\hsize\raggedright\arraybackslash}X|>{\hsize=0.4\hsize\raggedright\arraybackslash}X|>{\hsize=0.9\hsize\raggedright\arraybackslash}X|}
-\caption[Output and Post-Run Calculation parameters (\ct{OUTP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
+\caption[Output (\ct{OUTP} namelist group)]{For more information see Sec.~\ref{info:OUTP}.}
 \label{tbl:OUTP} \\
 \hline
 \multicolumn{5}{|c|}{\ct{OUTP} (Output and Post-Run Calculation Parameters)} \\
@@ -476,19 +392,9 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \hline \hline
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
 \endhead
-\ct{CRITERION}                           & Real                   & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FILE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_DEVICE}                        & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_FIELD}                         & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{FIRST_MEASUREMENT}                   & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{FYI}                                 & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{NET_HEAT_FLUX_OUTPUT}                & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
-\ct{SECOND_DEVICE}                       & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_FIELD}                        & Character Doublet      & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{SECOND_MEASUREMENT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{SPREADSHEET_OUTPUT}                  & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:OUTP}         &                    & \\ \hline
 \ct{VALIDATION_OUTPUT}                   & Logical                & Sec.~\ref{info:OUTP}         &                    & \ct{F} \\ \hline
 \end{xltabular}
 
@@ -614,235 +520,41 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 
 
 
-\chapter{CFAST Spreadsheet Outputs}
-
-At the user's option, CFAST outputs simulation results to one or more comma-delimited spreadsheets for further analysis by the user. The following table details all the possible outputs categorized by the physical object that is being represented in the model (here termed measurement `devices') and one or more measurements associated with that device.
-
-\clearpage
-
-\begingroup
-\scriptsize
-\noindent
-\setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.0}
-\setlength\LTleft{0in}
-\setlength\LTright{0in}
-\begin{xltabular}{\textwidth}{|>{\hsize=0.7\hsize\raggedright\arraybackslash}X|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.8\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|}
-\caption[Spreadsheet Outputs (\ct{OUTP} namelist group)]{}
-\label{tbl:custom_outputs} \\
-\hline
-\multicolumn{4}{|c|}{\ct{OUTP} (Spreadsheet Outputs)} \\
-\hline
-{\bf Device}   & {\bf Measurement}                                    & {\bf Notes}                                                & {\bf Default Spreadsheet} \\ \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{4}{|c|}{\ct{OUTP} (Spreadsheet Outputs)} \\
-\hline
-{\bf Device}   & {\bf Measurement}                                    & {\bf Notes}                                                & {\bf Default Spreadsheet} \\ \hline
-\endhead
-Compartments   & Upper Layer Temperature                              & User-specified ID                                          & \_compartments.csv \\ \hline
-               & Lower Layer Temperature                              &                                                            & \\ \hline
-               & Layer Height                                         &                                                            & \\ \hline
-               & Upper Layer Volume                                   &                                                            & \\ \hline
-               & Lower Layer Volume                                   &                                                            & \\ \hline
-               & Pressure                                             &                                                            & \\ \hline
-               & Ceiling Temperature                                  &                                                            & \\ \hline
-               & Upper Wall Temperature                               &                                                            & \\ \hline
-               & Lower Wall Temperature                               &                                                            & \\ \hline
-               & Floor Temperature                                    &                                                            & \\ \hline
-               & CO2 Upper Layer                                      &                                                            & \\ \hline
-               & CO2 Lower Layer                                      &                                                            & \\ \hline
-               & CO Upper Layer                                       &                                                            & \\ \hline
-               & CO Lower Layer                                       &                                                            & \\ \hline
-               & HCN Upper Layer                                      &                                                            & \\ \hline
-               & HCN Lower Layer                                      &                                                            & \\ \hline
-               & HCL Upper Layer                                      &                                                            & \\ \hline
-               & HCL Lower Layer                                      &                                                            & \\ \hline
-               & Unburned Fuel Upper Layer                            &                                                            & \\ \hline
-               & Unburned Fuel Lower Layer                            &                                                            & \\ \hline
-               & H2O Upper Layer                                      &                                                            & \\ \hline
-               & H2O Lower Layer                                      &                                                            & \\ \hline
-               & Optical Density Upper Layer                          &                                                            & \\ \hline
-               & Optical Density Lower Layer                          &                                                            & \\ \hline
-               & OD from Flaming Upper Layer                          &                                                            & \\ \hline
-               & OD from Flaming Lower Layer                          &                                                            & \\ \hline
-               & OD from Smoldering Upper Layer                       &                                                            & \\ \hline
-               & OD from Smoldering Lower Layer                       &                                                            & \\ \hline
-
-               & CO2 Upper Layer Mass                                 &                                                            & \\ \hline
-               & CO2 Lower Layer Mass                                 &                                                            & \\ \hline
-               & CO Upper Layer Mass                                  &                                                            & \\ \hline
-               & CO Lower Layer Mass                                  &                                                            & \\ \hline
-               & HCN Upper Layer Mass                                 &                                                            & \\ \hline
-               & HCN Lower Layer Mass                                 &                                                            & \\ \hline
-               & HCL Upper Layer Mass                                 &                                                            & \\ \hline
-               & HCL Lower Layer Mass                                 &                                                            & \\ \hline
-               & Unburned Fuel Upper Layer Mass                       &                                                            & \\ \hline
-               & Unburned Fuel Lower Layer Mass                       &                                                            & \\ \hline
-               & H2O Upper Layer Mass                                 &                                                            & \\ \hline
-               & H2O Lower Layer Mass                                 &                                                            & \\ \hline
-               & Soot Upper Layer Mass                                &                                                            & \\ \hline
-               & Soot Lower Layer Mass                                &                                                            & \\ \hline
-               & Soot from Flaming Upper Layer Mass                   &                                                            & \\ \hline
-               & Soot from Flaming Lower Layer Mass                   &                                                            & \\ \hline
-               & Soot from Smoldering Upper Layer Mass                &                                                            & \\ \hline
-               & Soot from Smoldering Lower Layer Mass                &                                                            & \\ \hline
-
-               & Potential Total Heat Upper Layer                     & -V option only                                             & \\ \hline
-               & Potential Total Heat Lower Layer                     & -V option only                                             & \\ \hline
-               & Potential CO2 Upper Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential CO2 Lower Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential CO Upper Layer Mass                        & -V option only                                             & \\ \hline
-               & Potential CO Lower Layer Mass                        & -V option only                                             & \\ \hline
-               & Potential Total Heat Upper Layer                     & -V option only                                             & \\ \hline
-               & Potential Total Heat Lower Layer                     & -V option only                                             & \\ \hline
-               & Potential HCN Upper Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential HCN Lower Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential HCL Upper Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential HCL Lower Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential H2O Upper Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential H2O Lower Layer Mass                       & -V option only                                             & \\ \hline
-               & Potential Soot Upper Layer Mass                      & -V option only                                             & \\ \hline
-               & Potential Soot Lower Layer Mass                      & -V option only                                             & \\ \hline
-               & Potential Soot from Flaming Upper Layer Mass         & -V option only                                             & \\ \hline
-               & Potential Soot from Flaming Lower Layer Mass         & -V option only                                             & \\ \hline
-               & Potential Soot from Smoldering Upper Layer Mass      & -V option only                                             & \\ \hline
-               & Potential Soot from Smoldering Lower Layer Mass      & -V option only                                             & \\ \hline
-
-Vents          & Net Inflow                                           &                                                            & \_vents \\ \hline
-               & Total Inflow Upper                                   &                                                            & \\ \hline
-               & Total Inflow Lower                                   &                                                            & \\ \hline
-               & Total Outflow Upper                                  &                                                            & \\ \hline
-               & Total Outflow Lower                                  &                                                            & \\ \hline
-               & Opening Fraction                                     &                                                            & \\ \hline
-               & Trace Species Flow                                   &                                                            & \\ \hline
-               & Trace Species Filtered                               &                                                            & \\ \hline
-
-Fires          & Ignition                                             & User-specified ID                                          & \_fires \\ \hline
-               & Plume Entrainment Rate                               &                                                            & \\ \hline
-               & Pyrolysis Rate                                       &                                                            & \\ \hline
-               & HRR Expected                                         &                                                            & \\ \hline
-               & HRR Actual                                           &                                                            & \\ \hline
-               & HRR Convective Actual                                &                                                            & \\ \hline
-               & HRR Upper Actual                                     &                                                            & \\ \hline
-               & HRR Lower Actual                                     &                                                            & \\ \hline
-               & Flame Height                                         &                                                            & \\ \hline
-               & HRR Door Jet Fires                                   &                                                            & \\ \hline
-               & Total Pyrolysate Released                            &                                                            & \\ \hline
-               & Total Trace Species Released                         &                                                            & \\ \hline
-
-Targets        & Target Surrounding Gas Temperature                   & User-specified ID                                          & \_devices \\ \hline
-               & Target Surface Temperature                           &                                                            & \\ \hline
-               & Target Internal Temperature                          &                                                            & \\ \hline
-               & Target Incident Flux                                 &                                                            & \\ \hline
-               & Back Target Incident Flux                            &                                                            & \\ \hline
-               & Target Net Flux                                      &                                                            & \\ \hline
-               & Back Target Net Flux                                 &                                                            & \\ \hline
-               & Target Gas FED                                       &                                                            & \\ \hline
-               & Target Gas FED Increment                             &                                                            & \\ \hline
-               & Target Heat FED                                      &                                                            & \\ \hline
-               & Target Heat FED Increment                            &                                                            & \\ \hline
-               & Target Obscuration                                   &                                                            & \\ \hline
-               & Target Radiative Flux                                & -V option only                                             & \\ \hline
-               & Back Target Radiative Flux                           & -V option only                                             & \\ \hline
-               & Target Convective Flux                               & -V option only                                             & \\ \hline
-               & Back Target Convective Flux                          & -V option only                                             & \\ \hline
-               & Target Radiative Fire Flux                           & -V option only                                             & \\ \hline
-               & Back Target Radiative Fire Flux                      & -V option only                                             & \\ \hline
-               & Target Surface Radiative Flux                        & -V option only                                             & \\ \hline
-               & Back Target Surface Radiative Flux                   & -V option only                                             & \\ \hline
-               & Target Gas Radiative Flux                            & -V option only                                             & \\ \hline
-               & Back Gas Target Radiative Flux                       & -V option only                                             & \\ \hline
-               & Target Radiative Loss Flux                           & -V option only                                             & \\ \hline
-               & Back Target Radiative Loss Flux                      & -V option only                                             & \\ \hline
-               & Target Total Gauge Flux                              & -V option only                                             & \\ \hline
-               & Back Target Total Gauge Flux                         & -V option only                                             & \\ \hline
-               & Target Radiative Gauge Flux                          & -V option only                                             & \\ \hline
-               & Back Target Radiative Gauge Flux                     & -V option only                                             & \\ \hline
-               & Target Convective Gauge Flux                         & -V option only                                             & \\ \hline
-               & Back Target Convective Gauge Flux                    & -V option only                                             & \\ \hline
-               & Target Radiative Loss Gauge Flux                     & -V option only                                             & \\ \hline
-               & Back Target Radiative Loss Gauge Flux                & -V option only                                             & \\ \hline
-
-Detectors      & Sensor Surrounding Gas Temperature                   & User-specified ID                                          & \_devices \\ \hline
-               & Sensor Surrounding Gas Velocity                      &                                                            & \\ \hline
-               & Sensor Obscuration                                   &                                                            & \\ \hline
-               & Sensor Temperature                                   &                                                            & \\ \hline
-               & Sensor Activation                                    &                                                            & \\ \hline
-
-
-\end{xltabular}
-\endgroup
-
-
-\clearpage
 
 
 
-\chapter{Running CFAST from a Command Prompt or Terminal}
+\chapter{Running CFAST from a Command Prompt}
 
-CFAST can be run from a Windows command prompt or a macOS or Linux terminal. The installation bundle includes a platform-specific environment script that defines \texttt{CFAST\_HOME} and adds the CFAST executable, and Smokeview when it is installed, to the command search path. After the environment has been configured, CFAST can be invoked from any folder with the path to an input file in any other folder. Enclose a path in quotation marks when it contains spaces.
+CFAST can be run from a Windows command prompt or a macOS or Linux terminal. The installation bundle includes a platform-specific environment script that defines \texttt{CFAST\_HOME} and adds the CFAST executable, and Smokeview when it is installed, to the command search path. After the environment has been configured, CFAST can be invoked from any folder containing the input file.
 
 \section{Windows}
 
-During an interactive installation, the Windows installer offers to create a desktop shortcut named \texttt{CMDcfast}. This shortcut opens a command prompt and configures its environment by calling \texttt{bin\textbackslash CFASTVARS.bat}. In a \texttt{CMDcfast} window, run an input file as follows:
-
+The Windows installer offers to create a desktop shortcut named \texttt{CMDcfast}. This shortcut opens a command prompt from which a case can be run by changing directories to the location of the input file and typing:
 \begin{lstlisting}
-cfast C:\path\to\case.in
+cfast case.in
 \end{lstlisting}
-
-The default installation folder is \texttt{C:\textbackslash Program Files\textbackslash firemodels\textbackslash CFAST8}. To configure an ordinary command prompt instead, first call the environment script. The environment change applies only to that command-prompt window.
-
+To configure an ordinary command prompt instead, call the environment script:
 \begin{lstlisting}
 call "C:\Program Files\firemodels\CFAST8\bin\CFASTVARS.bat"
-cfast "C:\Program Files\firemodels\CFAST8\Examples\Users_Guide_Example.in"
 \end{lstlisting}
-
-If CFAST was installed in a different folder, use that folder in the command above.
+The default installation folder is \texttt{C:\textbackslash Program Files\textbackslash firemodels\textbackslash CFAST8}. If CFAST is installed in a different folder, use that folder in the command above.
 
 \section{macOS}
 
 The default macOS installation folder is \texttt{/Applications/CFAST8}. Source the environment script before running CFAST from a terminal:
-
 \begin{lstlisting}
 source /Applications/CFAST8/bin/CFASTVARS.sh
-cfast /Applications/CFAST8/Examples/Users_Guide_Example.in
 \end{lstlisting}
-
-To configure future terminal sessions automatically, add the \texttt{source} command to the startup file for the shell: \texttt{\textasciitilde/.zprofile} for zsh, the default macOS shell, or \texttt{\textasciitilde/.bash\_profile} for bash. If CFAST was extracted or installed in a different folder, use the path to its \texttt{bin/CFASTVARS.sh} file.
+To configure future terminal sessions automatically, add the \texttt{source} command to the startup file for the shell: \texttt{\textasciitilde/.zprofile} for zsh, the default macOS shell, or \texttt{\textasciitilde/.bash\_profile} for bash. 
 
 \section{Linux}
 
 The Linux bundle is distributed as a compressed tar archive. After extracting it, locate the \texttt{CFAST/CFAST8} folder and source its environment script. For example:
-
 \begin{lstlisting}
 source /path/to/CFAST/CFAST8/bin/CFASTVARS.sh
-cfast /path/to/CFAST/CFAST8/Examples/Users_Guide_Example.in
 \end{lstlisting}
-
 To configure future terminal sessions automatically, add the \texttt{source} command, with the actual installation path, to the shell startup file: typically \texttt{\textasciitilde/.bashrc} for bash or \texttt{\textasciitilde/.zshrc} for zsh.
 
-\section{Command Syntax and Options}
-
-The general command syntax is
-
-\begin{lstlisting}
-cfast path/to/project.in [options]
-\end{lstlisting}
-
-The \texttt{.in} extension is optional. CFAST creates its output files in the input file's folder. One or more command-line options can follow the input filename:
-
-\begin{itemize}
-\item \texttt{-k}: Do not access the keyboard interactively.
-\item \texttt{-i}: Perform initialization only.
-\item \texttt{-c}: Use compact text output.
-\item \texttt{-f}: Use full text output. The \texttt{-c} and \texttt{-f} options are mutually exclusive; full output is the default.
-\item \texttt{-l}: List interim output on the console.
-\item \texttt{-n}: Report target heat flux relative to ambient conditions.
-\item \texttt{-o:selection}: Limit spreadsheet output to the selected files. Use \texttt{C} for \texttt{\_compartments.csv}, \texttt{D} for \texttt{\_devices.csv}, \texttt{M} for \texttt{\_masses.csv}, \texttt{V} for \texttt{\_vents.csv}, and \texttt{W} for \texttt{\_walls.csv}; for example, \texttt{-o:CD} selects compartment and device output.
-\item \texttt{-v}: Produce validation output, including modified spreadsheet columns intended for automated analysis.
-\end{itemize}
 
 
 \label{last_page}

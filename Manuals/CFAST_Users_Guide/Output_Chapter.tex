@@ -1,6 +1,6 @@
 % !TEX root = CFAST_Users_Guide.tex
 
-\chapter{Output from CFAST}
+\chapter{Output}
 \label{Output_Chapter}
 
 
@@ -22,11 +22,11 @@ Comp 1         48.52      20.89      1.542       36.    ( 49%)  0.172      9.306
 Comp 2         138.4      36.39      1.586       35.    ( 47%)  0.171      9.338E-02    -1.86
 Comp 3         103.7      27.50      1.000       50.    ( 67%)  0.161      0.104        0.983
 \end{lstlisting}
-The first column contains the compartment ID.  On each row, after its compartment number, the values listed from left to right are the upper layer temperature, lower layer temperature, the height of the interface between the two layers, the total pyrolysis rate, and finally the total fire size.  The only value given for the outside is the total heat release rate of fires venting to the outside.
+Each row lists the compartment name, the upper layer temperature, lower layer temperature, the height of the interface between the two layers, volume of the upper layer and its percentage of the whole, absorption coefficients of the upper and layer layers, and compartment pressure.
 
 \section{Detailed Outputs}
 
-The following sections describe each of the outputs from the model.  Each section refers to a specific part of the printout and appears in the order the output appears. A description of each option follows. When running CFAST from within CEdit, an output file is automatically generated based on the input file name. For example, running the example file  \ct{Users_Guide_Example.in} generates an output file named  \ct{Users_Guide_Example.out}. All the detailed outputs described in the following sections are included in the output file.
+The following sections describe each of the outputs from the model.  Each section refers to a specific part of the printout and appears in the order the output appears. The detailed output described in the following sections is included in the file with the \ct{.out} extension.
 
 \subsection{Output for Initialization}
 
@@ -162,7 +162,6 @@ M     Comp 2         Outside         2       Time           0       100       50
 \subsubsection{Thermal Properties}
 
 The thermal properties section is broken into two parts.  The first part is a table that lists the material for each surface of each compartment.  The compartments appear as rows down the page in order of specification.  From left to right next to the compartment name comes the material for the ceiling, wall and floor.  The second table lists the properties of each material used in the simulation. For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity. In addition to materials for compartment surfaces, any thermal properties specified for targets are also listed (this may include thermal properties for gaseous materials specified as fire sources in a simulation.)
-
 \begin{lstlisting}[basicstyle=\tiny]
 THERMAL PROPERTIES
 
@@ -178,7 +177,6 @@ Name    Conductivity      Specific Heat     Density        Thickness     Emissiv
 CONCRETE     1.75           1.000E+03       2.200E+03       0.150           0.940
 DEFAULT     0.120            900.            800.           1.200E-02       0.900
 \end{lstlisting}
-
 Material choices for the ceiling, walls, and floors are discussed in Sec.~\ref{info:COMP2}. Setting thermophysical properties is done in the Thermal Properties tab discussed in Sec.~\ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
 
 
@@ -241,8 +239,6 @@ All of the inputs for targets come from the Targets tab discussed in chapter \re
 \subsubsection{Detectors and Sprinklers}
 
 The entry for each detector or sprinkler shows the compartment and position of the device and its activation characteristics. For smoke detectors, activation is based on the smoke obscuration at the position of the detector; for heat detectors and sprinklers, the temperature of the detector.
-
-
 \begin{lstlisting}[basicstyle=\tiny]
 DETECTORS/ALARMS/SPRINKLERS
 Target Compartment Type   Position (x, y, z) Activation  Flaming     Smoldering
@@ -253,7 +249,6 @@ Target Compartment Type   Position (x, y, z) Activation  Flaming     Smoldering
   2    Comp 1      SMOKE  2.00 2.00 2.97     23.93
   3    Comp 1      HEAT   2.00 2.00 2.97                                         30.00         5.00
 \end{lstlisting}
-
 All of the inputs for detectors and sprinklers come from the Detector / Suppression tab discussed in Sec.~\ref{info:DEVC2}. Units for position are all in m.
 
 \subsection{Output for Main Variables}
@@ -286,7 +281,6 @@ Compartment Fire      Ign Plume     Pyrol     Fire      Flame  Fire in Fire in  
 Comp 1                    1.802E-04 1.503E-07 7.51             0.00    7.51      0.00
 Comp 2                    1.57      2.486E-02 4.500E+05        0.00    4.500E+05 0.00
 \end{lstlisting}
-% This seems out of place. Like it should be in the technical reference, which it probably is, but not here.
 Flame height is calculated from the work of Heskestad~\cite{Heskestad:2002}. The average flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
 
 \subsection{Output for Wall Surfaces, Targets, and Detectors/Sprinklers}
@@ -336,7 +330,6 @@ Comp 1      77.3  19.1  1.29  8.077E-03  2.025E-04  0.00  0.00  2.27  0.788  0.7
 Comp 2      77.0  18.6  1.71  1.061E-02  2.008E-05  0.00  0.00  2.63  0.808  0.808  0.00   0.00
 Comp 3      77.0  18.7  1.64  1.018E-02  2.190E-05  0.00  0.00  2.57  0.847  0.847  0.00   0.00
 \end{lstlisting}
-
 The reported species concentrations are percentages by volume. Optical depth per meter is a measure of the visibility in the smoke. Trace species (TS) is the total mass of the trace species that is present in the layer in kilograms. It is an absolute measure and not percent or density.
 
 \subsection{Output for Vent Flows}
@@ -411,7 +404,6 @@ There are three sets of information in this file. The first includes compartment
 \item[Trace Species Upper/Lower Layer] (kg):  total mass of trace species in the upper (or lower) layer in the current compartment
 \item[HRR Door Jet Fires] (W): total heat release rate of all door jet fires \emph{adding} heat to this compartment.
 \end{description}
-
 The second set of information is for fires. This information is displayed for each fire:
 
 \begin{description}
@@ -427,7 +419,6 @@ The second set of information is for fires. This information is displayed for ea
 \item[Total Pyrolysate Released] (kg): total mass released by the fire up to the current time.
 \item[Total Trace Species Released] (kg): total mass of trace species released by the fire up to the current time.
 \end{description}
-
 The last set of information is for door jet fires. This information is displayed for each compartment and for the outside:
 
 \begin{description}
@@ -460,7 +451,6 @@ The second set of columns pertain to the user-defined targets included in the si
 \item[Target Radiative Gauge Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature (validation output only)
 \item[Target Radiative Loss Gauge Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings assuming the target radiative losses are at ambient temperature (validation output only)
 \end{description}
-
 The second set of columns pertain to the detector/sprinkler output.
 
 \begin{description}
@@ -511,90 +501,3 @@ This file provides information on compartment surface temperatures.
 \item[Floor Temperature] (\degc): temperature of the floor surface in the current compartment
 \end{description}
 
-\newpage
-
-\section{Error Messages}
-
-In some (hopefully rare) cases, a simulation will fail to complete. In those cases, an error message provides guidance to the user on possible reasons for the failure. The message will contain an error number which provides a reference to additional information from the table below. Most often, these errors result from improper information in the input data files.
-During initialization of the program for a simulation, CFAST may stop with an error message if the simulation cannot be initialized due to a missing or incorrect file specification. The error codes are as follows:
-\begin{description}
-\item[100] program called with no arguments (no input file)
-\item[101] internal error in fire input; code for a free burning fire should not be reachable
-\item[102] project file does not exist
-\item[103] total file name length including path  is more than 256 characters
-\item[104] one of the output files is not accessible (for example, if a CFAST case with this name is already running)
-\item[105] error writing to an output file (openoutputfiles)
-\item[106] a system fault has occurred. Applies to all open/close pairs once the model is running
-\item[107] incompatible options
-\item[108] not currently used
-\item[109] cannot find/open a file
-\item[110] error in handling the status input/output
-\end{description}
-Error codes from 1 to 99 are from the routine which parses the input and will be reported in the .log file.  The first set indicates a command with the wrong number of arguments. These errors indicate an error in a particular input command as follows:
-\begin{description}
-\item[1] TIMES command
-\item[2] TAMB command
-\item[3] EAMB command
-\item[4] LIMO2 command
-\item[5] THERMAL or FIRE commands
-\item[7] MAINF command
-\item[8] COMPA command
-\item[10] HVENT command
-\item[11] EVENT command
-\item[12] MVENT command
-\item[23] VVENT command
-\item[24] WIND command
-\item[25] INTER command
-\item[26] MVOPN command
-\item[28] MVDCT command
-\item[29] MVFAN command
-\item[32] OBJECT command
-\item[34] CJET and DETEC command
-\item[35] STPMAX command
-\item[37] VHEAT command
-\item[39] ONEZ command
-\item[41] TARGE command
-\item[46] HALL command
-\item[47] ROOMA command
-\item[51] ROOMH command
-\item[55] DTCHE command
-\item[56] SETP command
-\item[58] HHEAT command
-\item[65] HEATF command
-\end{description}
-The second set of errors related to parsing the input indicate specific errors with a command as follows:
-\begin{description}
-\item[9, compa] Compartment out of range
-\item[26, inter] Not a defined compartment
-\item[27, mvopn] Specified node number too large for this system
-\item[30, mvfan] Fan curve has incorrect specification
-\item[31, mvfan] Exceeded allowed number of fans
-\item[33, object] Object must be assigned to an existing compartment
-\item[35, detect] Invalid DETECTOR specification
-\item[36, detect] A referenced compartment is not yet defined
-\item[38, vheat] VHEAT has specified a non-existent compartment
-\item[42, target] Too many targets are being defined
-\item[43, target] The compartment specified by TARGET does not exist
-\item[44, target] Invalid TARGET solution method specified
-\item[45,  target] Invalid equation type specified in TARGET
-\item[49, rooma] Compartment specified by ROOMA does not exist
-\item[52, roomh] Compartment specified by ROOMH is not defined
-\item[53, roomh] ROOMH error on data line
-\item[54, roomh] Data on the ROOMA (or H) line must be positive
-\item[57, setp] Trying to reset the SETP parameters
-\item[61, hheat] HHEAT specification error in compartment pairs
-\item[62, hheat] Error in fraction for HHEAT
-\item[63, object] Fire type out of range
-\item[64, object] The fire must be assigned to an existing compartment
-\item[66, heatf] The heat source must be assigned to an existing compartment
-\item[67, mvent] Compartment has not been defined
-\item[68, mvent] Exceeded one of the array bounds, ierror=68 (external), 69 (internal)  and 70 (fan)
-\item[71, event] Undefined vent type
-\item[72, inter] Specification for interface height is outside of allowable range
-\item[73, inter] Compartments must be defined in pairs
-\item[74, setp] The requested “SETP” command does not exist
-\item[75, setp] Incorrect file reference
-\item[76, setp] Cannot read the parameter file
-\item[77, setp] Unsupported parameter
-\end{description}
-Errors 400 and above are failures while the model is running. 610 through 685 are failures in the numerical routines; these are rarely seen, but typically result from an internal error in the model.

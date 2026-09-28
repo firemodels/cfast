@@ -114,7 +114,6 @@ class OutputTab(QWidget):
         self.net_heat_flux_checkbox = QCheckBox("Net Heat Flux Output")
         self.validation_checkbox = QCheckBox("Validation Output")
         self.debug_checkbox = QCheckBox("Debug Output")
-        self.show_cfast_window_checkbox = QCheckBox("Show CFAST Window")
         self.spreadsheet_select_all_checkbox = QCheckBox("Select All Spreadsheet Output")
         self.spreadsheet_compartments_checkbox = QCheckBox("Compartments Output")
         self.spreadsheet_devices_checkbox = QCheckBox("Devices Output")
@@ -243,7 +242,6 @@ class OutputTab(QWidget):
         self.net_heat_flux_checkbox.setChecked(case.net_heat_flux_output)
         self.validation_checkbox.setChecked(case.validation_output)
         self.debug_checkbox.setChecked(case.debug_output)
-        self.show_cfast_window_checkbox.setChecked(case.show_cfast_window)
         self.spreadsheet_compartments_checkbox.setChecked(
             case.spreadsheet_output_compartments
         )
@@ -272,8 +270,6 @@ class OutputTab(QWidget):
         right_layout.addWidget(self.validation_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.debug_checkbox)
-        right_layout.addSpacing(25)
-        right_layout.addWidget(self.show_cfast_window_checkbox)
         right_layout.addStretch(1)
 
         main_layout.addLayout(left_layout, 1)
@@ -497,7 +493,6 @@ class OutputTab(QWidget):
         self.net_heat_flux_checkbox.setChecked(False)
         self.validation_checkbox.setChecked(False)
         self.debug_checkbox.setChecked(False)
-        self.show_cfast_window_checkbox.setChecked(False)
         for checkbox in self.spreadsheet_checkboxes:
             checkbox.setChecked(True)
 
@@ -836,7 +831,6 @@ class OutputTab(QWidget):
         case.net_heat_flux_output = self.net_heat_flux_checkbox.isChecked()
         case.validation_output = self.validation_checkbox.isChecked()
         case.debug_output = self.debug_checkbox.isChecked()
-        case.show_cfast_window = self.show_cfast_window_checkbox.isChecked()
         case.spreadsheet_output_compartments = (
             self.spreadsheet_compartments_checkbox.isChecked()
         )

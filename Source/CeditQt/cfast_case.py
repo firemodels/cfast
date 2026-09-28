@@ -348,7 +348,6 @@ class CfastCase:
     net_heat_flux_output: bool = False
     validation_output: bool = False
     debug_output: bool = False
-    show_cfast_window: bool = False
     spreadsheet_output_compartments: bool = True
     spreadsheet_output_devices: bool = True
     spreadsheet_output_masses: bool = True

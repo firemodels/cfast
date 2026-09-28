@@ -38,10 +38,6 @@ objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o  \
 
 objwin = $(objf:.o=.obj)
 
-objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o \
-       srev.o cfastexit.o utilities.o ssHeaders.o outputdebug.o compartments.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
-       numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o  input_namelist.o input.o cfast.o  
-
 
 # General Purpose Rules
 
@@ -71,14 +67,14 @@ setup_win:
 gnu_win : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
 gnu_win : obj = cfast8_win
-gnu_win : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_win : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win_db : FCOMPL = gfortran
 gnu_win_db : obj = cfast8_win_db
-gnu_win_db : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_win_db : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 intel_win : FFLAGS = /O2 /fp:consistent /fpconstant /traceback $(GITINFO)
 intel_win : FCOMPL = ifx
@@ -97,14 +93,14 @@ intel_win_db : setup_win $(objwin)
 gnu_linux : FFLAGS = -O0 $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : obj = cfast8_linux
-gnu_linux : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_linux : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 gnu_linux_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : obj = cfast8_linux_db
-gnu_linux_db : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_linux_db : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 intel_linux : FFLAGS = -O2 -traceback $(GITINFO)
 intel_linux : FCOMPL = ifx
@@ -123,14 +119,14 @@ intel_linux_db : $(objf)
 gnu_macos : FFLAGS = -O0 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
 gnu_macos: FCOMPL = gfortran
 gnu_macos : obj = cfast8_macos
-gnu_macos : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_macos : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 gnu_macos_db : FFLAGS = -O0 -std=f2018 -ggdb -finit-real=snan -finit-integer=-999999 -Wall -Werror -Wunused-parameter -Wno-target-lifetime -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -frecursive -ffpe-summary=none -fall-intrinsics -fbounds-check $(GITINFOGNU)
 gnu_macos_db : FCOMPL = gfortran
 gnu_macos_db : obj = cfast8_macos_db
-gnu_macos_db : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+gnu_macos_db : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 intel_macos : FFLAGS = -O2 -traceback $(GITINFO)
 intel_macos : FCOMPL = ifx

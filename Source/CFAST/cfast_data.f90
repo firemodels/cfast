@@ -71,26 +71,6 @@ module  diag_data
 
 end module diag_data
 
-! -------------------------dump_data---------------------------------------
-    
-module dump_data
-    
-    use precision_parameters
-    use cparams, only: mx_dumps, mxitems
-    
-    implicit none
-    
-    integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
-    
-    character(len=24), parameter, dimension(num_csvfiles) :: csvnames = &
-        (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
-    integer, dimension(num_csvfiles) :: iocsv
-    
-    logical :: alloc_dump = .true., init_dump = .true.
-    
-    end module dump_data
-
 ! --------------------------- fire_data -------------------------------------------
 
 module fire_data
@@ -166,7 +146,6 @@ module namelist_data
     logical :: timeflag = .false.
     logical :: ventflag = .false. 
     logical :: diagflag = .false.
-    logical :: dumpflag = .false.
 
 end module namelist_data
     
@@ -203,8 +182,6 @@ module option_data
             on,                   on,          on,          off,                           off,  &
         !   oxygen dassl solve    Residual print   convection between layers
             off,                  off,                  on  /)
-
-    real(eb) :: stptime
 
     integer :: iprtalg = 0
     integer :: total_steps = 0
@@ -283,7 +260,7 @@ module setup_data
         iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(len=64) :: project, extension
     character(len=256) :: exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, sscalculation
+        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile
 
 end module setup_data
 
@@ -406,7 +383,7 @@ module vent_data
     integer :: n_hvents                                                 ! number of horizontal vents
     type (vent_type), allocatable, dimension(:), target  :: hventinfo   ! structured horizontal vent data
     
-    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for vent jet fires (u or l)
+    real(eb), dimension(2,mxhvents) :: vss, vsa, vsas                   ! individual flows for vent jet fires (u or l)
     
     ! horizontal vent flow slab data by elevation in vent
     integer :: nvelev                                                   ! current number of slabs

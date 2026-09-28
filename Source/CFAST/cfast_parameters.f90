@@ -144,9 +144,6 @@
     integer, parameter :: w_to_wall = 4
     integer, parameter :: w_boundary_condition = 5
     
-    ! Post-run calculation parameters
-    integer, parameter :: mx_dumps = mxitems  ! Maximum number of columns that will be generated
-
     end module cparams
 
     ! --------------------------- defaults -------------------------------------------

@@ -12,7 +12,7 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxmatl, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        smoked, mx_dumps, mxss
+        smoked, mxss
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo, alloc_devc, init_devc

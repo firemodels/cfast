@@ -10,24 +10,23 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg, mx_dumps, cjetvelocitymin
+        w_from_room, w_from_wall, idx_tempf_trg, cjetvelocitymin
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction
-    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    use setup_data, only: iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, title, outputformat, validation_output, net_heat_flux_output, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
-        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
+        ssdiag, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
     use iso_fortran_env, only: compiler_version
 
     implicit none
@@ -50,17 +49,14 @@ module output_routines
     
 !> \param   iunit (input): logical unit number to write output
 
-    subroutine output_version (iunit, program_name, program_version)
+    subroutine output_version (iunit, program_name)
 
-    integer, intent(in) :: iunit, program_version
+    integer, intent(in) :: iunit
     character(len=5) :: program_name
     
-    integer imajor, iminor, iminorrev
     character(len=256) :: revision, revision_date, compile_date
 
     call get_info(revision, revision_date, compile_date)
-
-    call splitversion(program_version,imajor,iminor,iminorrev)
 
     write (iunit,'(/a/)') program_name
     write (iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
@@ -70,39 +66,13 @@ module output_routines
 
     end subroutine output_version
 
-! --------------------------- splitversion -------------------------------------------
-    
-!> \brief   parse program version as integers
-    
-!> \param (input):  version     integer version number of the code
-!> \param   imajor (output): major version number
-!> \param   iminor (output): minor version number
-!> \param   iminorrev (output): minor revision number
-
-    subroutine splitversion (version,imajor,iminor,iminorrev)
-
-    integer, intent(in) :: version
-    integer, intent(out) :: imajor,iminor,iminorrev
-
-    if (version>=1000) then
-        imajor = version/1000
-        iminor = modulo(version,1000)/100
-        iminorrev = modulo(version,100)
-    else
-        imajor = version/100
-        iminor = modulo(version,100)/10
-        iminorrev = modulo(version,10)
-    end if
-
-    end subroutine splitversion
-
 ! --------------------------- output_initial_conditions -------------------------------------------
 
 !> \brief   output initial test case description
 
     subroutine output_initial_conditions
 
-    call output_version (iofilo,'CFAST',cfast_version)
+    call output_version (iofilo,'CFAST')
 
     write (iofilo,5000) trim(inputfile), trim(title)
     if (outputformat>1) then
@@ -1333,15 +1303,10 @@ module output_routines
         iofilssv = get_filenumber()
         iofilssw = get_filenumber()
         if (ssoutoptions(ichar('C')-ichar('A')+1)>0) open(iofilssc, file=sscompartment,form='formatted')
-        iocsv(iocsv_compartments) = iofilssc
         if (ssoutoptions(ichar('D')-ichar('A')+1)>0) open(iofilssd, file=ssdevice,form='formatted')
-        iocsv(iocsv_devices) = iofilssd
         if (ssoutoptions(ichar('M')-ichar('A')+1)>0) open(iofilssm, file=ssmasses,form='formatted')
-        iocsv(iocsv_masses) = iofilssm
         if (ssoutoptions(ichar('V')-ichar('A')+1)>0) open(iofilssv, file=ssvent,form='formatted')
-        iocsv(iocsv_vents) = iofilssv
         if (ssoutoptions(ichar('W')-ichar('A')+1)>0) open(iofilssw, file=sswall,form='formatted')
-        iocsv(iocsv_walls) = iofilssw
         
         if (radi_verification_flag) then
             iofilssdiag = get_filenumber()

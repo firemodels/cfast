@@ -15,7 +15,7 @@ module hflow_routines
     use room_data, only: n_rooms, ns, roominfo
     use spreadsheet_output_data, only: outarray
     use solver_data, only: i_wallmap, i_speciesmap
-    use vent_data, only: n_hvents, hventinfo, n_leaks, leakinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
+    use vent_data, only: n_hvents, hventinfo, n_leaks, leakinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vsas
 
     implicit none
 
@@ -59,10 +59,7 @@ module hflow_routines
     
     vss(1:2,1:mxhvents) = 0.0_eb
     vsa(1:2,1:mxhvents) = 0.0_eb
-    vas(1:2,1:mxhvents) = 0.0_eb
-    vaa(1:2,1:mxhvents) = 0.0_eb
     vsas(1:2,1:mxhvents) = 0.0_eb
-    vasa(1:2,1:mxhvents) = 0.0_eb
     
     if (n_hvents==0) return
 
@@ -102,7 +99,7 @@ module hflow_routines
 
         if (avent>=1.0e-10_eb) then
             call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&
-                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                 yvelev,xmslab,nslab,ventptr%cvent)
 
             ventptr%n_slabs = nslab
@@ -119,7 +116,7 @@ module hflow_routines
 
             !  calculate entrainment type mixing at the vents
 
-            call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas(1,i),vasa(1,i))
+            call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas(1,i))
 
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
@@ -209,7 +206,7 @@ module hflow_routines
 
         if (avent>=1.0e-10_eb) then
             call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&
-                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                 yvelev,xmslab,nslab,ventptr%cvent)
 
             ventptr%n_slabs = nslab
@@ -259,13 +256,12 @@ module hflow_routines
 !> \param   pmix (output): species concentrations in plume
 !> \param   uflw3(i,1:3,j) (output): mass, enthalpy, and species flows to upper (j=2) or lower (j=1) layer of room i
 !> \param   vsas (output): mixing flow mass from upper layer due to entrainment
-!> \param   vasa (output): mixing flow mass from lower layer due to entrainment
 
-    subroutine spill_plume (dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
+    subroutine spill_plume (dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas)
 
     integer, intent(in) :: dirs12(10), nslab
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(ns,2), conu(ns,2), yvbot, yvtop, width
-    real(eb), intent(out) :: uflw3(2,ns+2,2), vsas(2), vasa(2), pmix(ns)
+    real(eb), intent(out) :: uflw3(2,ns+2,2), vsas(2), pmix(ns)
 
     integer :: iprod, i , ifrom, ito
     real(eb) :: tmix, zd
@@ -274,7 +270,6 @@ module hflow_routines
     uflw3(1:2,1:ns+2,l) = 0.0_eb
     uflw3(1:2,1:ns+2,u) = 0.0_eb
     vsas(1:2) = 0.0_eb
-    vasa(1:2) = 0.0_eb
 
     do i = 1, nslab
 
@@ -335,7 +330,6 @@ module hflow_routines
                             !    to try to approximate the reduced kelvin-helmholz type mixing.
 
                             uflw3(ito,m,l) = uflw3(ito,m,l)*0.25_eb
-                            vasa(ito) = uflw3(ito,m,l)
                             uflw3(ito,m,u) = -uflw3(ito,m,l)
                         end if
                     end if
@@ -414,7 +408,7 @@ module hflow_routines
 !> \param   n_velev (output): number of unique elevations delineating slabs
 
     subroutine ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,epsp,cslab,pslab,qslab, &
-        vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,cvent)
+        vss,vsa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,cvent)
 
     integer, intent(in) :: mxfslab
     integer, intent(out) :: nslab, dirs12(*)
@@ -424,7 +418,7 @@ module hflow_routines
 
     real(eb), intent(out) :: yvelev(*), dpv1m2(10)
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
-    real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
+    real(eb), intent(out) :: vss(2), vsa(2)
 
     integer :: nneut, nelev, i, jroom, iprod
 
@@ -537,21 +531,12 @@ module hflow_routines
                 vss(2) = xmslab(i)
             end if
         else if (ys<min(zlay(1),zlay(2))) then
-            if (dirs12(i)>0) then
-                vaa(1) = xmslab(i)
-            else
-                vaa(2) = xmslab(i)
-            end if
         else if (ys>zlay(1)) then
             if (dirs12(i)>0) then
                 vsa(1) = xmslab(i)
-            else
-                vas(2) = xmslab(i)
             end if
         else if (ys>zlay(2)) then
-            if (dirs12(i)>0) then
-                vas(1) = xmslab(i)
-            else
+            if (dirs12(i)<=0) then
                 vsa(2) = xmslab(i)
             end if
         end if

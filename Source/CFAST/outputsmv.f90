@@ -8,7 +8,7 @@
     use utility_routines, only: tointstring, get_filenumber
 
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
-    use setup_data, only: smvcsv, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssdiag, sscalculation
+    use setup_data, only: smvcsv, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssdiag
 
     use cparams, only: smoked, face_front, face_left, face_back, face_right
 
@@ -56,7 +56,6 @@
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
 
-    real(eb) :: vred, vgreen, vblue
     real(eb) :: targetvector(6)
     real(eb) :: xyz(6)
     integer ::i, iroom1, iroom2
@@ -187,7 +186,7 @@
     if (n_hvents/=0) then
         do i = 1, n_hvents
             write (iofilsmv,"(a)") "HVENTPOS"
-            call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            call get_vent_info ("H", i, iroom1, iroom2, xyz, vtype)
             write (iofilsmv,"(2(1x,i3),1x,6(e11.4,1x))") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
@@ -196,7 +195,7 @@
     if (n_vvents/=0) then
         do i = 1, n_vvents
             write (iofilsmv,"(a)") "VVENTPOS"
-            call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            call get_vent_info ("V",i , iroom1, iroom2, xyz, vtype)
             write (iofilsmv,"(2(1x,i3),1x,6(e11.4,1x),1x,i3)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vtype
         end do
     end if
@@ -205,7 +204,7 @@
     if (n_mvents/=0) then
         do i = 1, n_mvents
             write (iofilsmv,'(a)') "MVENTPOS"
-            call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            call get_vent_info ("M", i, iroom1, iroom2, xyz, vtype)
             write (iofilsmv,"(1x,i3,1x,6(e11.4,1x))") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
@@ -247,14 +246,14 @@
 
     ! ---------------------------------- get_vent_info -------------------------------------------------
 
-    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vtype)
 
     ! get the shape data for mechanical flow vent external connections
 
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: ivent
     integer, intent(out) :: iroom1, iroom2
-    real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
+    real(eb), intent(out) :: xyz(6)
     integer, intent(out) :: vtype
 
     real(eb) :: vheight, varea, voffset
@@ -360,10 +359,6 @@
             xyz(6) = vheight
         end if
     end if
-
-    vred = 1.0_eb
-    vgreen = 1.0_eb
-    vblue = 1.0_eb
 
     end subroutine get_vent_info
 

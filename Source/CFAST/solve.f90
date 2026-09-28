@@ -17,7 +17,7 @@ module solve_routines
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
-    use utility_routines, only: mat2mult, interp, shellsort, cptime, get_filenumber
+    use utility_routines, only: mat2mult, interp, shellsort, get_filenumber
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
@@ -33,7 +33,7 @@ module solve_routines
         partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
     use option_data, only: option, mxopt, on, off, iprtalg, fpdassl, &
-        stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn
+        total_steps, fpsteady, foxygen, fdebug, fresidprn
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
@@ -232,8 +232,7 @@ module solve_routines
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, ismv, exists, ispread,firstpassforsmokeview
     integer :: idid, i, n_odes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, n
-    real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
-        ostptime, tdtect, tobj
+    real(eb) :: tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout, tdtect, tobj
     integer :: first_time
     integer :: stopunit, ios
     
@@ -242,7 +241,6 @@ module solve_routines
     ! Keep the large solver workspace off the stack in recursive debug builds.
     allocate(rwork(lrwork))
 
-    call cptime(toff)
     ires = 0
     tpaws = tstop + 1.0_eb
     tstart = i_time_step - 1
@@ -493,14 +491,10 @@ module solve_routines
             idset = 0
             ipar(2) = some
             told = t
-            call cptime(ton)
             call ddassl (calculate_residuals,n_odes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
             ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
             ieqmax = ipar(3)
-            ostptime = ton - toff
-            call cptime(toff)
             stime = t
-            stptime = toff - ton
 
             ! make sure dassl is happy
             if (idid<0) then
@@ -1024,7 +1018,7 @@ module solve_routines
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isof
     real(eb) :: wtemp
     real(eb) :: xdelt, tstop, zzu, zzl
-    real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu
+    real(eb) :: zlay, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
     real(eb) :: xmax, xmid, ymax, ymid, zmax
 
@@ -1312,7 +1306,6 @@ module solve_routines
             iroom = targptr%room
             roomptr => roominfo(iroom)
             zlay = roomptr%depth(l)
-            ztarg = targptr%center(3)
         end do
 
         ! define surface wall temperatures (interior=1,exterior=2)

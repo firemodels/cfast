@@ -292,7 +292,7 @@ module fire_routines
 
     real(eb) :: xmass(ns), layer_thickness, t_lower, t_upper, lower_plume_height, upper_plume_height
     real(eb) :: pyrolysis_rate_constrained, hrr_constrained
-    real(eb) :: chirad, hrr, source_o2, xtemp, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper
+    real(eb) :: chirad, hrr, source_o2, xtemp, pyrolysis_rate_upper, entrainment_rate_upper
     real(eb) :: firex, firey
     integer :: ipass, lsp
     type(room_type), pointer :: roomptr
@@ -358,7 +358,7 @@ module fire_routines
             ! of air entrained to that required to produce stable stratification
             call heskestad_plume(hrr, hrr_c, fire_area, &
                 min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
-                lower_plume_height, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, entrainment_rate)
+                lower_plume_height, interior_ambient_temperature, entrainment_rate)
 
             if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
@@ -400,7 +400,7 @@ module fire_routines
 
         call heskestad_plume (hrr, hrr_c, upper_plume_height, fire_area, &
            min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
-            interior_ambient_temperature, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper)
+            interior_ambient_temperature, entrainment_rate_upper)
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
@@ -457,13 +457,12 @@ module fire_routines
 !> \param   t_inf (input): ambient temperature at base of the fire
 !> \param   pyrolysis_rate (input): mass loss rate of the fire (kg/s)
 !> \param   fire_area (input): cross sectional area at the base of the fire
-!> \param   plume_flow_rate (output): total mass transfer rate up to height z (kg/s)
 !> \param   entrainment_rate (output): net entrainment rate up to height z (kg/s)
 
-    subroutine heskestad_plume (q_t, q_c, fire_area, x, y, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate)
+    subroutine heskestad_plume (q_t, q_c, fire_area, x, y, z, t_inf, entrainment_rate)
 
-    real(eb), intent(in) :: q_t, q_c, z, t_inf, pyrolysis_rate, fire_area, x, y
-    real(eb), intent(out) :: plume_flow_rate, entrainment_rate
+    real(eb), intent(in) :: q_t, q_c, z, t_inf, fire_area, x, y
+    real(eb), intent(out) :: entrainment_rate
 
     real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
     real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
@@ -498,9 +497,7 @@ module fire_routines
         c1 = 0.196*(grav_con*rho_inf**2/(cpg*t_inf))**onethird  ! under normal conditions, 0.071_eb
         c2 = 2.9_eb/((gsqrt*cpg*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
         entrainment_rate = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
-        plume_flow_rate = pyrolysis_rate + entrainment_rate
     else
-        plume_flow_rate = pyrolysis_rate
         entrainment_rate = 0.0_eb
     end if
 

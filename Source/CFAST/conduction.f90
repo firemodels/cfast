@@ -37,7 +37,7 @@ module conduction_routines
 
     real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes), walldx(nnodes)
 
-    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, tderv
+    real(eb) :: twint, twext, tgas, wfluxin, wfluxout
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
     integer :: nslab_w, n_nodes(mxslb+1)
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb
@@ -84,7 +84,7 @@ module conduction_routines
             wtemps = roomptr%t_profile(1:nnodes,iwall)
             walldx = roomptr%walldx(1:nnodes,iwall)
             call conductive_flux (update,twint,twext,dt,k_w,c_w,rho_w, &
-                wtemps,walldx,n_nodes,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
+                wtemps,walldx,n_nodes,nslab_w,wfluxin,wfluxout,iwb,tgrad)
             roomptr%t_profile(1:nnodes,iwall) = wtemps
             ! store wall gradient
             vtgrad(iw) = tgrad(2)
@@ -111,7 +111,7 @@ module conduction_routines
 ! --------------------------- conductive_flux -------------------------------------------
 
     subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,n_nodes,nslab,wfluxin,wfluxout,iwbound,&
-       tgrad,tderv)
+       tgrad)
 
 
 !> \brief   handles cfast conduction for compartment surfaces and planar targets
@@ -130,15 +130,13 @@ module conduction_routines
 !> \param   wfluxout (input): flux striking exterior wall
 !> \param   iwbound (input): type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
 !>                           on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
-!> \param   tderv (input): partial of temperature gradient with respect to wall surface temperature.
-!>                         this number is used to calculate wall jacobian elements.
 !> \param   wtemp (output): wall temperature profile
 !> \param   tgrad (output): temperature gradient
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
     integer, intent(in) :: update, nslab, iwbound, n_nodes(*)
     
-    real(eb), intent(out) :: wtemp(*), tgrad(2), tderv
+    real(eb), intent(out) :: wtemp(*), tgrad(2)
 
 
     integer :: nx, i, ibeg, iend, islab, nintx, ibreak
@@ -265,7 +263,6 @@ module conduction_routines
 
     tgrad(1) = (ddif(1)-ddif(2)*walldx(1))
     tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
-    tderv = tderiv(2)
 
     end subroutine conductive_flux
 

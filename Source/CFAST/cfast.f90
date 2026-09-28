@@ -35,7 +35,7 @@ use solve_routines, only : solve_simulation
 use utility_routines, only : cptime, read_command_options
 
 use option_data, only: total_steps
-use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_output, &
+use setup_data, only: stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_output, &
     program_name, errormessage
 
 implicit none
@@ -47,7 +47,7 @@ program_name = 'CFAST'
 
 errormessage = ' '
 if (command_argument_count()==0) then
-    call output_version(0,program_name,cfast_version)
+    call output_version(0,program_name)
     call cfastexit('CFAST',0)
     stop
 end if
@@ -59,8 +59,8 @@ call initialize_memory
 call read_command_options
 call open_files
 
-if (.not.validation_output) call output_version(output_unit,'CFAST',cfast_version)
-call output_version(iofill,'CFAST',cfast_version)
+if (.not.validation_output) call output_version(output_unit,'CFAST')
+call output_version(iofill,'CFAST')
 
 call read_input_file
 

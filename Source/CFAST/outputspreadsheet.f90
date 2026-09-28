@@ -7,12 +7,12 @@ module spreadsheet_routines
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
-    use utility_routines, only: ssaddtolist, readcsvformat, tointstring
+    use utility_routines, only: ssaddtolist, tointstring
     
     use cfast_types, only: fire_type, room_type, detector_type, target_type, vent_type, ssout_type, vent_type
 
     use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mx_dumps, mxss, cjetvelocitymin, &
+        ns, soot, soot_flaming, soot_smolder, smoked, mxss, cjetvelocitymin, &
         n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
         fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
     
@@ -21,7 +21,7 @@ module spreadsheet_routines
     use fire_data, only: n_fires, fireinfo
     use room_data, only: n_rooms, roominfo, pressure_ref
     use setup_data, only: validation_output, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension, ssoutoptions, errormessage
+        iofilssdiag, iofilcalc, iofill, ss_out_interval, project, ssoutoptions, errormessage
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo

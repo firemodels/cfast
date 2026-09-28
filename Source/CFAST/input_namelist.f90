@@ -9,7 +9,7 @@
     
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
-        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
+        w_from_room, w_to_room, w_from_wall, w_to_wall
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &

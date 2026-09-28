@@ -14,14 +14,13 @@
         visual_type
 
     use cenviro, only: rgas
-    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        mx_dumps, interior, exterior
+    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: input_file_line
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
-        ssdiag, sscalculation, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        ssdiag, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase, errormessage
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -375,7 +374,6 @@
     queryfile     = project(1:ld) // '.query'
     statusfile    = project(1:ld) // '.status'
     slabcsv       = project(1:ld) // '_slab.csv'
-    sscalculation = project(1:ld) // '_calculations.csv'
 
     !open input file and check to see if it's a new (namelist) format file
 

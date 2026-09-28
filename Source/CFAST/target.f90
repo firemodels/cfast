@@ -44,7 +44,7 @@ module target_routines
 
     logical :: first = .true.
     real(eb) :: x_node(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
+    real(eb) :: wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2), t_inf
     real(eb) :: nu_co2, fed_gas_increment, fed_heat_increment
     integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom, ilayer
@@ -114,7 +114,7 @@ module target_routines
                 iwbound = 4
                 walldx(1:nnodes_trg-1) = xl*x_node(1:nnodes_trg-1)
                 call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
-                    wfluxin,wfluxout,iwbound,tgrad,tderv)
+                    wfluxin,wfluxout,iwbound,tgrad)
             else if (iieq==cylpde) then
                 wfluxavg = (wfluxin+wfluxout)/2.0_eb
                 iwbound = 4

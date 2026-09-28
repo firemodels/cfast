@@ -143,15 +143,15 @@ intel_macos_db : $(objf)
 # *** Object Dependencies ***
 
 cfast.o : utilities.o cfastexit.o initialization.o input_namelist.o input.o numerics.o \
-              output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
-              compartments.o conduction.o convection.o radiation.o target.o \
-              fire.o flowfan.o flowhorizontal.o flowvertical.o solve.o
+          output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
+          compartments.o conduction.o convection.o radiation.o target.o \
+          fire.o flowfan.o flowhorizontal.o flowvertical.o solve.o
 
 
-cfast.obj : utilities.obj cfastexit.obj initialization.obj input_namelist.o input.obj numerics.obj \
-              output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
-              compartments.obj conduction.obj convection.obj radiation.obj target.obj \
-              fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj solve.o
+cfast.obj : utilities.obj cfastexit.obj initialization.obj input_namelist.obj input.obj numerics.obj \
+            output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
+            compartments.obj conduction.obj convection.obj radiation.obj target.obj \
+            fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj solve.obj
 
 #-------------- force compilation of srev.90 -----------
 

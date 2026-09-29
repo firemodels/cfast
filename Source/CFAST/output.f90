@@ -45,9 +45,9 @@ module output_routines
 
 ! --------------------------- output_version -------------------------------------------
 
-!> \brief   put the header information in the output file. we assume the file is open
-    
-!> \param   iunit (input): logical unit number to write output
+    !> \brief   put the header information in the output file. we assume the file is open
+    !> \param   iunit (input): logical unit number to write output
+    !> \param   program_name (inout): name of the program, CFAST
 
     subroutine output_version (iunit, program_name)
 

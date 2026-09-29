@@ -23,13 +23,12 @@ module mflow_routines
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-!> \brief   physical interface routine to calculate flow through all forced vents (mechanical flow).
-!>          it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
-    
-!> \param   tsec (input): current simulation time (s)
-!> \param   epsp (input): pressure error tolerance
-!> \param   uflw_mf (output): change in mass and energy for each layer / compartment via flow through mechanical vents
-!> \param   iflw_filtered (output): mass and energy removed from system via filtering at mechanical vents
+    !> \brief   physical interface routine to calculate flow through all forced vents (mechanical flow).
+    !>          it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
+    !> \param   tsec (input): current simulation time (s)
+    !> \param   epsp (input): pressure error tolerance
+    !> \param   uflw_mf (output): change in mass and energy for each layer / compartment via flow through mechanical vents
+    !> \param   uflw_filtered (output): mass and energy removed from system via filtering at mechanical vents
 
     subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered)
 

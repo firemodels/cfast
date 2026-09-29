@@ -659,9 +659,9 @@ module fire_routines
 
 ! --------------------------- vent_jets -------------------------------------------
 
-!> \brief   calculate rates of mass and energy flows into the layers from all vent jet fires in the building
-
-!> \param   flows_doorjets (output): mass and energy flows into layers due to vent jet fires
+    !> \brief   calculate rates of mass and energy flows into the layers from all vent jet fires in the building
+    !> \param   flows_doorjets (output): mass and energy flows into layers due to vent jet fires
+    !> \param   djetflg (output):
 
     subroutine vent_jets (flows_doorjets, djetflg)
 

@@ -235,10 +235,12 @@
     spreadsheet_output = ' '
 
     call checkread ('OUTP',lu,ios)
-    read(lu,OUTP,iostat=ios)
-    if (ios>0) then
-        write(errormessage, '(a)') 'Error, Invalid specification in &OUTP inputs.'
-        call cfastexit('read_output_options',1)
+    if (ios==0) then
+        read(lu,OUTP,iostat=ios)
+        if (ios>0) then
+            write(errormessage, '(a)') 'Error, Invalid specification in &OUTP inputs.'
+            call cfastexit('read_output_options',1)
+        end if
     end if
 
     ssoutoptions = (/ (i, i=1,26) /)

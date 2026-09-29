@@ -110,35 +110,29 @@ module conduction_routines
 
 ! --------------------------- conductive_flux -------------------------------------------
 
-    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,n_nodes,nslab,wfluxin,wfluxout,iwbound,&
-       tgrad)
+    !> \brief   handles cfast conduction for compartment surfaces and planar targets
+    !> \param   update (input): we don't keep solution unless update is 1 or 2
+    !> \param   tempin (input): temperature at interior wall
+    !> \param   tempout (input): temperature at exterior wall
+    !> \param   dt (input):  time step interval from last valid solution point
+    !> \param   wk (input): wall thermal conductivity
+    !> \param   wspec (input): wall specific heat
+    !> \param   wrho (input): wall density
+    !> \param   wtemp (input): wall temperature profile
+    !> \param   walldx (input): wall position points
+    !> \param   n_nodes (input): number of nodes in each slab
+    !> \param   nslab (input): number of slabs
+    !> \param   wfluxin (input): flux striking interior wall
+    !> \param   wfluxout (input): flux striking exterior wall
+    !> \param   iwbound (input): type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
+    !>                           on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
+    !> \param   tgrad (output): temperature gradient
 
-
-!> \brief   handles cfast conduction for compartment surfaces and planar targets
-    
-!> \param   update (input): we don't keep solution unless update is 1 or 2
-!> \param   tempin (input): temperature at interior wall
-!> \param   tempout (input): temperature at exterior wall
-!> \param   dt (input):  time step interval from last valid solution point
-!> \param   wk (input): wall thermal conductivity
-!> \param   wspec (input): wall specific heat
-!> \param   wrho (input): wall density
-!> \param   walldx (input): wall position points
-!> \param   n_nodes (input): number of nodes in each slab
-!> \param   nslab (input): number of slabs
-!> \param   wfluxin (input): flux striking interior wall
-!> \param   wfluxout (input): flux striking exterior wall
-!> \param   iwbound (input): type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
-!>                           on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
-!> \param   wtemp (output): wall temperature profile
-!> \param   tgrad (output): temperature gradient
+    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,n_nodes,nslab,wfluxin,wfluxout,iwbound,tgrad)
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
     integer, intent(in) :: update, nslab, iwbound, n_nodes(*)
-    
     real(eb), intent(out) :: wtemp(*), tgrad(2)
-
-
     integer :: nx, i, ibeg, iend, islab, nintx, ibreak
     real(eb) :: a(nnodes), b(nnodes), c(nnodes), tnew(nnodes), tderiv(nnodes), ddif(3)
     real(eb) :: xkrhoc, s, hi, him1

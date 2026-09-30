@@ -6,6 +6,8 @@
 &MISC ADIABATIC = .TRUE.  / 
 &DIAG T = 0, 10000
       F = 500., 500.  / 
+
+&OUTP VALIDATION_OUTPUT = T /
  
 !! Material Properties 
 &MATL ID = 'STEELROD' MATERIAL = '"Steel Rod, 2.5 cm diameter"', 

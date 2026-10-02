@@ -20,8 +20,7 @@
     use namelist_data, only: input_file_line
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
-        ssdiag, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, &
-        overwrite_testcase, errormessage
+        ssdiag, validation_output, gitfile, errorlogging, stopfile, queryfile, statusfile, overwrite, errormessage
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use material_data, only: n_matl, material_info
@@ -424,7 +423,7 @@
     if (buf(1:1)=='&') then
         call read_misc (iofili)
         call read_output_options (iofili)
-        if (.not.overwrite_testcase) then
+        if (.not.overwrite) then
             inquire (file=outputfile,exist=ex)
             if (ex) then
                 write (errormessage,'(a,a,a)') &

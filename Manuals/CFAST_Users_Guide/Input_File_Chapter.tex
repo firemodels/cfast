@@ -627,7 +627,6 @@ Sample visualizations are included below.
 By default, CFAST generates a set of output files that includes a formatted readable output and a set of spreadsheet files.  Options are available to modify the output files.  The default output should be appropriate for most simulations.
 \begin{description}
     \item[Spreadsheet Output] (default: \textbf{ALL}; namelist: \ct{SPREADSHEET\_OUTPUT}) String of output-category letters that selects and orders spreadsheet outputs. \ct{ALL} selects every category.
-    \item[Net Heat Flux Output] (default: \ct{F}; namelist: \ct{NET_HEAT_FLUX_OUTPUT}) If \ct{T}, includes net target heat flux in spreadsheet output.
     \item[Validation Output] (default: \ct{F}; namelist: \ct{VALIDATION\_OUTPUT}) If checked, abbreviated headings for spreadsheet columns facilitate the post-processing of validation cases.
     \item[Debug Output] (default: \textbf{OFF}; namelist: \ct{DIAG/DEBUG_PPRINT}, \ct{DIAG/RESIDUAL_DEBUG_PRINT}) If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
 \end{description}

@@ -20,7 +20,7 @@ module output_routines
     use setup_data, only: iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, &
-        outputfile, statusfile, title, outputformat, validation_output, net_heat_flux_output, time_end, print_out_interval, &
+        outputfile, statusfile, title, outputformat, validation_output, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
@@ -528,7 +528,7 @@ module output_routines
                     tctemp = targptr%tinternal
                     gasfed = targptr%fed_gas
                     heatfed = targptr%fed_heat
-                    if (validation_output.or.net_heat_flux_output) then
+                    if (validation_output) then
                         itotal = targptr%flux_incident_front
                         total = targptr%flux_net_gauge(1)
                     else

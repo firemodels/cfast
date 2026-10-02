@@ -30,10 +30,9 @@ module solve_routines
     
     use devc_data, only: n_detectors, n_targets, targetinfo, idset
     use diag_data, only: radi_verification_flag, verification_time_step, upper_layer_thickness, dbtime, gas_temperature, &
-        partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
+        partial_pressure_co2, partial_pressure_h2o, ioresid, residcsv, residfirst, residual_debug_print, ioslab, slabcsv
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
-    use option_data, only: option, mxopt, on, off, iprtalg, fpdassl, &
-        total_steps, fpsteady, foxygen, fdebug, fresidprn
+    use option_data, only: option, mxopt, on, off, iprtalg, total_steps, fpsteady, foxygen
     use room_data, only: n_rooms, roominfo, n_cons, surface_connections, &
         exterior_ambient_temperature, exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound, &
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
@@ -384,11 +383,9 @@ module solve_routines
             call delete_output_files (queryfile)
         end if
 
-        !Check to see if diagnostic files .resid and .jac exist. If they do exist
-        !set flags and open file, if needed, to print diagnositic information.
-        inquire (file=residfile, exist=exists)
-        if (exists .or. option(fresidprn) == on) then
-            residprn = .true.
+        ! Check to see if diagnostic files .resid and .jac exist. If they do exist
+        ! set flags and open file, if needed, to print diagnositic information.
+        if (residual_debug_print) then
             if (residfirst) then
                 residfirst = .false.
                 ioresid = get_filenumber()
@@ -396,8 +393,6 @@ module solve_routines
                 ioslab = get_filenumber()
                 open (ioslab, file=slabcsv)
             end if
-        else
-            residprn = .false.
         end if
 
         ! now do normal output (printout, spreadsheets, ...)
@@ -780,14 +775,8 @@ module solve_routines
 
     if (ipar(2)==some) then
         update = 0
-        prnslab = .false.
     else
         update = 1
-        if (residprn) then
-            prnslab = .true.
-        else
-            prnslab = .false.
-        end if
         dbtime = tsec
     end if
 
@@ -862,7 +851,7 @@ module solve_routines
     end do
 
     if (update==all) then
-        if (residprn) then
+        if (residual_debug_print) then
             call output_spreadsheet_residuals (tsec, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
                 filtered, flows_doorjets, flows_layer_mixing, flows_convection, flows_radiation, fluxes_convection, &
                 fluxes_radiation)

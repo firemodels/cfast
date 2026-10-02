@@ -48,13 +48,12 @@ module  diag_data
     
     implicit none
 
-    logical :: residprn
     logical :: residfirst = .true.
     logical :: nwline=.true.
-    logical :: prnslab
+    logical :: residual_debug_print = .false.
     integer :: ioresid, ioslab
     real(eb) ::   dbtime
-    character(len=256) :: residfile, residcsv, slabcsv
+    character(len=256) :: residcsv, slabcsv
     
     ! Verification flag
     logical :: radi_verification_flag = .false.
@@ -163,11 +162,8 @@ module option_data
     integer, parameter :: on = 1
 
     integer, parameter :: frad = 8
-    integer, parameter :: fdebug = 10
     integer, parameter :: fpsteady = 14
-    integer, parameter :: fpdassl = 15
     integer, parameter :: foxygen = 16
-    integer, parameter :: fresidprn = 17
 
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet

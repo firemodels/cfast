@@ -15,7 +15,7 @@
 
     use cenviro, only: rgas
     use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, interior, exterior
-    use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
+    use diag_data, only: radi_verification_flag, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: input_file_line
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, project, extension, smvhead, smvdata, &
@@ -369,7 +369,6 @@
     gitfile       = project(1:ld) // '_git.txt'
     errorlogging  = project(1:ld) // '.log'
     stopfile      = project(1:ld) // '.stop'
-    residfile     = project(1:ld) // '.debug'
     residcsv      = project(1:ld) // '_resid.csv'
     queryfile     = project(1:ld) // '.query'
     statusfile    = project(1:ld) // '.status'

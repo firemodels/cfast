@@ -10,7 +10,7 @@ module hflow_routines
     
     use cenviro, only: cp
     use cparams, only: l, u, m, q, mxrooms, mxhvents, mxfslab, deltatemp_min
-    use diag_data, only: dbtime, prnslab
+    use diag_data, only: dbtime, residual_debug_print
     use option_data, only: option, on
     use room_data, only: n_rooms, ns, roominfo
     use spreadsheet_output_data, only: outarray
@@ -110,7 +110,7 @@ module hflow_routines
                 ventptr%ytop_slab(islab) = yvelev(islab+1)
             end do
 
-            if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
+            if (residual_debug_print) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
             call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfslab,ventptr%h_mflow,uflw2)
 
@@ -137,9 +137,7 @@ module hflow_routines
 
     end do
 
-    if (prnslab) then
-        call SSprintslab (position, outarray)
-    end if
+    if (residual_debug_print) call SSprintslab (position, outarray)
 
     end subroutine wall_flow
 

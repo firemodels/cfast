@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import math
 
 from cfast_case import CfastCase
 from cfast_reader import namelist_field_texts, residual_debug_value
@@ -399,7 +400,7 @@ def validate_case(case: CfastCase) -> None:
             )
         if target.thickness < 0.0:
             raise ValueError(f"Target {target.id!r}: thickness must be non-negative.")
-        if target.temperature_depth < 0.0:
+        if not math.isfinite(target.temperature_depth) or target.temperature_depth < 0.0:
             raise ValueError(
                 f"Target {target.id!r}: internal temperature depth must be non-negative."
             )
@@ -417,10 +418,18 @@ def validate_case(case: CfastCase) -> None:
                 raise ValueError(
                     f"Target {target.id!r}: internal temperature depth fraction must be 0 to 1."
                 )
-        elif target.thickness > 0.0 and target.temperature_depth > target.thickness:
-            raise ValueError(
-                f"Target {target.id!r}: internal temperature depth exceeds target thickness."
+        else:
+            thickness = target.thickness or next(
+                (material.thickness for material in case.materials if material.id == target.matl_id),
+                0.0,
             )
+            if not math.isfinite(thickness) or (
+                target.temperature_depth > thickness
+                and not math.isclose(target.temperature_depth, thickness, rel_tol=1.0e-10, abs_tol=1.0e-12)
+            ):
+                raise ValueError(
+                    f"Target {target.id!r}: internal temperature depth exceeds target thickness."
+                )
 
     for device in getattr(case, "detection_devices", []):
         if device.comp_id not in compartment_ids:

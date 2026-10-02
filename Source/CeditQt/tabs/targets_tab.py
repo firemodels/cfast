@@ -252,8 +252,15 @@ class TargetsTab(QWidget):
         self.specific_heat_label = QLabel("Specific Heat: ")
         self.density_label = QLabel("Density: ")
         self.thickness_edit = QLineEdit()
-        self.temperature_depth_label = QLabel()
+        self.temperature_depth_label = QLabel("Internal Temperature at")
+        self.depth_units_combo = QComboBox()
+        self.depth_units_combo.addItem("Fraction", "FRACTION")
+        self.depth_units_combo.addItem("Depth", "METERS")
+        self.temperature_depth_units = "FRACTION"
         self.temperature_depth_edit = QLineEdit()
+        depth_label_layout = QHBoxLayout()
+        depth_label_layout.addWidget(self.temperature_depth_label)
+        depth_label_layout.addWidget(self.depth_units_combo)
 
         layout.addWidget(QLabel("Material:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.material_combo, 0, 1)
@@ -262,7 +269,7 @@ class TargetsTab(QWidget):
         layout.addWidget(self.density_label, 3, 0, 1, 2)
         layout.addWidget(QLabel("Thickness:"), 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.thickness_edit, 4, 1)
-        layout.addWidget(self.temperature_depth_label, 5, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addLayout(depth_label_layout, 5, 0)
         layout.addWidget(self.temperature_depth_edit, 5, 1)
 
         layout.setVerticalSpacing(12)
@@ -367,7 +374,8 @@ class TargetsTab(QWidget):
             self.convection_back_edit.setText(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
             set_combo_text(self.material_combo, "OFF")
             self.thickness_edit.clear()
-            self.temperature_depth_label.setText("Internal Temperature at (fraction):")
+            self.depth_units_combo.setCurrentIndex(0)
+            self.temperature_depth_units = "FRACTION"
             self.conductivity_label.setText("Conductivity: ")
             self.specific_heat_label.setText("Specific Heat: ")
             self.density_label.setText("Density: ")
@@ -401,17 +409,14 @@ class TargetsTab(QWidget):
             format_value(CONVECTION_COEFFICIENT, target.convection_coefficient_back, include_unit=False)
         )
         set_combo_text(self.material_combo, target.matl_id)
+        self.depth_units_combo.setCurrentIndex(0 if target.depth_units.upper() == "FRACTION" else 1)
+        self.temperature_depth_units = self.depth_units_combo.currentData()
         self.temperature_depth_edit.setText(
             format_number(target.temperature_depth)
             if target.depth_units.upper() == "FRACTION"
             else format_value(LENGTH, target.temperature_depth)
         )
         self.thickness_edit.setText(format_value(LENGTH, self.effective_thickness(target)))
-        self.temperature_depth_label.setText(
-            "Internal Temperature at (fraction):"
-            if target.depth_units.upper() == "FRACTION"
-            else f"Internal Temperature at ({unit_label(LENGTH)}):"
-        )
         self.update_material_labels(target.matl_id)
 
         self.updating = False
@@ -428,6 +433,7 @@ class TargetsTab(QWidget):
             widget.textChanged.connect(self.editor_changed)
 
         self.thickness_edit.editingFinished.connect(self.commit_thickness)
+        self.depth_units_combo.currentIndexChanged.connect(self.depth_units_changed)
         for combo in self.editor_combos():
             combo.currentTextChanged.connect(self.editor_changed)
 
@@ -567,8 +573,8 @@ class TargetsTab(QWidget):
             matl_id=matl_id,
             target_type=self.target_type_combo.currentText().strip().upper(),
             thickness=float(thickness) if isinstance(thickness, (float, int)) else 0.0,
-            temperature_depth=self.temperature_depth_from_editor(existing),
-            depth_units=existing.depth_units if existing is not None else "DISTANCE",
+            temperature_depth=self.temperature_depth_from_editor(),
+            depth_units=self.depth_units_combo.currentData(),
             surface_orientation=(
                 self.surface_orientation_combo.currentText() if specify_direction else "USER SPECIFIED"
             ),
@@ -660,14 +666,52 @@ class TargetsTab(QWidget):
         thickness = self.material_properties(target.matl_id).get("thickness", 0.0)
         return float(thickness) if isinstance(thickness, (float, int)) else 0.0
 
-    def temperature_depth_from_editor(self, existing: Target | None) -> float:
-        if existing is not None and existing.depth_units.upper() == "FRACTION":
-            return parse_number(
-                self.temperature_depth_edit.text(), "Internal Temperature Depth"
-            )
-        return parse_value(
-            LENGTH, self.temperature_depth_edit.text(), "Internal Temperature Depth"
-        )
+    def depth_units_changed(self):
+        if self.updating or self.current_index < 0:
+            return
+        old_fraction = self.temperature_depth_units == "FRACTION"
+        new_fraction = self.depth_units_combo.currentData() == "FRACTION"
+        self.temperature_depth_units = self.depth_units_combo.currentData()
+        if old_fraction != new_fraction:
+            try:
+                text = self.temperature_depth_edit.text().strip()
+                value = (float(text.replace("D", "E").replace("d", "e")) if old_fraction
+                         else parse_value(LENGTH, text, "Internal Temperature Depth"))
+                thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
+                if new_fraction:
+                    value = value / thickness if thickness > 0.0 else value
+                    if math.isclose(value, 1.0, rel_tol=1.0e-10, abs_tol=1.0e-12):
+                        value = 1.0
+                else:
+                    value *= thickness
+                blocker = QSignalBlocker(self.temperature_depth_edit)
+                self.temperature_depth_edit.setText(
+                    format_number(value) if new_fraction else format_value(LENGTH, value)
+                )
+                del blocker
+            except ValueError:
+                pass
+        self.editor_changed()
+
+    def temperature_depth_from_editor(self) -> float:
+        text = self.temperature_depth_edit.text().strip()
+        if self.depth_units_combo.currentData() == "FRACTION":
+            try:
+                value = float(text.replace("D", "E").replace("d", "e"))
+            except ValueError:
+                raise ValueError("Internal temperature fraction must be a unitless number from 0 to 1.") from None
+            if not 0.0 <= value <= 1.0:
+                raise ValueError("Internal temperature fraction must be 0 to 1.")
+        else:
+            value = parse_value(LENGTH, text, "Internal Temperature Depth")
+            thickness = parse_value(LENGTH, self.thickness_edit.text(), "Thickness")
+            if not math.isfinite(value) or value < 0.0:
+                raise ValueError("Internal temperature depth must be a finite, nonnegative number.")
+            if not math.isfinite(thickness) or thickness < 0.0 or (
+                value > thickness and not math.isclose(value, thickness, rel_tol=1.0e-10, abs_tol=1.0e-12)
+            ):
+                raise ValueError("Internal temperature depth exceeds target thickness.")
+        return value
 
     def add_target(self):
         convection_coefficients = self.convection_coefficients_from_editor()
@@ -742,6 +786,7 @@ class TargetsTab(QWidget):
             if self.material_combo.currentText().strip() not in {m.id for m in case.materials}:
                 raise ValueError("Adiabatic target: select a material defined in Thermal Properties for its emissivity.")
         if self.current_index >= 0:
+            self.temperature_depth_from_editor()
             if self.normal_mode_combo.currentText() == "Specify Direction" and not self.surface_orientation_combo.currentText():
                 raise ValueError("Target: select a surface orientation or a fire in its compartment.")
             try:

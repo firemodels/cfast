@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from cfast_case import CfastCase
+from cfast_reader import namelist_field_texts, residual_debug_value
 
 
 def cfast_string(value: str) -> str:
@@ -606,15 +607,27 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")
 
+    diag_records = []
+    extra_namelists = []
+    for extra_namelist in getattr(case, "extra_namelists", []):
+        text = extra_namelist.strip()
+        if text.upper().startswith("&DIAG"):
+            diag_records.append([
+                field for _, field in namelist_field_texts(text)
+                if residual_debug_value(field) is None
+            ])
+        elif text:
+            extra_namelists.append(text)
+
     if getattr(case, "debug_output", False):
-        add_wrapped_namelist(
-            lines,
-            "DIAG",
-            [
-                "DEBUG_PRINT = 'ON'",
-                "RESIDUAL_DEBUG_PRINT = 'ON'",
-            ],
-        )
+        if not diag_records:
+            diag_records.append([])
+        diag_records[0].append("RESIDUAL_DEBUG_PRINT = .TRUE.")
+
+    for diag_fields in diag_records:
+        if not diag_fields:
+            continue
+        add_wrapped_namelist(lines, "DIAG", diag_fields)
         lines.append("")
 
     outp_fields = []
@@ -1034,7 +1047,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
         lines.append("")
 
-    for extra_namelist in getattr(case, "extra_namelists", []):
+    for extra_namelist in extra_namelists:
         text = extra_namelist.strip()
         if text:
             lines.append(text)

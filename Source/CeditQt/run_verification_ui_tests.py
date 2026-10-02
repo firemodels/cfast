@@ -1275,6 +1275,64 @@ def check_unrecognized_namelists():
             raise AssertionError(f"&{name} should be rejected")
 
 
+def check_debug_output():
+    """The checkbox must control the logical flag, including after reloading."""
+    from cfast_reader import parse_namelists, read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+
+    window = CeditMainWindow()
+    try:
+        window.load_case(opening_case())
+        with tempfile.TemporaryDirectory(prefix="cedit-qt-debug-") as tmp:
+            path = Path(tmp) / "debug.in"
+            for checked in (False, True, False):
+                window.output_tab.debug_checkbox.setChecked(checked)
+                assert window.write_case_to_path(path) == path
+                records = parse_namelists(path.read_text())
+                diag = [record.fields for record in records if record.name == "DIAG"]
+                assert diag == ([{"RESIDUAL_DEBUG_PRINT": [True]}] if checked else [])
+                window.load_cfast_input(path)
+                assert window.output_tab.debug_checkbox.isChecked() == checked
+
+            for value, checked in (("T", True), (".TRUE.", True), ("F", False), (".FALSE.", False)):
+                case = opening_case()
+                write_cfast_input(case, path)
+                text = path.read_text().replace(
+                    "&TAIL /",
+                    f"&DIAG RESIDUAL_DEBUG_PRINT = {value}, "
+                    "RADIATION_SUB_MODEL = 'OFF', T = 0, 60, F = 20, 100 /\n&TAIL /",
+                )
+                path.write_text(text)
+                window.load_cfast_input(path)
+                assert window.output_tab.debug_checkbox.isChecked() == checked
+                for enabled in (checked, not checked):
+                    window.output_tab.debug_checkbox.setChecked(enabled)
+                    assert window.write_case_to_path(path) == path
+                    diag = [record.fields for record in parse_namelists(path.read_text())
+                            if record.name == "DIAG"]
+                    expected = {"RADIATION_SUB_MODEL": ["OFF"], "T": [0, 60], "F": [20, 100]}
+                    if enabled:
+                        expected["RESIDUAL_DEBUG_PRINT"] = [True]
+                    assert diag == [expected]
+                    assert read_cfast_input(path).debug_output == enabled
+                    window.load_cfast_input(path)
+
+            # Invalid legacy settings must reach CFAST unchanged, not be repaired.
+            legacy = "&DIAG DEBUG_PRINT = 'ON', DASSL_DEBUG_PRINT = 'OFF', RESIDUAL_DEBUG_PRINT = 'ON' /"
+            case = opening_case()
+            case.extra_namelists = [legacy]
+            write_cfast_input(case, path)
+            window.load_cfast_input(path)
+            assert not window.output_tab.debug_checkbox.isChecked()
+            assert window.write_case_to_path(path) == path
+            diag = [record.fields for record in parse_namelists(path.read_text())
+                    if record.name == "DIAG"]
+            assert diag == [parse_namelists(legacy)[0].fields]
+    finally:
+        window.deleteLater()
+
+
 def check_output_visualizations():
     from PySide6.QtCore import QSignalBlocker
     from cfast_reader import read_cfast_input
@@ -1357,6 +1415,7 @@ def main() -> int:
     check_mechanical_vent_defaults()
     check_surface_connections_removed()
     check_unrecognized_namelists()
+    check_debug_output()
     check_output_visualizations()
 
     if args.mode == "rewrite":

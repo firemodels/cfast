@@ -32,7 +32,7 @@
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_output, &
-        overwrite_testcase, inputfile, errormessage
+        overwrite, inputfile, errormessage
     use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use material_data, only: n_matl, material_info
@@ -86,7 +86,6 @@
 
     namelist /HEAD/ version, title
 
-    ios = 1
     version = 0
 
     rewind (unit=lu)
@@ -157,8 +156,6 @@
     real(eb) :: simulation,print,spreadsheet,smokeview
     namelist /TIME/ print,simulation,spreadsheet,smokeview
 
-    ios = 1
-
     rewind (unit=lu)
     input_file_line_number = 0
 
@@ -228,7 +225,6 @@
 
     namelist /OUTP/ fyi, validation_output, spreadsheet_output
 
-    ios = 1
     rewind (unit=lu)
     input_file_line_number = 0
     spreadsheet_output = ' '
@@ -280,8 +276,6 @@
     real(eb) :: interior_temperature, exterior_temperature, interior_o2_mass_fraction, exterior_o2_mass_fraction
     namelist /INIT/ pressure, relative_humidity, interior_temperature, exterior_temperature, &
                     interior_o2_mass_fraction, exterior_o2_mass_fraction
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -344,22 +338,17 @@
 
     ! --------------------------- read_misc -------------------------------------------
     
-!> \brief   read in &MISC namelist that includes various special inputs
-    
-!> \param   lu (input): logical input unit number for the open input file
+    !> \brief   read in &MISC namelist that includes various special inputs
+    !> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_misc (lu)
 
     integer, intent(in) :: lu
-
     integer :: ios
-
     real(eb) :: max_time_step, max_iteration, lower_oxygen_limit
     real(eb), dimension(2) :: specific_extinction
-    logical :: adiabatic, overwrite
+    logical :: adiabatic
     namelist /MISC/ adiabatic, max_time_step, max_iteration, lower_oxygen_limit, specific_extinction, overwrite
-
-    ios = 1
 
     rewind (unit=lu) ; input_file_line_number = 0
 
@@ -391,7 +380,6 @@
         stp_cnt_max = int(max_iteration)
         lower_o2_limit = lower_oxygen_limit
         sigma_s = specific_extinction
-        overwrite_testcase = overwrite
 
     end if misc_flag
 
@@ -401,7 +389,6 @@
 
     ! note most default values are set in initialize_memory and used here to initialize namelist
 
-    overwrite = .true.
     adiabatic = .false.
     max_time_step = stpmax
     max_iteration = -1
@@ -415,23 +402,18 @@
 
     ! --------------------------- read_matl -------------------------------------------
     
-!> \brief   read in &MATL namelist that includes material thermal properties
-    
-!> \param   lu (input): logical input unit number for the open input file
+    !> \brief   read in &MATL namelist that includes material thermal properties
+    !> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_matl (lu)
-
 
     integer :: ios,ii
     integer, intent(in) :: lu
     type(material_type), pointer :: thrmpptr
-
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
     character(len=64) :: id, material
     character(len=128) :: fyi
     namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness, fyi
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -510,18 +492,14 @@
 
     ! --------------------------- read_comp -------------------------------------------
     
-!> \brief   read in &COMP namelist that includes compartment specifications
-    
-!> \param   lu (input): logical input unit number for the open input file
+    !> \brief   read in &COMP namelist that includes compartment specifications
+    !> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_comp (lu)
 
     integer, intent(in) :: lu
-    
     integer :: ios, i, k
-
     type(room_type), pointer :: roomptr
-
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width, flow_coefficient
     real(eb), dimension(3) :: origin
@@ -535,8 +513,6 @@
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
         ceiling_matl_id, floor_matl_id, wall_matl_id,ceiling_thickness, floor_thickness, wall_thickness, &
         origin, shaft, width, leak_area_ratio, flow_coefficient
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -689,9 +665,8 @@
 
     ! --------------------------- read_devc -------------------------------------------
     
-!> \brief   read in &DEVC namelist that includes target and detector specifications
-    
-!> \param   lu (input): logical input unit number for the open input file
+    !> \brief   read in &DEVC namelist that includes target and detector specifications
+    !> \param   lu (input): logical input unit number for the open input file
 
     subroutine read_devc (lu)
 
@@ -716,8 +691,6 @@
     real(eb), dimension(2) :: convection_coefficients
     namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, surface_orientation, &
         surface_temperature, thickness, rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1001,9 +974,8 @@
 
     ! --------------------------- read_tabl ------------------------
     
-!> \brief   read in &TABL namelist that includes fire time history inputs
-    
-!> \param   lu (input): logical input unit number for the open input file
+    !> \brief   read in &TABL namelist that includes fire time history inputs
+    !> \param   lu (input): logical input unit number for the open input file
     
     subroutine read_tabl (lu)
     
@@ -1018,8 +990,6 @@
     real(eb), dimension(mxtablcols) :: data
     
     namelist /TABL/ id, labels, data
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1125,10 +1095,8 @@ continue
     character(len=64) :: comp_id, devc_id, fire_id, id, ignition_criterion
     character(len=128) :: fyi
     real(eb), dimension(2) :: location
-    
     namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint, fyi
 
-    ios = 1
     tmpcond = 0.0
 
     rewind (unit=lu)
@@ -1317,8 +1285,6 @@ continue
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
         table_id, trace_yield, flaming_transition_time
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1594,8 +1560,6 @@ continue
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
         filter_time, flow, height, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
         setpoint, shape, t, top, type, width, fyi, flow_coefficient
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1993,7 +1957,6 @@ continue
     character(len=64) :: comp_id
     namelist /ISOF/ comp_id, value
 
-    ios = 1
     counter = 0
 
     rewind (unit=lu)
@@ -2088,8 +2051,6 @@ continue
     character(len=64) :: domain,plane
     character(len=64) :: comp_id
     namelist /SLCF/ domain, plane, position, comp_id
-
-    ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -2237,8 +2198,6 @@ continue
         residual_debug_print, adiabatic_target_verification, radiative_incident_flux, &
         upper_layer_thickness, verification_time_step, verification_fire_heat_flux
 
-    ios = 1
-
     rewind (unit=lu)
     input_file_line_number = 0
 
@@ -2322,12 +2281,11 @@ continue
 
     ! --------------------------- checkread ---------------------------------------
     
-!> \brief   read input file checking for the next specified namelist input.
-!>          on successful search the file is left at the line before the found item so the input routine can read it
-
-!> \param   name (input): namelist to  be looked for
-!> \param   lu (input): logicial unit number of the open input file to be read
-!> \param   ios (output): status returned. 0 if OK, 1 if error
+    !> \brief   read input file checking for the next specified namelist input.
+    !>          on successful search the file is left at the line before the found item so the input routine can read it
+    !> \param   name (input): namelist to  be looked for
+    !> \param   lu (input): logicial unit number of the open input file to be read
+    !> \param   ios (output): status returned. 0 if OK, 1 if error
     
     subroutine checkread(name,lu,ios)
 

@@ -243,7 +243,7 @@ module setup_data
     
     integer :: cfast_version = 7705     ! current cfast version
 
-    logical :: overwrite_testcase=.true.
+    logical :: overwrite=.true.
     logical :: validation_output = .false.
     integer :: outputformat = 0
     logical :: init_scalars = .true.  

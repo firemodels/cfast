@@ -614,6 +614,32 @@ def parse_fields(body: str) -> dict[str, list[Any]]:
     return fields
 
 
+def namelist_field_texts(raw: str) -> list[tuple[str, str]]:
+    """Return assignments without changing their original value formatting."""
+    body = re.sub(r"^\s*&\w+", "", raw).rsplit("/", 1)[0]
+    assignments = [
+        match for match in re.finditer(
+            r"'(?:[^']|'')*'|(?P<key>[A-Za-z_][A-Za-z0-9_]*)\s*=", body
+        )
+        if match.group("key") is not None
+    ]
+    fields = []
+    for index, match in enumerate(assignments):
+        end = assignments[index + 1].start() if index + 1 < len(assignments) else len(body)
+        fields.append((match.group("key").upper(), body[match.start():end].strip().rstrip(",")))
+    return fields
+
+
+def residual_debug_value(field: str) -> bool | None:
+    """Recognize logical input only; leave legacy strings for CFAST to reject."""
+    match = re.fullmatch(
+        r"RESIDUAL_DEBUG_PRINT\s*=\s*(\.TRUE\.|\.FALSE\.|T|F)\s*", field, re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    return match.group(1).upper() in {".TRUE.", "T"}
+
+
 def tokenize(body: str) -> list[Token]:
     tokens: list[Token] = []
     index = 0
@@ -782,11 +808,19 @@ def apply_record(
         if "MAX_TIME_STEP" in fields:
             case.max_time_step = number_field(fields, "MAX_TIME_STEP", 0.0)
     elif name == "DIAG":
-        case.extra_namelists.append(record.raw.strip())
-        warnings.append(
-            f"Line {record.line}: &DIAG was preserved and will be written on save "
-            "but is not editable."
-        )
+        preserved = False
+        for _, field in namelist_field_texts(record.raw):
+            debug_value = residual_debug_value(field)
+            if debug_value is None:
+                preserved = True
+            else:
+                case.debug_output = debug_value
+        if preserved:
+            case.extra_namelists.append(record.raw.strip())
+            warnings.append(
+                f"Line {record.line}: other &DIAG settings were preserved and will "
+                "be written on save but are not editable."
+            )
     elif name == "OUTP":
         if "VALIDATION_OUTPUT" in fields:
             case.validation_output = bool_field(

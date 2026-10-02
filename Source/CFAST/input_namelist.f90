@@ -32,7 +32,7 @@
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_output, net_heat_flux_output, ssoutoptions, &
+        print_out_interval, smv_out_interval, ss_out_interval, validation_output, &
         overwrite_testcase, inputfile, errormessage
     use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
@@ -219,7 +219,7 @@
 
     subroutine read_output_options (lu)
 
-    use setup_data, only: validation_output, net_heat_flux_output
+    use setup_data, only: ssoutoptions
     integer, intent(in) :: lu
     integer :: ios
     character(len=26) :: spreadsheet_output
@@ -227,7 +227,7 @@
     integer :: i, index
     character(len=26) :: selected
 
-    namelist /OUTP/ fyi, validation_output, net_heat_flux_output, spreadsheet_output
+    namelist /OUTP/ fyi, validation_output, spreadsheet_output
 
     ios = 1
     rewind (unit=lu)

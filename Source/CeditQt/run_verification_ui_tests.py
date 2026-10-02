@@ -824,7 +824,8 @@ def check_target_material_initialization():
     try:
         assert not tab.targets
         assert tab.material_combo.currentText() == "OFF"
-        assert tab.temperature_depth_label.text() == "Internal Temperature at (fraction):"
+        assert tab.temperature_depth_label.text() == "Internal Temperature at"
+        assert tab.depth_units_combo.currentText() == "Fraction"
         assert tab.temperature_depth_edit.text() == ""
         assert tab.material_ids == ["OFF"]
         assert tab.thickness_edit.text() == ""
@@ -870,7 +871,8 @@ def check_target_material_initialization():
         assert tab.material_combo.currentText() == "OFF"
         assert tab.thickness_edit.text() == ""
         assert tab.density_label.text().strip() == "Density:"
-        assert tab.temperature_depth_label.text() == "Internal Temperature at (fraction):"
+        assert tab.temperature_depth_label.text() == "Internal Temperature at"
+        assert tab.depth_units_combo.currentText() == "Fraction"
         assert tab.temperature_depth_edit.text() == ""
 
         window.load_case(opening_case())
@@ -881,6 +883,107 @@ def check_target_material_initialization():
         tab.add_to_case(case)
         assert case.targets[0].matl_id == "OFF"
     finally:
+        window.deleteLater()
+
+
+def check_target_temperature_depth():
+    from dataclasses import replace
+
+    from cfast_case import Target
+    from cfast_reader import parse_namelists, read_cfast_input
+    from cfast_writer import validate_case
+    from main_window import default_concrete_material, opening_case
+    from units import LENGTH, format_value, unit_system
+
+    original_units = dict(unit_system.selected)
+    window = CeditMainWindow()
+    tab = window.targets_tab
+    try:
+        unit_system.set_indices({key: 0 for key in original_units})
+        case = opening_case()
+        material = replace(default_concrete_material(), thickness=0.016)
+        case.materials = [material]
+        case.targets = [Target(id="Target 1", comp_id=case.compartments[0].id, matl_id=material.id)]
+        window.load_case(case)
+        assert tab.depth_units_combo.currentText() == "Fraction"
+        assert tab.temperature_depth_edit.text() == "0.5"
+        tab.depth_units_combo.setCurrentText("Depth")
+        assert tab.temperature_depth_edit.text() == "0.008 m"
+        assert tab.targets[0].depth_units == "METERS"
+        tab.depth_units_combo.setCurrentText("Fraction")
+        assert tab.temperature_depth_edit.text() == "0.5"
+
+        with tempfile.TemporaryDirectory(prefix="cedit-target-depth-") as tmp:
+            path = Path(tmp) / "target.in"
+            for mode, values, units in (
+                ("Fraction", ("0", "0.5", "1"), "FRACTION"),
+                ("Depth", ("0 m", "8 mm", "0.016 m"), "METERS"),
+            ):
+                tab.depth_units_combo.setCurrentText(mode)
+                for value in values:
+                    tab.temperature_depth_edit.setText(value)
+                    window.update_live_validation()
+                    assert window.statusBar().currentMessage() == "No Errors"
+                    expected = tab.temperature_depth_from_editor()
+                    assert window.write_case_to_path(path) == path
+                    fields = next(record.fields for record in parse_namelists(path.read_text())
+                                  if record.name == "DEVC")
+                    assert fields["DEPTH_UNITS"] == [units]
+                    assert math.isclose(fields["TEMPERATURE_DEPTH"][0], expected, abs_tol=1e-12)
+                    window.load_cfast_input(path)
+                    assert tab.depth_units_combo.currentText() == mode
+                    assert math.isclose(read_cfast_input(path).targets[0].temperature_depth, expected, abs_tol=1e-12)
+
+            for mode, invalid in (
+                ("Fraction", ("-0.1", "1.1", "0.5 m", "nan", "inf", "bad")),
+                ("Depth", ("-0.001 m", "0.017 m", "bad")),
+            ):
+                for value in invalid:
+                    window.load_case(case)
+                    tab.depth_units_combo.setCurrentText(mode)
+                    tab.temperature_depth_edit.setText(value)
+                    window.update_live_validation()
+                    assert window.statusBar().currentMessage().startswith("Error:")
+                    previous = path.read_text()
+                    assert window.write_case_to_path(path) is None
+                    assert path.read_text() == previous
+
+            window.load_case(case)
+            tab.depth_units_combo.setCurrentText("Depth")
+            tab.thickness_edit.setText("0.004 m")
+            window.update_live_validation()
+            assert "exceeds target thickness" in window.statusBar().currentMessage()
+            tab.temperature_depth_edit.setText("0.004 m")
+            window.update_live_validation()
+            assert window.statusBar().currentMessage() == "No Errors"
+
+        # The model uses zero thickness to inherit the material's thickness.
+        case.targets[0] = replace(case.targets[0], depth_units="METERS", temperature_depth=0.017)
+        try:
+            validate_case(case)
+        except ValueError as exc:
+            assert "exceeds target thickness" in str(exc)
+        else:
+            raise AssertionError("Inherited material thickness must constrain depth")
+
+        case.targets[0] = replace(case.targets[0], temperature_depth=0.008)
+        unit_system.set_indices({**original_units, "length": 3})
+        window.load_case(case)
+        assert tab.temperature_depth_edit.text() == format_value(LENGTH, 0.008)
+        tab.depth_units_combo.setCurrentText("Fraction")
+        assert math.isclose(float(tab.temperature_depth_edit.text()), 0.5, rel_tol=1e-8)
+        tab.depth_units_combo.setCurrentText("Depth")
+        assert math.isclose(window.build_cfast_case().targets[0].temperature_depth, 0.008, rel_tol=1e-8)
+        tab.temperature_depth_edit.setText("0.016 m")
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
+        tab.depth_units_combo.setCurrentText("Fraction")
+        assert tab.temperature_depth_edit.text() == "1"
+        tab.depth_units_combo.setCurrentText("Depth")
+        window.update_live_validation()
+        assert window.statusBar().currentMessage() == "No Errors"
+    finally:
+        unit_system.set_indices(original_units)
         window.deleteLater()
 
 
@@ -1408,6 +1511,7 @@ def main() -> int:
     check_verification_case_discovery()
     check_compartment_header_palettes()
     check_target_material_initialization()
+    check_target_temperature_depth()
     check_target_material_validation()
     check_target_orientation()
     check_adiabatic_target()

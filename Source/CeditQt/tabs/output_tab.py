@@ -111,7 +111,6 @@ class OutputTab(QWidget):
         self.height_grid_edit = QLineEdit("50")
         self.set_editor_widths()
 
-        self.net_heat_flux_checkbox = QCheckBox("Net Heat Flux Output")
         self.validation_checkbox = QCheckBox("Validation Output")
         self.debug_checkbox = QCheckBox("Debug Output")
         self.spreadsheet_select_all_checkbox = QCheckBox("Select All Spreadsheet Output")
@@ -239,7 +238,6 @@ class OutputTab(QWidget):
                 )
         self.prepare_resolution_table()
 
-        self.net_heat_flux_checkbox.setChecked(case.net_heat_flux_output)
         self.validation_checkbox.setChecked(case.validation_output)
         self.debug_checkbox.setChecked(case.debug_output)
         self.spreadsheet_compartments_checkbox.setChecked(
@@ -265,8 +263,6 @@ class OutputTab(QWidget):
 
         right_layout.addWidget(self.build_spreadsheet_group())
         right_layout.addSpacing(35)
-        right_layout.addWidget(self.net_heat_flux_checkbox)
-        right_layout.addSpacing(25)
         right_layout.addWidget(self.validation_checkbox)
         right_layout.addSpacing(25)
         right_layout.addWidget(self.debug_checkbox)
@@ -490,7 +486,6 @@ class OutputTab(QWidget):
     def load_output_option_defaults(self):
         self.updating = True
 
-        self.net_heat_flux_checkbox.setChecked(False)
         self.validation_checkbox.setChecked(False)
         self.debug_checkbox.setChecked(False)
         for checkbox in self.spreadsheet_checkboxes:
@@ -828,7 +823,6 @@ class OutputTab(QWidget):
             )
 
         case.output_visualizations = visualizations
-        case.net_heat_flux_output = self.net_heat_flux_checkbox.isChecked()
         case.validation_output = self.validation_checkbox.isChecked()
         case.debug_output = self.debug_checkbox.isChecked()
         case.spreadsheet_output_compartments = (

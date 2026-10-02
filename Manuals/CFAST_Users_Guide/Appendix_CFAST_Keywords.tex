@@ -151,7 +151,7 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \label{info:DEVC3}
 
 \begin{xltabular}{\textwidth}{|>{\hsize=1.65\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.85\hsize\raggedright\arraybackslash}X|>{\hsize=0.65\hsize\raggedright\arraybackslash}X|>{\hsize=1.0\hsize\raggedright\arraybackslash}X|}
-\caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Sec.~\ref{info:DEVC}.}
+\caption[Device Parameters (\ct{DEVC} namelist group)]{For more information see Chapter~\ref{info:DEVC}.}
 \label{tbl:DEVC} \\
 \hline
 \multicolumn{5}{|c|}{\ct{DEVC} (Device Parameters)} \\
@@ -163,24 +163,24 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
-\ct{ADIABATIC_TARGET}                    & Logical                & Sec.~\ref{info:DEVC}         &                    & \ct{F} \\ \hline
-\ct{COMP_ID}                             & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Sec.~\ref{info:DEVC}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
-\ct{DEPTH_UNITS}                         & Character              & Sec.~\ref{info:DEVC}         & none or m          & \ct{'FRACTION'} \\ \hline
-\ct{FYI}                                 & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{LOCATION}                            & Real Triplet           & Sec.~\ref{info:DEVC}         & m                  & \\ \hline
-\ct{MATL_ID}                             & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{NORMAL}                              & Real Triplet           & Sec.~\ref{info:DEVC}         &                    & 0,0,1 \\ \hline
-\ct{RTI}                                 & Real                   & Sec.~\ref{info:DEVC2}        & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 50 \\ \hline
-\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:DEVC}         & \degc or \%/m      & \\ \hline
-\ct{SETPOINTS}                           & Real Doublet           & Sec.~\ref{info:DEVC}         & \%/m               & \\ \hline
-\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}        & m/s                & \\ \hline
-\ct{SURFACE_ORIENTATION}                 & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{SURFACE_TEMPERATURE}                 & Real                   & Sec.~\ref{info:DEVC}         &                    & \\ \hline
-\ct{TEMPERATURE_DEPTH}                   & Real                   & Sec.~\ref{info:DEVC}         &                    & 0.5 \\ \hline
-\ct{THICKNESS}                           & Real                   & Sec.~\ref{info:DEVC}         &                    & material thickness \\ \hline
-\ct{TYPE}                                & Character              & Sec.~\ref{info:DEVC}         &                    & \\ \hline
+\ct{ADIABATIC_TARGET}                    & Logical                & Sec.~\ref{chapter:targets}         &                    & \ct{F} \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{CONVECTION_COEFFICIENTS}             & Real Doublet           & Sec.~\ref{chapter:targets}         & kW/(m$^2$$\cdot$K) & 0, 0 \\ \hline
+\ct{DEPTH_UNITS}                         & Character              & Sec.~\ref{chapter:targets}         & none or m          & \ct{'FRACTION'} \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{LOCATION}                            & Real Triplet           & Sec.~\ref{chapter:targets}         & m                  & \\ \hline
+\ct{MATL_ID}                             & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{NORMAL}                              & Real Triplet           & Sec.~\ref{chapter:targets}         &                    & 0,0,1 \\ \hline
+\ct{RTI}                                 & Real                   & Sec.~\ref{info:DEVC2}              & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 50 \\ \hline
+\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:DEVC2}              & \degc or \%/m      & \\ \hline
+\ct{SETPOINTS}                           & Real Doublet           & Sec.~\ref{info:DEVC2}              & \%/m               & \\ \hline
+\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}              & m/s                & \\ \hline
+\ct{SURFACE_ORIENTATION}                 & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{SURFACE_TEMPERATURE}                 & Real                   & Sec.~\ref{chapter:targets}         &                    & \\ \hline
+\ct{TEMPERATURE_DEPTH}                   & Real                   & Sec.~\ref{chapter:targets}         &                    & 0.5  \\ \hline
+\ct{THICKNESS}                           & Real                   & Sec.~\ref{chapter:targets}         &                    &      \\ \hline
+\ct{TYPE}                                & Character              & Sec.~\ref{chapter:targets}         &                    &      \\ \hline
 \end{xltabular}
 
 
@@ -542,7 +542,7 @@ The default macOS installation folder is \texttt{/Applications/CFAST8}. Source t
 \begin{lstlisting}
 source /Applications/CFAST8/bin/CFASTVARS.sh
 \end{lstlisting}
-To configure future terminal sessions automatically, add the \texttt{source} command to the startup file for the shell: \texttt{\textasciitilde/.zprofile} for zsh, the default macOS shell, or \texttt{\textasciitilde/.bash\_profile} for bash. 
+To configure future terminal sessions automatically, add the \texttt{source} command to the startup file for the shell: \texttt{\textasciitilde/.zprofile} for zsh, the default macOS shell, or \texttt{\textasciitilde/.bash\_profile} for bash.
 
 \section{Linux}
 

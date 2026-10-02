@@ -453,7 +453,7 @@ In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associ
 \section{Time-Dependent Properties}
 \label{info:FIRE2}
 
-Time-dependent fire quantities are listed in the table. Data points are linearly interpolated. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
+Time-dependent fire quantities are listed in the table, with a maximum of 199 points. Data points are linearly interpolated. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
 \begin{description}
 \item[Time] (units: s; namelist: \ct{'TIME'}) Time from ignition.
 \item[HRR] (units: kW; namelist: \ct{'HRR'}) Heat release rate as a function of time.
@@ -480,10 +480,12 @@ The curve is written directly into the fire table, where the time, heat release 
 
 \chapter{Measurement and Fire Protection Devices}
 \label{info:DEVC}
+
+This chapter describes how to insert ``targets'' into the simulation. A target is any device that monitors or responds to the heat of the fire.
+
+
 \section{Targets}
 \label{chapter:targets}
-
-A target is any object heated by thermal radiation and convection. If a target is assigned a material, a one-dimensional heat conduction calculation is performed in either Cartesian or cylindrical coordinates.
 
 \begin{figure}[h!]
 \begin{center}
@@ -492,6 +494,7 @@ A target is any object heated by thermal radiation and convection. If a target i
 \end{center}
 \end{figure}
 
+A target is any object heated by thermal radiation and convection. If a target is assigned a material, a one-dimensional heat conduction calculation is performed in either Cartesian or cylindrical coordinates.
 \begin{description}
 \item[ID] (namelist: \ct{ID}) The unique name of the device or target (i.e. not the same as another target, sprinkler, or detector in the same simulation).
 \item[Compartment] (namelist: \ct{COMP_ID}) The compartment in which the target is located.
@@ -517,14 +520,14 @@ A target is any object heated by thermal radiation and convection. If a target i
 \section{Sprinklers and Detectors}
 \label{info:DEVC2}
 
-Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  These inputs are specified using the Detection/Suppression tab.
-
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{SCRIPT_FIGURES/Detector_Tab}
 \caption[The CFAST Detection/Suppression Tab]{The CFAST Detection/Suppression Tab.}
 \end{center}
 \end{figure}
+
+Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  These inputs are specified using the Detection/Suppression tab.
 
 \begin{description}
 \item[ID]  (namelist: \ct{ID}) Unique name of the device (i.e. not the same as another target, sprinkler, or detector in the same simulation).

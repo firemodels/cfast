@@ -18,14 +18,13 @@
     use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo, init_devc
     use diag_data, only: partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
         verification_time_step, verification_fire_heat_flux, verification_ast, &
-        radiative_incident_flux_ast, radi_verification_flag
+        radiative_incident_flux_ast, radi_verification_flag, residual_debug_print
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
         tablinfo, init_fire
     use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
         compflag, devcflag, tablflag, insfflag, fireflag, ventflag, diagflag, slcfflag, isofflag, &
         convert_negative_distances
-    use option_data, only: option, on, off, frad, &
-        fdebug, fpsteady, fpdassl, fresidprn
+    use option_data, only: option, on, off, frad, fpsteady
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, &
         relative_humidity, adiabatic_walls, &
@@ -2230,13 +2229,11 @@ continue
     integer :: ios, i
     integer, intent(in) :: lu
 
-    character(len=3) :: radiation_sub_model, debug_print, &
-        steady_state_initial_conditions, dassl_debug_print, residual_debug_print, &
-        adiabatic_target_verification
+    character(len=3) :: radiation_sub_model, steady_state_initial_conditions, adiabatic_target_verification
     real(eb), dimension(mxpts) :: t, f
     real(eb) :: radiative_incident_flux
     namelist /DIAG/ partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
-        radiation_sub_model, debug_print, steady_state_initial_conditions, dassl_debug_print, &
+        radiation_sub_model, steady_state_initial_conditions, &
         residual_debug_print, adiabatic_target_verification, radiative_incident_flux, &
         upper_layer_thickness, verification_time_step, verification_fire_heat_flux
 
@@ -2291,17 +2288,8 @@ continue
         if (radiation_sub_model == 'OFF') then
             option(frad) = off
         end if 
-        if (trim(debug_print) == 'ON') then
-            option(fdebug) = on
-        end if 
         if (trim(steady_state_initial_conditions) == 'ON') then
             option(fpsteady) = on
-        end if 
-        if (trim(dassl_debug_print) == 'ON') then
-            option(fpdassl) = on
-        end if 
-        if (trim(residual_debug_print) == 'ON') then
-            option(fresidprn) = on
         end if 
         if (trim(adiabatic_target_verification) == 'ON') then 
             verification_ast = .true.
@@ -2322,10 +2310,7 @@ continue
     t                               = -1001._eb
     f                               = -1001._eb
     radiation_sub_model             = 'ON'
-    debug_print                     = 'OFF'
     steady_state_initial_conditions = 'OFF'
-    dassl_debug_print               = 'OFF'
-    residual_debug_print            = 'OFF'
     adiabatic_target_verification   = 'OFF'
     radiative_incident_flux         = 0._eb
     upper_layer_thickness           = -1001._eb

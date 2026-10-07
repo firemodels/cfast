@@ -15,6 +15,9 @@ Build/bundle/build_macos_bundle.sh
 
 The DMG is written to `Build/bundle/macos`.
 
+The macOS bundle script passes `--clean-cfast` to the CFAST build script so each
+bundle build recompiles CFAST with fresh object and module files.
+
 To use manuals from the `CFAST_TEST` release and upload the finished DMG back
 to the test bundle release:
 

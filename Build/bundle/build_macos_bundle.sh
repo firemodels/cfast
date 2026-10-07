@@ -559,9 +559,10 @@ build_cfast_executable()
 
   echo "*** Building CFAST macOS executable ($CFAST_BUILD_TARGET)"
   if [[ -f "$make_script" ]]; then
-    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" bash ./make_cfast.sh)
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" bash ./make_cfast.sh --clean-cfast)
   else
     require_command make
+    (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET clean" make -f ../makefile clean)
     (cd "$build_dir" && run_checked "CFAST $CFAST_BUILD_TARGET build" make -f ../makefile "$CFAST_BUILD_TARGET")
   fi
 }

@@ -589,6 +589,7 @@ module initialization_routines
         fireinfo(1:mxfires)%chemistry_type = 2
         fireinfo(1:mxfires)%ignition_type = trigger_by_time
         fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
+        fireinfo(1:mxfires)%e_coefficient = -1._eb
         fireinfo(1:mxfires)%ignition_time = 0.0_eb
         fireinfo(1:mxfires)%ignited = .false.
         fireinfo(1:mxfires)%reported = .false.

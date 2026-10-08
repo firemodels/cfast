@@ -37,6 +37,7 @@ from cfast_reader import read_fire_properties
 from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
+    E_COEFFICIENT,
     HEAT_FLUX,
     HOC,
     HRR,
@@ -392,6 +393,12 @@ class FiresTab(QWidget):
         self.ignition_combo = QComboBox()
         self.ignition_combo.addItems(["TIME", "TEMPERATURE", "FLUX"])
         self.setpoint_edit = QLineEdit()
+        self.e_coefficient_edit = QLineEdit()
+        self.e_coefficient_edit.setPlaceholderText("Blank: legacy sprinkler suppression")
+        self.e_coefficient_edit.setToolTip(
+            "Optional water suppression coefficient for this fire. Blank uses the legacy model; "
+            "zero disables sprinkler attenuation. Positive values use accumulated water exposure."
+        )
         self.target_combo = QComboBox()
         self.target_combo.setEditable(True)
         self.fire_property_combo = QComboBox()
@@ -515,6 +522,9 @@ class FiresTab(QWidget):
             alignment=Qt.AlignmentFlag.AlignRight,
         )
         fire_layout.addWidget(self.fire_property_combo, 5, 1, 1, 3)
+        self.e_coefficient_label = QLabel(f"E Coefficient\n({unit_label(E_COEFFICIENT)}):")
+        fire_layout.addWidget(self.e_coefficient_label, 6, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        fire_layout.addWidget(self.e_coefficient_edit, 6, 1, 1, 3)
         fire_group.setLayout(fire_layout)
 
         property_group = QGroupBox("Fuel Properties")
@@ -574,6 +584,7 @@ class FiresTab(QWidget):
 
     def connect_editor_signals(self):
         line_edits = [
+            self.e_coefficient_edit,
             self.fire_id_edit,
             self.x_position_edit,
             self.y_position_edit,
@@ -875,6 +886,7 @@ class FiresTab(QWidget):
         self.loading = True
         try:
             for widget in [
+                self.e_coefficient_edit,
                 self.fire_id_edit,
                 self.x_position_edit,
                 self.y_position_edit,
@@ -907,6 +919,9 @@ class FiresTab(QWidget):
         prop = self.find_property(fire.fire_property_id)
 
         self.fire_id_edit.setText(fire.id)
+        self.e_coefficient_edit.setText(
+            "" if fire.e_coefficient is None else format_value(E_COEFFICIENT, fire.e_coefficient)
+        )
         set_combo_text(self.compartment_combo, fire.comp_id)
         self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
         self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
@@ -1073,6 +1088,11 @@ class FiresTab(QWidget):
         if fire is None:
             return
 
+        text = self.e_coefficient_edit.text().strip()
+        coefficient = parse_value(E_COEFFICIENT, text, "E Coefficient") if text else None
+        if coefficient is not None and coefficient < 0.0:
+            raise ValueError("E Coefficient must be nonnegative.")
+        fire.e_coefficient = coefficient
         fire.id = self.fire_id_edit.text().strip() or fire.id
         fire.comp_id = (
             self.compartment_combo.currentText().strip()
@@ -1294,6 +1314,7 @@ class FiresTab(QWidget):
 
     def refresh_unit_labels(self):
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
+        self.e_coefficient_label.setText(f"E Coefficient\n({unit_label(E_COEFFICIENT)}):")
 
     def add_to_case(self, case: CfastCase):
         self.save_current_editor()

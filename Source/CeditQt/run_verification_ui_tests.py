@@ -45,6 +45,11 @@ HELPER_SCRIPTS = {
         "Sprinkler/sprinkler_1_compartments.csv",
         "Sprinkler/sprinkler_1_devices.csv",
     ],
+    "e_coefficient.py": [
+        "Sprinkler/e_coefficient_compartments.csv",
+        "Sprinkler/e_coefficient_devices.csv",
+        "Sprinkler/e_coefficient.smv",
+    ],
     "target_2.py": [
         "Target/target_2_devices.csv",
     ],
@@ -1715,6 +1720,68 @@ def check_unused_fire_definitions():
         window.deleteLater()
 
 
+def check_fire_e_coefficient():
+    from cfast_reader import fire_from_fields, parse_namelists, read_cfast_input
+    from cfast_writer import validate_case, write_cfast_input
+    from units import E_COEFFICIENT, LENGTH, MASS, TIME, format_value, parse_value, unit_system
+
+    root = find_repo_root(Path(__file__))
+    case = read_cfast_input(root / "Verification/Sprinkler/e_coefficient.in")
+    assert [fire.e_coefficient for fire in case.fires] == [1, 2, 0, None, 1, 0.5, 0.1, 1]
+    for value in (-1, float("inf"), float("nan"), "invalid", True):
+        try:
+            fire_from_fields({"E_COEFFICIENT": [value]})
+        except ValueError as exc:
+            assert "E_COEFFICIENT" in str(exc)
+        else:
+            raise AssertionError("Invalid E_COEFFICIENT must not silently select the legacy model")
+    original_units = dict(unit_system.selected)
+    window = CeditMainWindow()
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-e-coefficient-") as directory:
+            path = Path(directory) / "saved.in"
+            for indices in ((0, 0, 0), (3, 2, 1)):
+                unit_system.set_index(LENGTH, indices[0])
+                unit_system.set_index(MASS, indices[1])
+                unit_system.set_index(TIME, indices[2])
+                window.load_case(case)
+                tab = window.fires_tab
+                tab.select_fire(0)
+                assert tab.e_coefficient_edit.text() == format_value(E_COEFFICIENT, 1)
+                assert math.isclose(parse_value(E_COEFFICIENT, "1 m2/(kg s)", "E"), 1)
+                tab.e_coefficient_edit.setText("0 m2/(kg s)")
+                tab.select_fire(1)
+                assert tab.e_coefficient_edit.text() == format_value(E_COEFFICIENT, 2)
+                assert tab.fires[0].e_coefficient == 0
+                tab.e_coefficient_edit.clear()
+                # Changing the shared definition must not change the instance's coefficient.
+                tab.fire_property_combo.setCurrentText("Growing burner")
+                assert tab.fires[1].e_coefficient is None
+                assert window.write_case_to_path(path) == path
+                records = [record for record in parse_namelists(path.read_text()) if record.name == "FIRE"]
+                assert records[0].fields["E_COEFFICIENT"] == [0]
+                assert "E_COEFFICIENT" not in records[1].fields
+                assert "E_COEFFICIENT" not in records[3].fields
+                reopened = read_cfast_input(path)
+                assert [fire.e_coefficient for fire in reopened.fires] == [0, None, 0, None, 1, 0.5, 0.1, 1]
+                assert case.fires[0].e_coefficient == 1  # Editor owns a copy.
+
+            for invalid in (-1, float("inf"), float("nan")):
+                case.fires[0].e_coefficient = invalid
+                try:
+                    validate_case(case)
+                except ValueError as exc:
+                    assert "E_COEFFICIENT" in str(exc)
+                else:
+                    raise AssertionError("Invalid E_COEFFICIENT was accepted")
+            case.fires[0].e_coefficient = 1
+            write_cfast_input(case, path)
+            assert read_cfast_input(path).fires == case.fires
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -1737,6 +1804,7 @@ def main() -> int:
     check_output_visualizations()
     check_fire_import()
     check_unused_fire_definitions()
+    check_fire_e_coefficient()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

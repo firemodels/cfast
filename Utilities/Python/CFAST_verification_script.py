@@ -32,6 +32,7 @@ print("fire_ignition...");                     safe_run("./scripts/fire_ignition
 print("radiativefluxes...");                   safe_run("./scripts/radiativefluxes.py")
 print("speciesmass...");                       safe_run("./scripts/speciesmass.py")
 print("sprinkler_1...");                       safe_run("./scripts/sprinkler_1.py")
+print("e_coefficient...");                     safe_run("./scripts/e_coefficient.py", [])
 print("target_2...");                          safe_run("./scripts/target_2.py")
 print("generate_cedit_figures...");            safe_run("../../Manuals/CFAST_Users_Guide/generate_cedit_figures.py", [])
 

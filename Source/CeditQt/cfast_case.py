@@ -7,7 +7,7 @@ _FORMULA_SUBSCRIPTS = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈�
 
 
 def formula_subscript(value: int) -> str:
-    return str(value).translate(_FORMULA_SUBSCRIPTS)
+    return "" if value == 1 else str(value).translate(_FORMULA_SUBSCRIPTS)
 
 
 @dataclass

@@ -1501,6 +1501,162 @@ def check_output_visualizations():
         window.deleteLater()
 
 
+def check_fire_import():
+    import copy
+    from unittest.mock import patch
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import QDialog, QPushButton
+    from cfast_case import FireProperty
+    from cfast_reader import read_cfast_input, read_fire_properties
+    from cfast_writer import write_cfast_input
+    from tabs.fires_tab import FireImportDialog
+    from units import ENERGY, HRR, HOC, format_value, unit_system
+
+    assert FireProperty(id="Methane").fuel_formula() == "CH₄"
+    assert FireProperty(id="Single atoms", hydrogen=1, oxygen=1, nitrogen=1, chlorine=1).fuel_formula() == "CHONCl"
+    assert FireProperty(id="Decane", carbon=10, hydrogen=22).fuel_formula() == "C₁₀H₂₂"
+    assert FireProperty(id="Hydrogen", carbon=0, hydrogen=2).fuel_formula() == "H₂"
+
+    root = find_repo_root(Path(__file__))
+    legacy = read_fire_properties(root / "Utilities/for_bundle/Bin/AllFires.in")
+    assert len(legacy) == 11
+    assert legacy[0].id == "3_panel_workstation"
+    assert legacy[0].ramp[0].hrr == 38.0
+    assert legacy[0].heat_of_combustion == 17100.0
+    assert math.isclose(legacy[1].ramp[0].hcn_yield, 0.11585, rel_tol=1e-4)
+
+    window = CeditMainWindow()
+    tab = window.fires_tab
+    original_units = dict(unit_system.selected)
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-fire-import-") as directory:
+            directory = Path(directory)
+            source = directory / "source.in"
+            source.write_text(
+                "&HEAD VERSION=7600, TITLE='Source scenario' /\n"
+                "&COMP ID='Source room', WIDTH=12, DEPTH=8, HEIGHT=3 /\n"
+                "&FIRE ID='Source instance', COMP_ID='Source room', FIRE_ID='Fuel', "
+                "IGNITION_CRITERION='TEMPERATURE', DEVC_ID='Source target', SETPOINT=200 /\n"
+                "&TABL ID='Fuel', DATA=0.02, 250, 60, 0.04, 2, 0.03, 0.5, 0.01, 0 /\n"
+                "&TABL ID='Fuel', DATA=0.02, 0, 0, 0.04, 2, 0.03, 0.5, 0.01, 0 /\n"
+                "&CHEM ID='Fuel', CARBON=2, HYDROGEN=6, HEAT_OF_COMBUSTION=42000, "
+                "RADIATIVE_FRACTION=0.25 /\n"
+                "&TABL ID='Fuel', LABELS='TRACE_YIELD','HRR','TIME','SOOT_YIELD',"
+                "'AREA','HCN_YIELD','HEIGHT','CO_YIELD','HCL_YIELD' /\n",
+                encoding="utf-8",
+            )
+            props = read_fire_properties(source)
+            prop = props[0]
+            assert prop.carbon == 2 and prop.heat_of_combustion == 42000
+            point = prop.ramp[0]
+            assert (point.time, point.hrr, point.height, point.area) == (60, 250, 0.5, 2)
+            assert (point.co_yield, point.soot_yield, point.hcn_yield, point.trace_yield) == (0.01, 0.04, 0.03, 0.02)
+            assert read_cfast_input(source).fire_properties == props
+
+            constants = directory / "constants.in"
+            constants.write_text(
+                "&CHEM ID='Constant yields', AREA=2, HRR=50, CO_YIELD=0.1, SOOT_YIELD=0.2 /\n"
+                "&TABL ID='Constant yields', LABELS='TIME', 'HEIGHT' /\n"
+                "&TABL ID='Constant yields', DATA=0, 0.5 /\n"
+            )
+            constant_point = read_fire_properties(constants)[0].ramp[0]
+            assert (constant_point.hrr, constant_point.area, constant_point.co_yield,
+                    constant_point.soot_yield) == (50, 2, 0.1, 0.2)
+            for content in (
+                "&CHEM ID='Incomplete' /",
+                "&CHEM ID='Invalid' / &TABL ID='Invalid', LABELS='TIME','HRR' / "
+                "&TABL ID='Invalid', DATA=0 /",
+                "FIRE,1,0,0,0,1,TIME,0,0,0,0,Incomplete\nCHEMI,1,4,0,0,0,0.35,50000000\n",
+            ):
+                constants.write_text(content)
+                try:
+                    read_fire_properties(constants)
+                except ValueError:
+                    pass
+                else:
+                    raise AssertionError("Incomplete fire definitions must report an error")
+
+            baseline = copy.deepcopy(window.build_cfast_case())
+            unit_system.set_index(ENERGY, 1)
+            window.load_case(baseline)
+            dialog = FireImportDialog([(str(source), prop)])
+            assert dialog.table.item(0, 3).text() == format_value(HRR, 250)
+            assert dialog.table.item(0, 4).text() == format_value(HOC, 42000)
+            dialog.set_all_checked(Qt.CheckState.Unchecked)
+            assert not dialog.selected_properties()
+            dialog.set_all_checked(Qt.CheckState.Checked)
+            assert dialog.selected_properties() == props
+            dialog.deleteLater()
+
+            button = next(button for button in tab.findChildren(QPushButton)
+                          if button.text() == "From File")
+            file_picker = "tabs.fires_tab.QFileDialog.getOpenFileNames"
+            dialog_exec = "tabs.fires_tab.FireImportDialog.exec"
+            with patch(file_picker, return_value=([], "")):
+                button.click()
+            with patch(file_picker, return_value=([str(source)], "")), \
+                    patch(dialog_exec, return_value=QDialog.DialogCode.Rejected):
+                button.click()
+            def select_none(dialog):
+                dialog.set_all_checked(Qt.CheckState.Unchecked)
+                return QDialog.DialogCode.Accepted
+
+            with patch(file_picker, return_value=([str(source)], "")), patch(dialog_exec, select_none):
+                button.click()
+            assert window.build_cfast_case() == baseline
+
+            empty = directory / "empty.in"
+            empty.write_text("&HEAD VERSION=7600 /\n")
+            invalid = directory / "invalid.in"
+            invalid.write_text("&CHEM ID='broken'")
+            messages = []
+
+            def select_second(dialog):
+                assert len(dialog.candidates) == 2
+                dialog.set_all_checked(Qt.CheckState.Unchecked)
+                dialog.table.item(1, 0).setCheckState(Qt.CheckState.Checked)
+                return QDialog.DialogCode.Accepted
+
+            with patch(file_picker, return_value=(
+                    [str(source), str(source), str(empty), str(invalid), str(directory / "missing.in")], "")), \
+                    patch(dialog_exec, select_second), \
+                    patch.object(QMessageBox, "warning", side_effect=lambda *args: messages.append(args[2])):
+                button.click()
+            assert len(messages) == 1
+            assert all(name in messages[0] for name in ("empty.in", "invalid.in", "missing.in"))
+            assert len(tab.fires) == len(baseline.fires) + 1
+
+            with patch(file_picker, return_value=([str(source)], "")), \
+                    patch(dialog_exec, return_value=QDialog.DialogCode.Accepted):
+                button.click()
+            result = window.build_cfast_case()
+            assert len(result.fires) == len(baseline.fires) + 2
+            assert result.fires[:len(baseline.fires)] == baseline.fires
+            assert result.fire_properties[:len(baseline.fire_properties)] == baseline.fire_properties
+            assert result.compartments == baseline.compartments
+            assert result.targets == baseline.targets and result.title == baseline.title
+            imported = result.fires[-2:]
+            assert [fire.fire_property_id for fire in imported] == ["Fuel", "Fuel_2"]
+            room = baseline.compartments[0]
+            assert all(fire.comp_id == room.id and not fire.target and fire.setpoint == 0
+                       and fire.ignition_criterion == "TIME"
+                       and fire.x_position == room.width / 2 and fire.y_position == room.depth / 2
+                       for fire in imported)
+            assert result.fire_properties[-1].sorted_ramp() == prop.sorted_ramp()
+            saved = directory / "saved.in"
+            write_cfast_input(result, saved)
+            reopened = read_cfast_input(saved)
+            assert reopened.fires == result.fires
+            for actual, expected in zip(reopened.fire_properties, result.fire_properties):
+                assert actual.sorted_ramp() == expected.sorted_ramp()
+                assert actual.heat_of_combustion == expected.heat_of_combustion
+            window.load_case(reopened)
+            assert len(tab.fires) == len(result.fires)
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -1521,6 +1677,7 @@ def main() -> int:
     check_unrecognized_namelists()
     check_debug_output()
     check_output_visualizations()
+    check_fire_import()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

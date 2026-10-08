@@ -420,6 +420,10 @@ All chlorine in the fuel is converted to HCl. HCN production is limited by both 
 
 Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details.
 
+The \textbf{From File} button imports fire definitions from one or more existing CFAST input files. Select the files, then use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the definitions to add. The list shows each definition's name, chemical formula, peak heat release rate, heat of combustion, and source file. CEdit reads the \ct{CHEM} and matching \ct{TABL} records, including the table's column labels. Legacy files containing \ct{FIRE}, \ct{CHEMI}, and named curve rows, such as \ct{AllFires.in}, are also supported.
+
+Click \textbf{OK} to add each selected definition and a new fire instance at the center of the first compartment, with ignition at time zero. Adjust the compartment, location, and ignition settings as needed. The source file's compartment and target assignments are not imported. Names already present in the case receive numeric suffixes so existing fires remain unchanged. Imported definitions are stored in the current case when it is saved; they are not linked to the source file.
+
 In the text input file, the following parameters are stored within the namelist group \ct{FIRE}:
 \begin{description}
 \item[Fire ID] (namelist: \ct{ID}) Unique name of the fire.

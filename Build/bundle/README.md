@@ -52,7 +52,15 @@ Build/CeditQt/build_linux_app.sh
 Build/bundle/build_linux_bundle.sh
 ```
 
-The tarball is written to `Build/bundle/linux`.
+The tarball is written to `Build/bundle/linux`. Add `--upload` to publish the
+tarball to the release selected by `--upload-release-repo` and
+`--upload-release-tag` (defaults: `firemodels/test_bundles` and `CFAST_TEST`, or
+`GH_OWNER`/`GH_REPO` and `GH_CFAST_TAG` when set).
+
+The [CI pipeline](../../Utilities/CI/README.md) calls this script with
+`--no-update-repos --no-build-cfast --no-build-smokeview --no-build-manuals
+--no-upload-manuals`, supplies the tested executables, and publishes the manuals
+separately. This packages the artifacts from the completed verification run.
 
 ### Windows
 
@@ -143,7 +151,7 @@ Linux:
 - GNU or Intel CFAST build environment
 - PyInstaller for the CEditQt app build
 - LaTeX with `biber` for the CFAST manuals
-- GitHub CLI (`gh`) to upload the built manuals
+- GitHub CLI (`gh`) to upload the built manuals or tarball
 
 ## Useful Options
 

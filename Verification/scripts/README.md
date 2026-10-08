@@ -1,11 +1,12 @@
-# Running CFAST Verification Cases Manually
+# Running CFAST Verification cases
 
-You can run the CFAST verification cases manually; that is, outside of CFASTbot, by executing the bash script `Run_CFAST_Cases.sh` in Windows Powershell, linux, or macOS. 
-```
-./Run_CFAST_Cases.sh -q batch
-```
-Here, `batch` is the name of the queue, assuming Slurm is installed. For Windows, where there is typically not a queuing system installed, run the cases serially like this
-```
-bash ./Run_CFAST_Cases.sh -q terminal
+The shared suite runner is `Utilities/CI/Run_CFAST_Cases.sh`. From the CFAST root:
+
+```bash
+Utilities/CI/Run_CFAST_Cases.sh --suite Verification -q batch
+Utilities/CI/Run_CFAST_Cases.sh --suite Verification -I gnu -q terminal
 ```
 
+Use `--test-UI` to import and rewrite the inputs through CEditQt without running
+CFAST. The `Run_CFAST_Cases.sh` in this directory calls the shared runner. See [the CI documentation](../../Utilities/CI/README.md)
+for compiler, debug, queue, stop, timing, and case-selection options.

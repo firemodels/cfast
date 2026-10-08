@@ -517,7 +517,7 @@ class FiresTab(QWidget):
         fire_layout.addWidget(self.fire_property_combo, 5, 1, 1, 3)
         fire_group.setLayout(fire_layout)
 
-        property_group = QGroupBox("Fire Properties")
+        property_group = QGroupBox("Fuel Properties")
         property_layout = QGridLayout()
         property_layout.addWidget(
             QLabel("Fire Properties ID:"),

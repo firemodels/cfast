@@ -435,13 +435,13 @@ In the text input file, the following parameters are stored within the namelist 
 \item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
 \end{description}
 
-\section{Fire Properties}
+\section{Fuel Properties}
 
-Each fire can have a different chemical composition and time-dependent properties. Alternatively, two or more fires can reference the same set of properties.
+The \textbf{Fuel Properties} block in the lower left of the Fires tab contains the fuel's chemical composition, heat of combustion, and radiative fraction. Each fire can have a different chemical composition and time-dependent properties. Alternatively, two or more fires can reference the same set of properties.
 
 In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
 \begin{description}
-\item[Fire Propties ID] (namelist: \ct{FIRE_ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
+\item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
 \item[C] (default: 1; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule.
 \item[H] (default: 4, namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
 \item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.

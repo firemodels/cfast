@@ -4,12 +4,15 @@ import copy
 import csv
 import html
 import io
+from pathlib import Path
 
 from PySide6.QtCore import QByteArray, QMimeData, Qt, Signal
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
     QComboBox,
+    QDialog,
+    QFileDialog,
     QFrame,
     QGridLayout,
     QGroupBox,
@@ -30,6 +33,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, Compartment, FireDefinition, FireProperty, FireRampPoint
+from cfast_reader import read_fire_properties
 from table_widgets import HoverEditTableWidget
 from units import (
     AREA,
@@ -112,6 +116,58 @@ def ramp_headers() -> list[str]:
         f"HCN Yield\n({unit_label(MASS_FRACTION)})",
         f"TS Yield\n({unit_label(MASS_FRACTION)})",
     ]
+
+
+class FireImportDialog(QDialog):
+    def __init__(self, candidates: list[tuple[str, FireProperty]], parent=None):
+        super().__init__(parent)
+        self.candidates = candidates
+        self.setWindowTitle("Insert Fires")
+        self.resize(900, 360)
+        self.table = QTableWidget(len(candidates), 6)
+        self.table.setHorizontalHeaderLabels([
+            "", "Fire", "Formula", f"Peak HRR\n({unit_label(HRR)})",
+            f"Heat of Combustion\n({unit_label(HOC)})", "Source File",
+        ])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        for row, (path, prop) in enumerate(candidates):
+            check = QTableWidgetItem()
+            check.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            check.setCheckState(Qt.CheckState.Checked)
+            self.table.setItem(row, 0, check)
+            for col, value in enumerate([
+                prop.id, prop.fuel_formula(), format_value(HRR, prop.peak_hrr()),
+                format_value(HOC, prop.heat_of_combustion), Path(path).name,
+            ], 1):
+                item = make_read_only_item(value)
+                item.setToolTip(path)
+                self.table.setItem(row, col, item)
+
+        buttons = QHBoxLayout()
+        for title, callback in [
+            ("Select All", lambda: self.set_all_checked(Qt.CheckState.Checked)),
+            ("Deselect All", lambda: self.set_all_checked(Qt.CheckState.Unchecked)),
+            ("OK", self.accept), ("Cancel", self.reject),
+        ]:
+            button = QPushButton(title)
+            button.clicked.connect(callback)
+            buttons.addWidget(button)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(
+            "Select fire definitions to add. New fires start at time zero in the first compartment.\n"
+            "Duplicate names receive a numeric suffix."
+        ))
+        layout.addWidget(self.table)
+        layout.addLayout(buttons)
+
+    def set_all_checked(self, state: Qt.CheckState):
+        for row in range(self.table.rowCount()):
+            self.table.item(row, 0).setCheckState(state)
+
+    def selected_properties(self) -> list[FireProperty]:
+        return [prop for row, (_, prop) in enumerate(self.candidates)
+                if self.table.item(row, 0).checkState() == Qt.CheckState.Checked]
 
 
 class FirePlotCanvas(FigureCanvas):
@@ -405,7 +461,7 @@ class FiresTab(QWidget):
 
         add_new_button.clicked.connect(self.add_new_fire)
         add_t2_button.clicked.connect(self.add_t_squared_fire)
-        from_file_button.clicked.connect(self.from_file_placeholder)
+        from_file_button.clicked.connect(self.import_from_file)
         remove_button.clicked.connect(self.remove_fire)
 
         layout.addWidget(add_new_button)
@@ -1176,12 +1232,65 @@ class FiresTab(QWidget):
         self.rebuild_summary_table()
         self.select_fire(min(self.current_index, len(self.fires) - 1))
 
-    def from_file_placeholder(self):
-        QMessageBox.information(
-            self,
-            "From File",
-            "Loading a fire definition from file is not implemented yet.",
+    def import_from_file(self):
+        paths, _ = QFileDialog.getOpenFileNames(
+            self, "Insert Fires", "", "CFAST files (*.in *.cfast);;All files (*.*)",
         )
+        if not paths:
+            return
+        candidates: list[tuple[str, FireProperty]] = []
+        errors: list[str] = []
+        for path in paths:
+            try:
+                properties = read_fire_properties(path)
+                if not properties:
+                    errors.append(f"{path}: No fire definitions were found.")
+                candidates.extend((path, prop) for prop in properties)
+            except (OSError, ValueError) as exc:
+                errors.append(str(exc))
+        if errors:
+            QMessageBox.warning(self, "Insert Fires", "\n\n".join(errors))
+        if not candidates:
+            return
+        dialog = FireImportDialog(candidates, self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        selected = dialog.selected_properties()
+        if not selected:
+            return
+        try:
+            self.save_current_editor()
+        except ValueError as exc:
+            QMessageBox.warning(self, "Insert Fires", str(exc))
+            return
+        self.add_imported_properties(selected)
+
+    def add_imported_properties(self, properties: list[FireProperty]):
+        def unique_id(name: str, used: set[str]) -> str:
+            candidate = name
+            suffix = 2
+            while candidate in used:
+                candidate = f"{name}_{suffix}"
+                suffix += 1
+            used.add(candidate)
+            return candidate
+
+        fire_ids = {fire.id for fire in self.fires}
+        property_ids = {prop.id for prop in self.fire_properties}
+        first_added = len(self.fires)
+        compartment = self.default_compartment()
+        width, depth = self.compartment_sizes.get(compartment, (0.0, 0.0))
+        for source in properties:
+            prop = copy.deepcopy(source)
+            prop.id = unique_id(prop.id, property_ids)
+            self.fire_properties.append(prop)
+            self.fires.append(FireDefinition(
+                id=unique_id(source.id, fire_ids), comp_id=compartment,
+                fire_property_id=prop.id, x_position=width / 2.0, y_position=depth / 2.0,
+            ))
+        self.update_property_choices()
+        self.rebuild_summary_table()
+        self.select_fire(first_added)
 
     def refresh_unit_labels(self):
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())

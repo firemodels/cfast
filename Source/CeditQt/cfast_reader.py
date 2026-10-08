@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import csv
+import io
 from pathlib import Path
 import re
 from typing import Any
@@ -386,9 +388,14 @@ def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
 
     warnings: list[str] = []
     case = CfastCase()
-    fire_properties_by_id: dict[str, FireProperty] = {}
+    try:
+        fire_properties_by_id = fire_properties_from_records(records)
+    except ValueError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
 
     for record in records:
+        if record.name in {"CHEM", "TABL"}:
+            continue
         try:
             apply_record(case, fire_properties_by_id, record, warnings)
         except Exception as exc:
@@ -419,6 +426,91 @@ def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
 
     case.import_warnings = warnings
     return ImportResult(case=case, warnings=warnings, records=records)
+
+
+def read_fire_properties(path: str | Path) -> list[FireProperty]:
+    """Read reusable fire definitions without importing the source scenario."""
+    path = Path(path)
+    try:
+        text = path.read_text(encoding="utf-8-sig")
+        if strip_comments(text).lstrip().startswith("&"):
+            properties = list(fire_properties_from_records(parse_namelists(text)).values())
+            for prop in properties:
+                if not prop.ramp:
+                    raise ValueError(f"No time-history data found for fire {prop.id}.")
+            return properties
+        return read_legacy_fire_properties(text)
+    except (ValueError, UnicodeError) as exc:
+        raise ValueError(f"{path}: {exc}") from exc
+
+
+def fire_properties_from_records(records: list[NamelistRecord]) -> dict[str, FireProperty]:
+    # VB scans CHEM and then finds its TABL records throughout the file. Keep
+    # that order independence, including LABELS appearing after DATA.
+    properties: dict[str, FireProperty] = {}
+    labels: dict[str, list[str]] = {}
+    constants: dict[str, dict[str, float]] = {}
+    for record in records:
+        if record.name == "CHEM":
+            prop = fire_property_from_fields(record.fields)
+            if prop.id in properties:
+                raise ValueError(f"Duplicate CHEM ID: {prop.id}")
+            properties[prop.id] = prop
+            constants[prop.id] = {
+                key: number_field(record.fields, key, 0.0)
+                for key in ("HRR", "AREA", "CO_YIELD", "SOOT_YIELD", "HCN_YIELD", "TRACE_YIELD")
+                if key in record.fields
+            }
+        elif record.name == "TABL" and "LABELS" in record.fields:
+            table_id = required_string(record.fields, "ID", "TABL ID")
+            labels[table_id] = [str(value).upper() for value in record.fields["LABELS"]]
+
+    for record in records:
+        if record.name == "TABL" and string_field(record.fields, "ID", "") in properties:
+            table_id = string_field(record.fields, "ID", "")
+            add_table_data(properties, record.fields, labels, constants.get(table_id))
+    return properties
+
+
+def read_legacy_fire_properties(text: str) -> list[FireProperty]:
+    """Read VB's FIRE/CHEMI and named curve rows (HRR in W, HoC in J/kg)."""
+    rows = [row for row in csv.reader(io.StringIO(text))
+            if row and row[0].strip() and not row[0].lstrip().startswith("!")]
+    if not rows or rows[0][0].strip().upper() not in {"VERSN", "FIRE"}:
+        raise ValueError("Expected a CFAST namelist or FIRE/CHEMI fire file.")
+    properties = []
+    starts = [i for i, row in enumerate(rows) if row[0].strip().upper() == "FIRE"]
+    for start, end in zip(starts, starts[1:] + [len(rows)]):
+        block = {row[0].strip().upper(): row[1:] for row in rows[start:end]}
+        if "CHEMI" not in block:
+            continue
+        name = rows[start][11].strip() if len(rows[start]) > 11 else ""
+        if not name:
+            raise ValueError("Legacy FIRE name is required.")
+        try:
+            values = {key: [float(value.replace("D", "E").replace("d", "e")) for value in block[key]]
+                      for key in ("TIME", "HRR", "SOOT", "CO", "TRACE", "AREA", "HEIGH")}
+            chemistry = [float(value) for value in block["CHEMI"][:7]]
+            carbon, hydrogen, oxygen, nitrogen, chlorine, radiation, hoc = chemistry
+        except (KeyError, ValueError) as exc:
+            raise ValueError(f"Incomplete or invalid legacy fire: {name}") from exc
+        count = len(values["TIME"])
+        if not count or any(len(curve) != count for curve in values.values()):
+            raise ValueError(f"Mismatched curve lengths in legacy fire: {name}")
+        # The VB reader derives HCN yield from the fuel nitrogen content.
+        molar_mass = sum(atom * mass for atom, mass in zip(
+            chemistry[:5], (12.0107, 1.00794, 15.9994, 14.0067, 35.453)))
+        hcn = 27.02864 * nitrogen / molar_mass if molar_mass else 0.0
+        properties.append(FireProperty(
+            id=name, carbon=int(carbon), hydrogen=int(hydrogen), oxygen=int(oxygen),
+            nitrogen=int(nitrogen), chlorine=int(chlorine),
+            heat_of_combustion=hoc / 1000.0, radiative_fraction=radiation,
+            ramp=[FireRampPoint(values["TIME"][i], values["HRR"][i] / 1000.0,
+                                values["HEIGH"][i], values["AREA"][i], values["CO"][i],
+                                values["SOOT"][i], hcn, values["TRACE"][i])
+                  for i in range(count)],
+        ))
+    return properties
 
 
 def parse_namelists(text: str) -> list[NamelistRecord]:
@@ -1094,6 +1186,8 @@ def fire_property_from_fields(fields: dict[str, list[Any]]) -> FireProperty:
 def add_table_data(
     fire_properties_by_id: dict[str, FireProperty],
     fields: dict[str, list[Any]],
+    labels_by_id: dict[str, list[str]] | None = None,
+    constants: dict[str, float] | None = None,
 ) -> None:
     if "DATA" not in fields:
         return
@@ -1101,6 +1195,21 @@ def add_table_data(
     prop_id = required_string(fields, "ID", "TABL ID")
     prop = fire_properties_by_id.setdefault(prop_id, FireProperty(id=prop_id))
     data = number_vector(fields, "DATA", [])
+
+    labels = (labels_by_id or {}).get(prop_id)
+    if labels:
+        if len(data) != len(labels) or len(set(labels)) != len(labels):
+            raise ValueError(f"TABL {prop_id}: DATA must match unique LABELS.")
+        values = {**(constants or {}), **dict(zip(labels, data))}
+        if "TIME" not in values:
+            raise ValueError(f"TABL {prop_id}: TIME label is required.")
+        prop.ramp.append(FireRampPoint(
+            time=values["TIME"], hrr=values.get("HRR", 0.0),
+            height=values.get("HEIGHT", 0.0), area=values.get("AREA", 0.1),
+            co_yield=values.get("CO_YIELD", 0.0), soot_yield=values.get("SOOT_YIELD", 0.01),
+            hcn_yield=values.get("HCN_YIELD", 0.0), trace_yield=values.get("TRACE_YIELD", 0.0),
+        ))
+        return
 
     if len(data) < 2:
         return

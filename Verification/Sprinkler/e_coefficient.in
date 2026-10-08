@@ -1,0 +1,36 @@
+&HEAD VERSION = 7600, TITLE = 'Per-fire water suppression in three rooms' /
+!! Suppression by continuously accumulating sprinkler water.
+!! Shared methane burners: 0.6 m by 0.6 m, 100 kW/m2, hence 36 kW.
+!! Room A: E=1, E=2, E=0, and the legacy tau model.
+!! Room B: twice the spray density, a growing fire, and a delayed fire.
+!! Room C: no active sprinkler; E=1 must leave the prescribed HRR unchanged.
+&TIME SIMULATION = 60, PRINT = 10, SMOKEVIEW = 10, SPREADSHEET = 0.02 /
+&INIT INTERIOR_TEMPERATURE = 20, EXTERIOR_TEMPERATURE = 20 /
+&MISC ADIABATIC = .TRUE., MAX_TIME_STEP = 0.1 /
+&COMP ID = 'Room A', WIDTH = 10, DEPTH = 10, HEIGHT = 4, ORIGIN = 0,0,0 /
+&COMP ID = 'Room B', WIDTH = 10, DEPTH = 10, HEIGHT = 4, ORIGIN = 12,0,0 /
+&COMP ID = 'Room C', WIDTH = 10, DEPTH = 10, HEIGHT = 4, ORIGIN = 24,0,0 /
+&VENT ID = 'Door A', TYPE = 'WALL', COMP_IDS = 'Room A','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
+&VENT ID = 'Door B', TYPE = 'WALL', COMP_IDS = 'Room B','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
+&VENT ID = 'Door C', TYPE = 'WALL', COMP_IDS = 'Room C','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
+&FIRE ID = 'Reference', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
+&FIRE ID = 'Stronger', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 7,2, E_COEFFICIENT = 2 /
+&FIRE ID = 'No attenuation', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,7, E_COEFFICIENT = 0 /
+&FIRE ID = 'Legacy', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 7,7 /
+&FIRE ID = 'Second room', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
+&FIRE ID = 'Growing', COMP_ID = 'Room B', FIRE_ID = 'Growing burner', LOCATION = 7,2, E_COEFFICIENT = 0.5 /
+&FIRE ID = 'Delayed', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,7, SETPOINT = 15, E_COEFFICIENT = 0.1 /
+&FIRE ID = 'Dry room', COMP_ID = 'Room C', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
+&CHEM ID = 'Burner', CARBON = 1, HYDROGEN = 4, HEAT_OF_COMBUSTION = 50000, RADIATIVE_FRACTION = 0.35 /
+&TABL ID = 'Burner', LABELS = 'TIME','HRR','HEIGHT','AREA','CO_YIELD','SOOT_YIELD','HCN_YIELD','TRACE_YIELD' /
+&TABL ID = 'Burner', DATA = 0,36,0.25,0.36,0,0,0,0 /
+&TABL ID = 'Burner', DATA = 60,36,0.25,0.36,0,0,0,0 /
+&CHEM ID = 'Growing burner', CARBON = 1, HYDROGEN = 4, HEAT_OF_COMBUSTION = 50000, RADIATIVE_FRACTION = 0.35 /
+&TABL ID = 'Growing burner', LABELS = 'TIME','HRR','HEIGHT','AREA','CO_YIELD','SOOT_YIELD','HCN_YIELD','TRACE_YIELD' /
+&TABL ID = 'Growing burner', DATA = 0,18,0.25,0.36,0,0,0,0 /
+&TABL ID = 'Growing burner', DATA = 60,54,0.25,0.36,0,0,0,0 /
+&DEVC ID = 'Sprinkler A', TYPE = 'SPRINKLER', COMP_ID = 'Room A', LOCATION = 2,2,3.96,
+      SETPOINT = 30, RTI = 20, SPRAY_DENSITY = 0.0001 /
+&DEVC ID = 'Sprinkler B', TYPE = 'SPRINKLER', COMP_ID = 'Room B', LOCATION = 2,2,3.96,
+      SETPOINT = 30, RTI = 10, SPRAY_DENSITY = 0.0002 /
+&TAIL /

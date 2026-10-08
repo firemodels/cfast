@@ -934,6 +934,26 @@ where $u_{\rm w}$ is the water spray density, expressed in units\footnote{Note t
 
 There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers is noted, but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
 
+An alternative empirical model is selected for an individual fire by specifying \ct{E_COEFFICIENT} on its \ct{FIRE} namelist. This option replaces the quenching-time correlation for that fire. Let $\chi$ denote \ct{E_COEFFICIENT}, in \unit{m^2/(kg.s)}, and let $u_{\rm w}$ now denote the input spray density in \unit{m/s}. The accumulated delivered water mass per unit area is approximated by
+\begin{equation}
+ m_{\rm w}''(t)=\rho_{\rm w}\int_{t_{\rm act}}^t u_{\rm w}(s)\,\mathrm{d}s,
+ \qquad \rho_{\rm w}=1000\ \unit{kg/m^3}.
+\end{equation}
+The suppression rate is $k(t)=\chi m_{\rm w}''(t)$, with units of \unit{1/s}. The prescribed heat release and fuel mass-loss rates are multiplied by the same attenuation factor:
+\begin{equation}
+ S(t)=\exp\left[-\int_{t_{\rm act}}^t k(s)\,\mathrm{d}s\right],
+ \qquad \dQ(t)=\dQ_0(t)S(t),
+ \qquad \dot m_{\rm f}(t)=\dot m_{{\rm f},0}(t)S(t).
+\end{equation}
+Here the subscript 0 denotes the prescribed value at the current time relative to fire ignition. The baseline is not frozen at sprinkler activation. For the constant spray density used by CFAST, with $\Delta t=\max(0,t-t_{\rm act})$, the integrals give
+\begin{equation}
+ S(t)=\exp\left[-\frac{1}{2}\chi\rho_{\rm w}u_{\rm w}(\Delta t)^2\right].
+ \label{eq:e_coefficient}
+\end{equation}
+The exponent is dimensionless. CFAST evaluates this expression analytically, so the water exposure does not depend on the number of solver residual evaluations. Subsequent combustion and oxygen-limitation calculations still apply.
+
+This formulation follows the FDS empirical burning-rate reduction model, using accumulated delivered water in place of FDS's calculated water mass on the fuel surface. The approximation assumes continuous delivery after activation and neglects evaporation, runoff, and spatial variation of the spray. Wetting starts at sprinkler activation, including for a fire that ignites later. The same first activated sprinkler in the compartment supplies the spray density for all fires there; each fire can have its own $\chi$. Additional sprinklers are not summed. Omitting \ct{E_COEFFICIENT} retains the original model, explicitly setting it to zero disables sprinkler attenuation for that fire, and negative values are invalid. The coefficient must be obtained experimentally for the fuel and application.
+
 \section{Tenability} \label{sec:Tenability}
 
 The International Organization for Standardization (ISO) standard 13571 \cite{ISO:13571} provides methods to estimate the time to untenable conditions that may result from a fire.  This includes effects from asphyxiant gases, radiant heat, and convected heat. CFAST includes tenability estimates as part of its target calculations so that tenability is determined for user-selected locations within one or more compartments. All of these are expressed as a fractional effective dose (FED) which is an integrated area under a time-concentration curve for the chosen quantity. The time at which the FED exceeds a chosen threshold value represents the time to compromised tenability \cite{ISO:13571}.

@@ -34,6 +34,7 @@ $RUNCFAST -d Species methane_flame_simple.in
 $RUNCFAST -d Species species_test.in
 
 $RUNCFAST -d Sprinkler sprinkler_1.in
+$RUNCFAST -d Sprinkler e_coefficient.in
 
 $RUNCFAST -d Target target_1.in
 $RUNCFAST -d Target target_2.in

@@ -309,6 +309,7 @@ class FireDefinition:
     x_position: float = 2.5
     y_position: float = 2.5
     fyi: str = ""
+    e_coefficient: float | None = None
 
 
 @dataclass

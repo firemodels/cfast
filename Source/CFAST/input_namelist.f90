@@ -1081,6 +1081,8 @@ continue
     
     subroutine read_fire (lu)
 
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
+
     integer, intent(in) :: lu
     
     integer :: ios, i, ii, jj, iroom
@@ -1091,11 +1093,11 @@ continue
     type(fire_type),   pointer :: fireptr
     type(target_type), pointer :: targptr
 
-    real(eb) setpoint
+    real(eb) :: e_coefficient, setpoint
     character(len=64) :: comp_id, devc_id, fire_id, id, ignition_criterion
     character(len=128) :: fyi
     real(eb), dimension(2) :: location
-    namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint, fyi
+    namelist /FIRE/ comp_id, devc_id, e_coefficient, fire_id, fyi, id, ignition_criterion, location, setpoint
 
     tmpcond = 0.0
 
@@ -1163,6 +1165,16 @@ continue
             fireptr%id = id
             fireptr%fyi = fyi
             fireptr%fire_id = fire_id
+            if (.not.ieee_is_finite(e_coefficient)) then
+                errormessage = '***Error in FIRE: E_COEFFICIENT must be finite and nonnegative for '//trim(id)
+                call cfastexit('read_fire',9)
+            else if (e_coefficient<0._eb) then
+                errormessage = '***Error in FIRE: E_COEFFICIENT must be nonnegative for '//trim(id)
+                call cfastexit('read_fire',9)
+            end if
+            ! A missing input retains the legacy model; an explicit zero disables attenuation.
+            fireptr%e_coefficient = -1._eb
+            if (e_coefficient<huge(1._eb)) fireptr%e_coefficient = e_coefficient
             
             ! position
             if (convert_negative_distances) then
@@ -1249,6 +1261,7 @@ continue
 
     comp_id                 = 'NULL'
     devc_id                 = 'NULL'
+    e_coefficient           = huge(1._eb)
     fire_id                 = 'NULL'
     id                      = 'NULL'
     fyi                     = 'NULL'

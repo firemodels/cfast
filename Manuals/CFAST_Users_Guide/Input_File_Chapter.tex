@@ -433,7 +433,14 @@ In the text input file, the following parameters are stored within the namelist 
 \item[Set Point] (namelist: \ct{SETPOINT}) The critical value of temperature or heat flux at which ignition will occur.
 \item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
 \item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
+\item[E Coefficient] (optional; units: \unit{m^2/(kg.s)}; namelist: \ct{E_COEFFICIENT}) Empirical water suppression coefficient for this fire instance. Leave the field blank to use the original sprinkler quenching-time correlation. A positive value selects the accumulated-water model described below. Zero disables sprinkler attenuation for this fire. Negative values are invalid. Fires referencing the same fire properties may use different coefficients.
 \end{description}
+
+With \ct{E_COEFFICIENT} specified, the current prescribed HRR and fuel mass-loss rate are multiplied by
+\begin{equation}
+ S(t)=\exp\left[-\frac{1}{2}\chi\rho_{\rm w}u_{\rm w}\max(0,t-t_{\rm act})^2\right],
+\end{equation}
+where $\chi$ is \ct{E_COEFFICIENT}, $\rho_{\rm w}=1000$~\unit{kg/m^3}, $u_{\rm w}$ is the sprinkler's \ct{SPRAY_DENSITY} in \unit{m/s}, and $t_{\rm act}$ is its activation time. This model assumes the delivered water accumulates continuously without evaporation or runoff. The first activated sprinkler in the fire's compartment controls the water delivery. A fire that ignites later is subject to the water exposure accumulated since sprinkler activation. The coefficient must be determined experimentally. For example, adding \ct{E_COEFFICIENT=1.0} to a \ct{FIRE} line selects this model for that instance while leaving the \ct{CHEM} and \ct{TABL} definitions shared with other fires.
 
 \section{Fuel Properties}
 
@@ -544,7 +551,7 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.
 \item[RTI] (default: 100~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
-\item[Spray Density] (default: $7\times 10^{-5}$~\unit{m/s}) Rate of water dispersed by a sprinkler, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
+\item[Spray Density] (default: $7\times 10^{-5}$~\unit{m/s}) Rate of water dispersed by a sprinkler, derived by dividing the volumetric flow rate by the spray area. The suppression calculation uses the experimental correlation by Evans~\cite{Evans:1993} unless the fire specifies \ct{E_COEFFICIENT}; see Sec.~\ref{info:FIRE}.
 \item[FYI]  Optional descriptive text retained with the device but not used in the calculation.
 \end{description}
 Smoke detectors activate based on the average smoke concentration of the upper layer of the compartment, not the ceiling jet. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments~\cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponds to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805~\cite{NRCNUREG1805}. \\

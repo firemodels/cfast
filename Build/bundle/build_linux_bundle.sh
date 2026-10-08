@@ -33,12 +33,15 @@ UPDATE_REPOS=1
 UPDATE_BRANCH="master"
 BUILD_MANUALS=1
 UPLOAD_MANUALS=1
+UPLOAD=0
 if [[ -n "${GH_OWNER:-}" && -n "${GH_REPO:-}" ]]; then
   MANUALS_UPLOAD_REPO="$GH_OWNER/$GH_REPO"
 else
   MANUALS_UPLOAD_REPO="firemodels/test_bundles"
 fi
 MANUALS_UPLOAD_TAG="${GH_CFAST_TAG:-CFAST_TEST}"
+UPLOAD_RELEASE_REPO="$MANUALS_UPLOAD_REPO"
+UPLOAD_RELEASE_TAG="$MANUALS_UPLOAD_TAG"
 MANUALS=(
   "CFAST_Configuration_Guide"
   "CFAST_Tech_Ref"
@@ -80,6 +83,9 @@ usage()
   echo "  --no-upload-manuals      Do not upload built manual PDFs and CFAST_INFO.txt"
   echo "  --manuals-upload-repo repo GitHub owner/repo receiving built manuals"
   echo "  --manuals-upload-tag tag GitHub release tag receiving built manuals"
+  echo "  --upload                 Upload the tarball to a GitHub release"
+  echo "  --upload-release-repo repo GitHub owner/repo receiving the tarball"
+  echo "  --upload-release-tag tag GitHub release tag receiving the tarball"
   echo "  --no-tarball             Stage files only"
   echo "  -h, --help               Display this message"
 }
@@ -735,6 +741,18 @@ while [[ $# -gt 0 ]]; do
       MANUALS_UPLOAD_TAG="$2"
       shift 2
       ;;
+    --upload)
+      UPLOAD=1
+      shift
+      ;;
+    --upload-release-repo)
+      UPLOAD_RELEASE_REPO="$2"
+      shift 2
+      ;;
+    --upload-release-tag)
+      UPLOAD_RELEASE_TAG="$2"
+      shift 2
+      ;;
     --no-tarball)
       CREATE_TARBALL=0
       shift
@@ -780,6 +798,14 @@ fi
 
 if [[ "$SMV_EXE_SET" == "0" ]]; then
   SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/$SMV_BUILD_TARGET/smokeview_linux"
+fi
+
+if [[ "$UPLOAD" == "1" ]]; then
+  if [[ "$CREATE_TARBALL" != "1" ]]; then
+    echo "***error: --upload requires tarball creation."
+    exit 1
+  fi
+  command -v gh >/dev/null 2>&1 || { echo "***error: --upload requires gh."; exit 1; }
 fi
 
 update_bundle_repos
@@ -868,4 +894,9 @@ if [[ "$CREATE_TARBALL" == "1" ]]; then
 else
   echo "*** Bundle staged:"
   echo "    $STAGE_ROOT/$DIST_NAME"
+fi
+
+if [[ "$UPLOAD" == "1" ]]; then
+  run_checked "Linux bundle upload" gh release upload "$UPLOAD_RELEASE_TAG" \
+    "$TARBALL_PATH" --clobber -R "$UPLOAD_RELEASE_REPO"
 fi

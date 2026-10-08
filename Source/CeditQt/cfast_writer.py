@@ -974,7 +974,10 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
     lines.append("")
     lines.append("!! Fire Properties")
+    referenced_property_ids = {fire.fire_property_id for fire in case.fires}
     for prop in case.fire_properties:
+        if prop.id not in referenced_property_ids:
+            continue
         add_wrapped_namelist(
             lines,
             "CHEM",

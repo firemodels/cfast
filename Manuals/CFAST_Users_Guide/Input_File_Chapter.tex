@@ -439,6 +439,8 @@ In the text input file, the following parameters are stored within the namelist 
 
 The \textbf{Fuel Properties} block in the lower left of the Fires tab contains the fuel's chemical composition, heat of combustion, and radiative fraction. Each fire can have a different chemical composition and time-dependent properties. Alternatively, two or more fires can reference the same set of properties.
 
+When saving an input file, CEdit writes only the \ct{CHEM} and \ct{TABL} definitions referenced by a fire's \ct{FIRE_ID}. A definition shared by several fires is written once. For example, if \ct{Fire_3} references \ct{Fire_1_Fire} and no fire references \ct{Fire_3_Fire}, the unused \ct{Fire_3_Fire} chemistry and table are omitted. Unused definitions remain available in the current editing session, but are not retained when the saved file is reopened.
+
 In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
 \begin{description}
 \item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.

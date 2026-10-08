@@ -1657,6 +1657,64 @@ def check_fire_import():
         window.deleteLater()
 
 
+def check_unused_fire_definitions():
+    import copy
+    from cfast_case import FireDefinition, FireProperty, FireRampPoint
+    from cfast_reader import parse_namelists, read_cfast_input
+    from main_window import opening_case
+
+    case = opening_case()
+    room = case.compartments[0]
+    case.fire_properties = [
+        FireProperty(id=f"Fire_{i}_Fire", ramp=[
+            FireRampPoint(0, 0), FireRampPoint(300, 1000),
+            FireRampPoint(600, 200 if i == 1 else 0),
+        ]) for i in range(1, 4)
+    ]
+    case.fires = [FireDefinition(
+        id=f"Fire_{i}", comp_id=room.id, fire_property_id=f"Fire_{i}_Fire",
+        x_position=room.width / 2, y_position=room.depth / 2,
+    ) for i in range(1, 4)]
+    window = CeditMainWindow()
+    try:
+        window.load_case(case)
+        tab = window.fires_tab
+        tab.select_fire(2)
+        tab.fire_property_combo.setCurrentText("Fire_1_Fire")
+        expected = copy.deepcopy(window.build_cfast_case())
+        assert expected.fires[2].fire_property_id == "Fire_1_Fire"
+        with tempfile.TemporaryDirectory(prefix="cedit-unused-fires-") as directory:
+            path = Path(directory) / "shared.in"
+            assert window.write_case_to_path(path) == path
+            records = parse_namelists(path.read_text())
+            assert [record.fields["ID"][0] for record in records if record.name == "CHEM"] == [
+                "Fire_1_Fire", "Fire_2_Fire"]
+            tables = [record for record in records if record.name == "TABL"]
+            assert {record.fields["ID"][0] for record in tables} == {"Fire_1_Fire", "Fire_2_Fire"}
+            assert len(tables) == 8  # One header and three points per used definition.
+            reopened = read_cfast_input(path)
+            assert reopened.fires == expected.fires
+            assert reopened.fire_properties == expected.fire_properties[:2]
+            assert window.build_cfast_case() == expected  # Saving does not prune the editor.
+
+            # Reusing the old definition must include it again on the next save.
+            tab.select_fire(2)
+            tab.fire_property_combo.setCurrentText("Fire_3_Fire")
+            assert window.write_case_to_path(path) == path
+            assert len(read_cfast_input(path).fire_properties) == 3
+
+            # Removing every instance leaves no CHEM or TABL records to write.
+            while tab.fires:
+                tab.select_fire(0)
+                tab.remove_fire()
+            assert window.write_case_to_path(path) == path
+            assert not any(record.name in {"FIRE", "CHEM", "TABL"}
+                           for record in parse_namelists(path.read_text()))
+            assert len(tab.fire_properties) == 3
+    finally:
+        window.deleteLater()
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve() if args.repo_root else find_repo_root(Path(__file__))
@@ -1678,6 +1736,7 @@ def main() -> int:
     check_debug_output()
     check_output_visualizations()
     check_fire_import()
+    check_unused_fire_definitions()
 
     if args.mode == "rewrite":
         if args.work_dir is None:

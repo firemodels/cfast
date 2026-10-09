@@ -1,11 +1,43 @@
 #!/bin/bash
 set -o pipefail
 CI_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-source "$CI_DIR/wait_cases.sh"
 source "$CI_DIR/setup_python.sh"
 cur_dir=$CI_DIR
 # CFASTbot
 # This script runs the CFAST verification/validation suite
+
+# A job disappearing from the scheduler is not proof that it succeeded.
+wait_case_manifest() {
+  local manifest=$1 manager job status active rc=0
+  [[ -f $manifest ]] || { echo "Run aborted: missing job manifest: $manifest" >&2; return 1; }
+  while IFS=$'\t' read -r manager job status; do
+    while [[ ! -f $status ]]; do
+      active=0
+      case "$manager" in
+        slurm)
+          if ! listing=$(squeue -h -j "$job" -o '%i'); then
+            echo "Run aborted: cannot query Slurm job $job" >&2; rc=1; break
+          fi
+          [[ -z $listing ]] || active=1;;
+        pbs) if qstat "$job" >/dev/null 2>&1; then active=1; fi;;
+        local) if [[ $job != 0 ]] && kill -0 "$job" 2>/dev/null; then active=1; fi;;
+        *) echo "Run aborted: unknown scheduler: $manager" >&2; return 1;;
+      esac
+      if [[ $active == 0 ]]; then
+        # Allow shared filesystem metadata to catch up after scheduler completion.
+        sleep "${CFAST_CI_STATUS_GRACE:-2}"
+        [[ -f $status ]] || { echo "Run aborted: job $job ended without a status file: $status" >&2; rc=1; break; }
+      else
+        if declare -F check_time_limit >/dev/null; then check_time_limit; fi
+        sleep "${CFAST_CI_POLL_SECONDS:-5}"
+      fi
+    done
+    if [[ -f $status && $(cat "$status") != 0 ]]; then
+      echo "Run aborted: job $job failed ($(cat "$status")): $status" >&2; rc=1
+    fi
+  done < "$manifest"
+  return "$rc"
+}
 
 run_logged()
 {
@@ -18,18 +50,6 @@ run_logged()
       cat "$log" >> "$ERROR_LOG"
    fi
    return "$result"
-}
-
-#---------------------------------------------
-#                   run_auto
-#---------------------------------------------
-
-run_auto()
-{
-   if cmp -s "$OUTPUT_DIR/revisions.tsv" "$GITSTATUS_DIR/last_successful_revisions.tsv"; then
-      echo "Repository revisions are unchanged since the last successful run."
-      exit 0
-   fi
 }
 
 #---------------------------------------------
@@ -746,25 +766,16 @@ mkdir -p "$HISTORY_DIR"
 [[ ! -f $EMAIL_LIST ]] || source "$EMAIL_LIST"
 QUEUE=terminal
 compiler=intel
-RUNAUTO=
 UPLOAD=
-TEST_UI=
-PREFLIGHT=0
 PYTHON_ENV_ACTIVE=
 while (($#)); do
    case "$1" in
-      -r) reporoot=$2; shift 2;;
       -q) QUEUE=$2; shift 2;;
-      -I) compiler=$2; shift 2;;
       -m) mailTo=$2; shift 2;;
-      -a) RUNAUTO=y; shift;;
       -U) UPLOAD=1; shift;;
-      --test-UI) TEST_UI=1; shift;;
-      --preflight) PREFLIGHT=1; shift;;
       *) echo "Unknown driver option: $1" >&2; exit 2;;
    esac
 done
-case "$compiler" in intel|gnu) :;; *) echo 'Compiler must be intel or gnu.' >&2; exit 2;; esac
 cfastrepo=$reporoot/cfast
 fdsrepo=$reporoot/fds
 smvrepo=$reporoot/smv
@@ -781,19 +792,16 @@ for name in cfast fds smv exp; do
    git -C "$reporoot/$name" submodule status --recursive >> "$OUTPUT_DIR/revisions.tsv"
 done
 printf 'ci_tooling\t%s\n' "${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" rev-parse HEAD)}" >> "$OUTPUT_DIR/revisions.tsv"
-if [[ $RUNAUTO == y ]]; then run_auto; fi
 missing=0
 for program in python3 ifx pdflatex biber; do
    command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" >&2; missing=1; }
 done
-if [[ $compiler == gnu ]]; then command -v gfortran >/dev/null || missing=1; fi
 if [[ $QUEUE != terminal && $QUEUE != none ]]; then
    if ! command -v sbatch >/dev/null && ! command -v qsub >/dev/null; then
       echo 'Missing batch scheduler.' >&2; missing=1
    fi
 fi
 [[ $missing == 0 ]] || exit 1
-if [[ $PREFLIGHT == 1 ]]; then echo 'CFAST CI preflight passed.'; exit 0; fi
 
 platform="linux"
 if [ "`uname`" == "Darwin" ] ; then
@@ -923,10 +931,8 @@ fi
 if [[ $stage2_build_cfast_release_success ]] ; then
    run_vv_cases_release || exit 1
    check_vv_cases_release || exit 1
-   if [[ "$TEST_UI" != "" ]]; then
-      run_ceditqt_cases_release || exit 1
-      check_ceditqt_cases_release || exit 1
-   fi
+   run_ceditqt_cases_release || exit 1
+   check_ceditqt_cases_release || exit 1
 fi
 
 ### Stage 4 ###

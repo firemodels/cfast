@@ -14,8 +14,7 @@ The Membership list is only accessible to Discussion Group Managers. This precau
 
 ## Management Information
 
-Employees at the National Institute of Standards and Technology currently are assigned as Owners and Managers of the Discussion Group.  The role of Owners and Managers are defined on the GoogleGroups Help FAQ as:
-"The original owner is the person who created the group, invited the first members, and chose the group's posting and access settings. Once the owner selects a member to be a manager, both the owner and the manager can approve posts, invite new members, create managers, and change the group's management settings. Only the owner, however, can create a co-owner, transfer ownership to another user, or remove the group."
+Employees at the National Institute of Standards and Technology currently are assigned as Owners and Managers of the Discussion Group.  The role of Owners and Managers are defined on the GoogleGroups Help FAQ as: "The original owner is the person who created the group, invited the first members, and chose the group's posting and access settings. Once the owner selects a member to be a manager, both the owner and the manager can approve posts, invite new members, create managers, and change the group's management settings. Only the owner, however, can create a co-owner, transfer ownership to another user, or remove the group."
 
 ## Discussion Group Posts
 

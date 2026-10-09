@@ -9,8 +9,7 @@ For more information, including a link to our discussion forum, please visit the
 -->
 
 
-Contributions of particular interest are given [here](https://github.com/firemodels/cfast/wiki/Potential-Research-Topics).
-Guidelines for making these contributions are given [here.](https://github.com/firemodels/cfast/blob/master/CONTRIBUTING.md) 
+Contributions of particular interest are given [here](https://github.com/firemodels/cfast/wiki/Potential-Research-Topics). Guidelines for making these contributions are given [here.](https://github.com/firemodels/cfast/blob/master/CONTRIBUTING.md)
 
 Here are some other useful links:
 

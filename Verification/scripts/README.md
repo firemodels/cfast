@@ -7,6 +7,4 @@ Utilities/CI/Run_CFAST_Cases.sh --suite Verification -q batch
 Utilities/CI/Run_CFAST_Cases.sh --suite Verification -I gnu -q terminal
 ```
 
-Use `--test-UI` to import and rewrite the inputs through CEditQt without running
-CFAST. The `Run_CFAST_Cases.sh` in this directory calls the shared runner. See [the CI documentation](../../Utilities/CI/README.md)
-for compiler, debug, queue, stop, timing, and case-selection options.
+Use `--test-UI` to import and rewrite the inputs through CEditQt without running CFAST. The `Run_CFAST_Cases.sh` in this directory calls the shared runner. See [the CI documentation](../../Utilities/CI/README.md) for compiler, debug, queue, stop, timing, and case-selection options.

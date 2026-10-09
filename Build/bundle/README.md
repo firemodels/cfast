@@ -1,7 +1,6 @@
 # CFAST Bundle Builds
 
-This directory contains the platform bundle scripts for CFAST 8. Run the
-commands from the CFAST repository root unless noted otherwise.
+This directory contains the platform bundle scripts for CFAST 8. Run the commands from the CFAST repository root unless noted otherwise.
 
 ## Quick Start
 
@@ -15,11 +14,9 @@ Build/bundle/build_macos_bundle.sh
 
 The DMG is written to `Build/bundle/macos`.
 
-The macOS bundle script passes `--clean-cfast` to the CFAST build script so each
-bundle build recompiles CFAST with fresh object and module files.
+The macOS bundle script passes `--clean-cfast` to the CFAST build script so each bundle build recompiles CFAST with fresh object and module files.
 
-To use manuals from the `CFAST_TEST` release and upload the finished DMG back
-to the test bundle release:
+To use manuals from the `CFAST_TEST` release and upload the finished DMG back to the test bundle release:
 
 ```bash
 Build/bundle/build_macos_bundle.sh --manuals-from-release --upload
@@ -27,12 +24,7 @@ Build/bundle/build_macos_bundle.sh --manuals-from-release --upload
 
 ### Signed and notarized macOS releases
 
-Gatekeeper accepts a downloaded application only after it has a Developer ID
-signature and has been notarized by Apple. The bundle build takes its Developer
-ID identity from `CODESIGN_ID`, keeping it out of the repository. It signs
-CEditQt and its nested code, CFAST, Smokeview, and bundled runtime libraries
-with the hardened runtime, then signs the finished DMG. When notarization is
-enabled, the build submits the DMG to Apple and staples the resulting ticket.
+Gatekeeper accepts a downloaded application only after it has a Developer ID signature and has been notarized by Apple. The bundle build takes its Developer ID identity from `CODESIGN_ID`, keeping it out of the repository. It signs CEditQt and its nested code, CFAST, Smokeview, and bundled runtime libraries with the hardened runtime, then signs the finished DMG. When notarization is enabled, the build submits the DMG to Apple and staples the resulting ticket.
 
 For a macOS scheduled job, use the wrapper script:
 
@@ -42,25 +34,16 @@ Build/bundle/run_macos_bundle.sh
 
 ### Linux
 
-Build CEditQt, then create the tarball. The bundle script updates the repos,
-rebuilds CFAST and Smokeview, and builds the CFAST manuals before staging. The
-Linux tarball includes the built manuals. The same PDFs and revision information
-are uploaded for the macOS and Windows bundle builds:
+Build CEditQt, then create the tarball. The bundle script updates the repos, rebuilds CFAST and Smokeview, and builds the CFAST manuals before staging. The Linux tarball includes the built manuals. The same PDFs and revision information are uploaded for the macOS and Windows bundle builds:
 
 ```bash
 Build/CeditQt/build_linux_app.sh
 Build/bundle/build_linux_bundle.sh
 ```
 
-The tarball is written to `Build/bundle/linux`. Add `--upload` to publish the
-tarball to the release selected by `--upload-release-repo` and
-`--upload-release-tag` (defaults: `firemodels/test_bundles` and `CFAST_TEST`, or
-`GH_OWNER`/`GH_REPO` and `GH_CFAST_TAG` when set).
+The tarball is written to `Build/bundle/linux`. Add `--upload` to publish the tarball to the release selected by `--upload-release-repo` and `--upload-release-tag` (defaults: `firemodels/test_bundles` and `CFAST_TEST`, or `GH_OWNER`/`GH_REPO` and `GH_CFAST_TAG` when set).
 
-The [CI pipeline](../../Utilities/CI/README.md) calls this script with
-`--no-update-repos --no-build-cfast --no-build-smokeview --no-build-manuals
---no-upload-manuals`, supplies the tested executables, and publishes the manuals
-separately. This packages the artifacts from the completed verification run.
+The [CI pipeline](../../Utilities/CI/README.md) calls this script with `--no-update-repos --no-build-cfast --no-build-smokeview --no-build-manuals --no-upload-manuals`, supplies the tested executables, and publishes the manuals separately. This packages the artifacts from the completed verification run.
 
 ### Windows
 
@@ -70,9 +53,7 @@ From PowerShell or Command Prompt, create the self-extracting installer:
 python Build\bundle\build_windows_bundle.py --manuals-from-release
 ```
 
-The Windows script builds `Build\CFAST\intel_win\cfast8_win.exe` and CEditQt by
-default before staging the bundle. The installer is written to
-`Build\bundle\windows`.
+The Windows script builds `Build\CFAST\intel_win\cfast8_win.exe` and CEditQt by default before staging the bundle. The installer is written to `Build\bundle\windows`.
 
 To upload the installer to the test bundle release after it is built:
 
@@ -86,8 +67,7 @@ For a Windows scheduled task, use the wrapper script:
 Build\bundle\run_windows_bundle.ps1
 ```
 
-By default, `--upload` pushes to `firemodels/test_bundles` release tag
-`CFAST_TEST`. Override this with:
+By default, `--upload` pushes to `firemodels/test_bundles` release tag `CFAST_TEST`. Override this with:
 
 ```powershell
 python Build\bundle\build_windows_bundle.py --manuals-from-release --upload --upload-release-repo firemodels/test_bundles --upload-release-tag CFAST_TEST
@@ -97,19 +77,9 @@ The upload step requires `gh` to be installed and authenticated.
 
 ## Inputs
 
-The macOS, Linux, and Windows bundle scripts reset and clean the local `cfast`
-checkout, fetch `git@github.com:firemodels/cfast.git`, and use the latest
-central `master` by default. Use `--cfast-tag` to build a specific CFAST tag.
-They also fresh-clone `smv` from `git@github.com:firemodels/smv.git` into the
-parallel firemodels workspace before building unless `--no-update-repos` is
-supplied.
+The macOS, Linux, and Windows bundle scripts reset and clean the local `cfast` checkout, fetch `git@github.com:firemodels/cfast.git`, and use the latest central `master` by default. Use `--cfast-tag` to build a specific CFAST tag. They also fresh-clone `smv` from `git@github.com:firemodels/smv.git` into the parallel firemodels workspace before building unless `--no-update-repos` is supplied.
 
-The macOS and Windows scripts fresh-clone `fds` from
-`git@github.com:firemodels/fds.git` into the parallel firemodels workspace and
-build `.github/fds_python_env` from that checkout unless `--python` is supplied.
-Linux also fresh-clones the parallel `fds` checkout during repo updates. FDS is
-used only for the shared Python environment; FDS is not built by these scripts.
-The `exp` repo is not updated during bundle assembly.
+The macOS and Windows scripts fresh-clone `fds` from `git@github.com:firemodels/fds.git` into the parallel firemodels workspace and build `.github/fds_python_env` from that checkout unless `--python` is supplied. Linux also fresh-clones the parallel `fds` checkout during repo updates. FDS is used only for the shared Python environment; FDS is not built by these scripts. The `exp` repo is not updated during bundle assembly.
 
 The bundle scripts stage:
 
@@ -121,9 +91,7 @@ The bundle scripts stage:
 - Smokeview, rebuilt from the local `smv` checkout unless disabled
 - runtime libraries needed by the bundled executables
 
-The macOS and Windows scripts build CFAST, CEditQt, and Smokeview unless
-disabled. The Linux script builds CFAST and Smokeview, but assumes the CEditQt
-app has already been built.
+The macOS and Windows scripts build CFAST, CEditQt, and Smokeview unless disabled. The Linux script builds CFAST and Smokeview, but assumes the CEditQt app has already been built.
 
 ## Dependencies
 

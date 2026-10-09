@@ -2,8 +2,7 @@
 
 Python/PySide6 interface for editing and running CFAST input files.
 
-Surface connections are no longer supported by CFAST and have no editor tab.
-Legacy `CONN` entries are omitted when input files are saved through CEdit Qt.
+Surface connections are no longer supported by CFAST and have no editor tab. Legacy `CONN` entries are omitted when input files are saved through CEdit Qt.
 
 ## Running
 
@@ -22,8 +21,7 @@ Install the dependencies needed for the action you are running:
     python -m pip install pillow
     python -m pip install dmgbuild
 
-PyInstaller is required for standalone app builds. Pillow is required for
-Windows icon generation. dmgbuild is required for the macOS DMG.
+PyInstaller is required for standalone app builds. Pillow is required for Windows icon generation. dmgbuild is required for the macOS DMG.
 
 ## macOS App
 
@@ -65,8 +63,7 @@ Output:
 
     Build/bundle/linux
 
-After extracting the tarball, source the startup file before using CFAST from a
-terminal:
+After extracting the tarball, source the startup file before using CFAST from a terminal:
 
     source /path/to/CFAST/bin/CFASTVARS.sh
 
@@ -107,9 +104,7 @@ Shortcut options:
 
 ## CFAST and Smokeview Paths
 
-In a bundle, CEdit Qt first looks for the bundled CFAST and Smokeview
-executables. Outside a bundle, CEdit Qt uses `cfast` and `smokeview` from
-`PATH`.
+In a bundle, CEdit Qt first looks for the bundled CFAST and Smokeview executables. Outside a bundle, CEdit Qt uses `cfast` and `smokeview` from `PATH`.
 
 To select a specific executable:
 

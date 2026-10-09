@@ -99,7 +99,7 @@ export RUNSMV=$SVNROOT/Utilities/Scripts/runsmv.sh
 export SMVBINDIR="-bindir $SVNROOT/SMV/for_bundle/"
 export BASEDIR=`pwd`/..
 
-echo "erasing SCRIPT_FIGURES png files"
+echo "Generating CFAST Smokeview pictures"
 
 if [ "$START_X" == "yes" ]; then
   source $SVNROOT/Utilities/Scripts/startXserver.sh 2>/dev/null

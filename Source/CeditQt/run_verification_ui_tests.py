@@ -1394,6 +1394,18 @@ def check_debug_output():
         window.load_case(opening_case())
         with tempfile.TemporaryDirectory(prefix="cedit-qt-debug-") as tmp:
             path = Path(tmp) / "debug.in"
+            # Old input files must not restore the removed output-mode switch.
+            for value in ("T", "F"):
+                write_cfast_input(opening_case(), path)
+                path.write_text(path.read_text().replace(
+                    "&TAIL /", f"&OUTP VALIDATION_OUTPUT = {value}, FYI = 'Output' /\n&TAIL /",
+                ))
+                window.load_cfast_input(path)
+                assert not hasattr(window.output_tab, "validation_checkbox")
+                assert window.write_case_to_path(path) == path
+                assert "VALIDATION_OUTPUT" not in path.read_text()
+                assert not hasattr(read_cfast_input(path), "validation_output")
+
             for checked in (False, True, False):
                 window.output_tab.debug_checkbox.setChecked(checked)
                 assert window.write_case_to_path(path) == path

@@ -1,5 +1,7 @@
 module cfast_types
 
+    use iso_fortran_env, only: error_unit
+
     use precision_parameters
     
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, &
@@ -356,8 +358,8 @@ module cfast_types
                 end if
             end do time_label_loop
             if (tidx <= 0) then
-                write(*,5000) table%id
-                write(*,*) 'ERROR in cfast_structures:fire_type:pop_table'
+                write (error_unit,5000) table%id
+                write (error_unit,*) 'ERROR in cfast_structures:fire_type:pop_table'
                 stop
             end if 
 

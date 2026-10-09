@@ -916,12 +916,6 @@ def apply_record(
                 "be written on save but are not editable."
             )
     elif name == "OUTP":
-        if "VALIDATION_OUTPUT" in fields:
-            case.validation_output = bool_field(
-                fields,
-                "VALIDATION_OUTPUT",
-                case.validation_output,
-            )
         if "NET_HEAT_FLUX_OUTPUT" in fields:
             case.net_heat_flux_output = bool_field(
                 fields,
@@ -934,12 +928,17 @@ def apply_record(
                 string_field(fields, "SPREADSHEET_OUTPUT", ""),
             )
         known_outp_fields = {
-            "VALIDATION_OUTPUT",
+            "VALIDATION_OUTPUT",  # Discard this obsolete option when importing older files.
             "NET_HEAT_FLUX_OUTPUT",
             "SPREADSHEET_OUTPUT",
         }
         if any(key not in known_outp_fields for key in fields):
-            case.extra_namelists.append(record.raw.strip())
+            case.extra_namelists.append(
+                "&OUTP " + ", ".join(
+                    text for key, text in namelist_field_texts(record.raw)
+                    if key != "VALIDATION_OUTPUT"
+                ) + " /"
+            )
             warnings.append(
                 f"Line {record.line}: &OUTP was preserved and will be written on save "
                 "but is not editable."

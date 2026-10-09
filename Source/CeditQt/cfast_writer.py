@@ -646,8 +646,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     outp_fields = []
     if getattr(case, "net_heat_flux_output", False):
         outp_fields.append("NET_HEAT_FLUX_OUTPUT = .TRUE.")
-    if getattr(case, "validation_output", False):
-        outp_fields.append("VALIDATION_OUTPUT = .TRUE.")
 
     spreadsheet_output = spreadsheet_output_code(case)
     if spreadsheet_output != "CDMVW":

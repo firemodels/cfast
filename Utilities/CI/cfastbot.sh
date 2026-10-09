@@ -1,5 +1,7 @@
 #!/bin/bash
 set -o pipefail
+exec 1>&2
+export PYTHONUNBUFFERED=1
 CI_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$CI_DIR/setup_python.sh"
 cur_dir=$CI_DIR
@@ -8,15 +10,17 @@ cur_dir=$CI_DIR
 
 # A job disappearing from the scheduler is not proof that it succeeded.
 wait_case_manifest() {
-  local manifest=$1 manager job status active rc=0
+  local manifest=$1 manager job status active listing failed rc=0
   [[ -f $manifest ]] || { echo "Run aborted: missing job manifest: $manifest" >&2; return 1; }
   while IFS=$'\t' read -r manager job status; do
+    failed=0
+    echo "Waiting for $manager job $job: $status"
     while [[ ! -f $status ]]; do
       active=0
       case "$manager" in
         slurm)
           if ! listing=$(squeue -h -j "$job" -o '%i'); then
-            echo "Run aborted: cannot query Slurm job $job" >&2; rc=1; break
+            echo "Run aborted: cannot query Slurm job $job" >&2; failed=1; break
           fi
           [[ -z $listing ]] || active=1;;
         pbs) if qstat "$job" >/dev/null 2>&1; then active=1; fi;;
@@ -26,14 +30,28 @@ wait_case_manifest() {
       if [[ $active == 0 ]]; then
         # Allow shared filesystem metadata to catch up after scheduler completion.
         sleep "${CFAST_CI_STATUS_GRACE:-2}"
-        [[ -f $status ]] || { echo "Run aborted: job $job ended without a status file: $status" >&2; rc=1; break; }
+        [[ -f $status ]] || { echo "Run aborted: job $job ended without a status file: $status" >&2; failed=1; break; }
       else
         if declare -F check_time_limit >/dev/null; then check_time_limit; fi
         sleep "${CFAST_CI_POLL_SECONDS:-5}"
       fi
     done
-    if [[ -f $status && $(cat "$status") != 0 ]]; then
-      echo "Run aborted: job $job failed ($(cat "$status")): $status" >&2; rc=1
+    if [[ -f $status ]]; then
+      if [[ $(cat "$status") != 0 ]]; then
+        echo "Run aborted: job $job failed ($(cat "$status")): $status" >&2; failed=1
+      else
+        echo "Completed $manager job $job"
+      fi
+    fi
+    if [[ $failed == 1 ]]; then
+      rc=1
+      if [[ -s ${status%.exit}.err ]]; then
+        echo "Last lines of ${status%.exit}.err:" >&2
+        tail -n 30 "${status%.exit}.err" >&2
+      fi
+      if [[ $manager == slurm ]] && command -v sacct >/dev/null; then
+        sacct -j "$job" --format=JobID,State,ExitCode,Reason -P >&2 || true
+      fi
     fi
   done < "$manifest"
   return "$rc"
@@ -41,12 +59,22 @@ wait_case_manifest() {
 
 run_logged()
 {
-   local log=$1
+   local log=$1 result tee_pid tee_result stream_dir
    shift
-   "$@" > "$log" 2>&1
-   local result=$?
+   # A named pipe streams output while keeping setup functions in this shell.
+   stream_dir=$(mktemp -d "${log}.stream.XXXXXX") || return 1
+   mkfifo "$stream_dir/output" || { rmdir "$stream_dir"; return 1; }
+   tee -a "$log" < "$stream_dir/output" >&2 &
+   tee_pid=$!
+   "$@" > "$stream_dir/output" 2>&1
+   result=$?
+   wait "$tee_pid"
+   tee_result=$?
+   rm -f "$stream_dir/output"
+   rmdir "$stream_dir"
+   if [[ $result == 0 ]]; then result=$tee_result; fi
    if [[ $result != 0 ]]; then
-      echo "Command failed (exit $result): $*" >> "$ERROR_LOG"
+      echo "Command failed (exit $result): $*" | tee -a "$ERROR_LOG" >&2
       cat "$log" >> "$ERROR_LOG"
    fi
    return "$result"
@@ -101,14 +129,12 @@ setup_python_environment()
    local setup_log="$1"
 
    if [ "$PYTHON_ENV_ACTIVE" == "1" ]; then
-      echo "Python environment already active." > "$setup_log"
+      run_logged "$setup_log" echo "Python environment already active."
       return 0
    fi
 
-   setup_cfast_python "$reporoot" > "$setup_log" 2>&1 || {
-      cat "$setup_log" >> "$ERROR_LOG"
-      return 1
-   }
+   echo "Setting up Python environment"
+   run_logged "$setup_log" setup_cfast_python "$reporoot" || return 1
    PYTHON_ENV_ACTIVE=1
    return 0
 }
@@ -245,9 +271,9 @@ submit_suite()
    local result=0
    export CFAST_JOB_MANIFEST="$run_log.jobs"
    : > "$CFAST_JOB_MANIFEST"
-   "$CI_DIR/Run_CFAST_Cases.sh" --repo-root "$cfastrepo" --suite "$suite" "$@" > "$run_log" 2>&1 || result=1
+   run_logged "$run_log" "$CI_DIR/Run_CFAST_Cases.sh" --repo-root "$cfastrepo" --suite "$suite" "$@" || result=1
    TIME_LIMIT_STAGE="3 $suite cases"
-   wait_case_manifest "$CFAST_JOB_MANIFEST" >> "$run_log" 2>&1 || result=1
+   run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" || result=1
    if [[ $result != 0 ]]; then
       cat "$run_log" >> "$ERROR_LOG"
    fi
@@ -619,14 +645,14 @@ upload_linux_bundle()
 
    echo "Building and uploading CFAST Linux bundle"
    # Package the binaries and manuals from this run without changing revisions.
-   if "$cedit_script" --python "$CFAST_PYTHON" > "$bundle_log" 2>&1 &&
-      "$bundle_script" --no-update-repos --no-build-cfast --no-build-smokeview \
+   if run_logged "$bundle_log" "$cedit_script" --python "$CFAST_PYTHON" &&
+      run_logged "$bundle_log" "$bundle_script" --no-update-repos --no-build-cfast --no-build-smokeview \
          --no-build-manuals --no-upload-manuals \
          --cfast-exe "$cfastrepo/Build/CFAST/${compiler}_linux/cfast8_linux" \
          --smokeview-exe "$smvrepo/Build/smokeview/intel_linux/smokeview_linux" \
          --output-dir "$OUTPUT_DIR/bundles" --stage-dir "$OUTPUT_DIR/bundle_stage" \
          --upload --upload-release-repo "$GH_OWNER/$GH_REPO" \
-         --upload-release-tag "$GH_CFAST_TAG" >> "$bundle_log" 2>&1; then
+         --upload-release-tag "$GH_CFAST_TAG"; then
       return 0
    fi
    echo "Errors from Stage 7 - Build/upload CFAST Linux bundle:" >> "$ERROR_LOG"
@@ -726,7 +752,7 @@ email_build_status()
    else
       if [[ "$UPLOAD" == "1" ]] && [[ -e $GUIDES2GH ]]; then
          cd "$cfastbotdir" || exit 1
-         "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" > "$OUTPUT_DIR/stage7_upload" 2>&1 || { cat "$OUTPUT_DIR/stage7_upload" >> "$ERROR_LOG"; return 1; }
+         run_logged "$OUTPUT_DIR/stage7_upload" "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" || { cat "$OUTPUT_DIR/stage7_upload" >> "$ERROR_LOG"; return 1; }
          GITURL=https://github.com/$GH_OWNER/$GH_REPO/releases/tag/$GH_CFAST_TAG
          echo ""                                  >> $TIME_LOG
          echo "Linux bundle, Manuals: $GITURL"    >> $TIME_LOG
@@ -864,23 +890,23 @@ setup_python_environment "$OUTPUT_DIR/stage0_python_setup" || exit 1
 BOT_REVISION="CI tooling: ${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" describe --always --dirty)}"
 
 cd "$reporoot/exp" || exit 1
-EXP_REVISION=`git describe --abbrev=7 --dirty --long`
+EXP_REVISION=`git describe --always --abbrev=7 --dirty --long`
 
 cd "$reporoot/fds" || exit 1
-FDS_REVISION=`git describe --abbrev=7 --dirty --long`
+FDS_REVISION=`git describe --always --abbrev=7 --dirty --long`
 
 cd "$reporoot/cfast" || exit 1
-CFAST_REVISION=`git describe --abbrev=7 --dirty --long`
+CFAST_REVISION=`git describe --always --abbrev=7 --dirty --long`
 CFAST_SHORTHASH=`git rev-parse --short HEAD`
 GIT_REVISION=$CFAST_SHORTHASH
 # CFAST_REV same as CFAST_REVISION without the hash on the end
-CFAST_REV=`git describe | sed 's/-g[0-9a-f]*$//'`
+CFAST_REV=`git describe --always | sed 's/-g[0-9a-f]*$//'`
 
 cd "$reporoot/smv" || exit 1
-SMV_REVISION=`git describe --abbrev=7 --dirty --long`
+SMV_REVISION=`git describe --always --abbrev=7 --dirty --long`
 SMV_SHORTHASH=`git rev-parse --short HEAD`
 # SMV_REV same as SMV_REVISION without the hash on the end
-SMV_REV=`git describe | sed 's/-g[0-9a-f]*$//'`
+SMV_REV=`git describe --always | sed 's/-g[0-9a-f]*$//'`
 
 cd "$cur_dir" || exit 1
 
@@ -891,32 +917,32 @@ echo "Building"
 echo "   cfast"
 echo "      $compiler debug"
 cd "$cfastrepo/Build/CFAST/${compiler}_${cfast_platform}_db" || exit 1
-./make_cfast.sh --clean-cfast > "$OUTPUT_DIR/stage2_build_cfast_debug" 2>&1 || { cat "$OUTPUT_DIR/stage2_build_cfast_debug" >> "$ERROR_LOG"; exit 1; }
+run_logged "$OUTPUT_DIR/stage2_build_cfast_debug" ./make_cfast.sh --clean-cfast || exit 1
 check_compile_cfast_db || exit 1
 
 #*** build release cfast
 echo "      release"
 cd "$cfastrepo/Build/CFAST/${compiler}_${cfast_platform}" || exit 1
-./make_cfast.sh --clean-cfast > "$OUTPUT_DIR/stage2_build_cfast_release" 2>&1 || { cat "$OUTPUT_DIR/stage2_build_cfast_release" >> "$ERROR_LOG"; exit 1; }
+run_logged "$OUTPUT_DIR/stage2_build_cfast_release" ./make_cfast.sh --clean-cfast || exit 1
 check_compile_cfast || exit 1
 
 #*** build smokeview libraries
 cd "$smvrepo/Build/LIBS/intel_${platform}" || exit 1
 echo 'Building Smokeview libraries' >> $OUTPUT_DIR/stage2_build_smv_util 2>&1
 echo "   smokeview libraries"
-./make_LIBS.sh > "$OUTPUT_DIR/stage2_build_smv_util" 2>&1 || { cat "$OUTPUT_DIR/stage2_build_smv_util" >> "$ERROR_LOG"; exit 1; }
+run_logged "$OUTPUT_DIR/stage2_build_smv_util" ./make_LIBS.sh || exit 1
 
 #*** build debug smokeview
 echo "   smokeview"
 echo "      debug"
 cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
-./make_smokeview_db.sh > "$OUTPUT_DIR/stage2_build_smv_debug" 2>&1 || { cat "$OUTPUT_DIR/stage2_build_smv_debug" >> "$ERROR_LOG"; exit 1; }
+run_logged "$OUTPUT_DIR/stage2_build_smv_debug" ./make_smokeview_db.sh || exit 1
 check_compile_smv_db || exit 1
 
 #*** build release smokeview
 echo "      release"
 cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
-./make_smokeview.sh > "$OUTPUT_DIR/stage2_build_smv_release" 2>&1 || { cat "$OUTPUT_DIR/stage2_build_smv_release" >> "$ERROR_LOG"; exit 1; }
+run_logged "$OUTPUT_DIR/stage2_build_smv_release" ./make_smokeview.sh || exit 1
 check_compile_smv || exit 1
 
 ### Stage 3 ###

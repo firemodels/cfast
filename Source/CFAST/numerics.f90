@@ -1,5 +1,7 @@
     module numerics_routines
 
+    use iso_fortran_env, only: error_unit
+
     use utility_routines, only: d1mach
 
     use setup_data, only: iofill
@@ -5852,13 +5854,13 @@
     lm = len_trim(mesg)
 
     ! write the message
-    write (*,5000) mesg(1:lm)
+    write (error_unit,5000) mesg(1:lm)
     write (iofill,5000) mesg(1:lm)
     if (nnr==1) then
-        write (*,5001) nerr,r1
+        write (error_unit,5001) nerr,r1
         write (iofill,5001) nerr,r1
     else if (nnr==2) then
-        write (*,5002) nerr,r1,r2
+        write (error_unit,5002) nerr,r1,r2
         write (iofill,5002) nerr,r1,r2
     end if
 

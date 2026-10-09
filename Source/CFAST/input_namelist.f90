@@ -1,5 +1,7 @@
     module namelist_input_routines
 
+    use iso_fortran_env, only: error_unit
+
     use precision_parameters
 
     use exit_routines, only: cfastexit
@@ -31,7 +33,7 @@
         interior_ambient_o2_mass_fraction, exterior_ambient_o2_mass_fraction, &
         interior_ambient_n2_mass_fraction, exterior_ambient_n2_mass_fraction
     use setup_data, only: iofili, iofill, cfast_version, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_output, &
+        print_out_interval, smv_out_interval, ss_out_interval, &
         overwrite, inputfile, errormessage
     use solver_data, only: stpmax, stp_cnt_max, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
@@ -125,7 +127,7 @@
     end if head_flag
 
     if (version/=cfast_version/1000) then
-        write (*,5002) version, cfast_version/1000
+        write (error_unit,5002) version, cfast_version/1000
         write (iofill,5002) version, cfast_version/1000
     end if
 
@@ -223,7 +225,7 @@
     integer :: i, index
     character(len=26) :: selected
 
-    namelist /OUTP/ fyi, validation_output, spreadsheet_output
+    namelist /OUTP/ fyi, spreadsheet_output
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -2270,7 +2272,6 @@ continue
     
     end if diag_flag
     
-    if (radi_verification_flag) validation_output = .true.
 
     contains
 

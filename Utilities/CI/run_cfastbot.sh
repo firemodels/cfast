@@ -36,6 +36,7 @@ output="$state/runs/$(date +%Y%m%d-%H%M%S)-$$"
 mkdir -p "$output"
 printf '%s\n' "$output" > "$state/latest_run"
 export CFAST_CI_OUTPUT_DIR=$output
+printf 'CFASTbot logs: %s\n' "$output" >&2
 child=
 terminate_tree() {
   local parent=$1 pid
@@ -60,5 +61,8 @@ child=$!
 rc=0
 wait "$child" || rc=$?
 printf '%s\n' "$rc" > "$output/exit_code"
-if [[ $rc != 0 ]]; then cancel_jobs; fi
+if [[ $rc != 0 ]]; then
+  cancel_jobs
+  echo "CFASTbot failed (exit $rc); logs: $output" >&2
+fi
 exit "$rc"

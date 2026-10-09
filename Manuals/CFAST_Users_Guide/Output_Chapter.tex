@@ -8,21 +8,20 @@
 
 \section{Compact Output}
 
-The default output to the console is called the compact form, and shows the basic information about a scenario, including layer temperatures and the size of fires. Default text output provides a simple overview for the user to make sure the case runs as expected.
+Console output is always written to standard error (stderr). The compact form is printed at the specified print interval and shows the basic information about a scenario, including layer temperatures and the size of fires. Default text output provides a simple overview for the user to make sure the case runs as expected.
 \begin{lstlisting}[basicstyle=\scriptsize]
 ****************************
-* Time =   3600.0 seconds. *
+* Time =    850.0 seconds. *
 ****************************
 
-Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure
-               Temp.     Temp       Height      Vol             Absor      Absorb
-               (C)       (C)        (m)         (m^3)           (1/m)      (1/m)       (Pa)
-----------------------------------------------------------------------------------------------------
-Comp 1         48.52      20.89      1.542       36.    ( 49%)  0.172      9.306E-02   -0.570
-Comp 2         138.4      36.39      1.586       35.    ( 47%)  0.171      9.338E-02    -1.86
-Comp 3         103.7      27.50      1.000       50.    ( 67%)  0.161      0.104        0.983
+ Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure
+               Temp.   Temp.   Height  Rate      Size
+               (C)     (C)     (m)     (kg/s)    (W)       (Pa)
+ --------------------------------------------------------------------
+    1          793.0   790.7   0.10     2.000E-03 1.000E+05 2.718E+05
+  Outside                                         0.00
 \end{lstlisting}
-Each row lists the compartment name, the upper layer temperature, lower layer temperature, the height of the interface between the two layers, volume of the upper layer and its percentage of the whole, absorption coefficients of the upper and layer layers, and compartment pressure.
+Each compartment row lists its number, upper and lower layer temperatures, layer interface height, total fuel pyrolysis rate, total fire heat release rate, and pressure. The outside row reports the heat release rate of fires burning outside. The example above is from \ct{sealed\_test\_2\_layers.in}.
 
 \section{Detailed Outputs}
 
@@ -368,13 +367,15 @@ Comp 2         Outside                      0.6667E+02                0.2223E-01
 
 CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snapshot of the modeling data at an instant of time. This interval is set on the Simulation tab discussed in Sec.~\ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
 
+Spreadsheet files contain the full output set for the selected categories. Gas concentrations in the compartment spreadsheet are mole fractions (\ct{mol_frac}); the compartment smoke columns \ct{ULOD}, \ct{LLOD}, and their flaming and smoldering components contain smoke mass concentrations in mg/m$^3$. Target and sensor obscuration and Smokeview optical-density output retain units of m$^{-1}$.
+
 Several spreadsheet files are generated with each CFAST simulation:
 
 \begin{enumerate}
 \item \textbf{project\_compartments.csv} contains layer temperature and height, species concentrations, and fire-related outputs.
-\item \textbf{project\_devices.csv} contains outputs for targets and detectors (detailed target info with -V option)
-\item \textbf{project\_masses.csv} contains mass of species in compartment layers and total trace species masses (detailed unburned fuel info with -V flag)
-\item \textbf{project\_vents.csv} contains vent flows (additional flow details with -V option)
+\item \textbf{project\_devices.csv} contains outputs for targets and detectors including detailed target heat fluxes
+\item \textbf{project\_masses.csv} contains mass of species in compartment layers and total trace species masses including detailed unburned fuel information
+\item \textbf{project\_vents.csv} contains vent flows including upper- and lower-layer inflows and outflows
 \item \textbf{project\_walls.csv} contains compartment surface temperatures
 \end{enumerate}
 
@@ -389,16 +390,16 @@ There are three sets of information in this file. The first includes compartment
 \item[Layer Height]  (m)
 \item[ Upper Layer Volume] (m$^3$): total volume of the upper layer. This is just the floor area times the difference between the ceiling height and the layer height.
 \item[ Pressure] (Pa): pressure at compartment floor relative to the outside at the absolute height of the floor.
-\item[N2 Upper/Lower Layer] (mol \%): nitrogen concentration in the upper (or lower) layer in the current compartment
-\item[O2 Upper/Lower Layer] (mol \%): oxygen concentration in the upper (or lower) layer in the current compartment
-\item[CO2 Upper/Lower Layer] (mol \%):  carbon dioxide concentration in the upper (or lower) layer in the current compartment
-\item[CO Upper/Lower Layer] (mol \%):  carbon monoxide concentration in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
-\item[HCN Upper/Lower Layer] (mol \%):  HCN concentration in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
-\item[HCL Upper/Lower Layer] (mol \%):  HCl concentration in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
-\item[H2O Upper/Lower Layer] (mol \%):  water vapor concentration in the upper (or lower) layer in the current compartment
-\item[Optical Density Upper/Lower Layer] (m$^{-1}$):  optical density in the upper (or lower) layer in the current compartment
-\item[Optical Density Upper/Lower Layer] (m$^{-1}$):  optical density from flaming-generated smoke in the upper (or lower) layer in the current compartment
-\item[Optical Density Upper/Lower Layer] (m$^{-1}$):  optical density from smoldering-generated smoke in the upper (or lower) layer in the current compartment
+\item[N2 Upper/Lower Layer] (mole fraction): nitrogen concentration in the upper (or lower) layer in the current compartment
+\item[O2 Upper/Lower Layer] (mole fraction): oxygen concentration in the upper (or lower) layer in the current compartment
+\item[CO2 Upper/Lower Layer] (mole fraction):  carbon dioxide concentration in the upper (or lower) layer in the current compartment
+\item[CO Upper/Lower Layer] (mole fraction):  carbon monoxide concentration in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
+\item[HCN Upper/Lower Layer] (mole fraction):  HCN concentration in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
+\item[HCL Upper/Lower Layer] (mole fraction):  HCl concentration in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
+\item[H2O Upper/Lower Layer] (mole fraction):  water vapor concentration in the upper (or lower) layer in the current compartment
+\item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration in the upper (or lower) layer in the current compartment
+\item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration from flaming-generated smoke in the upper (or lower) layer in the current compartment
+\item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration from smoldering-generated smoke in the upper (or lower) layer in the current compartment
 \item[Trace Species Upper/Lower Layer] (kg):  total mass of trace species in the upper (or lower) layer in the current compartment
 \item[HRR Door Jet Fires] (W): total heat release rate of all door jet fires \emph{adding} heat to this compartment.
 \end{description}
@@ -439,15 +440,15 @@ The second set of columns pertain to the user-defined targets included in the si
 \item[Target Heat FED]: fractional effective dose due to convective heat at the current target location
 \item[Target Heat FED Increment]: incremental fractional effective dose due to convective heat at the current target location
 \item[Target Obscuration] (m$^{-1}$):  optical density at the current target location
-\item[Target Convective Flux] (kW/m$^2$): convective heat flux to the  front surface of the current target (validation output only)
-\item[Target Radiative Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target (validation output only)
-\item[Target Fire Radiative Flux] (kW/m$^2$): radiative heat flux from fires to the front surface of the current target (validation output only)
-\item[Target Surface Radiative Flux] (kW/m$^2$): radiative heat flux from compartment surfaces to the front surface of the current target (validation output only)
-\item[Target Gas Radiative Flux] (kW/m$^2$):   radiative heat flux from the upper and lower gas layers to the front surface of the current target (validation output only)
-\item[Target Radiative Loss Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings at the calculated temperature of the target (validation output only)
-\item[Target Total Gauge Flux] (kW/m$^2$): total net heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature (validation output only)
-\item[Target Radiative Gauge Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature (validation output only)
-\item[Target Radiative Loss Gauge Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings assuming the target radiative losses are at ambient temperature (validation output only)
+\item[Target Convective Flux] (kW/m$^2$): convective heat flux to the  front surface of the current target
+\item[Target Radiative Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target
+\item[Target Fire Radiative Flux] (kW/m$^2$): radiative heat flux from fires to the front surface of the current target
+\item[Target Surface Radiative Flux] (kW/m$^2$): radiative heat flux from compartment surfaces to the front surface of the current target
+\item[Target Gas Radiative Flux] (kW/m$^2$):   radiative heat flux from the upper and lower gas layers to the front surface of the current target
+\item[Target Radiative Loss Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings at the calculated temperature of the target
+\item[Target Total Gauge Flux] (kW/m$^2$): total net heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature
+\item[Target Radiative Gauge Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature
+\item[Target Radiative Loss Gauge Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings assuming the target radiative losses are at ambient temperature
 \end{description}
 The second set of columns pertain to the detector/sprinkler output.
 
@@ -466,9 +467,9 @@ The second set of columns pertain to the detector/sprinkler output.
 \item[N2 Upper/Lower Layer] (kg): total nitrogen mass in the upper (or lower) layer in the current compartment
 \item[O2 Upper/Lower Layer] (kg): total oxygen mass in the upper (or lower) layer in the current compartment
 \item[CO2 Upper/Lower Layer] (kg):  total carbon dioxide mass in the upper (or lower) layer in the current compartment
-\item[CO Upper/Lower Layer] (kg):  total carbon monoxide mass in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
-\item[HCN Upper/Lower Layer] (kg):  total HCN mass in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
-\item[HCL Upper/Lower Layer] (kg):  total HCl mass in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)
+\item[CO Upper/Lower Layer] (kg):  total carbon monoxide mass in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
+\item[HCN Upper/Lower Layer] (kg):  total HCN mass in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
+\item[HCL Upper/Lower Layer] (kg):  total HCl mass in the upper (or lower) layer in the current compartment (multiply by $10^6$ to convert to ppm)
 \item[H2O Upper/Lower Layer] (kg):  total water vapor mass in the upper (or lower) layer in the current compartment
 \item[Optical Density Upper/Lower Layer] (kg):  total soot mass in the upper (or lower) layer in the current compartment
 \item[Optical Density Upper/Lower Layer] (kg):  total soot mass from flaming-generated smoke in the upper (or lower) layer in the current compartment

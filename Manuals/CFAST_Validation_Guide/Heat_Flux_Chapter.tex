@@ -7,6 +7,10 @@ CFAST includes calculation of heat flux via convection, radiation, and conductio
 For compartment linings, the ``outside'' surface is, by default, exposed to the exterior ambient temperature with convection and radiation calculated in a similar manner to the inside surface.  The ``outside'' boundary condition can also be specified as a constant temperature (i.e., the outside surface can be at ambient temperature) or can be connected to the ``outside'' surface of part or all of a second compartment.  For targets, the back surface is simply pointed in a direction opposite that of the front surface with convection and radiation calculated in a similar manner to the front surface. This chapter contains a variety of heat flux measurements, ranging from less than 1 kW/m$^2$ from very small gas burners  to more than 100~kW/m$^2$ in full-scale compartment fires.
 
 \section{Heat Flux to  Compartment Ceiling, Wall, and Floor Surfaces}
+\label{Surface Heat Flux}
+\label{Wall Heat Flux}
+\label{Ceiling Heat Flux}
+\label{Floor Heat Flux}
 
 In the NIST/NRC tests, heat flux gauges and thermocouples were positioned at various locations on the walls, floor, and ceiling of the fire compartments. The locations are given in Table~\ref{NIST_NRC_Wall_Coords}. The heat flux gauges were not water cooled; thus, they measured the {\em net} rather than the {\em gauge} heat flux. However, the net heat flux is a function of the temperature of the heat flux gauge itself, which is not something that is modeled. To better compare model and measurement, the measured net heat flux is converted into a gauge heat flux using the following formula:
 \begin{equation}
@@ -43,8 +47,7 @@ HCe4    &  2.56     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \
 \label{WTC_Gauges}
 \end{table}
 
-Figure \ref{fig:Surface_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.
-\label{Target Heat Flux}
+Figure \ref{fig:Surface_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix~\ref{sec:Graphs} provides comparisons of heat flux and surface temperature on cable and surface targets.
 
 \begin{figure}
 \begin{center}
@@ -55,12 +58,9 @@ Figure \ref{fig:Surface_Flux_Scatter} shows a comparison of predicted and measur
 
 
 \section{Heat Flux to Targets}
+\label{Target Heat Flux}
 
-In the NIST/NRC tests, cables in various types (power and control), and configurations (horizontal, vertical, in trays or free-hanging), were installed in the test compartment. For each of the four cable targets considered, measurements of the radiative and total heat flux were made with gauges positioned near the cables themselves.  In the WTC tests, There were a variety of heat flux gauges installed in the test compartment. Most were within 2~m of the fire. Their locations and orientations are listed in Table~\ref{WTC_Gauges}. Figure \ref{fig:Target_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.
-\label{Surface Heat Flux}
-\label{Wall Heat Flux}
-\label{Ceiling Heat Flux}
-\label{Floor Heat Flux}
+In the NIST/NRC tests, cables in various types (power and control), and configurations (horizontal, vertical, in trays or free-hanging), were installed in the test compartment. For each of the four cable targets considered, measurements of the radiative and total heat flux were made with gauges positioned near the cables themselves.  In the WTC tests, There were a variety of heat flux gauges installed in the test compartment. Most were within 2~m of the fire. Their locations and orientations are listed in Table~\ref{WTC_Gauges}. Figure \ref{fig:Target_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix~\ref{sec:Graphs} provides comparisons of heat flux and surface temperature on cable and surface targets.
 
 \begin{figure}
 \begin{center}

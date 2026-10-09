@@ -11,7 +11,7 @@ Usage: Run_CFAST_Cases.sh --suite Verification|Validation [options]
   -I intel|gnu    Compiler (default: intel)
   -d              Debug executable
   -e executable   Override executable
-  -q queue        Batch queue, terminal, or none
+  -q queue        Slurm partition (default: batch)
   -j prefix       Job-name prefix
   -m iterations   Stop after the specified iteration count
   -s              Stop the suite's cases

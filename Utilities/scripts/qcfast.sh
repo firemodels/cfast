@@ -4,14 +4,14 @@ set -euo pipefail
 usage() {
   cat <<'HELP'
 Usage: qcfast.sh [-d directory] [-e executable] [-q queue] [options] input.in
-  -q queue     Slurm/PBS queue; terminal runs locally, none runs locally in background
+  -q queue     Slurm partition (default: batch)
   -e path      CFAST executable (required except for --test-UI or stopping)
   -j prefix    Scheduler job-name prefix
   -c           Pass the input basename without its extension
   -s           Write the case stop file
   -v           Print the job script without submitting or changing case outputs
   -V           Pass -V to CFAST
-  -E           Capture stderr (also the default for local runs)
+  -E           Capture stderr (the default)
   --test-UI    Import/rewrite through CEditQt without running CFAST
   -h           Show this help
 HELP
@@ -54,23 +54,13 @@ else
   [[ $version == 0 ]] || command+=(-V)
 fi
 log="$dir/$base$suffix.log"; err="$dir/$base$suffix.err"; status_file="$dir/$base$suffix.exit"
-scheduler=local
-if [[ $queue != terminal && $queue != none ]]; then
-  if command -v sbatch >/dev/null; then scheduler=slurm
-  elif command -v qsub >/dev/null; then scheduler=pbs
-  else echo 'Run aborted: no scheduler found; use -q terminal for local execution.' >&2; exit 1; fi
-fi
 script=$(mktemp "${TMPDIR:-/tmp}/qcfast.XXXXXX")
 trap 'rm -f "$script"' EXIT
 {
   echo '#!/usr/bin/env bash'
-  if [[ $scheduler == slurm ]]; then
-    printf '#SBATCH --job-name=%s%s\n#SBATCH --output="%s"\n#SBATCH --error="%s"\n#SBATCH --partition=%s\n#SBATCH --ntasks=1\n#SBATCH --cpus-per-task=1\n' "$job_name" "$suffix" "$log" "$err" "$queue"
-    [[ -z ${SLURM_MEM:-} ]] || printf '#SBATCH --mem=%s\n' "$SLURM_MEM"
-    [[ -z ${SLURM_MEMPERCPU:-} ]] || printf '#SBATCH --mem-per-cpu=%s\n' "$SLURM_MEMPERCPU"
-  elif [[ $scheduler == pbs ]]; then
-    printf '#PBS -N %s%s\n#PBS -o "%s"\n#PBS -e "%s"\n#PBS -l nodes=1:ppn=1\n' "$job_name" "$suffix" "$log" "$err"
-  fi
+  printf '#SBATCH --job-name=%s%s\n#SBATCH --output="%s"\n#SBATCH --error="%s"\n#SBATCH --partition=%s\n#SBATCH --ntasks=1\n#SBATCH --cpus-per-task=1\n' "$job_name" "$suffix" "$log" "$err" "$queue"
+  [[ -z ${SLURM_MEM:-} ]] || printf '#SBATCH --mem=%s\n' "$SLURM_MEM"
+  [[ -z ${SLURM_MEMPERCPU:-} ]] || printf '#SBATCH --mem-per-cpu=%s\n' "$SLURM_MEMPERCPU"
   printf 'status_file=%q\n' "$status_file"
   echo 'trap '\''rc=$?; printf "%s\n" "$rc" > "$status_file.tmp.$$"; mv "$status_file.tmp.$$" "$status_file"'\'' EXIT'
   printf 'cd %q || exit 1\n' "$dir"
@@ -80,30 +70,18 @@ trap 'rm -f "$script"' EXIT
   echo 'exit $?'
 } > "$script"
 if [[ $preview == 1 ]]; then cat "$script"; exit 0; fi
+command -v sbatch >/dev/null || { echo 'Run aborted: sbatch not found.' >&2; exit 1; }
 rm -f "$status_file" "$log" "$err"
 if [[ $ui == 0 ]]; then
   if [[ -n ${STOPFDSMAXITER:-} ]]; then printf '%s\n' "$STOPFDSMAXITER" > "$dir/$base.stop"
   else rm -f "$dir/$base.stop"; fi
 fi
 cp "$script" "$dir/$base$suffix.slog"
-job_id=; rc=0
-case "$scheduler:$queue" in
-  local:terminal)
-    bash "$dir/$base$suffix.slog" > "$log" 2> "$err" || rc=$?
-    cat "$log"; cat "$err" >&2;;
-  local:none)
-    bash "$dir/$base$suffix.slog" > "$log" 2> "$err" &
-    job_id=$!; echo "Started local job $job_id";;
-  slurm:*)
-    result=$(sbatch "$script") || { echo 'Run aborted: sbatch failed.' >&2; exit 1; }
-    echo "$result"; job_id=$(awk '/Submitted batch job/ {print $4}' <<< "$result")
-    [[ $job_id =~ ^[0-9]+$ ]] || { echo 'Run aborted: missing Slurm job ID.' >&2; exit 1; };;
-  pbs:*)
-    job_id=$(qsub -q "$queue" "$script") || { echo 'Run aborted: qsub failed.' >&2; exit 1; }
-    [[ $job_id =~ ^[0-9]+([.][A-Za-z0-9._-]+)?$ ]] || { echo 'Run aborted: invalid PBS job ID.' >&2; exit 1; }
-    echo "Submitted PBS job $job_id";;
-esac
+result=$(sbatch "$script") || { echo 'Run aborted: sbatch failed.' >&2; exit 1; }
+echo "$result"
+job_id=$(awk '/Submitted batch job/ {print $4}' <<< "$result")
+[[ $job_id =~ ^[0-9]+$ ]] || { echo 'Run aborted: missing Slurm job ID.' >&2; exit 1; }
 if [[ -n ${CFAST_JOB_MANIFEST:-} ]]; then
-  printf '%s\t%s\t%s\n' "$scheduler" "${job_id:-0}" "$status_file" >> "$CFAST_JOB_MANIFEST"
+  printf '%s\t%s\t%s\n' slurm "$job_id" "$status_file" >> "$CFAST_JOB_MANIFEST"
 fi
-exit "$rc"
+exit 0

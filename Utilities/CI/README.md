@@ -7,14 +7,14 @@ CFAST owns the build, Verification/Validation, CEditQt, plotting, manual, and re
 From the CFAST repository root:
 
 ```bash
-Utilities/CI/Run_CFAST_Cases.sh --suite Verification -I gnu -q terminal
+Utilities/CI/Run_CFAST_Cases.sh --suite Verification -I gnu -q batch
 Utilities/CI/Run_CFAST_Cases.sh --suite Validation -I intel -q batch
 Utilities/CI/Run_CFAST_Cases.sh --suite Verification --test-UI -q batch
 ```
 
-Use `-d` for debug, `-m 2` to stop after two iterations, `-s` to request stops, `-t` to report saved timings, `--case e_coefficient.in` to select a case, and `-v` to print job scripts without submitting them. `-e` selects an explicit executable. `-q none` runs cases locally in the background. The `Verification/scripts/Run_CFAST_Cases.sh` and Validation counterpart forward to this shared runner.
+Use `-d` for debug, `-m 2` to stop after two iterations, `-s` to request stops, `-t` to report saved timings, `--case e_coefficient.in` to select a case, and `-v` to print job scripts without submitting them. `-e` selects an explicit executable. The `Verification/scripts/Run_CFAST_Cases.sh` and Validation counterpart forward to this shared runner.
 
-The launcher supports Slurm and PBS/Torque and records a job manifest when `CFAST_JOB_MANIFEST` is set. Each completed case writes an `.exit` file. UI tests use separate `.ui.log`, `.ui.err`, `.ui.slog`, and `.ui.exit` files. The pipeline waits for its own jobs and fails when a job exits unsuccessfully or disappears without a completion record. UI jobs import and rewrite inputs; they do not run CFAST again.
+The launcher uses Slurm for batch jobs and records a job manifest when `CFAST_JOB_MANIFEST` is set. Each completed case writes an `.exit` file. UI tests use separate `.ui.log`, `.ui.err`, `.ui.slog`, and `.ui.exit` files. The pipeline waits for its own jobs. If a Slurm job has no `.exit` file, it checks `sacct` for the exact job ID and accepts only `COMPLETED` with exit code `0:0`. Accounting is retried briefly to allow for reporting delays. Failed jobs and jobs whose success cannot be confirmed stop the pipeline. UI jobs import and rewrite inputs; they do not run CFAST again.
 
 ## Run the complete pipeline on existing checkouts
 
@@ -24,11 +24,16 @@ Run from `cfast/Utilities/CI` in the prepared repository collection:
 ./run_cfastbot.sh -q firebot -U -m your@email.address
 ```
 
-`-q` selects the scheduler queue (`terminal` runs locally), `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, `cfastbot_email_list.sh` or the configured Git email supplies the recipient.
+`-q` selects the Slurm partition (default: `batch`), `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, `cfastbot_email_list.sh` or the configured Git email supplies the recipient.
 
-The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean Intel builds, Verification/Validation, CEditQt checks, figures, and manuals. It uses Python, LaTeX, and the scheduler selected by `-q`. Standalone suite execution does not require the Smokeview or manual toolchains.
+The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean Intel builds, Verification/Validation, CEditQt checks, figures, and manuals. It uses Python, LaTeX, and Slurm with the partition selected by `-q`. Standalone suite execution does not require the Smokeview or manual toolchains.
 
-Progress and command output are printed to stderr as the run proceeds and saved in the stage logs. The launcher prints the log directory at startup. Batch jobs report submission and completion on screen; individual case output remains in the case log files.
+Progress and command output are printed to stderr as the run proceeds and saved in the stage logs. The launcher prints the log directory at startup. Batch jobs report submission and completion on screen; individual case output remains in the case log files. CFAST writes its console output to each case's `.err` file and its model log to `.log`. Follow a running case from another terminal, for example:
+
+```bash
+tail -f ../../Verification/Energy_Balance/sealed_test.err
+```
+
 
 ## Shared repository preparation
 

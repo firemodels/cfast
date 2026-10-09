@@ -10,27 +10,44 @@ cur_dir=$CI_DIR
 
 # A job disappearing from the scheduler is not proof that it succeeded.
 wait_case_manifest() {
-  local manifest=$1 manager job status active listing failed rc=0
+  local manifest=$1 manager job status active listing failed accounting attempts rc=0
   [[ -f $manifest ]] || { echo "Run aborted: missing job manifest: $manifest" >&2; return 1; }
   while IFS=$'\t' read -r manager job status; do
+    [[ $manager == slurm ]] || { echo "Run aborted: invalid Slurm manifest: $manifest" >&2; return 1; }
     failed=0
+    attempts=0
     echo "Waiting for $manager job $job: $status"
     while [[ ! -f $status ]]; do
       active=0
-      case "$manager" in
-        slurm)
-          if ! listing=$(squeue -h -j "$job" -o '%i'); then
-            echo "Run aborted: cannot query Slurm job $job" >&2; failed=1; break
-          fi
-          [[ -z $listing ]] || active=1;;
-        pbs) if qstat "$job" >/dev/null 2>&1; then active=1; fi;;
-        local) if [[ $job != 0 ]] && kill -0 "$job" 2>/dev/null; then active=1; fi;;
-        *) echo "Run aborted: unknown scheduler: $manager" >&2; return 1;;
-      esac
+      # A purged job may make squeue return an error; consult accounting below.
+      listing=$(squeue -h -j "$job" -o '%i' 2>/dev/null) || listing=
+      [[ -z $listing ]] || active=1
       if [[ $active == 0 ]]; then
         # Allow shared filesystem metadata to catch up after scheduler completion.
         sleep "${CFAST_CI_STATUS_GRACE:-2}"
-        [[ -f $status ]] || { echo "Run aborted: job $job ended without a status file: $status" >&2; failed=1; break; }
+        [[ ! -f $status ]] || break
+        if command -v sacct >/dev/null; then
+          # Match the allocation itself, not a successful .batch or .extern step.
+          accounting=$(sacct -n -P -j "$job" --format=JobID,State,ExitCode |
+            awk -F '|' -v job="$job" '$1 == job {print $2 "|" $3}') || accounting=
+          case "$accounting" in
+            'COMPLETED|0:0')
+              echo "Completed Slurm job $job (confirmed by sacct; no .exit file)"
+              break;;
+            ''|PENDING\|*|RUNNING\|*|COMPLETING\|*)
+              # Accounting can lag behind squeue. Retry briefly before failing.
+              attempts=$((attempts + 1))
+              if [[ $attempts -lt 6 ]]; then
+                sleep "${CFAST_CI_POLL_SECONDS:-5}"
+                continue
+              fi;;
+          esac
+          echo "Run aborted: Slurm job $job has no successful completion record: ${accounting:-unavailable}" >&2
+        else
+          echo "Run aborted: job $job ended without a status file: $status" >&2
+        fi
+        failed=1
+        break
       else
         if declare -F check_time_limit >/dev/null; then check_time_limit; fi
         sleep "${CFAST_CI_POLL_SECONDS:-5}"
@@ -49,7 +66,7 @@ wait_case_manifest() {
         echo "Last lines of ${status%.exit}.err:" >&2
         tail -n 30 "${status%.exit}.err" >&2
       fi
-      if [[ $manager == slurm ]] && command -v sacct >/dev/null; then
+      if command -v sacct >/dev/null; then
         sacct -j "$job" --format=JobID,State,ExitCode,Reason -P >&2 || true
       fi
     fi
@@ -790,7 +807,7 @@ VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 NEWGUIDE_DIR=$OUTPUT_DIR/NEW_GUIDES
 mkdir -p "$HISTORY_DIR"
 [[ ! -f $EMAIL_LIST ]] || source "$EMAIL_LIST"
-QUEUE=terminal
+QUEUE=batch
 compiler=intel
 UPLOAD=
 PYTHON_ENV_ACTIVE=
@@ -822,10 +839,8 @@ missing=0
 for program in python3 ifx pdflatex biber; do
    command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" >&2; missing=1; }
 done
-if [[ $QUEUE != terminal && $QUEUE != none ]]; then
-   if ! command -v sbatch >/dev/null && ! command -v qsub >/dev/null; then
-      echo 'Missing batch scheduler.' >&2; missing=1
-   fi
+if ! command -v sbatch >/dev/null; then
+   echo 'Missing Slurm command: sbatch.' >&2; missing=1
 fi
 [[ $missing == 0 ]] || exit 1
 

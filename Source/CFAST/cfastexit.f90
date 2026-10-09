@@ -1,9 +1,11 @@
 module exit_routines
 
+    use iso_fortran_env, only: error_unit
+
     use precision_parameters
     
     use namelist_data, only: input_file_line, input_file_line_number
-    use setup_data, only: validation_output, iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    use setup_data, only: iofilo, iofill, iofilstat, smv_out_interval, iofilsmv, iofilsmvplt, iofilsmvzone, &
         ss_out_interval, iofilssc, iofilssd, iofilssm, iofilssv, iofilssdiag, iofilcalc, stopfile, program_name, &
         errormessage, stime, project
     use option_data, only: total_steps
@@ -27,19 +29,17 @@ module exit_routines
     exitcode = errorcode
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
-            ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
-            !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
-            !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
-            if (.not.validation_output) write (*, '(''Maximum iteration exit from '',a)') program_name
+            ! Reaching the requested iteration limit is a successful CFASTbot debug check.
+            write (error_unit, '(''Maximum iteration exit from '',a)') program_name
             if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'',a)') program_name
             exitcode = 0
         else
-            if (errormessage/='') write (*,'(a)') errormessage
-            if (input_file_line/='') write (*,'(a,i0,a,a)') 'Error on line ',input_file_line_number, &
+            if (errormessage/='') write (error_unit,'(a)') errormessage
+            if (input_file_line/='') write (error_unit,'(a,i0,a,a)') 'Error on line ',input_file_line_number, &
                 ' of the input file: ', trim(input_file_line)
-            write (*,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, exitcode, trim(name)
+            write (error_unit,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, exitcode, trim(name)
             if (iofill/=0) then
-                if (errormessage/='') write (*,'(a)') errormessage
+                if (errormessage/='') write (iofill,'(a)') errormessage
                 if (input_file_line/='') write (iofill,'(a,i0,a,a)') 'Error on line ',input_file_line_number, &
                     ' of the input file: ', trim(input_file_line)
                 write (iofill,'(''***Error exit from '',a,'', error '',i0,'' from routine '',a)') program_name, &
@@ -47,7 +47,7 @@ module exit_routines
             end if
         end if
     else
-        if (.not.validation_output) write (*, '(''Normal exit from '',a)') program_name
+        write (error_unit, '(''Normal exit from '',a)') program_name
         if (iofill/=0) write (iofill, '(''Normal exit from '',a)') program_name
     end if
     

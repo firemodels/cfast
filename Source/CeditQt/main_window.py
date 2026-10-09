@@ -1553,7 +1553,6 @@ class CeditMainWindow(QMainWindow):
             field in text
             for field in (
                 "NET_HEAT_FLUX_OUTPUT",
-                "VALIDATION_OUTPUT",
                 "SPREADSHEET_OUTPUT",
             )
         ):

@@ -28,6 +28,8 @@ Run from `cfast/Utilities/CI` in the prepared repository collection:
 
 The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean Intel builds, Verification/Validation, CEditQt checks, figures, and manuals. It uses Python, LaTeX, and the scheduler selected by `-q`. Standalone suite execution does not require the Smokeview or manual toolchains.
 
+Progress and command output are printed to stderr as the run proceeds and saved in the stage logs. The launcher prints the log directory at startup. Batch jobs report submission and completion on screen; individual case output remains in the case log files.
+
 ## Shared repository preparation
 
 Keep one set of repositories under a common directory, such as `/home/firebot/firemodels`. The local `update_repos.sh` in that directory updates and cleans the repositories before any bot starts. It is maintained outside version control. CFASTbot uses the prepared revisions and performs no Git updates or cleanup.

@@ -26,7 +26,7 @@ program cfast
 
 use precision_parameters
 
-use iso_fortran_env, only: output_unit
+use iso_fortran_env, only: error_unit
 use exit_routines, only: cfastexit
 use initialization_routines, only : initialize_memory, initialize_species, initialize_walls
 use input_routines, only : open_files, read_input_file
@@ -35,7 +35,7 @@ use solve_routines, only : solve_simulation
 use utility_routines, only : cptime, read_command_options
 
 use option_data, only: total_steps
-use setup_data, only: stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_output, &
+use setup_data, only: stime, iofill, i_time_step, time_end, deltat, i_time_end, &
     program_name, errormessage
 
 implicit none
@@ -47,7 +47,7 @@ program_name = 'CFAST'
 
 errormessage = ' '
 if (command_argument_count()==0) then
-    call output_version(0,program_name)
+    call output_version(error_unit,program_name)
     call cfastexit('CFAST',0)
     stop
 end if
@@ -59,8 +59,9 @@ call initialize_memory
 call read_command_options
 call open_files
 
-if (.not.validation_output) call output_version(output_unit,'CFAST')
+call output_version(error_unit,'CFAST')
 call output_version(iofill,'CFAST')
+flush(error_unit)
 
 call read_input_file
 
@@ -79,7 +80,7 @@ call cptime(tbeg)
 call solve_simulation (tstop)
 call cptime(tend)
 
-if (.not.validation_output) call output_runtime_diagnostics(output_unit,tend-tbeg,total_steps)
+call output_runtime_diagnostics(error_unit,tend-tbeg,total_steps)
 call output_runtime_diagnostics(iofill,tend-tbeg,total_steps)
 
 call cfastexit ('CFAST', 0)

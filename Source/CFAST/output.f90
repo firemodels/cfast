@@ -1,4 +1,6 @@
 module output_routines
+
+    use iso_fortran_env, only: error_unit
     
     use precision_parameters
 
@@ -20,7 +22,7 @@ module output_routines
     use setup_data, only: iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, &
-        outputfile, statusfile, title, outputformat, validation_output, time_end, print_out_interval, &
+        outputfile, statusfile, title, outputformat, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscompartment, ssdevice, sswall, ssmasses, ssvent, ssoutoptions, errormessage
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
@@ -119,6 +121,12 @@ module output_routines
     else if (outputformat==1) then
         call results_compressed (iofilo)
     end if
+
+    write (error_unit,4090)
+    write (error_unit,5000) time
+    write (error_unit,5010)
+    call results_compressed (error_unit)
+    flush(error_unit)
 
 4090 format (//,28('*'))
 5000 format ('* Time = ',f8.1,' seconds. *')
@@ -528,13 +536,8 @@ module output_routines
                     tctemp = targptr%tinternal
                     gasfed = targptr%fed_gas
                     heatfed = targptr%fed_heat
-                    if (validation_output) then
-                        itotal = targptr%flux_incident_front
-                        total = targptr%flux_net_gauge(1)
-                    else
-                        itotal = targptr%flux_incident_front
-                        total = targptr%flux_net(1)
-                    end if
+                    itotal = targptr%flux_incident_front
+                    total = targptr%flux_net_gauge(1)
                     if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
                     if (abs(total)<=1.0e-10_eb) total = 0.0_eb
                     if (total/=0.0_eb) then
@@ -1178,7 +1181,7 @@ module output_routines
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
         end if
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
-        if (validation_output.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
+        if (flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
 
 5000 format (2x,1pg11.3)
@@ -1201,35 +1204,35 @@ module output_routines
 
     integer :: itmp, irm, iw
 
-    write (*,'(a)')'Solution component with the greatest error is'
+    write (error_unit,'(a)')'Solution component with the greatest error is'
     if (equation_pointer<=nofp+n_rooms) then
-        write (*,'(a,i2)')' pressure in room ',equation_pointer
+        write (error_unit,'(a,i2)')' pressure in room ',equation_pointer
     else if (equation_pointer<=noftu) then
-        write (*,'(a,i2)')' either hvac or fsm ',equation_pointer-n_rooms
+        write (error_unit,'(a,i2)')' either hvac or fsm ',equation_pointer-n_rooms
     else if (equation_pointer<=nofvu) then
-        write (*,'(a,i2)')' upper layer temp in room ',equation_pointer-noftu
+        write (error_unit,'(a,i2)')' upper layer temp in room ',equation_pointer-noftu
     else if (equation_pointer<=noftl) then
-        write (*,'(a,i2)')' upper layer vol in room ',equation_pointer-nofvu
+        write (error_unit,'(a,i2)')' upper layer vol in room ',equation_pointer-nofvu
     else if (equation_pointer<=noftl+n_rooms) then
-        write (*,'(a,i2)')' lower layer temp in room ',equation_pointer-noftl
+        write (error_unit,'(a,i2)')' lower layer temp in room ',equation_pointer-noftl
     else if (equation_pointer<=nofwt) then
         if (option(foxygen)==on) then
-            write (*,'(a,i2)')' oxygen component ',equation_pointer-nofoxyl
+            write (error_unit,'(a,i2)')' oxygen component ',equation_pointer-nofoxyl
         else
-            write (*,'(a,i2)')' target number ',equation_pointer
+            write (error_unit,'(a,i2)')' target number ',equation_pointer
         end if
     else if (equation_pointer<=nofprd) then
         itmp = equation_pointer - nofwt
         irm = surface_connections(itmp,w_from_room)
         iw = surface_connections(itmp,w_from_wall)
         if (iw==1) then
-            write (*,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
+            write (error_unit,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
         else if (iw==2) then
-            write (*,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
+            write (error_unit,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
         else if (iw==3) then
-            write (*,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
+            write (error_unit,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
         else if (iw==4) then
-            write (*,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
+            write (error_unit,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
         end if
     end if
 

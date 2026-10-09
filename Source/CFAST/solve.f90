@@ -1,5 +1,7 @@
 module solve_routines
 
+    use iso_fortran_env, only: error_unit
+
     use precision_parameters
 
     use conduction_routines, only: conduction
@@ -369,7 +371,7 @@ module solve_routines
         ! If the stop file exists or the esc key has been pressed, then quit
         if (icode==1.and.stp_cnt_max.eq.0) then
             call delete_output_files (stopfile)
-            write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            write (error_unit,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
             write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
             return
         end if
@@ -494,7 +496,7 @@ module solve_routines
             ! make sure dassl is happy
             if (idid<0) then
                 call write_error_component (ieqmax)
-                write (*,'(a,i0)') '***Error, dassl - idid = ', idid
+                write (error_unit,'(a,i0)') '***Error, dassl - idid = ', idid
                 write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                 stop
             end if
@@ -505,7 +507,7 @@ module solve_routines
                     stpmin_cnt = stpmin_cnt + 1
                     if (stpmin_cnt>stpmin_cnt_max) then
                         ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
-                        write (*,'(a,i0,a,e11.4,a,e11.4)') &
+                        write (error_unit,'(a,i0,a,e11.4,a,e11.4)') &
                             '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
                         write (iofill,'(a,i0,a,e11.4,a,e11.4)') &
                             '***Error, ', stpmin_cnt_max, 'Consecutive time steps with size below ', stpmin, ' at t = ', t
@@ -572,8 +574,8 @@ module solve_routines
                     ! make sure dassl is happy (again)
                     if (idid<0) then
                         call write_error_component (ipar(3))
-                        write (*,'(a,i0)') '***Error, dassl - idid = ', idid
-                        write (*,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
+                        write (error_unit,'(a,i0)') '***Error, dassl - idid = ', idid
+                        write (error_unit,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                         write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                         write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error, Problem in DASSL backing from ',t,'to time ',tdout
                         write (errormessage,'(a)') '***Error, Equation solver could not find a solution.'
@@ -598,7 +600,7 @@ module solve_routines
                     call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
                 else
                     ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                    write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
+                    write (error_unit,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
                         t,' Last time = ',told,' need to back step to ',td
                     write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error, Back step too large in DASSL, Time = ', &
                         t,' Last time = ',told,' need to back step to ',td
@@ -1149,7 +1151,7 @@ module solve_routines
                 ndisc = ndisc + 4
             end do
         else
-            write (*,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
+            write (error_unit,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
             write (iofill,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
 10          format('***Error, Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
         end if

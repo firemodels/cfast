@@ -10,68 +10,87 @@ cur_dir=$CI_DIR
 
 # A job disappearing from the scheduler is not proof that it succeeded.
 wait_case_manifest() {
-  local manifest=$1 manager job status active listing failed accounting attempts rc=0
+  local manifest=$1 label=${2:-Cases} manager job status job_ids= listing accounting
+  local i state code total completed running pending confirming failed summary last_summary= next_report=0 now
+  local jobs=() paths=() results=() attempts=() queue_states=() accounting_states=()
   [[ -f $manifest ]] || { echo "Run aborted: missing job manifest: $manifest" >&2; return 1; }
   while IFS=$'\t' read -r manager job status; do
-    [[ $manager == slurm ]] || { echo "Run aborted: invalid Slurm manifest: $manifest" >&2; return 1; }
-    failed=0
-    attempts=0
-    echo "Waiting for $manager job $job: $status"
-    while [[ ! -f $status ]]; do
-      active=0
-      # A purged job may make squeue return an error; consult accounting below.
-      listing=$(squeue -h -j "$job" -o '%i' 2>/dev/null) || listing=
-      [[ -z $listing ]] || active=1
-      if [[ $active == 0 ]]; then
-        # Allow shared filesystem metadata to catch up after scheduler completion.
-        sleep "${CFAST_CI_STATUS_GRACE:-2}"
-        [[ ! -f $status ]] || break
-        if command -v sacct >/dev/null; then
-          # Match the allocation itself, not a successful .batch or .extern step.
-          accounting=$(sacct -n -P -j "$job" --format=JobID,State,ExitCode |
-            awk -F '|' -v job="$job" '$1 == job {print $2 "|" $3}') || accounting=
-          case "$accounting" in
-            'COMPLETED|0:0')
-              echo "Completed Slurm job $job (confirmed by sacct; no .exit file)"
-              break;;
-            ''|PENDING\|*|RUNNING\|*|COMPLETING\|*)
-              # Accounting can lag behind squeue. Retry briefly before failing.
-              attempts=$((attempts + 1))
-              if [[ $attempts -lt 6 ]]; then
-                sleep "${CFAST_CI_POLL_SECONDS:-5}"
-                continue
-              fi;;
-          esac
-          echo "Run aborted: Slurm job $job has no successful completion record: ${accounting:-unavailable}" >&2
-        else
-          echo "Run aborted: job $job ended without a status file: $status" >&2
-        fi
-        failed=1
-        break
-      else
-        if declare -F check_time_limit >/dev/null; then check_time_limit; fi
-        sleep "${CFAST_CI_POLL_SECONDS:-5}"
-      fi
-    done
-    if [[ -f $status ]]; then
-      if [[ $(cat "$status") != 0 ]]; then
-        echo "Run aborted: job $job failed ($(cat "$status")): $status" >&2; failed=1
-      else
-        echo "Completed $manager job $job"
-      fi
-    fi
-    if [[ $failed == 1 ]]; then
-      rc=1
-      if [[ -s ${status%.exit}.err ]]; then
-        echo "Last lines of ${status%.exit}.err:" >&2
-        tail -n 30 "${status%.exit}.err" >&2
-      fi
-      if command -v sacct >/dev/null; then
-        sacct -j "$job" --format=JobID,State,ExitCode,Reason -P >&2 || true
-      fi
-    fi
+    [[ $manager == slurm && $job =~ ^[0-9]+$ ]] || {
+      echo "Run aborted: invalid Slurm manifest: $manifest" >&2; return 1;
+    }
+    jobs+=("$job"); paths+=("$status"); results+=(""); attempts+=(0)
+    job_ids="${job_ids:+$job_ids,}$job"
   done < "$manifest"
-  return "$rc"
+  total=${#jobs[@]}
+  [[ $total -gt 0 ]] || { echo "Run aborted: no jobs submitted for $label" >&2; return 1; }
+
+  while :; do
+    # Query the suite together rather than waiting on each case in turn.
+    listing=$(squeue -h -u "$(id -un)" -o '%i|%T') || listing=
+    accounting=
+    if command -v sacct >/dev/null; then
+      accounting=$(sacct -n -P -j "$job_ids" --format=JobID,State,ExitCode) || accounting=
+    fi
+    queue_states=(); accounting_states=()
+    while IFS='|' read -r job state; do
+      [[ $job =~ ^[0-9]+$ ]] || continue
+      queue_states[job]=$state
+    done <<< "$listing"
+    while IFS='|' read -r job state code; do
+      # Ignore .batch/.extern steps and retain only exact allocation IDs.
+      [[ $job =~ ^[0-9]+$ ]] || continue
+      accounting_states[job]="$state|$code"
+    done <<< "$accounting"
+
+    completed=0; running=0; pending=0; confirming=0; failed=0
+    for ((i=0; i<total; i++)); do
+      job=${jobs[i]}; status=${paths[i]}
+      if [[ -z ${results[i]} ]]; then
+        state=
+        if [[ -f $status ]]; then
+          code=$(cat "$status")
+          if [[ $code == 0 ]]; then results[i]=ok
+          else state="exit code ${code:-missing}"; fi
+        elif [[ -n ${queue_states[job]:-} ]]; then
+          attempts[i]=0
+          case ${queue_states[job]} in
+            PENDING|CONFIGURING) pending=$((pending + 1));;
+            *) running=$((running + 1));;
+          esac
+        else
+          case ${accounting_states[job]:-} in
+            'COMPLETED|0:0') results[i]=ok;;
+            ''|PENDING\|*|RUNNING\|*|COMPLETING\|*|CONFIGURING\|*)
+              # Allow accounting and shared filesystem metadata to catch up.
+              attempts[i]=$((attempts[i] + 1))
+              if [[ ${attempts[i]} -lt 6 ]]; then confirming=$((confirming + 1))
+              else state="completion could not be confirmed"; fi;;
+            *) state=${accounting_states[job]};;
+          esac
+        fi
+        if [[ -n $state ]]; then
+          results[i]=failed
+          echo "FAIL: ${status%.exit} (Slurm job $job): $state" >&2
+          if [[ -s ${status%.exit}.err ]]; then tail -n 30 "${status%.exit}.err" >&2; fi
+        fi
+      fi
+      case ${results[i]} in
+        ok) completed=$((completed + 1));;
+        failed) failed=$((failed + 1));;
+      esac
+    done
+
+    summary="$label: $completed/$total completed, $running running, $pending pending, $confirming confirming, $failed failed"
+    now=$(date +%s)
+    if [[ $summary != "$last_summary" || $now -ge $next_report ]]; then
+      echo "$summary"
+      last_summary=$summary; next_report=$((now + 30))
+    fi
+    [[ $failed == 0 ]] || return 1
+    [[ $completed -lt $total ]] || return 0
+    if declare -F check_time_limit >/dev/null; then check_time_limit; fi
+    sleep "${CFAST_CI_POLL_SECONDS:-5}"
+  done
 }
 
 run_logged()
@@ -285,12 +304,19 @@ submit_suite()
 {
    local suite=$1 run_log=$2
    shift 2
-   local result=0
+   local result=0 mode=release option
+   for option in "$@"; do
+      case "$option" in
+         -d) mode="debug initialization (2 iterations)";;
+         --test-UI) mode="UI import/save (no simulation)";;
+      esac
+   done
+   echo "Submitting $suite $mode cases"
    export CFAST_JOB_MANIFEST="$run_log.jobs"
    : > "$CFAST_JOB_MANIFEST"
    run_logged "$run_log" "$CI_DIR/Run_CFAST_Cases.sh" --repo-root "$cfastrepo" --suite "$suite" "$@" || result=1
    TIME_LIMIT_STAGE="3 $suite cases"
-   run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" || result=1
+   run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" "$suite $mode" || result=1
    if [[ $result != 0 ]]; then
       cat "$run_log" >> "$ERROR_LOG"
    fi
@@ -454,7 +480,7 @@ run_ceditqt_cases_release()
    local verification_log="$OUTPUT_DIR/stage3_run_release_ceditqt_verification"
    local validation_log="$OUTPUT_DIR/stage3_run_release_ceditqt_validation"
 
-   echo '   CEditQt UI'
+   echo '   CEditQt import/save checks (no simulation)'
    echo 'Running CEditQt V&V UI import/rewrite tests' > $OUTPUT_DIR/stage3_run_release_ceditqt 2>&1
 
    setup_python_environment $OUTPUT_DIR/stage3_ceditqt_python_setup || return 1
@@ -735,10 +761,10 @@ email_build_status()
    echo "Fortran: $IFORT_VERSION "             >> $TIME_LOG
    echo ""                                     >> $TIME_LOG
    echo "$BOT_REVISION "                       >> $TIME_LOG
-   echo "$CFAST_REVISION "                     >> $TIME_LOG
-   echo "$EXP_REVISION "                       >> $TIME_LOG
-   echo "$FDS_REVISION "                       >> $TIME_LOG
-   echo "$SMV_REVISION "                       >> $TIME_LOG
+   echo "CFAST: $CFAST_REVISION "             >> $TIME_LOG
+   echo "EXP: $EXP_REVISION "                 >> $TIME_LOG
+   echo "FDS: $FDS_REVISION "                 >> $TIME_LOG
+   echo "SMV: $SMV_REVISION "                 >> $TIME_LOG
    echo ""                                     >> $TIME_LOG
    echo "Start Time: $start_time "             >> $TIME_LOG
    echo "Stop Time: $stop_time "               >> $TIME_LOG
@@ -902,26 +928,26 @@ setup_python_environment "$OUTPUT_DIR/stage0_python_setup" || exit 1
 
 ### Stage 1 ###
 
-BOT_REVISION="CI tooling: ${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" describe --always --dirty)}"
+BOT_REVISION="CI tooling: ${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" describe --tags --always --dirty)}"
 
 cd "$reporoot/exp" || exit 1
-EXP_REVISION=`git describe --always --abbrev=7 --dirty --long`
+EXP_REVISION=`git describe --tags --always --abbrev=7 --dirty --long`
 
 cd "$reporoot/fds" || exit 1
-FDS_REVISION=`git describe --always --abbrev=7 --dirty --long`
+FDS_REVISION=`git describe --tags --always --abbrev=7 --dirty --long`
 
 cd "$reporoot/cfast" || exit 1
-CFAST_REVISION=`git describe --always --abbrev=7 --dirty --long`
+CFAST_REVISION=`git describe --tags --always --abbrev=7 --dirty --long`
 CFAST_SHORTHASH=`git rev-parse --short HEAD`
 GIT_REVISION=$CFAST_SHORTHASH
 # CFAST_REV same as CFAST_REVISION without the hash on the end
-CFAST_REV=`git describe --always | sed 's/-g[0-9a-f]*$//'`
+CFAST_REV=`git describe --tags --always | sed 's/-g[0-9a-f]*$//'`
 
 cd "$reporoot/smv" || exit 1
-SMV_REVISION=`git describe --always --abbrev=7 --dirty --long`
+SMV_REVISION=`git describe --tags --always --abbrev=7 --dirty --long`
 SMV_SHORTHASH=`git rev-parse --short HEAD`
 # SMV_REV same as SMV_REVISION without the hash on the end
-SMV_REV=`git describe --always | sed 's/-g[0-9a-f]*$//'`
+SMV_REV=`git describe --tags --always | sed 's/-g[0-9a-f]*$//'`
 
 cd "$cur_dir" || exit 1
 

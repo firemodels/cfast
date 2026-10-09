@@ -4,11 +4,11 @@ set -euo pipefail
 CI_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 root=$(cd "$CI_DIR/../../.." && pwd)
 state=${CFAST_CI_STATE_DIR:-$HOME/.cfastbot}
-queue=terminal; args=()
+queue=batch; args=()
 usage() {
   cat <<'HELP'
 Usage: run_cfastbot.sh [-q queue] [-U] [-m address]
-  -q queue    Scheduler queue, terminal, or none (default: terminal)
+  -q queue    Slurm partition (default: batch)
   -U          Upload guides and the Linux bundle
   -m address  Notification email
   -h, --help  Show help
@@ -49,7 +49,7 @@ cancel_jobs() {
     [[ -f $manifest ]] || continue
     while IFS=$'\t' read -r manager job status; do
       [[ -f $status ]] && continue
-      case "$manager" in slurm) scancel "$job" || true;; pbs) qdel "$job" || true;; local) [[ $job == 0 ]] || terminate_tree "$job";; esac
+      [[ $manager != slurm ]] || scancel "$job" || true
     done < "$manifest"
   done
 }

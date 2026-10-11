@@ -896,7 +896,41 @@ else
   echo "    $STAGE_ROOT/$DIST_NAME"
 fi
 
-if [[ "$UPLOAD" == "1" ]]; then
+upload_linux_bundle()
+{
+  local assets asset_name lower_name
+  local new_asset_name="$(basename "$TARBALL_PATH")"
+
+  if [[ "$UPLOAD" != "1" ]]; then
+    return 0
+  fi
+
+  # Snapshot candidates before uploading so concurrent uploads are not removed.
+  if ! assets="$(gh release view "$UPLOAD_RELEASE_TAG" -R "$UPLOAD_RELEASE_REPO" \
+      --json assets --jq '.assets[].name')"; then
+    echo "***error: unable to read GitHub release assets before upload."
+    exit 1
+  fi
+
+  # Do not clobber: a same-name collision must preserve the published bundle.
   run_checked "Linux bundle upload" gh release upload "$UPLOAD_RELEASE_TAG" \
-    "$TARBALL_PATH" --clobber -R "$UPLOAD_RELEASE_REPO"
-fi
+    "$TARBALL_PATH" -R "$UPLOAD_RELEASE_REPO"
+
+  # Retire previous Linux bundles only after the replacement upload succeeds.
+  while IFS= read -r asset_name; do
+    if [[ "$asset_name" == "$new_asset_name" ]]; then
+      continue
+    fi
+    lower_name="$(printf '%s' "$asset_name" | tr '[:upper:]' '[:lower:]')"
+    case "$lower_name" in
+      cfast*linux*.tar.gz)
+        echo "*** Removing previous CFAST Linux bundle: $asset_name"
+        run_checked "GitHub release asset removal for $asset_name" \
+          gh release delete-asset "$UPLOAD_RELEASE_TAG" "$asset_name" \
+            -R "$UPLOAD_RELEASE_REPO" -y
+        ;;
+    esac
+  done <<< "$assets"
+}
+
+upload_linux_bundle

@@ -14,7 +14,7 @@ The \textbf{Simulation} tab defines initial conditions, numerical parameters, an
 \label{info:HEAD}
 
 \begin{description}
-\item[Title] (namelist: \ct{TITLE}) Optional title that may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string. Note that the \textbf{Title} is not used to name the text input file.
+\item[Title] (namelist: \ct{TITLE}) Optional title that may consist of letters, numbers, and/or symbols and may be up to 128 characters. All output files will be tagged with this character string. Note that the \textbf{Title} is not used to name the text input file.
 \end{description}
 The \ct{HEAD} line of the input file will contain the \textbf{Title} and a \ct{VERSION} number that is used to detect older versions of the software.
 
@@ -24,7 +24,7 @@ The \ct{HEAD} line of the input file will contain the \textbf{Title} and a \ct{V
 \label{info:TIME}
 
 \begin{description}
-\item[Simulation Time] (default: 900 s; namelist: \ct{SIMULATION}): Duration of the simulation. The maximum value for this input is 86400~s (1~day).
+\item[Simulation Time] (default: 900 s; namelist: \ct{SIMULATION}): Duration of the simulation.
 
 \item[Text Output Interval] (default: 60 s; namelist: \ct{PRINT}): Time interval between diagnostic outputs. If equal to zero, no output values will appear.
 
@@ -93,7 +93,7 @@ CFAST does not include predefined thermal properties for compartment materials. 
 \begin{description}
 \item[Material] (namelist: \ct{MATERIAL}) A descriptive name for the material.
 
-\item[ID] (namelist: \ct{ID}) A one-word (no more than 8 characters) {\it unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
+\item[ID] (namelist: \ct{ID}) A \textit{unique} identifier for the material, up to 64 characters. It is used in other CFAST inputs to identify the particular material referenced.
 
 \item[Conductivity] (default units: \unit{kW/(m.K)}; namelist: \ct{CONDUCTIVITY}) Thermal conductivity for the material. Note the units---this property is often listed in units of W/(m$\cdot$K).
 

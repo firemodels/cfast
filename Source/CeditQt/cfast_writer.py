@@ -189,9 +189,9 @@ def validate_case(case: CfastCase) -> None:
     require_unique_ids("fire", case.fires)
 
     for material in case.materials:
-        if not material.id.strip() or len(material.id) > 16:
+        if not material.id.strip() or len(material.id) > 64:
             raise ValueError(
-                f"Thermal property {material.id!r}: ID must contain 1 to 16 characters."
+                f"Thermal property {material.id!r}: ID must contain 1 to 64 characters."
             )
         if not 0.0 <= material.emissivity <= 1.0:
             raise ValueError(

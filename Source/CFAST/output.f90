@@ -997,7 +997,7 @@ module output_routines
 
 5000 format (//,'All compartment surfaces are adiabatic.')
      5010 format (//,'THERMAL PROPERTIES',//,a,2x,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
-          5X,'Emissivity',/,a,2x,'(kW/(m  C))       (kJ/(m  C))       (kg/m^3)       (m)',/,a)
+          5X,'Emissivity',/,a,2x,'(W/(m C))         (J/(kg C))        (kg/m^3)       (m)',/,a)
 5040 format (a,2x,4(1pg13.3,3x),1pg13.3)
 5050 format (a,2x,3(1pg13.3,3x),1pg13.3)
 5060 format (' ')

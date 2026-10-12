@@ -960,7 +960,9 @@ module output_routines
 
     subroutine output_initial_thermal_properties
 
-    integer i, j, k
+    integer i, j, k, name_width
+    integer, parameter :: property_width = 77      ! four 16-character property columns plus the 13-character emissivity
+    character(len=4), parameter :: name_heading = 'Name'
     type(room_type), pointer :: roomptr
     type(material_type), pointer :: thrmpptr
 
@@ -979,21 +981,25 @@ module output_routines
     return
 
     ! some surfaces are on, do the printout of the material properties
-10  write (iofilo,5010)
+    ! the name column is as wide as the longest material name so names are never truncated
+10  name_width = max(len(name_heading), maxval(len_trim(material_info(1:n_matl)%id)))
+    write (iofilo,5010) name_heading//repeat(' ',name_width-len(name_heading)), repeat(' ',name_width), &
+        repeat('-',name_width+2+property_width)
     do i = 1, n_matl
         thrmpptr => material_info(i)
-        write (iofilo,5040) thrmpptr%id, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
+        write (iofilo,5040) thrmpptr%id(1:name_width), thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), &
+            thrmpptr%thickness(1), thrmpptr%eps
         do j = 2, thrmpptr%nslab
-            write (iofilo,5050) thrmpptr%k(j), thrmpptr%c(j), thrmpptr%rho(j), thrmpptr%thickness(j)
+            write (iofilo,5050) repeat(' ',name_width), thrmpptr%k(j), thrmpptr%c(j), thrmpptr%rho(j), thrmpptr%thickness(j)
         end do
     end do
     write (iofilo,5060)
 
 5000 format (//,'All compartment surfaces are adiabatic.')
-     5010 format (//,'THERMAL PROPERTIES',//,'Name',4X,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
-          5X,'Emissivity',/,8x, '(kW/(m  C))       (kJ/(m  C))       (kg/m^3)       (m)',/,83('-'))
-5040 format (a8,5(1pg13.3,3x),5e10.2)
-5050 format (8x,4(1pg13.3,3x))
+     5010 format (//,'THERMAL PROPERTIES',//,a,2x,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
+          5X,'Emissivity',/,a,2x,'(kW/(m  C))       (kJ/(m  C))       (kg/m^3)       (m)',/,a)
+5040 format (a,2x,4(1pg13.3,3x),1pg13.3)
+5050 format (a,2x,3(1pg13.3,3x),1pg13.3)
 5060 format (' ')
 
     end subroutine output_initial_thermal_properties

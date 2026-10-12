@@ -1034,6 +1034,30 @@ def check_target_material_validation():
         window.deleteLater()
 
 
+def check_material_id_length():
+    """Material IDs follow the CFAST namelist length of 64 characters."""
+    from dataclasses import replace
+
+    from cfast_reader import read_cfast_input
+    from cfast_writer import validate_case, write_cfast_input
+    from main_window import default_concrete_material, opening_case
+
+    case = opening_case()
+    case.materials = [replace(default_concrete_material(), id="M" * 64)]
+    with tempfile.TemporaryDirectory(prefix="cedit-material-id-") as directory:
+        path = Path(directory) / "material_id.in"
+        write_cfast_input(case, path)
+        assert read_cfast_input(path).materials[0].id == "M" * 64
+
+    case.materials[0].id = "M" * 65
+    try:
+        validate_case(case)
+    except ValueError as exc:
+        assert "1 to 64 characters" in str(exc)
+    else:
+        raise AssertionError("A material ID longer than 64 characters was accepted")
+
+
 def check_target_orientation():
     """Issue #2504: select one orientation and write only the chosen normal form."""
     from dataclasses import replace
@@ -1806,6 +1830,7 @@ def main() -> int:
     check_target_material_initialization()
     check_target_temperature_depth()
     check_target_material_validation()
+    check_material_id_length()
     check_target_orientation()
     check_adiabatic_target()
     check_adiabatic_convection_coefficients()

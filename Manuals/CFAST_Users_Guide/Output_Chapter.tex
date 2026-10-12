@@ -160,21 +160,15 @@ M     Comp 2         Outside         2       Time           0       100       50
 
 \subsubsection{Thermal Properties}
 
-The thermal properties section is broken into two parts.  The first part is a table that lists the material for each surface of each compartment.  The compartments appear as rows down the page in order of specification.  From left to right next to the compartment name comes the material for the ceiling, wall and floor.  The second table lists the properties of each material used in the simulation. For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity. In addition to materials for compartment surfaces, any thermal properties specified for targets are also listed (this may include thermal properties for gaseous materials specified as fire sources in a simulation.)
+The thermal properties section lists the properties of each material used in the simulation. For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity. In addition to materials for compartment surfaces, any thermal properties specified for targets are also listed (this may include thermal properties for gaseous materials specified as fire sources in a simulation.)
 \begin{lstlisting}[basicstyle=\tiny]
 THERMAL PROPERTIES
 
-Compartment    Ceiling      Wall         Floor
------------------------------------------------
-Comp 1       CONCRETE     CONCRETE     CONCRETE
-Comp 2       CONCRETE     CONCRETE     CONCRETE
-Comp 3       CONCRETE     CONCRETE     CONCRETE
-
-
-Name    Conductivity      Specific Heat     Density        Thickness     Emissivity
------------------------------------------------------------------------------------
-CONCRETE     1.75           1.000E+03       2.200E+03       0.150           0.940
-DEFAULT     0.120            900.            800.           1.200E-02       0.900
+Name      Conductivity      Specific Heat     Density        Thickness     Emissivity
+          (kW/(m  C))       (kJ/(m  C))       (kg/m^3)       (m)
+---------------------------------------------------------------------------------------
+CONCRETE       1.75           1.000E+03       2.200E+03       0.150           0.940
+DEFAULT       0.120            900.            800.           1.200E-02       0.900
 \end{lstlisting}
 Material choices for the ceiling, walls, and floors are discussed in Sec.~\ref{info:COMP2}. Setting thermophysical properties is done in the Thermal Properties tab discussed in Sec.~\ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
 

@@ -37,24 +37,25 @@ tail -f ../../Verification/Energy_Balance/sealed_test.err
 
 ## Shared repository preparation
 
-Keep one set of repositories under a common directory, such as `/home/firebot/firemodels`. The local `update_repos.sh` in that directory fetches all tags, completes shallow repository history, and updates and cleans the repositories before any bot starts. It is maintained outside version control. CFASTbot uses the prepared revisions and performs no Git updates or cleanup.
+Keep the dedicated CI repositories under a common directory, such as `/home/firebot/FireModels_cbot`. Copy `cfast/Utilities/CI/update_repos.sh` to that directory before running it, so the running script stays outside the checkout it updates. It removes stale Git locks, fetches tags and full history, replaces local branches with their remote branches, and discards local commits, edits, and untracked/ignored files. Submodules are reset to the commits recorded by their parent repositories. CFASTbot uses the prepared revisions and performs no Git updates or cleanup.
 
 Run preparation and CFASTbot in sequence, so a preparation failure prevents CI:
 
 ```bash
-cd /home/firebot/firemodels
+cd /home/firebot/FireModels_cbot &&
+cp cfast/Utilities/CI/update_repos.sh . &&
 ./update_repos.sh && ./cfast/Utilities/CI/run_cfastbot.sh -q firebot -U
 ```
 
-Run these commands manually in order. Complete repository preparation before starting a bot, and let the bot finish before preparing repositories again.
+Run preparation only while no other jobs are using these checkouts. Complete repository preparation before starting a bot, and let the bot finish before preparing repositories again.
 
-A CFAST-only cron entry after repository preparation is:
+A cron entry that copies the script, prepares the repositories, and then runs CFASTbot is:
 
 ```cron
-1 3 * * * /bin/bash -lc '/home/firebot/firemodels/cfast/Utilities/CI/run_cfastbot.sh -q firebot -U > /home/firebot/.cfastbot/cfastbot_daily.out 2>&1'
+1 3 * * * /bin/bash -lc '(cd /home/firebot/FireModels_cbot && cp cfast/Utilities/CI/update_repos.sh . && ./update_repos.sh && ./cfast/Utilities/CI/run_cfastbot.sh -q firebot -U) > /home/firebot/.cfastbot/cfastbot_daily.out 2>&1'
 ```
 
-Create `/home/firebot/.cfastbot` before using that log redirection. CFASTbot needs no workspace initialization or repository configuration file.
+Create `/home/firebot/.cfastbot` before using that log redirection. The log captures both preparation and CI output; `&&` prevents CI from starting if preparation fails. CFASTbot needs no workspace initialization or repository configuration file.
 
 ## State and Python
 

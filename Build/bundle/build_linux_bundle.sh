@@ -912,9 +912,9 @@ upload_linux_bundle()
     exit 1
   fi
 
-  # Do not clobber: a same-name collision must preserve the published bundle.
+  # Repeated runs of the same revision replace the existing same-name bundle.
   run_checked "Linux bundle upload" gh release upload "$UPLOAD_RELEASE_TAG" \
-    "$TARBALL_PATH" -R "$UPLOAD_RELEASE_REPO"
+    "$TARBALL_PATH" --clobber -R "$UPLOAD_RELEASE_REPO"
 
   # Retire previous Linux bundles only after the replacement upload succeeds.
   while IFS= read -r asset_name; do

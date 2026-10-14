@@ -6,6 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FIREMODELS_ROOT="$(cd "$REPO_ROOT/.." && pwd)"
 
+export MACOSX_DEPLOYMENT_TARGET=26.0
+
 APP_NAME="cedit"
 DIST_NAME=""
 VOLUME_NAME=""

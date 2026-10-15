@@ -451,13 +451,13 @@ When saving an input file, CEdit writes only the \ct{CHEM} and \ct{TABL} definit
 In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
 \begin{description}
 \item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
-\item[C] (default: 1; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule.
-\item[H] (default: 4, namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
+\item[C] (default: 0; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule. Fuel atom counts must be nonnegative, and at least one of \ct{CARBON}, \ct{HYDROGEN}, \ct{OXYGEN}, \ct{NITROGEN}, or \ct{CHLORINE} must be positive. An empty fuel molecule is an input error; no default fuel composition is assumed.
+\item[H] (default: 0; namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
 \item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.
 \item[N] (default: 0; namelist: \ct{N}) Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
 \item[Cl] (default: 0; namelist: \ct{CHLORINE}) Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
 \item[Heat of Combustion] (default: 50000 kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed.
-\item[Radiative Fraction] (default: 0.3; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[Radiative Fraction] (default: 0.35; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. In CFAST 8 beta, omitting this parameter uses 0.35; earlier namelist readers used zero. Specify zero explicitly for a non-radiating fire. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
 \item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
 \end{description}
 
@@ -550,7 +550,7 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \item[Width (X)] (units: \unit{m}; namelist: \ct{LOCATION(1)}) Distance from the left wall of the compartment.
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.
-\item[RTI] (default: 100~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
+\item[RTI] (default: 50~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
 \item[Spray Density] (default: $7\times 10^{-5}$~\unit{m/s}) Rate of water dispersed by a sprinkler, derived by dividing the volumetric flow rate by the spray area. The suppression calculation uses the experimental correlation by Evans~\cite{Evans:1993} unless the fire specifies \ct{E_COEFFICIENT}; see Sec.~\ref{info:FIRE}.
 \item[FYI]  Optional descriptive text retained with the device but not used in the calculation.
 \end{description}

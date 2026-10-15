@@ -913,11 +913,17 @@
                     end if
                 end if
 
-                dtectptr%spray_density = spray_density*1000.0_eb
-                ! if spray density is zero, then turn off the sprinkler
-                if (dtectptr%spray_density <= 0.0_eb) then
+                ! if spray density is positive, convert from m/s to mm/s for use in suppression algorithm
+                ! if spray density is negative, it's the half-life of the heat release rate and spray density will calculated
+                ! if spray density is zero, turn off the sprinkler
+                if (spray_density < 0.0_eb) then
+                    dtectptr%spray_density = spray_density
+                elseif (spray_density > 0.0_eb) then
+                    dtectptr%spray_density = spray_density*1000.0_eb
+                else
                     dtectptr%quench = .false.
                 end if
+
                 ! if there's a sprinkler that can go off, then make sure the time step is small enough to report it accurately
                 if (dtectptr%quench) then
                     if (stpmax>0) then

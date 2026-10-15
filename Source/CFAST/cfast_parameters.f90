@@ -29,7 +29,7 @@
     real(eb), parameter :: t_max = 900._eb          ! maximum flame temperature
 
     integer, parameter :: mxmatl = mxitems         ! maximum number of thermal properties
-    integer, parameter :: mxthrmplen = 16           ! maximum length for thermal property short names
+    integer, parameter :: mxthrmplen = 64           ! maximum length for thermal property IDs, matching the namelist input
 
     integer, parameter :: trigger_by_time = 1       ! indicies for fire ignition type (also used by vents)
     integer, parameter :: trigger_by_temp = 2

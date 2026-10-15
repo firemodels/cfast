@@ -553,8 +553,8 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \item[ID]  (namelist: \ct{ID}) Unique name of the device (i.e. not the same as another target, sprinkler, or detector in the same simulation).
 \item[Type] (namelist: \ct{TYPE}) Type of detector; select \textbf{Smoke} (detector), \textbf{Heat} (detector), or \textbf{Sprinkler}.
 \item[Compartment] (namelist: \ct{COMP_ID}) The compartment in which the detector or sprinkler is located.
-\item[Activation Temperature] (units: \unit{\degreeCelsius}; namelist: \ct{SETPOINT}) Temperature at or above which the detector link activates.
-\item[Activation Obscuration] (default: 23.93~\unit{\%/m}; namelist: \ct{SETPOINT} or \ct{SETPOINTS(1:2)}) Obscuration at or above which the detector link activates. For a dual-threshold smoke detector both smoldering and flaming smoke obscuration set points are given.
+\item[Activation Temperature] (default: 57~\unit{\degreeCelsius}; namelist: \ct{SETPOINT}) Temperature at which the detector link activates.
+\item[Activation Obscuration] (default: 24~\unit{\%/m}; namelist: \ct{SETPOINT} or \ct{SETPOINTS(1:2)}) Obscuration at or above which the detector link activates. For a dual-threshold smoke detector both smoldering and flaming smoke obscuration set points are given.
 \item[Width (X)] (units: \unit{m}; namelist: \ct{LOCATION(1)}) Distance from the left wall of the compartment.
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.

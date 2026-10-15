@@ -876,10 +876,11 @@
                 dtectptr%fyi = fyi
                 if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR') then
                     if (setpoint/=-1001._eb) then
-                        dtectptr%trigger = setpoint + 273.15_eb
+                        dtectptr%trigger = setpoint
                     else
                         dtectptr%trigger = default_activation_temperature
                     end if
+                    dtectptr%trigger = dtectptr%trigger + 273.15_eb
                 else
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint

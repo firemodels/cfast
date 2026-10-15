@@ -1296,7 +1296,6 @@ continue
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
         soot_yield, trace_yield, flaming_transition_time
-    logical :: found
     character(len=64) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
@@ -1428,19 +1427,13 @@ continue
                     fireptr%t_height = 0.0_eb
                     fireptr%height(1) = 0.0_eb
 
-                    found = .false. 
+                    ! A table is optional; matching columns override the constant CHEM values.
                     tabl_search: do kk = 1, n_tabls
                         tablptr=>tablinfo(kk)
                         if (trim(tablptr%id)==trim(fireptr%fire_id)) then
-                            found = .true. 
                             call fireptr%pop_table(tablptr)
                         end if
                     end do tabl_search
-                    
-                    if (.not.found) then
-                        write (errormessage,5320) tablptr%id
-                        call cfastexit('read_chem',5)
-                    end if
 
                     ! calculate mass loss rate from hrr and hoc inputs
                     fireptr%mdot = fireptr%qdot / ohcomb
@@ -1481,16 +1474,10 @@ continue
                 end if
             end do searching
 
-           ! if (ifire<1.or.ifire>n_fires) then
-           !     write (errormessage,5320) ifire
-           !     call cfastexit('read_chem',7)
-           ! end if
-
         end do read_fire_loop
 
     end if fire_flag
 
-5320 format ('***Error, Bad FIRE input. Fire specification error, fire ',i0,' is not referenced')
 5321 format ('***Error, Bad FIRE input. Fire specification error, not an allowed fire type',i0)
 
 5001 format ('***Error, invalid heat of combustion, must be greater than zero, ',1pg12.3)

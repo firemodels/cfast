@@ -446,6 +446,8 @@ The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 \subsection{Measuring the Temperature Change of a Thermally Thin Target}
 \label{radiation_1}
 
+The case \ct{radiation_1.in} specifies the constant heat release rate and fire area directly on \ct{CHEM}, without a \ct{TABL} definition. This also verifies that constant fire properties can be used without a time-dependent table.
+
 A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. Because the purpose of this case is to test the point source radiation model and the heating of a thermally-thin target, there is a 20~m$^2$ vent located in the center of the ceiling to exhaust the smoke from the fire and maintain an ambient temperature lower layer. A 1.5~mm thick sheet of plain carbon steel is placed 2~m to the right of the fire. It is oriented directly at the fire. The target is heated by the thermal radiation from the fire, and it is cooled via convective and radiative loss. The net radiative heat transfer to the target is given by:
 \begin{equation}
 \dqr'' = \epsilon \frac{\chi_{\rm r} \, \dot{Q}}{4\pi \, r^2} + 2\epsilon \sigma ( T_{\rm g}^4 - T_{\rm s}^4)

@@ -448,9 +448,17 @@ The \textbf{Fuel Properties} block in the lower left of the Fires tab contains t
 
 When saving an input file, CEdit writes only the \ct{CHEM} and \ct{TABL} definitions referenced by a fire's \ct{FIRE_ID}. A definition shared by several fires is written once. For example, if \ct{Fire_3} references \ct{Fire_1_Fire} and no fire references \ct{Fire_3_Fire}, the unused \ct{Fire_3_Fire} chemistry and table are omitted. Unused definitions remain available in the current editing session, but are not retained when the saved file is reopened.
 
-In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. A \ct{CHEM} line and a \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. The \ct{CHEM} parameters are:
+In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. The \ct{CHEM} line and any associated \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. A \ct{TABL} definition is optional when all fire properties are constant. For example, the following specifies a 300~kW methane fire with an area of 0.5~\unit{m^2} in a previously defined compartment \ct{C1}, without a \ct{TABL} definition:
+\begin{verbatim}
+&FIRE ID = 'F1' COMP_ID = 'C1' FIRE_ID = 'F1_fire'
+      LOCATION = 2.5, 2.5 /
+&CHEM ID = 'F1_fire' CARBON = 1 HYDROGEN = 4
+      HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35
+      HRR = 300 AREA = 0.5 CO_YIELD = 0.01 SOOT_YIELD = 0.015 /
+\end{verbatim}
+The heat release rate remains constant after ignition, subject to the usual oxygen and suppression limits. The \ct{CHEM} parameters are:
 \begin{description}
-\item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition. More than one fire instance may reference the same definition.
+\item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition, if present. More than one fire instance may reference the same definition.
 \item[C] (default: 0; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule. Fuel atom counts must be nonnegative, and at least one of \ct{CARBON}, \ct{HYDROGEN}, \ct{OXYGEN}, \ct{NITROGEN}, or \ct{CHLORINE} must be positive. An empty fuel molecule is an input error; no default fuel composition is assumed.
 \item[H] (default: 0; namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
 \item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.

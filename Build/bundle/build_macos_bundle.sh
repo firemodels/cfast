@@ -19,7 +19,7 @@ CFAST_EXE_SET=0
 CFAST_REPO_URL="${CFAST_REPO_URL:-git@github.com:firemodels/cfast.git}"
 CFAST_TAG="${CFAST_TAG:-}"
 CEDIT_APP="$REPO_ROOT/Build/CeditQt/macos/$APP_NAME.app"
-EXAMPLE_FILE="$REPO_ROOT/Utilities/for_bundle/Bin/Data/Users_Guide_Example.in"
+EXAMPLE_FILE="$REPO_ROOT/Verification/Bundle_Examples/Users_Guide_Example.in"
 SMV_EXE="$FIREMODELS_ROOT/smv/Build/smokeview/gnu_osx/smokeview_osx"
 SMV_EXE_SET=0
 SMV_BUNDLE_DIR="$FIREMODELS_ROOT/smv/Build/for_bundle"
@@ -74,7 +74,7 @@ RELEASE_MANUAL_ASSETS=(
   "CFAST_Validation_Guide.pdf"
 )
 EXTRA_EXAMPLE_FILES=(
-  "$REPO_ROOT/Utilities/for_bundle/Bin/Data/Large_Building.in"
+  "$REPO_ROOT/Verification/Bundle_Examples/Large_Building.in"
 )
 
 usage()

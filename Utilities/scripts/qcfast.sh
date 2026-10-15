@@ -10,18 +10,17 @@ Usage: qcfast.sh [-d directory] [-e executable] [-q queue] [options] input.in
   -c           Pass the input basename without its extension
   -s           Write the case stop file
   -v           Print the job script without submitting or changing case outputs
-  -V           Pass -V to CFAST
   -E           Capture stderr (the default)
   --test-UI    Import/rewrite through CEditQt without running CFAST
   -h           Show this help
 HELP
 }
-queue=batch; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; version=0; ui=0
+queue=batch; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; ui=0
 while (($#)); do
   case "$1" in
     -d|-e|-q|-j) [[ $# -ge 2 ]] || { usage >&2; exit 2; }
       case "$1" in -d) dir=$2;; -e) exe=$2;; -q) queue=$2;; -j) prefix=$2;; esac; shift 2;;
-    -c) strip=1; shift;; -s) stop=1; shift;; -v) preview=1; shift;; -V) version=1; shift;;
+    -c) strip=1; shift;; -s) stop=1; shift;; -v) preview=1; shift;;
     -E|-b) shift;; # -b was accepted by the former V&V launcher; -e selects the build.
     --test-UI) ui=1; shift;; -h|--help) usage; exit 0;;
     --) shift; break;; -*) echo "Unknown option: $1" >&2; exit 2;; *) break;;
@@ -51,7 +50,6 @@ else
   [[ $exe == /* ]] || exe="$(cd "$(dirname "$exe")" && pwd)/$(basename "$exe")"
   argument=$input; [[ $strip == 0 ]] || argument=$base
   command=("$exe" "$argument")
-  [[ $version == 0 ]] || command+=(-V)
 fi
 log="$dir/$base$suffix.log"; err="$dir/$base$suffix.err"; status_file="$dir/$base$suffix.exit"
 script=$(mktemp "${TMPDIR:-/tmp}/qcfast.XXXXXX")

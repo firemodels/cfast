@@ -83,7 +83,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=(
             "Input file to load before capturing screenshots. Defaults to "
-            "Utilities/for_bundle/Bin/Data/Users_Guide_Example.in."
+            "Verification/Bundle_Examples/Users_Guide_Example.in."
         ),
     )
     parser.add_argument(
@@ -329,7 +329,7 @@ def main() -> int:
     args = parse_args()
     repo_root = find_repo_root(args.repo_root or Path(__file__))
     input_path = args.input or (
-        repo_root / "Utilities" / "for_bundle" / "Bin" / "Data" / "Users_Guide_Example.in"
+        repo_root / "Verification" / "Bundle_Examples" / "Users_Guide_Example.in"
     )
     output_dir = args.output_dir or (
         repo_root / "Manuals" / "CFAST_Users_Guide" / "SCRIPT_FIGURES"

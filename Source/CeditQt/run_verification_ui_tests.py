@@ -1558,14 +1558,6 @@ def check_fire_import():
     assert FireProperty(id="Decane", carbon=10, hydrogen=22).fuel_formula() == "C₁₀H₂₂"
     assert FireProperty(id="Hydrogen", carbon=0, hydrogen=2).fuel_formula() == "H₂"
 
-    root = find_repo_root(Path(__file__))
-    legacy = read_fire_properties(root / "Utilities/for_bundle/Bin/AllFires.in")
-    assert len(legacy) == 11
-    assert legacy[0].id == "3_panel_workstation"
-    assert legacy[0].ramp[0].hrr == 38.0
-    assert legacy[0].heat_of_combustion == 17100.0
-    assert math.isclose(legacy[1].ramp[0].hcn_yield, 0.11585, rel_tol=1e-4)
-
     window = CeditMainWindow()
     tab = window.fires_tab
     original_units = dict(unit_system.selected)

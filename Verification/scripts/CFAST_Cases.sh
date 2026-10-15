@@ -1,5 +1,8 @@
 #!/bin/bash
 
+$RUNCFAST -d Bundle_Examples Large_Building.in
+$RUNCFAST -d Bundle_Examples Users_Guide_Example.in
+
 $RUNCFAST -d Energy_Balance sealed_test.in
 $RUNCFAST -d Energy_Balance sealed_test_2_layers.in
 

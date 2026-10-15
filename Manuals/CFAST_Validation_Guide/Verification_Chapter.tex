@@ -17,6 +17,8 @@ Whereas model validation consists mainly of comparing predictions with experimen
 A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.  For each of the examples, an analytical solution is presented and compared to the results of a matching CFAST simulation.
 
 
+The Verification suite also runs the distribution examples, \ct{Large_Building.in} and \ct{Users_Guide_Example.in}, from \ct{Verification/Bundle_Examples}. These cases check that the bundled input files can be read and run successfully. The platform bundle scripts copy these same files into the distribution.
+
 \section{Energy}
 \label{energy_balance}
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.

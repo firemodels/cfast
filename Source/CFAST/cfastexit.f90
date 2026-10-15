@@ -57,10 +57,9 @@ module exit_routines
     if (exitcode==0) then
         stop
     else
-        error stop 1
+        ! The diagnostic above describes a controlled failure; no runtime backtrace is needed.
+        stop 1, quiet=.true.
     end if
-
-    stop
     
     end subroutine cfastexit
 

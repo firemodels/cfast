@@ -51,7 +51,9 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 - Manual sources live under `Manuals/`. Edit the tracked LaTeX sources in place; do not create alternate or replacement appendix files.
 - Build a guide from its manual directory with its existing `make_guide.sh` script.
 - After changing a manual, require a successful build, check the LaTeX error log, and visually inspect representative affected PDF pages.
-- Follow the mathematical and SI-unit style of Thompson and Taylor, *Guide for the Use of the International System of Units*, NIST Special Publication 811.
+- Use American English spelling throughout documentation, including "meter" and "liter".
+- All documentation must use SI units only; do not include English/US customary units or parenthetical equivalents. Follow the mathematical and SI-unit style of A. Thompson and B.N. Taylor, *The NIST Guide for the Use of the International System of Units*, NIST Special Publication 811 (2008): https://www.nist.gov/pml/special-publication-811.
+- Include the standard mathematical-style comment block citing this guide and its current URL near the top of every manual main `.tex` file.
 - Add every new input parameter to the User Guide. If it is not ready for public display, include the documentation as a LaTeX comment so developers can track it.
 - Do not add or update release PDF collections except as part of an explicitly requested release.
 - Avoid web links in manuals because they frequently become stale.

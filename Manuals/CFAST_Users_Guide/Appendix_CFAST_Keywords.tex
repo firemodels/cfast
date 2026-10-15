@@ -99,7 +99,7 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{ID}                                  & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
 \ct{NITROGEN}                            & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
 \ct{OXYGEN}                              & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
-\ct{RADIATIVE_FRACTION}                  & Real                   & Sec.~\ref{info:FIRE}         &                    & 0 \\ \hline
+\ct{RADIATIVE_FRACTION}                  & Real                   & Sec.~\ref{info:FIRE}         &                    & 0.35 \\ \hline
 \ct{SOOT_YIELD}                          & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
 \ct{TABLE_ID}                            & Character              & Sec.~\ref{info:FIRE}         &                    & \ct{'NULL'} \\ \hline
 \ct{TRACE_YIELD}                         & Real                   & Sec.~\ref{info:FIRE}         & kg/kg              & 0 \\ \hline
@@ -173,7 +173,8 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{MATL_ID}                             & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
 \ct{NORMAL}                              & Real Triplet           & Sec.~\ref{chapter:targets}         &                    & 0,0,1 \\ \hline
 \ct{RTI}                                 & Real                   & Sec.~\ref{info:DEVC2}              & $\sqrt{\hbox{m}\cdot\hbox{s}}$ & 50 \\ \hline
-\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:DEVC2}              & \degc or \%/m      & \\ \hline
+\ct{SETPOINT}\footnote{The default is 23.93~\%/m for smoke detectors and 57.22~\degc for heat detectors and sprinklers.}
+                                        & Real                   & Sec.~\ref{info:DEVC2}              & \degc or \%/m      & See note \\ \hline
 \ct{SETPOINTS}                           & Real Doublet           & Sec.~\ref{info:DEVC2}              & \%/m               & \\ \hline
 \ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}              & m/s                & \\ \hline
 \ct{SURFACE_ORIENTATION}                 & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline

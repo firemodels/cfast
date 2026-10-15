@@ -1,5 +1,16 @@
 \documentclass[12pt,twoside]{book}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                                                 %
+% The mathematical style of these documents follows                                               %
+%                                                                                                 %
+% A. Thompson and B.N. Taylor. The NIST Guide for the Use of the International System of Units.   %
+%    NIST Special Publication 811, 2008.                                                          %
+%                                                                                                 %
+% https://www.nist.gov/pml/special-publication-811                                                %
+%                                                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \input{../Bibliography/commoncommands}
 
 \addbibresource{../Bibliography/CFAST_refs.bib}
@@ -918,7 +929,7 @@ which is used to determine smoke detector activation, below.
 CFAST estimates the activation of smoke detectors based on either the smoke concentration or temperature at the detector location.
 
 \begin{itemize}
-\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24 \%/m (8~\%/ft) obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
+\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24 \%/m obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
 \item CFAST can also model a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
 \end{itemize}
 Users are cautioned that both of these models are very crude and the uncertainty in predictions is substantial. Consult the CFAST Validation Guide for more details on their validation.

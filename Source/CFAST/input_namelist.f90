@@ -15,7 +15,7 @@
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
-        default_min_cutoff_relp, default_max_cutoff_relp, default_o2_mass_fraction
+        default_min_cutoff_relp, default_max_cutoff_relp, default_o2_mass_fraction, default_radiative_fraction
     
     use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo, init_devc
     use diag_data, only: partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
@@ -1339,6 +1339,17 @@ continue
             call set_defaults
             read(lu,CHEM)
 
+            ! A molar chemistry balance requires a nonempty fuel with nonnegative atom counts.
+            if (min(carbon, hydrogen, oxygen, nitrogen, chlorine) < 0._eb) then
+               write(errormessage,'(3a)') '***Error in &CHEM ', trim(id), ': Fuel atom counts must be nonnegative.'
+               call cfastexit('read_chem',8)
+            endif
+            if (carbon + hydrogen + oxygen + nitrogen + chlorine <= 0._eb) then
+               write(errormessage,'(3a)') '***Error in &CHEM ', trim(id), &
+                  ': Empty fuel molecule. Specify at least one positive fuel atom count.'
+               call cfastexit('read_chem',9)
+            endif
+
             ifire = 0
             
             ! find all fires that this definition applies to
@@ -1502,7 +1513,7 @@ continue
     id                        = 'NULL'
     nitrogen                  = 0._eb
     oxygen                    = 0._eb
-    radiative_fraction        = 0._eb
+    radiative_fraction        = default_radiative_fraction
     soot_yield                = 0._eb
     table_id                  = 'NULL'
     trace_yield               = 0._eb

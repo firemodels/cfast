@@ -670,6 +670,12 @@ module output_routines
     type(room_type), pointer :: roomptr
     character :: hall, shaft
     character(len=7), parameter :: surfaces(3) = ['Ceiling','Floor  ','Walls  ']
+    character(len=13), parameter :: property_headings(5) = &
+        [character(len=13) :: 'Conductivity', 'Specific Heat', 'Density', 'Thickness', 'Emissivity']
+    character(len=13), parameter :: property_units(5) = &
+        [character(len=13) :: '(W/(m K))', '(J/(kg K))', '(kg/m3)', '(m)', '']
+    character(len=13) :: property_values(5)
+    character(len=5) :: layer_text
 
     write (iofilo,5000)
     do i = 1, n_rooms
@@ -684,21 +690,23 @@ module output_routines
     if (adiabatic_walls) then
         write (iofilo,*) 'All compartment surfaces are adiabatic'
     else
-        write (iofilo,5020)
+        write (iofilo,5020) property_headings, property_units
         do i = 1, n_rooms
             roomptr => roominfo(i)
             do j = 1, 3     ! loop over the surface
                 do k = 1, roomptr%nslab_w(j) ! loop over the layers
+                    ! Pad on the right so headings, units, and values share the same column starts.
+                    write (property_values,'(1pg13.3)') roomptr%k_w(k,j), roomptr%c_w(k,j), roomptr%rho_w(k,j), &
+                        roomptr%thick_w(k,j), roomptr%eps_w(j)
+                    property_values = adjustl(property_values)
+                    write (layer_text,'(i0)') k
                     if (j==1.and.k==1) then
-                        write (iofilo,5030) i, trim(roomptr%id)//repeat(' ',13), trim(surfaces(j))//repeat(' ',7), k, &
-                            roomptr%k_w(k,j), roomptr%c_w(k,j), roomptr%rho_w(k,j), roomptr%thick_w(k,j), roomptr%eps_w(j), &
+                        write (iofilo,5030) i, trim(roomptr%id)//repeat(' ',13), surfaces(j), layer_text, property_values, &
                             trim(roomptr%matl(k,j))
                     else if (k==1) then
-                        write (iofilo,5040) trim(surfaces(j))//repeat(' ',7), k, roomptr%k_w(k,j), roomptr%c_w(k,j), &
-                            roomptr%rho_w(k,j), roomptr%thick_w(k,j), roomptr%eps_w(j), trim(roomptr%matl(k,j))
+                        write (iofilo,5040) surfaces(j), layer_text, property_values, trim(roomptr%matl(k,j))
                     else
-                        write (iofilo,5050) k, roomptr%k_w(k,j), roomptr%c_w(k,j), roomptr%rho_w(k,j), roomptr%thick_w(k,j), &
-                            roomptr%eps_w(j), trim(roomptr%matl(k,j))
+                        write (iofilo,5050) layer_text, property_values, trim(roomptr%matl(k,j))
                     end if
                 end do
             end do
@@ -711,12 +719,11 @@ module output_routines
     '                                                                        Height       Height                     ', &
     'Leakage      Leakage',/, 33x,5('(m)',10x),14x,2('(m^2)',8x),/,133('-'))
 5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
-     5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment  Name              Surface      Layer      Conductivity    ', &
-          'Specific Heat    Density        Thickness     Emissivity      Material',/, &
-          '                                                       (kW/(m C))     (kJ/(m C))      (kg/m^3)       (m)',/,146('-'))  
-5030 format (i5,8x,a13,5x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
-5040 format (31x,a7,5x,i2,6x,5(1pg13.3,3x),2x,a)
-5050 format (43x,i2,6x,5(1pg13.3,3x),2x,a)
+5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment',t14,'Name',t32,'Surface',t44,'Layer', &
+    t52,5(a13,3x),2x,'Material',/,t52,5(a13,3x),/,141('-'))
+5030 format (i5,8x,a13,5x,a7,5x,a5,3x,5(a13,3x),2x,a)
+5040 format (31x,a7,5x,a5,3x,5(a13,3x),2x,a)
+5050 format (43x,a5,3x,5(a13,3x),2x,a)
     end subroutine output_initial_compartments
 
 ! --------------------------- output_initial_vents -------------------------------------------

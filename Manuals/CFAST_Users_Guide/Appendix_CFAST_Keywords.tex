@@ -39,9 +39,32 @@ In general, the namelist records can be entered in any order in the input file, 
 \end{lstlisting}
 as the last line at the end of the input file. This completes the file from \ct{&HEAD} to \ct{&TAIL}. CFAST does not even look for this last line. It just forces the ``end of file'' character past relevant input.
 
-The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
+The following abbreviated example illustrates the structure of \ct{Users_Guide_Example.in}, which is included in the CFAST software distribution. It retains one compartment, one wall vent, and one fire; additional compartments, devices, and visualization records are omitted for clarity.
+\begin{lstlisting}
+&HEAD VERSION = 8000, TITLE = 'Abbreviated Users Guide Example' /
+&TIME SIMULATION = 3600, PRINT = 60, SPREADSHEET = 60 /
+&INIT PRESSURE = 101325, RELATIVE_HUMIDITY = 50,
+      INTERIOR_TEMPERATURE = 20, EXTERIOR_TEMPERATURE = 20 /
+&MATL ID = 'CONCRETE', CONDUCTIVITY = 1.75, DENSITY = 2200,
+      SPECIFIC_HEAT = 1, THICKNESS = 0.15, EMISSIVITY = 0.94 /
+&COMP ID = 'Comp 1', DEPTH = 5, HEIGHT = 3, WIDTH = 5,
+      CEILING_MATL_ID = 'CONCRETE', WALL_MATL_ID = 'CONCRETE',
+      FLOOR_MATL_ID = 'CONCRETE' /
+&VENT TYPE = 'WALL', ID = 'WallVent_1',
+      COMP_IDS = 'Comp 1', 'OUTSIDE', TOP = 2, BOTTOM = 0,
+      WIDTH = 1, FACE = 'FRONT', OFFSET = 2 /
+&FIRE ID = 'Cushion', COMP_ID = 'Comp 1',
+      FIRE_ID = 'Cushion_Fire', LOCATION = 2.5, 2.5 /
+&CHEM ID = 'Cushion_Fire', CARBON = 9, HYDROGEN = 6,
+      NITROGEN = 2, OXYGEN = 2, HEAT_OF_COMBUSTION = 50000,
+      RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Cushion_Fire', LABELS = 'TIME', 'HRR', 'AREA' /
+&TABL ID = 'Cushion_Fire', DATA = 0, 0, 0.1 /
+&TABL ID = 'Cushion_Fire', DATA = 180, 200, 0.1 /
+&TAIL /
+\end{lstlisting}
 
-Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist parameters, the section where each is introduced in the document, and the table containing all of the keywords for each group.
+Table~\ref{tbl:namelistgroups} provides a quick reference to the supported namelist groups, the section where each is introduced in the document, and the table containing all of the keywords for each group. The legacy \ct{CONN} group is ignored in CFAST 8 beta; see Sec.~\ref{sec:changes_from_v7} for migration guidance.
 
 \begin{table}[ht]
 \begin{center}
@@ -126,10 +149,10 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{CEILING_MATL_ID}                    & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
 \ct{CEILING_THICKNESS}                  & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
 \ct{CROSS_SECT_AREAS}                   & Real Array             & Sec.~\ref{info:COMP4}        & m$^2$              & \\ \hline
-\ct{CROSS_SECT_HEIGHTS}                 & Real Array             & Sec.~\ref{info:COMP4}        &                    & \\ \hline
+\ct{CROSS_SECT_HEIGHTS}                 & Real Array             & Sec.~\ref{info:COMP4}        & m                  & \\ \hline
 \ct{DEPTH}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
 \ct{FLOOR_MATL_ID}                      & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{FLOOR_THICKNESS}                    & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{FLOOR_THICKNESS}                    & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
 \ct{FLOW_COEFFICIENT}                   & Real                   & Sec.~\ref{info:COMP}         &                    & 0.07 \\ \hline
 \ct{FYI}                                & Character              & Sec.~\ref{info:COMP6}        &                    & \\ \hline
 \ct{GRID}                               & Integer Triplet        & Sec.~\ref{info:SLCF2}        &                    & 50,50,50 \\ \hline
@@ -140,7 +163,7 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{ORIGIN}                             & Real Triplet           & Sec.~\ref{info:COMP}         & m                  & 0,0,0 \\ \hline
 \ct{SHAFT}                              & Logical                & Sec.~\ref{info:COMP3}        &                    & \ct{F} \\ \hline
 \ct{WALL_MATL_ID}                       & Character Triplet      & Sec.~\ref{info:COMP2}        &                    & \\ \hline
-\ct{WALL_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        &                    & \\ \hline
+\ct{WALL_THICKNESS}                     & Real Triplet           & Sec.~\ref{info:COMP2}        & m                  & \\ \hline
 \ct{WIDTH}                              & Real                   & Sec.~\ref{info:COMP}         & m                  & \\ \hline
 \end{xltabular}
 

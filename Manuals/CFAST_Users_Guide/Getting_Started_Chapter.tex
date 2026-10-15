@@ -2,7 +2,7 @@
 
 \chapter{Getting Started}
 
-The Consolidated Model of Fire and Smoke Transport (CFAST) is documented by four publications: this User's Guide, the Technical Reference Guide~\cite{CFAST_Tech_Guide_8}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and the Configuration Management Plan~\cite{CFAST_Config_Guide_8}. The Technical Reference Guide describes the underlying physical principles, provides a comparison with other models, and includes an evaluation of the model following the guidelines of ASTM~E1355~\cite{CFAST:ASTM:E1355}. The Verification and Validation Guide documents verification and validation cases and quantifies the model uncertainty. The Configuration Management Plan documents the processes used during the development and validation of the model. The User's Guide describes how to use the model and the input editor CEdit.
+The Consolidated Fire and Smoke Transport (CFAST) model is documented by four publications: this User's Guide, the Technical Reference Guide~\cite{CFAST_Tech_Guide_8}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and the Configuration Management Plan~\cite{CFAST_Config_Guide_8}. The Technical Reference Guide describes the underlying physical principles, provides a comparison with other models, and includes an evaluation of the model following the guidelines of ASTM~E1355~\cite{CFAST:ASTM:E1355}. The Verification and Validation Guide documents verification and validation cases and quantifies the model uncertainty. The Configuration Management Plan documents the processes used during the development and validation of the model. The User's Guide describes how to use the model and the input editor CEdit.
 
 \section{Installation}
 
@@ -51,3 +51,17 @@ The View menu allows you to view or print the input data file, output file (if t
 \section{The Help Menu}
 
 The Help menu accesses the User's Guide, the CFAST web site, and version information.
+
+
+\section[Changes from Version 7]{Changes from Version 7}
+\label{sec:changes_from_v7}
+
+When migrating a version 7 input file to CFAST 8 beta, review the following changes before comparing results. Tables in Sec.~\ref{app:namelist_chem} and the following sections list the current input parameters and defaults.
+
+\noindent\textbf{Surface connections (\texttt{CONN}).} The version 7 \ct{CONN} namelist for heat conduction between compartment surfaces is no longer supported. CFAST 8 beta ignores these records, including the \ct{TYPE='FLOOR'} record in older copies of \ct{Users_Guide_Example.in}. Remove them when migrating an input file. Compartment back surfaces are exposed to exterior ambient conditions; conduction through a shared wall or floor to another compartment is not modeled. Openings for gas flow must still be specified with \ct{VENT}; a vent does not replace a solid thermal connection.
+
+\noindent\textbf{Diagnostic switches (\texttt{DIAG}).} Only the parameters listed in Chapter~\ref{info:DIAG} are supported. Removed version 7 switches, such as \ct{CONDUCTION_SUB_MODEL}, cause an ``Invalid specification'' error even when set to \ct{'ON'}. Remove unsupported parameters from the record, or remove the record if none remain. The \ct{RADIATION_SUB_MODEL} switch remains available.
+
+\noindent\textbf{Post-run statistics (\texttt{OUTP}).} Version 7 statistical requests using parameters such as \ct{ID}, \ct{TYPE}, \ct{FIRST_DEVICE}, and \ct{FIRST_MEASUREMENT} are no longer supported. Remove these requests and calculate the desired statistics from the spreadsheet results. The current \ct{OUTP} group accepts only \ct{SPREADSHEET_OUTPUT} and \ct{FYI}; see Sec.~\ref{info:OUTP}.
+
+\noindent\textbf{Fire chemistry and output units.} Specify the fuel atom counts explicitly; an empty fuel molecule is now an input error. The current default \ct{RADIATIVE_FRACTION} is 0.35, whereas earlier namelist readers used zero. Spreadsheet gas concentrations now use mole fractions (\ct{mol_frac}); older output files labeled \texttt{mol \%} contain percentages. Divide those percentage values by 100 to compare them with current mole fractions, and check the units row when updating post-processing scripts.

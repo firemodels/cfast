@@ -174,8 +174,8 @@
     
     ! sprinkler/detector defaults
     real(eb), parameter :: default_rti = 50._eb
-    real(eb), parameter :: default_activation_temperature = (135._eb - 32._eb)/1.8_eb
-    real(eb), parameter :: default_activation_obscuration = 100._eb*(1._eb-(1._eb-8._eb/100._eb)**(1._eb/0.3048_eb))
+    real(eb), parameter :: default_activation_temperature = 57._eb  ! C or 135 F, Temperature Classification: Ordinary
+    real(eb), parameter :: default_activation_obscuration = 24._eb  ! %/m or 8 %/ft
     
     ! vents defaults
     real(eb), parameter :: default_min_cutoff_relp = 200._eb, default_max_cutoff_relp = 300._eb

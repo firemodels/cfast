@@ -37,6 +37,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from table_widgets import UnitTableWidget
+
 from cfast_case import (
     CfastCase,
     Compartment,
@@ -65,7 +67,7 @@ from units import (
     HRR,
     LENGTH,
     MASS_LOSS,
-    PRESSURE,
+    PRESSURE_DIFFERENCE,
     TEMPERATURE,
     TIME,
     format_number,
@@ -409,6 +411,7 @@ class CeditMainWindow(QMainWindow):
         self.run_button: QPushButton | None = None
         self.stop_button: QPushButton | None = None
         self.run_monitor_dialog: RunMonitorDialog | None = None
+        self.engineering_units_dialog: EngineeringUnitsDialog | None = None
         self.cfast_status_timer = QTimer(self)
         self.cfast_status_timer.setInterval(250)
         self.cfast_status_timer.timeout.connect(self.poll_cfast_status)
@@ -611,16 +614,27 @@ class CeditMainWindow(QMainWindow):
         self.settings.setValue("show_toolbar", visible)
 
     def select_engineering_units(self):
+        if self.engineering_units_dialog is None:
+            self.engineering_units_dialog = EngineeringUnitsDialog(self)
+            self.engineering_units_dialog.apply_requested.connect(self.apply_engineering_units)
+        dialog = self.engineering_units_dialog
+        if not dialog.isVisible():
+            for key, combo in dialog.combos.items():
+                combo.setCurrentIndex(unit_system.selected[key])
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
+
+    def apply_engineering_units(self):
+        dialog = self.engineering_units_dialog
         try:
+            # Read the current edits at Apply time; a modeless dialog can stay open
+            # while the user edits or loads an entirely different case.
             case = self.build_cfast_case(require_compartments=False)
         except Exception as exc:
             self.simulation_tab.set_message(str(exc))
             self.statusBar().showMessage("Errors")
             QMessageBox.critical(self, "Engineering Units", str(exc))
-            return
-
-        dialog = EngineeringUnitsDialog(self)
-        if dialog.exec() != QDialog.DialogCode.Accepted:
             return
 
         unit_system.set_indices(dialog.selected_indices())
@@ -1725,10 +1739,13 @@ class CeditMainWindow(QMainWindow):
 
 
 class EngineeringUnitsDialog(QDialog):
+    apply_requested = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setWindowTitle("Select Engineering Units")
+        self.setWindowModality(Qt.WindowModality.NonModal)
         self.combos: dict[str, QComboBox] = {}
 
         layout = QFormLayout()
@@ -1740,10 +1757,10 @@ class EngineeringUnitsDialog(QDialog):
             layout.addRow(f"{BASE_UNIT_NAMES[key]}:", combo)
 
         buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok
-            | QDialogButtonBox.StandardButton.Cancel
+            QDialogButtonBox.StandardButton.Apply
+            | QDialogButtonBox.StandardButton.Close
         )
-        buttons.accepted.connect(self.accept)
+        buttons.button(QDialogButtonBox.StandardButton.Apply).clicked.connect(self.apply_requested.emit)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
@@ -1774,7 +1791,7 @@ class RunMonitorDialog(QDialog):
         ("interface", ("Inter.", "Interface"), LENGTH),
         ("pyrolysis", ("Pyrol", "Pyrolysis"), MASS_LOSS),
         ("fire", ("Fire",), HRR),
-        ("pressure", ("Pressure",), PRESSURE),
+        ("pressure", ("Pressure",), PRESSURE_DIFFERENCE),
     )
 
     def __init__(self, parent, case_name: str, simulation_time: float):
@@ -1802,7 +1819,7 @@ class RunMonitorDialog(QDialog):
         top_layout.addWidget(self.progress_bar, 0, 5)
         top_layout.setColumnStretch(5, 1)
 
-        self.summary_table = QTableWidget(0, 7)
+        self.summary_table = UnitTableWidget(0, 7)
         self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
         self.summary_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -1853,7 +1870,7 @@ class RunMonitorDialog(QDialog):
             f"Interface\nHeight\n({unit_label(LENGTH)})",
             f"Pyrolysis\nRate\n({unit_label(MASS_LOSS)})",
             f"Fire\nSize\n({unit_label(HRR)})",
-            f"Pressure\n({unit_label(PRESSURE)})",
+            f"Pressure\n({unit_label(PRESSURE_DIFFERENCE)})",
         ]
 
     def update_status(self, text: str):
@@ -1921,7 +1938,7 @@ class RunMonitorDialog(QDialog):
                 self.format_status_value(LENGTH, values[3]),
                 self.format_status_value(MASS_LOSS, values[4]),
                 self.format_status_value(HRR, values[5]),
-                self.format_status_value(PRESSURE, values[6]),
+                self.format_status_value(PRESSURE_DIFFERENCE, values[6]),
             ]
 
         if len(values) >= 5:
@@ -1932,7 +1949,7 @@ class RunMonitorDialog(QDialog):
                 "",
                 self.format_status_value(MASS_LOSS, values[2]),
                 self.format_status_value(HRR, values[3]),
-                self.format_status_value(PRESSURE, values[4]),
+                self.format_status_value(PRESSURE_DIFFERENCE, values[4]),
             ]
 
         return None
@@ -1978,7 +1995,7 @@ class RunMonitorDialog(QDialog):
             self.format_status_value(LENGTH, values.get("interface", "")),
             self.format_status_value(MASS_LOSS, values.get("pyrolysis", "")),
             self.format_status_value(HRR, values.get("fire", "")),
-            self.format_status_value(PRESSURE, values.get("pressure", "")),
+            self.format_status_value(PRESSURE_DIFFERENCE, values.get("pressure", "")),
         ]
 
     def format_status_value(self, kind: str, text: str) -> str:

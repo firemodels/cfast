@@ -18,6 +18,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from table_widgets import UnitTableWidget
+
 from cfast_case import CfastCase, Compartment, OutputVisualization
 from units import LENGTH, TEMPERATURE, format_value, parse_number, parse_value
 
@@ -79,11 +81,11 @@ class OutputTab(QWidget):
         self.updating = False
         self.compartments: list[Compartment] = []
 
-        self.visual_table = QTableWidget(10, 5)
+        self.visual_table = UnitTableWidget(10, 5)
         self.visual_table.setHorizontalHeaderLabels(visual_headers())
         self.visual_table.verticalHeader().setVisible(False)
 
-        self.resolution_table = QTableWidget(10, 4)
+        self.resolution_table = UnitTableWidget(10, 4)
         self.resolution_table.setHorizontalHeaderLabels(resolution_headers())
         self.resolution_table.verticalHeader().setVisible(False)
         self.resolution_table.setEditTriggers(
@@ -333,16 +335,19 @@ class OutputTab(QWidget):
         return group
 
     def build_visual_editor(self):
+        self.visual_temperature_label = QLabel("Temperature:")
+        self.axis_label = QLabel("Axis:")
+        self.visual_position_label = QLabel("Position:")
         layout = QGridLayout()
         layout.addWidget(QLabel("Visualization Type:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.visualization_type_combo, 0, 1)
         layout.addWidget(QLabel("Compartment:"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.visual_compartment_edit, 1, 1)
-        layout.addWidget(QLabel("Position:"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.visual_position_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.visual_position_edit, 2, 1)
-        layout.addWidget(QLabel("Axis:"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.axis_label, 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.axis_combo, 3, 1)
-        layout.addWidget(QLabel("Temperature:"), 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.visual_temperature_label, 4, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.visual_temperature_edit, 4, 1)
         return layout
 
@@ -363,12 +368,15 @@ class OutputTab(QWidget):
         return group
 
     def build_resolution_editor(self):
+        self.height_grid_label = QLabel("Height (Z) Grid:")
+        self.depth_grid_label = QLabel("Depth (Y) Grid:")
+        self.width_grid_label = QLabel("Width (X) Grid:")
         layout = QGridLayout()
-        layout.addWidget(QLabel("Width (X) Grid:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.width_grid_label, 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.width_grid_edit, 0, 1)
-        layout.addWidget(QLabel("Depth (Y) Grid:"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.depth_grid_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.depth_grid_edit, 1, 1)
-        layout.addWidget(QLabel("Height (Z) Grid:"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.height_grid_label, 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.height_grid_edit, 2, 1)
         return layout
 
@@ -673,8 +681,14 @@ class OutputTab(QWidget):
 
     def set_visual_editor_enabled(self, vis_type: str):
         self.axis_combo.setEnabled(vis_type.upper() == "2-D")
+        self.axis_combo.setVisible(vis_type.upper() == "2-D")
+        self.axis_label.setVisible(vis_type.upper() == "2-D")
         self.visual_position_edit.setEnabled(vis_type.upper() == "2-D")
+        self.visual_position_edit.setVisible(vis_type.upper() == "2-D")
+        self.visual_position_label.setVisible(vis_type.upper() == "2-D")
         self.visual_temperature_edit.setEnabled(vis_type.upper() == "ISOF")
+        self.visual_temperature_edit.setVisible(vis_type.upper() == "ISOF")
+        self.visual_temperature_label.setVisible(vis_type.upper() == "ISOF")
 
     def editor_to_visual_row(self):
         if self.updating:
@@ -748,8 +762,14 @@ class OutputTab(QWidget):
 
     def set_resolution_editor_enabled(self, enabled: bool):
         self.width_grid_edit.setEnabled(enabled)
+        self.width_grid_edit.setVisible(enabled)
+        self.width_grid_label.setVisible(enabled)
         self.depth_grid_edit.setEnabled(enabled)
+        self.depth_grid_edit.setVisible(enabled)
+        self.depth_grid_label.setVisible(enabled)
         self.height_grid_edit.setEnabled(enabled)
+        self.height_grid_edit.setVisible(enabled)
+        self.height_grid_label.setVisible(enabled)
 
     def editor_to_resolution_row(self):
         if self.updating:

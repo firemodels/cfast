@@ -1,11 +1,30 @@
 from __future__ import annotations
 
+import re
+
 from PySide6.QtCore import QEvent, QTimer, Qt
 from PySide6.QtGui import QColor, QPen
 from PySide6.QtWidgets import QStyledItemDelegate, QStyle, QTableWidget
 
 
-class HoverCellDelegate(QStyledItemDelegate):
+class UnitCellDelegate(QStyledItemDelegate):
+    """Keep units in editable data, but avoid repeating the column unit in display."""
+
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        header = index.model().headerData(index.column(), Qt.Orientation.Horizontal)
+        match = re.fullmatch(r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)\s+(.+)", option.text)
+        if match and str(header).endswith(f"({match[2]})"):
+            option.text = match[1]
+
+
+class UnitTableWidget(QTableWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setItemDelegate(UnitCellDelegate(self))
+
+
+class HoverCellDelegate(UnitCellDelegate):
     def paint(self, painter, option, index):
         super().paint(painter, option, index)
 
@@ -28,7 +47,7 @@ class HoverCellDelegate(QStyledItemDelegate):
         painter.restore()
 
 
-class HoverEditTableWidget(QTableWidget):
+class HoverEditTableWidget(UnitTableWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._hovered_cell: tuple[int, int] | None = None

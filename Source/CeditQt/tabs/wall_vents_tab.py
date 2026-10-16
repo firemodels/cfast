@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment, WallVent
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitTableWidget
 from units import LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -99,7 +99,7 @@ class WallVentsTab(QWidget):
         self.pre_fraction_edit = QLineEdit()
         self.post_fraction_edit = QLineEdit()
 
-        self.schedule_table = QTableWidget(8, 2)
+        self.schedule_table = UnitTableWidget(8, 2)
         self.schedule_table.setHorizontalHeaderLabels(
             [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
@@ -461,6 +461,7 @@ class WallVentsTab(QWidget):
         self.loading = False
 
     def set_editor_enabled(self, enabled: bool):
+        self.editor_group.setVisible(enabled)
         for widget in [
             self.id_edit,
             self.first_comp_combo,

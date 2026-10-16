@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitTableWidget
 from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -219,14 +219,14 @@ class CompartmentsTab(QWidget):
         self.floor_leak_area_ratio_edit = QLineEdit()
         self.ceiling_leak_area_ratio_edit = QLineEdit()
 
-        self.area_table = QTableWidget(6, 2)
+        self.area_table = UnitTableWidget(6, 2)
         self.area_table.setHorizontalHeaderLabels(area_headers())
         self.area_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
         )
         self.area_table.verticalHeader().setVisible(False)
 
-        self.materials_table = QTableWidget(3, 6)
+        self.materials_table = UnitTableWidget(3, 6)
         self.materials_table.setHorizontalHeaderLabels(material_headers())
         self.materials_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch

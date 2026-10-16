@@ -1089,6 +1089,8 @@ def check_target_orientation():
         assert combo.findText("Local fire") >= 0 and combo.findText("Other fire") == -1
         tab.normal_mode_combo.setCurrentText("Specify Direction")
         assert combo.isEnabled() and not tab.nx_edit.isEnabled()
+        assert not combo.isHidden() and tab.nx_edit.isHidden()
+        assert not tab.surface_orientation_label.isHidden() and tab.nx_label.isHidden()
         with tempfile.TemporaryDirectory(prefix="cedit-target-orientation-") as directory:
             path = Path(directory) / "target.in"
             for direction in ("CEILING", "FLOOR", "LEFT WALL", "RIGHT WALL", "FRONT WALL", "BACK WALL", "Local fire"):
@@ -1376,6 +1378,12 @@ def check_detection_device_parameters():
                 assert tab.activation_obscuration_edit.isEnabled() == (display_type == "Smoke")
                 assert tab.rti_edit.isEnabled() == (display_type != "Smoke")
                 assert tab.spray_density_edit.isEnabled() == (display_type == "Sprinkler")
+                for name, visible in (("activation_temperature", display_type != "Smoke"),
+                                      ("activation_obscuration", display_type == "Smoke"),
+                                      ("rti", display_type != "Smoke"),
+                                      ("spray_density", display_type == "Sprinkler")):
+                    assert getattr(tab, f"{name}_edit").isHidden() == (not visible)
+                    assert getattr(tab, f"{name}_label").isHidden() == (not visible)
 
             # Rebuilding and updating rows must both leave irrelevant cells blank and locked.
             tab.rebuild_summary_table()
@@ -1446,6 +1454,141 @@ def check_detection_device_parameters():
         assert DetectionDevice("Default", "Comp 1").rti == 50
     finally:
         unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
+def check_engineering_units_editor():
+    from unittest.mock import patch
+    from PySide6.QtCore import QSettings, Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QDialogButtonBox, QStyleOptionViewItem, QTableWidget
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case, RunMonitorDialog
+    from units import LENGTH, PRESSURE, PRESSURE_DIFFERENCE, format_value, parse_value, unit_system
+
+    window = CeditMainWindow()
+    original_units = dict(unit_system.selected)
+    tab = window.detection_suppression_tab
+    try:
+        unit_system.set_indices({key: 0 for key in original_units})
+        window.load_case(opening_case())
+        tab.add_device()
+        window.show()
+        window.tabs.setCurrentWidget(tab)
+        QApplication.processEvents()
+        # Enter units one keystroke at a time, then commit by moving focus.
+        for edit, attr in ((tab.x_edit, "x_position"), (tab.y_edit, "y_position"),
+                           (tab.z_edit, "z_position")):
+            edit.setFocus()
+            edit.selectAll()
+            QTest.keyClicks(edit, "5 ft")
+            QTest.keyClick(edit, Qt.Key.Key_Tab)
+            assert edit.text() == "1.524 m", edit.text()
+            assert math.isclose(getattr(tab.selected_device(), attr), 1.524)
+
+        def displayed(table, row, col):
+            option = QStyleOptionViewItem()
+            table.itemDelegate().initStyleOption(option, table.model().index(row, col))
+            return option.text
+
+        assert displayed(tab.summary_table, 0, tab.COL_X) == "1.524"
+        assert displayed(tab.summary_table, 0, tab.COL_RTI) == "50"
+        assert displayed(tab.summary_table, 0, tab.COL_ACTIVATION) == "57.00 °C"
+        tab.type_combo.setCurrentText("Smoke")
+        assert displayed(tab.summary_table, 0, tab.COL_ACTIVATION) == "24 %/m"
+        assert tab.response_group.isHidden()
+        assert not tab.fyi_edit.isHidden()
+        # Table edits in other units still convert and normalize correctly.
+        tab.summary_table.item(0, tab.COL_X).setText("10 ft")
+        assert math.isclose(tab.selected_device().x_position, 3.048)
+        assert displayed(tab.summary_table, 0, tab.COL_X) == "3.048"
+
+        with tempfile.TemporaryDirectory(prefix="cedit-units-editor-") as directory:
+            window.settings = QSettings(str(Path(directory) / "settings.ini"), QSettings.Format.IniFormat)
+            window.select_engineering_units()
+            dialog = window.engineering_units_dialog
+            assert not dialog.isModal() and QApplication.activeModalWidget() is None
+            window.select_engineering_units()
+            assert window.engineering_units_dialog is dialog
+            apply = dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.StandardButton.Apply)
+            # Edits made after opening the dialog must survive Apply.
+            tab.x_edit.setText("7 ft")
+            dialog.combos[LENGTH].setCurrentText("ft")
+            apply.click()
+            assert dialog.isVisible()
+            assert tab.x_edit.text() == "7 ft"
+            assert displayed(tab.summary_table, 0, tab.COL_X) == "7"
+            assert math.isclose(window.build_cfast_case().detection_devices[0].x_position, 2.1336)
+            # Loading a new case while the dialog is open must not restore the old case.
+            case = opening_case()
+            case.title = "Loaded while units are open"
+            case.compartments[0].width = 8.0
+            window.load_case(case)
+            for label, expected in (("psi", 14.6959487755), ("psia", 14.6959487755), ("psig", 0.0)):
+                dialog.combos[PRESSURE].setCurrentText(label)
+                apply.click()
+                assert math.isclose(float(window.simulation_tab.pressure_edit.text().split()[0]),
+                                    expected, abs_tol=1e-8)
+                assert window.build_cfast_case().title == case.title
+                assert math.isclose(window.build_cfast_case().pressure, 101325.0, abs_tol=1e-4)
+                path = Path(directory) / "pressure.in"
+                write_cfast_input(window.build_cfast_case(), path)
+                assert math.isclose(read_cfast_input(path).pressure, 101325.0, abs_tol=1e-3)
+                assert format_value(PRESSURE_DIFFERENCE, 0.0) == "0 psi"
+            monitor = RunMonitorDialog(window, "Units", 60)
+            assert "(psi)" in monitor.summary_headers()[-1]
+            assert monitor.format_status_value(PRESSURE_DIFFERENCE, "0") == "0"
+            monitor.deleteLater()
+            assert math.isclose(parse_value(PRESSURE, "1 psia", "Pressure"), 6894.757293168)
+            assert math.isclose(parse_value(PRESSURE, "0 psig", "Pressure"), 101325.0)
+            assert math.isclose(parse_value(PRESSURE, "-1 psig", "Pressure"), 94430.242706832)
+            assert math.isclose(parse_value(PRESSURE_DIFFERENCE, "1 psig", "Pressure difference"),
+                                6894.757293168)
+            window.mechanical_vents_tab.add_vent()
+            vent_tab = window.mechanical_vents_tab
+            vent_tab.begin_dropoff_edit.setText("1 psig")
+            vent_tab.zero_flow_edit.setText("2 psi")
+            saved = window.build_cfast_case().mechanical_vents[0]
+            assert math.isclose(saved.begin_dropoff, 6894.757293168)
+            assert math.isclose(saved.zero_flow, 13789.514586336)
+            # Invalid edits must leave both the case and selected units available for repair.
+            window.simulation_tab.pressure_edit.setText("1 invalid")
+            previous = dict(unit_system.selected)
+            dialog.combos[PRESSURE].setCurrentText("Pa")
+            with patch.object(QMessageBox, "critical") as critical:
+                apply.click()
+                critical.assert_called_once()
+            assert unit_system.selected == previous and dialog.isVisible()
+            window.simulation_tab.pressure_edit.setText("0 psig")
+            dialog.close()
+            window.select_engineering_units()
+            assert dialog.combos[PRESSURE].currentText() == "psig"
+            dialog.close()
+        # Check both summary and detail tables, including compound units.
+        units_dir = Path(__file__).resolve().parents[2] / "Verification" / "Units"
+        checked = 0
+        for length_index in (0, 3):
+            unit_system.set_indices({**{key: 0 for key in original_units}, LENGTH: length_index})
+            for name in ("units_basic", "units_vents_devices", "units_fire"):
+                window.load_case(read_cfast_input(units_dir / f"{name}.in"))
+                for table in window.findChildren(QTableWidget):
+                    for col in range(table.columnCount()):
+                        header = table.horizontalHeaderItem(col)
+                        if header is None:
+                            continue
+                        for row in range(table.rowCount()):
+                            item = table.item(row, col)
+                            if item is None:
+                                continue
+                            number, _, suffix = item.text().partition(" ")
+                            if suffix and header.text().endswith(f"({suffix})"):
+                                assert displayed(table, row, col) == number
+                                checked += 1
+        assert checked > 100, checked
+    finally:
+        unit_system.set_indices(original_units)
+        window.hide()
         window.deleteLater()
 
 
@@ -1611,6 +1754,9 @@ def check_output_visualizations():
             assert tab.visual_temperature_edit.isEnabled()
             assert not tab.visual_position_edit.isEnabled()
             assert not tab.axis_combo.isEnabled()
+            assert tab.axis_combo.isHidden() and tab.axis_label.isHidden()
+            assert tab.visual_position_edit.isHidden() and tab.visual_position_label.isHidden()
+            assert not tab.visual_temperature_edit.isHidden()
             tab.visual_temperature_edit.setText("212 F")
             tab.visual_temperature_edit.editingFinished.emit()
             tab.duplicate_visualization()
@@ -1929,6 +2075,7 @@ def main() -> int:
     check_adiabatic_convection_coefficients()
     check_mechanical_vent_defaults()
     check_detection_device_parameters()
+    check_engineering_units_editor()
     check_surface_connections_removed()
     check_unrecognized_namelists()
     check_debug_output()

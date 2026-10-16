@@ -19,12 +19,12 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment, MechanicalVent
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitTableWidget
 from units import (
     AREA,
     FLOWRATE,
     LENGTH,
-    PRESSURE,
+    PRESSURE_DIFFERENCE,
     TIME,
     format_number,
     format_value,
@@ -134,7 +134,7 @@ class MechanicalVentsTab(QWidget):
         self.pre_fraction_edit = QLineEdit()
         self.post_fraction_edit = QLineEdit()
 
-        self.schedule_table = QTableWidget(8, 2)
+        self.schedule_table = UnitTableWidget(8, 2)
         self.schedule_table.setHorizontalHeaderLabels(
             [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )
@@ -487,8 +487,8 @@ class MechanicalVentsTab(QWidget):
         self.set_combo_text(self.to_orientation_combo, self.display_orientation(vent.to_orientation))
 
         self.flow_edit.setText(format_value(FLOWRATE, vent.flow))
-        self.begin_dropoff_edit.setText(format_value(PRESSURE, vent.begin_dropoff))
-        self.zero_flow_edit.setText(format_value(PRESSURE, vent.zero_flow))
+        self.begin_dropoff_edit.setText(format_value(PRESSURE_DIFFERENCE, vent.begin_dropoff))
+        self.zero_flow_edit.setText(format_value(PRESSURE_DIFFERENCE, vent.zero_flow))
         self.offset_x_edit.setText(format_value(LENGTH, vent.offset_x))
         self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
         self.filter_efficiency_edit.setText(f"{format_number(vent.filter_efficiency)} %")
@@ -566,8 +566,8 @@ class MechanicalVentsTab(QWidget):
             vent.to_area = parse_value(AREA, self.to_area_edit.text(), "To Area")
             vent.to_height = parse_value(LENGTH, self.to_height_edit.text(), "To Height")
             vent.flow = parse_value(FLOWRATE, self.flow_edit.text(), "Flow Rate")
-            vent.begin_dropoff = parse_value(PRESSURE, self.begin_dropoff_edit.text(), "Begin Dropoff")
-            vent.zero_flow = parse_value(PRESSURE, self.zero_flow_edit.text(), "Zero Flow")
+            vent.begin_dropoff = parse_value(PRESSURE_DIFFERENCE, self.begin_dropoff_edit.text(), "Begin Dropoff")
+            vent.zero_flow = parse_value(PRESSURE_DIFFERENCE, self.zero_flow_edit.text(), "Zero Flow")
             vent.offset_x = parse_value(LENGTH, self.offset_x_edit.text(), "Vent Offset X")
             vent.offset_y = parse_value(LENGTH, self.offset_y_edit.text(), "Vent Offset Y")
             vent.filter_efficiency = parse_number(

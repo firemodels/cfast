@@ -2,6 +2,8 @@
 
 This directory contains the platform bundle scripts for CFAST 8. Run the commands from the CFAST repository root unless noted otherwise.
 
+All platform bundle scripts pass `--clean-cfast` when building CFAST so each bundle build recompiles it with fresh object and module files. Direct-make fallbacks also clean before compiling. Use `--no-build-cfast` only to package an executable that has already been built and verified.
+
 ## Quick Start
 
 ### macOS
@@ -13,8 +15,6 @@ Build/bundle/build_macos_bundle.sh
 ```
 
 The DMG is written to `Build/bundle/macos`.
-
-The macOS bundle script passes `--clean-cfast` to the CFAST build script so each bundle build recompiles CFAST with fresh object and module files.
 
 To use manuals from the `CFAST_TEST` release and upload the finished DMG back to the test bundle release:
 

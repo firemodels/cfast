@@ -505,13 +505,14 @@ def build_cfast_executable(args) -> None:
     require_dir(build_dir, f"CFAST build directory for {args.cfast_build_target}")
 
     print(f"*** Building CFAST Windows executable ({args.cfast_build_target})")
-    if args.cfast_build_target == "intel_win":
+    if args.cfast_build_target in ("intel_win", "gnu_win"):
         make_script = build_dir / "make_cfast.bat"
-        require_file(make_script, "CFAST Intel Windows make script")
-        run_checked([command_processor(), "/d", "/c", make_script.name], build_dir, "CFAST intel_win build")
-    elif args.cfast_build_target == "gnu_win":
-        require_command("make")
-        run_checked(["make", "-f", "..\\makefile", "gnu_win"], build_dir, "CFAST gnu_win build")
+        require_file(make_script, "CFAST Windows make script")
+        run_checked(
+            [command_processor(), "/d", "/c", make_script.name, "--clean-cfast"],
+            build_dir,
+            f"CFAST {args.cfast_build_target} build",
+        )
     else:
         raise SystemExit(f"***error: unsupported CFAST Windows build target: {args.cfast_build_target}")
 

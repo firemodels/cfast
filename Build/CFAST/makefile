@@ -173,4 +173,4 @@ clean:
 
 .PHONY : winclean
 winclean:
-	-erase *.mod *.obj 
+	-erase *.o *.mod *.obj

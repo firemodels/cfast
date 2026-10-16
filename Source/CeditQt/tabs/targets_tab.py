@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, FireDefinition, MaterialProperty, Target
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitLineEdit, rounded_display_text
 from units import (
     CONDUCTIVITY,
     CONVECTION_COEFFICIENT,
@@ -187,9 +187,9 @@ class TargetsTab(QWidget):
         group = QGroupBox("Target Geometry")
         layout = QGridLayout()
 
-        self.x_edit = QLineEdit()
-        self.y_edit = QLineEdit()
-        self.z_edit = QLineEdit()
+        self.x_edit = UnitLineEdit()
+        self.y_edit = UnitLineEdit()
+        self.z_edit = UnitLineEdit()
         self.normal_mode_combo = QComboBox()
         self.normal_mode_combo.addItems(["Specify Normal", "Specify Direction"])
         self.surface_orientation_combo = QComboBox()
@@ -241,8 +241,8 @@ class TargetsTab(QWidget):
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic")
         self.convection_group = QGroupBox("Convection Coefficients")
-        self.convection_front_edit = QLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
-        self.convection_back_edit = QLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
+        self.convection_front_edit = UnitLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
+        self.convection_back_edit = UnitLineEdit(format_value(CONVECTION_COEFFICIENT, 0.01, include_unit=False))
         convection_layout = QFormLayout(self.convection_group)
         self.convection_front_label = QLabel(f"Front (1), {unit_label(CONVECTION_COEFFICIENT)}:")
         self.convection_back_label = QLabel(f"Back (2), {unit_label(CONVECTION_COEFFICIENT)}:")
@@ -255,13 +255,13 @@ class TargetsTab(QWidget):
         self.conductivity_label = QLabel("Conductivity: ")
         self.specific_heat_label = QLabel("Specific Heat: ")
         self.density_label = QLabel("Density: ")
-        self.thickness_edit = QLineEdit()
+        self.thickness_edit = UnitLineEdit()
         self.temperature_depth_label = QLabel("Internal Temperature at")
         self.depth_units_combo = QComboBox()
         self.depth_units_combo.addItem("Fraction", "FRACTION")
         self.depth_units_combo.addItem("Depth", "METERS")
         self.temperature_depth_units = "FRACTION"
-        self.temperature_depth_edit = QLineEdit()
+        self.temperature_depth_edit = UnitLineEdit()
         depth_label_layout = QHBoxLayout()
         depth_label_layout.addWidget(self.temperature_depth_label)
         depth_label_layout.addWidget(self.depth_units_combo)
@@ -899,7 +899,7 @@ def material_properties(matl_id: str) -> dict:
 def format_property(value, kind: str) -> str:
     if isinstance(value, str):
         return value
-    return format_value(kind, float(value), include_unit=False)
+    return rounded_display_text(format_value(kind, float(value), include_unit=False))
 
 
 def unique_id(base: str, existing: set[str]) -> str:

@@ -1520,12 +1520,38 @@ def check_engineering_units_editor():
             assert tab.x_edit.text() == "7 ft"
             assert displayed(tab.summary_table, 0, tab.COL_X) == "7"
             assert math.isclose(window.build_cfast_case().detection_devices[0].x_position, 2.1336)
+            # Presets replace every selection and apply immediately without closing.
+            for combo in dialog.combos.values():
+                combo.setCurrentIndex(combo.count() - 1)
+            for button, labels, position in (
+                (dialog.english_button,
+                 {"length": "ft", "mass": "lbm", "time": "s", "temperature": "°F",
+                  "pressure": "psia", "energy": "BTU", "smoke": "%/ft"}, "7 ft"),
+                (dialog.si_button,
+                 {"length": "m", "mass": "kg", "time": "s", "temperature": "°C",
+                  "pressure": "Pa", "energy": "kJ", "smoke": "%/m"}, "2.1336 m"),
+            ):
+                button.click()
+                assert dialog.isVisible() and QApplication.activeModalWidget() is None
+                assert {key: combo.currentText() for key, combo in dialog.combos.items()} == labels
+                assert {key: unit_system.choices(key)[unit_system.selected[key]] for key in labels} == labels
+                assert tab.x_edit.text() == position
+                fraction_unit = f"{labels['mass']}/{labels['mass']}"
+                assert window.simulation_tab.interior_o2_mass_fraction_edit.text() == f"0.23 {fraction_unit}"
+                assert window.simulation_tab.exterior_o2_mass_fraction_edit.text() == f"0.23 {fraction_unit}"
+                saved = window.build_cfast_case()
+                assert math.isclose(saved.detection_devices[0].x_position, 2.1336)
+                assert math.isclose(saved.detection_devices[0].activation_obscuration, 24.0)
+                assert math.isclose(saved.pressure, 101325.0, abs_tol=1e-4)
+                assert math.isclose(saved.interior_temperature, 20.0)
+                for key, index in unit_system.selected.items():
+                    assert window.settings.value(f"units/{key}", type=int) == index
             # Loading a new case while the dialog is open must not restore the old case.
             case = opening_case()
             case.title = "Loaded while units are open"
             case.compartments[0].width = 8.0
             window.load_case(case)
-            for label, expected in (("psi", 14.6959487755), ("psia", 14.6959487755), ("psig", 0.0)):
+            for label, expected in (("psi", 14.7), ("psia", 14.7), ("psig", 0.0)):
                 dialog.combos[PRESSURE].setCurrentText(label)
                 apply.click()
                 assert math.isclose(float(window.simulation_tab.pressure_edit.text().split()[0]),
@@ -1560,6 +1586,10 @@ def check_engineering_units_editor():
                 apply.click()
                 critical.assert_called_once()
             assert unit_system.selected == previous and dialog.isVisible()
+            with patch.object(QMessageBox, "critical") as critical:
+                dialog.si_button.click()
+                critical.assert_called_once()
+            assert unit_system.selected == previous and dialog.isVisible()
             window.simulation_tab.pressure_edit.setText("0 psig")
             dialog.close()
             window.select_engineering_units()
@@ -1583,12 +1613,301 @@ def check_engineering_units_editor():
                                 continue
                             number, _, suffix = item.text().partition(" ")
                             if suffix and header.text().endswith(f"({suffix})"):
-                                assert displayed(table, row, col) == number
+                                assert math.isclose(float(displayed(table, row, col)), float(number), rel_tol=5e-5)
                                 checked += 1
         assert checked > 100, checked
     finally:
         unit_system.set_indices(original_units)
         window.hide()
+        window.deleteLater()
+
+
+def check_quantity_display_precision():
+    from dataclasses import asdict
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QStyleOptionViewItem
+    from cfast_reader import read_cfast_input
+    from main_window import EngineeringUnitsDialog
+    from table_widgets import UnitLineEdit
+    from units import unit_system
+
+    def same_values(expected, actual, path="case"):
+        if isinstance(expected, dict):
+            assert expected.keys() == actual.keys(), path
+            for key in expected:
+                same_values(expected[key], actual[key], f"{path}.{key}")
+        elif isinstance(expected, (list, tuple)):
+            assert len(expected) == len(actual), path
+            for index, (left, right) in enumerate(zip(expected, actual)):
+                same_values(left, right, f"{path}[{index}]")
+        elif isinstance(expected, float):
+            assert math.isclose(expected, actual, rel_tol=1e-8, abs_tol=1e-9), (path, expected, actual)
+        else:
+            assert expected == actual, (path, expected, actual)
+
+    window = CeditMainWindow()
+    original_units = dict(unit_system.selected)
+    try:
+        units_dir = Path(__file__).resolve().parents[2] / "Verification/Units"
+        compact_fields = 0
+        for name in ("units_basic", "units_vents_devices", "units_fire"):
+            unit_system.set_indices({key: 0 for key in original_units})
+            window.load_case(read_cfast_input(units_dir / f"{name}.in"))
+            baseline = asdict(window.build_cfast_case())
+            for preset in ("English", "SI", "English"):
+                case = window.build_cfast_case()
+                unit_system.set_indices({key: unit_system.choices(key).index(label)
+                                         for key, label in EngineeringUnitsDialog.PRESETS[preset].items()})
+                window.load_case(case)
+                for edit in window.findChildren(UnitLineEdit):
+                    if edit.displayText() != edit.text():
+                        compact_fields += 1
+                        number = edit.displayText().split()[0]
+                        digits = number.lower().split("e")[0].lstrip("+-").replace(".", "").lstrip("0")
+                        assert len(digits) <= 5, edit.displayText()
+                same_values(baseline, asdict(window.build_cfast_case()))
+        assert compact_fields > 20, compact_fields
+
+        tab = window.mechanical_vents_tab
+        tab.add_vent()
+        tab.from_area_edit.setText("2.690977604 ft²")
+        tab.from_height_edit.setText("3.937007874 ft")
+        tab.flow_edit.setText("0.7062933344 ft³/s")
+        assert tab.from_area_edit.displayText() == "2.691 ft²"
+        assert tab.from_height_edit.displayText() == "3.937 ft"
+        assert tab.flow_edit.displayText() == "0.70629 ft³/s"
+        window.build_cfast_case()
+        option = QStyleOptionViewItem()
+        tab.summary_table.itemDelegate().initStyleOption(option, tab.summary_table.model().index(0, 3))
+        assert option.text == "2.691"
+        assert tab.summary_table.horizontalHeaderItem(2).text() == "From\nCompartment"
+        assert tab.summary_table.horizontalHeaderItem(6).text() == "To\nCompartment"
+        window.show()
+        window.tabs.setCurrentWidget(tab)
+        QApplication.processEvents()
+        tab.from_area_edit.setFocus()
+        tab.from_area_edit.selectAll()
+        QTest.keyClicks(tab.from_area_edit, "3.123456789 ft2")
+        QTest.keyClick(tab.from_area_edit, Qt.Key.Key_Tab)
+        assert tab.from_area_edit.displayText() == "3.1235 ft2"
+        assert tab.from_area_edit.text() == "3.123456789 ft2"
+        assert math.isclose(window.build_cfast_case().mechanical_vents[0].from_area,
+                            3.123456789 * 0.3048 ** 2)
+    finally:
+        unit_system.set_indices(original_units)
+        window.hide()
+        window.deleteLater()
+
+
+def check_pound_mass_units():
+    from units import (
+        DENSITY, E_COEFFICIENT, HOC, MASS, MASS_FRACTION, MASS_LOSS,
+        SPECIFIC_EXTINCTION, SPECIFIC_HEAT, format_value, parse_value, unit_system,
+    )
+
+    original_units = dict(unit_system.selected)
+    try:
+        unit_system.set_index(MASS, unit_system.choices(MASS).index("lbm"))
+        assert format_value(MASS, 0.4535924) == "1 lbm"
+        assert format_value(MASS_FRACTION, 0.23) == "0.23 lbm/lbm"
+        for kind, label, expected in (
+            (MASS, "lbm", 0.4535924),
+            (MASS_FRACTION, "lbm/lbm", 1.0),
+            (MASS_LOSS, "lbm/s", 0.4535924),
+            (DENSITY, "lbm/ft3", 0.4535924 / 0.3048 ** 3),
+            (HOC, "BTU/lbm", 1.05435 / 0.4535924),
+            (SPECIFIC_HEAT, "BTU/(lbm F)", 1.05435 / (0.4535924 * 5 / 9)),
+            (SPECIFIC_EXTINCTION, "ft2/lbm", 0.3048 ** 2 / 0.4535924),
+            (E_COEFFICIENT, "ft2/(lbm s)", 0.3048 ** 2 / 0.4535924),
+        ):
+            for spelling in (label, label.replace("lbm", "lb")):
+                assert math.isclose(parse_value(kind, f"1 {spelling}", "Mass quantity"), expected)
+            try:
+                parse_value(kind, f"1 {label.replace('lbm', 'lbf')}", "Mass quantity")
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("Pound force must not be accepted as pound mass")
+    finally:
+        unit_system.set_indices(original_units)
+
+
+def check_units_start_in_si():
+    from unittest.mock import patch
+    from PySide6.QtCore import QSettings
+    from units import unit_system
+
+    original_units = dict(unit_system.selected)
+    window = None
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-startup-units-") as directory:
+            settings = QSettings(str(Path(directory) / "settings.ini"), QSettings.Format.IniFormat)
+            for key in unit_system.selected:
+                settings.setValue(f"units/{key}", len(unit_system.choices(key)) - 1)
+                unit_system.set_index(key, len(unit_system.choices(key)) - 1)
+            with patch("main_window.QSettings", return_value=settings):
+                window = CeditMainWindow()
+            assert all(index == 0 for index in unit_system.selected.values())
+            assert window.simulation_tab.interior_temperature_edit.text() == "20 °C"
+            assert window.simulation_tab.pressure_edit.text() == "101325 Pa"
+            assert window.simulation_tab.interior_o2_mass_fraction_edit.text() == "0.23 kg/kg"
+            assert window.simulation_tab.flaming_extinction_edit.text() == "8700 m²/kg"
+    finally:
+        unit_system.set_indices(original_units)
+        if window is not None:
+            window.deleteLater()
+
+
+def check_simulation_unit_display():
+    from PySide6.QtTest import QTest
+    from cfast_case import CfastCase
+    from tabs.simulation_tab import SimulationTab
+    from units import LENGTH, MASS, PRESSURE, SPECIFIC_EXTINCTION, display_value, parse_value, unit_label, unit_system
+
+    original_units = dict(unit_system.selected)
+    tab = SimulationTab()
+    try:
+        # All available mass units label both fractions without changing their values.
+        for index, mass in enumerate(unit_system.choices(MASS)):
+            unit_system.set_index(MASS, index)
+            case = CfastCase()
+            tab.load_case(case)
+            for edit in (tab.interior_o2_mass_fraction_edit, tab.exterior_o2_mass_fraction_edit):
+                assert edit.text() == f"0.23 {mass}/{mass}"
+                edit.setText("0.21 kg/kg")
+                edit.editingFinished.emit()
+                assert edit.text() == f"0.21 {mass}/{mass}"
+            tab.add_to_case(case)
+            assert case.interior_o2_mass_fraction == case.exterior_o2_mass_fraction == 0.21
+
+        # Rounded displays retain the exact pressure through normalization and unit changes.
+        for pressure in (101325.0, 100987.654321):
+            case = CfastCase(pressure=pressure)
+            for label in ("psia", "Pa", "psig", "psi", "psia"):
+                unit_system.set_index(PRESSURE, unit_system.choices(PRESSURE).index(label))
+                tab.load_case(case)
+                for _ in range(3):
+                    tab.pressure_edit.editingFinished.emit()
+                    tab.add_to_case(case)
+                    assert case.pressure == pressure
+            # User-entered precision also survives the rounded display.
+            tab.pressure_edit.setText("14.123456789 psia")
+            tab.pressure_edit.editingFinished.emit()
+            assert tab.pressure_edit.text() == "14.12 psia"
+            tab.add_to_case(case)
+            assert case.pressure == parse_value(PRESSURE, "14.123456789 psia", "Pressure")
+
+        # Five significant figures affect only display, even across repeated unit changes.
+        for coefficients in ((8700.0, 4400.0), (1234.567891, 0.0000123456789)):
+            case = CfastCase(specific_extinction=coefficients)
+            for length_index, mass_index in ((3, 2), (0, 0), (3, 2), (0, 0)):
+                unit_system.set_indices({LENGTH: length_index, MASS: mass_index})
+                tab.load_case(case)
+                for edit, value in zip((tab.flaming_extinction_edit, tab.smoldering_extinction_edit), coefficients):
+                    expected = f"{display_value(SPECIFIC_EXTINCTION, value):.5g} {unit_label(SPECIFIC_EXTINCTION)}"
+                    assert edit.text() == expected
+                    edit.editingFinished.emit()
+                    edit.editingFinished.emit()
+                tab.add_to_case(case)
+                assert case.specific_extinction == coefficients
+        tab.flaming_extinction_edit.setText("1234.567891 m2/kg")
+        tab.flaming_extinction_edit.editingFinished.emit()
+        assert tab.flaming_extinction_edit.text() == "1234.6 m²/kg"
+        tab.add_to_case(case)
+        assert case.specific_extinction[0] == 1234.567891
+
+        # Explicitly retyping the displayed number counts as a new pressure value.
+        tab.load_case(CfastCase(pressure=101325.0))
+        tab.pressure_edit.selectAll()
+        QTest.keyClicks(tab.pressure_edit, "14.7 psia")
+        tab.pressure_edit.editingFinished.emit()
+        case = CfastCase()
+        tab.add_to_case(case)
+        assert case.pressure == parse_value(PRESSURE, "14.7 psia", "Pressure")
+    finally:
+        unit_system.set_indices(original_units)
+        tab.deleteLater()
+
+
+def check_derived_unit_input_files():
+    from cfast_reader import read_cfast_input
+    from unittest.mock import patch
+    from main_window import EngineeringUnitsDialog
+    from units import HEAT_FLUX, SPECIFIC_EXTINCTION, TEMPERATURE, unit_label, unit_system
+
+    window = CeditMainWindow()
+    original_units = dict(unit_system.selected)
+
+    def save_input(path):
+        with patch.object(QMessageBox, "information"):
+            assert window.write_case_to_path(path) == path
+        return read_cfast_input(path)
+
+    units_file = Path(__file__).resolve().parents[2] / "Verification/Units/units_vents_devices.in"
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-derived-units-") as directory:
+            for profile, labels in EngineeringUnitsDialog.PRESETS.items():
+                unit_system.set_indices({key: unit_system.choices(key).index(label)
+                                         for key, label in labels.items()})
+                for criterion, kind, setpoint in (("TEMPERATURE", TEMPERATURE, 100.0),
+                                                  ("FLUX", HEAT_FLUX, 5.0)):
+                    case = read_cfast_input(units_file)
+                    for vents in (case.wall_vents, case.ceiling_floor_vents, case.mechanical_vents):
+                        vents[0].criterion = criterion
+                        vents[0].setpoint = setpoint
+                        vents[0].target = "Thermocouple"
+                    window.load_case(case)
+                    sim = window.simulation_tab
+                    if profile == "English":
+                        assert sim.flaming_extinction_edit.text().endswith(" ft²/lbm")
+                        assert sim.smoldering_extinction_edit.text().endswith(" ft²/lbm")
+                        expected_extinction = 8700 * 0.4535924 / 0.3048 ** 2
+                        assert sim.flaming_extinction_edit.text() == f"{expected_extinction:.5g} ft²/lbm"
+                        coefficient = window.compartments_tab.flow_coefficient_edit.text()
+                        assert coefficient.endswith(" ft³/(s √(psi))")
+                        assert math.isclose(float(coefficient.split()[0]),
+                                            0.07 * math.sqrt(6894.757293168) / 0.3048 ** 3)
+                    tabs = (window.wall_vents_tab, window.ceiling_floor_vents_tab, window.mechanical_vents_tab)
+                    for tab in tabs:
+                        assert tab.setpoint_label.text() == f"Setpoint ({unit_label(kind)}):"
+                        if profile == "English":
+                            expected = 212.0 if criterion == "TEMPERATURE" else 5000 * 0.3048 ** 2 / 1054.35
+                            assert math.isclose(float(tab.setpoint_edit.text()), expected)
+
+                    # Write exactly what Save writes, then read the actual input file.
+                    path = Path(directory) / f"{profile}_{criterion}.in"
+                    saved = save_input(path)
+                    assert math.isclose(saved.pressure, 101325.0)
+                    assert math.isclose(saved.interior_temperature, 20.0)
+                    assert math.isclose(saved.interior_o2_mass_fraction, 0.23)
+                    assert all(math.isclose(a, b) for a, b in zip(saved.specific_extinction, (8700, 4400)))
+                    assert math.isclose(saved.compartments[0].flow_coefficient, 0.07)
+                    assert math.isclose(saved.compartments[0].width, 5.0)
+                    for vents in (saved.wall_vents, saved.ceiling_floor_vents, saved.mechanical_vents):
+                        assert math.isclose(vents[0].setpoint, setpoint)
+
+                    # Explicit SI entries also work while English is selected.
+                    sim.flaming_extinction_edit.setText("9000 m2/kg")
+                    sim.smoldering_extinction_edit.setText("4500 m²/kg")
+                    for tab in tabs:
+                        tab.setpoint_edit.setText("80 C" if criterion == "TEMPERATURE" else "2 kW/m2")
+                        tab.setpoint_edit.editingFinished.emit()
+                    saved = save_input(path)
+                    assert saved.specific_extinction == (9000.0, 4500.0)
+                    for vents in (saved.wall_vents, saved.ceiling_floor_vents, saved.mechanical_vents):
+                        assert math.isclose(vents[0].setpoint, 80.0 if criterion == "TEMPERATURE" else 2.0)
+                    if profile == "English":
+                        sim.pressure_edit.setText("15 psia")
+                        sim.flaming_extinction_edit.setText("100 ft2/lbm")
+                        sim.smoldering_extinction_edit.setText("50 ft2/lbm")
+                        saved = save_input(path)
+                        # The existing input writer retains six significant figures.
+                        assert math.isclose(saved.pressure, 15 * 6894.757293168, rel_tol=5e-6)
+                        assert math.isclose(saved.specific_extinction[0], 100 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
+                        assert math.isclose(saved.specific_extinction[1], 50 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
+    finally:
+        unit_system.set_indices(original_units)
         window.deleteLater()
 
 
@@ -2076,6 +2395,11 @@ def main() -> int:
     check_mechanical_vent_defaults()
     check_detection_device_parameters()
     check_engineering_units_editor()
+    check_quantity_display_precision()
+    check_pound_mass_units()
+    check_units_start_in_si()
+    check_simulation_unit_display()
+    check_derived_unit_input_files()
     check_surface_connections_removed()
     check_unrecognized_namelists()
     check_debug_output()

@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment, DetectionDevice
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitLineEdit
 from units import (
     LENGTH,
     RTI,
@@ -120,14 +120,14 @@ class DetectionSuppressionTab(QWidget):
         self.compartment_combo = QComboBox()
         self.compartment_combo.setEditable(True)
 
-        self.x_edit = QLineEdit()
-        self.y_edit = QLineEdit()
-        self.z_edit = QLineEdit()
+        self.x_edit = UnitLineEdit()
+        self.y_edit = UnitLineEdit()
+        self.z_edit = UnitLineEdit()
 
-        self.activation_temperature_edit = QLineEdit()
-        self.activation_obscuration_edit = QLineEdit()
-        self.rti_edit = QLineEdit()
-        self.spray_density_edit = QLineEdit()
+        self.activation_temperature_edit = UnitLineEdit()
+        self.activation_obscuration_edit = UnitLineEdit()
+        self.rti_edit = UnitLineEdit()
+        self.spray_density_edit = UnitLineEdit()
         self.fyi_edit = QLineEdit()
 
         self.editor_group = self.build_editor_group()

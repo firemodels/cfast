@@ -559,7 +559,15 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.
 \item[RTI] (default: 50~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
-\item[Spray Density] (default: $7\times 10^{-5}$~\unit{m/s}; namelist: \ct{SPRAY_DENSITY}) Rate of water dispersed by a sprinkler, derived by dividing the volumetric flow rate by the spray area. The suppression calculation uses the experimental correlation by Evans~\cite{Evans:1993} unless the fire specifies \ct{E_COEFFICIENT}; see Sec.~\ref{info:FIRE}.
+\item[Spray Density] (default: $6.316\times 10^{-5}$~\unit{m/s}; namelist: \ct{SPRAY_DENSITY}) Rate of water dispersed by a sprinkler, derived by dividing its volumetric flow rate by its area of application. Suppression is modeled using the experimental correlation developed by Evans and Madrzykowski~\cite{Evans:1993} in which the heat release rate is assumed to decrease exponentially following the activation of a sprinkler at time $t=t_{\rm act}$:
+    \be
+      \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}  \label{supp}
+   \ee
+    In Eq.~(\ref{supp}), the term $u_{\rm w}$ has units of mm/s, which is obtained by multiplying the specified \ct{SPRAY_DENSITY} in units of m/s by 1000. The default value of $6.316\times 10^{-5}$~\unit{m/s} has been chosen based on the assumption that the spray will decrease the heat release of the fire by 50~\% after 300~s (5~min) following activation. Alternative values can be computed using the following formula:
+    \be
+       u_{\rm w} = \left( \frac{ 3 \, \ln(2) }{\Delta t_{1/2}} \right)^{1/1.8}
+    \ee
+    where $\Delta t_{1/2}$ is the time in seconds required to decrease the HRR by 50~\%. The value of \ct{SPRAY_DENSITY} should be $u_{\rm w}/1000$ to recover units of m/s.
 \item[FYI]  Optional descriptive text retained with the device but not used in the calculation.
 \end{description}
 Smoke detectors activate based on the average smoke concentration of the upper layer of the compartment, not the ceiling jet. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments~\cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponds to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805~\cite{NRCNUREG1805}. \\

@@ -98,7 +98,7 @@ module spreadsheet_routines
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer', roomptr%id, &
                 species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULH2O_'//trim(cRoom), 'H2O Upper Layer', roomptr%id, species_units)
-            call ssaddtoheader (sscompinfo, n_sscomp, 'ULOD_'//trim(cRoom), 'Optical Density Upper Layer', roomptr%id, &
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULOD_'//trim(cRoom), 'Soot Density Upper Layer', roomptr%id, &
                 smoke_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULODF_'//trim(cRoom), 'OD from Flaming Upper Layer', &
                 roomptr%id, smoke_units)
@@ -114,7 +114,7 @@ module spreadsheet_routines
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer', roomptr%id, &
                     species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLH2O_'//trim(cRoom), 'H2O Lower Layer', roomptr%id, species_units)
-                call ssaddtoheader (sscompinfo, n_sscomp, 'LLOD_'//trim(cRoom), 'Optical Density Lower Layer', roomptr%id, &
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLOD_'//trim(cRoom), 'Soot Density Lower Layer', roomptr%id, &
                     smoke_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLODF_'//trim(cRoom), 'OD from Flaming Lower Layer', roomptr%id, &
                     smoke_units)
@@ -896,7 +896,7 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Optical Density Upper Layer', 'Soot Upper Layer Mass', 'Optical Density Lower Layer', &
+    case ('Soot Density Upper Layer', 'Soot Upper Layer Mass', 'Soot Density Lower Layer', &
           'Soot Lower Layer Mass')
         do i = 1, n_rooms+1
             layer = u

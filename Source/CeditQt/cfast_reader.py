@@ -1289,8 +1289,11 @@ def detection_device_from_fields(
     device_type: str,
 ) -> DetectionDevice:
     location = number_vector(fields, "LOCATION", [0.0, 0.0, 0.0], length=3)
-    setpoint = number_field(fields, "SETPOINT", 73.88998)
     is_smoke = device_type == "SMOKE_DETECTOR"
+    setpoint = number_field(
+        fields, "SETPOINT",
+        DetectionDevice.activation_obscuration if is_smoke else DetectionDevice.activation_temperature,
+    )
 
     return DetectionDevice(
         id=required_string(fields, "ID", "device ID"),
@@ -1299,9 +1302,9 @@ def detection_device_from_fields(
         x_position=location[0],
         y_position=location[1],
         z_position=location[2],
-        activation_temperature=73.88998 if is_smoke else setpoint,
-        activation_obscuration=setpoint if is_smoke else 23.93346,
-        rti=number_field(fields, "RTI", 100.0),
+        activation_temperature=DetectionDevice.activation_temperature if is_smoke else setpoint,
+        activation_obscuration=setpoint if is_smoke else DetectionDevice.activation_obscuration,
+        rti=number_field(fields, "RTI", DetectionDevice.rti),
         spray_density=number_field(fields, "SPRAY_DENSITY", 0.0),
         fyi=string_field(fields, "FYI", ""),
     )

@@ -1348,6 +1348,107 @@ def check_mechanical_vent_defaults():
         window.deleteLater()
 
 
+def check_detection_device_parameters():
+    from PySide6.QtCore import Qt
+
+    from cfast_case import DetectionDevice
+    from cfast_reader import detection_device_from_fields, parse_namelists, read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+    from units import SMOKE, TEMPERATURE, format_value, unit_system
+
+    window = CeditMainWindow()
+    tab = window.detection_suppression_tab
+    original_units = dict(unit_system.selected)
+    try:
+        for temperature_unit in (0, 1):
+            unit_system.set_index(TEMPERATURE, temperature_unit)
+            case = opening_case()
+            window.load_case(case)
+            for display_type in ("Sprinkler", "Heat", "Smoke"):
+                tab.add_device()
+                tab.type_combo.setCurrentText(display_type)
+                device = tab.selected_device()
+                assert device.activation_temperature == 57
+                assert device.activation_obscuration == 24
+                assert device.rti == 50
+                assert tab.activation_temperature_edit.isEnabled() == (display_type != "Smoke")
+                assert tab.activation_obscuration_edit.isEnabled() == (display_type == "Smoke")
+                assert tab.rti_edit.isEnabled() == (display_type != "Smoke")
+                assert tab.spray_density_edit.isEnabled() == (display_type == "Sprinkler")
+
+            # Rebuilding and updating rows must both leave irrelevant cells blank and locked.
+            tab.rebuild_summary_table()
+            for row in range(3):
+                tab.update_summary_row(row)
+                for col, relevant in ((tab.COL_RTI, row != 2), (tab.COL_SPRAY_DENSITY, row == 0)):
+                    item = tab.summary_table.item(row, col)
+                    assert bool(item.text()) == relevant
+                    assert bool(item.flags() & Qt.ItemFlag.ItemIsEditable) == relevant
+                if row == 2:
+                    assert tab.table_text(row, tab.COL_ACTIVATION) == format_value(SMOKE, 24)
+
+            # Type edits in the table must not reinterpret temperature as obscuration.
+            tab.select_device(0)
+            tab.activation_temperature_edit.setText("80 C")
+            tab.summary_table.item(0, tab.COL_TYPE).setText("Smoke")
+            assert tab.devices[0].activation_obscuration == 24
+            assert not tab.rti_edit.isEnabled()
+            tab.summary_table.item(0, tab.COL_ACTIVATION).setText("31 %/m")
+            tab.summary_table.item(0, tab.COL_TYPE).setText("Heat")
+            assert tab.devices[0].activation_temperature == 80
+            assert tab.devices[0].activation_obscuration == 31
+            assert tab.table_text(0, tab.COL_SPRAY_DENSITY) == ""
+            tab.summary_table.item(0, tab.COL_RTI).setText("65")
+            assert tab.devices[0].rti == 65
+            tab.type_combo.setCurrentText("Sprinkler")
+            tab.spray_density_edit.setText("0.0002 m/s")
+            tab.select_device(1)
+            tab.activation_temperature_edit.setText("90 C")
+            tab.select_device(2)
+            tab.activation_obscuration_edit.setText("30 %/m")
+
+            # Hidden parameters must not be parsed, validated, or written for smoke devices.
+            tab.rti_edit.setText("invalid")
+            tab.spray_density_edit.setText("invalid")
+            tab.devices[2].rti = -1
+            tab.devices[2].spray_density = -1
+            saved_case = window.build_cfast_case()
+            with tempfile.TemporaryDirectory(prefix="cedit-detectors-") as directory:
+                path = Path(directory) / "devices.in"
+                write_cfast_input(saved_case, path)
+                records = [record.fields for record in parse_namelists(path.read_text())
+                           if record.name == "DEVC"]
+                assert len(records) == 3
+                assert [record["SETPOINT"] for record in records] == [[80], [90], [30]]
+                assert records[0]["RTI"] == [65]
+                assert records[0]["SPRAY_DENSITY"] == [0.0002]
+                assert records[1]["RTI"] == [50]
+                assert "SPRAY_DENSITY" not in records[1]
+                assert "RTI" not in records[2] and "SPRAY_DENSITY" not in records[2]
+                reopened = read_cfast_input(path).detection_devices
+                assert reopened[0].activation_temperature == 80
+                assert reopened[1].activation_temperature == 90
+                assert reopened[2].activation_obscuration == 30
+
+        # Omitted namelist values use the same defaults as newly added devices.
+        for device_type in ("SPRINKLER", "HEAT_DETECTOR", "SMOKE_DETECTOR"):
+            fields = {"ID": ["Device"], "COMP_ID": ["Comp 1"]}
+            device = detection_device_from_fields(fields, device_type)
+            assert device.activation_temperature == 57
+            assert device.activation_obscuration == 24
+            assert device.rti == 50
+            fields.update({"SETPOINT": [42], "RTI": [75]})
+            device = detection_device_from_fields(fields, device_type)
+            assert device.rti == 75
+            assert (device.activation_obscuration if device_type == "SMOKE_DETECTOR"
+                    else device.activation_temperature) == 42
+        assert DetectionDevice("Default", "Comp 1").rti == 50
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
 def check_surface_connections_removed():
     """Legacy surface connections must not be exposed or saved by the UI."""
     from dataclasses import replace
@@ -1827,6 +1928,7 @@ def main() -> int:
     check_adiabatic_target()
     check_adiabatic_convection_coefficients()
     check_mechanical_vent_defaults()
+    check_detection_device_parameters()
     check_surface_connections_removed()
     check_unrecognized_namelists()
     check_debug_output()

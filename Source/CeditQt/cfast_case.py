@@ -207,9 +207,9 @@ class DetectionDevice:
     x_position: float = 3.0
     y_position: float = 3.0
     z_position: float = 2.97
-    activation_temperature: float = 73.88998
-    activation_obscuration: float = 23.93346
-    rti: float = 100.0
+    activation_temperature: float = 57.0
+    activation_obscuration: float = 24.0
+    rti: float = 50.0
     spray_density: float = 7.0e-5
     fyi: str = ""
 

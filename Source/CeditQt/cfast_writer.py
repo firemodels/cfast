@@ -907,12 +907,10 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             else:
                 fields.append(f"SETPOINT = {cfast_number(device.activation_temperature)}")
 
-            fields.extend(
-                [
-                    f"RTI = {cfast_number(device.rti)}",
-                    f"SPRAY_DENSITY = {cfast_number(device.spray_density)}",
-                ]
-            )
+            if device.device_type.upper() in {"SPRINKLER", "HEAT_DETECTOR"}:
+                fields.append(f"RTI = {cfast_number(device.rti)}")
+            if device.device_type.upper() == "SPRINKLER":
+                fields.append(f"SPRAY_DENSITY = {cfast_number(device.spray_density)}")
 
             if device.fyi:
                 fields.append(f"FYI = {cfast_string(device.fyi)}")

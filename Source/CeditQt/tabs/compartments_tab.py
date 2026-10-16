@@ -24,8 +24,8 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment
-from table_widgets import HoverEditTableWidget, UnitTableWidget
-from units import AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
+from table_widgets import HoverEditTableWidget, UnitLineEdit, UnitTableWidget
+from units import FLOW_COEFFICIENT, AREA, LENGTH, format_number, format_value, parse_number, parse_value, unit_label
 
 
 class CompartmentSummaryHeader(QHeaderView):
@@ -199,12 +199,12 @@ class CompartmentsTab(QWidget):
         self.detail_group = QGroupBox("Compartment 1 (of 1)")
         self.id_edit = QLineEdit()
 
-        self.width_edit = QLineEdit()
-        self.depth_edit = QLineEdit()
-        self.height_edit = QLineEdit()
-        self.x_edit = QLineEdit()
-        self.y_edit = QLineEdit()
-        self.z_edit = QLineEdit()
+        self.width_edit = UnitLineEdit()
+        self.depth_edit = UnitLineEdit()
+        self.height_edit = UnitLineEdit()
+        self.x_edit = UnitLineEdit()
+        self.y_edit = UnitLineEdit()
+        self.z_edit = UnitLineEdit()
 
         self.normal_radio = QRadioButton("Normal (Two-zone model)")
         self.shaft_radio = QRadioButton("Shaft (Single-zone model)")
@@ -214,10 +214,10 @@ class CompartmentsTab(QWidget):
         self.flow_group.addButton(self.shaft_radio)
         self.flow_group.addButton(self.hall_radio)
 
-        self.flow_coefficient_edit = QLineEdit()
-        self.wall_leak_area_ratio_edit = QLineEdit()
-        self.floor_leak_area_ratio_edit = QLineEdit()
-        self.ceiling_leak_area_ratio_edit = QLineEdit()
+        self.flow_coefficient_edit = UnitLineEdit()
+        self.wall_leak_area_ratio_edit = UnitLineEdit()
+        self.floor_leak_area_ratio_edit = UnitLineEdit()
+        self.ceiling_leak_area_ratio_edit = UnitLineEdit()
 
         self.area_table = UnitTableWidget(6, 2)
         self.area_table.setHorizontalHeaderLabels(area_headers())
@@ -708,7 +708,7 @@ class CompartmentsTab(QWidget):
         else:
             self.normal_radio.setChecked(True)
 
-        self.flow_coefficient_edit.setText(format_number(c.flow_coefficient))
+        self.flow_coefficient_edit.setText(format_value(FLOW_COEFFICIENT, c.flow_coefficient))
         self.wall_leak_area_ratio_edit.setText(format_number(c.wall_leak_area_ratio))
         self.floor_leak_area_ratio_edit.setText(format_number(c.floor_leak_area_ratio))
         self.ceiling_leak_area_ratio_edit.setText(format_number(c.ceiling_leak_area_ratio))
@@ -885,9 +885,9 @@ class CompartmentsTab(QWidget):
             c.origin_z = parse_value(LENGTH, self.z_edit.text() or "0", "Z Position")
             c.shaft = self.shaft_radio.isChecked()
             c.hall = self.hall_radio.isChecked()
-            c.flow_coefficient = parse_number(
-                self.flow_coefficient_edit.text() or "0.07",
-                "Flow Coefficient",
+            c.flow_coefficient = parse_value(
+                FLOW_COEFFICIENT, self.flow_coefficient_edit.text(),
+                "Flow Coefficient", default=0.07,
             )
             c.wall_leak_area_ratio = parse_number(
                 self.wall_leak_area_ratio_edit.text() or "0",

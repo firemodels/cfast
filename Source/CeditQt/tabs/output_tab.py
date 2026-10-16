@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from table_widgets import UnitTableWidget
+from table_widgets import UnitLineEdit, UnitTableWidget
 
 from cfast_case import CfastCase, Compartment, OutputVisualization
 from units import LENGTH, TEMPERATURE, format_value, parse_number, parse_value
@@ -101,8 +101,8 @@ class OutputTab(QWidget):
         self.visual_compartment_edit = QComboBox()
         self.visual_compartment_edit.setEditable(True)
         self.visual_compartment_edit.addItems(["All"])
-        self.visual_position_edit = QLineEdit(format_value(LENGTH, 0.0))
-        self.visual_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
+        self.visual_position_edit = UnitLineEdit(format_value(LENGTH, 0.0))
+        self.visual_temperature_edit = UnitLineEdit(format_value(TEMPERATURE, 20.0))
         self.visual_temperature_edit.setEnabled(False)
 
         self.axis_combo = QComboBox()

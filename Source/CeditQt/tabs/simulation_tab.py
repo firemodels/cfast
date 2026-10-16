@@ -20,9 +20,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from table_widgets import UnitLineEdit
+
 from cfast_case import CfastCase
 from cfast_syntax_highlighter import CfastSyntaxHighlighter
-from units import PRESSURE, TEMPERATURE, TIME, format_number, format_value, parse_number, parse_value
+from units import (
+    MASS_FRACTION, PRESSURE, SPECIFIC_EXTINCTION, TEMPERATURE, TIME,
+    display_value, format_number, format_value, parse_number, parse_value, unit_label,
+)
 
 
 def format_percent(value: float | int) -> str:
@@ -34,7 +39,7 @@ def format_mol_fraction(value: float | int) -> str:
 
 
 def format_mass_fraction(value: float | int) -> str:
-    return f"{format_number(value)} kg/kg"
+    return format_value(MASS_FRACTION, value)
 
 
 def fixed_width_font() -> QFont:
@@ -66,27 +71,31 @@ class SimulationTab(QWidget):
 
         self.title_edit = QLineEdit("CFAST Simulation")
 
-        self.simulation_time_edit = QLineEdit(format_value(TIME, 3600.0))
-        self.print_interval_edit = QLineEdit(format_value(TIME, 60.0))
-        self.spreadsheet_interval_edit = QLineEdit(format_value(TIME, 15.0))
-        self.smokeview_interval_edit = QLineEdit(format_value(TIME, 15.0))
-        self.max_time_step_edit = QLineEdit("Default")
+        self.simulation_time_edit = UnitLineEdit(format_value(TIME, 3600.0))
+        self.print_interval_edit = UnitLineEdit(format_value(TIME, 60.0))
+        self.spreadsheet_interval_edit = UnitLineEdit(format_value(TIME, 15.0))
+        self.smokeview_interval_edit = UnitLineEdit(format_value(TIME, 15.0))
+        self.max_time_step_edit = UnitLineEdit("Default")
 
-        self.interior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
-        self.relative_humidity_edit = QLineEdit(format_percent(50.0))
-        self.exterior_temperature_edit = QLineEdit(format_value(TEMPERATURE, 20.0))
-        self.pressure_edit = QLineEdit(format_value(PRESSURE, 101325.0))
-        self.interior_o2_mass_fraction_edit = QLineEdit("0.23 kg/kg")
-        self.exterior_o2_mass_fraction_edit = QLineEdit("0.23 kg/kg")
+        self.interior_temperature_edit = UnitLineEdit(format_value(TEMPERATURE, 20.0))
+        self.relative_humidity_edit = UnitLineEdit(format_percent(50.0))
+        self.exterior_temperature_edit = UnitLineEdit(format_value(TEMPERATURE, 20.0))
+        self.pressure_edit = UnitLineEdit()
+        self.set_pressure_value(101325.0)
+        self.interior_o2_mass_fraction_edit = UnitLineEdit(format_mass_fraction(0.23))
+        self.exterior_o2_mass_fraction_edit = UnitLineEdit(format_mass_fraction(0.23))
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
-        self.lower_oxygen_limit_edit = QLineEdit(format_mol_fraction(0.15))
+        self.lower_oxygen_limit_edit = UnitLineEdit(format_mol_fraction(0.15))
         self.max_iteration_edit = QLineEdit("-1")
         self.max_iteration_edit.setToolTip("Use -1 for unlimited solver iterations.")
         self.overwrite_checkbox = QCheckBox("Overwrite Existing Output Files")
         self.overwrite_checkbox.setChecked(True)
-        self.flaming_extinction_edit = QLineEdit("8700")
-        self.smoldering_extinction_edit = QLineEdit("4400")
+        self.flaming_extinction_edit = UnitLineEdit()
+        self.smoldering_extinction_edit = UnitLineEdit()
+        self._extinction_values: dict[QLineEdit, tuple[float, str]] = {}
+        self.set_extinction_value(self.flaming_extinction_edit, 8700.0)
+        self.set_extinction_value(self.smoldering_extinction_edit, 4400.0)
 
         self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
@@ -141,7 +150,7 @@ class SimulationTab(QWidget):
         self.interior_temperature_edit.setText(format_value(TEMPERATURE, case.interior_temperature))
         self.relative_humidity_edit.setText(format_percent(case.relative_humidity))
         self.exterior_temperature_edit.setText(format_value(TEMPERATURE, case.exterior_temperature))
-        self.pressure_edit.setText(format_value(PRESSURE, case.pressure))
+        self.set_pressure_value(case.pressure)
         self.interior_o2_mass_fraction_edit.setText(
             format_mass_fraction(case.interior_o2_mass_fraction)
         )
@@ -152,8 +161,8 @@ class SimulationTab(QWidget):
         self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
         self.max_iteration_edit.setText(str(case.max_iteration))
         self.overwrite_checkbox.setChecked(case.overwrite)
-        self.flaming_extinction_edit.setText(format_number(case.specific_extinction[0]))
-        self.smoldering_extinction_edit.setText(format_number(case.specific_extinction[1]))
+        self.set_extinction_value(self.flaming_extinction_edit, case.specific_extinction[0])
+        self.set_extinction_value(self.smoldering_extinction_edit, case.specific_extinction[1])
 
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
@@ -206,8 +215,8 @@ class SimulationTab(QWidget):
             ("Lower Oxygen Limit:", self.lower_oxygen_limit_edit, 1, 0),
             ("Maximum Solver Iterations:", self.max_iteration_edit, 2, 0),
             ("Maximum Time Step:", self.max_time_step_edit, 3, 0),
-            ("Flaming Extinction Coefficient (m²/kg):", self.flaming_extinction_edit, 1, 2),
-            ("Smoldering Extinction Coefficient (m²/kg):", self.smoldering_extinction_edit, 2, 2),
+            ("Flaming Extinction Coefficient:", self.flaming_extinction_edit, 1, 2),
+            ("Smoldering Extinction Coefficient:", self.smoldering_extinction_edit, 2, 2),
         ]
         for label, widget, row, col in fields:
             layout.addWidget(QLabel(label), row, col, alignment=Qt.AlignmentFlag.AlignRight)
@@ -227,13 +236,15 @@ class SimulationTab(QWidget):
             (self.max_time_step_edit, TIME, "Maximum Time Step", True),
             (self.interior_temperature_edit, TEMPERATURE, "Interior Temperature", False),
             (self.exterior_temperature_edit, TEMPERATURE, "Exterior Temperature", False),
-            (self.pressure_edit, PRESSURE, "Pressure", False),
         ):
             edit.editingFinished.connect(
                 lambda edit=edit, kind=kind, field_name=field_name, allow_default=allow_default: (
                     self.normalize_value_edit(edit, kind, field_name, allow_default)
                 )
             )
+        for edit in (self.flaming_extinction_edit, self.smoldering_extinction_edit):
+            edit.editingFinished.connect(lambda edit=edit: self.normalize_extinction(edit))
+        self.pressure_edit.editingFinished.connect(self.normalize_pressure)
         self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
         self.lower_oxygen_limit_edit.editingFinished.connect(self.normalize_lower_oxygen_limit)
         self.interior_o2_mass_fraction_edit.editingFinished.connect(
@@ -265,6 +276,54 @@ class SimulationTab(QWidget):
         else:
             edit.setText(format_value(kind, value))
 
+    def set_pressure_value(self, value: float):
+        self._pressure_value = value
+        label = unit_label(PRESSURE)
+        if label in {"psi", "psia", "psig"}:
+            number = format_number(round(display_value(PRESSURE, value), 2))
+            self._pressure_text = f"{number} {label}"
+        else:
+            self._pressure_text = format_value(PRESSURE, value)
+        self.pressure_edit.setText(self._pressure_text)
+        self.pressure_edit.setModified(False)
+        self.pressure_edit.setToolTip(format_value(PRESSURE, value))
+
+    def pressure_value(self) -> float:
+        # Reading or normalizing an unchanged, rounded display must not change
+        # the stored pressure when saving or switching engineering units.
+        if (self.pressure_edit.text().strip() == self._pressure_text
+                and not self.pressure_edit.isModified()):
+            return self._pressure_value
+        return parse_value(PRESSURE, self.pressure_edit.text(), "Pressure")
+
+    def normalize_pressure(self):
+        try:
+            value = self.pressure_value()
+        except ValueError:
+            return
+        self.set_pressure_value(value)
+
+    def set_extinction_value(self, edit: QLineEdit, value: float):
+        text = f"{display_value(SPECIFIC_EXTINCTION, value):.5g} {unit_label(SPECIFIC_EXTINCTION)}"
+        self._extinction_values[edit] = (value, text)
+        edit.setText(text)
+        edit.setModified(False)
+        edit.setToolTip(format_value(SPECIFIC_EXTINCTION, value))
+
+    def extinction_value(self, edit: QLineEdit, field_name: str) -> float:
+        value, text = self._extinction_values[edit]
+        # Display rounding must not change the SI value exported to the input file.
+        if edit.text().strip() == text and not edit.isModified():
+            return value
+        return parse_value(SPECIFIC_EXTINCTION, edit.text(), field_name)
+
+    def normalize_extinction(self, edit: QLineEdit):
+        try:
+            value = self.extinction_value(edit, "Extinction Coefficient")
+        except ValueError:
+            return
+        self.set_extinction_value(edit, value)
+
     def normalize_relative_humidity(self):
         try:
             value = parse_number(self.relative_humidity_edit.text(), "Humidity")
@@ -287,7 +346,7 @@ class SimulationTab(QWidget):
             (self.exterior_o2_mass_fraction_edit, "Exterior O₂ Mass Fraction"),
         ):
             try:
-                value = parse_number(edit.text(), field_name)
+                value = parse_value(MASS_FRACTION, edit.text(), field_name)
             except ValueError:
                 continue
             edit.setText(format_mass_fraction(value))
@@ -336,11 +395,7 @@ class SimulationTab(QWidget):
             self.exterior_temperature_edit.text(),
             "Exterior Temperature",
         )
-        case.pressure = parse_value(
-            PRESSURE,
-            self.pressure_edit.text(),
-            "Pressure",
-        )
+        case.pressure = self.pressure_value()
         case.interior_o2_mass_fraction = self.o2_mass_fraction_value(
             self.interior_o2_mass_fraction_edit,
             "Interior O₂ Mass Fraction",
@@ -366,7 +421,7 @@ class SimulationTab(QWidget):
             (self.flaming_extinction_edit, "Flaming Extinction Coefficient"),
             (self.smoldering_extinction_edit, "Smoldering Extinction Coefficient"),
         ):
-            value = parse_number(edit.text(), name)
+            value = self.extinction_value(edit, name)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"{name} must be a finite, non-negative number.")
             extinction.append(value)
@@ -374,9 +429,9 @@ class SimulationTab(QWidget):
 
     @staticmethod
     def o2_mass_fraction_value(edit: QLineEdit, field_name: str) -> float:
-        value = parse_number(edit.text(), field_name)
+        value = parse_value(MASS_FRACTION, edit.text(), field_name)
         if not 0.0 <= value <= 1.0:
-            raise ValueError(f"{field_name} must be between 0 and 1 kg/kg.")
+            raise ValueError(f"{field_name} must be between 0 and 1 {unit_label(MASS_FRACTION)}.")
         return value
 
     def set_message(self, text: str, syntax_highlight: bool = False):

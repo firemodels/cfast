@@ -19,10 +19,12 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CfastCase, Compartment, MechanicalVent
-from table_widgets import HoverEditTableWidget, UnitTableWidget
+from table_widgets import HoverEditTableWidget, UnitLineEdit, UnitTableWidget
 from units import (
     AREA,
     FLOWRATE,
+    HEAT_FLUX,
+    TEMPERATURE,
     LENGTH,
     PRESSURE_DIFFERENCE,
     TIME,
@@ -38,11 +40,11 @@ def summary_headers() -> list[str]:
     return [
         "Num",
         "ID",
-        "From Compartment",
+        "From\nCompartment",
         f"From Area\n({unit_label(AREA)})",
         f"From Height\n({unit_label(LENGTH)})",
         "From Type",
-        "To Compartment",
+        "To\nCompartment",
         f"To Area\n({unit_label(AREA)})",
         f"To Height\n({unit_label(LENGTH)})",
         "To Type",
@@ -104,35 +106,35 @@ class MechanicalVentsTab(QWidget):
         self.from_compartment_edit = QComboBox()
         self.from_compartment_edit.setEditable(True)
         self.from_compartment_edit.addItems(["Outside"])
-        self.from_area_edit = QLineEdit()
-        self.from_height_edit = QLineEdit()
+        self.from_area_edit = UnitLineEdit()
+        self.from_height_edit = UnitLineEdit()
         self.from_orientation_combo = QComboBox()
         self.from_orientation_combo.addItems(["Vertical", "Horizontal"])
 
         self.to_compartment_edit = QComboBox()
         self.to_compartment_edit.setEditable(True)
         self.to_compartment_edit.addItems(["Outside"])
-        self.to_area_edit = QLineEdit()
-        self.to_height_edit = QLineEdit()
+        self.to_area_edit = UnitLineEdit()
+        self.to_height_edit = UnitLineEdit()
         self.to_orientation_combo = QComboBox()
         self.to_orientation_combo.addItems(["Vertical", "Horizontal"])
 
-        self.flow_edit = QLineEdit()
-        self.begin_dropoff_edit = QLineEdit()
-        self.zero_flow_edit = QLineEdit()
-        self.offset_x_edit = QLineEdit()
-        self.offset_y_edit = QLineEdit()
-        self.filter_efficiency_edit = QLineEdit()
-        self.filter_time_edit = QLineEdit()
+        self.flow_edit = UnitLineEdit()
+        self.begin_dropoff_edit = UnitLineEdit()
+        self.zero_flow_edit = UnitLineEdit()
+        self.offset_x_edit = UnitLineEdit()
+        self.offset_y_edit = UnitLineEdit()
+        self.filter_efficiency_edit = UnitLineEdit()
+        self.filter_time_edit = UnitLineEdit()
 
         self.criterion_combo = QComboBox()
         self.criterion_combo.addItems(["Time", "Temperature", "Heat Flux"])
-        self.setpoint_label = QLabel("Setpoint (°C):")
-        self.setpoint_edit = QLineEdit()
+        self.setpoint_label = QLabel(f"Setpoint ({unit_label(TEMPERATURE)}):")
+        self.setpoint_edit = UnitLineEdit()
         self.target_combo = QComboBox()
         self.target_combo.setEditable(True)
-        self.pre_fraction_edit = QLineEdit()
-        self.post_fraction_edit = QLineEdit()
+        self.pre_fraction_edit = UnitLineEdit()
+        self.post_fraction_edit = UnitLineEdit()
 
         self.schedule_table = UnitTableWidget(8, 2)
         self.schedule_table.setHorizontalHeaderLabels(
@@ -341,9 +343,9 @@ class MechanicalVentsTab(QWidget):
         self.schedule_table.setVisible(time_control)
         self.condition_widget.setVisible(not time_control)
         if criterion == "FLUX":
-            self.setpoint_label.setText("Setpoint (kW/m²):")
+            self.setpoint_label.setText(f"Setpoint ({unit_label(HEAT_FLUX)}):")
         else:
-            self.setpoint_label.setText("Setpoint (°C):")
+            self.setpoint_label.setText(f"Setpoint ({unit_label(TEMPERATURE)}):")
 
     def load_demo_data(self):
         self.vents = [
@@ -494,7 +496,7 @@ class MechanicalVentsTab(QWidget):
         self.filter_efficiency_edit.setText(f"{format_number(vent.filter_efficiency)} %")
         self.filter_time_edit.setText(format_value(TIME, vent.filter_time))
         self.set_combo_text(self.criterion_combo, criterion_display(vent.criterion))
-        self.setpoint_edit.setText(format_number(vent.setpoint))
+        self.setpoint_edit.setText(format_value(HEAT_FLUX if vent.criterion == "FLUX" else TEMPERATURE, vent.setpoint, include_unit=False))
         self.set_combo_text(self.target_combo, vent.target)
         self.pre_fraction_edit.setText(format_number(vent.pre_fraction))
         self.post_fraction_edit.setText(format_number(vent.post_fraction))
@@ -585,7 +587,7 @@ class MechanicalVentsTab(QWidget):
             vent.t_values, vent.f_values = self.extract_schedule()
         else:
             try:
-                vent.setpoint = parse_number(self.setpoint_edit.text(), "Setpoint")
+                vent.setpoint = parse_value(HEAT_FLUX if vent.criterion == "FLUX" else TEMPERATURE, self.setpoint_edit.text(), "Setpoint")
                 vent.pre_fraction = parse_number(
                     self.pre_fraction_edit.text(), "Prior Opening Fraction"
                 )

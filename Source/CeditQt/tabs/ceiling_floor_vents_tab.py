@@ -17,8 +17,8 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CeilingFloorVent, CfastCase, Compartment
-from table_widgets import HoverEditTableWidget, UnitTableWidget
-from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
+from table_widgets import HoverEditTableWidget, UnitLineEdit, UnitTableWidget
+from units import HEAT_FLUX, TEMPERATURE, AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
 def table_item_text(table: QTableWidget, row: int, col: int) -> str:
@@ -99,19 +99,19 @@ class CeilingFloorVentsTab(QWidget):
         self.second_comp_edit.setEditable(True)
         self.shape_combo = QComboBox()
         self.shape_combo.addItems(["ROUND", "SQUARE"])
-        self.area_edit = QLineEdit()
-        self.offset_x_edit = QLineEdit()
-        self.offset_y_edit = QLineEdit()
+        self.area_edit = UnitLineEdit()
+        self.offset_x_edit = UnitLineEdit()
+        self.offset_y_edit = UnitLineEdit()
         self.fyi_edit = QLineEdit()
 
         self.criterion_combo = QComboBox()
         self.criterion_combo.addItems(["Time", "Temperature", "Heat Flux"])
-        self.setpoint_label = QLabel("Setpoint (°C):")
-        self.setpoint_edit = QLineEdit()
+        self.setpoint_label = QLabel(f"Setpoint ({unit_label(TEMPERATURE)}):")
+        self.setpoint_edit = UnitLineEdit()
         self.target_combo = QComboBox()
         self.target_combo.setEditable(True)
-        self.pre_fraction_edit = QLineEdit()
-        self.post_fraction_edit = QLineEdit()
+        self.pre_fraction_edit = UnitLineEdit()
+        self.post_fraction_edit = UnitLineEdit()
 
         self.fraction_table = UnitTableWidget(5, 2)
         self.fraction_table.setHorizontalHeaderLabels(
@@ -162,7 +162,7 @@ class CeilingFloorVentsTab(QWidget):
             self.schedules[row] = (list(vent.t_values), list(vent.f_values))
             self.opening_details[row] = {
                 "criterion": criterion_display(vent.criterion),
-                "setpoint": format_number(vent.setpoint),
+                "setpoint": format_value(HEAT_FLUX if vent.criterion == "FLUX" else TEMPERATURE, vent.setpoint, include_unit=False),
                 "target": vent.target,
                 "pre_fraction": format_number(vent.pre_fraction),
                 "post_fraction": format_number(vent.post_fraction),
@@ -291,9 +291,9 @@ class CeilingFloorVentsTab(QWidget):
         self.fraction_table.setVisible(time_control)
         self.condition_widget.setVisible(not time_control)
         if criterion == "FLUX":
-            self.setpoint_label.setText("Setpoint (kW/m²):")
+            self.setpoint_label.setText(f"Setpoint ({unit_label(HEAT_FLUX)}):")
         else:
-            self.setpoint_label.setText("Setpoint (°C):")
+            self.setpoint_label.setText(f"Setpoint ({unit_label(TEMPERATURE)}):")
 
     def build_opening_group(self):
         group = QGroupBox("Opening Fraction")
@@ -759,7 +759,7 @@ class CeilingFloorVentsTab(QWidget):
             if criterion == "TIME":
                 t_values, f_values = self.schedules.get(row, ([], []))
             elif criterion in {"TEMPERATURE", "FLUX"}:
-                setpoint = parse_number(details["setpoint"], "Setpoint")
+                setpoint = parse_value(HEAT_FLUX if criterion == "FLUX" else TEMPERATURE, details["setpoint"], "Setpoint")
                 target = details["target"].strip()
                 pre_fraction = parse_number(
                     details["pre_fraction"], "Prior Opening Fraction"

@@ -19,12 +19,14 @@ SMOKE = "smoke"
 AREA = "area"
 VELOCITY = "velocity"
 FLOWRATE = "flowrate"
+FLOW_COEFFICIENT = "flow_coefficient"
 RTI = "rti"
 MASS_LOSS = "mass_loss"
 DENSITY = "density"
 HRR = "hrr"
 HOC = "hoc"
 E_COEFFICIENT = "e_coefficient"
+SPECIFIC_EXTINCTION = "specific_extinction"
 HOG = "hog"
 HEAT_FLUX = "heat_flux"
 CONDUCTIVITY = "conductivity"
@@ -75,7 +77,7 @@ BASE_UNITS: dict[str, list[BaseUnit]] = {
     MASS: [
         BaseUnit("kg", 1.0),
         BaseUnit("g", 0.001),
-        BaseUnit("lb", 0.4535924),
+        BaseUnit("lbm", 0.4535924),
         BaseUnit("oz", 0.02834952),
     ],
     TIME: [
@@ -118,7 +120,7 @@ _BASE_UNIT_ALIASES = {
     "h": ["hr", "hrs", "hour", "hours"],
     "ft": ["foot", "feet"],
     "in": ["inch", "inches"],
-    "lb": ["lbs", "pound", "pounds"],
+    "lbm": ["lb", "lbs", "pound", "pounds"],
     "oz": ["ounce", "ounces"],
     "°C": ["C", "deg C", "degC", "Celsius"],
     "°F": ["F", "deg F", "degF", "Fahrenheit"],
@@ -131,6 +133,8 @@ _EXPLICIT_UNIT_LOOKUP_CACHE: dict[str, dict[str, Conversion]] = {}
 
 def normalize_unit_label(label: str) -> str:
     normalized = label.strip().lower()
+    # Accept the old mass spelling in both base and compound units, but never lbf.
+    normalized = re.sub(r"\blbs?\b", "lbm", normalized)
     normalized = normalized.replace("°", "")
     normalized = normalized.translate(_SUPERSCRIPT_TO_DIGIT)
     normalized = normalized.translate(_SUBSCRIPT_TO_DIGIT)
@@ -315,6 +319,11 @@ class UnitSystem:
                 0.0,
                 f"{l_length}/{l_time}",
             ),
+            FLOW_COEFFICIENT: Conversion(
+                length.multiplier ** 3 / (time.multiplier * math.sqrt(pressure.multiplier)),
+                0.0,
+                f"{l_volume}/({l_time} {root_label('psi' if l_pressure in {'psia', 'psig'} else l_pressure)})",
+            ),
             FLOWRATE: Conversion(
                 length.multiplier ** 3 / time.multiplier,
                 0.0,
@@ -342,6 +351,9 @@ class UnitSystem:
                 energy.multiplier / mass.multiplier,
                 0.0,
                 f"{l_energy}/{l_mass}",
+            ),
+            SPECIFIC_EXTINCTION: Conversion(
+                length.multiplier ** 2 / mass.multiplier, 0.0, f"{l_area}/{l_mass}",
             ),
             E_COEFFICIENT: Conversion(
                 length.multiplier ** 2 / (mass.multiplier * time.multiplier),
@@ -480,6 +492,13 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
             )
 
         for time in BASE_UNITS[TIME]:
+            if kind == FLOW_COEFFICIENT:
+                for pressure in BASE_UNITS[PRESSURE]:
+                    pressure_label = "psi" if pressure.label in {"psia", "psig"} else pressure.label
+                    label = f"{power_label(length.label, 3)}/({time.label} {root_label(pressure_label)})"
+                    register_unit(lookup, label, Conversion(
+                        length.multiplier ** 3 / (time.multiplier * math.sqrt(pressure.multiplier)),
+                        0.0, label))
             if kind == VELOCITY:
                 register_unit(
                     lookup,
@@ -503,6 +522,10 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                 )
 
         for mass in BASE_UNITS[MASS]:
+            if kind == SPECIFIC_EXTINCTION:
+                label = f"{power_label(length.label, 2)}/{mass.label}"
+                register_unit(lookup, label, Conversion(
+                    length.multiplier ** 2 / mass.multiplier, 0.0, label))
             if kind == E_COEFFICIENT:
                 for time in BASE_UNITS[TIME]:
                     label = f"{power_label(length.label, 2)}/({mass.label} {time.label})"

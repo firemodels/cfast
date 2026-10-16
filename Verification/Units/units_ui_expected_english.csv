@@ -5,8 +5,8 @@ units_basic,init.interior_temperature,68,°F,1e-9
 units_basic,init.exterior_temperature,50,°F,1e-9
 units_basic,init.pressure,1,atm,1e-9
 units_basic,matl.CONCRETE.conductivity,0.0168634703846,BTU/(min ft °F),1e-9
-units_basic,matl.CONCRETE.specific_heat,0.239005811901,BTU/(lb °F),1e-9
-units_basic,matl.CONCRETE.density,137.341504184,lb/ft³,1e-7
+units_basic,matl.CONCRETE.specific_heat,0.239005811901,BTU/(lbm °F),1e-9
+units_basic,matl.CONCRETE.density,137.341504184,lbm/ft³,1e-7
 units_basic,matl.CONCRETE.thickness,0.4921259843,ft,1e-9
 units_basic,comp.Room.width,16.40419948,ft,1e-8
 units_basic,comp.Room.depth,13.12335958,ft,1e-8
@@ -33,7 +33,7 @@ units_vents_devices,device.Sprinkler.spray_density,0.01377952756,ft/min,1e-11
 units_vents_devices,device.Smoke.activation_obscuration,7.999999813,%/ft,1e-8
 units_fire,fire.Couch.setpoint,0.5,min,1e-9
 units_fire,fire.Couch.x_position,7.217847769,ft,1e-9
-units_fire,fire_property.Couch_Fire.heat_of_combustion,21510.52307,BTU/lb,1e-5
+units_fire,fire_property.Couch_Fire.heat_of_combustion,21510.52307,BTU/lbm,1e-5
 units_fire,fire_property.Couch_Fire.ramp_2_time,1,min,1e-9
 units_fire,fire_property.Couch_Fire.ramp_2_hrr,56907.09916,BTU/min,1e-5
 units_fire,fire_property.Couch_Fire.ramp_2_height,4.921259843,ft,1e-9

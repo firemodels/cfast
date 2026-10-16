@@ -1,21 +1,85 @@
 from __future__ import annotations
 
+import math
 import re
 
 from PySide6.QtCore import QEvent, QTimer, Qt
 from PySide6.QtGui import QColor, QPen
-from PySide6.QtWidgets import QStyledItemDelegate, QStyle, QTableWidget
+from PySide6.QtWidgets import QLineEdit, QStyledItemDelegate, QStyle, QTableWidget
+
+
+_QUANTITY_TEXT = re.compile(r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)(\s+.*)?")
+
+
+def rounded_display_text(text: str) -> str:
+    """Limit fractional displays to five significant figures without changing units."""
+    match = _QUANTITY_TEXT.fullmatch(text)
+    if not match:
+        return text
+    number = match[1]
+    mantissa = number.lower().split("e")[0]
+    digits = mantissa.lstrip("+-").replace(".", "").lstrip("0")
+    if len(digits) <= 5 or ("." not in number and "e" not in number.lower()):
+        return text
+    value = float(number)
+    if not math.isfinite(value):
+        return text
+    return f"{value:.5g}{match[2] or ''}"
+
+
+class UnitLineEdit(QLineEdit):
+    """Show a compact quantity while retaining its full text until the user edits it.
+
+    displayText() is the visible value; text() supplies the unrounded value to
+    existing model parsers. Merely focusing, saving, or changing units is lossless.
+    """
+
+    def __init__(self, text: str = "", parent=None):
+        super().__init__(parent)
+        self.setText(text)
+
+    def setText(self, text: str):
+        self._value_text = text
+        self._display_text = rounded_display_text(text)
+        super().setText(self._display_text)
+        self.setToolTip(text if self._display_text != text else "")
+
+    def text(self) -> str:
+        visible = super().text()
+        if not self.isModified() and visible == self._display_text:
+            return self._value_text
+        return visible
+
+    def compact_display(self):
+        visible = super().text()
+        if rounded_display_text(visible) != visible:
+            self.setText(self.text())
+
+    def focusOutEvent(self, event):
+        # Let the existing editor slots commit the user's text before rounding it.
+        super().focusOutEvent(event)
+        self.compact_display()
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.compact_display()
 
 
 class UnitCellDelegate(QStyledItemDelegate):
-    """Keep units in editable data, but avoid repeating the column unit in display."""
+    """Round quantity displays and omit repeated header units, retaining model data."""
 
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
-        header = index.model().headerData(index.column(), Qt.Orientation.Horizontal)
-        match = re.fullmatch(r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)\s+(.+)", option.text)
-        if match and str(header).endswith(f"({match[2]})"):
-            option.text = match[1]
+        header = str(index.model().headerData(index.column(), Qt.Orientation.Horizontal))
+        match = _QUANTITY_TEXT.fullmatch(option.text)
+        if not match:
+            return
+        suffix = (match[2] or "").strip()
+        if suffix or header.endswith(")"):
+            option.text = rounded_display_text(option.text)
+        if suffix and header.endswith(f"({suffix})"):
+            option.text = option.text[:-(len(suffix) + 1)]
 
 
 class UnitTableWidget(QTableWidget):

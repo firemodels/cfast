@@ -37,7 +37,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from table_widgets import UnitTableWidget
+from table_widgets import UnitLineEdit, UnitTableWidget
 
 from cfast_case import (
     CfastCase,
@@ -420,7 +420,8 @@ class CeditMainWindow(QMainWindow):
         self.cfast_query_timer.timeout.connect(self.request_cfast_status_update)
 
         self.settings = QSettings("FireModels", "CEditQt")
-        unit_system.load_settings(self.settings)
+        # Every new editor session starts in SI, regardless of the last display selection.
+        unit_system.set_indices({key: 0 for key in BASE_UNIT_KEYS})
         self.cfast_executable = self.settings.value("cfast_executable", "", type=str)
         self.smokeview_executable = self.settings.value(
             "smokeview_executable",
@@ -1740,6 +1741,16 @@ class CeditMainWindow(QMainWindow):
 
 class EngineeringUnitsDialog(QDialog):
     apply_requested = Signal()
+    PRESETS = {
+        "SI": {
+            "length": "m", "mass": "kg", "time": "s", "temperature": "°C",
+            "pressure": "Pa", "energy": "kJ", "smoke": "%/m",
+        },
+        "English": {
+            "length": "ft", "mass": "lbm", "time": "s", "temperature": "°F",
+            "pressure": "psia", "energy": "BTU", "smoke": "%/ft",
+        },
+    }
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -1749,6 +1760,15 @@ class EngineeringUnitsDialog(QDialog):
         self.combos: dict[str, QComboBox] = {}
 
         layout = QFormLayout()
+        presets_layout = QHBoxLayout()
+        self.si_button = QPushButton("SI")
+        self.english_button = QPushButton("English")
+        for name, button in (("SI", self.si_button), ("English", self.english_button)):
+            button.setAutoDefault(False)
+            button.setToolTip("Apply " + ", ".join(self.PRESETS[name].values()))
+            button.clicked.connect(lambda checked=False, preset=name: self.select_preset(preset))
+            presets_layout.addWidget(button)
+        layout.addRow(presets_layout)
         for key in BASE_UNIT_KEYS:
             combo = QComboBox()
             combo.addItems(unit_system.choices(key))
@@ -1765,6 +1785,11 @@ class EngineeringUnitsDialog(QDialog):
         layout.addWidget(buttons)
 
         self.setLayout(layout)
+
+    def select_preset(self, name: str):
+        for key, label in self.PRESETS[name].items():
+            self.combos[key].setCurrentText(label)
+        self.apply_requested.emit()
 
     def selected_indices(self) -> dict[str, int]:
         return {key: combo.currentIndex() for key, combo in self.combos.items()}
@@ -1803,9 +1828,9 @@ class RunMonitorDialog(QDialog):
         self.setWindowModality(Qt.WindowModality.NonModal)
         self.resize(980, 560)
 
-        self.dt_edit = QLineEdit("0")
+        self.dt_edit = UnitLineEdit("0")
         self.dt_edit.setReadOnly(True)
-        self.time_edit = QLineEdit("0")
+        self.time_edit = UnitLineEdit("0")
         self.time_edit.setReadOnly(True)
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)

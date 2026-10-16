@@ -34,7 +34,7 @@ from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, Compartment, FireDefinition, FireProperty, FireRampPoint
 from cfast_reader import read_fire_properties
-from table_widgets import HoverEditTableWidget, UnitTableWidget
+from table_widgets import HoverEditTableWidget, UnitLineEdit, UnitTableWidget
 from units import (
     AREA,
     E_COEFFICIENT,
@@ -388,12 +388,12 @@ class FiresTab(QWidget):
         self.fire_id_edit = QLineEdit()
         self.compartment_combo = QComboBox()
         self.compartment_combo.setEditable(True)
-        self.x_position_edit = QLineEdit()
-        self.y_position_edit = QLineEdit()
+        self.x_position_edit = UnitLineEdit()
+        self.y_position_edit = UnitLineEdit()
         self.ignition_combo = QComboBox()
         self.ignition_combo.addItems(["TIME", "TEMPERATURE", "FLUX"])
-        self.setpoint_edit = QLineEdit()
-        self.e_coefficient_edit = QLineEdit()
+        self.setpoint_edit = UnitLineEdit()
+        self.e_coefficient_edit = UnitLineEdit()
         self.e_coefficient_edit.setPlaceholderText("Blank: legacy sprinkler suppression")
         self.e_coefficient_edit.setToolTip(
             "Optional water suppression coefficient for this fire. Blank uses the legacy model; "
@@ -410,8 +410,8 @@ class FiresTab(QWidget):
         self.oxygen_edit = QLineEdit()
         self.nitrogen_edit = QLineEdit()
         self.chlorine_edit = QLineEdit()
-        self.heat_of_combustion_edit = QLineEdit()
-        self.radiative_fraction_edit = QLineEdit()
+        self.heat_of_combustion_edit = UnitLineEdit()
+        self.radiative_fraction_edit = UnitLineEdit()
 
         self.ramp_table = SpreadsheetTableWidget(8, 8)
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())

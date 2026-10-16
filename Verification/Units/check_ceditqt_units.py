@@ -19,7 +19,7 @@ PROFILES = {
     },
     "english": {
         "length": 3,  # ft
-        "mass": 2,  # lb
+        "mass": 2,  # lbm
         "time": 1,  # min
         "temperature": 2,  # F
         "pressure": 3,  # atm

@@ -344,9 +344,21 @@ class DetectionSuppressionTab(QWidget):
             format_value(SMOKE, device.activation_obscuration)
             if activation_kind == SMOKE
             else format_activation_temperature(device.activation_temperature),
-            format_value(RTI, device.rti),
-            format_value(VELOCITY, device.spray_density),
+            format_value(RTI, device.rti)
+            if device.device_type.upper() in {"SPRINKLER", "HEAT_DETECTOR"} else "",
+            format_value(VELOCITY, device.spray_density)
+            if device.device_type.upper() == "SPRINKLER" else "",
         ]
+
+    def summary_cell_editable(self, row: int, col: int) -> bool:
+        if row >= len(self.devices) or col == self.COL_NUM:
+            return False
+        device_type = self.devices[row].device_type.upper()
+        if col == self.COL_RTI:
+            return device_type in {"SPRINKLER", "HEAT_DETECTOR"}
+        if col == self.COL_SPRAY_DENSITY:
+            return device_type == "SPRINKLER"
+        return True
 
     def rebuild_summary_table(self):
         self.updating_table = True
@@ -356,16 +368,14 @@ class DetectionSuppressionTab(QWidget):
         for row in range(self.summary_table.rowCount()):
             if row < len(self.devices):
                 values = self.device_summary_values(row, self.devices[row])
-                editable = True
             else:
                 values = ["", "", "", "", "", "", "", "", "", ""]
-                editable = False
 
             for col, value in enumerate(values):
                 self.summary_table.setItem(
                     row,
                     col,
-                    make_table_item(value, editable=(editable and col != self.COL_NUM)),
+                    make_table_item(value, editable=self.summary_cell_editable(row, col)),
                 )
 
         self.updating_table = False
@@ -382,7 +392,7 @@ class DetectionSuppressionTab(QWidget):
             self.summary_table.setItem(
                 row,
                 col,
-                make_table_item(value, editable=(col != self.COL_NUM)),
+                make_table_item(value, editable=self.summary_cell_editable(row, col)),
             )
 
         self.updating_table = False
@@ -481,12 +491,14 @@ class DetectionSuppressionTab(QWidget):
         self.update_editor_enabled_state()
 
     def update_editor_enabled_state(self):
-        device_type = self.type_combo.currentText().strip().upper()
-        is_smoke = device_type == "SMOKE"
+        device_type = display_type_to_devc_type(self.type_combo.currentText())
+        is_smoke = device_type == "SMOKE_DETECTOR"
         is_sprinkler = device_type == "SPRINKLER"
+        is_thermal = device_type in {"SPRINKLER", "HEAT_DETECTOR"}
 
-        self.activation_temperature_edit.setEnabled(not is_smoke)
+        self.activation_temperature_edit.setEnabled(is_thermal)
         self.activation_obscuration_edit.setEnabled(is_smoke)
+        self.rti_edit.setEnabled(is_thermal)
         self.spray_density_edit.setEnabled(is_sprinkler)
 
     def type_changed(self):
@@ -539,9 +551,14 @@ class DetectionSuppressionTab(QWidget):
             self.table_text(row, self.COL_COMPARTMENT)
             or self.default_compartment()
         )
+        previous_type = device.device_type.upper()
         device.device_type = display_type_to_devc_type(
             self.table_text(row, self.COL_TYPE) or device.display_type()
         )
+        if device.device_type != previous_type:
+            # The existing activation cell still contains the previous type's units.
+            # Display the stored value for the new type before parsing the row.
+            self.update_summary_row(row)
         device.x_position = parse_value(
             LENGTH,
             self.table_text(row, self.COL_X),
@@ -577,18 +594,15 @@ class DetectionSuppressionTab(QWidget):
         ):
             device.activation_temperature = activation
 
-        device.rti = parse_value(
-            RTI,
-            self.table_text(row, self.COL_RTI),
-            "RTI",
-            device.rti,
-        )
-        device.spray_density = parse_value(
-            VELOCITY,
-            self.table_text(row, self.COL_SPRAY_DENSITY),
-            "Spray Density",
-            device.spray_density,
-        )
+        if device.device_type.upper() in {"SPRINKLER", "HEAT_DETECTOR"}:
+            device.rti = parse_value(
+                RTI, self.table_text(row, self.COL_RTI), "RTI", device.rti,
+            )
+        if device.device_type.upper() == "SPRINKLER":
+            device.spray_density = parse_value(
+                VELOCITY, self.table_text(row, self.COL_SPRAY_DENSITY),
+                "Spray Density", device.spray_density,
+            )
 
     def save_current_editor(self):
         device = self.selected_device()
@@ -605,28 +619,27 @@ class DetectionSuppressionTab(QWidget):
         device.y_position = parse_value(LENGTH, self.y_edit.text(), "Y Position", 0.0)
         device.z_position = parse_value(LENGTH, self.z_edit.text(), "Z Position", 0.0)
         # Keep the stored precision when the rounded display has not been edited.
-        if self.activation_temperature_edit.text().strip() != format_activation_temperature(
+        is_thermal = device.device_type in {"SPRINKLER", "HEAT_DETECTOR"}
+        if is_thermal and self.activation_temperature_edit.text().strip() != format_activation_temperature(
             device.activation_temperature
         ):
             device.activation_temperature = parse_value(
                 TEMPERATURE,
                 self.activation_temperature_edit.text(),
                 "Activation Temperature",
-                73.88998,
+                DetectionDevice.activation_temperature,
             )
-        device.activation_obscuration = parse_value(
-            SMOKE,
-            self.activation_obscuration_edit.text(),
-            "Activation Obscuration",
-            23.93346,
-        )
-        device.rti = parse_value(RTI, self.rti_edit.text(), "RTI", 100.0)
-        device.spray_density = parse_value(
-            VELOCITY,
-            self.spray_density_edit.text(),
-            "Spray Density",
-            0.0,
-        )
+        if device.device_type == "SMOKE_DETECTOR":
+            device.activation_obscuration = parse_value(
+                SMOKE, self.activation_obscuration_edit.text(),
+                "Activation Obscuration", DetectionDevice.activation_obscuration,
+            )
+        if is_thermal:
+            device.rti = parse_value(RTI, self.rti_edit.text(), "RTI", DetectionDevice.rti)
+        if device.device_type == "SPRINKLER":
+            device.spray_density = parse_value(
+                VELOCITY, self.spray_density_edit.text(), "Spray Density", 0.0,
+            )
         device.fyi = self.fyi_edit.text().strip()
 
     def add_device(self):
@@ -648,7 +661,6 @@ class DetectionSuppressionTab(QWidget):
             x_position=compartment.width / 2 if compartment else 0.0,
             y_position=compartment.depth / 2 if compartment else 0.0,
             z_position=compartment.height if compartment else 0.0,
-            rti=130.0,
             spray_density=1.4e-4,
         )
         self.devices.append(device)
@@ -729,9 +741,9 @@ class DetectionSuppressionTab(QWidget):
                     f"Detection / Suppression row {index}: unknown type "
                     f"{device.device_type!r}."
                 )
-            if device.rti < 0.0:
+            if device.device_type.upper() in {"SPRINKLER", "HEAT_DETECTOR"} and device.rti < 0.0:
                 raise ValueError(f"Detection / Suppression row {index}: RTI < 0.")
-            if device.spray_density < 0.0:
+            if device.device_type.upper() == "SPRINKLER" and device.spray_density < 0.0:
                 raise ValueError(
                     f"Detection / Suppression row {index}: spray density < 0."
                 )

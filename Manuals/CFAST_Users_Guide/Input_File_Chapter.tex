@@ -211,8 +211,8 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 
 CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as a leakage area per unit wall area and per unit floor area.
 \begin{description}
-\item[Wall Leak Area Ratio, Floor Leak Area Ratio] (default: (0,0); namelist: \ct{LEAK_AREA_RATIO(1:2)}): Leakage area ratio input as the leakage area per unit wall and floor area.
-\item[Flow Coefficient] (default: 0.07; namelist: \ct{FLOW_COEFFICIENT}) Orifice flow coefficient for leakage.
+\item[Wall Leak Area Ratio, Floor Leak Area Ratio, Ceiling Leak Area Ratio] (default: (0,0, 0); namelist: \ct{LEAK_AREA_RATIO(1:3)}): Leakage area ratio input as the leakage area per unit wall, floor, and ceiling area.
+\item[Flow Coefficient] (default: 0; namelist: \ct{FLOW_COEFFICIENT}) This is a flow coefficient derived from a blower door test (i.e., it is not a discharge coefficient).  CFAST will convert this during runtime to leakage areas for the wall, floor, and ceiling. If a value is specified for flow coefficient it will override any values set for the leak area ratio inputs.
 \end{description}
 For reference, the following table is taken from the \textit{Handbook of Smoke Control Engineering}~\cite{Klote:2012}.
 \begin{table}[ht]

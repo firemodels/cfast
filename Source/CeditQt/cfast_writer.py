@@ -692,7 +692,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             f"FLOOR_THICKNESS = {cfast_vector(compartment.floor_thickness)}",
             f"HALL = {cfast_logical(compartment.hall)}",
             f"SHAFT = {cfast_logical(compartment.shaft)}",
-            f"LEAK_AREA_RATIO = {cfast_vector((compartment.wall_leak_area_ratio, compartment.floor_leak_area_ratio))}",
+            f"LEAK_AREA_RATIO = {cfast_vector((compartment.wall_leak_area_ratio, compartment.floor_leak_area_ratio, compartment.ceiling_leak_area_ratio))}",
             f"FLOW_COEFFICIENT = {cfast_number(compartment.flow_coefficient)}",
         ]
 

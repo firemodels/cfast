@@ -132,7 +132,7 @@ module cfast_types
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         
-        real(eb), dimension(2) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls and (2) floor
+        real(eb), dimension(3) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls, (2) floor, and ceiling (3)
         real(eb)               :: cvent                 ! leak vent flow coefficient. Default is 0.7
 
         ! cross-sectional area variables

@@ -217,6 +217,7 @@ class CompartmentsTab(QWidget):
         self.flow_coefficient_edit = QLineEdit()
         self.wall_leak_area_ratio_edit = QLineEdit()
         self.floor_leak_area_ratio_edit = QLineEdit()
+        self.ceiling_leak_area_ratio_edit = QLineEdit()
 
         self.area_table = QTableWidget(6, 2)
         self.area_table.setHorizontalHeaderLabels(area_headers())
@@ -443,6 +444,7 @@ class CompartmentsTab(QWidget):
         form_layout.addRow("Flow Coefficient:", self.flow_coefficient_edit)
         form_layout.addRow("Wall Leak Area Ratio:", self.wall_leak_area_ratio_edit)
         form_layout.addRow("Floor Leak Area Ratio:", self.floor_leak_area_ratio_edit)
+        form_layout.addRow("Ceiling Leak Area Ratio:", self.ceiling_leak_area_ratio_edit)
         flow_layout.addLayout(form_layout)
         flow_box.setLayout(flow_layout)
 
@@ -468,6 +470,7 @@ class CompartmentsTab(QWidget):
             self.flow_coefficient_edit,
             self.wall_leak_area_ratio_edit,
             self.floor_leak_area_ratio_edit,
+            self.ceiling_leak_area_ratio_edit,
             self.fyi_edit,
         ]
 
@@ -708,6 +711,7 @@ class CompartmentsTab(QWidget):
         self.flow_coefficient_edit.setText(format_number(c.flow_coefficient))
         self.wall_leak_area_ratio_edit.setText(format_number(c.wall_leak_area_ratio))
         self.floor_leak_area_ratio_edit.setText(format_number(c.floor_leak_area_ratio))
+        self.ceiling_leak_area_ratio_edit.setText(format_number(c.ceiling_leak_area_ratio))
 
         self.load_materials_table(c)
         self.load_area_table(c)
@@ -730,6 +734,7 @@ class CompartmentsTab(QWidget):
             self.flow_coefficient_edit,
             self.wall_leak_area_ratio_edit,
             self.floor_leak_area_ratio_edit,
+            self.ceiling_leak_area_ratio_edit,
             self.fyi_edit,
         ):
             edit.clear()
@@ -891,6 +896,10 @@ class CompartmentsTab(QWidget):
             c.floor_leak_area_ratio = parse_number(
                 self.floor_leak_area_ratio_edit.text() or "0",
                 "Floor Leak Area Ratio",
+            )
+            c.ceiling_leak_area_ratio = parse_number(
+                self.ceiling_leak_area_ratio_edit.text() or "0",
+                "Ceiling Leak Area Ratio",
             )
             c.fyi = self.fyi_edit.text().strip()
             self.save_materials_from_table(c)

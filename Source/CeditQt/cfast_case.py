@@ -40,9 +40,10 @@ class Compartment:
     grid: tuple[int, int, int] = (50, 50, 50)
     hall: bool = False
     shaft: bool = False
-    flow_coefficient: float = 0.07
+    flow_coefficient: float = 0.0
     wall_leak_area_ratio: float = 0.0
     floor_leak_area_ratio: float = 0.0
+    ceiling_leak_area_ratio: float = 0.0
     cross_section_heights: list[float] = field(default_factory=list)
     cross_section_areas: list[float] = field(default_factory=list)
     fyi: str = ""

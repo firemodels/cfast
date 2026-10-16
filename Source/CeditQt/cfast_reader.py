@@ -1017,8 +1017,8 @@ def compartment_from_fields(fields: dict[str, list[Any]]) -> Compartment:
     leak_area_ratio = number_vector(
         fields,
         "LEAK_AREA_RATIO",
-        [0.0, 0.0],
-        length=2,
+        [0.0, 0.0, 0.0],
+        length=3,
     )
     return Compartment(
         id=comp_id,
@@ -1037,9 +1037,10 @@ def compartment_from_fields(fields: dict[str, list[Any]]) -> Compartment:
         grid=(int(grid[0]), int(grid[1]), int(grid[2])),
         hall=bool_field(fields, "HALL", False),
         shaft=bool_field(fields, "SHAFT", False),
-        flow_coefficient=number_field(fields, "FLOW_COEFFICIENT", 0.07),
+        flow_coefficient=number_field(fields, "FLOW_COEFFICIENT", 0.0),
         wall_leak_area_ratio=leak_area_ratio[0],
         floor_leak_area_ratio=leak_area_ratio[1],
+        ceiling_leak_area_ratio=leak_area_ratio[2],
         cross_section_heights=number_vector(fields, "CROSS_SECT_HEIGHTS", []),
         cross_section_areas=number_vector(fields, "CROSS_SECT_AREAS", []),
         fyi=string_field(fields, "FYI", ""),

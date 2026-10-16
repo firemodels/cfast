@@ -212,7 +212,8 @@ module initialization_routines
     subroutine initialize_leakage
     
     integer iroom, counter
-    real(eb) :: area
+    real(eb), parameter :: rho_leak = 352.981915_eb/298.15_eb
+    real(eb) :: area, area2, leak_area
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     
@@ -220,7 +221,10 @@ module initialization_routines
     do iroom = 1, n_rooms
         roomptr => roominfo(iroom)
         ! wall leakage
-        if (roomptr%leak_area_ratios(1) /= 0.0_eb) then
+        if (roomptr%cvent > 0.0_eb) then
+            area = 2 * ((roomptr%cwidth + roomptr%cdepth) * roomptr%cheight + roomptr%cwidth * roomptr%cdepth)
+            leak_area = roomptr%cvent*sqrt(rho_leak/2._EB)
+            ! wall
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
@@ -228,11 +232,10 @@ module initialization_routines
             ventptr%room1 = roomptr%compartment
             ventptr%room2 = n_rooms+1
             ventptr%counter = counter
-            ventptr%cvent = roomptr%cvent
             ventptr%sill   = roomptr%cheight*0.05
             ventptr%soffit = roomptr%cheight*0.95
-            area = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
-            ventptr%width  = area*roomptr%leak_area_ratios(1)/(ventptr%soffit-ventptr%sill)
+            area2 = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
+            ventptr%width  = area2/area*leak_area/(ventptr%soffit-ventptr%sill)
             ventptr%offset(1) = 0._eb
             ventptr%offset(2) = 0._eb
             ventptr%face=1
@@ -243,11 +246,8 @@ module initialization_routines
             ventptr%opening_final_fraction = 1._eb
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
-            ventptr%cvent = 0.7_eb
-        end if
-        
-        ! floor leakage
-        if (roomptr%leak_area_ratios(2) /= 0.0_eb) then
+            ventptr%cvent = 1.0_eb
+            ! floor
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
@@ -255,11 +255,10 @@ module initialization_routines
             ventptr%room1 = roomptr%compartment
             ventptr%room2 = n_rooms+1
             ventptr%counter = counter
-            ventptr%cvent = roomptr%cvent
             ventptr%sill   = 0._eb
             ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
-            area = roomptr%cwidth * roomptr%cdepth
-            ventptr%soffit  = area*roomptr%leak_area_ratios(2)/ventptr%width
+            area2 = roomptr%cwidth * roomptr%cdepth
+            ventptr%soffit  = area2/area*leak_area/ventptr%width
             ventptr%offset(1) = 0._eb
             ventptr%offset(2) = 0._eb
             ventptr%face=1
@@ -270,7 +269,107 @@ module initialization_routines
             ventptr%opening_final_fraction = 1._eb
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
-            ventptr%cvent = 0.7_eb
+            ventptr%cvent = 1.0_eb
+            ! ceiling
+            n_leaks = n_leaks + 1
+            counter = counter + 1
+            ventptr => leakinfo(n_leaks)
+            ventptr%id = 'Ceiling Leak ' // trim(roomptr%id)
+            ventptr%room1 = roomptr%compartment
+            ventptr%room2 = n_rooms+1
+            ventptr%counter = counter
+            ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
+            area2 = roomptr%cwidth * roomptr%cdepth
+            ventptr%soffit  = roomptr%cheight 
+            ventptr%sill   = roomptr%cheight - area*roomptr%leak_area_ratios(3)/ventptr%width
+            ventptr%offset(1) = 0._eb
+            ventptr%offset(2) = 0._eb
+            ventptr%face=1
+            ventptr%opening_type = trigger_by_time
+            ventptr%opening_initial_time = 0._eb
+            ventptr%opening_initial_fraction = 1._eb
+            ventptr%opening_final_time = 0._eb
+            ventptr%opening_final_fraction = 1._eb
+            ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+            ventptr%absolute_sill = ventptr%sill + roomptr%z0
+            ventptr%cvent = 1.0_eb            
+       else
+           if (roomptr%leak_area_ratios(1) > 0.0_eb) then
+                n_leaks = n_leaks + 1
+                counter = counter + 1
+                ventptr => leakinfo(n_leaks)
+                ventptr%id = 'Wall Leak ' // trim(roomptr%id)
+                ventptr%room1 = roomptr%compartment
+                ventptr%room2 = n_rooms+1
+                ventptr%counter = counter
+                ventptr%sill   = roomptr%cheight*0.05
+                ventptr%soffit = roomptr%cheight*0.95
+                area = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
+                ventptr%width  = area*roomptr%leak_area_ratios(1)/(ventptr%soffit-ventptr%sill)
+                ventptr%offset(1) = 0._eb
+                ventptr%offset(2) = 0._eb
+                ventptr%face=1
+                ventptr%opening_type = trigger_by_time
+                ventptr%opening_initial_time = 0._eb
+                ventptr%opening_initial_fraction = 1._eb
+                ventptr%opening_final_time = 0._eb
+                ventptr%opening_final_fraction = 1._eb
+                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+                ventptr%absolute_sill = ventptr%sill + roomptr%z0
+                ventptr%cvent = 1.0_eb
+           endif
+        
+           ! floor leakage
+            if (roomptr%leak_area_ratios(2) > 0.0_eb) then
+                n_leaks = n_leaks + 1
+                counter = counter + 1
+                ventptr => leakinfo(n_leaks)
+                ventptr%id = 'Floor Leak ' // trim(roomptr%id)
+                ventptr%room1 = roomptr%compartment
+                ventptr%room2 = n_rooms+1
+                ventptr%counter = counter
+                ventptr%sill   = 0._eb
+                ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
+                area = roomptr%cwidth * roomptr%cdepth
+                ventptr%soffit  = area*roomptr%leak_area_ratios(2)/ventptr%width
+                ventptr%offset(1) = 0._eb
+                ventptr%offset(2) = 0._eb
+                ventptr%face=1
+                ventptr%opening_type = trigger_by_time
+                ventptr%opening_initial_time = 0._eb
+                ventptr%opening_initial_fraction = 1._eb
+                ventptr%opening_final_time = 0._eb
+                ventptr%opening_final_fraction = 1._eb
+                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+                ventptr%absolute_sill = ventptr%sill + roomptr%z0
+                ventptr%cvent = 1.0_eb
+            end if
+        
+           ! ceiling leakage
+            if (roomptr%leak_area_ratios(3) > 0.0_eb) then
+                n_leaks = n_leaks + 1
+                counter = counter + 1
+                ventptr => leakinfo(n_leaks)
+                ventptr%id = 'Ceiling Leak ' // trim(roomptr%id)
+                ventptr%room1 = roomptr%compartment
+                ventptr%room2 = n_rooms+1
+                ventptr%counter = counter
+                ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
+                area = roomptr%cwidth * roomptr%cdepth
+                ventptr%soffit  = roomptr%cheight 
+                ventptr%sill   = roomptr%cheight - area*roomptr%leak_area_ratios(3)/ventptr%width
+                ventptr%offset(1) = 0._eb
+                ventptr%offset(2) = 0._eb
+                ventptr%face=1
+                ventptr%opening_type = trigger_by_time
+                ventptr%opening_initial_time = 0._eb
+                ventptr%opening_initial_fraction = 1._eb
+                ventptr%opening_final_time = 0._eb
+                ventptr%opening_final_fraction = 1._eb
+                ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+                ventptr%absolute_sill = ventptr%sill + roomptr%z0
+                ventptr%cvent = 1.0_eb
+            end if
         end if
     end do
     

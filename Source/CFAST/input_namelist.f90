@@ -505,7 +505,7 @@
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width, flow_coefficient
     real(eb), dimension(3) :: origin
-    real(eb), dimension(2) :: leak_area_ratio
+    real(eb), dimension(3) :: leak_area_ratio
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     real(eb), dimension(3) :: ceiling_thickness, floor_thickness, wall_thickness
     logical :: hall, shaft

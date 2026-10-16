@@ -182,6 +182,10 @@ class DetectionSuppressionTab(QWidget):
         return layout
 
     def build_editor_group(self):
+        self.activation_temperature_label = QLabel("Activation Temperature:")
+        self.activation_obscuration_label = QLabel("Activation Obscuration:")
+        self.rti_label = QLabel("RTI:")
+        self.spray_density_label = QLabel("Spray Density:")
         group = QGroupBox("Alarm")
         layout = QGridLayout()
 
@@ -197,7 +201,7 @@ class DetectionSuppressionTab(QWidget):
         layout.addWidget(self.compartment_combo, 1, 3)
 
         layout.addWidget(
-            QLabel("Activation Temperature:"),
+            self.activation_temperature_label,
             1,
             4,
             alignment=Qt.AlignmentFlag.AlignRight,
@@ -205,7 +209,7 @@ class DetectionSuppressionTab(QWidget):
         layout.addWidget(self.activation_temperature_edit, 1, 5)
 
         layout.addWidget(
-            QLabel("Activation Obscuration:"),
+            self.activation_obscuration_label,
             2,
             4,
             alignment=Qt.AlignmentFlag.AlignRight,
@@ -222,14 +226,14 @@ class DetectionSuppressionTab(QWidget):
         position_layout.addWidget(self.z_edit, 2, 1)
         position_group.setLayout(position_layout)
 
-        response_group = QGroupBox("Response / Suppression")
+        self.response_group = response_group = QGroupBox("Response / Suppression")
         response_layout = QGridLayout()
-        response_layout.addWidget(QLabel("RTI:"), 0, 0)
+        response_layout.addWidget(self.rti_label, 0, 0)
         response_layout.addWidget(self.rti_edit, 0, 1)
-        response_layout.addWidget(QLabel("Spray Density:"), 1, 0)
+        response_layout.addWidget(self.spray_density_label, 1, 0)
         response_layout.addWidget(self.spray_density_edit, 1, 1)
-        response_layout.addWidget(QLabel("FYI:"), 2, 0)
-        response_layout.addWidget(self.fyi_edit, 2, 1)
+        layout.addWidget(QLabel("FYI:"), 4, 4, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.fyi_edit, 4, 5)
         response_group.setLayout(response_layout)
 
         layout.addWidget(position_group, 3, 1, 1, 2)
@@ -253,6 +257,7 @@ class DetectionSuppressionTab(QWidget):
             self.fyi_edit,
         ]:
             line_edit.textChanged.connect(self.editor_changed)
+            line_edit.editingFinished.connect(self.finish_editor_edit)
 
         self.type_combo.currentTextChanged.connect(self.type_changed)
         self.compartment_combo.currentTextChanged.connect(self.editor_changed)
@@ -389,11 +394,14 @@ class DetectionSuppressionTab(QWidget):
         values = self.device_summary_values(row, self.devices[row])
 
         for col, value in enumerate(values):
-            self.summary_table.setItem(
-                row,
-                col,
-                make_table_item(value, editable=self.summary_cell_editable(row, col)),
-            )
+            item = self.summary_table.item(row, col)
+            updated = make_table_item(value, editable=self.summary_cell_editable(row, col))
+            if item is None:
+                self.summary_table.setItem(row, col, updated)
+            else:
+                # Keep the emitting item alive until all itemChanged slots finish.
+                item.setText(value)
+                item.setFlags(updated.flags())
 
         self.updating_table = False
 
@@ -497,9 +505,18 @@ class DetectionSuppressionTab(QWidget):
         is_thermal = device_type in {"SPRINKLER", "HEAT_DETECTOR"}
 
         self.activation_temperature_edit.setEnabled(is_thermal)
+        self.activation_temperature_edit.setVisible(is_thermal)
+        self.activation_temperature_label.setVisible(is_thermal)
         self.activation_obscuration_edit.setEnabled(is_smoke)
+        self.activation_obscuration_edit.setVisible(is_smoke)
+        self.activation_obscuration_label.setVisible(is_smoke)
         self.rti_edit.setEnabled(is_thermal)
+        self.rti_edit.setVisible(is_thermal)
+        self.rti_label.setVisible(is_thermal)
         self.spray_density_edit.setEnabled(is_sprinkler)
+        self.spray_density_edit.setVisible(is_sprinkler)
+        self.spray_density_label.setVisible(is_sprinkler)
+        self.response_group.setVisible(is_thermal)
 
     def type_changed(self):
         self.update_editor_enabled_state()
@@ -516,6 +533,17 @@ class DetectionSuppressionTab(QWidget):
             # Let partially typed text remain in the editor. Export/run will
             # validate the final value.
             pass
+
+    def finish_editor_edit(self):
+        if self.loading_editor:
+            return
+        try:
+            self.save_current_editor()
+        except ValueError:
+            return
+        self.update_summary_row(self.current_index)
+        if self.selected_device() is not None:
+            self.load_editor(self.current_index)
 
     def summary_item_changed(self, item: QTableWidgetItem):
         if self.updating_table or self.loading_editor:

@@ -201,6 +201,10 @@ class TargetsTab(QWidget):
         self.ny_edit = QLineEdit()
         self.nz_edit = QLineEdit()
 
+        self.nx_label = QLabel("Normal (X):")
+        self.ny_label = QLabel("Normal (Y):")
+        self.nz_label = QLabel("Normal (Z):")
+        self.surface_orientation_label = QLabel("Surface Orientation:")
         layout.addWidget(QLabel("Target Position"), 0, 1)
         layout.addWidget(QLabel("Normal Vector Points to"), 0, 3)
 
@@ -211,17 +215,17 @@ class TargetsTab(QWidget):
 
         layout.addWidget(QLabel("Depth (Y):"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.y_edit, 2, 1)
-        layout.addWidget(QLabel("Normal (X):"), 2, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.nx_label, 2, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.nx_edit, 2, 3)
 
         layout.addWidget(QLabel("Height (Z):"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.z_edit, 3, 1)
-        layout.addWidget(QLabel("Normal (Y):"), 3, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.ny_label, 3, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.ny_edit, 3, 3)
 
-        layout.addWidget(QLabel("Normal (Z):"), 4, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.nz_label, 4, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.nz_edit, 4, 3)
-        layout.addWidget(QLabel("Surface Orientation:"), 5, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.surface_orientation_label, 5, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.surface_orientation_combo, 5, 3)
 
         group.setLayout(layout)
@@ -478,8 +482,11 @@ class TargetsTab(QWidget):
     def update_normal_controls(self):
         specify_direction = self.normal_mode_combo.currentText() == "Specify Direction"
         self.surface_orientation_combo.setEnabled(specify_direction)
-        for widget in (self.nx_edit, self.ny_edit, self.nz_edit):
+        self.surface_orientation_combo.setVisible(specify_direction)
+        self.surface_orientation_label.setVisible(specify_direction)
+        for widget in (self.nx_edit, self.ny_edit, self.nz_edit, self.nx_label, self.ny_label, self.nz_label):
             widget.setEnabled(not specify_direction)
+            widget.setVisible(not specify_direction)
 
     def set_fires(self, fires: list[FireDefinition]):
         self.fires = list(fires)

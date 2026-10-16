@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from table_widgets import UnitTableWidget
+
 from cfast_case import CfastCase, MaterialProperty
 from cfast_reader import read_cfast_input_with_warnings
 from units import (
@@ -45,7 +47,7 @@ class ThermalPropertyImportDialog(QDialog):
         self.setWindowTitle("Insert Thermal Properties")
         self.resize(800, 360)
 
-        self.table = QTableWidget(len(materials), 7)
+        self.table = UnitTableWidget(len(materials), 7)
         self.table.setHorizontalHeaderLabels(
             [
                 "",
@@ -131,7 +133,7 @@ class ThermalPropertiesTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.table = QTableWidget(8, 8)
+        self.table = UnitTableWidget(8, 8)
         self.refresh_unit_labels()
 
         self.table.horizontalHeader().setSectionResizeMode(

@@ -12,6 +12,7 @@ TIME = "time"
 TEMPERATURE = "temperature"
 TEMPERATURE_RISE = "temperature_rise"
 PRESSURE = "pressure"
+PRESSURE_DIFFERENCE = "pressure_difference"
 ENERGY = "energy"
 SMOKE = "smoke"
 
@@ -93,6 +94,10 @@ BASE_UNITS: dict[str, list[BaseUnit]] = {
         BaseUnit("mm Hg", 133.3224),
         BaseUnit("in H₂O", 249.0889),
         BaseUnit("atm", 101325.0),
+        BaseUnit("psi", 6894.757293168),
+        BaseUnit("psia", 6894.757293168),
+        # Gauge pressure is relative to one standard atmosphere.
+        BaseUnit("psig", 6894.757293168, 101325.0 / 6894.757293168),
     ],
     ENERGY: [
         BaseUnit("kJ", 1000.0),
@@ -297,7 +302,11 @@ class UnitSystem:
                 l_temperature,
             ),
             TEMPERATURE_RISE: Conversion(temperature.multiplier, 0.0, l_temperature),
-            PRESSURE: Conversion(pressure.multiplier, 0.0, l_pressure),
+            PRESSURE: Conversion(pressure.multiplier, pressure.offset, l_pressure),
+            PRESSURE_DIFFERENCE: Conversion(
+                pressure.multiplier, 0.0,
+                "psi" if l_pressure in {"psia", "psig"} else l_pressure,
+            ),
             LENGTH: Conversion(length.multiplier, 0.0, l_length),
             SMOKE: Conversion(smoke.multiplier, 0.0, l_smoke, smoke=True),
             AREA: Conversion(length.multiplier * length.multiplier, 0.0, l_area),
@@ -441,6 +450,13 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                     smoke=(kind == SMOKE),
                 ),
             )
+        _EXPLICIT_UNIT_LOOKUP_CACHE[kind] = lookup
+        return lookup
+
+    if kind == PRESSURE_DIFFERENCE:
+        for unit in BASE_UNITS[PRESSURE]:
+            if unit.label != "psia":
+                register_unit(lookup, unit.label, Conversion(unit.multiplier, 0.0, unit.label))
         _EXPLICIT_UNIT_LOOKUP_CACHE[kind] = lookup
         return lookup
 

@@ -34,7 +34,7 @@ from matplotlib.figure import Figure
 
 from cfast_case import CfastCase, Compartment, FireDefinition, FireProperty, FireRampPoint
 from cfast_reader import read_fire_properties
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitTableWidget
 from units import (
     AREA,
     E_COEFFICIENT,
@@ -125,7 +125,7 @@ class FireImportDialog(QDialog):
         self.candidates = candidates
         self.setWindowTitle("Insert Fires")
         self.resize(900, 360)
-        self.table = QTableWidget(len(candidates), 6)
+        self.table = UnitTableWidget(len(candidates), 6)
         self.table.setHorizontalHeaderLabels([
             "", "Fire", "Formula", f"Peak HRR\n({unit_label(HRR)})",
             f"Heat of Combustion\n({unit_label(HOC)})", "Source File",
@@ -209,7 +209,7 @@ class FirePlotCanvas(FigureCanvas):
         self.draw()
 
 
-class SpreadsheetTableWidget(QTableWidget):
+class SpreadsheetTableWidget(UnitTableWidget):
     pasted = Signal()
 
     def keyPressEvent(self, event):

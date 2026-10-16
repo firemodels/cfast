@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from cfast_case import CeilingFloorVent, CfastCase, Compartment
-from table_widgets import HoverEditTableWidget
+from table_widgets import HoverEditTableWidget, UnitTableWidget
 from units import AREA, LENGTH, TIME, format_number, format_value, parse_number, parse_value, unit_label
 
 
@@ -113,7 +113,7 @@ class CeilingFloorVentsTab(QWidget):
         self.pre_fraction_edit = QLineEdit()
         self.post_fraction_edit = QLineEdit()
 
-        self.fraction_table = QTableWidget(5, 2)
+        self.fraction_table = UnitTableWidget(5, 2)
         self.fraction_table.setHorizontalHeaderLabels(
             [f"Time\n({unit_label(TIME)})", "Opening Fraction"]
         )

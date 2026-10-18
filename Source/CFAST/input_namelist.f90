@@ -656,7 +656,7 @@
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
     leak_area_ratio(:)      = 0.0_eb
-    flow_coefficient        = 0.07_eb
+    flow_coefficient        = 0.0_eb
     hall                    = .false.
     shaft                   = .false.
 

@@ -887,7 +887,7 @@ class CompartmentsTab(QWidget):
             c.hall = self.hall_radio.isChecked()
             c.flow_coefficient = parse_value(
                 FLOW_COEFFICIENT, self.flow_coefficient_edit.text(),
-                "Flow Coefficient", default=0.07,
+                "Flow Coefficient", default=0.0,
             )
             c.wall_leak_area_ratio = parse_number(
                 self.wall_leak_area_ratio_edit.text() or "0",

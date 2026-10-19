@@ -8,7 +8,7 @@ module fire_routines
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
         
-    use cenviro, only: cp
+    use cenviro, only: cp, mw_n2, mw_o2, mw_co2, mw_h2o, mw_c, mw_co, mw_hcn, mw_hcl
     use cparams, only: u, l, m, q, ts, fuel, n2, o2, o2f, mxfires, mxrooms, fuel_moles, fuel_q, fuel_n2, fuel_o2, fuel_co2, &
         fuel_co, fuel_hcn, fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, soot_flaming, soot_smolder, ct, &
         mx_hsep, t_max, ns_mass, flaming, smoldering, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, &
@@ -222,7 +222,7 @@ module fire_routines
     if (fireptr%n_hcn>0) then
         call interp(fireptr%t_hcn,fireptr%y_hcn,fireptr%n_hcn,xxtime,1,y_hcn)
     else
-        y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
+        y_HCN = fireptr%n_N*mw_hcn/fireptr%molar_mass
     end if
     call interp(fireptr%t_trace,fireptr%y_trace,fireptr%n_trace,xxtime,1,y_trace)
     call interp(fireptr%t_area,fireptr%area,fireptr%n_area,xxtime,1,area_t)
@@ -569,11 +569,11 @@ module fire_routines
 
     ! now do the chemistry balance with supplied inputs.
     nu_soot = molar_mass/0.01201_eb*y_soot
-    nu_soot_flaming = molar_mass/0.01201_eb*y_soot_flaming
-    nu_soot_smolder = molar_mass/0.01201_eb*y_soot_smolder
-    nu_hcn = min(n_N,molar_mass/0.027028_eb*y_hcn)
+    nu_soot_flaming = molar_mass/mw_c*y_soot_flaming
+    nu_soot_smolder = molar_mass/mw_c*y_soot_smolder
+    nu_hcn = min(n_N,molar_mass/mw_hcn*y_hcn)
     nu_hcl = n_Cl
-    nu_co = molar_mass/0.02801_eb*y_co
+    nu_co = molar_mass/mw_co*y_co
     nu_h2o = (n_H - nu_hcl - nu_hcn)/2.0_eb
     nu_co2 = n_C  - nu_co - nu_hcn - nu_soot
     nu_o2 = nu_co2 + (nu_h2o + nu_co - n_O)/2.0_eb
@@ -582,16 +582,16 @@ module fire_routines
     ! chemistry balance is molar-based so convert back to mass rates. fuel and o2 are consumed,
     ! so negative. Others are produced, so positive
     net_fuel = -pyrolysis_rate_constrained
-    net_o2 = -pyrolysis_rate_constrained*nu_o2*0.032_eb/molar_mass
-    net_co2 = pyrolysis_rate_constrained*nu_co2*0.04401_eb/molar_mass
-    net_co = pyrolysis_rate_constrained*nu_co*0.02801_eb/molar_mass
-    net_h2o = pyrolysis_rate_constrained*nu_h2o*0.018016_eb/molar_mass
-    net_hcl = pyrolysis_rate_constrained*nu_hcl*0.036458_eb/molar_mass
-    net_hcn = pyrolysis_rate_constrained*nu_hcn*0.027028_eb/molar_mass
-    net_soot = pyrolysis_rate_constrained*nu_soot*0.01201_eb/molar_mass
-    net_soot_flaming = pyrolysis_rate_constrained*nu_soot_flaming*0.01201_eb/molar_mass
-    net_soot_smolder = pyrolysis_rate_constrained*nu_soot_smolder*0.01201_eb/molar_mass
-    net_n2 = pyrolysis_rate_constrained*nu_n2*0.02802_eb/molar_mass
+    net_o2 = -pyrolysis_rate_constrained*nu_o2*mw_o2/molar_mass
+    net_co2 = pyrolysis_rate_constrained*nu_co2*mw_co2/molar_mass
+    net_co = pyrolysis_rate_constrained*nu_co*mw_co/molar_mass
+    net_h2o = pyrolysis_rate_constrained*nu_h2o*mw_h2o/molar_mass
+    net_hcl = pyrolysis_rate_constrained*nu_hcl*mw_hcl/molar_mass
+    net_hcn = pyrolysis_rate_constrained*nu_hcn*mw_hcn/molar_mass
+    net_soot = pyrolysis_rate_constrained*nu_soot*mw_c/molar_mass
+    net_soot_flaming = pyrolysis_rate_constrained*nu_soot_flaming*mw_c/molar_mass
+    net_soot_smolder = pyrolysis_rate_constrained*nu_soot_smolder*mw_c/molar_mass
+    net_n2 = pyrolysis_rate_constrained*nu_n2*mw_n2/molar_mass
     net_ct = 0.0_eb
     
     if (-net_o2 > o2_available) then
@@ -800,13 +800,13 @@ module fire_routines
         y_smolder_soot = 0.0_eb
         y_co = room2ptr%species_mass(u,fuel_co)/room2ptr%species_mass(u,fuel)
         y_hcn = room2ptr%species_mass(u,fuel_hcn)/room2ptr%species_mass(u,fuel)
-        nu_soot = y_soot*xxmolar_mass/0.01201_eb
-        nu_co = y_co*xxmolar_mass/0.02801_eb
-        nu_hcn = y_hcn*xxmolar_mass/0.027028_eb
-        nu_hcl = room2ptr%species_mass(u,fuel_hcl)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.036458_eb
-        nu_co2 = room2ptr%species_mass(u,fuel_co2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.04401_eb
-        nu_h2o = room2ptr%species_mass(u,fuel_h2o)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.018016_eb
-        nu_o2 = room2ptr%species_mass(u,fuel_o2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.032_eb
+        nu_soot = y_soot*xxmolar_mass/mw_c
+        nu_co = y_co*xxmolar_mass/mw_co
+        nu_hcn = y_hcn*xxmolar_mass/mw_hcn
+        nu_hcl = room2ptr%species_mass(u,fuel_hcl)/room2ptr%species_mass(u,fuel)*xxmolar_mass/mw_hcl
+        nu_co2 = room2ptr%species_mass(u,fuel_co2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/mw_co2
+        nu_h2o = room2ptr%species_mass(u,fuel_h2o)/room2ptr%species_mass(u,fuel)*xxmolar_mass/mw_h2o
+        nu_o2 = room2ptr%species_mass(u,fuel_o2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/mw_o2
         
         n_n = nu_hcn
         n_cl = nu_hcl
@@ -1136,11 +1136,10 @@ module fire_routines
     real(eb), intent(in) :: deltt
 
     ! molar_masses of the species
-    real(eb), parameter :: molar_mass(ns_mass) = &
-        (/0.02802_eb,0.032_eb,0.04401_eb,0.02801_eb,0.027028_eb,0.036458_eb,0.01201_eb,0.018016_eb,0.01201_eb/)
+    real(eb) :: molar_mass(ns_mass) = (/mw_n2, mw_o2, mw_co2, mw_co, mw_hcn, mw_hcl, mw_c, mw_h2o, mw_c/)
 
     ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
-    real(eb), parameter :: avagad = 1.0_eb/6.022e23_eb
+    real(eb), parameter :: avagad = 1.0_eb/6.02214076e23_eb
     
     real(eb) :: air_moles(2), v(2)
     integer i, layer, lsp

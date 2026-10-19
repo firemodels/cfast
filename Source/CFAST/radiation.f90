@@ -767,6 +767,7 @@ module radiation_routines
 ! --------------------------- absorb -------------------------------------------
 
     real(eb) function absorb(cmpt, layer)
+    use cenviro, only: mw_co2, mw_h2o
 
     !  calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
 
@@ -820,9 +821,9 @@ module radiation_routines
 
     ! declare module data
 
-    ! physical constants [mw in kg/mol; rg in m^3-atm/mol-kelvin]
+    ! physical constants [rg in m^3-atm/mol-kelvin]
 
-    real(eb), parameter :: mwco2 = 44.0088e-3_eb, mwh2o = 18.0153e-3_eb, rg = 82.0562e-6_eb, k = 1195.5_eb, rhos = 1800.0_eb
+    real(eb), parameter :: rg = 82.0562e-6_eb, k = 1195.5_eb, rhos = 1800.0_eb
 
     ! log(t) data for co2 [t in k]
 
@@ -910,7 +911,7 @@ module radiation_routines
     ag = 0.0_eb
 
     ! absorbance for co2
-    ng = roomptr%species_mass(layer,co2)/mwco2
+    ng = roomptr%species_mass(layer,co2)/mw_co2
     plg = ng*rtv*l
     if (plg>0.0_eb) then
         cplg = log10(plg)
@@ -922,7 +923,7 @@ module radiation_routines
     end if
 
     ! absorbance for h2o
-    ng = roomptr%species_mass(layer,h2o)/mwh2o
+    ng = roomptr%species_mass(layer,h2o)/mw_h2o
     plg = ng*rtv*l
     if (plg>0.0_eb) then
         cplg = log10(plg)

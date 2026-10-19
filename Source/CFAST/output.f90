@@ -452,7 +452,7 @@ module output_routines
     'Lower Layer               Upper Layer               Lower Layer',/, &
     'Vent   From/Bottom    To/Top           Fraction     Inflow       Outflow      ', &
     'Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,153('-'))
-5070 format (a4,3x,a12,3x,a12,15x,a)
+5070 format (a4,3x,a12,3x,a12,15x,a104)
 
     end subroutine results_vent_flows
 
@@ -1161,7 +1161,7 @@ module output_routines
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
     character(len=*), intent(out) :: outbuf
 
-    real :: flow(8),  x1000,x100,x10,x1,x01
+    real :: flow(8)
 
     integer :: i
 
@@ -1174,34 +1174,14 @@ module output_routines
     flow(6) = real(flow6)
     flow(7) = real(flow7)
     flow(8) = real(flow8)
-    x1000 = 1000.0
-    x100 = 100.0
-    x10 = 10.0
-    x1 = 1.0
-    x01 = 0.1
     do i = 1, 8
-        if (flow(i)>=x1000) then
-            write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
-        else if (flow(i)>=x100) then
-            write (outbuf(13*(i-1)+1:13*i),5010) flow(i)
-        else if (flow(i)>=x10) then
-            write (outbuf(13*(i-1)+1:13*i),5020) flow(i)
-        else if (flow(i)>=x1) then
-            write (outbuf(13*(i-1)+1:13*i),5030) flow(i)
-        else if (flow(i)>=x01) then
-            write (outbuf(13*(i-1)+1:13*i),5040) flow(i)
+        if (flow(i)<=atol) then
+           outbuf(13*(i-1)+1:13*i) = ' '
         else
-            write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
-        end if
-        if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
-        if (flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
+           write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
+        endif
     end do
 
-5000 format (2x,1pg11.3)
-5010 format (f6.0,7x)
-5020 format (f7.1,6x)
-5030 format (f8.2,5x)
-5040 format (f9.3,4x)
 5050 format (2x,e11.4)
     end subroutine flwout
 

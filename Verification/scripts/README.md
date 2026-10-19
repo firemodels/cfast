@@ -19,9 +19,18 @@ Utilities/CI/Run_CFAST_Cases.sh --suite Verification -I gnu -q batch
 
 Use `--test-UI` to import and rewrite the inputs through CEditQt without running CFAST. The `Run_CFAST_Cases.sh` in this directory calls the shared runner. See [the CI documentation](../../Utilities/CI/README.md) for compiler, debug, queue, stop, timing, and case-selection options.
 
-## Windows PowerShell
+## Windows
 
-Run the native PowerShell script from this directory with your Windows CFAST executable:
+If PowerShell blocks direct execution of `.ps1` files, use the `.bat` launcher from this directory in either Command Prompt or PowerShell:
+
+```bat
+.\Run_CFAST_Cases.bat -e "C:\My Builds\cfast8_win.exe"
+.\Run_CFAST_Cases.bat -d -I gnu
+```
+
+The batch launcher passes all options to the adjacent PowerShell script and returns its exit code. It uses Windows PowerShell with `-ExecutionPolicy Bypass` for that process only; it does not change the saved execution policy or require administrator privileges. An execution policy enforced by organization Group Policy can still block it. Use double quotes around paths containing spaces when calling the batch launcher.
+
+You can also run the native PowerShell script directly from this directory:
 
 ```powershell
 .\Run_CFAST_Cases.ps1 -e ..\..\Build\CFAST\gnu_win\cfast8_win.exe

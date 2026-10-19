@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Submit one CFAST or CEditQt case. Used by both V&V suites.
+# Run or submit one CFAST or CEditQt case. Used by both V&V suites.
 set -euo pipefail
 usage() {
   cat <<'HELP'
 Usage: qcfast.sh [-d directory] [-e executable] [-q queue] [options] input.in
-  -q queue     Slurm partition (default: batch)
+  -q partition Submit to Slurm (default: run locally and wait)
   -e path      CFAST executable (required except for --test-UI or stopping)
   -j prefix    Scheduler job-name prefix
   -c           Pass the input basename without its extension
@@ -15,11 +15,11 @@ Usage: qcfast.sh [-d directory] [-e executable] [-q queue] [options] input.in
   -h           Show this help
 HELP
 }
-queue=batch; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; ui=0
+queue=; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; ui=0
 while (($#)); do
   case "$1" in
     -d|-e|-q|-j) [[ $# -ge 2 ]] || { usage >&2; exit 2; }
-      case "$1" in -d) dir=$2;; -e) exe=$2;; -q) queue=$2;; -j) prefix=$2;; esac; shift 2;;
+      case "$1" in -d) dir=$2;; -e) exe=$2;; -q) [[ -n $2 ]] || { echo "Slurm partition must not be empty." >&2; exit 2; }; queue=$2;; -j) prefix=$2;; esac; shift 2;;
     -c) strip=1; shift;; -s) stop=1; shift;; -v) preview=1; shift;;
     -E|-b) shift;; # -b was accepted by the former V&V launcher; -e selects the build.
     --test-UI) ui=1; shift;; -h|--help) usage; exit 0;;
@@ -56,9 +56,11 @@ script=$(mktemp "${TMPDIR:-/tmp}/qcfast.XXXXXX")
 trap 'rm -f "$script"' EXIT
 {
   echo '#!/usr/bin/env bash'
-  printf '#SBATCH --job-name=%s%s\n#SBATCH --output="%s"\n#SBATCH --error="%s"\n#SBATCH --partition=%s\n#SBATCH --ntasks=1\n#SBATCH --cpus-per-task=1\n' "$job_name" "$suffix" "$log" "$err" "$queue"
-  [[ -z ${SLURM_MEM:-} ]] || printf '#SBATCH --mem=%s\n' "$SLURM_MEM"
-  [[ -z ${SLURM_MEMPERCPU:-} ]] || printf '#SBATCH --mem-per-cpu=%s\n' "$SLURM_MEMPERCPU"
+  if [[ -n $queue ]]; then
+    printf '#SBATCH --job-name=%s%s\n#SBATCH --output="%s"\n#SBATCH --error="%s"\n#SBATCH --partition=%s\n#SBATCH --ntasks=1\n#SBATCH --cpus-per-task=1\n' "$job_name" "$suffix" "$log" "$err" "$queue"
+    [[ -z ${SLURM_MEM:-} ]] || printf '#SBATCH --mem=%s\n' "$SLURM_MEM"
+    [[ -z ${SLURM_MEMPERCPU:-} ]] || printf '#SBATCH --mem-per-cpu=%s\n' "$SLURM_MEMPERCPU"
+  fi
   printf 'status_file=%q\n' "$status_file"
   echo 'trap '\''rc=$?; printf "%s\n" "$rc" > "$status_file.tmp.$$"; mv "$status_file.tmp.$$" "$status_file"'\'' EXIT'
   printf 'cd %q || exit 1\n' "$dir"
@@ -68,13 +70,24 @@ trap 'rm -f "$script"' EXIT
   echo 'exit $?'
 } > "$script"
 if [[ $preview == 1 ]]; then cat "$script"; exit 0; fi
-command -v sbatch >/dev/null || { echo 'Run aborted: sbatch not found.' >&2; exit 1; }
+if [[ -n $queue ]]; then
+  command -v sbatch >/dev/null || { echo 'Run aborted: sbatch not found.' >&2; exit 1; }
+fi
 rm -f "$status_file" "$log" "$err"
 if [[ $ui == 0 ]]; then
   if [[ -n ${STOPFDSMAXITER:-} ]]; then printf '%s\n' "$STOPFDSMAXITER" > "$dir/$base.stop"
   else rm -f "$dir/$base.stop"; fi
 fi
 cp "$script" "$dir/$base$suffix.slog"
+if [[ -z $queue ]]; then
+  echo "Running locally: $dir/$input"
+  rc=0
+  bash "$script" > "$log" 2> "$err" || rc=$?
+  if [[ $rc != 0 ]]; then
+    echo "Run failed (exit $rc): $dir/$input; see $log and $err" >&2
+  fi
+  exit "$rc"
+fi
 result=$(sbatch "$script") || { echo 'Run aborted: sbatch failed.' >&2; exit 1; }
 echo "$result"
 job_id=$(awk '/Submitted batch job/ {print $4}' <<< "$result")

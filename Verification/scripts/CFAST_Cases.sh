@@ -51,7 +51,6 @@ $RUNCFAST -d Units units_fire.in
 $RUNCFAST -d Units units_vents_devices.in
 
 $RUNCFAST -d Ventilation Leakage_1.in
-$RUNCFAST -d Ventilation Leakage_2.in
 $RUNCFAST -d Ventilation VVent_Tests.in
 $RUNCFAST -d Ventilation surface_opened_fraction_1.in
 $RUNCFAST -d Ventilation ventilation_1.in

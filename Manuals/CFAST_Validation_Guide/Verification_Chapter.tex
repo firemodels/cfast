@@ -426,14 +426,14 @@ For this verification case, the upper layer thickness for each compartment is se
 \label{Leakage_1}
 \label{Leakage_2}
 
-Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ or $\Delta P = \rho/2 \times \left( \dV/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 \times 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
+Air is supplied to the floor of three compartments (3 m x 3 m x 3 m) at ambient condition via a single mechanical vent in each compartment with a flowrate of 0.05~m$^3$/s. The first compartment has leakage defined with a flow coefficient of 0.02. This results in a total leakage area of 0.0153~m$^2$. This is 0.000284~m$^2$/m$^2$ of leakage based on the total area of the room boundaries (54~m$^2$). The second compartment assigns that leakage ratio to walls, floor, and ceiling. The third compartment assigns the entire leakage area to just the floor at a ratio of 0.00170~m$^2$/m$^2$. The total flow out of each compartment should equal the total mechanical flow into each compartment. At ambient density, the flow rate of 0.05~m$^3$/s is 0.06~kg/s. Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ where the discharge coefficient for leakage is taken to be 1. Solving for $\Delta P$ using the leak area, mechanical flowrate, and ambient density gives a pressure rise of 6.36~Pa.
 
 The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
 \begin{figure}[h]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_2_Flow} &
-\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_2_Pressure} \\
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_1_Flow} &
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_1_Pressure} \\
 \end{tabular*}
 \caption[Results of the test case \ct{Leakage_1.in}]{Expected and CFAST calculated wall leakage for the case \ct{Leakage_1.in}.}
 \label{Leak_Results}

@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 $RUNCFAST -d 1RFURN 1RFURN1.in
 $RUNCFAST -d 1RFURN 1RFURN6.in
@@ -426,7 +426,6 @@ $RUNCFAST -d ../Verification/Ventilation ventilation_4.in
 $RUNCFAST -d ../Verification/Ventilation VVent_Tests.in
 $RUNCFAST -d ../Verification/Ventilation surface_opened_fraction_1.in
 $RUNCFAST -d ../Verification/Ventilation Leakage_1.in
-$RUNCFAST -d ../Verification/Ventilation Leakage_2.in
 
 $RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
 

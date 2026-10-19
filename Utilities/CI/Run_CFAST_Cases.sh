@@ -3,7 +3,7 @@
 set -euo pipefail
 CI_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo=${CFAST_REPO:-$(cd "$CI_DIR/../.." && pwd)}
-suite=; compiler=intel; debug=; queue=batch; prefix=; timing=0; ui=0; preview=0; selected=; exe=
+suite=; compiler=intel; debug=; queue=; prefix=; timing=0; ui=0; preview=0; selected=; exe=
 launch_args=()
 usage() {
   cat <<'HELP'
@@ -11,7 +11,7 @@ Usage: Run_CFAST_Cases.sh --suite Verification|Validation [options]
   -I intel|gnu    Compiler (default: intel)
   -d              Debug executable
   -e executable   Override executable
-  -q queue        Slurm partition (default: batch)
+  -q partition    Submit to Slurm (default: run locally, sequentially)
   -j prefix       Job-name prefix
   -m iterations   Stop after the specified iteration count
   -s              Stop the suite's cases
@@ -29,7 +29,7 @@ while (($#)); do
       [[ $# -ge 2 ]] || { usage >&2; exit 2; }
       case "$1" in
         --suite) suite=$2;; --repo-root) repo=$2;; --case) selected=$2;; -I) compiler=$2;;
-        -e) exe=$2;; -q) queue=$2;; -j) prefix=$2;; -m) export STOPFDSMAXITER=$2;; -S) :;;
+        -e) exe=$2;; -q) [[ -n $2 ]] || { echo "Slurm partition must not be empty." >&2; exit 2; }; queue=$2;; -j) prefix=$2;; -m) export STOPFDSMAXITER=$2;; -S) :;;
       esac; shift 2;;
     -d) debug=_db; shift;; -s) export STOPFDS=1; shift;; -t) timing=1; shift;;
     -v) preview=1; shift;; --test-UI) ui=1; shift;; -h|--help) usage; exit 0;;
@@ -42,6 +42,21 @@ repo=$(cd "$repo" && pwd)
 case $(uname) in Darwin) platform=macos;; Linux) platform=linux;; MINGW*|MSYS*|CYGWIN*) platform=win;; *) echo 'Unsupported platform.' >&2; exit 1;; esac
 export CFAST_REPO=$repo BASEDIR="$repo/$suite" SVNROOT=$repo
 export CFAST=${exe:-$repo/Build/CFAST/${compiler}_${platform}${debug}/cfast8_${platform}${debug}}
+# Resolve from the caller's directory before changing to the suite directory.
+if [[ $ui == 0 && $timing == 0 && -z ${STOPFDS:-} ]]; then
+  resolved_exe=$(command -v "$CFAST") || {
+    echo "Run aborted: executable not found: $CFAST" >&2
+    echo 'Rerun with -e /path/to/cfast to select your executable.' >&2
+    echo 'Use an absolute path, a path relative to your current directory, or an executable name on PATH (not a shell alias).' >&2
+    if [[ -z $exe && $compiler == intel ]]; then
+      echo 'For a standard GNU build, use -I gnu instead of the default Intel build (add -d for debug).' >&2
+    fi
+    exit 1
+  }
+  [[ $resolved_exe == /* ]] || resolved_exe="$PWD/$resolved_exe"
+  export CFAST=$resolved_exe
+  echo "CFAST executable: $CFAST"
+fi
 match_file=$(mktemp "${TMPDIR:-/tmp}/cfast-cases.XXXXXX")
 trap 'rm -f "$match_file"' EXIT
 export CFAST_MATCH_FILE=$match_file
@@ -58,7 +73,8 @@ run_cfast_case() {
     awk -v name="$input" '/execution time/ {t=$5} /time steps/ {s=$5} END {print name "," t "," s}' "$log"
     return
   fi
-  local options=(-q "$CFAST_QUEUE" -j "$CFAST_PREFIX" -e "$CFAST")
+  local options=(-j "$CFAST_PREFIX" -e "$CFAST")
+  [[ -z $CFAST_QUEUE ]] || options+=(-q "$CFAST_QUEUE")
   [[ $CFAST_UI == 0 ]] || options+=(--test-UI)
   [[ $CFAST_PREVIEW == 0 ]] || options+=(-v)
   "$CFAST_LAUNCHER" "${options[@]}" "$@"
@@ -66,6 +82,6 @@ run_cfast_case() {
 export -f run_cfast_case
 export RUNCFAST=run_cfast_case
 cd "$BASEDIR"
-# -e propagates the first failed submission instead of masking it with a later success.
+# -e propagates the first failed run or submission instead of masking it with a later success.
 bash -e scripts/CFAST_Cases.sh
 [[ -s $match_file ]] || { echo "No matching cases in $suite: $selected" >&2; exit 1; }

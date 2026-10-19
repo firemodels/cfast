@@ -21,14 +21,14 @@ Use `--test-UI` to import and rewrite the inputs through CEditQt without running
 
 ## Windows
 
-If PowerShell blocks direct execution of `.ps1` files, use the `.bat` launcher from this directory in either Command Prompt or PowerShell:
+Run the native batch script from this directory in either Command Prompt or PowerShell:
 
 ```bat
 .\Run_CFAST_Cases.bat -e "C:\My Builds\cfast8_win.exe"
 .\Run_CFAST_Cases.bat -d -I gnu
 ```
 
-The batch launcher passes all options to the adjacent PowerShell script and returns its exit code. It uses Windows PowerShell with `-ExecutionPolicy Bypass` for that process only; it does not change the saved execution policy or require administrator privileges. An execution policy enforced by organization Group Policy can still block it. Use double quotes around paths containing spaces when calling the batch launcher.
+The batch script reads `CFAST_Cases.sh` and launches CFAST directly using `cmd.exe`. It does not invoke PowerShell, Git Bash, or the CI runner, and it does not change any execution policy. It supports `-e`, `-I`, `-d`, `-Case`, `-v`, and `-h`, with the same case selection, output files, and failure handling described below. Use double quotes around paths containing spaces. Normal file permissions and application-control rules still apply.
 
 You can also run the native PowerShell script directly from this directory:
 
@@ -38,6 +38,6 @@ You can also run the native PowerShell script directly from this directory:
 .\Run_CFAST_Cases.ps1 -e 'C:\My Builds\cfast8_win.exe' -Case sealed_test.in -v
 ```
 
-This script reads the entries in `CFAST_Cases.sh` and runs CFAST directly. It requires only PowerShell and CFAST; Git Bash and the CI runner are not used. Cases run sequentially in list order and stop on the first failure. Console output is captured in `.stdout` and `.err` files, and an `.exit` file records each case's exit code. CFAST writes its own model `.log` file. These files are stored next to the input; existing stop files are cleared before each run. All selected inputs are checked before the first case starts.
+Both Windows scripts read the entries in `CFAST_Cases.sh` and run CFAST directly; the `.ps1` version requires PowerShell. Cases run sequentially in list order and stop on the first failure. Console output is captured in `.stdout` and `.err` files, and an `.exit` file records each case's exit code. CFAST writes its own model `.log` file. These files are stored next to the input; existing stop files are cleared before each run. All selected inputs are checked before the first case starts.
 
-`-e` accepts an absolute path, a path relative to your current directory, or an executable name on `PATH`. Quote paths containing spaces. Without `-e`, the script selects the standard Intel Windows build; use `-I gnu` for GNU and add `-d` for debug. Use `-Case` to select a filename or stem, `-v` to preview without changing outputs, and `-h` for help. The PowerShell runner supports the simple `$RUNCFAST -d directory input.in` entries in the verification list and reports an error if it encounters other shell syntax.
+`-e` accepts an absolute path, a path relative to your current directory, or an executable name on `PATH`. Quote paths containing spaces. Without `-e`, the script selects the standard Intel Windows build; use `-I gnu` for GNU and add `-d` for debug. Use `-Case` to select a filename or stem, `-v` to preview without changing outputs, and `-h` for help. Both Windows runners support the simple `$RUNCFAST -d directory input.in` entries in the verification list and report an error if they encounter other shell syntax.

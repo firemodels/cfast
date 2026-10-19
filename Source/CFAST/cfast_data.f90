@@ -12,6 +12,8 @@ module cenviro
     real(eb), parameter :: cp = 1012.0_eb
     real(eb), parameter :: gamma = 1.40_eb
     real(eb), parameter :: rgas = (gamma-1.0_eb)/gamma*cp
+    real(eb), parameter :: mw_n2 = 28.01340e-3_eb, mw_o2 = 31.99880e-3_eb, mw_co2 = 44.00950e-3_eb, mw_h2o = 18.01528e-3_eb, &
+                           mw_c = 12.01070e-3_eb, mw_co = 28.01010e-3_eb, mw_hcn = 27.02534e-3_eb, mw_hcl = 36.46094e-3_eb 
 
 end module cenviro
 

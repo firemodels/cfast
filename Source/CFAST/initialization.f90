@@ -212,7 +212,7 @@ module initialization_routines
     subroutine initialize_leakage
     
     integer iroom, counter
-    real(eb), parameter :: rho_leak = 352.981915_eb/298.15_eb
+    real(eb), parameter :: rho_leak = default_pressure/rgas/298.15
     real(eb) :: area, area2, leak_area
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
@@ -744,7 +744,7 @@ module initialization_routines
         ! tables in the handbook of physics and chemistry.
         xt = interior_ambient_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
-        xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
+        xh2o = exp(xtemp)/default_pressure*(18.016_eb/28.584_eb)
         initial_mass_fraction(h2o) = relative_humidity*xh2o
 
         ! normalize the compartment atmosphere

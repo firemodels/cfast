@@ -11,7 +11,7 @@ cur_dir=$CI_DIR
 # A job disappearing from the scheduler is not proof that it succeeded.
 wait_case_manifest() {
   local manifest=$1 label=${2:-Cases} manager job status job_ids= listing accounting
-  local i state code total completed running pending confirming failed summary last_summary= next_report=0 now
+  local i state code total completed running pending confirming failed summary last_summary= next_report=0 now log
   local jobs=() paths=() results=() attempts=() queue_states=() accounting_states=()
   [[ -f $manifest ]] || { echo "Run aborted: missing job manifest: $manifest" >&2; return 1; }
   while IFS=$'\t' read -r manager job status; do
@@ -71,7 +71,12 @@ wait_case_manifest() {
         if [[ -n $state ]]; then
           results[i]=failed
           echo "FAIL: ${status%.exit} (Slurm job $job): $state" >&2
-          if [[ -s ${status%.exit}.err ]]; then tail -n 30 "${status%.exit}.err" >&2; fi
+          for log in "${status%.exit}.log" "${status%.exit}.err"; do
+            if [[ -s $log ]]; then
+              printf '\nCase log: %s\n' "$log" >&2
+              tail -n 60 "$log" >&2
+            fi
+          done
         fi
       fi
       case ${results[i]} in
@@ -86,8 +91,12 @@ wait_case_manifest() {
       echo "$summary"
       last_summary=$summary; next_report=$((now + 30))
     fi
-    [[ $failed == 0 ]] || return 1
-    [[ $completed -lt $total ]] || return 0
+    # Collect all jobs already submitted to this suite before reporting failure.
+    # Later pipeline stages still stop; the email includes every failed case.
+    if [[ $((completed + failed)) -eq $total ]]; then
+      [[ $failed == 0 ]]
+      return $?
+    fi
     if declare -F check_time_limit >/dev/null; then check_time_limit; fi
     sleep "${CFAST_CI_POLL_SECONDS:-5}"
   done
@@ -317,9 +326,6 @@ submit_suite()
    run_logged "$run_log" "$CI_DIR/Run_CFAST_Cases.sh" --repo-root "$cfastrepo" --suite "$suite" "$@" || result=1
    TIME_LIMIT_STAGE="3 $suite cases"
    run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" "$suite $mode" || result=1
-   if [[ $result != 0 ]]; then
-      cat "$run_log" >> "$ERROR_LOG"
-   fi
    return "$result"
 }
 
@@ -710,7 +716,6 @@ upload_linux_bundle()
 
 save_build_status()
 {
-   cd "$cfastbotdir" || exit 1
    # Save status outcome of build to a text file
    if [[ -e $WARNING_LOG && -e $ERROR_LOG ]]
    then
@@ -747,68 +752,73 @@ save_build_status()
 
 email_build_status()
 {
-   echo $THIS_CFAST_FAILED>$CFAST_STATUS_FILE
-   stop_time=`date`
-   IFORT_VERSION=`ifx -v 2>&1`
-   if [[ $SKIP_git_UPDATE_AND_PROPFIX ]] ; then
-      echo "CFASTbot was invoked with the -s option (SKIP_git_UPDATE_AND_PROPFIX)." >> $TIME_LOG
-      echo "Skipping git revert, update, and property fix operations." >> $TIME_LOG
-      echo "The current git revision is ${GIT_REVISION}" >> $TIME_LOG
-   fi
-   echo ""                                     >> $TIME_LOG
-   echo "Host: $hostname "                     >> $TIME_LOG
-   echo "repo: $cfastrepo "                    >> $TIME_LOG
-   echo "Fortran: $IFORT_VERSION "             >> $TIME_LOG
-   echo ""                                     >> $TIME_LOG
-   echo "$BOT_REVISION "                       >> $TIME_LOG
-   echo "CFAST: $CFAST_REVISION "             >> $TIME_LOG
-   echo "EXP: $EXP_REVISION "                 >> $TIME_LOG
-   echo "FDS: $FDS_REVISION "                 >> $TIME_LOG
-   echo "SMV: $SMV_REVISION "                 >> $TIME_LOG
-   echo ""                                     >> $TIME_LOG
-   echo "Start Time: $start_time "             >> $TIME_LOG
-   echo "Stop Time: $stop_time "               >> $TIME_LOG
-   if [ "$total_time" != "" ]; then
-     echo "Run Time: $total_time"              >> $TIME_LOG
-   fi
-   cd "$cfastbotdir" || exit 1
-   # Check for warnings and errors
-   if [[ -e $WARNING_LOG && -e $ERROR_LOG ]]
-   then
-     cat $TIME_LOG >> $WARNING_LOG
-     # Send email with failure message and warnings, body of email contains appropriate log file
-     cat $ERROR_LOG $TIME_LOG | mail $REPLYTO -s "CFASTbot build failure and warnings on ${hostname}. Revision ${GIT_REVISION}." $mailTo &> /dev/null
-
-   # Check for errors only
-   elif [ -e $ERROR_LOG ]
-   then
-      # Send email with failure message, body of email contains error log file
-      cat $ERROR_LOG $TIME_LOG | mail $REPLYTO -s "CFASTbot build failure on ${hostname}. Revision ${GIT_REVISION}." $mailTo &> /dev/null
-
-   # Check for warnings only
-   elif [ -e $WARNING_LOG ]
-   then
-      # Send email with success message, include warnings
-      cat $WARNING_LOG $TIME_LOG | mail $REPLYTO -s "CFASTbot build success with warnings on ${hostname}. Revision ${GIT_REVISION}." $mailTo &> /dev/null
-
-   # No errors or warnings
+   local label subject
+   stop_time=$(date)
+   IFORT_VERSION=$(ifx -v 2>&1)
+   {
+      printf '\nHost: %s\nrepo: %s\nLogs: %s\n' "$hostname" "$cfastrepo" "$OUTPUT_DIR"
+      printf 'Fortran: %s\n\n%s\n' "$IFORT_VERSION" "$BOT_REVISION"
+      printf 'CFAST: %s\nEXP: %s\nFDS: %s\nSMV: %s\n' \
+         "$CFAST_REVISION" "$EXP_REVISION" "$FDS_REVISION" "$SMV_REVISION"
+      printf '\nStart Time: %s\nStop Time: %s\n' "$start_time" "$stop_time"
+      [[ -z $total_time ]] || printf 'Run Time: %s\n' "$total_time"
+      [[ -z $GITURL ]] || printf 'Linux bundle, Manuals: %s\n' "$GITURL"
+   } >> "$TIME_LOG"
+   if [[ -s $ERROR_LOG ]]; then
+      label='failure'
+      [[ ! -s $WARNING_LOG ]] || label='failure and warnings'
+   elif [[ -s $WARNING_LOG ]]; then
+      label='success with warnings'
    else
-      if [[ "$UPLOAD" == "1" ]] && [[ -e $GUIDES2GH ]]; then
-         cd "$cfastbotdir" || exit 1
-         run_logged "$OUTPUT_DIR/stage7_upload" "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" || { cat "$OUTPUT_DIR/stage7_upload" >> "$ERROR_LOG"; return 1; }
-         GITURL=https://github.com/$GH_OWNER/$GH_REPO/releases/tag/$GH_CFAST_TAG
-         echo ""                                  >> $TIME_LOG
-         echo "Linux bundle, Manuals: $GITURL"    >> $TIME_LOG
-      fi
-      # Send empty email with success message
-      cat $TIME_LOG | mail $REPLYTO -s "CFASTbot build success on ${hostname}! Revision ${GIT_REVISION}." $mailTo &> /dev/null
+      label='success'
    fi
+   subject="CFASTbot build $label on ${hostname}. Revision ${GIT_REVISION}."
+   # Keep the exact body and mail diagnostics even if delivery fails.
+   {
+      [[ ! -s $ERROR_LOG ]] || cat "$ERROR_LOG"
+      [[ ! -s $WARNING_LOG ]] || cat "$WARNING_LOG"
+      cat "$TIME_LOG"
+   } > "$OUTPUT_DIR/email_body.txt"
+   if ! mail $REPLYTO -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
+      echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
+      return 1
+   fi
+   if [[ -s $VALIDATION_STATS_LOG ]]; then
+      mail $REPLYTO -s "CFASTbot notice. Validation statistics have changed for Revision ${GIT_REVISION}." \
+         $mailTo < "$VALIDATION_STATS_LOG" >> "$OUTPUT_DIR/email.log" 2>&1 || return 1
+   fi
+}
 
-   # Send email notification if validation statistics have changed.
-   if [ -e $VALIDATION_STATS_LOG ]
-   then
-      mail $REPLYTO -s "CFASTbot notice. Validation statistics have changed for Revision ${GIT_REVISION}." $mailTo < $VALIDATION_STATS_LOG &> /dev/null
+# Run reporting on every normal or failed pipeline exit, without running uploads
+# or later simulation/plotting stages after a failed prerequisite.
+finalize_build_status()
+{
+   local result=$?
+   trap - EXIT
+   if [[ $result != 0 ]]; then
+      printf '\nCFASTbot stopped with exit code %s. Logs: %s\n' "$result" "$OUTPUT_DIR" >> "$ERROR_LOG"
    fi
+   if [[ -s $ERROR_LOG ]]; then
+      THIS_CFAST_FAILED=1
+      [[ $result != 0 ]] || result=1
+   fi
+   if ! email_build_status; then
+      echo "Status email delivery failed; see $OUTPUT_DIR/email.log and email_body.txt" >> "$ERROR_LOG"
+      THIS_CFAST_FAILED=1
+      [[ $result != 0 ]] || result=1
+   fi
+   printf '%s\n' "$THIS_CFAST_FAILED" > "$CFAST_STATUS_FILE"
+   save_build_status || { [[ $result != 0 ]] || result=1; }
+   exit "$result"
+}
+
+upload_guides()
+{
+   if [[ "$UPLOAD" == "1" && -e $GUIDES2GH && ! -s $ERROR_LOG && ! -s $WARNING_LOG ]]; then
+      run_logged "$OUTPUT_DIR/stage7_upload" "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" || return 1
+      GITURL=https://github.com/$GH_OWNER/$GH_REPO/releases/tag/$GH_CFAST_TAG
+   fi
+   return 0
 }
 
 #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -852,8 +862,17 @@ exprepo=$reporoot/exp
 mailTo=${mailTo:-${mailToCFAST:-}}
 if [[ -z $mailTo ]]; then mailTo=$(git -C "$cfastrepo" config user.email || whoami); fi
 REPLYTO=
+hostname=$(hostname)
+start_time=$(date)
+START_TIME=$(date +%s)
+GIT_REVISION=$(git -C "$cfastrepo" rev-parse --short HEAD 2>/dev/null || echo unknown)
+THIS_CFAST_FAILED=0
+CFAST_STATUS_FILE=$GITSTATUS_DIR/cfast_status
+trap finalize_build_status EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 for repo in "$cfastrepo" "$fdsrepo" "$smvrepo" "$exprepo"; do
-   [[ -d $repo ]] || { echo "Missing repository: $repo" >&2; exit 1; }
+   [[ -d $repo ]] || { echo "Missing repository: $repo" | tee -a "$ERROR_LOG" >&2; exit 1; }
 done
 : > "$OUTPUT_DIR/revisions.tsv"
 for name in cfast fds smv exp; do
@@ -863,10 +882,10 @@ done
 printf 'ci_tooling\t%s\n' "${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" rev-parse HEAD)}" >> "$OUTPUT_DIR/revisions.tsv"
 missing=0
 for program in python3 ifx pdflatex biber; do
-   command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" >&2; missing=1; }
+   command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" | tee -a "$ERROR_LOG" >&2; missing=1; }
 done
 if ! command -v sbatch >/dev/null; then
-   echo 'Missing Slurm command: sbatch.' >&2; missing=1
+   echo 'Missing Slurm command: sbatch.' | tee -a "$ERROR_LOG" >&2; missing=1
 fi
 [[ $missing == 0 ]] || exit 1
 
@@ -895,8 +914,6 @@ fi
 
 cd
 
-THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$GITSTATUS_DIR/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
@@ -914,16 +931,11 @@ GUIDES2GH=$cfastbotdir/guides2GH.sh
 # This is a notification only and does not terminate CFASTbot.
 # This check runs during Stages 3 and 5.
 
-# Start CFASTbot timer
-START_TIME=$(date +%s)
-
 # Set time limit
 TIME_LIMIT=14400
 TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 
 
-hostname=$(hostname)
-start_time=$(date)
 setup_python_environment "$OUTPUT_DIR/stage0_python_setup" || exit 1
 
 ### Stage 1 ###
@@ -1063,12 +1075,11 @@ fi
   echo $SMV_REV         > ${VERSION_LATEST}/SMV_REVISION
 
 ### Stage 7 ###
-upload_linux_bundle
+upload_linux_bundle || exit 1
+upload_guides || exit 1
 
-### Report results ###
+### Report results (the EXIT trap sends status on success or failure) ###
 set_files_world_readable || exit 1
-email_build_status
-save_build_status
 
 ### save version info if cfastbot passed ###
 if [[ ! -e $ERROR_LOG ]] && [[ ! -e $WARNING_LOG ]]; then
@@ -1088,5 +1099,3 @@ if [[ ! -e $ERROR_LOG && ! -e $WARNING_LOG ]]; then
 fi
 echo "CFAST CI failed; see $OUTPUT_DIR" >&2
 exit 1
-
-

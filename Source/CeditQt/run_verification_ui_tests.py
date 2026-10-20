@@ -2163,6 +2163,7 @@ def check_fire_import():
                     constant_point.soot_yield) == (50, 2, 0.1, 0.2)
             for content in (
                 "&CHEM ID='Incomplete' /",
+                "&CHEM ID='Incomplete table', HRR=10 / &TABL ID='Incomplete table', DATA=0 /",
                 "&CHEM ID='Invalid' / &TABL ID='Invalid', LABELS='TIME','HRR' / "
                 "&TABL ID='Invalid', DATA=0 /",
                 "FIRE,1,0,0,0,1,TIME,0,0,0,0,Incomplete\nCHEMI,1,4,0,0,0,0.35,50000000\n",
@@ -2314,6 +2315,27 @@ def check_unused_fire_definitions():
         window.deleteLater()
 
 
+def check_constant_fire_rewrite(app: QApplication):
+    from cfast_reader import read_cfast_input, read_fire_properties
+
+    root = find_repo_root(Path(__file__))
+    source = root / "Verification/Radiation/radiation_1.in"
+    expected = read_cfast_input(source)
+    prop = expected.fire_properties[0]
+    assert len(prop.ramp) == 1
+    point = prop.ramp[0]
+    assert (point.time, point.hrr, point.area, point.height) == (0.0, 10.0, 0.09, 0.0)
+    assert (point.co_yield, point.soot_yield, point.hcn_yield, point.trace_yield) == (0.0, 0.0, 0.0, 0.0)
+    assert read_fire_properties(source) == expected.fire_properties
+    with tempfile.TemporaryDirectory(prefix="cedit-constant-fire-") as directory:
+        output = Path(directory)
+        result = rewrite_case(app, root, output, source)
+        assert result.ok, result.message
+        reopened = read_cfast_input(output / source.relative_to(root))
+        assert reopened.fire_properties == expected.fire_properties
+        assert reopened.fires == expected.fires
+
+
 def check_fire_e_coefficient():
     from cfast_reader import fire_from_fields, parse_namelists, read_cfast_input
     from cfast_writer import validate_case, write_cfast_input
@@ -2406,6 +2428,7 @@ def main() -> int:
     check_output_visualizations()
     check_fire_import()
     check_unused_fire_definitions()
+    check_constant_fire_rewrite(app)
     check_fire_e_coefficient()
 
     if args.mode == "rewrite":

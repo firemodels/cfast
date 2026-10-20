@@ -467,10 +467,23 @@ def fire_properties_from_records(records: list[NamelistRecord]) -> dict[str, Fir
             table_id = required_string(record.fields, "ID", "TABL ID")
             labels[table_id] = [str(value).upper() for value in record.fields["LABELS"]]
 
+    tables_with_data: set[str] = set()
     for record in records:
         if record.name == "TABL" and string_field(record.fields, "ID", "") in properties:
             table_id = string_field(record.fields, "ID", "")
+            if "DATA" in record.fields:
+                tables_with_data.add(table_id)
             add_table_data(properties, record.fields, labels, constants.get(table_id))
+    for prop_id, prop in properties.items():
+        values = constants[prop_id]
+        if not prop.ramp and "HRR" in values and prop_id not in tables_with_data:
+            # CHEM can define a constant fire without any TABL records. A single
+            # point at time zero retains that behavior when saved as a table.
+            prop.ramp.append(FireRampPoint(
+                time=0.0, hrr=values["HRR"], height=0.0, area=values.get("AREA", 0.0),
+                co_yield=values.get("CO_YIELD", 0.0), soot_yield=values.get("SOOT_YIELD", 0.0),
+                hcn_yield=values.get("HCN_YIELD", 0.0), trace_yield=values.get("TRACE_YIELD", 0.0),
+            ))
     return properties
 
 

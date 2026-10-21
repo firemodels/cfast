@@ -12,10 +12,11 @@ Usage: qcfast.sh [-d directory] [-e executable] [-q queue] [options] input.in
   -v           Print the job script without submitting or changing case outputs
   -E           Capture stderr (the default)
   --test-UI    Import/rewrite through CEditQt without running CFAST
+  --skip-editor-checks Skip general editor checks for subsequent UI cases
   -h           Show this help
 HELP
 }
-queue=; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; ui=0
+queue=; dir=.; exe=${CFAST:-}; prefix=; strip=0; stop=0; preview=0; ui=0; skip_editor_checks=0
 while (($#)); do
   case "$1" in
     -d|-e|-q|-j) [[ $# -ge 2 ]] || { usage >&2; exit 2; }
@@ -23,6 +24,7 @@ while (($#)); do
     -c) strip=1; shift;; -s) stop=1; shift;; -v) preview=1; shift;;
     -E|-b) shift;; # -b was accepted by the former V&V launcher; -e selects the build.
     --test-UI) ui=1; shift;; -h|--help) usage; exit 0;;
+    --skip-editor-checks) skip_editor_checks=1; shift;;
     --) shift; break;; -*) echo "Unknown option: $1" >&2; exit 2;; *) break;;
   esac
 done
@@ -43,6 +45,7 @@ if [[ $ui == 1 ]]; then
   repo=${CFAST_REPO:?CFAST_REPO is required for UI tests}
   command=("${CFAST_PYTHON:-python}" "$repo/Source/CeditQt/run_verification_ui_tests.py"
     --mode rewrite --repo-root "$repo" --input "$dir/$input" --skip-helpers)
+  [[ $skip_editor_checks == 0 ]] || command+=(--skip-editor-checks)
 else
   [[ -n $exe ]] || { echo 'Run aborted: specify -e executable.' >&2; exit 1; }
   exe=$(command -v "$exe") || { echo "Run aborted: executable not found: $exe" >&2; exit 1; }

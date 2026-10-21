@@ -154,6 +154,11 @@ def parse_args() -> argparse.Namespace:
         help="Do not run derived-CSV helper scripts after CFAST completes.",
     )
     parser.add_argument(
+        "--skip-editor-checks",
+        action="store_true",
+        help="Only test the selected cases; general editor checks run in the suite's first case.",
+    )
+    parser.add_argument(
         "--compare-targets",
         action="store_true",
         help=(
@@ -2405,31 +2410,34 @@ def main() -> int:
 
     patch_message_boxes()
     app = QApplication.instance() or QApplication([])
-    check_verification_case_discovery()
-    check_compartment_header_palettes()
-    check_target_material_initialization()
-    check_target_temperature_depth()
-    check_target_material_validation()
-    check_material_id_length()
-    check_target_orientation()
-    check_adiabatic_target()
-    check_adiabatic_convection_coefficients()
-    check_mechanical_vent_defaults()
-    check_detection_device_parameters()
-    check_engineering_units_editor()
-    check_quantity_display_precision()
-    check_pound_mass_units()
-    check_units_start_in_si()
-    check_simulation_unit_display()
-    check_derived_unit_input_files()
-    check_surface_connections_removed()
-    check_unrecognized_namelists()
-    check_debug_output()
-    check_output_visualizations()
-    check_fire_import()
-    check_unused_fire_definitions()
-    check_constant_fire_rewrite(app)
-    check_fire_e_coefficient()
+    if not args.skip_editor_checks:
+        print("Running general editor checks", flush=True)
+        check_verification_case_discovery()
+        check_compartment_header_palettes()
+        check_target_material_initialization()
+        check_target_temperature_depth()
+        check_target_material_validation()
+        check_material_id_length()
+        check_target_orientation()
+        check_adiabatic_target()
+        check_adiabatic_convection_coefficients()
+        check_mechanical_vent_defaults()
+        check_detection_device_parameters()
+        check_engineering_units_editor()
+        check_quantity_display_precision()
+        check_pound_mass_units()
+        check_units_start_in_si()
+        check_simulation_unit_display()
+        check_derived_unit_input_files()
+        check_surface_connections_removed()
+        check_unrecognized_namelists()
+        check_debug_output()
+        check_output_visualizations()
+        check_fire_import()
+        check_unused_fire_definitions()
+        check_constant_fire_rewrite(app)
+        check_fire_e_coefficient()
+        print("General editor checks passed", flush=True)
 
     if args.mode == "rewrite":
         if args.work_dir is None:

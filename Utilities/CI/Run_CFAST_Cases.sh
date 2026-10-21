@@ -63,8 +63,9 @@ export CFAST_MATCH_FILE=$match_file
 export CFAST_LAUNCHER="$CI_DIR/../scripts/qcfast.sh"
 export CFAST_QUEUE=$queue CFAST_PREFIX=$prefix CFAST_TIMING=$timing CFAST_UI=$ui CFAST_PREVIEW=$preview CFAST_SELECTED=$selected
 run_cfast_case() {
-  local args=("$@") input=${!#} directory=. i
+  local args=("$@") input=${!#} directory=. i first_case=0
   [[ -z $CFAST_SELECTED || $input == "$CFAST_SELECTED" || ${input%.*} == "$CFAST_SELECTED" ]] || return 0
+  [[ -s $CFAST_MATCH_FILE ]] || first_case=1
   printf "%s\n" "$input" >> "$CFAST_MATCH_FILE"
   if [[ $CFAST_TIMING == 1 ]]; then
     for ((i=0; i<${#args[@]}; i++)); do [[ ${args[i]} != -d ]] || directory=${args[i+1]}; done
@@ -75,7 +76,11 @@ run_cfast_case() {
   fi
   local options=(-j "$CFAST_PREFIX" -e "$CFAST")
   [[ -z $CFAST_QUEUE ]] || options+=(-q "$CFAST_QUEUE")
-  [[ $CFAST_UI == 0 ]] || options+=(--test-UI)
+  if [[ $CFAST_UI == 1 ]]; then
+    options+=(--test-UI)
+    # Keep the general editor checks in the first selected case of each suite.
+    [[ $first_case == 1 ]] || options+=(--skip-editor-checks)
+  fi
   [[ $CFAST_PREVIEW == 0 ]] || options+=(-v)
   "$CFAST_LAUNCHER" "${options[@]}" "$@"
 }

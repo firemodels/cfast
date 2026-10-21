@@ -4,22 +4,22 @@ set -euo pipefail
 CI_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 root=$(cd "$CI_DIR/../../.." && pwd)
 state=${CFAST_CI_STATE_DIR:-$HOME/.cfastbot}
-queue=batch; args=()
+args=()
 usage() {
   cat <<'HELP'
 Usage: run_cfastbot.sh [-q queue] [-U] [-m address]
-  -q queue    Slurm partition (default: batch)
+  -q queue    Submit to Slurm (default: run locally)
   -U          Upload guides and the Linux bundle
   -m address  Notification email
   -h, --help  Show help
-Run update_repos.sh in the repository collection before starting CFASTbot.
+Run on existing sibling cfast, fds, exp, and smv checkouts.
 HELP
 }
 while (($#)); do
   case "$1" in
     -q|-m)
       [[ $# -ge 2 && -n $2 && $2 != -* ]] || { echo "$1 requires a value." >&2; exit 2; }
-      if [[ $1 == -q ]]; then queue=$2; else args+=(-m "$2"); fi
+      args+=("$1" "$2")
       shift 2;;
     -U) args+=("$1"); shift;;
     -h|--help) usage; exit 0;; *) echo "Unknown option: $1" >&2; usage >&2; exit 2;;
@@ -56,7 +56,8 @@ cancel_jobs() {
 interrupt() { cancel_jobs; if [[ -n $child ]]; then terminate_tree "$child"; wait "$child" 2>/dev/null || true; fi; }
 trap 'interrupt; exit 130' INT
 trap 'interrupt; exit 143' TERM
-bash "$CI_DIR/cfastbot.sh" -q "$queue" "${args[@]}" &
+# Bash 3.2 treats an empty array as unset under nounset.
+bash "$CI_DIR/cfastbot.sh" ${args[@]+"${args[@]}"} &
 child=$!
 rc=0
 wait "$child" || rc=$?

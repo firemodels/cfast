@@ -26,9 +26,20 @@ Run from `cfast/Utilities/CI` in the prepared repository collection:
 ./run_cfastbot.sh -q firebot -U -m your@email.address
 ```
 
-`-q` selects the Slurm partition (default: `batch`), `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, `cfastbot_email_list.sh` or the configured Git email supplies the recipient.
+Cases run locally and sequentially by default; `-q` selects a Slurm partition, `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, `cfastbot_email_list.sh` supplies the recipient if configured. Linux also falls back to the configured Git email. On macOS, an unconfigured recipient leaves the report in `email_body.txt` without requiring email delivery.
 
-The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean Intel builds, Verification/Validation, CEditQt checks, figures, and manuals. Each V&V case gets a short debug initialization run (two iterations) and one full release simulation. The separate UI check imports and saves the input without running CFAST; its rewritten inputs and logs do not replace the simulation CSV files used for plotting. It uses Python, LaTeX, and Slurm with the partition selected by `-q`. Standalone suite execution does not require the Smokeview or manual toolchains.
+The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean CFAST builds (GNU on macOS, Intel on Linux), Smokeview builds (Clang on macOS, Intel on Linux), Verification/Validation, CEditQt checks, figures, and manuals. Each V&V case gets a short debug initialization run (two iterations) and one full release simulation. The separate UI check imports and saves the input without running CFAST; its rewritten inputs and logs do not replace the simulation CSV files used for plotting. It uses Python and LaTeX; Slurm is required only when `-q` is supplied. Standalone suite execution does not require the Smokeview or manual toolchains.
+
+On a standalone Mac, run `./run_cfastbot.sh` with no queue option. Install GNU Fortran, the Xcode command-line tools, and a LaTeX distribution providing `pdflatex` and `biber`. Smokeview uses its native Clang/Cocoa build. Run from a graphical desktop session for figure rendering. To reuse a provisioned Python environment, set `CFAST_CI_PYTHON` to the absolute path of its Python executable. The normal run uses the existing checkouts; repository preparation is a separate operation.
+
+On Windows, use a compiler-enabled PowerShell terminal from `cfast/Utilities/CI`:
+
+```powershell
+.\run_cfastbot.ps1
+.\run_cfastbot.ps1 -Compiler gnu -Python C:\path\to\python.exe
+```
+
+The Windows launcher runs the full pipeline locally and sequentially, without Bash or Slurm. It requires GNU Make, Intel C/C++ for Smokeview, Intel Fortran by default (or GNU Fortran with `-Compiler gnu`), Python with the FDS plotting and CEditQt dependencies, and `pdflatex`/`biber`. Activate the compiler environment before launching. Python must already be provisioned; `CFAST_CI_PYTHON` overrides `-Python`. Use `-StateDirectory` to override the external log directory. Stage logs, the final `exit_code`, validation statistics, and successful guide PDFs are saved under the run directory. Per-case `.stdout`, `.err`, and `.exit` files remain beside the inputs; UI checks use a separate `.ui` suffix. The Windows launcher saves results locally and does not send email or publish bundles.
 
 Progress and command output are printed to stderr as the run proceeds and saved in the stage logs. The launcher prints the log directory at startup. Batch jobs report submission and suite progress on screen; individual case output remains in the case log files. CFAST writes its console output to each case's `.err` file and its model log to `.log`. Follow a running case from another terminal, for example:
 

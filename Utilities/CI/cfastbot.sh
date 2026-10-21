@@ -141,7 +141,9 @@ check_time_limit()
 
       if [ $ELAPSED_TIME -gt $TIME_LIMIT ]
       then
-         echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail $REPLYTO -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo &> /dev/null
+         if [[ $platform != osx || -n $mailTo ]]; then
+            echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail $REPLYTO -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo &> /dev/null
+         fi
          TIME_LIMIT_EMAIL_NOTIFICATION="sent"
       fi
    fi
@@ -250,7 +252,7 @@ check_compile_cfast()
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
+   cd "$smvrepo/Build/smokeview/${smv_compiler}_${platform}" || exit 1
    if [ -e "smokeview_${platform}_db" ]
    then
       stage2_build_smv_debug_success=true
@@ -280,7 +282,7 @@ check_compile_smv_db()
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
+   cd "$smvrepo/Build/smokeview/${smv_compiler}_${platform}" || exit 1
    if [ -e "smokeview_${platform}" ]
    then
       stage2_build_smv_release_success=true
@@ -320,12 +322,19 @@ submit_suite()
          --test-UI) mode="UI import/save (no simulation)";;
       esac
    done
-   echo "Submitting $suite $mode cases"
+   if [[ -n $QUEUE ]]; then
+      set -- "$@" -q "$QUEUE"
+      echo "Submitting $suite $mode cases"
+   else
+      echo "Running $suite $mode cases locally"
+   fi
    export CFAST_JOB_MANIFEST="$run_log.jobs"
    : > "$CFAST_JOB_MANIFEST"
    run_logged "$run_log" "$CI_DIR/Run_CFAST_Cases.sh" --repo-root "$cfastrepo" --suite "$suite" "$@" || result=1
    TIME_LIMIT_STAGE="3 $suite cases"
-   run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" "$suite $mode" || result=1
+   if [[ -n $QUEUE ]]; then
+      run_logged "$run_log" wait_case_manifest "$CFAST_JOB_MANIFEST" "$suite $mode" || result=1
+   fi
    return "$result"
 }
 
@@ -347,10 +356,10 @@ run_vv_cases_debug()
    echo '   debug'
    echo 'Running CFAST V&V cases' >> $OUTPUT_DIR/stage3_run_debug 2>&1
 
-   submit_suite Verification "$verification_log" -I "$compiler" -S "$smvrepo" -m 2 -d -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Verification "$verification_log" -I "$compiler" -S "$smvrepo" -m 2 -d -j "$JOBPREFIX" || return 1
    cat "$verification_log" >> $OUTPUT_DIR/stage3_run_debug 2>&1
 
-   submit_suite Validation "$validation_log" -I "$compiler" -S "$smvrepo" -m 2 -d -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Validation "$validation_log" -I "$compiler" -S "$smvrepo" -m 2 -d -j "$JOBPREFIX" || return 1
    cat "$validation_log" >> $OUTPUT_DIR/stage3_run_debug 2>&1
    return 0
 }
@@ -419,10 +428,10 @@ run_vv_cases_release()
    echo '   release'
    echo 'Running CFAST V&V cases' >> $OUTPUT_DIR/stage3_run_release 2>&1
 
-   submit_suite Verification "$verification_log" -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Verification "$verification_log" -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" || return 1
    cat "$verification_log" >> $OUTPUT_DIR/stage3_run_release 2>&1
 
-   submit_suite Validation "$validation_log" -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Validation "$validation_log" -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" || return 1
    cat "$validation_log" >> $OUTPUT_DIR/stage3_run_release 2>&1
    return 0
 }
@@ -491,10 +500,10 @@ run_ceditqt_cases_release()
 
    setup_python_environment $OUTPUT_DIR/stage3_ceditqt_python_setup || return 1
 
-   submit_suite Verification "$verification_log" --test-UI -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Verification "$verification_log" --test-UI -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" || return 1
    cat "$verification_log" >> $OUTPUT_DIR/stage3_run_release_ceditqt 2>&1
 
-   submit_suite Validation "$validation_log" --test-UI -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" -q "$QUEUE" || return 1
+   submit_suite Validation "$validation_log" --test-UI -I "$compiler" -S "$smvrepo" -j "$JOBPREFIX" || return 1
    cat "$validation_log" >> $OUTPUT_DIR/stage3_run_release_ceditqt 2>&1
    return 0
 }
@@ -754,7 +763,11 @@ email_build_status()
 {
    local label subject
    stop_time=$(date)
-   IFORT_VERSION=$(ifx -v 2>&1)
+   if [[ $platform == osx ]]; then
+      IFORT_VERSION=$(gfortran --version 2>&1)
+   else
+      IFORT_VERSION=$(ifx -v 2>&1)
+   fi
    {
       printf '\nHost: %s\nrepo: %s\nLogs: %s\n' "$hostname" "$cfastrepo" "$OUTPUT_DIR"
       printf 'Fortran: %s\n\n%s\n' "$IFORT_VERSION" "$BOT_REVISION"
@@ -779,6 +792,11 @@ email_build_status()
       [[ ! -s $WARNING_LOG ]] || cat "$WARNING_LOG"
       cat "$TIME_LOG"
    } > "$OUTPUT_DIR/email_body.txt"
+   # A standalone Mac does not need a configured mail transport.
+   if [[ $platform == osx && -z $mailTo ]]; then
+      echo "Build report: $OUTPUT_DIR/email_body.txt"
+      return 0
+   fi
    if ! mail $REPLYTO -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
       echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
       return 1
@@ -843,8 +861,20 @@ VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 NEWGUIDE_DIR=$OUTPUT_DIR/NEW_GUIDES
 mkdir -p "$HISTORY_DIR"
 [[ ! -f $EMAIL_LIST ]] || source "$EMAIL_LIST"
-QUEUE=batch
+QUEUE=
+platform=linux
+cfast_platform=linux
 compiler=intel
+fortran=ifx
+smv_compiler=intel
+if [[ $(uname) == Darwin ]]; then
+   platform=osx
+   cfast_platform=macos
+   compiler=gnu
+   fortran=gfortran
+   smv_compiler=clang
+fi
+export platform cfast_platform
 UPLOAD=
 PYTHON_ENV_ACTIVE=
 while (($#)); do
@@ -860,7 +890,7 @@ fdsrepo=$reporoot/fds
 smvrepo=$reporoot/smv
 exprepo=$reporoot/exp
 mailTo=${mailTo:-${mailToCFAST:-}}
-if [[ -z $mailTo ]]; then mailTo=$(git -C "$cfastrepo" config user.email || whoami); fi
+if [[ -z $mailTo && $platform != osx ]]; then mailTo=$(git -C "$cfastrepo" config user.email || whoami); fi
 REPLYTO=
 hostname=$(hostname)
 start_time=$(date)
@@ -881,24 +911,15 @@ for name in cfast fds smv exp; do
 done
 printf 'ci_tooling\t%s\n' "${CFAST_CI_TOOLING_REVISION:-$(git -C "$cfastrepo" rev-parse HEAD)}" >> "$OUTPUT_DIR/revisions.tsv"
 missing=0
-for program in python3 ifx pdflatex biber; do
+for program in python3 "$fortran" pdflatex biber; do
    command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" | tee -a "$ERROR_LOG" >&2; missing=1; }
 done
-if ! command -v sbatch >/dev/null; then
-   echo 'Missing Slurm command: sbatch.' | tee -a "$ERROR_LOG" >&2; missing=1
+if [[ -n $QUEUE ]]; then
+   for program in sbatch squeue scancel; do
+      command -v "$program" >/dev/null || { echo "Missing Slurm command: $program." | tee -a "$ERROR_LOG" >&2; missing=1; }
+   done
 fi
 [[ $missing == 0 ]] || exit 1
-
-platform="linux"
-if [ "`uname`" == "Darwin" ] ; then
-  platform="osx"
-fi
-cfast_platform=$platform
-if [ "$cfast_platform" == "osx" ] ; then
-  cfast_platform="macos"
-fi
-export platform
-export cfast_platform
 
 echo "   platform: $platform"
 echo "   compiler: $compiler"
@@ -980,7 +1001,7 @@ run_logged "$OUTPUT_DIR/stage2_build_cfast_release" ./make_cfast.sh --clean-cfas
 check_compile_cfast || exit 1
 
 #*** build smokeview libraries
-cd "$smvrepo/Build/LIBS/intel_${platform}" || exit 1
+cd "$smvrepo/Build/LIBS/${smv_compiler}_${platform}" || exit 1
 echo 'Building Smokeview libraries' >> $OUTPUT_DIR/stage2_build_smv_util 2>&1
 echo "   smokeview libraries"
 run_logged "$OUTPUT_DIR/stage2_build_smv_util" ./make_LIBS.sh || exit 1
@@ -988,13 +1009,13 @@ run_logged "$OUTPUT_DIR/stage2_build_smv_util" ./make_LIBS.sh || exit 1
 #*** build debug smokeview
 echo "   smokeview"
 echo "      debug"
-cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
+cd "$smvrepo/Build/smokeview/${smv_compiler}_${platform}" || exit 1
 run_logged "$OUTPUT_DIR/stage2_build_smv_debug" ./make_smokeview_db.sh || exit 1
 check_compile_smv_db || exit 1
 
 #*** build release smokeview
 echo "      release"
-cd "$smvrepo/Build/smokeview/intel_${platform}" || exit 1
+cd "$smvrepo/Build/smokeview/${smv_compiler}_${platform}" || exit 1
 run_logged "$OUTPUT_DIR/stage2_build_smv_release" ./make_smokeview.sh || exit 1
 check_compile_smv || exit 1
 
@@ -1018,7 +1039,26 @@ fi
 if [[ $stage2_build_cfast_release_success && $stage2_build_smv_release_success ]] ; then
    echo "Generating smokeview images"
    cd "$cfastrepo/Validation/scripts" || exit 1
-   run_logged "$OUTPUT_DIR/stage4_make_pictures" ./Make_CFAST_Pictures.sh -I intel
+   if [[ $platform == osx ]]; then
+      # Native Cocoa Smokeview needs neither Xvfb nor the old FDS/SMV layout.
+      export CFAST_PICTURE_EXE="$smvrepo/Build/smokeview/clang_osx/smokeview_osx"
+      export CFAST_PICTURE_ROOT="$cfastrepo/Validation"
+      export CFAST_PICTURE_OUTPUT="$cfastrepo/Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES"
+      export CFAST_PICTURE_BINDIR="$smvrepo/for_bundle"
+      mkdir -p "$CFAST_PICTURE_OUTPUT"
+      cfast_picture() (
+         [[ $# == 3 && $1 == -d ]] || return 2
+         cd "$CFAST_PICTURE_ROOT/$2" || return 1
+         local base=${3%.*}
+         [[ -f $base.smv && -f $base.ssf ]] || return 1
+         "$CFAST_PICTURE_EXE" -bindir "$CFAST_PICTURE_BINDIR" -scriptrenderdir "$CFAST_PICTURE_OUTPUT" -runscript "$base" > "$base.serr" 2>&1
+      )
+      export -f cfast_picture
+      export RUNSMV=cfast_picture
+      run_logged "$OUTPUT_DIR/stage4_make_pictures" bash -e ./CFAST_Pictures.sh || exit 1
+   else
+      run_logged "$OUTPUT_DIR/stage4_make_pictures" ./Make_CFAST_Pictures.sh -I intel
+   fi
    check_cfast_pictures
 fi
 

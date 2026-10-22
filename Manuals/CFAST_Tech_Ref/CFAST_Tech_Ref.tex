@@ -163,14 +163,14 @@ The rest of this document is broken into several chapters as follows:
 
 The equations used to model pressure, layer height and temperatures in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the principles of conservation of mass and energy using the ideal gas law as an equation of state to relate temperature and density. These equations predict the evolution in time of the compartment pressure (at the floor), upper layer volume, and layer temperatures due to the net gain or loss of mass and energy in these layers. The primary assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived~\cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
 
-The exchange of mass and energy or heat between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and heat between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and heat from the lower to the upper layer, and convection transfers heat from the gas layers to the surrounding walls.  The momentum within any one zone is assumed to be zero. Momentum exchange between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law).
+The exchange of mass and energy or heat between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and heat between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and heat from the lower to the upper layer, and convection transfers heat from the gas layers to the surrounding walls.  The momentum within any one zone is assumed to be zero. Momentum exchange between zones in adjacent compartments is accounted for in terms of horizontal (Bernoulli's law) or vertical vent flow equations.
 
 \section{Model Equations}
 \label{sect:equations}
 
-Each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. All thermodynamic parameters are assumed to be constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
+Each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. All thermodynamic parameters are assumed to be constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~\unit{J/(kg.K)} and $\gamma = 1.4$; thus,
 \be
-   R = \frac{\gamma-1}{\gamma} \, \cp \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
+   R = \frac{\gamma-1}{\gamma} \, \cp \approx 289.14~\unit{J/(kg.K)}
 \ee
 \begin{figure}[h]
 \centering
@@ -217,7 +217,7 @@ where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivit
 
 \section{Species Transport}
 
-The equation of state, Eq. (\ref{EoS}), assumes that the molecular weight of the gaseous mixture throughout the domain is approximately that of air, 29~g/mol. However, CFAST does track the products of combustion and the depletion of oxygen in each zone. At the start of the simulation, the composition of each layer is set to ambient conditions. The initial temperature is specified by the user. The oxygen mass fraction is 23~\% (21~\% volume fraction) and the nitrogen mass fraction is 77~\% (79~\% volume fraction). The mass fraction of water vapor is specified by the user in terms of a relative humidity and the oxygen and nitrogen mass fractions are adjusted accordingly. All other gas species are initially zero.  As fuel is burned, product species are produced in direct proportion to the rate of fuel consumption (the major products of combustion are determined from the specified fuel molecule and the minor species yields are specified by the user). The mass fraction of oxygen can limit the combustion rate as discussed in Section~\ref{section:HRR}. Two special separate species are included in the model -- a generic toxic species and an arbitrary trace species. Both are excluded from the overall mass balance, but they are generated by the fire and transported in a manner identical to the other species.
+The equation of state, Eq. (\ref{EoS}), assumes that the molecular weight of the gaseous mixture throughout the domain is approximately that of air, 29~g/mol. However, CFAST does track the products of combustion and the depletion of oxygen in each zone. At the start of the simulation, the composition of each layer is set to ambient conditions. The initial temperature is specified by the user. The oxygen mass fraction is 23~\% (21~\% volume fraction) and the nitrogen mass fraction is 77~\% (79~\% volume fraction). The mass fraction of water vapor is specified by the user in terms of a relative humidity, and the oxygen and nitrogen mass fractions are adjusted accordingly. All other gas species are initially zero.  As fuel is burned, product species are produced in direct proportion to the rate of fuel consumption (the major products of combustion are determined from the specified fuel molecule and the minor species yields are specified by the user). The mass fraction of oxygen can limit the combustion rate as discussed in Section~\ref{section:HRR}. Two special separate species are included in the model -- a generic toxic species and an arbitrary trace species. Both are excluded from the overall mass balance, but they are generated by the fire and transported in a manner identical to the other species.
 
 Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers. The species mass divided by the layer volume is the mass concentration. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. See Ref.~\cite{Jones:2008} for an example on the use of filtering.
 
@@ -230,7 +230,7 @@ The calculation of radiation exchange in CFAST also depends in part on the speci
 \chapter{The Fire Plume}
 \label{sec:TheFire}
 
-Fires in CFAST are specified by the user in terms of a time-dependent heat release rate (HRR), an effective fuel molecule, and the yields of the products of incomplete combustion like soot and CO. Fires can be specified in multiple compartments and are treated as totally separate entities, with no interaction of the plumes. These fires are generally referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
+Fires in CFAST are specified by the user in terms of a time-dependent heat release rate (HRR), a time-dependent fire area, an effective fuel molecule, and the yields of the products of incomplete combustion like soot and CO. Fires can be specified in multiple compartments and are treated as totally separate entities, with no interaction of the plumes. These fires are generally referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
 
 CFAST does not include a pyrolysis model to {\em predict}, as opposed to specify, the growth and spread of the fire. Rather, the transient pyrolysis rates for each fire are prescribed by the user. Whereas this approach does not directly calculate the increased pyrolysis due to radiative feedback from the flame or compartment, in theory these effects could be prescribed by the user. For larger fires, this can be an important consideration, and the specification used should reflect the actual conditions as closely as possible.
 
@@ -269,7 +269,7 @@ As fuel and oxygen are consumed, heat is released and various products of combus
 \end{eqnarray}
 where $\dQ$ is the heat released by the fire. The parameters $\dQr$ and $\dQc$ are the heat released by radiation and convection, respectively, and $\chir$ is the fraction of the fire's heat release rate emitted as radiation.
 
-The user specifies the heat release rate, $\dQ$, as the actual heat released, accounting for combustion efficiency, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The combustion efficiency, $\chia$, is the fraction of the theoretical energy that is actually released during combustion \cite{Hamins:1996}. $\chia$ is a function of fuel type, scale, and vitiation. For small fires, Tewarson provides measured values for specific fuels \cite{Tewarson:2003}. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. The assumed and constant values for the combustion efficiency and radiative fraction may add uncertainty to the calculated results, so the heat release rate and radiative fraction should be chosen carefully to best model the scenario of interest.
+The user specifies the heat release rate, $\dQ$, as the actual heat released, accounting for combustion efficiency, along with the fire ares which is used to determine the characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The combustion efficiency, $\chia$, is the fraction of the theoretical energy that is actually released during combustion \cite{Hamins:1996}. $\chia$ is a function of fuel type, scale, and vitiation. For small fires, Tewarson provides measured values for specific fuels \cite{Tewarson:2003}. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35~\% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. The assumed and constant values for the combustion efficiency and radiative fraction may add uncertainty to the calculated results, so the heat release rate and radiative fraction should be chosen carefully to best model the scenario of interest.
 
 Using the specified heat release rate of the fire, $\dQ$, and a user-specified heat of combustion, $\Dh$,  the model calculates the pyrolysis rate of fuel, $\dmf$:
 \be
@@ -352,7 +352,7 @@ Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite
 \be
    u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (\cp \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5}
 \ee
-Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
+Note that if the velocity is expressed in units of \unit{m/s} and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
 
 Above the interface between the hot upper layer and the cooler lower layer, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation~\cite{Heskestad:2002} is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
@@ -542,7 +542,7 @@ The flow through mechanical vents can be filtered. Filtering affects particulate
 
 \section{Leakage}
 
-CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is typically measured using a door blower test where a blower door is placed in the door to a building or compartment. The blower door seals the opening and contains a calibrated, variable speed blower and a differential pressure measurement. The volume flow, $Q$ in m$^3$/s, needed to reach a specified differential pressure, $\Delta P$ in Pa, is measured resulting in a flow coefficient, $C$ using
+CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is typically measured using a blower door test where a blower door is placed in the door to a building or compartment. The blower door seals the opening and contains a calibrated, variable speed blower and a differential pressure measurement. The volume flow, $Q$ in~\unit{m^3/s}, needed to reach a specified differential pressure, $\Delta P$ in Pa, is measured resulting in a flow coefficient, $C$ using
 \be
 Q = C \delta P^n
 \ee
@@ -553,8 +553,8 @@ Leakage is specified for each desired compartment as either
 \begin {enumerate}
     \item Specified fractional leakage areas for the walls, floor, and/or ceiling.
     \begin{itemize}
-        \item A leakage area per unit wall area for wall leakage. For wall leakage, the model creates a vent on the wall with a sill height of 5 \% of the compartment ceiling height and a soffit of 95 \% of the compartment ceiling height.  The width of the vent is determined from a calculated vent area (the specified area or the specified leakage area ratio times the total wall area of the compartment) divided by the vent height (90 \% of the compartment ceiling height). 
-        \item A leakage area per unit floor and/or ceiling area for floor and or ceiling leaks.  For floor leakage, the model creates a vent on the wall with a width of 90 \% of the average wall width (the sum of the compartment width and the compartment depth divided by two) with the sill at the floor and the soffit height from a calculated vent area (the specified area or the specified leakage area ratio times the total floor area of the compartment) divided by the vent width (90 \% of the average compartment wall width). For ceiling leakage the same calculation is used and the vent is placed with its soffit at the compartment height.
+        \item A leakage area per unit wall area for wall leakage. For wall leakage, the model creates a vent on the wall with a sill height of 5~\% of the compartment ceiling height and a soffit of 95~\% of the compartment ceiling height.  The width of the vent is determined from a calculated vent area (the specified area or the specified leakage area ratio times the total wall area of the compartment) divided by the vent height (90~\% of the compartment ceiling height). 
+        \item A leakage area per unit floor and/or ceiling area for floor and or ceiling leaks.  For floor leakage, the model creates a vent on the wall with a width of 90~\% of the average wall width (the sum of the compartment width and the compartment depth divided by two) with the sill at the floor and the soffit height from a calculated vent area (the specified area or the specified leakage area ratio times the total floor area of the compartment) divided by the vent width (90~\% of the average compartment wall width). For ceiling leakage the same calculation is used and the vent is placed with its soffit at the compartment height.
     \end{itemize}
     \item The flow coefficient $C$. CFAST converts $C$ to a total leakage area which is then apportioned to the floor, walls, and ceiling based on their respective area fractions compared to the total compartment surface area.
 \end{enumerate}
@@ -751,11 +751,11 @@ where $\hat{\mathbf v}$ denotes the normalized vector~\cite{vanOosterom:1983}. T
 
 \subsection{Transmittance and Absorptance}
 
-The transmittance is the fraction of radiant energy that will pass through a volume filled with an absorbing medium. It is usually expressed in the form:
+The transmittance, $\tau$, is the fraction of radiant energy that will pass through a volume filled with an absorbing medium. It is usually expressed in the form:
 \be
    \tau = {\rm e}^{-a L}
 \ee
-where $a$ is the absorption coefficient and $L$ is the path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
+where $a$ is the absorption coefficient and $L$ is the path length. The absorptance, $\alpha$, is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
 
 In general, the transmittance and absorptance are functions of wavelength. This is an important factor to consider for the major gaseous products, $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$. However, soot has a continuous absorption spectrum that allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum. The total transmittance over a path length $L$ through a volume of combustion products is taken as the product of the transmittance of the soot and major gas phase products:
 \be
@@ -920,10 +920,10 @@ where the superscript $n$ denotes the value at the current time, and $\Delta t$ 
 
 The gas temperature is estimated at the detector or sprinkler location. If the detector or sprinkler is located within the plume, the gas temperature and velocity are estimated from section \ref{sec:Plume_Temp_Velocity}. If the detector or sprinkler is located within the ceiling jet, the gas temperature and velocity are estimated from section \ref{sec:Ceiling_Jet}.  If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the gas temperature is taken to be the appropriate layer temperature with a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
 
-\section{Visibility}
-\label{Visibility}
+\section{Optical Density}
+\label{Optical_Density}
 
-The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density per unit distance, $D_u$, is given by the expression:
+The optical density calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density per unit distance, $D_u$, is given by the expression:
 \be
    D_u = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
 \ee
@@ -938,8 +938,8 @@ which is used to determine smoke detector activation, below.
 CFAST estimates the activation of smoke detectors based on either the smoke concentration or temperature at the detector location.
 
 \begin{itemize}
-\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24 \%/m obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
-\item CFAST can also model a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
+\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24~\unit{\%/m} obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
+\item CFAST can also model a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~\unit{\degreeCelsius} and RTI of 5~\unit{(m.s)^{1/2}}. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
 \end{itemize}
 Users are cautioned that both of these models are very crude and the uncertainty in predictions is substantial. Consult the CFAST Validation Guide for more details on their validation.
 
@@ -969,7 +969,7 @@ For radiant and convected heat, the FED is given by
 \be
     \chi_{\FED} = \sum\limits_{t_1}^{t_2} \frac{1}{{4.2 \, \dq''}^{-1.9}} \, \Delta t + \frac{1}{4.1 \times 10^8 \, T^{-3.61}} \, \Delta t
 \ee
-where $\dq''$ is the radiant heat flux in kW/m$^2$ and $T$ is the temperature in \degc. For target locations where the radiant flux is less than 2.5 kW/m$^2$, the radiant heat term is taken to be zero consistent with ISO 13571.
+where $\dq''$ is the radiant heat flux in \unit{kW/m^2} and $T$ is the temperature in \unit{\degreeCelsius}. For target locations where the radiant flux is less than 2.5~\unit{kW/m^2}, the radiant heat term is taken to be zero consistent with ISO 13571.
 
 \printbibliography[heading=bibintoc,title={References}]
 
@@ -988,23 +988,23 @@ Note that the units associated with a given symbol are sometimes changed upon in
 \begin{center}
 \begin{longtable}{p{1in}  p{5.5 in}}
 
-$A$                 & area, m$^2$ \\
-$A_{\rm v}$         & cross-sectional area of a vent, m$^2$ \\
-$a$                 & absorption coefficient, m$^{-1}$ \\
+$A$                 & area, \unit{m^2} \\
+$A_{\rm v}$         & cross-sectional area of a vent, \unit{m^2} \\
+$a$                 & absorption coefficient, \unit{m^{-1}} \\
 $C$                 & vent constriction (or flow) coefficient, dimensionless \\
 $C_{\rm LOL}$       & lower oxygen limit coefficient, dimensionless \\
-$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
-$\cv$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
-$c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
+$\cp$               & heat capacity of air at constant pressure, \unit{J/(kg.K)} or k\unit{J/(kg.K)} \\
+$\cv$               & heat capacity of air at constant volume, \unit{J/(kg.K)} or k\unit{J/(kg.K)} \\
+$c$                 & heat capacity of a solid, k\unit{J/(kg.K)} \\
 $D$                 & fire diameter, m \\
-$D_u$               & optical density per unit distance, m$^{-1}$ \\
+$D_u$               & optical density per unit distance, \unit{m^{-1}} \\
 $D^*$               & characteristic fire diameter, m \\
 $F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $j$, dimensionless \\
 $f_v$               & soot volume fraction, dimensionless \\
-$g$                 & gravitational constant, 9.8 m/s$^2$ \\
-$h$                 & convective heat transfer coefficient, W/(m$^2\cdot$K) \\
+$g$                 & gravitational constant, 9.80665~\unit{m/s^2} \\
+$h$                 & convective heat transfer coefficient, \unit{W/(m.K)} \\
 $H$                 & height of a compartment, m \\
-$k$                 & thermal conductivity of air, W/(m$\cdot$K) \\
+$k$                 & thermal conductivity of air, \unit{W/(m.K)} \\
 $L$                 & length of a compartment, m \\
                     & mean flame height, m \\
                     & characteristic length for radiation calculation, m \\
@@ -1020,8 +1020,8 @@ $\dqi$              & rate of addition of heat into layer $i$, kW \\
 $\dQ$               & total heat release rate of the fire, kW \\
 $\dQc$              & heat release rate of the fire released as convective energy, kW \\
 $\dq''$             & heat flux, kW/m$^2$ \\
-$R$                 & specific gas constant, J/(kg$\cdot$K) \\
-RTI                 & response time index of a sprinkler or heat detector, (m$\cdot$s)$^{1/2}$ \\
+$R$                 & specific gas constant, \unit{J/(kg.K)} \\
+RTI                 & response time index of a sprinkler or heat detector, \unit{(m.s)^{1/2}} \\
 $r$                 & radial distance from the fire, m \\
                     & radial coordinate of cylindrical solid, m \\
 $S$                 & vent coefficient for vertical flow vents, dimensionless \\
@@ -1033,34 +1033,34 @@ $\Tu$               & \underline{u}pper layer gas temperature, K \\
 $\Tw$               & \underline{w}all (ceiling, upper wall, lower wall, floor) surface temperature, K \\
 $t$                 & time, s \\
 $u_{\rm w}$         & water spray density, m/s \\
-$V$                 & total volume of a compartment, m$^3$ \\
-$\dV$               & volumetric flowrate, m$^3$/s \\
-$\Vl$               & total volume of lower layer in a compartment, m$^3$ \\
-$\Vu$               & total volume of upper layer in a compartment, m$^3$ \\
-$v$                 & gas velocity, m/s \\
+$V$                 & total volume of a compartment,\unit{m^3} \\
+$\dV$               & volumetric flowrate, \unit{m^3/s} \\
+$\Vl$               & total volume of lower layer in a compartment, \unit{m^3} \\
+$\Vu$               & total volume of upper layer in a compartment, \unit{m^3} \\
+$v$                 & gas velocity, \unit{m/s} \\
 $W$                 & width of a compartment, m; wall thickness, m \\
 $w$                 & door or window width, m \\
 $x$                 & length variable, m \\
 $Y_{\rm LOL}$       & lower oxygen limit, by mass, dimensionless \\
 $Y_\OTWO$           & mass fraction of oxygen in a gas layer, dimensionless \\
-$y_{\CO}$           & carbon monoxide yield, kg/kg \\
-$y_{\rm s}$         & soot yield, kg/kg \\
+$y_{\CO}$           & carbon monoxide yield, \unit{kg/kg} \\
+$y_{\rm s}$         & soot yield, \unit{kg/kg} \\
 $z$                 & height variable, m \\
 $\bar{z}$           & mid-range height of a vertical vent segment, m \\
 $z_0$               & height of the virtual origin of fire, m \\
   \\
 $\alpha$            & gas absorptance, dimensionless \\
-                    & thermal diffusivity in conduction, (m$^2$/s) \\
+                    & thermal diffusivity in conduction, \unit{m^2/s} \\
 $\gamma$            & ratio of specific heats, 1.4, dimensionless \\
-$\Dh$               & heat of combustion of the fuel, kJ/kg \\
-$\DhO$              & energy released per unit mass of oxygen consumed, kJ/kg \\
+$\Dh$               & heat of combustion of the fuel, \unit{kJ/kg} \\
+$\DhO$              & energy released per unit mass of oxygen consumed, \unit{kJ/kg} \\
 $\Delta T$          & temperature rise, K \\
 $\epsilon$          & emissivity \\
 $\nu$               & stoichiometric coefficient, dimensionless \\
-                    & kinematic viscosity, m$^2$/s \\
-$\rho$              & density, kg/m$^3$ \\
-$\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
-$\sigma$            & Stefan--Boltzmann constant ($5.67 \times 10^{-8}$ W/(m$^2\cdot$K$^4$)) \\
+                    & kinematic viscosity, \unit{m^2/s} \\
+$\rho$              & density, \unit{kg/m^3} \\
+$\rho_\infty$       & ambient density of air, 1.195~\unit{kg/m^3} \\
+$\sigma$            & Stefan--Boltzmann constant (\num{5.67E-8}~\unit{W/(m^2.K^4)} \\
 $\tau$              & transmittance, dimensionless \\
 $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 \end{longtable}

@@ -2341,14 +2341,23 @@ def check_constant_fire_rewrite(app: QApplication):
         assert reopened.fires == expected.fires
 
 
-def check_fire_e_coefficient():
+def check_fire_suppression_parameters():
     from cfast_reader import fire_from_fields, parse_namelists, read_cfast_input
     from cfast_writer import validate_case, write_cfast_input
-    from units import E_COEFFICIENT, LENGTH, MASS, TIME, format_value, parse_value, unit_system
+    from units import LENGTH, MASS, TIME, VELOCITY, format_value, unit_system
 
     root = find_repo_root(Path(__file__))
     case = read_cfast_input(root / "Verification/Sprinkler/e_coefficient.in")
     assert [fire.e_coefficient for fire in case.fires] == [1, 2, 0, None, 1, 0.5, 0.1, 1]
+    assert all(fire.decay_time == 432.8 and fire.spray_density == 6.316e-5 for fire in case.fires)
+    for name in ("DECAY_TIME", "SPRAY_DENSITY"):
+        for values in ([], [1, 2], [0], [-1], [float("inf")], [float("nan")], ["invalid"], [True]):
+            try:
+                fire_from_fields({name: values})
+            except ValueError as exc:
+                assert name in str(exc)
+            else:
+                raise AssertionError(f"Invalid {name} accepted: {values}")
     for value in (-1, float("inf"), float("nan"), "invalid", True):
         try:
             fire_from_fields({"E_COEFFICIENT": [value]})
@@ -2359,7 +2368,7 @@ def check_fire_e_coefficient():
     original_units = dict(unit_system.selected)
     window = CeditMainWindow()
     try:
-        with tempfile.TemporaryDirectory(prefix="cedit-e-coefficient-") as directory:
+        with tempfile.TemporaryDirectory(prefix="cedit-suppression-") as directory:
             path = Path(directory) / "saved.in"
             for indices in ((0, 0, 0), (3, 2, 1)):
                 unit_system.set_index(LENGTH, indices[0])
@@ -2368,24 +2377,62 @@ def check_fire_e_coefficient():
                 window.load_case(case)
                 tab = window.fires_tab
                 tab.select_fire(0)
-                assert tab.e_coefficient_edit.text() == format_value(E_COEFFICIENT, 1)
-                assert math.isclose(parse_value(E_COEFFICIENT, "1 m2/(kg s)", "E"), 1)
-                tab.e_coefficient_edit.setText("0 m2/(kg s)")
+                assert not hasattr(tab, "e_coefficient_edit")
+                assert tab.decay_time_edit.parentWidget().title() == "Suppression Parameters"
+                assert tab.spray_density_edit.parentWidget() is tab.decay_time_edit.parentWidget()
+                assert tab.decay_time_edit.text() == format_value(TIME, 432.8)
+                assert tab.spray_density_edit.text() == format_value(VELOCITY, 6.316e-5)
+                tab.decay_time_edit.setText("2 min")
+                tab.spray_density_edit.setText("0.0002 m/s")
                 tab.select_fire(1)
-                assert tab.e_coefficient_edit.text() == format_value(E_COEFFICIENT, 2)
-                assert tab.fires[0].e_coefficient == 0
-                tab.e_coefficient_edit.clear()
-                # Changing the shared definition must not change the instance's coefficient.
+                assert tab.decay_time_edit.text() == format_value(TIME, 432.8)
+                assert tab.fires[0].decay_time == 120
+                assert math.isclose(tab.fires[0].spray_density, 0.0002)
+                tab.decay_time_edit.clear()
+                tab.spray_density_edit.clear()
+                # Blank fields restore defaults; shared fuel properties do not own suppression.
                 tab.fire_property_combo.setCurrentText("Growing burner")
-                assert tab.fires[1].e_coefficient is None
+                assert tab.fires[1].decay_time == 432.8
+                assert tab.fires[1].spray_density == 6.316e-5
                 assert window.write_case_to_path(path) == path
                 records = [record for record in parse_namelists(path.read_text()) if record.name == "FIRE"]
-                assert records[0].fields["E_COEFFICIENT"] == [0]
-                assert "E_COEFFICIENT" not in records[1].fields
+                assert records[0].fields["DECAY_TIME"] == [120]
+                assert records[0].fields["SPRAY_DENSITY"] == [0.0002]
+                assert records[1].fields["DECAY_TIME"] == [432.8]
+                assert records[1].fields["SPRAY_DENSITY"] == [6.316e-5]
                 assert "E_COEFFICIENT" not in records[3].fields
                 reopened = read_cfast_input(path)
-                assert [fire.e_coefficient for fire in reopened.fires] == [0, None, 0, None, 1, 0.5, 0.1, 1]
+                assert len(reopened.fires) == len(tab.fires)
+                for saved_fire, edited_fire in zip(reopened.fires, tab.fires):
+                    assert saved_fire.id == edited_fire.id
+                    assert math.isclose(saved_fire.decay_time, edited_fire.decay_time, rel_tol=1e-6)
+                    assert math.isclose(saved_fire.spray_density, edited_fire.spray_density, rel_tol=1e-6)
+                assert [fire.e_coefficient for fire in reopened.fires] == [1, 2, 0, None, 1, 0.5, 0.1, 1]
                 assert case.fires[0].e_coefficient == 1  # Editor owns a copy.
+                assert case.fires[0].decay_time == 432.8
+
+                for edit in (tab.decay_time_edit, tab.spray_density_edit):
+                    original_text = edit.text()
+                    for invalid_text in ("0", "-1", "1e999", "invalid"):
+                        edit.setText(invalid_text)
+                        try:
+                            tab.save_current_fire_only()
+                        except ValueError:
+                            pass
+                        else:
+                            raise AssertionError(f"Invalid suppression input accepted: {invalid_text}")
+                    edit.setText(original_text)
+
+            for name, default in (("decay_time", 432.8), ("spray_density", 6.316e-5)):
+                for invalid in (0, -1, float("inf"), float("nan")):
+                    setattr(case.fires[0], name, invalid)
+                    try:
+                        validate_case(case)
+                    except ValueError as exc:
+                        assert name.upper() in str(exc)
+                    else:
+                        raise AssertionError(f"Invalid {name} was accepted")
+                setattr(case.fires[0], name, default)
 
             for invalid in (-1, float("inf"), float("nan")):
                 case.fires[0].e_coefficient = invalid
@@ -2436,7 +2483,7 @@ def main() -> int:
         check_fire_import()
         check_unused_fire_definitions()
         check_constant_fire_rewrite(app)
-        check_fire_e_coefficient()
+        check_fire_suppression_parameters()
         print("General editor checks passed", flush=True)
 
     if args.mode == "rewrite":

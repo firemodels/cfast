@@ -4,6 +4,7 @@ import copy
 import csv
 import html
 import io
+import math
 from pathlib import Path
 
 from PySide6.QtCore import QByteArray, QMimeData, Qt, Signal
@@ -37,7 +38,6 @@ from cfast_reader import read_fire_properties
 from table_widgets import HoverEditTableWidget, UnitLineEdit, UnitTableWidget
 from units import (
     AREA,
-    E_COEFFICIENT,
     HEAT_FLUX,
     HOC,
     HRR,
@@ -45,6 +45,7 @@ from units import (
     MASS_FRACTION,
     TEMPERATURE,
     TIME,
+    VELOCITY,
     display_value,
     format_number,
     format_value,
@@ -393,11 +394,14 @@ class FiresTab(QWidget):
         self.ignition_combo = QComboBox()
         self.ignition_combo.addItems(["TIME", "TEMPERATURE", "FLUX"])
         self.setpoint_edit = UnitLineEdit()
-        self.e_coefficient_edit = UnitLineEdit()
-        self.e_coefficient_edit.setPlaceholderText("Blank: legacy sprinkler suppression")
-        self.e_coefficient_edit.setToolTip(
-            "Optional water suppression coefficient for this fire. Blank uses the legacy model; "
-            "zero disables sprinkler attenuation. Positive values use accumulated water exposure."
+        self.decay_time_edit = UnitLineEdit()
+        self.decay_time_edit.setToolTip(
+            "DECAY_TIME: empirical fire suppression decay time constant. Default: 432.8 s."
+        )
+        self.spray_density_edit = UnitLineEdit()
+        self.spray_density_edit.setToolTip(
+            "SPRAY_DENSITY: reference spray density for suppression of this burning object "
+            "or commodity class. Default: 6.316e-5 m/s."
         )
         self.target_combo = QComboBox()
         self.target_combo.setEditable(True)
@@ -522,10 +526,17 @@ class FiresTab(QWidget):
             alignment=Qt.AlignmentFlag.AlignRight,
         )
         fire_layout.addWidget(self.fire_property_combo, 5, 1, 1, 3)
-        self.e_coefficient_label = QLabel(f"E Coefficient\n({unit_label(E_COEFFICIENT)}):")
-        fire_layout.addWidget(self.e_coefficient_label, 6, 0, alignment=Qt.AlignmentFlag.AlignRight)
-        fire_layout.addWidget(self.e_coefficient_edit, 6, 1, 1, 3)
         fire_group.setLayout(fire_layout)
+
+        suppression_group = QGroupBox("Suppression Parameters")
+        suppression_layout = QGridLayout()
+        self.decay_time_label = QLabel(f"Decay Time Constant ({unit_label(TIME)}):")
+        self.spray_density_label = QLabel(f"Spray Density ({unit_label(VELOCITY)}):")
+        suppression_layout.addWidget(self.decay_time_label, 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        suppression_layout.addWidget(self.decay_time_edit, 0, 1)
+        suppression_layout.addWidget(self.spray_density_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        suppression_layout.addWidget(self.spray_density_edit, 1, 1)
+        suppression_group.setLayout(suppression_layout)
 
         property_group = QGroupBox("Fuel Properties")
         property_layout = QGridLayout()
@@ -563,6 +574,7 @@ class FiresTab(QWidget):
         property_group.setLayout(property_layout)
 
         layout.addWidget(fire_group)
+        layout.addWidget(suppression_group)
         layout.addWidget(property_group)
         layout.addStretch(1)
         widget.setLayout(layout)
@@ -584,7 +596,8 @@ class FiresTab(QWidget):
 
     def connect_editor_signals(self):
         line_edits = [
-            self.e_coefficient_edit,
+            self.decay_time_edit,
+            self.spray_density_edit,
             self.fire_id_edit,
             self.x_position_edit,
             self.y_position_edit,
@@ -886,7 +899,8 @@ class FiresTab(QWidget):
         self.loading = True
         try:
             for widget in [
-                self.e_coefficient_edit,
+                self.decay_time_edit,
+                self.spray_density_edit,
                 self.fire_id_edit,
                 self.x_position_edit,
                 self.y_position_edit,
@@ -919,9 +933,8 @@ class FiresTab(QWidget):
         prop = self.find_property(fire.fire_property_id)
 
         self.fire_id_edit.setText(fire.id)
-        self.e_coefficient_edit.setText(
-            "" if fire.e_coefficient is None else format_value(E_COEFFICIENT, fire.e_coefficient)
-        )
+        self.decay_time_edit.setText(format_value(TIME, fire.decay_time))
+        self.spray_density_edit.setText(format_value(VELOCITY, fire.spray_density))
         set_combo_text(self.compartment_combo, fire.comp_id)
         self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
         self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
@@ -1088,11 +1101,12 @@ class FiresTab(QWidget):
         if fire is None:
             return
 
-        text = self.e_coefficient_edit.text().strip()
-        coefficient = parse_value(E_COEFFICIENT, text, "E Coefficient") if text else None
-        if coefficient is not None and coefficient < 0.0:
-            raise ValueError("E Coefficient must be nonnegative.")
-        fire.e_coefficient = coefficient
+        decay_time = parse_value(TIME, self.decay_time_edit.text(), "Decay Time Constant", 432.8)
+        spray_density = parse_value(VELOCITY, self.spray_density_edit.text(), "Spray Density", 6.316e-5)
+        if any(not math.isfinite(value) or value <= 0.0 for value in (decay_time, spray_density)):
+            raise ValueError("Suppression parameters must be finite and positive.")
+        fire.decay_time = decay_time
+        fire.spray_density = spray_density
         fire.id = self.fire_id_edit.text().strip() or fire.id
         fire.comp_id = (
             self.compartment_combo.currentText().strip()
@@ -1314,7 +1328,8 @@ class FiresTab(QWidget):
 
     def refresh_unit_labels(self):
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
-        self.e_coefficient_label.setText(f"E Coefficient\n({unit_label(E_COEFFICIENT)}):")
+        self.decay_time_label.setText(f"Decay Time Constant ({unit_label(TIME)}):")
+        self.spray_density_label.setText(f"Spray Density ({unit_label(VELOCITY)}):")
 
     def add_to_case(self, case: CfastCase):
         self.save_current_editor()

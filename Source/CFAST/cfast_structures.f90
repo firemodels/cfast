@@ -38,7 +38,6 @@ module cfast_types
         real(eb) :: obscuration_flaming ! smoke obscuration due to flaming fires (calculated)
         real(eb) :: obscuration_smolder ! smoke obscuration due to smoldering fires (calculated)
         real(eb) :: activation_time     ! time of detector activation (calculated)
-        real(eb) :: tau                 ! characteristice quencing time (calculated)
         logical :: activated            ! true if detector has activated (calculated)
         logical :: reported             ! true if detector activation has already been reported (calculated)
         logical :: dual_detector        ! true if smoke detector with different triggers for flaming and smoldering smoke 
@@ -54,7 +53,7 @@ module cfast_types
         integer :: ignition_type                        ! ignition type for fire (user input)
                                                         ! (1 = time, 2 = temperature, 3 = heat flux)
         real(eb) :: ignition_criterion                  ! ignition criterion for fire. Units depend on ignition type (user input)
-        real(eb) :: e_coefficient                       ! water suppression coefficient, m2/(kg s); negative selects legacy tau
+        real(eb) :: evans_coefficient                   ! water suppression coefficient, s*(mm/s)^1.8
         integer :: chemistry_type                       ! fire type. Currently, only constrained fire (user input)
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl            ! stociometry of the fuel (user input)
         real(eb) :: chirad                              ! fraction of fire HRR released as radiation (user input)

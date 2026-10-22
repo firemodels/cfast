@@ -917,7 +917,7 @@
                 ! if spray density is negative, it's the half-life of the heat release rate and spray density will calculated
                 ! if spray density is zero, turn off the sprinkler
                 if (spray_density < 0.0_eb) then
-                    dtectptr%spray_density = spray_density
+                    dtectptr%spray_density = (3._eb/(abs(spray_density)/log(2._eb)))**(1._eb/1.8_eb)
                 elseif (spray_density > 0.0_eb) then
                     dtectptr%spray_density = spray_density*1000.0_eb
                 else
@@ -972,7 +972,7 @@
     rti                             = default_rti
     setpoint                        = -1001._eb
     setpoints                       = (/-1001._eb, -1001._eb/)
-    spray_density                   = -300.0_eb
+    spray_density                   = 6.316e-5_eb
     adiabatic_target                = .false.
     convection_coefficients(:)      = 0._eb
 
@@ -1102,11 +1102,11 @@ continue
     type(fire_type),   pointer :: fireptr
     type(target_type), pointer :: targptr
 
-    real(eb) :: e_coefficient, setpoint
+    real(eb) :: decay_time, spray_density, setpoint
     character(len=64) :: comp_id, devc_id, fire_id, id, ignition_criterion
     character(len=128) :: fyi
     real(eb), dimension(2) :: location
-    namelist /FIRE/ comp_id, devc_id, e_coefficient, fire_id, fyi, id, ignition_criterion, location, setpoint
+    namelist /FIRE/ comp_id, decay_time, devc_id, fire_id, fyi, id, ignition_criterion, location, setpoint, spray_density
 
     tmpcond = 0.0
 
@@ -1174,16 +1174,11 @@ continue
             fireptr%id = id
             fireptr%fyi = fyi
             fireptr%fire_id = fire_id
-            if (.not.ieee_is_finite(e_coefficient)) then
-                errormessage = '***Error in FIRE: E_COEFFICIENT must be finite and nonnegative for '//trim(id)
-                call cfastexit('read_fire',9)
-            else if (e_coefficient<0._eb) then
-                errormessage = '***Error in FIRE: E_COEFFICIENT must be nonnegative for '//trim(id)
+            if (decay_time<0._eb) then
+                errormessage = '***Error in FIRE: DECAY_TIME must be nonnegative for '//trim(id)
                 call cfastexit('read_fire',9)
             end if
-            ! A missing input retains the legacy model; an explicit zero disables attenuation.
-            fireptr%e_coefficient = -1._eb
-            if (e_coefficient<huge(1._eb)) fireptr%e_coefficient = e_coefficient
+            fireptr%evans_coefficient = decay_time*(1000._eb*spray_density)**1.8_eb
             
             ! position
             if (convert_negative_distances) then
@@ -1270,7 +1265,8 @@ continue
 
     comp_id                 = 'NULL'
     devc_id                 = 'NULL'
-    e_coefficient           = huge(1._eb)
+    decay_time              = 432.8_eb
+    spray_density           = 6.3163e-5_eb
     fire_id                 = 'NULL'
     id                      = 'NULL'
     fyi                     = 'NULL'

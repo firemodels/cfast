@@ -311,6 +311,8 @@ class FireDefinition:
     y_position: float = 2.5
     fyi: str = ""
     e_coefficient: float | None = None
+    decay_time: float = 432.8
+    spray_density: float = 6.316e-5
 
 
 @dataclass

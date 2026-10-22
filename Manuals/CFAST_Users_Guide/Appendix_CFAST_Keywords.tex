@@ -199,7 +199,7 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{SETPOINT}\footnote{The default is 23.93~\%/m for smoke detectors and 57.22~\degc for heat detectors and sprinklers.}
                                         & Real                   & Sec.~\ref{info:DEVC2}              & \degc or \%/m      & See note \\ \hline
 \ct{SETPOINTS}                           & Real Doublet           & Sec.~\ref{info:DEVC2}              & \%/m               & \\ \hline
-\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}              & m/s                & \\ \hline
+\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:DEVC2}              & m/s                & $6.316 \times 10^{-5}$ \\ \hline
 \ct{SURFACE_ORIENTATION}                 & Character              & Sec.~\ref{chapter:targets}         &                    & \\ \hline
 \ct{SURFACE_TEMPERATURE}                 & Real                   & Sec.~\ref{chapter:targets}         &                    & \\ \hline
 \ct{TEMPERATURE_DEPTH}                   & Real                   & Sec.~\ref{chapter:targets}         &                    & 0.5  \\ \hline
@@ -262,15 +262,16 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 {\bf Parameter} & {\bf Type} & {\bf Reference} & {\bf Units} & {\bf Default} \\ \hline
-\ct{COMP_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
-\ct{DEVC_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
-\ct{E_COEFFICIENT}                       & Real                   & Sec.~\ref{info:FIRE}         & \unit{m^2/(kg.s)}   & Omitted \\ \hline
-\ct{FIRE_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
-\ct{FYI}                                 & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
-\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE}         &                    & \\ \hline
-\ct{IGNITION_CRITERION}                  & Character              & Sec.~\ref{info:FIRE}         &                    & \ct{'TIME'} \\ \hline
-\ct{LOCATION}                            & Real Pair              & Sec.~\ref{info:FIRE}         & m                  & \\ \hline
-\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s \\ \hline
+\ct{COMP_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                                    &                        \\ \hline
+\ct{DEVC_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                                    &                        \\ \hline
+\ct{FIRE_ID}                             & Character              & Sec.~\ref{info:FIRE}         &                                    &                        \\ \hline
+\ct{FYI}                                 & Character              & Sec.~\ref{info:FIRE}         &                                    &                        \\ \hline
+\ct{ID}                                  & Character              & Sec.~\ref{info:FIRE}         &                                    &                        \\ \hline
+\ct{IGNITION_CRITERION}                  & Character              & Sec.~\ref{info:FIRE}         &                                    & \ct{'TIME'}            \\ \hline
+\ct{LOCATION}                            & Real Pair              & Sec.~\ref{info:FIRE}         & m                                  &                        \\ \hline
+\ct{SETPOINT}                            & Real                   & Sec.~\ref{info:FIRE}         & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ & 0 s                    \\ \hline
+\ct{SPRAY_DENSITY}                       & Real                   & Sec.~\ref{info:FIRE}         & m/s                                & $6.316 \times 10^{-5}$ \\ \hline
+\ct{DECAY_TIME}                          & Real                   & Sec.~\ref{info:FIRE}         & s                                  & 432.8                  \\ \hline
 \end{xltabular}
 
 

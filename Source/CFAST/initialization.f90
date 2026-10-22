@@ -80,7 +80,7 @@ module initialization_routines
 
     subroutine initialize_ambient ()
 
-    real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
+    real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, scale
     integer i, ii, iwall, iroom, itarg
 
     type(target_type), pointer :: targptr
@@ -149,24 +149,7 @@ module initialization_routines
         if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%cdepth*0.5_eb
         if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%cheight-mx_vsep
 
-        ! if tdspray>0 then interpret it as a spray density and convert
-        ! to a characteristic quenching time
-        ! if tdspray < 0 then interpret abs(tdspray) as the time
-        ! required to reduce the fire size by 50 per cent
-        ! if tdspray = 0 then turn the sprinkler off
-        tdspray = dtectptr%spray_density
-        if (tdspray>0.0_eb) then
-            tdrate = 3.0_eb/tdspray**1.8_eb
-        else if (tdspray<0.0_eb) then
-            tdrate = abs(tdspray)/log(2.0_eb)
-            tdspray = (3.0_eb/tdrate)**(1.0_eb/1.8_eb)
-        else
-            tdspray = 0.0_eb
-            tdrate = 1.0e10_eb
-            dtectptr%quench = .false.
-        end if
-        dtectptr%spray_density = tdspray
-        dtectptr%tau = tdrate
+        if (dtectptr%spray_density==0._eb) dtectptr%quench = .false.
 
         ! set initial ceiling jet and detector link temperatures to ambient
         if (dtectptr%dtype==smoked) then
@@ -607,7 +590,7 @@ module initialization_routines
         n_detectors = 0
         detectorinfo(1:mxdtect)%id = ' '
         detectorinfo(1:mxdtect)%rti = default_rti
-        detectorinfo(1:mxdtect)%spray_density = -300.0_eb
+        detectorinfo(1:mxdtect)%spray_density = 0.06316_eb
         detectorinfo(1:mxdtect)%center(1) = -1.0_eb
         detectorinfo(1:mxdtect)%center(2) = -1.0_eb
         detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
@@ -688,7 +671,7 @@ module initialization_routines
         fireinfo(1:mxfires)%chemistry_type = 2
         fireinfo(1:mxfires)%ignition_type = trigger_by_time
         fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
-        fireinfo(1:mxfires)%e_coefficient = -1._eb
+        fireinfo(1:mxfires)%evans_coefficient = 3._eb
         fireinfo(1:mxfires)%ignition_time = 0.0_eb
         fireinfo(1:mxfires)%ignited = .false.
         fireinfo(1:mxfires)%reported = .false.

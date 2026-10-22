@@ -433,14 +433,19 @@ In the text input file, the following parameters are stored within the namelist 
 \item[Set Point] (namelist: \ct{SETPOINT}) The critical value of temperature or heat flux at which ignition will occur.
 \item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
 \item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
-\item[E Coefficient] (optional; units: \unit{m^2/(kg.s)}; namelist: \ct{E_COEFFICIENT}) Empirical water suppression coefficient for this fire instance. Leave the field blank to use the original sprinkler quenching-time correlation. A positive value selects the accumulated-water model described below. Zero disables sprinkler attenuation for this fire. Negative values are invalid. Fires referencing the same fire properties may use different coefficients.
+\item[Suppression Parameters] Two parameters are used to characterize the suppression of the fire. The first is the \textbf{Decay Time Constant} (default: 432.8~s; namelist: \ct{DECAY_TIME}), and the second is the \textbf{Spray Density} (default: $6.316 \times 10^{-5}$~m/s; namelist: \ct{SPRAY_DENSITY}) These are empirical parameters obtained from a full-scale sprinkler suppression experiment that are appropriate for the given burning object or commodity class. The default values are chosen to be consistent with previous versions of CFAST for which the suppression characteristics were the same for every fire.
 \end{description}
+Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the pyrolysis rate and the corresponding heat release rate are assumed to decrease exponentially:
+\be
+   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = \tau_0 \, \left( \frac{u_{\rm w,0}}{u_{\rm w}} \right)^{1.8}
+\ee
+where $\tau$ is referred to as the decay time constant, typically expressed in seconds, and $u_{\rm w}$ is the water spray density, expressed in units of volume per unit area per unit time, such as \unit{L/(min \, m^2)}, \unit{gal/(min \, ft^2)}, or the equivalent velocity\footnote{For consistency with past versions of CFAST, the specified \ct{SPRAY_DENSITY} is expressed in units of m/s in the text-based input file.} in units of mm/s or m/s. The parameters $\tau_0$ and $u_{\rm w,0}$ are emprically derived from a full-scale sprinkler suppression experiment in which the decay time constant is inferred for a specific object or commodity class subjected to a specific spray density. Past versions of CFAST pegged the value of $\tau_0 \, u_{\rm w,0}^{1.8}$ to 3 where  $\tau_0$ was expressed in seconds and $u_{\rm w,0}$ in mm/s. The more general approach retains the basic concept of Madrzykowski and Evans, but allows the end user to specify different suppression parameters for each fire. Note the following caveats for sprinkler suppression:
+\begin{enumerate}
+\item The first sprinkler activated controls the heat release rate of the fire. Subsequent sprinkler activations have no additional effect.
+\item The water spray has no effect on the gas temperature or secondary sprinkler activation times.
+\item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system.
+\end{enumerate}
 
-With \ct{E_COEFFICIENT} specified, the current prescribed HRR and fuel mass-loss rate are multiplied by
-\begin{equation}
- S(t)=\exp\left[-\frac{1}{2}\chi\rho_{\rm w}u_{\rm w}\max(0,t-t_{\rm act})^2\right],
-\end{equation}
-where $\chi$ is \ct{E_COEFFICIENT}, $\rho_{\rm w}=1000$~\unit{kg/m^3}, $u_{\rm w}$ is the sprinkler's \ct{SPRAY_DENSITY} in \unit{m/s}, and $t_{\rm act}$ is its activation time. This model assumes the delivered water accumulates continuously without evaporation or runoff. The first activated sprinkler in the fire's compartment controls the water delivery. A fire that ignites later is subject to the water exposure accumulated since sprinkler activation. The coefficient must be determined experimentally. For example, adding \ct{E_COEFFICIENT=1.0} to a \ct{FIRE} line selects this model for that instance while leaving the \ct{CHEM} and \ct{TABL} definitions shared with other fires.
 
 \section{Fuel Properties}
 
@@ -559,27 +564,10 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \item[Depth (Y)] (units: \unit{m}; namelist: \ct{LOCATION(2)}) Distance from the front wall of the compartment.
 \item[Height (Z)] (units: \unit{m}; namelist: \ct{LOCATION(3)}) Distance from the floor of the compartment.
 \item[RTI] (default: 50~\unit{(m.s)\tothe{1/2}}; namelist: \ct{RTI}) Response Time Index for the sprinkler or detection device.
-\item[Spray Density] (default: $6.316\times 10^{-5}$~\unit{m/s}; namelist: \ct{SPRAY_DENSITY}) Rate of water dispersed by a sprinkler, derived by dividing its volumetric flow rate by its area of application. Suppression is modeled using the experimental correlation developed by Evans and Madrzykowski~\cite{Evans:1993} in which the heat release rate is assumed to decrease exponentially following the activation of a sprinkler at time $t=t_{\rm act}$:
-    \be
-      \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}  \label{supp}
-   \ee
-    In Eq.~(\ref{supp}), the term $u_{\rm w}$ has units of mm/s, which is obtained by multiplying the specified \ct{SPRAY_DENSITY} in units of m/s by 1000. The default value of $6.316\times 10^{-5}$~\unit{m/s} has been chosen based on the assumption that the spray will decrease the heat release of the fire by 50~\% after 300~s (5~min) following activation. Alternative values can be computed using the following formula:
-    \be
-       u_{\rm w} = \left( \frac{ 3 \, \ln(2) }{\Delta t_{1/2}} \right)^{1/1.8}
-    \ee
-    where $\Delta t_{1/2}$ is the time in seconds required to decrease the HRR by 50~\%. The value of \ct{SPRAY_DENSITY} should be $u_{\rm w}/1000$ to recover units of m/s.
+\item[Spray Density] (default: $6.316\times 10^{-5}$~\unit{m/s}; namelist: \ct{SPRAY_DENSITY}) Rate of water dispersed by a sprinkler, derived by dividing its volumetric flow rate by its area of application. Fire suppression is discussed in Section~\ref{info:FIRE}.
 \item[FYI]  Optional descriptive text retained with the device but not used in the calculation.
 \end{description}
-Smoke detectors activate based on the average smoke concentration of the upper layer of the compartment, not the ceiling jet. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments~\cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponds to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805~\cite{NRCNUREG1805}. \\
-
-\noindent Note the following on sprinkler suppression:
-\begin{enumerate}
-\item The first sprinkler activated controls the heat release rate of the fire. Subsequent sprinkler activations have no additional effect.
-\item The water spray has no effect on the gas temperature or secondary sprinkler activation times.
-\item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system.
-\end{enumerate}
-
-
+Smoke detectors activate based on the average smoke concentration of the upper layer of the compartment, not the ceiling jet. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\unit{\degreeCelsius} to 10~\unit{\degreeCelsius} above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments~\cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\unit{\degreeCelsius} corresponds to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\unit{\degreeCelsius} with an RTI value of 5~\unit{(m.s)\tothe{1/2}} in NUREG-1805~\cite{NRCNUREG1805}.
 
 
 \chapter{Visualization}

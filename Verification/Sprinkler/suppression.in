@@ -13,14 +13,14 @@
 &VENT ID = 'Door A', TYPE = 'WALL', COMP_IDS = 'Room A','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
 &VENT ID = 'Door B', TYPE = 'WALL', COMP_IDS = 'Room B','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
 &VENT ID = 'Door C', TYPE = 'WALL', COMP_IDS = 'Room C','OUTSIDE', WIDTH = 2, BOTTOM = 0, TOP = 3 /
-&FIRE ID = 'Reference', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
-&FIRE ID = 'Stronger', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 7,2, E_COEFFICIENT = 2 /
-&FIRE ID = 'No attenuation', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,7, E_COEFFICIENT = 0 /
+&FIRE ID = 'Reference', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,2, DECAY_TIME = 30 /
+&FIRE ID = 'Stronger', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 7,2, DECAY_TIME = 15 /
+&FIRE ID = 'No attenuation', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 2,7, DECAY_TIME = 1000 /
 &FIRE ID = 'Legacy', COMP_ID = 'Room A', FIRE_ID = 'Burner', LOCATION = 7,7 /
-&FIRE ID = 'Second room', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
-&FIRE ID = 'Growing', COMP_ID = 'Room B', FIRE_ID = 'Growing burner', LOCATION = 7,2, E_COEFFICIENT = 0.5 /
-&FIRE ID = 'Delayed', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,7, SETPOINT = 15, E_COEFFICIENT = 0.1 /
-&FIRE ID = 'Dry room', COMP_ID = 'Room C', FIRE_ID = 'Burner', LOCATION = 2,2, E_COEFFICIENT = 1 /
+&FIRE ID = 'Second room', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,2, DECAY_TIME = 30 /
+&FIRE ID = 'Growing', COMP_ID = 'Room B', FIRE_ID = 'Growing burner', LOCATION = 7,2, DECAY_TIME = 60 /
+&FIRE ID = 'Delayed', COMP_ID = 'Room B', FIRE_ID = 'Burner', LOCATION = 2,7, SETPOINT = 15, DECAY_TIME = 300 /
+&FIRE ID = 'Dry room', COMP_ID = 'Room C', FIRE_ID = 'Burner', LOCATION = 2,2, DECAY_TIME = 30 /
 &CHEM ID = 'Burner', CARBON = 1, HYDROGEN = 4, HEAT_OF_COMBUSTION = 50000, RADIATIVE_FRACTION = 0.35 /
 &TABL ID = 'Burner', LABELS = 'TIME','HRR','HEIGHT','AREA','CO_YIELD','SOOT_YIELD','HCN_YIELD','TRACE_YIELD' /
 &TABL ID = 'Burner', DATA = 0,36,0.25,0.36,0,0,0,0 /

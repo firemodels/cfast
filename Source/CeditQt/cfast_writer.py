@@ -529,6 +529,10 @@ def validate_case(case: CfastCase) -> None:
         raise ValueError("At least one fire property definition is required.")
 
     for fire in case.fires:
+        for name in ("decay_time", "spray_density"):
+            value = getattr(fire, name)
+            if not math.isfinite(value) or value <= 0.0:
+                raise ValueError(f"Fire {fire.id!r}: {name.upper()} must be finite and positive.")
         if fire.e_coefficient is not None and (
             not math.isfinite(fire.e_coefficient) or fire.e_coefficient < 0.0
         ):
@@ -958,10 +962,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         fields = [
             f"ID = {cfast_string(fire.id)}",
             f"COMP_ID = {cfast_string(fire.comp_id)}",
+            f"DECAY_TIME = {cfast_number(fire.decay_time)}",
             f"FIRE_ID = {cfast_string(fire.fire_property_id)}",
             f"IGNITION_CRITERION = {cfast_string(fire.ignition_criterion.upper())}",
             f"SETPOINT = {cfast_number(fire.setpoint)}",
             f"LOCATION = {cfast_vector((fire.x_position, fire.y_position))}",
+            f"SPRAY_DENSITY = {cfast_number(fire.spray_density)}",
         ]
 
         if fire.target:

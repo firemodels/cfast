@@ -28,13 +28,7 @@ def safe_run(script_path, script_args=None):
 
 # Scripts to run prior to dataplot
 
-print("fire_ignition...");                     safe_run("./scripts/fire_ignition.py")
-print("radiativefluxes...");                   safe_run("./scripts/radiativefluxes.py")
-print("speciesmass...");                       safe_run("./scripts/speciesmass.py")
-print("sprinkler_1...");                       safe_run("./scripts/sprinkler_1.py")
-print("e_coefficient...");                     safe_run("./scripts/e_coefficient.py", [])
-print("target_2...");                          safe_run("./scripts/target_2.py")
-print("generate_cedit_figures...");            safe_run("../../Manuals/CFAST_Users_Guide/generate_cedit_figures.py", [])
+print("suppression...");                     safe_run("./scripts/suppression.py", [])
 
 # Dataplot and scatplot options
 
@@ -56,7 +50,7 @@ saved_data, drange = fdsplotlib.dataplot(config_filename=Dataplot_Inputs_File,
                                          pltdir=Manuals_Dir,
                                          close_figs=True,
                                          verbose=True,
-                                         plot_range=["all"]) # see notes below on plot_range
+                                         plot_range=["63:66"]) # see notes below on plot_range
 
 # ----- write saved_data, drange to disk -----
 import pickle

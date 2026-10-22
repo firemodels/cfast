@@ -533,10 +533,6 @@ def validate_case(case: CfastCase) -> None:
             value = getattr(fire, name)
             if not math.isfinite(value) or value <= 0.0:
                 raise ValueError(f"Fire {fire.id!r}: {name.upper()} must be finite and positive.")
-        if fire.e_coefficient is not None and (
-            not math.isfinite(fire.e_coefficient) or fire.e_coefficient < 0.0
-        ):
-            raise ValueError(f"Fire {fire.id!r}: E_COEFFICIENT must be finite and nonnegative.")
         if fire.comp_id not in compartment_ids:
             raise ValueError(
                 f"Fire {fire.id!r}: compartment {fire.comp_id!r} does not exist."
@@ -972,8 +968,6 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
 
         if fire.target:
             fields.append(f"DEVC_ID = {cfast_string(fire.target)}")
-        if fire.e_coefficient is not None:
-            fields.append(f"E_COEFFICIENT = {cfast_number(fire.e_coefficient)}")
 
         if fire.fyi:
             fields.append(f"FYI = {cfast_string(fire.fyi)}")

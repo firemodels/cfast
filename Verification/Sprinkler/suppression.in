@@ -1,9 +1,9 @@
 &HEAD VERSION = 7600, TITLE = 'Per-fire water suppression in three rooms' /
-!! Suppression by continuously accumulating sprinkler water.
+!! Suppression with per-fire decay time constants.
 !! Shared methane burners: 0.6 m by 0.6 m, 100 kW/m2, hence 36 kW.
-!! Room A: E=1, E=2, E=0, and the legacy tau model.
+!! Room A: decay times of 30, 15, 1000, and the default 432.8 s.
 !! Room B: twice the spray density, a growing fire, and a delayed fire.
-!! Room C: no active sprinkler; E=1 must leave the prescribed HRR unchanged.
+!! Room C: no active sprinkler; prescribed HRR must remain unchanged.
 &TIME SIMULATION = 60, PRINT = 10, SMOKEVIEW = 10, SPREADSHEET = 0.02 /
 &INIT INTERIOR_TEMPERATURE = 20, EXTERIOR_TEMPERATURE = 20 /
 &MISC ADIABATIC = .TRUE., MAX_TIME_STEP = 0.1 /

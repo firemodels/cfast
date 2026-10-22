@@ -45,10 +45,10 @@ HELPER_SCRIPTS = {
         "Sprinkler/sprinkler_1_compartments.csv",
         "Sprinkler/sprinkler_1_devices.csv",
     ],
-    "e_coefficient.py": [
-        "Sprinkler/e_coefficient_compartments.csv",
-        "Sprinkler/e_coefficient_devices.csv",
-        "Sprinkler/e_coefficient.smv",
+    "suppression.py": [
+        "Sprinkler/suppression_compartments.csv",
+        "Sprinkler/suppression_devices.csv",
+        "Sprinkler/suppression.smv",
     ],
     "target_2.py": [
         "Target/target_2_devices.csv",
@@ -223,14 +223,14 @@ def select_cases(verification_root: Path, requested: list[str]) -> list[Path]:
         return cases
 
     selected: list[Path] = []
-    requested_normalized = [value.lower() for value in requested]
+    requested_normalized = [value.replace("\\", "/").lower() for value in requested]
 
     for path in cases:
-        names = {path.name.lower(), path.stem.lower(), str(path.relative_to(verification_root)).lower()}
+        names = {path.name.lower(), path.stem.lower(), path.relative_to(verification_root).as_posix().lower()}
         if any(value in names for value in requested_normalized):
             selected.append(path)
 
-    missing = sorted(set(requested_normalized) - {item for path in selected for item in {path.name.lower(), path.stem.lower(), str(path.relative_to(verification_root)).lower()}})
+    missing = sorted(set(requested_normalized) - {item for path in selected for item in {path.name.lower(), path.stem.lower(), path.relative_to(verification_root).as_posix().lower()}})
     if missing:
         raise RuntimeError("No Verification .in case matched: " + ", ".join(missing))
 
@@ -770,6 +770,7 @@ def check_verification_case_discovery():
             path.touch()
         assert select_cases(root, []) == paths
         assert select_cases(root, ["NRC_Users_Guide/Example/nrc.in"]) == [paths[1]]
+        assert select_cases(root, [r"NRC_Users_Guide\Example\nrc.in"]) == [paths[1]]
         assert select_cases(root, ["nrc"]) == [paths[1]]
 
 
@@ -1707,7 +1708,7 @@ def check_quantity_display_precision():
 
 def check_pound_mass_units():
     from units import (
-        DENSITY, E_COEFFICIENT, HOC, MASS, MASS_FRACTION, MASS_LOSS,
+        DENSITY, HOC, MASS, MASS_FRACTION, MASS_LOSS,
         SPECIFIC_EXTINCTION, SPECIFIC_HEAT, format_value, parse_value, unit_system,
     )
 
@@ -1724,7 +1725,6 @@ def check_pound_mass_units():
             (HOC, "BTU/lbm", 1.05435 / 0.4535924),
             (SPECIFIC_HEAT, "BTU/(lbm F)", 1.05435 / (0.4535924 * 5 / 9)),
             (SPECIFIC_EXTINCTION, "ft2/lbm", 0.3048 ** 2 / 0.4535924),
-            (E_COEFFICIENT, "ft2/(lbm s)", 0.3048 ** 2 / 0.4535924),
         ):
             for spelling in (label, label.replace("lbm", "lb")):
                 assert math.isclose(parse_value(kind, f"1 {spelling}", "Mass quantity"), expected)
@@ -2347,9 +2347,12 @@ def check_fire_suppression_parameters():
     from units import LENGTH, MASS, TIME, VELOCITY, format_value, unit_system
 
     root = find_repo_root(Path(__file__))
-    case = read_cfast_input(root / "Verification/Sprinkler/e_coefficient.in")
-    assert [fire.e_coefficient for fire in case.fires] == [1, 2, 0, None, 1, 0.5, 0.1, 1]
-    assert all(fire.decay_time == 432.8 and fire.spray_density == 6.316e-5 for fire in case.fires)
+    case = read_cfast_input(root / "Verification/Sprinkler/suppression.in")
+    expected_decay_times = [30, 15, 1000, 432.8, 30, 60, 300, 30]
+    assert [fire.decay_time for fire in case.fires] == expected_decay_times
+    assert all(fire.spray_density == 6.316e-5 for fire in case.fires)
+    assert "suppression.py" in HELPER_SCRIPTS
+    assert all((root / "Utilities/Python/scripts" / script).is_file() for script in HELPER_SCRIPTS)
     for name in ("DECAY_TIME", "SPRAY_DENSITY"):
         for values in ([], [1, 2], [0], [-1], [float("inf")], [float("nan")], ["invalid"], [True]):
             try:
@@ -2358,13 +2361,6 @@ def check_fire_suppression_parameters():
                 assert name in str(exc)
             else:
                 raise AssertionError(f"Invalid {name} accepted: {values}")
-    for value in (-1, float("inf"), float("nan"), "invalid", True):
-        try:
-            fire_from_fields({"E_COEFFICIENT": [value]})
-        except ValueError as exc:
-            assert "E_COEFFICIENT" in str(exc)
-        else:
-            raise AssertionError("Invalid E_COEFFICIENT must not silently select the legacy model")
     original_units = dict(unit_system.selected)
     window = CeditMainWindow()
     try:
@@ -2377,15 +2373,14 @@ def check_fire_suppression_parameters():
                 window.load_case(case)
                 tab = window.fires_tab
                 tab.select_fire(0)
-                assert not hasattr(tab, "e_coefficient_edit")
                 assert tab.decay_time_edit.parentWidget().title() == "Suppression Parameters"
                 assert tab.spray_density_edit.parentWidget() is tab.decay_time_edit.parentWidget()
-                assert tab.decay_time_edit.text() == format_value(TIME, 432.8)
+                assert tab.decay_time_edit.text() == format_value(TIME, 30)
                 assert tab.spray_density_edit.text() == format_value(VELOCITY, 6.316e-5)
                 tab.decay_time_edit.setText("2 min")
                 tab.spray_density_edit.setText("0.0002 m/s")
                 tab.select_fire(1)
-                assert tab.decay_time_edit.text() == format_value(TIME, 432.8)
+                assert tab.decay_time_edit.text() == format_value(TIME, 15)
                 assert tab.fires[0].decay_time == 120
                 assert math.isclose(tab.fires[0].spray_density, 0.0002)
                 tab.decay_time_edit.clear()
@@ -2400,16 +2395,15 @@ def check_fire_suppression_parameters():
                 assert records[0].fields["SPRAY_DENSITY"] == [0.0002]
                 assert records[1].fields["DECAY_TIME"] == [432.8]
                 assert records[1].fields["SPRAY_DENSITY"] == [6.316e-5]
-                assert "E_COEFFICIENT" not in records[3].fields
+                assert records[3].fields["DECAY_TIME"] == [432.8]
                 reopened = read_cfast_input(path)
                 assert len(reopened.fires) == len(tab.fires)
                 for saved_fire, edited_fire in zip(reopened.fires, tab.fires):
                     assert saved_fire.id == edited_fire.id
                     assert math.isclose(saved_fire.decay_time, edited_fire.decay_time, rel_tol=1e-6)
                     assert math.isclose(saved_fire.spray_density, edited_fire.spray_density, rel_tol=1e-6)
-                assert [fire.e_coefficient for fire in reopened.fires] == [1, 2, 0, None, 1, 0.5, 0.1, 1]
-                assert case.fires[0].e_coefficient == 1  # Editor owns a copy.
-                assert case.fires[0].decay_time == 432.8
+                assert [fire.decay_time for fire in reopened.fires] == [120, 432.8, 1000, 432.8, 30, 60, 300, 30]
+                assert [fire.decay_time for fire in case.fires] == expected_decay_times  # Editor owns a copy.
 
                 for edit in (tab.decay_time_edit, tab.spray_density_edit):
                     original_text = edit.text()
@@ -2434,15 +2428,6 @@ def check_fire_suppression_parameters():
                         raise AssertionError(f"Invalid {name} was accepted")
                 setattr(case.fires[0], name, default)
 
-            for invalid in (-1, float("inf"), float("nan")):
-                case.fires[0].e_coefficient = invalid
-                try:
-                    validate_case(case)
-                except ValueError as exc:
-                    assert "E_COEFFICIENT" in str(exc)
-                else:
-                    raise AssertionError("Invalid E_COEFFICIENT was accepted")
-            case.fires[0].e_coefficient = 1
             write_cfast_input(case, path)
             assert read_cfast_input(path).fires == case.fires
     finally:

@@ -25,7 +25,6 @@ MASS_LOSS = "mass_loss"
 DENSITY = "density"
 HRR = "hrr"
 HOC = "hoc"
-E_COEFFICIENT = "e_coefficient"
 SPECIFIC_EXTINCTION = "specific_extinction"
 HOG = "hog"
 HEAT_FLUX = "heat_flux"
@@ -355,11 +354,6 @@ class UnitSystem:
             SPECIFIC_EXTINCTION: Conversion(
                 length.multiplier ** 2 / mass.multiplier, 0.0, f"{l_area}/{l_mass}",
             ),
-            E_COEFFICIENT: Conversion(
-                length.multiplier ** 2 / (mass.multiplier * time.multiplier),
-                0.0,
-                f"{l_area}/({l_mass} {l_time})",
-            ),
             HOG: Conversion(
                 energy.multiplier / mass.multiplier,
                 0.0,
@@ -526,11 +520,6 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
                 label = f"{power_label(length.label, 2)}/{mass.label}"
                 register_unit(lookup, label, Conversion(
                     length.multiplier ** 2 / mass.multiplier, 0.0, label))
-            if kind == E_COEFFICIENT:
-                for time in BASE_UNITS[TIME]:
-                    label = f"{power_label(length.label, 2)}/({mass.label} {time.label})"
-                    register_unit(lookup, label, Conversion(
-                        length.multiplier ** 2 / (mass.multiplier * time.multiplier), 0.0, label))
             if kind == DENSITY:
                 volume_label = power_label(length.label, 3)
                 register_unit(

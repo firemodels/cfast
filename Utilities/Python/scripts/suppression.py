@@ -84,7 +84,6 @@ def verify(case_path: Path):
         stride = max(1, round(2.0 / output_step))
         writer.writerows(zip(data["Time"][::stride], *(values[::stride] for values in expected.values())))
 
-    print(f"Suppression: all 8 fires passed; maximum normalized error {max(errors.values()):.6g}")
     return errors
 
 

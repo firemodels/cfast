@@ -1178,7 +1178,8 @@ continue
                 errormessage = '***Error in FIRE: DECAY_TIME must be nonnegative for '//trim(id)
                 call cfastexit('read_fire',9)
             end if
-            fireptr%evans_coefficient = decay_time*(1000._eb*spray_density)**1.8_eb
+            fireptr%decay_time = decay_time
+            fireptr%spray_density = 1000._eb*spray_density
             
             ! position
             if (convert_negative_distances) then

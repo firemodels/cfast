@@ -671,7 +671,8 @@ module initialization_routines
         fireinfo(1:mxfires)%chemistry_type = 2
         fireinfo(1:mxfires)%ignition_type = trigger_by_time
         fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
-        fireinfo(1:mxfires)%evans_coefficient = 3._eb
+        fireinfo(1:mxfires)%decay_time = 432.8_eb
+        fireinfo(1:mxfires)%spray_density = 0.06316_eb
         fireinfo(1:mxfires)%ignition_time = 0.0_eb
         fireinfo(1:mxfires)%ignited = .false.
         fireinfo(1:mxfires)%reported = .false.

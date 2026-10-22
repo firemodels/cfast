@@ -184,7 +184,7 @@ module fire_routines
         ! heat release rate is the smaller of rate at current time
         ! and rate at sprinkler activation time*exp( ...)
         dtectptr => detectorinfo(id)
-        tau = fireptr%evans_coefficient*dtectptr%spray_density**(-1.8_eb)
+        tau = fireptr%decay_time*(fireptr%spray_density/dtectptr%spray_density)**(1.8_eb)
         xxtimef = dtectptr%activation_time - fireptr%ignition_time
         call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,qt)
         call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtimef,1,qtf)

@@ -576,9 +576,9 @@ A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m 
 \end{equation}
 where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. After the sprinkler link temperature reaches the activation temperature, $t > t_{\rm act}$, the sprinkler will begin to suppress the fire by diminishing its heat release rate at the exponential rate described by \cite{Evans:1993}:
 \begin{equation}
-\dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
+\dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = \tau_0 \, \left( \frac{ u_{\rm w,0} }{u_{\rm w} } \right)^{1.8}  \quad ; \quad \tau_0 \, u_{\rm w,0}^{1.8} = 3
 \end{equation}
-where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
+where $u_{\rm w}$ is the sprinkler spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -589,31 +589,28 @@ where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure
 \label{sprinkler1}
 \end{figure}
 
-\subsection{Suppression by Accumulated Water}
-\label{verify:e_coefficient}
+\subsection{Suppression of Fires with Individual Decay Times}
+\label{verify:suppression}
 
-The case \ct{Sprinkler/e_coefficient.in} tests fire suppression by continuously accumulating sprinkler water. Each constant methane burner releases 36~kW over an area of 0.36~\unit{m^2}, corresponding to a 0.6~m square at 100~\unit{kW/m^2}.
+The case \ct{Sprinkler/suppression.in} tests sprinkler suppression with a separate decay time constant for each of eight 36~kW fires occupying three 10~m by 10~m by 4~m vented compartments. Four fires in Room A share the same chemistry and HRR time history but use specified \ct{DECAY_TIME} values of 30~s, 15~s, and 1000~s, or omit the parameter to use the default 432.8~s. Room A's sprinkler has a spray density of $10^{-4}$~\unit{m/s}, an RTI of 20~\unit{(m.s)\tothe{1/2}}, and a 30~\unit{\degreeCelsius} activation temperature. Room~B uses twice the sprinkler spray density and an RTI of 10~\unit{(m.s)\tothe{1/2}} with the same activation temperature. It contains a constant fire with a decay time of 30~s, a fire growing from 18~kW to 54~kW over 60~s with a decay time of 60~s, and a constant fire with a decay time of 300~s that ignites 15~s after sprinkler activation. Room C contains a constant fire with a decay time of 30~s but no sprinkler.
 
-Eight fires occupy three 10~m by 10~m by 4~m compartments, each vented to the outdoors. Four fires in Room A share the same chemistry and HRR table but use \ct{E_COEFFICIENT} values of 1, 2, and 0~\unit{m^2/(kg.s)}, or omit the parameter to select the original quenching-time model. Room A's sprinkler has a spray density of $10^{-4}$~\unit{m/s}, an RTI of 20~\unit{(m.s)\tothe{1/2}}, and a 30~\unit{\degreeCelsius} set point. Room B uses twice the spray density and an RTI of 10~\unit{(m.s)\tothe{1/2}} with the same set point. It contains a constant fire with coefficient 1, a fire growing from 18 to 54~kW over 60~s with coefficient 0.5, and a constant fire with coefficient 0.1 that ignites at 15~s, after sprinkler activation. Room C contains a constant fire with coefficient 1 and no sprinkler.
-
-For each fire using the new model, the expected rate is
+For an ignited fire after sprinkler activation, the expected HRR is
 \begin{equation}
- \dQ(t)=\dQ_0(t)\exp\left[-\frac{1}{2}\chi\rho_{\rm w}u_{\rm w}\max(0,t-t_{\rm act})^2\right],
- \qquad \rho_{\rm w}=1000\ \unit{kg/m^3}.
+ \dQ(t) = \dQ_0 (t_{\rm act}) \, \exp\left(-\frac{t-t_{\rm act}}{\tau}\right) \qquad \tau=\tau_0 \, \left(\frac{u_{\rm w,0}}{u_{\rm w}}\right)^{1.8}
 \end{equation}
-The growing fire tests evaluation of the current prescribed HRR, and the delayed fire tests water exposure before ignition. The explicit-zero and dry-room fires retain their prescribed HRR. The legacy fire follows $\dQ(t)=36\exp[-\max(0,t-t_{\rm act})/\tau]$~kW, with $\tau=3/(0.1)^{1.8}$~s. The existing startup filter for adiabatic compartments ramps rates over the first second.
+Here $\tau_0$ is the fire's \ct{DECAY_TIME}, $u_{\rm w,0}$ is its reference \ct{SPRAY_DENSITY}, and $u_{\rm w}$ is the activated sprinkler's \ct{SPRAY_DENSITY}. All fires use the default reference spray density, approximately $6.316\times10^{-5}$~\unit{m/s}. The growing fire tests decay from the HRR at sprinkler activation. The delayed fire tests ignition after sprinkler activation, with the constant prescribed HRR extended to the activation time. The 1000~s fire decays slowly; only the dry-room fire retains its prescribed HRR throughout the simulation. The default-parameter fire reproduces the original quenching-time correlation to the precision of the defaults. The existing startup filter for adiabatic compartments ramps rates over the first second.
 
-The simulation runs for 60~s. Figure~\ref{fig:e_coefficient} compares the calculated and analytical HRR histories for all eight fires, using each compartment's calculated sprinkler activation time. The expected fuel mass-loss rate is the HRR divided by the heat of combustion, 50~MJ/kg.
+The simulation runs for 60~s. Figure~\ref{fig:suppression} compares the calculated and analytical HRR histories for all eight fires, using each compartment's calculated sprinkler activation time.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/e_coefficient_room_a} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/e_coefficient_room_b} \\
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/e_coefficient_controls} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/e_coefficient_delayed}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/suppression_room_a} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/suppression_room_b} \\
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/suppression_controls} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/suppression_delayed}
 \end{tabular*}
-\caption[Accumulated-water suppression verification]{CFAST and analytical HRR histories for the eight fires in \ct{e_coefficient.in}.}
-\label{fig:e_coefficient}
+\caption[Decay-time suppression verification]{CFAST and analytical HRR histories for the eight fires in \ct{suppression.in}.}
+\label{fig:suppression}
 \end{figure}
 
 \section{Fire Ignition}

@@ -104,13 +104,14 @@ CFAST_NAMELIST_PARAMETERS: dict[str, set[str]] = {
     "TABL": {"ID", "LABELS", "DATA"},
     "FIRE": {
         "COMP_ID",
+        "DECAY_TIME",
         "DEVC_ID",
-        "E_COEFFICIENT",
         "FIRE_ID",
         "ID",
         "IGNITION_CRITERION",
         "LOCATION",
         "SETPOINT",
+        "SPRAY_DENSITY",
         "FYI",
     },
     "CHEM": {
@@ -1170,14 +1171,14 @@ def mechanical_vent_from_fields(fields: dict[str, list[Any]]) -> MechanicalVent:
 
 def fire_from_fields(fields: dict[str, list[Any]]) -> FireDefinition:
     location = number_vector(fields, "LOCATION", [2.5, 2.5], length=2)
-    e_coefficient = None
-    if "E_COEFFICIENT" in fields:
-        values = fields["E_COEFFICIENT"]
+    suppression = {}
+    for name, default in (("DECAY_TIME", 432.8), ("SPRAY_DENSITY", 6.316e-5)):
+        values = fields.get(name, [default])
         if (len(values) != 1 or isinstance(values[0], bool)
                 or not isinstance(values[0], (int, float))
-                or not math.isfinite(values[0]) or values[0] < 0):
-            raise ValueError("E_COEFFICIENT must be a finite, nonnegative number.")
-        e_coefficient = float(values[0])
+                or not math.isfinite(values[0]) or values[0] <= 0):
+            raise ValueError(f"{name} must be a finite, positive number.")
+        suppression[name.lower()] = float(values[0])
 
     return FireDefinition(
         id=required_string(fields, "ID", "fire ID"),
@@ -1189,7 +1190,7 @@ def fire_from_fields(fields: dict[str, list[Any]]) -> FireDefinition:
         x_position=location[0],
         y_position=location[1],
         fyi=string_field(fields, "FYI", ""),
-        e_coefficient=e_coefficient,
+        **suppression,
     )
 
 

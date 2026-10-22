@@ -12,7 +12,7 @@ Utilities/CI/Run_CFAST_Cases.sh --suite Validation -I intel -q batch
 Utilities/CI/Run_CFAST_Cases.sh --suite Verification --test-UI -q batch
 ```
 
-Use `-d` for debug, `-m 2` to stop after two iterations, `-s` to request stops, `-t` to report saved timings, `--case e_coefficient.in` to select a case, and `-v` to print job scripts without submitting them. `-e` selects an explicit executable. The `Verification/scripts/Run_CFAST_Cases.sh` and Validation counterpart forward to this shared runner.
+Use `-d` for debug, `-m 2` to stop after two iterations, `-s` to request stops, `-t` to report saved timings, `--case suppression.in` to select a case, and `-v` to print job scripts without submitting them. `-e` selects an explicit executable. The `Verification/scripts/Run_CFAST_Cases.sh` and Validation counterpart forward to this shared runner.
 
 Suite execution is local by default; specify `-q partition` to submit to Slurm. Cases run sequentially, write the same per-case logs and exit files, and stop the suite on the first failure. For example, from `Verification/scripts`, run `./Run_CFAST_Cases.sh -e ../../Build/CFAST/gnu_macos/cfast8_macos`, or use `-I gnu` to select the standard GNU build for your platform. Executable paths are resolved relative to the caller's working directory; executable names on `PATH` also work, but interactive shell aliases do not. The single-case launcher uses the same rule: local execution unless `-q partition` is supplied.
 

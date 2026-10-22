@@ -922,6 +922,7 @@ The gas temperature is estimated at the detector or sprinkler location. If the d
 
 \section{Optical Density}
 \label{Optical_Density}
+\label{Visibility}
 
 The optical density calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density per unit distance, $D_u$, is given by the expression:
 \be
@@ -946,33 +947,14 @@ Users are cautioned that both of these models are very crude and the uncertainty
 
 \section{Fire Suppression} \label{sec:suppression}
 
-Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the heat release rate is assumed to decrease exponentially:
+Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the pyrolysis rate and the corresponding heat release rate are assumed to decrease exponentially:
 \be
-   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
+   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = \tau_0 \, \left( \frac{u_{\rm w,0}}{u_{\rm w}} \right)^{1.8}
 \ee
-where $u_{\rm w}$ is the water spray density, expressed in units\footnote{Note the CFAST graphical interface might use other units, but the program does convert the user-specified value into \unit{mm/s}.} of \unit{mm/s}.  The product species mass production rates are reduced by the same amount as the heat release rate.
+where $\tau$ is referred to as the decay time constant, typically expressed in seconds, and $u_{\rm w}$ is the water spray density, expressed in units of volume per unit area per unit time, such as \unit{L/(min \, m^2)}, \unit{gal/(min \, ft^2)}, or the equivalent velocity\footnote{For consistency with past versions of CFAST, the specified \ct{SPRAY_DENSITY} is expressed in units of m/s in the text-based input file.} in units of mm/s or m/s. The parameters $\tau_0$ and $u_{\rm w,0}$ are emprically derived from a full-scale sprinkler suppression experiment in which the decay time constant is inferred for a specific object or commodity class subjected to a specific spray density. Past versions of CFAST pegged the value of $\tau_0 \, u_{\rm w,0}^{1.8}$ to 3 where  $\tau_0$ was expressed in seconds and $u_{\rm w,0}$ in mm/s. The more general approach retains the basic concept of Madrzykowski and Evans, but allows the end user to specify different suppression parameters for each fire. 
 
 There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers is noted, but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
 
-An alternative empirical model is selected for an individual fire by specifying \ct{E_COEFFICIENT} on its \ct{FIRE} namelist. This option replaces the quenching-time correlation for that fire. Let $\chi$ denote \ct{E_COEFFICIENT}, in \unit{m^2/(kg.s)}, and let $u_{\rm w}$ now denote the input spray density in \unit{m/s}. The accumulated delivered water mass per unit area is approximated by
-\begin{equation}
- m_{\rm w}''(t)=\rho_{\rm w}\int_{t_{\rm act}}^t u_{\rm w}(s)\,\mathrm{d}s,
- \qquad \rho_{\rm w}=1000\ \unit{kg/m^3}.
-\end{equation}
-The suppression rate is $k(t)=\chi m_{\rm w}''(t)$, with units of \unit{1/s}. The prescribed heat release and fuel mass-loss rates are multiplied by the same attenuation factor:
-\begin{equation}
- S(t)=\exp\left[-\int_{t_{\rm act}}^t k(s)\,\mathrm{d}s\right],
- \qquad \dQ(t)=\dQ_0(t)S(t),
- \qquad \dot m_{\rm f}(t)=\dot m_{{\rm f},0}(t)S(t).
-\end{equation}
-Here the subscript 0 denotes the prescribed value at the current time relative to fire ignition. The baseline is not frozen at sprinkler activation. For the constant spray density used by CFAST, with $\Delta t=\max(0,t-t_{\rm act})$, the integrals give
-\begin{equation}
- S(t)=\exp\left[-\frac{1}{2}\chi\rho_{\rm w}u_{\rm w}(\Delta t)^2\right].
- \label{eq:e_coefficient}
-\end{equation}
-The exponent is dimensionless. CFAST evaluates this expression analytically, so the water exposure does not depend on the number of solver residual evaluations. Subsequent combustion and oxygen-limitation calculations still apply.
-
-This formulation follows the FDS empirical burning-rate reduction model, using accumulated delivered water in place of FDS's calculated water mass on the fuel surface. The approximation assumes continuous delivery after activation and neglects evaporation, runoff, and spatial variation of the spray. Wetting starts at sprinkler activation, including for a fire that ignites later. The same first activated sprinkler in the compartment supplies the spray density for all fires there; each fire can have its own $\chi$. Additional sprinklers are not summed. Omitting \ct{E_COEFFICIENT} retains the original model, explicitly setting it to zero disables sprinkler attenuation for that fire, and negative values are invalid. The coefficient must be obtained experimentally for the fuel and application.
 
 \section{Tenability} \label{sec:Tenability}
 

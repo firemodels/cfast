@@ -141,7 +141,7 @@ module fire_routines
     real(eb), intent(out) :: mdot_t, area_t, height_t, qdot_t, hoc_t, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming 
     real(eb), intent(out) :: y_soot_smolder, y_co, y_hcn, y_trace
 
-    real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max, wet_time
+    real(eb) :: xxtime, tau, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: id, ifact
     
     type(room_type), pointer :: roomptr
@@ -178,25 +178,17 @@ module fire_routines
     if (id==0) then
         ! if a sprinkler is not active then interpolate at current time
         ifact = 0
-    else if (fireptr%e_coefficient>=0._eb) then
-        dtectptr => detectorinfo(id)
-        wet_time = max(0._eb,tsec-dtectptr%activation_time)
-        ! Stored spray density is mm/s, numerically kg/(m2 s) for water at 1000 kg/m3.
-        ! Integrate delivered water mass and then its suppression rate analytically.
-        ! Keep xxtime at the current fire age, including for growing or delayed fires.
-        tfact = exp(-0.5_eb*fireptr%e_coefficient*dtectptr%spray_density*wet_time**2)
-        ifact = 1
     else
         ! if a sprinkler is active then interpolate at current time
         ! and when sprinkler first activated.  make sure that specified
         ! heat release rate is the smaller of rate at current time
         ! and rate at sprinkler activation time*exp( ...)
         dtectptr => detectorinfo(id)
-        tdrate = dtectptr%tau
+        tau = fireptr%decay_time*(fireptr%spray_density/dtectptr%spray_density)**(1.8_eb)
         xxtimef = dtectptr%activation_time - fireptr%ignition_time
         call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,qt)
         call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtimef,1,qtf)
-        tfact = exp(-(xxtime-xxtimef)/tdrate)
+        tfact = exp(-(xxtime-xxtimef)/tau)
         if (qt<tfact*qtf) then
             ! current time HRR is smaller than sprinklerd value
             ! so use current HRR and reset ifact to 0 so future HRRs are not throttled

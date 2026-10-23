@@ -18,6 +18,7 @@ SMOKE = "smoke"
 
 AREA = "area"
 VELOCITY = "velocity"
+SPRAY_DENSITY = "spray_density"
 FLOWRATE = "flowrate"
 FLOW_COEFFICIENT = "flow_coefficient"
 RTI = "rti"
@@ -33,7 +34,7 @@ CONVECTION_COEFFICIENT = "convection_coefficient"
 SPECIFIC_HEAT = "specific_heat"
 
 
-BASE_UNIT_KEYS = (LENGTH, MASS, TIME, TEMPERATURE, PRESSURE, ENERGY, SMOKE)
+BASE_UNIT_KEYS = (LENGTH, MASS, TIME, TEMPERATURE, PRESSURE, ENERGY, SMOKE, SPRAY_DENSITY)
 
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
 _SUPERSCRIPT_TO_DIGIT = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
@@ -111,6 +112,16 @@ BASE_UNITS: dict[str, list[BaseUnit]] = {
         BaseUnit("%/m", 1.0),
         BaseUnit("%/ft", 0.3048),
     ],
+    # Volume flow per area, stored as m/s independently of length/time choices.
+    SPRAY_DENSITY: [
+        BaseUnit("m/s", 1.0),
+        BaseUnit("mm/s", 0.001),
+        BaseUnit("mm/min", 0.001 / 60.0),
+        BaseUnit("L/min/m²", 0.001 / 60.0),
+        BaseUnit("L/s/m²", 0.001),
+        BaseUnit("US gal/min/ft²", 0.003785411784 / (60.0 * 0.3048 ** 2)),
+        BaseUnit("ft/s", 0.3048),
+    ],
 }
 
 _BASE_UNIT_ALIASES = {
@@ -126,6 +137,9 @@ _BASE_UNIT_ALIASES = {
     "K": ["Kelvin"],
     "R": ["Rankine"],
     "BTU": ["Btu", "btu"],
+    "L/min/m²": ["L/(min m²)"],
+    "L/s/m²": ["L/(s m²)"],
+    "US gal/min/ft²": ["gal/min/ft²", "gal/(min ft²)", "US gal/(min ft²)", "gpm/ft²"],
 }
 _EXPLICIT_UNIT_LOOKUP_CACHE: dict[str, dict[str, Conversion]] = {}
 
@@ -255,6 +269,7 @@ class UnitSystem:
         pressure = BASE_UNITS[PRESSURE][self.selected[PRESSURE]]
         energy = BASE_UNITS[ENERGY][self.selected[ENERGY]]
         smoke = BASE_UNITS[SMOKE][self.selected[SMOKE]]
+        spray_density = BASE_UNITS[SPRAY_DENSITY][self.selected[SPRAY_DENSITY]]
 
         l_length = length.label
         l_mass = mass.label
@@ -312,6 +327,7 @@ class UnitSystem:
             ),
             LENGTH: Conversion(length.multiplier, 0.0, l_length),
             SMOKE: Conversion(smoke.multiplier, 0.0, l_smoke, smoke=True),
+            SPRAY_DENSITY: Conversion(spray_density.multiplier, 0.0, spray_density.label),
             AREA: Conversion(length.multiplier * length.multiplier, 0.0, l_area),
             VELOCITY: Conversion(
                 length.multiplier / time.multiplier,
@@ -445,6 +461,9 @@ def explicit_unit_lookup(kind: str) -> dict[str, Conversion]:
     lookup: dict[str, Conversion] = {}
 
     if kind in BASE_UNITS:
+        if kind == SPRAY_DENSITY:
+            # Continue accepting explicit velocity units supported before this selector.
+            lookup.update(explicit_unit_lookup(VELOCITY))
         for unit in BASE_UNITS[kind]:
             register_unit(
                 lookup,

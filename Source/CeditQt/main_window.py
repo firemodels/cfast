@@ -89,6 +89,7 @@ BASE_UNIT_NAMES = {
     "pressure": "Pressure",
     "energy": "Energy",
     "smoke": "Smoke",
+    "spray_density": "Spray Density",
 }
 CFAST_EXECUTABLE_CANDIDATES = (
     Path("bin/cfast"),
@@ -1744,11 +1745,11 @@ class EngineeringUnitsDialog(QDialog):
     PRESETS = {
         "SI": {
             "length": "m", "mass": "kg", "time": "s", "temperature": "°C",
-            "pressure": "Pa", "energy": "kJ", "smoke": "%/m",
+            "pressure": "Pa", "energy": "kJ", "smoke": "%/m", "spray_density": "m/s",
         },
         "English": {
             "length": "ft", "mass": "lbm", "time": "s", "temperature": "°F",
-            "pressure": "psia", "energy": "BTU", "smoke": "%/ft",
+            "pressure": "psia", "energy": "BTU", "smoke": "%/ft", "spray_density": "US gal/min/ft²",
         },
     }
 

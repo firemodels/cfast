@@ -1,0 +1,25 @@
+# requirements.txt for pip install
+
+# Mirrored from fds/.github/requirements.txt; keep package requirements synchronized.
+
+numpy<2
+matplotlib
+pandas
+scipy
+seaborn
+pygments
+ipython
+cantera
+pyfdstools
+bibtexautocomplete
+PySide6
+
+# added for bundle scripts
+pyinstaller
+dmgbuild
+pillow
+
+# Local utility packages (imports fdsplotlib)
+-e ../../fds/Utilities/Python
+
+

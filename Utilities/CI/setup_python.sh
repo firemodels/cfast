@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 # Prefer the sibling FDS environment; provision CFAST's environment only as a fallback.
 setup_cfast_python() {
-  local root=$1
+  local root=$1 entry inherited pythonpath
+  # Also sanitize paths when reusing FDS or an explicitly supplied interpreter.
+  pythonpath="$root/fds/Utilities/Python"
+  inherited="${PYTHONPATH:-}:"
+  while [[ $inherited == *:* ]]; do
+    entry=${inherited%%:*}
+    inherited=${inherited#*:}
+    case ${entry%/} in
+      ''|fds/Utilities/Python|*/fds/Utilities/Python) continue;;
+    esac
+    pythonpath="$pythonpath:$entry"
+  done
+  export PYTHONPATH=$pythonpath
   if [[ -n ${CFAST_CI_PYTHON:-} ]]; then
     # Explicitly supplied, already provisioned interpreter (also used for local tests).
     export CFAST_PYTHON=$CFAST_CI_PYTHON
@@ -13,7 +25,6 @@ setup_cfast_python() {
   fi
   echo "CFAST Python: $CFAST_PYTHON"
   export PATH="$(dirname "$CFAST_PYTHON"):$PATH"
-  export PYTHONPATH="$root/fds/Utilities/Python${PYTHONPATH:+:$PYTHONPATH}"
   export MPLCONFIGDIR="$root/cfast/.github/cfast_matplotlib"
   mkdir -p "$MPLCONFIGDIR" || return 1
   "$CFAST_PYTHON" -c 'import fdsplotlib, numpy, pandas, scipy, matplotlib, PySide6' || return 1

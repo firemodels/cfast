@@ -4,11 +4,23 @@
 # Existing environments are reused; changed requirements are installed in place.
 
 setup_cfast_python_env() {
-  local arg repo requirements venv
+  local arg repo requirements venv entry inherited pythonpath
   for arg in "$@"; do
     [[ $arg == --batchmode ]] || { echo "Unknown argument: $arg" >&2; return 1; }
   done
   repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || return 1
+  # Select this checkout before invoking Python or pip; keep unrelated libraries.
+  pythonpath="$(dirname "$repo")/fds/Utilities/Python"
+  inherited="${PYTHONPATH:-}:"
+  while [[ $inherited == *:* ]]; do
+    entry=${inherited%%:*}
+    inherited=${inherited#*:}
+    case ${entry%/} in
+      ''|fds/Utilities/Python|*/fds/Utilities/Python) continue;;
+    esac
+    pythonpath="$pythonpath:$entry"
+  done
+  export PYTHONPATH=$pythonpath
   requirements="$repo/.github/requirements.txt"
   venv="$repo/.github/cfast_python_env"
   [[ -f $requirements ]] || { echo "Missing Python requirements: $requirements" >&2; return 1; }
@@ -24,7 +36,6 @@ setup_cfast_python_env() {
     cp "$requirements" "$venv/cfast_requirements.txt" || return 1
   fi
   source "$venv/bin/activate" || return 1
-  export PYTHONPATH="$repo/../fds/Utilities/Python${PYTHONPATH:+:$PYTHONPATH}"
   "$venv/bin/python" -c 'import fdsplotlib, numpy, pandas, scipy, matplotlib, PySide6' || return 1
   echo "CFAST Python environment ready: $venv"
 }

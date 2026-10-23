@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [ValidateSet('intel', 'gnu')][string]$Compiler = 'intel',
-    [string]$Python = 'python',
+    [string]$Python = '',
     [string]$StateDirectory = $(if ($env:CFAST_CI_STATE_DIR) { $env:CFAST_CI_STATE_DIR } else { Join-Path $HOME '.cfastbot' }),
     [switch]$Help
 )
@@ -137,11 +137,19 @@ try {
     $fortran = if ($Compiler -eq 'intel') { 'ifx' } else { 'gfortran' }
     if (-not (Get-Command $fortran -CommandType Application -ErrorAction SilentlyContinue)) { throw "Missing prerequisite: $fortran" }
     if ($env:CFAST_CI_PYTHON) { $Python = $env:CFAST_CI_PYTHON }
+    if (-not $Python) {
+        $Python = Join-Path $root 'fds/.github/fds_python_env/Scripts/python.exe'
+        if (-not (Test-Path -LiteralPath $Python -PathType Leaf)) {
+            . (Join-Path $script:Repo 'Utilities/Python/setup_python_env.ps1') --batchmode
+            $Python = Join-Path $script:Repo '.github/cfast_python_env/Scripts/python.exe'
+        }
+    }
     $script:PythonExe = (Get-Command $Python -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+    Write-Host "CFAST Python: $script:PythonExe"
     $env:PYTHONPATH = (Join-Path $root 'fds/Utilities/Python') + [IO.Path]::PathSeparator + $env:PYTHONPATH
     $env:QT_QPA_PLATFORM = 'offscreen'
     $env:MPLBACKEND = 'Agg'
-    $env:MPLCONFIGDIR = Join-Path $state 'matplotlib'
+    $env:MPLCONFIGDIR = Join-Path $script:Repo '.github/cfast_matplotlib'
     New-Item -ItemType Directory -Path $env:MPLCONFIGDIR -Force | Out-Null
     Invoke-Stage 'python_check' $script:Repo $script:PythonExe @('-c', 'import fdsplotlib, numpy, pandas, scipy, matplotlib, PySide6')
 

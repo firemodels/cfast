@@ -1,24 +1,20 @@
 #!/usr/bin/env bash
-# Source with the repository collection root. Keep the environment outside checkouts.
+# Prefer the sibling FDS environment; provision CFAST's environment only as a fallback.
 setup_cfast_python() {
-  local root=$1 state=${CFAST_CI_STATE_DIR:-$HOME/.cfastbot} requirements venv
-  requirements="$root/fds/.github/requirements.txt"
-  venv="$state/python_env"
+  local root=$1
   if [[ -n ${CFAST_CI_PYTHON:-} ]]; then
     # Explicitly supplied, already provisioned interpreter (also used for local tests).
     export CFAST_PYTHON=$CFAST_CI_PYTHON
+  elif [[ -x $root/fds/.github/fds_python_env/bin/python ]]; then
+    export CFAST_PYTHON="$root/fds/.github/fds_python_env/bin/python"
   else
-    [[ -f $requirements ]] || { echo "Missing Python requirements: $requirements" >&2; return 1; }
-    [[ -x $venv/bin/python ]] || python3 -m venv "$venv" || return 1
-    if ! cmp -s "$requirements" "$venv/cfast_requirements.txt"; then
-      (cd "$root/fds/.github" && "$venv/bin/python" -m pip install -r requirements.txt) || return 1
-      cp "$requirements" "$venv/cfast_requirements.txt"
-    fi
-    export CFAST_PYTHON="$venv/bin/python"
+    source "$root/cfast/Utilities/Python/setup_python_env.sh" --batchmode || return 1
+    export CFAST_PYTHON="$root/cfast/.github/cfast_python_env/bin/python"
   fi
+  echo "CFAST Python: $CFAST_PYTHON"
   export PATH="$(dirname "$CFAST_PYTHON"):$PATH"
   export PYTHONPATH="$root/fds/Utilities/Python${PYTHONPATH:+:$PYTHONPATH}"
-  export MPLCONFIGDIR="$state/matplotlib"
-  mkdir -p "$MPLCONFIGDIR"
+  export MPLCONFIGDIR="$root/cfast/.github/cfast_matplotlib"
+  mkdir -p "$MPLCONFIGDIR" || return 1
   "$CFAST_PYTHON" -c 'import fdsplotlib, numpy, pandas, scipy, matplotlib, PySide6' || return 1
 }

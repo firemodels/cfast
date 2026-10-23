@@ -65,6 +65,8 @@ fort.3
 # Python bytecode
 __pycache__/
 *.py[cod]
+.github/cfast_python_env/
+.github/cfast_matplotlib/
 
 # CEditQt app build output
 Build/CeditQt/icons/

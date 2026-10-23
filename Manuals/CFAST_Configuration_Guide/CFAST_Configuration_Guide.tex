@@ -186,10 +186,15 @@ The current location of the CFAST repository is \href{https://github.com/firemod
 \item CFAST source code files
 \item CFAST documentation
 \item Input files for software testing, verification testing, and validation testing
-\item Experimental data files used for validation testing
 \item Scripts and post-processing utilities used for software testing
 \item Web pages and wikis containing notes and other information
 \end{enumerate}
+
+Additional repositories used by CFAST are located within the firemodels account  (\href{https://github.com/firemodels/}{\textct{https://github.com/firemodels/}}) on GitHub.
+\begin{tabbing}
+    smv  \hspace{0.5in} \= Smokeview source code, integration tests, and documentation \\
+    exp                \> Experimental data for model validation \\
+\end{tabbing}
 
 Each member of the CFAST development team has an account and password for access to the CFAST repository\footnote{Access to the CFAST repository requires two-factor identification.}. In addition, anonymous users can fork or clone the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a pull request. If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
 
@@ -216,11 +221,11 @@ Each of these official releases forms a baseline for any future development of t
 
 \section{Version Documentation}
 
-Each released version of CFAST is documented by four primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_8}, the User's Guide \cite{CFAST_Users_Guide_8}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and this Software Quality Assurance plan. The documents apply to a specific version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
+Each released version of CFAST is documented by four primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_8}, the User's Guide \cite{CFAST_Users_Guide_8}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and this Software Quality Assurance plan. The documents apply to a specific version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles of the model, and describes the limitations of the model. THe Verification and Validation Guide  provides a review of model verification and validation efforts by NIST and others. The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
 
 \chapter{Software Requirements Identification, Design, Implementation, and Testing}
 
-Changes are made to the CFAST source code daily, and tracked via revision control software. However, these daily changes do not constitute a change to the version number. After the developers determine that enough changes have been made to the source, they release a new minor upgrade, 7.0.0 to 7.0.1, for example. This happens every few weeks. A change from 7.0 to 7.1 might happen only once a year, when significant improvements have been made to the model physics or numerics.
+Changes are made to the CFAST source code daily, and tracked via revision control software. However, these daily changes do not constitute a change to the version number. After the developers determine that enough changes have been made to the source, they release a new minor upgrade, 7.0.0 to 7.0.1, for example. This might happen a few times a year. A change from 7.0 to 7.1 might happen only once a year, when significant improvements have been made to the model physics or numerics.
 
 \section{Software Requirements Identification}
 
@@ -249,7 +254,7 @@ NIST has developed an automated reporting and resolution tracking website for us
 
 \section{Software Change Implementation}
 
-Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations (also included here) is run with each significant upgrade.
+Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations is also run each night.
 
 \subsection{Creating a Change Request}
 
@@ -286,7 +291,7 @@ Individual tests of model algorithms are performed by the developers during any 
 
 The CFAST and Smokeview source codes undergo an automated build, verification, validation, and regression testing process, which is similar to a continuous integration system that automates the build/testing cycle for a project. This automated process is referred to as CFASTbot. The CFASTbot build/test process helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between CFAST revisions.
 
-The automated build/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
+The automated build/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the verification and validation suites set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
 
 Upon completion of the automated build/test process, the results of the build/test process are dispatched to the development team. In the event of a failure, the build/test process continues when possible, and the appropriate error logs are dispatched to the development team.  The automated build/test process consists of eight build stages, which are described in the following sections.
 
@@ -298,29 +303,33 @@ In the first stage, the newest version of the CFAST source code is retrieved fro
 
 CFAST is compiled with debugging flags enabled. This stage allows for errors in the source code to be identified and traced early in the build/test process. Any compiler warnings are logged at this time, and the build/test process continues after no major compilation errors are found.
 
-\subsection*{Stage 3: Run verification suite (or validation set) in debug mode}
+\subsection*{Stage 3: Run Run verification and validation suites in debug mode}
 
-All of the cases in the verification suite (or validation set) are invoked using the CFAST debug versions that were compiled in Stage~2. The verification (or validation) cases are run for at least one time step to ensure that the cases start without errors. After all of the cases run for at least one time step, the cases are stopped using a CFAST stop file. Then the CFAST output logs are checked for Fortran errors, numerical instabilities, missing verification case files, or other CFAST errors.
+All of the cases in the Run verification and validation suites are invoked using the CFAST debug versions that were compiled in Stage~2. The verification and validation cases are run for at least one time step to ensure that the cases start without errors. After all of the cases run for at least one time step, the cases are stopped using a CFAST stop file. Then the CFAST output logs are checked for Fortran errors, numerical instabilities, missing case files, or other CFAST errors.
 
 \subsection*{Stage 4: Compilation of CFAST release versions}
 
 The release version of CFAST is compiled. Any compiler warnings are logged at this time, and the build/test process continues after no major compilation errors are found.
 
-\subsection*{Stage 5: Run verification suite (or validation set) in release mode}
+\subsection*{Stage 5: Run verification and validation suites in release mode}
 
-All of the cases in the verification suite (or validation set) are invoked using the CFAST release versions that were compiled in Stage~4. After all of the cases run to completion, the CFAST output logs are checked for Fortran errors, numerical instabilities, missing verification case files, or other CFAST errors.
+All of the cases in the verification and validation suites are invoked using the CFAST release versions that were compiled in Stage~4. After all of the cases run to completion, the CFAST output logs are checked for Fortran errors, numerical instabilities, missing case files, or other CFAST errors.
 
-\subsection*{Stage 6: Compilation of Smokeview and scripted generation of figures}
+\subsection*{Stage 6: Test functionality of user interface}
+
+The basic functionality of the user interface is tested including the ability to open and run cases and the ability to access each of the major input functions the user interface supports.
+
+\subsection*{Stage 7: Compilation of Smokeview and scripted generation of figures}
 
 The Smokeview debug and release versions are compiled along with the Smokeview utilities (smokezip, smokediff, and background). Any compiler warnings are logged at this time, and the build/test process continues after no major compilation errors are found.
 
 Additionally, scripts in the CFAST and SMV verification suites are used to generate figures in Smokeview using automated Smokeview scripting commands. These figures are used in the CFAST and Smokeview Guides.
 
-\subsection*{Stage 7: Generation of verification and validation plots and regression statistics}
+\subsection*{Stage 8: Generation of verification and validation plots and regression statistics}
 
 Scripts in the CFAST verification and validation suites are used to generate plots, regression information, and timing statistics using the results from Stage~5. These plots, figures, and statistical information are used in the CFAST Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
 
-\subsection*{Stage 8: Compilation of CFAST Guides}
+\subsection*{Stage 9: Compilation of CFAST Guides}
 
 The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_8}, User's Guide \cite{CFAST_Users_Guide_8}, Verification and Validation Guide \cite{CFAST_Valid_Guide_8}, and this Software Quality Assurance Plan are compiled to ensure that all figures and equations can be compiled without any \LaTeX\ errors.
 

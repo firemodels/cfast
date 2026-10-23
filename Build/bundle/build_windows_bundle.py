@@ -300,8 +300,16 @@ def update_bundle_repos(args) -> None:
         return
 
     print("*** Re-starting Windows bundle script after repo updates", flush=True)
-    os.environ["CFAST_WINDOWS_BUNDLE_REEXECUTED"] = "1"
-    os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
+
+    env = os.environ.copy()
+    env["CFAST_WINDOWS_BUNDLE_REEXECUTED"] = "1"
+
+    result = subprocess.run(
+        [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]],
+        env=env,
+        check=False,
+    )
+    raise SystemExit(result.returncode)
 
 
 def fds_venv_python(venv_dir: Path) -> Path:

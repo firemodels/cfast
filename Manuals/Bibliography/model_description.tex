@@ -25,13 +25,13 @@ The U.S. Nuclear Regulatory Commission has published a verification and validati
 
 \section{Governing Equations and Assumptions}
 
-The governing equations of CFAST are for conservation of mass and energy within the lower and upper layers of connected compartments within a building. The momentum within any one zone is assumed to be zero.  Momentum between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law). Other features of CFAST include:
+The governing equations of CFAST are for conservation of mass and energy within the lower and upper layers of connected compartments within a building. The momentum within any one zone is assumed to be zero.  Momentum between zones in adjacent compartments is accounted for in terms of horizontal or vertical vent flow equations. Other features of CFAST include:
 \begin{itemize}
 \item Compartment geometry: CFAST is generally limited to fire scenarios where the compartment volumes are strongly stratified. The empirical correlations contained in CFAST were developed for relatively uncluttered, flat ceilings in compartments that can be characterized as ``rooms'' as opposed to corridors or vertical shafts. There are no hard limits on what kind of compartment can or cannot be modeled in CFAST. The CFAST Validation Guide indicates the accuracy of its predictions for compartments of various aspect ratios.
 \item Heat Release Rate: CFAST does not predict fire growth on burning objects. The heat release rate is specified by the user for one or more fires. There is a simple sub-model to limit the heat release based on available oxygen.
 \item Radiation from fires is modeled with a simple point source approximation.  This limits the accuracy of the model within a few diameters of the fire. Calculation of radiative exchange between compartments is not modeled.
 \item Mechanical ventilation is modeled by specifying volumetric flow rates into or out of compartments. The overall HVAC (heating, ventilation, air conditioning) system is not modeled.
-\item Natural Ventilation and Leakage: The flow through vertical openings, like doors and windows, is modeled using the Bernoulli equation for the pressure difference between two compartments. Horizontal openings, like hatches, are treated with a single empirical correlation based on pressure and density differences between upper and lower compartments. Leakage is modeled by explicitly creating a small vertical or horizontal opening.
+\item Natural Ventilation and Leakage: The flow through vertical openings, like doors and windows, is modeled using the Bernoulli equation for the pressure difference between two compartments. Horizontal openings, like hatches, are treated with a single empirical correlation based on pressure and density differences between the upper and lower compartments. Leakage (to the ambient) is modeled by explicitly creating a small vertical opening.
 \item Suppression: CFAST predicts sprinkler activation based on an empirical ceiling jet correlation and activation model. A simple suppression model decreases the specified heat release rate.
 \end{itemize}
 The technical approach and assumptions of the model have been presented in the peer-reviewed scientific literature~\cite{Jones:1993a, Jones:1985, Jones:1984} and conference proceedings~\cite{Jones:1991}. CFAST has been reviewed and included in industry-standard handbooks such as the SFPE Handbook~\cite{Walton:2003} and referenced in specific standards, including NFPA~805~\cite{NFPA805:2004} and NFPA~551~\cite{NFPA551:2004}.
@@ -59,7 +59,7 @@ All of the data required to run the CFAST model reside in a single input file th
 \item positions, sizes, and characteristics of targets
 \item specifications for visual output from the model
 \end{itemize}
-The input files are provided for the validation exercises described in the Validation Guide~\cite{CFAST_Valid_Guide_8}. A complete description of the input parameters can be found in the CFAST User's Guide~\cite{CFAST_Users_Guide_8}.
+The input files are provided for the verification and validation exercises described in the Validation Guide~\cite{CFAST_Valid_Guide_8}. A complete description of the input parameters can be found in the CFAST User's Guide~\cite{CFAST_Users_Guide_8}.
 
 A comprehensive assessment of the numerical parameters (such as default time step or solution convergence criteria) and physical parameters (such as empirical constants for convective heat transfer or plume entrainment) used in CFAST is not available in one document. Instead, specific parameters have been tested in various verification and validation studies performed at NIST and elsewhere. Numerical parameters are described in this Technical Reference Guide and are subject to the internal review process at NIST, but many physical parameters are extracted from the literature and do not undergo a formal review. The model user is expected to assess the appropriateness of default values provided by CFAST and make changes to the default values, if needed.
 
@@ -67,12 +67,12 @@ A comprehensive assessment of the numerical parameters (such as default time ste
 
 \section{Model Results}
 
-The outputs of CFAST are the sensible variables that are needed for assessing the environment in a building subjected to a fire. Once the simulation is complete, CFAST produces an output file containing all of the solution variables.  Typical outputs include (but are not limited to) the following:
+The outputs of CFAST are the sensible variables that are needed for assessing the environment in a building subjected to a fire. Once the simulation is complete, CFAST produces output files containing all of the solution variables.  Typical outputs include (but are not limited to) the following:
 \begin{itemize}
 \item environmental conditions in the room (such as hot gas layer temperature; plume centerline temperature; oxygen and smoke concentration; and ceiling, wall, and floor temperatures)
 \item heat transfer-related outputs to walls and targets (such as incident convective, radiative, and total heat fluxes)
 \item fire intensity and flame height
-\item flow velocities through vents and openings
+\item mass flow rates through vents and openings
 \item detector and sprinkler activation times
 \end{itemize}
 

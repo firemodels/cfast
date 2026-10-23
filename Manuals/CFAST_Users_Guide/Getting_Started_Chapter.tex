@@ -44,7 +44,7 @@ The input parameters are organized via tabs near the top of the CEdit window, as
 
 The View menu allows you to view or print the input data file, output file (if the simulation has been run and a text output file generated) and the log file of the simulation. If one of the items does not exist on the user's hard disk, the selection is grayed out.
 \begin{description}
-\item[Select Engineering Units] allows you to select the units for input and output. By default, most outputs are in S.I. units, with temperature in Celsius.
+\item[Select Engineering Units] allows you to select the units for input and output. By default, most outputs are in SI units, with temperature in Celsius. The independent \textbf{Spray Density} selection applies to the Fires and Detection/Suppression tabs; input files always store \ct{SPRAY_DENSITY} in m/s. A compatible unit suffix overrides the selected units for an individual entry, for example, \ct{12 L/min/m2}. Suffixes are case insensitive: \ct{GPM/ft2} and \ct{gpm/ft2} both denote US gallons per minute per square foot. Area exponents accept \ct{ft2}, \ct{ft**2}, or \ct{ft^2}, as well as the superscript form ft\textsuperscript{2}.
 \end{description}
 
 

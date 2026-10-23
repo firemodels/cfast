@@ -45,7 +45,7 @@ from units import (
     MASS_FRACTION,
     TEMPERATURE,
     TIME,
-    VELOCITY,
+    SPRAY_DENSITY,
     display_value,
     format_number,
     format_value,
@@ -531,7 +531,7 @@ class FiresTab(QWidget):
         suppression_group = QGroupBox("Suppression Parameters")
         suppression_layout = QGridLayout()
         self.decay_time_label = QLabel(f"Decay Time Constant ({unit_label(TIME)}):")
-        self.spray_density_label = QLabel(f"Spray Density ({unit_label(VELOCITY)}):")
+        self.spray_density_label = QLabel(f"Spray Density ({unit_label(SPRAY_DENSITY)}):")
         suppression_layout.addWidget(self.decay_time_label, 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         suppression_layout.addWidget(self.decay_time_edit, 0, 1)
         suppression_layout.addWidget(self.spray_density_label, 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
@@ -934,7 +934,7 @@ class FiresTab(QWidget):
 
         self.fire_id_edit.setText(fire.id)
         self.decay_time_edit.setText(format_value(TIME, fire.decay_time))
-        self.spray_density_edit.setText(format_value(VELOCITY, fire.spray_density))
+        self.spray_density_edit.setText(format_value(SPRAY_DENSITY, fire.spray_density))
         set_combo_text(self.compartment_combo, fire.comp_id)
         self.x_position_edit.setText(format_value(LENGTH, fire.x_position))
         self.y_position_edit.setText(format_value(LENGTH, fire.y_position))
@@ -1102,7 +1102,7 @@ class FiresTab(QWidget):
             return
 
         decay_time = parse_value(TIME, self.decay_time_edit.text(), "Decay Time Constant", 432.8)
-        spray_density = parse_value(VELOCITY, self.spray_density_edit.text(), "Spray Density", 6.316e-5)
+        spray_density = parse_value(SPRAY_DENSITY, self.spray_density_edit.text(), "Spray Density", 6.316e-5)
         if any(not math.isfinite(value) or value <= 0.0 for value in (decay_time, spray_density)):
             raise ValueError("Suppression parameters must be finite and positive.")
         fire.decay_time = decay_time
@@ -1329,7 +1329,7 @@ class FiresTab(QWidget):
     def refresh_unit_labels(self):
         self.ramp_table.setHorizontalHeaderLabels(ramp_headers())
         self.decay_time_label.setText(f"Decay Time Constant ({unit_label(TIME)}):")
-        self.spray_density_label.setText(f"Spray Density ({unit_label(VELOCITY)}):")
+        self.spray_density_label.setText(f"Spray Density ({unit_label(SPRAY_DENSITY)}):")
 
     def add_to_case(self, case: CfastCase):
         self.save_current_editor()

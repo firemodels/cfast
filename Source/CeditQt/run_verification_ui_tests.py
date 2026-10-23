@@ -1532,10 +1532,11 @@ def check_engineering_units_editor():
             for button, labels, position in (
                 (dialog.english_button,
                  {"length": "ft", "mass": "lbm", "time": "s", "temperature": "°F",
-                  "pressure": "psia", "energy": "BTU", "smoke": "%/ft"}, "7 ft"),
+                  "pressure": "psia", "energy": "BTU", "smoke": "%/ft",
+                  "spray_density": "US gal/min/ft²"}, "7 ft"),
                 (dialog.si_button,
                  {"length": "m", "mass": "kg", "time": "s", "temperature": "°C",
-                  "pressure": "Pa", "energy": "kJ", "smoke": "%/m"}, "2.1336 m"),
+                  "pressure": "Pa", "energy": "kJ", "smoke": "%/m", "spray_density": "m/s"}, "2.1336 m"),
             ):
                 button.click()
                 assert dialog.isVisible() and QApplication.activeModalWidget() is None
@@ -2341,10 +2342,81 @@ def check_constant_fire_rewrite(app: QApplication):
         assert reopened.fires == expected.fires
 
 
+def check_spray_density_units():
+    from PySide6.QtCore import QSettings
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from units import LENGTH, SPRAY_DENSITY, TIME, VELOCITY, UnitSystem, parse_value, unit_system
+
+    original_units = dict(unit_system.selected)
+    window = CeditMainWindow()
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-spray-units-") as directory:
+            window.settings = QSettings(str(Path(directory) / "units.ini"), QSettings.Format.IniFormat)
+            case = read_cfast_input(find_repo_root(Path(__file__)) / "Verification/Sprinkler/suppression.in")
+            window.load_case(case)
+            window.select_engineering_units()
+            dialog = window.engineering_units_dialog
+            combo = dialog.combos[SPRAY_DENSITY]
+            # Independently known values: 12 L/min/m² = 0.2 mm/s; 1 US gpm/ft² = 40.7458333333 mm/min.
+            for text, expected in (("12 L/min/m2", 0.0002), ("12 L/(min m^2)", 0.0002),
+                                   ("0.2 mm/s", 0.0002), ("12 mm/min", 0.0002),
+                                   ("0.2 L/s/m²", 0.0002), ("1 gal/min/ft2", 0.0006790972222222222),
+                                   ("1 gpm/ft²", 0.0006790972222222222), ("1 ft/min", 0.00508)):
+                assert math.isclose(parse_value(SPRAY_DENSITY, text, "Spray Density"), expected, rel_tol=1e-10), text
+            velocity = unit_system.label(VELOCITY)
+            for index in range(combo.count()):
+                combo.setCurrentIndex(index)
+                window.apply_engineering_units()
+                assert unit_system.label(SPRAY_DENSITY) == combo.currentText()
+                assert unit_system.label(VELOCITY) == velocity
+                saved = window.build_cfast_case()
+                assert math.isclose(saved.fires[0].spray_density, case.fires[0].spray_density, rel_tol=1e-8)
+                assert math.isclose(saved.detection_devices[0].spray_density,
+                                    case.detection_devices[0].spray_density, rel_tol=1e-8)
+                restored = UnitSystem()
+                restored.load_settings(window.settings)
+                assert restored.selected[SPRAY_DENSITY] == index
+
+            combo.setCurrentText("L/min/m²")
+            dialog.combos[LENGTH].setCurrentText("ft")
+            dialog.combos[TIME].setCurrentText("min")
+            window.apply_engineering_units()
+            assert unit_system.label(SPRAY_DENSITY) == "L/min/m²"
+            fires = window.fires_tab
+            devices = window.detection_suppression_tab
+            fires.select_fire(0)
+            devices.select_device(0)
+            assert "L/min/m²" in fires.spray_density_label.text()
+            assert "L/min/m²" in devices.summary_headers()[devices.COL_SPRAY_DENSITY]
+            fires.spray_density_edit.setText("12")
+            devices.spray_density_edit.setText("12")
+            saved = window.build_cfast_case()
+            assert math.isclose(saved.fires[0].spray_density, 0.0002)
+            assert math.isclose(saved.detection_devices[0].spray_density, 0.0002)
+            # The editable device table accepts the same explicit units as the detail editor.
+            devices.summary_table.item(0, devices.COL_SPRAY_DENSITY).setText("24 L/min/m2")
+            saved = window.build_cfast_case()
+            assert math.isclose(saved.detection_devices[0].spray_density, 0.0004)
+            path = Path(directory) / "spray.in"
+            write_cfast_input(saved, path)
+            reopened = read_cfast_input(path)
+            assert math.isclose(reopened.fires[0].spray_density, 0.0002)
+            assert math.isclose(reopened.detection_devices[0].spray_density, 0.0004)
+            dialog.select_preset("English")
+            assert unit_system.label(SPRAY_DENSITY) == "US gal/min/ft²"
+            dialog.select_preset("SI")
+            assert unit_system.label(SPRAY_DENSITY) == "m/s"
+    finally:
+        unit_system.set_indices(original_units)
+        window.close()
+        window.deleteLater()
+
+
 def check_fire_suppression_parameters():
     from cfast_reader import fire_from_fields, parse_namelists, read_cfast_input
     from cfast_writer import validate_case, write_cfast_input
-    from units import LENGTH, MASS, TIME, VELOCITY, format_value, unit_system
+    from units import LENGTH, MASS, TIME, SPRAY_DENSITY, format_value, unit_system
 
     root = find_repo_root(Path(__file__))
     case = read_cfast_input(root / "Verification/Sprinkler/suppression.in")
@@ -2376,7 +2448,7 @@ def check_fire_suppression_parameters():
                 assert tab.decay_time_edit.parentWidget().title() == "Suppression Parameters"
                 assert tab.spray_density_edit.parentWidget() is tab.decay_time_edit.parentWidget()
                 assert tab.decay_time_edit.text() == format_value(TIME, 30)
-                assert tab.spray_density_edit.text() == format_value(VELOCITY, 6.316e-5)
+                assert tab.spray_density_edit.text() == format_value(SPRAY_DENSITY, 6.316e-5)
                 tab.decay_time_edit.setText("2 min")
                 tab.spray_density_edit.setText("0.0002 m/s")
                 tab.select_fire(1)
@@ -2469,6 +2541,7 @@ def main() -> int:
         check_unused_fire_definitions()
         check_constant_fire_rewrite(app)
         check_fire_suppression_parameters()
+        check_spray_density_units()
         print("General editor checks passed", flush=True)
 
     if args.mode == "rewrite":

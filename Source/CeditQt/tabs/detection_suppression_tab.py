@@ -25,7 +25,7 @@ from units import (
     RTI,
     SMOKE,
     TEMPERATURE,
-    VELOCITY,
+    SPRAY_DENSITY,
     display_value,
     format_value,
     parse_value,
@@ -351,7 +351,7 @@ class DetectionSuppressionTab(QWidget):
             else format_activation_temperature(device.activation_temperature),
             format_value(RTI, device.rti)
             if device.device_type.upper() in {"SPRINKLER", "HEAT_DETECTOR"} else "",
-            format_value(VELOCITY, device.spray_density)
+            format_value(SPRAY_DENSITY, device.spray_density)
             if device.device_type.upper() == "SPRINKLER" else "",
         ]
 
@@ -492,7 +492,7 @@ class DetectionSuppressionTab(QWidget):
             format_value(SMOKE, device.activation_obscuration)
         )
         self.rti_edit.setText(format_value(RTI, device.rti))
-        self.spray_density_edit.setText(format_value(VELOCITY, device.spray_density))
+        self.spray_density_edit.setText(format_value(SPRAY_DENSITY, device.spray_density))
         self.fyi_edit.setText(device.fyi)
 
         self.loading_editor = False
@@ -628,7 +628,7 @@ class DetectionSuppressionTab(QWidget):
             )
         if device.device_type.upper() == "SPRINKLER":
             device.spray_density = parse_value(
-                VELOCITY, self.table_text(row, self.COL_SPRAY_DENSITY),
+                SPRAY_DENSITY, self.table_text(row, self.COL_SPRAY_DENSITY),
                 "Spray Density", device.spray_density,
             )
 
@@ -666,7 +666,7 @@ class DetectionSuppressionTab(QWidget):
             device.rti = parse_value(RTI, self.rti_edit.text(), "RTI", DetectionDevice.rti)
         if device.device_type == "SPRINKLER":
             device.spray_density = parse_value(
-                VELOCITY, self.spray_density_edit.text(), "Spray Density", 0.0,
+                SPRAY_DENSITY, self.spray_density_edit.text(), "Spray Density", 0.0,
             )
         device.fyi = self.fyi_edit.text().strip()
 
@@ -794,5 +794,5 @@ class DetectionSuppressionTab(QWidget):
             f"Z Position\n({length})",
             "Activation",
             f"RTI\n({unit_label(RTI)})",
-            f"Spray Density\n({unit_label(VELOCITY)})",
+            f"Spray Density\n({unit_label(SPRAY_DENSITY)})",
         ]

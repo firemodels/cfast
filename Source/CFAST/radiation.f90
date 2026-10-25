@@ -34,7 +34,7 @@ module radiation_routines
     real(eb), intent(out), dimension(mxrooms,2) :: flows_radiation
     real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), f_height, rabsorb(2)
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), f_height, rabsorb(2), vfrac
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     
@@ -88,9 +88,10 @@ module radiation_routines
         end if
         rabsorb(1) = roomptr%absorb(u)
         rabsorb(2) = roomptr%absorb(l)
+        vfrac = roomptr%volume(l)/(roomptr%volume(l)+roomptr%volume(u))
         call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
             qrfire,xrfire,yrfire,zrfire,nrmfire, &
-            qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
+            qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black,vfrac)
         do j = 1, nwal
             fluxes_radiation(i,j) = qflxw(map(j))
         end do
@@ -104,7 +105,7 @@ module radiation_routines
 ! --------------------------- rad4 -------------------------------------------
 
     subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay_arg,qfire,xfire,yfire,zfire,nfire,&
-       qflux,qlay,mxfires,taufl,taufu,firang,qout,black)
+       qflux,qlay,mxfires,taufl,taufu,firang,qout,black,vfrac)
 
     ! computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
     ! a point source fire, emitting absorbing gas layers (u and l) and heat emitting wall segments.
@@ -122,6 +123,7 @@ module radiation_routines
     !                  xfire: x coordinate of fire location [m]
     !                  yfire: y coordinate of fire location [m]
     !                  zfire: z coordinate of fire location [m]
+    !                  vfrac: volume fraction of lower layer
     !      output arguments: qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces
     !                        where i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
     !                        qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the
@@ -131,7 +133,7 @@ module radiation_routines
     integer, parameter :: u = 1, l = 2, mxroom = 100
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
 
-    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay_arg
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay_arg, vfrac
     real(eb), intent(in) :: qfire(*), xfire(*), yfire(*), zfire(*)
     real(eb), intent(out) :: taufl(mxfires,*), taufu(mxfires,*), firang(4,mxfires)
 
@@ -149,8 +151,8 @@ module radiation_routines
     ! this correction turns off radiation to the lower layer when the lower layer reaches minimum volume
     hlay = hlay_arg
     factor_l = 1.0_eb
-    if (radiation_fix == 1 .and. hlay_arg/zroom<=vminfrac) then
-      hlay = vminfrac/zroom
+    if (radiation_fix == 1 .and. vfrac<=vminfrac) then
+      hlay = vminfrac*zroom
       factor_l = 0.0_eb
     endif
     

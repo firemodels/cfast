@@ -129,13 +129,13 @@
     b = radix(x)
     select case (i)
     case (1)
-        d1mach = b**(minexponent(x)-1) ! the smallest positive magnitude.
+        d1mach = tiny(x)               ! the smallest positive number.
     case (2)
-        d1mach = huge(x)               ! the largest magnitude.
+        d1mach = huge(x)               ! the largest positive number.
     case (3)
-        d1mach = b**(-digits(x))       ! the smallest relative spacing.
+        d1mach = b**(-digits(x))       ! the relative spacing at 0.5.
     case (4)
-        d1mach = b**(1-digits(x))      ! the largest relative spacing.
+        d1mach = b**(1-digits(x))      ! relative spacing at 1.
     case (5)
         d1mach = log10(b)
     case default

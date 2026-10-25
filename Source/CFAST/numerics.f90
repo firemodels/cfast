@@ -4811,7 +4811,7 @@
         !if (incx-1) 5,20,60
         if (incx-1.LT.0) then
             goto 5
-        else if (incx.eq.0) then
+        else if (incx-1.eq.0) then
             goto 20
         else
             goto 60

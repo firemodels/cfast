@@ -1210,12 +1210,6 @@ module solve_routines
                 call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%volume(l),1,roomptr%depth(l))
                 roomptr%depth(u) = roomptr%cheight - roomptr%depth(l)
             end if
-            if(radiation_fix==1.and.roomptr%depth(l)<0.1_eb)then
-                roomptr%depth(l)  = 0.1_eb
-                roomptr%depth(u)  = roomptr%cheight - 0.1_eb
-                roomptr%volume(l) = 0.1_eb*roomptr%floor_area
-                roomptr%volume(u) = roomptr%cvolume - roomptr%volume(l)
-            endif
 
             roomptr%relp = y_vector(iroom)
             roomptr%absp = y_vector(iroom) + pressure_offset

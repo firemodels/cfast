@@ -282,7 +282,9 @@ module fire_routines
         y_soot, y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, molar_mass, species_mass, &
         x_fire_position, y_fire_position, z_fire_position, fire_area, entrainment_rate, plume_flow_rate, hrr, &
         species_mass_rate, hrr_c, hrr_r, hrr_lower, hrr_upper)
-    
+
+    use utility_routines, only: d1mach
+
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
                             y_co, y_hcn, y_trace
@@ -363,8 +365,9 @@ module fire_routines
             if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
             end if
-
             entrainment_rate = min(entrainment_rate,hrr_c/(max((t_upper-t_lower),1.0_eb)*cp))
+            ! set entrainment to zero if less than 10 * machine epsilon
+            if (entrainment_rate < 10._eb*d1mach(4)) entrainment_rate=0._EB
             plume_flow_rate = pyrolysis_rate + entrainment_rate
 
             ! now do the kinetics scheme

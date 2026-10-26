@@ -552,7 +552,7 @@ module fire_routines
     real(eb) :: factor
 
     ! now do the chemistry balance with supplied inputs.
-    nu_soot = molar_mass/0.01201_eb*y_soot
+    nu_soot = molar_mass/mw_c*y_soot
     nu_soot_flaming = molar_mass/mw_c*y_soot_flaming
     nu_soot_smolder = molar_mass/mw_c*y_soot_smolder
     nu_hcn = min(n_N,molar_mass/mw_hcn*y_hcn)

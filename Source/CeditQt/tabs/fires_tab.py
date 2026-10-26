@@ -415,6 +415,15 @@ class FiresTab(QWidget):
         self.nitrogen_edit = QLineEdit()
         self.chlorine_edit = QLineEdit()
         self.heat_of_combustion_edit = UnitLineEdit()
+        self.epumo2_edit = QLineEdit()
+        self.epumo2_edit.setReadOnly(True)
+        self.epumo2_edit.setStyleSheet("""QLineEdit {background-color: #e6e6e6; color: black;}""")
+        self.carbon_edit.textChanged.connect(self.update_epumo2)
+        self.oxygen_edit.textChanged.connect(self.update_epumo2)
+        self.nitrogen_edit.textChanged.connect(self.update_epumo2)
+        self.hydrogen_edit.textChanged.connect(self.update_epumo2)
+        self.chlorine_edit.textChanged.connect(self.update_epumo2)
+        self.heat_of_combustion_edit.textChanged.connect(self.update_epumo2)
         self.radiative_fraction_edit = UnitLineEdit()
 
         self.ramp_table = SpreadsheetTableWidget(8, 8)
@@ -435,6 +444,7 @@ class FiresTab(QWidget):
         self.load_demo_data()
         self.rebuild_summary_table()
         self.select_fire(0)
+        self.update_epumo2()
 
     def load_case(self, case: CfastCase):
         self.refresh_unit_labels()
@@ -444,6 +454,7 @@ class FiresTab(QWidget):
         self.update_target_choices()
         self.update_property_choices()
         self.rebuild_summary_table()
+        self.update_epumo2()
 
         if self.fires:
             self.select_fire(0)
@@ -563,7 +574,16 @@ class FiresTab(QWidget):
             0,
             alignment=Qt.AlignmentFlag.AlignRight,
         )
-        property_layout.addWidget(self.heat_of_combustion_edit, 4, 1, 1, 3)
+        property_layout.addWidget(self.heat_of_combustion_edit, 4, 1)
+
+        property_layout.addWidget(
+            QLabel("ΔH<sub>c,O₂</sub>"),
+            4,
+            2,
+            alignment=Qt.AlignmentFlag.AlignRight,
+            )
+        property_layout.addWidget(self.epumo2_edit, 4, 3)
+
         property_layout.addWidget(
             QLabel("Radiative Fraction:"),
             5,
@@ -1298,6 +1318,7 @@ class FiresTab(QWidget):
             QMessageBox.warning(self, "Insert Fires", str(exc))
             return
         self.add_imported_properties(selected)
+        self.update_epumo2()
 
     def add_imported_properties(self, properties: list[FireProperty]):
         def unique_id(name: str, used: set[str]) -> str:
@@ -1354,3 +1375,34 @@ class FiresTab(QWidget):
                 case.heat_of_combustion = first_property.heat_of_combustion
                 case.radiative_fraction = first_property.radiative_fraction
                 case.fire_ramp = list(first_property.ramp)
+
+    def update_epumo2(self):
+       mw_n = 14.0067
+       mw_o = 15.9994
+       mw_c = 12.0107
+       mw_h = 1.00794
+       mw_cl = 35.453
+       try:
+           carbon = parse_number(self.carbon_edit.text(), "C")
+           oxygen = parse_number(self.oxygen_edit.text(), "O")
+           nitrogen = parse_number(self.nitrogen_edit.text(), "N")
+           hydrogen = parse_number(self.hydrogen_edit.text(), "H")
+           chlorine = parse_number(self.chlorine_edit.text(), "Cl")
+           hoc = parse_value(
+               HOC,
+               self.heat_of_combustion_edit.text(),
+               "Heat of Combustion",
+           )
+           mw_f = nitrogen * mw_n + oxygen * mw_o + hydrogen * mw_h + carbon * mw_c + chlorine * mw_cl
+           nu_hcl = min(hydrogen,chlorine)
+           nu_h2o = max(0.0,0.5*(hydrogen - nu_hcl))
+           nu_co2 = max(0.0,carbon -  nu_hcl)
+           nu_o2 = 0.5 * (nu_h2o - oxygen) + nu_co2
+           if (nu_o2 <= 0):
+               self.epumo2_edit.clear()
+           else:
+               epumo2 = hoc * mw_f / (2*mw_o * nu_o2)
+               epumo2_display = display_value(HOC, epumo2)
+               self.epumo2_edit.setText(f"{epumo2_display:.0f} {unit_label(HOC)}")
+       except ValueError:
+           self.epumo2_edit.clear()

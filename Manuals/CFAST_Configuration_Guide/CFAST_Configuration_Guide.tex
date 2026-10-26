@@ -243,7 +243,7 @@ Given the mature state of the model and the small development team, the software
 \end{description}
 \item [2. Analyze, evaluate, and implement the change:] Algorithms for more complex changes are typically documented by revisions to the CFAST Technical Reference Guide and specific test cases to verify the correct operation of the model changes are included in the CFAST Verification and Validation Guide. Software implementation then follows the equations included in the Technical Reference Guide. Additional details of the process, tracking, and testing of changes are included in the sections below.
 \item [3. Review and approval of the change:] Before accepting any change into the repository, verification and validation tests are run to ensure desired results. All changes to the software and documentation are automatically tracked in the CFAST repository.
-\item [4. Verification and Validation:] A suite of simple verification calculations is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations is run each night. Any changes to the results are automatically flagged and emailed to developers for review. Additional details of the process are included in the sections below.
+\item [4. Verification and Validation:] A suite of simple verification calculations is run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations is run each night. Validation statistics are compared with a version-controlled baseline, and changes exceeding the tolerance described below are flagged and emailed to developers for review. Additional details of the process are included in the sections below.
 \item [5. Release of new versions:] NIST policy requires review and approval of technical reports (all the CFAST documentation) and software (the CFAST software released on the CFAST website). Additional details of the review process are included in the sections below.
 \end{description}
 
@@ -293,7 +293,7 @@ The CFAST and Smokeview source codes undergo an automated build, verification, v
 
 The automated build/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the verification and validation suites set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
 
-Upon completion of the automated build/test process, the results of the build/test process are dispatched to the development team. In the event of a failure, the build/test process continues when possible, and the appropriate error logs are dispatched to the development team.  The automated build/test process consists of eight build stages, which are described in the following sections.
+Upon completion of the automated build/test process, a single email report is dispatched to the development team. The report combines build results, validation statistics requiring attention, warnings, and errors. The subject identifies success, success with warnings, or failure. Warnings alone do not cause the build/test process to fail. The automated build/test process consists of the stages described in the following sections.
 
 \subsection*{Stage 1: Checkout of CFAST codebase}
 
@@ -328,6 +328,12 @@ Additionally, scripts in the CFAST and SMV verification suites are used to gener
 \subsection*{Stage 8: Generation of verification and validation plots and regression statistics}
 
 Scripts in the CFAST verification and validation suites are used to generate plots, regression information, and timing statistics using the results from Stage~5. These plots, figures, and statistical information are used in the CFAST Verification and Validation Guide \cite{CFAST_Valid_Guide_8}.
+
+Validation statistics are compared with the version-controlled baseline in \path{validation_scatterplot_output_baseline.csv}. CFASTbot compares each predicted quantity in \path{validation_scatterplot_output.csv} with this baseline using signed relative differences in model relative standard deviation, $\tilde{\sigma}_M$, and bias factor, $\delta$. Each relative difference is the current value minus the baseline value, divided by the magnitude of the baseline value. For bias, the relative difference is calculated from $\delta$ itself, rather than its distance from unity.
+
+Changes greater than 1\,\% in magnitude produce an \texttt{Error} and cause the build/test process to fail when $\tilde{\sigma}_M$ increases or $\delta$ moves farther from unity. Changes exceeding the same threshold that improve or preserve agreement produce a \texttt{Warning}. Changes of 1\,\% or less in either direction produce no threshold message. When validation statistics require attention, the comparison details are included in the single email report.
+
+Small deviations from a baseline may occur with code changes. As model improvements reduce scatter and bring bias closer to unity, the baseline may be updated to reflect the improved statistics. These reviewed updates establish progressively tighter reference values for subsequent changes, encouraging development of the model physics toward tighter validation statistics over time. Version control preserves the history of these baseline changes.
 
 \subsection*{Stage 9: Compilation of CFAST Guides}
 

@@ -1034,7 +1034,7 @@ module output_routines
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%id), io, fire_geometry(fireptr%modified_plume)
             write (iofilo,5030) roomptr%id, ftype(fireptr%chemistry_type), fireptr%flaming_transition_time, fireptr%x_position, &
-                fireptr%y_position, fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
+                fireptr%y_position, fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit, fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
             is = 103
@@ -1056,7 +1056,7 @@ module output_routines
      5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
           '   Time to Flaming      Position (x,y,z)     Relative    Lower O2    Radiative',/ &
           ,73x,'Humidity    Limit       Fraction',/110('-'))
-5030 format (a14,1x,a13,3x,f9.1,8x,3(f7.2),2x,f7.1,6x,f7.2,5x,f7.2//)
+5030 format (a14,1x,a13,3x,f9.1,8x,3(f7.2),2x,f7.1,6x,f7.3,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))

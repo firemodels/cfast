@@ -60,7 +60,7 @@ Keywords associated with global parameters are organized in the miscellaneous na
 \begin{description}
 \item[Adiabatic Compartment Surfaces] (default: False; namelist: \ct{ADIABATIC}) When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and material properties are ignored. This feature is useful when designing an experiment in which it is assumed that there is no heat transfer to the walls of the compartments.
 
-\item[Lower Oxygen Limit] (default: 15~\%; namelist: \ct{LOWER_OXYGEN_LIMIT}):  Oxygen volume fraction below which combustion is suppressed following a smooth transitional curve.
+\item[Lower Oxygen Limit] (default: 15~\%; namelist: \ct{LOWER_OXYGEN_LIMIT}):  Oxygen mass fraction below which combustion is suppressed following a smooth transitional curve.
 
 \item[Maximum Solver Iterations] (default: $-1$ (unlimited); namelist: \ct{MAX_ITERATION}) Maximum number of iterations for the equation solver.
 
@@ -395,6 +395,7 @@ If the simulation includes mechanical ventilation filtering, care should be take
 
 
 \chapter{Fires}
+
 A fire in CFAST is specified via a time-dependent heat release rate (HRR). The specified heat of combustion is used to calculate the mass loss rate of fuel, from which the production rate of combustion products can be calculated using specified product yields. The heat release and the corresponding product generation rates go to zero when the lower oxygen limit is reached, and are replaced by the appropriate production rate of unburned fuel gas which is transported from zone to zone until there is sufficient oxygen.
 
 The model can simulate multiple fires in one or more compartments. These fires are treated as totally separate entities, with no interaction of the plumes. These fires can be ignited at a prescribed time, or when a corresponding target (see Chapter~\ref{chapter:targets}) reaches a specified temperature or heat flux.

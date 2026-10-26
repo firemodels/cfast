@@ -86,7 +86,7 @@ class SimulationTab(QWidget):
         self.exterior_o2_mass_fraction_edit = UnitLineEdit(format_mass_fraction(0.23))
 
         self.adiabatic_checkbox = QCheckBox("Adiabatic Compartment Surfaces")
-        self.lower_oxygen_limit_edit = UnitLineEdit(format_mol_fraction(0.15))
+        self.lower_oxygen_limit_edit = UnitLineEdit(format_mass_fraction(0.15))
         self.max_iteration_edit = QLineEdit("-1")
         self.max_iteration_edit.setToolTip("Use -1 for unlimited solver iterations.")
         self.overwrite_checkbox = QCheckBox("Overwrite Existing Output Files")
@@ -158,7 +158,7 @@ class SimulationTab(QWidget):
             format_mass_fraction(case.exterior_o2_mass_fraction)
         )
         self.adiabatic_checkbox.setChecked(case.adiabatic_surfaces)
-        self.lower_oxygen_limit_edit.setText(format_mol_fraction(case.lower_oxygen_limit))
+        self.lower_oxygen_limit_edit.setText(format_mass_fraction(case.lower_oxygen_limit))
         self.max_iteration_edit.setText(str(case.max_iteration))
         self.overwrite_checkbox.setChecked(case.overwrite)
         self.set_extinction_value(self.flaming_extinction_edit, case.specific_extinction[0])
@@ -338,7 +338,7 @@ class SimulationTab(QWidget):
         except ValueError:
             return
 
-        self.lower_oxygen_limit_edit.setText(format_mol_fraction(value))
+        self.lower_oxygen_limit_edit.setText(format_mass_fraction(value))
 
     def normalize_o2_mass_fractions(self):
         for edit, field_name in (

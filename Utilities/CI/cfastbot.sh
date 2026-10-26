@@ -626,13 +626,22 @@ def read_statistics(path):
             rows[quantity] = row
         if not rows:
             raise ValueError(f'no statistics in {path}')
-        return rows
+        return list(reader.fieldnames), rows
 
 try:
-    baseline, current = map(read_statistics, sys.argv[1:])
+    _, baseline = read_statistics(sys.argv[1])
+    fieldnames, current = read_statistics(sys.argv[2])
 except (OSError, ValueError, csv.Error) as exc:
     print(f'Error: Cannot compare validation statistics: {exc}')
     sys.exit(1)
+
+metrics = ('Sigma_Model', 'Bias')
+difference_columns = [metric + '_Relative_Difference' for metric in metrics]
+# Match FDS CSV output, refreshing existing columns when the check is rerun.
+fieldnames += [column for column in difference_columns if column not in fieldnames]
+for row in current.values():
+    for column in difference_columns:
+        row[column] = ''
 
 failed = False
 for quantity in sorted(baseline.keys() | current.keys()):
@@ -640,7 +649,7 @@ for quantity in sorted(baseline.keys() | current.keys()):
         print(f'Error: {quantity}: missing from validation output or baseline.')
         failed = True
         continue
-    for metric in ('Sigma_Model', 'Bias'):
+    for metric, column in zip(metrics, difference_columns):
         try:
             value = Decimal(current[quantity][metric])
             reference = Decimal(baseline[quantity][metric])
@@ -654,6 +663,7 @@ for quantity in sorted(baseline.keys() | current.keys()):
             difference = Decimal(0) if value == 0 else Decimal('Infinity').copy_sign(value)
         else:
             difference = (value - reference) / abs(reference)
+        current[quantity][column] = f'{difference:.6f}'
         # Decimal preserves the strict boundary: exactly 1% is not a failure.
         if abs(difference) > Decimal('0.01'):
             current_error = value if metric == 'Sigma_Model' else abs(value - 1)
@@ -663,6 +673,11 @@ for quantity in sorted(baseline.keys() | current.keys()):
             severity = 'Error' if worse else 'Warning'
             print(f'{severity}: {quantity}: {metric} relative difference {difference:.2%} '
                   f'exceeds 1% in magnitude (current={value}, baseline={reference}).')
+
+with open(sys.argv[2], 'w', newline='') as stream:
+    writer = csv.DictWriter(stream, fieldnames=fieldnames, lineterminator='\n')
+    writer.writeheader()
+    writer.writerows(current.values())
 sys.exit(1 if failed else 0)
 PY
    comparison_status=$?
@@ -1144,8 +1159,10 @@ fi
   run_logged "$OUTPUT_DIR/stage5_run_python_validation" "$CFAST_PYTHON" CFAST_validation_script.py
 
   check_python_validation
-  check_validation_stats || exit 1
+  validation_stats_status=0
+  check_validation_stats || validation_stats_status=$?
   archive_validation_stats || exit 1
+  [[ $validation_stats_status == 0 ]] || exit 1
 
 ### Stage 6 ###
   echo Building CFAST Tech guide

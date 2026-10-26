@@ -606,7 +606,7 @@ check_validation_stats()
    BASELINE_STATS_FILE=$cfastrepo/Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Scatterplots/${STATS_FILE_BASENAME}_baseline.csv
    CURRENT_STATS_FILE=$cfastrepo/Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Scatterplots/${STATS_FILE_BASENAME}.csv
 
-   # Match FDS validation_git_stats.py: changes over 10% fail only when
+   # Use the FDS validation rules with a 1% CFAST tolerance: changes fail only when
    # Sigma_Model increases or Bias moves farther from one.
    "$CFAST_PYTHON" - "$BASELINE_STATS_FILE" "$CURRENT_STATS_FILE" > "$VALIDATION_STATS_LOG" 2>&1 <<'PY'
 import csv
@@ -654,15 +654,15 @@ for quantity in sorted(baseline.keys() | current.keys()):
             difference = Decimal(0) if value == 0 else Decimal('Infinity').copy_sign(value)
         else:
             difference = (value - reference) / abs(reference)
-        # Decimal preserves the strict boundary: exactly 10% is not a failure.
-        if abs(difference) > Decimal('0.10'):
+        # Decimal preserves the strict boundary: exactly 1% is not a failure.
+        if abs(difference) > Decimal('0.01'):
             current_error = value if metric == 'Sigma_Model' else abs(value - 1)
             baseline_error = reference if metric == 'Sigma_Model' else abs(reference - 1)
             worse = current_error > baseline_error
             failed |= worse
             severity = 'Error' if worse else 'Warning'
             print(f'{severity}: {quantity}: {metric} relative difference {difference:.2%} '
-                  f'exceeds 10% in magnitude (current={value}, baseline={reference}).')
+                  f'exceeds 1% in magnitude (current={value}, baseline={reference}).')
 sys.exit(1 if failed else 0)
 PY
    comparison_status=$?

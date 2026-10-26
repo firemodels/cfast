@@ -141,9 +141,8 @@ check_time_limit()
 
       if [ $ELAPSED_TIME -gt $TIME_LIMIT ]
       then
-         if [[ $platform != osx || -n $mailTo ]]; then
-            echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail $REPLYTO -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo &> /dev/null
-         fi
+         printf 'Warning: CFASTbot exceeded its %s-second time limit in Stage %s; the run continued.\n' \
+            "$TIME_LIMIT" "$TIME_LIMIT_STAGE" >> "$WARNING_LOG"
          TIME_LIMIT_EMAIL_NOTIFICATION="sent"
       fi
    fi
@@ -599,6 +598,7 @@ check_python_validation()
 
 check_validation_stats()
 {
+   local comparison_status diff_status
    cd "$cfastrepo/Utilities/Python" || exit 1
 
    STATS_FILE_BASENAME=validation_scatterplot_output
@@ -606,28 +606,85 @@ check_validation_stats()
    BASELINE_STATS_FILE=$cfastrepo/Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Scatterplots/${STATS_FILE_BASENAME}_baseline.csv
    CURRENT_STATS_FILE=$cfastrepo/Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Scatterplots/${STATS_FILE_BASENAME}.csv
 
-   if [ -e ${CURRENT_STATS_FILE} ]
-   then
-      if [[ `diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE})` == "" ]]
-      then
-         # Continue along
-         :
-      else
-         echo "Warnings from stage 5 - Python plotting and statistics (validation):" >> $VALIDATION_STATS_LOG
-         echo "-------------------------------" >> $VALIDATION_STATS_LOG
-         echo "Validation statistics are different from baseline statistics." >> $VALIDATION_STATS_LOG
-         echo "Baseline validation statistics vs. Revision ${GIT_REVISION}:" >> $VALIDATION_STATS_LOG
-         echo "-------------------------------" >> $VALIDATION_STATS_LOG
-         head -n 1 ${BASELINE_STATS_FILE} >> $VALIDATION_STATS_LOG
-         echo "" >> $VALIDATION_STATS_LOG
-         diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $VALIDATION_STATS_LOG
-         echo "" >> $VALIDATION_STATS_LOG
+   # Match FDS validation_git_stats.py: changes over 10% fail only when
+   # Sigma_Model increases or Bias moves farther from one.
+   "$CFAST_PYTHON" - "$BASELINE_STATS_FILE" "$CURRENT_STATS_FILE" > "$VALIDATION_STATS_LOG" 2>&1 <<'PY'
+import csv
+import sys
+from decimal import Decimal, InvalidOperation
+
+def read_statistics(path):
+    with open(path, newline='') as stream:
+        reader = csv.DictReader(stream)
+        if not {'Quantity', 'Sigma_Model', 'Bias'}.issubset(reader.fieldnames or []):
+            raise ValueError(f'missing statistics columns in {path}')
+        rows = {}
+        for row in reader:
+            quantity = row['Quantity']
+            if not quantity or quantity in rows:
+                raise ValueError(f'missing or duplicate quantity in {path}: {quantity}')
+            rows[quantity] = row
+        if not rows:
+            raise ValueError(f'no statistics in {path}')
+        return rows
+
+try:
+    baseline, current = map(read_statistics, sys.argv[1:])
+except (OSError, ValueError, csv.Error) as exc:
+    print(f'Error: Cannot compare validation statistics: {exc}')
+    sys.exit(1)
+
+failed = False
+for quantity in sorted(baseline.keys() | current.keys()):
+    if quantity not in baseline or quantity not in current:
+        print(f'Error: {quantity}: missing from validation output or baseline.')
+        failed = True
+        continue
+    for metric in ('Sigma_Model', 'Bias'):
+        try:
+            value = Decimal(current[quantity][metric])
+            reference = Decimal(baseline[quantity][metric])
+            if not value.is_finite() or not reference.is_finite():
+                raise ValueError('non-finite statistic')
+        except (KeyError, TypeError, ValueError, InvalidOperation):
+            print(f'Error: {quantity}: invalid {metric} in validation output or baseline.')
+            failed = True
+            continue
+        if reference == 0:
+            difference = Decimal(0) if value == 0 else Decimal('Infinity').copy_sign(value)
+        else:
+            difference = (value - reference) / abs(reference)
+        # Decimal preserves the strict boundary: exactly 10% is not a failure.
+        if abs(difference) > Decimal('0.10'):
+            current_error = value if metric == 'Sigma_Model' else abs(value - 1)
+            baseline_error = reference if metric == 'Sigma_Model' else abs(reference - 1)
+            worse = current_error > baseline_error
+            failed |= worse
+            severity = 'Error' if worse else 'Warning'
+            print(f'{severity}: {quantity}: {metric} relative difference {difference:.2%} '
+                  f'exceeds 10% in magnitude (current={value}, baseline={reference}).')
+sys.exit(1 if failed else 0)
+PY
+   comparison_status=$?
+   # Include the full diff only when a metric needs attention.
+   if [[ -s $VALIDATION_STATS_LOG && -f $BASELINE_STATS_FILE && -f $CURRENT_STATS_FILE ]]; then
+      diff -u --label baseline --label "Revision ${GIT_REVISION}" \
+         <(sed 's/"//g' "$BASELINE_STATS_FILE") <(sed 's/"//g' "$CURRENT_STATS_FILE") >> "$VALIDATION_STATS_LOG"
+      diff_status=$?
+      if [[ $diff_status -gt 1 ]]; then
+         echo "Error: Could not compare validation statistics." >> "$VALIDATION_STATS_LOG"
+         comparison_status=1
       fi
-   else
-      echo "Warnings from stage 5 - Python plotting and statistics (validation):" >> $WARNING_LOG
-      echo "Error: The validation statistics output file does not exist." >> $WARNING_LOG
-      echo "Expected the file /Manuals/CFAST_Validation_Guide/SCRIPT_FIGURES/Scatterplots/validation_scatterplot_output.csv" >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
+   fi
+   if [[ $comparison_status != 0 ]]; then
+      echo "Errors from Stage 5 - Validation statistics:" >> "$ERROR_LOG"
+      cat "$VALIDATION_STATS_LOG" >> "$ERROR_LOG"
+      return 1
+   fi
+   if [[ -s $VALIDATION_STATS_LOG ]]; then
+      echo "Warnings from Stage 5 - Validation statistics changed from baseline:" >> "$WARNING_LOG"
+      cat "$VALIDATION_STATS_LOG" >> "$WARNING_LOG"
+      echo "" >> "$WARNING_LOG"
    fi
    return 0
 }
@@ -801,10 +858,6 @@ email_build_status()
       echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
       return 1
    fi
-   if [[ -s $VALIDATION_STATS_LOG ]]; then
-      mail $REPLYTO -s "CFASTbot notice. Validation statistics have changed for Revision ${GIT_REVISION}." \
-         $mailTo < "$VALIDATION_STATS_LOG" >> "$OUTPUT_DIR/email.log" 2>&1 || return 1
-   fi
 }
 
 # Run reporting on every normal or failed pipeline exit, without running uploads
@@ -948,8 +1001,8 @@ GUIDES2GH=$cfastbotdir/guides2GH.sh
 #  ==============================================
 
 # This routine checks the elapsed time of CFASTbot.
-# If CFASTbot runs more than 3 hours, an email notification is sent.
-# This is a notification only and does not terminate CFASTbot.
+# If CFASTbot exceeds the time limit, record a warning for the final report.
+# This does not terminate CFASTbot.
 # This check runs during Stages 3 and 5.
 
 # Set time limit
@@ -1137,5 +1190,9 @@ if [[ ! -e $ERROR_LOG && ! -e $WARNING_LOG ]]; then
    echo cfastbot complete
    exit 0
 fi
-echo "CFAST CI failed; see $OUTPUT_DIR" >&2
-exit 1
+if [[ -s $ERROR_LOG ]]; then
+   echo "CFAST CI failed; see $OUTPUT_DIR" >&2
+   exit 1
+fi
+echo "CFAST CI completed with warnings; see $OUTPUT_DIR" >&2
+exit 0

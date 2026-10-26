@@ -475,7 +475,7 @@ The heat release rate remains constant after ignition, subject to the usual oxyg
 \item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
 \end{description}
 
-
+Once a fuel is defined, CEdit will compute the heat of combustion based on oxygen which is the energy released per unit mass of oxygen consumed. This value is computed assuming complete combustion of the fuel with any chlorine going to HCl. The result is displayed next to the heat of combustion with the label $\Delta \rm{H}_{\rm{c} , \rm{O}_2}$ (energy per unit mass of oxygen). For typical combustibles this value will be near 13,100~\unit{kJ/kg}~\cite{Huggett:1980}. This value, adjusted for the time-dependent soot, CO, and HCN yields, is used by CFAST when limiting combustion based on available oxygen during entrainment.
 
 \section{Time-Dependent Properties}
 \label{info:FIRE2}

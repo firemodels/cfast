@@ -545,22 +545,11 @@ module fire_routines
     real(eb), intent(in) :: source_o2, lower_o2_limit
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
 
-    real(eb) :: o2_entrained, o2_factor, o2_available
+    real(eb) :: o2_entrained, o2_factor, o2_available, o2f2
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl, nu_hcn, nu_n2, nu_soot_flaming, nu_soot_smolder
     real(eb) :: net_n2, net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_soot_flaming, &
         net_soot_smolder
     real(eb) :: factor
-
-    ! calculate the actual burning rate constrained by available o2.
-
-    ! note the scaling in the tanh function.  tanh approaches ~2 at about ~4. 
-    ! the function inside the tanh scales the ordinate to ~o2range.  
-    ! the remainder of the function scales the result to 0-1
-    o2_entrained = entrainment_rate*source_o2
-    o2_factor = tanhsmooth(source_o2, lower_o2_limit+0.01_eb, lower_o2_limit, 1.0_eb, 0.0_eb)
-    o2_available = o2_entrained*o2_factor
-    hrr_constrained = max(0.0_eb,min(pyrolysis_rate*hoc,o2_available*o2f))
-    pyrolysis_rate_constrained = hrr_constrained/hoc
 
     ! now do the chemistry balance with supplied inputs.
     nu_soot = molar_mass/0.01201_eb*y_soot
@@ -574,6 +563,18 @@ module fire_routines
     nu_o2 = nu_co2 + (nu_h2o + nu_co - n_O)/2.0_eb
     nu_n2 = (n_N - nu_hcn)/2.0_eb
 
+    ! calculate the actual burning rate constrained by available o2.
+
+    ! note the scaling in the tanh function.  tanh approaches ~2 at about ~4. 
+    ! the function inside the tanh scales the ordinate to ~o2range.  
+    ! the remainder of the function scales the result to 0-1
+    o2_entrained = entrainment_rate*source_o2
+    o2_factor = tanhsmooth(source_o2, lower_o2_limit+0.01_eb, lower_o2_limit, 1.0_eb, 0.0_eb)
+    o2_available = o2_entrained*o2_factor
+    o2f2 = hoc * molar_mass / (nu_o2*mw_o2)
+    hrr_constrained = max(0.0_eb,min(pyrolysis_rate*hoc,o2_available*o2f2))
+    pyrolysis_rate_constrained = hrr_constrained/hoc
+      
     ! chemistry balance is molar-based so convert back to mass rates. fuel and o2 are consumed,
     ! so negative. Others are produced, so positive
     net_fuel = -pyrolysis_rate_constrained

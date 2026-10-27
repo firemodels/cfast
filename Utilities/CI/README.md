@@ -18,6 +18,24 @@ Suite execution is local by default; specify `-q partition` to submit to Slurm. 
 
 The launcher uses Slurm for batch jobs and records a job manifest when `CFAST_JOB_MANIFEST` is set. Each completed case writes an `.exit` file. UI tests use separate `.ui.log`, `.ui.err`, `.ui.slog`, and `.ui.exit` files. The pipeline queries Slurm for the suite together and reports completed, running, pending, confirming, and failed counts. The summary updates when counts change and at least every 30 seconds while waiting; confirming means a job has left the queue and its completion record has not appeared yet. Individual case details are printed for failures. If a Slurm job has no `.exit` file, it checks `sacct` for the exact job ID and accepts only `COMPLETED` with exit code `0:0`. Accounting is retried briefly to allow for reporting delays. Failed jobs and jobs whose success cannot be confirmed stop the pipeline. UI jobs import and rewrite inputs; they do not run CFAST again.
 
+## CEditQt editor and units checks
+
+With `--test-UI`, every selected Verification/Validation case is imported and rewritten. General editor checks run once, in the first selected case of each suite; later cases use `--skip-editor-checks`. Failures in either the editor checks or a case rewrite fail that job and the CI stage. The first case's `.ui.log` reports individual editor checks and the units coverage summary.
+
+Run the same general checks directly, without CFAST or a suite copy:
+
+```bash
+python Source/CeditQt/run_verification_ui_tests.py --editor-checks-only
+```
+
+The general checks invoke `Verification/Units/check_ceditqt_units.py --ui`. That checker uses the three Units inputs and their expected-value CSV, independent numerical reference data for every supported quantity and dependent unit combination, and Qt checks across all editor tabs and custom dialogs. It exercises all selector choices, SI/English resets, mixed profiles, conditional setpoints, table displays, plots, import dialogs, run status, and input-file round trips. Inventory assertions require coverage updates when quantities, unit choices, custom dialogs, tabs, unit fields, or table columns are added. The tests use temporary inputs/settings and do not run simulations. Qt and Matplotlib must be installed; the runner selects the offscreen Qt backend.
+
+To run just the units checks:
+
+```bash
+python Verification/Units/check_ceditqt_units.py --ui
+```
+
 ## Run the complete pipeline on existing checkouts
 
 Run from `cfast/Utilities/CI` in the prepared repository collection:

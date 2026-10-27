@@ -29,7 +29,7 @@ units_vents_devices,target.Thermocouple.x_position,8.202099738,ft,1e-9
 units_vents_devices,target.Thermocouple.temperature_depth,0.1640419948,ft,1e-10
 units_vents_devices,device.Sprinkler.activation_temperature,154.9994,°F,1e-7
 units_vents_devices,device.Sprinkler.rti,30.3990663853,√(ft min),1e-8
-units_vents_devices,device.Sprinkler.spray_density,0.01377952756,ft/min,1e-11
+units_vents_devices,device.Sprinkler.spray_density,4.2,mm/min,1e-11
 units_vents_devices,device.Smoke.activation_obscuration,7.999999813,%/ft,1e-8
 units_fire,fire.Couch.setpoint,0.5,min,1e-9
 units_fire,fire.Couch.x_position,7.217847769,ft,1e-9

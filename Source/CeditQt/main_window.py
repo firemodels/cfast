@@ -642,6 +642,8 @@ class CeditMainWindow(QMainWindow):
         unit_system.set_indices(dialog.selected_indices())
         unit_system.save_settings(self.settings)
         self.load_case(case)
+        if self.run_monitor_dialog is not None:
+            self.run_monitor_dialog.refresh_units()
         self.simulation_tab.set_message("Engineering units updated.")
         self.statusBar().showMessage("No Errors")
 
@@ -1828,6 +1830,8 @@ class RunMonitorDialog(QDialog):
 
         self.simulation_time = simulation_time
         self.running = True
+        self.last_time_status_line = ""
+        self.last_summary_status_lines: list[str] = []
         self.setWindowTitle(f"Run Model ({case_name})")
         self.setWindowModality(Qt.WindowModality.NonModal)
         self.resize(980, 560)
@@ -1910,11 +1914,17 @@ class RunMonitorDialog(QDialog):
         self.update_time_fields(lines[0])
         self.update_summary_rows(lines[1:])
 
+    def refresh_units(self):
+        self.summary_table.setHorizontalHeaderLabels(self.summary_headers())
+        self.update_time_fields(self.last_time_status_line)
+        self.update_summary_rows(self.last_summary_status_lines)
+
     def update_time_fields(self, line: str):
         match = self.STATUS_RE.search(line)
         if match is None:
             return
 
+        self.last_time_status_line = line
         time = self.parse_status_number(match.group("time"))
         dt = self.parse_status_number(match.group("dt"))
         if self.simulation_time > 0:
@@ -1937,6 +1947,8 @@ class RunMonitorDialog(QDialog):
         if not rows:
             return
 
+        # Keep the last complete rows when a status update contains only time.
+        self.last_summary_status_lines = list(lines)
         self.summary_table.setRowCount(len(rows))
         for row_index, values in enumerate(rows):
             for col, value in enumerate(values):

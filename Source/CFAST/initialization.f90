@@ -219,8 +219,7 @@ module initialization_routines
             ventptr%soffit = roomptr%cheight*0.95
             area2 = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
             ventptr%width  = area2/area*leak_area/(ventptr%soffit-ventptr%sill)
-            ventptr%offset(1) = 0._eb
-            ventptr%offset(2) = 0._eb
+            ventptr%offset = 0._eb
             ventptr%face=1
             ventptr%opening_type = trigger_by_time
             ventptr%opening_initial_time = 0._eb
@@ -242,8 +241,7 @@ module initialization_routines
             ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
             area2 = roomptr%cwidth * roomptr%cdepth
             ventptr%soffit  = area2/area*leak_area/ventptr%width
-            ventptr%offset(1) = 0._eb
-            ventptr%offset(2) = 0._eb
+            ventptr%offset = 0._eb
             ventptr%face=1
             ventptr%opening_type = trigger_by_time
             ventptr%opening_initial_time = 0._eb
@@ -265,8 +263,7 @@ module initialization_routines
             area2 = roomptr%cwidth * roomptr%cdepth
             ventptr%soffit  = roomptr%cheight 
             ventptr%sill   = roomptr%cheight - area2/area*leak_area/ventptr%width
-            ventptr%offset(1) = 0._eb
-            ventptr%offset(2) = 0._eb
+            ventptr%offset = 0._eb
             ventptr%face=1
             ventptr%opening_type = trigger_by_time
             ventptr%opening_initial_time = 0._eb
@@ -289,8 +286,7 @@ module initialization_routines
                 ventptr%soffit = roomptr%cheight*0.95
                 area = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
                 ventptr%width  = area*roomptr%leak_area_ratios(1)/(ventptr%soffit-ventptr%sill)
-                ventptr%offset(1) = 0._eb
-                ventptr%offset(2) = 0._eb
+                ventptr%offset = 0._eb
                 ventptr%face=1
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_initial_time = 0._eb
@@ -315,8 +311,7 @@ module initialization_routines
                 ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
                 area = roomptr%cwidth * roomptr%cdepth
                 ventptr%soffit  = area*roomptr%leak_area_ratios(2)/ventptr%width
-                ventptr%offset(1) = 0._eb
-                ventptr%offset(2) = 0._eb
+                ventptr%offset = 0._eb
                 ventptr%face=1
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_initial_time = 0._eb
@@ -341,8 +336,7 @@ module initialization_routines
                 area = roomptr%cwidth * roomptr%cdepth
                 ventptr%soffit  = roomptr%cheight 
                 ventptr%sill   = roomptr%cheight - area*roomptr%leak_area_ratios(3)/ventptr%width
-                ventptr%offset(1) = 0._eb
-                ventptr%offset(2) = 0._eb
+                ventptr%offset = 0._eb
                 ventptr%face=1
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_initial_time = 0._eb

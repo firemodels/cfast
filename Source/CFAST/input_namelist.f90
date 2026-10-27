@@ -1569,7 +1569,8 @@ continue
 
     real(eb) :: area, bottom, flow, height, offset, setpoint, top, width, pre_fraction, post_fraction, &
         filter_time, filter_efficiency, flow_coefficient
-    real(eb), dimension(2) :: areas, cutoffs, heights, offsets
+    real(eb), dimension(2) :: areas, cutoffs, heights
+    real(eb), dimension(2,2) :: offsets
     real(eb), dimension(mxpts) :: t, f
     character(len=64),dimension(2) :: comp_ids, orientations
     character(len=64) :: criterion, devc_id, face, id, shape, type
@@ -1701,8 +1702,8 @@ continue
                 if (trim(face) == 'REAR') ventptr%face=3
                 if (trim(face) == 'LEFT') ventptr%face=4
 
-                ventptr%offset(1) = offset
-                ventptr%offset(2) = 0._eb
+                ventptr%offset(1,1) = offset
+                ventptr%offset(1,2) = 0._eb
 
                 call set_criterion
 
@@ -1765,8 +1766,7 @@ continue
                 ventptr%min_cutoff_relp = cutoffs(1)
                 ventptr%max_cutoff_relp = cutoffs(2)
 
-                ventptr%xoffset = offsets(1)
-                ventptr%yoffset = offsets(2)
+                ventptr%offset = offsets
 
                 if (trim(criterion) /= 'NULL') then
                     call set_criterion
@@ -1814,8 +1814,7 @@ continue
                     call cfastexit('read_vent',12)
                 end if
 
-                ventptr%xoffset = offsets(1)
-                ventptr%yoffset = offsets(2)
+                ventptr%offset = offsets
 
                 if (trim(criterion) /='NULL') then
                     call set_criterion 
@@ -1853,7 +1852,7 @@ continue
     heights(:)            = 0._eb
     id                    = 'NULL'
     offset                = 0._eb
-    offsets(:)            = 0._eb
+    offsets               = 0._eb
     orientations(:)       = 'VERTICAL'
     pre_fraction          = 1._eb
     post_fraction         = 1._eb

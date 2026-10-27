@@ -1762,11 +1762,14 @@ class EngineeringUnitsDialog(QDialog):
 
         layout = QFormLayout()
         presets_layout = QHBoxLayout()
-        self.si_button = QPushButton("SI")
-        self.english_button = QPushButton("English")
+        self.si_button = QPushButton("Reset to SI")
+        self.english_button = QPushButton("Reset to English")
         for name, button in (("SI", self.si_button), ("English", self.english_button)):
             button.setAutoDefault(False)
-            button.setToolTip("Apply " + ", ".join(self.PRESETS[name].values()))
+            button.setToolTip(
+                f"Reset all units to {name} defaults and apply immediately: "
+                + ", ".join(self.PRESETS[name].values())
+            )
             button.clicked.connect(lambda checked=False, preset=name: self.select_preset(preset))
             presets_layout.addWidget(button)
         layout.addRow(presets_layout)

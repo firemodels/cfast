@@ -171,7 +171,15 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Keep the temporary work directory after the run.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--editor-checks-only",
+        action="store_true",
+        help="Run all general editor and units checks without importing a suite or running CFAST.",
+    )
+    args = parser.parse_args()
+    if args.editor_checks_only and args.skip_editor_checks:
+        parser.error("--editor-checks-only cannot be combined with --skip-editor-checks")
+    return args
 
 
 def find_repo_root(start: Path) -> Path:
@@ -2516,33 +2524,53 @@ def main() -> int:
     app = QApplication.instance() or QApplication([])
     if not args.skip_editor_checks:
         print("Running general editor checks", flush=True)
-        check_verification_case_discovery()
-        check_compartment_header_palettes()
-        check_target_material_initialization()
-        check_target_temperature_depth()
-        check_target_material_validation()
-        check_material_id_length()
-        check_target_orientation()
-        check_adiabatic_target()
-        check_adiabatic_convection_coefficients()
-        check_mechanical_vent_defaults()
-        check_detection_device_parameters()
-        check_engineering_units_editor()
-        check_quantity_display_precision()
-        check_pound_mass_units()
-        check_units_start_in_si()
-        check_simulation_unit_display()
-        check_derived_unit_input_files()
-        check_surface_connections_removed()
-        check_unrecognized_namelists()
-        check_debug_output()
-        check_output_visualizations()
-        check_fire_import()
-        check_unused_fire_definitions()
-        check_constant_fire_rewrite(app)
-        check_fire_suppression_parameters()
-        check_spray_density_units()
+        editor_checks = (
+            check_verification_case_discovery,
+            check_compartment_header_palettes,
+            check_target_material_initialization,
+            check_target_temperature_depth,
+            check_target_material_validation,
+            check_material_id_length,
+            check_target_orientation,
+            check_adiabatic_target,
+            check_adiabatic_convection_coefficients,
+            check_mechanical_vent_defaults,
+            check_detection_device_parameters,
+            check_engineering_units_editor,
+            check_quantity_display_precision,
+            check_pound_mass_units,
+            check_units_start_in_si,
+            check_simulation_unit_display,
+            check_derived_unit_input_files,
+            check_surface_connections_removed,
+            check_unrecognized_namelists,
+            check_debug_output,
+            check_output_visualizations,
+            check_fire_import,
+            check_unused_fire_definitions,
+            check_constant_fire_rewrite,
+            check_fire_suppression_parameters,
+            check_spray_density_units,
+        )
+        for check in editor_checks:
+            start = time.monotonic()
+            print(f"  {check.__name__}", flush=True)
+            if check is check_constant_fire_rewrite:
+                check(app)
+            else:
+                check()
+            print(f"  PASS ({time.monotonic() - start:.2f}s)", flush=True)
+        # Runs once per suite via the same first-case gate as other editor checks.
+        # Keep the independent expected-value CSV and full Qt matrix in CI.
+        subprocess.run(
+            [sys.executable, str(repo_root / "Verification/Units/check_ceditqt_units.py"),
+             "--repo-root", str(repo_root), "--ui"],
+            check=True,
+        )
         print("General editor checks passed", flush=True)
+
+    if args.editor_checks_only:
+        return 0
 
     if args.mode == "rewrite":
         if args.work_dir is None:

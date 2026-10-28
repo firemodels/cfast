@@ -19,6 +19,6 @@ Here are some other useful links:
 
 [Full Downloads](https://github.com/firemodels/cfast/releases)
 
-[Smokeview Downloads](https://github.com/firemodels/smv/releases) .
+[Smokeview Downloads](https://github.com/firemodels/smv/releases).
 
 Pull requests welcome!

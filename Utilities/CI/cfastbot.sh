@@ -833,8 +833,7 @@ save_build_status()
 
 email_build_status()
 {
-   local label subject address reply_to=
-   local mail_options=()
+   local label subject
    stop_time=$(date)
    if [[ $platform == osx ]]; then
       IFORT_VERSION=$(gfortran --version 2>&1)
@@ -870,16 +869,7 @@ email_build_status()
       echo "Build report: $OUTPUT_DIR/email_body.txt"
       return 0
    fi
-   # Reply All should reach the team, not the host's undeliverable local sender.
-   for address in $mailTo; do
-      reply_to="${reply_to:+$reply_to,}$address"
-   done
-   mail_options=(-s "$subject")
-   if [[ $platform != osx ]]; then
-      mail_options+=(-S "replyto=$reply_to")
-   fi
-   # macOS mail reads REPLYTO from the environment; Linux mailx uses -S.
-   if ! REPLYTO="$reply_to" mail "${mail_options[@]}" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
+   if ! mail -S posix -S "reply-to=${mailTo// /,}" -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
       echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
       return 1
    fi

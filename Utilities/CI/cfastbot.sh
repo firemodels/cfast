@@ -869,7 +869,7 @@ email_build_status()
       echo "Build report: $OUTPUT_DIR/email_body.txt"
       return 0
    fi
-   if ! mail -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
+   if ! mail -S posix -S "reply-to=${mailTo// /,}" -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
       echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
       return 1
    fi

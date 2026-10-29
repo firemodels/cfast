@@ -596,7 +596,8 @@ def check_ui_matrix(repo_root):
                     (window.mechanical_vents_tab, case.mechanical_vents,
                      [(a, a, k) for a, k in (("from_area", "area"), ("to_area", "area"), ("from_height", "length"),
                       ("to_height", "length"), ("flow", "flowrate"), ("begin_dropoff", "pressure_difference"),
-                      ("zero_flow", "pressure_difference"), ("offset_x", "length"), ("offset_y", "length"), ("filter_time", "time"))],
+                      ("zero_flow", "pressure_difference"), ("from_offset_x", "length"), ("from_offset_y", "length"),
+                      ("to_offset_x", "length"), ("to_offset_y", "length"), ("filter_time", "time"))],
                      [(3, "from_area", "area"), (4, "from_height", "length"), (7, "to_area", "area"),
                       (8, "to_height", "length"), (10, "flow", "flowrate")], "schedule_table"),
                 ):

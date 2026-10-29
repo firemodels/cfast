@@ -824,7 +824,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"ORIENTATIONS = {cfast_string_vector((vent.from_orientation, vent.to_orientation))}",
                 f"FLOW = {cfast_number(vent.flow)}",
                 f"CUTOFFS = {cfast_vector((vent.begin_dropoff, vent.zero_flow))}",
-                f"OFFSETS = {cfast_vector((vent.offset_x, vent.offset_y))}",
+                f"OFFSETS = {cfast_vector((vent.from_offset_x, vent.from_offset_y, vent.to_offset_x, vent.to_offset_y))}",
                 f"FILTER_EFFICIENCY = {cfast_number(vent.filter_efficiency)}",
                 f"FILTER_TIME = {cfast_number(vent.filter_time)}",
             ]

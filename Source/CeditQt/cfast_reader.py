@@ -715,11 +715,54 @@ def parse_fields(body: str) -> dict[str, list[Any]]:
 
                 values.append(token.value)
 
-            fields.setdefault(key, []).extend(values)
+            if key.startswith("OFFSETS("):
+                apply_offset_section(fields, key, values)
+            elif key == "OFFSETS":
+                offsets = fields.setdefault(key, [])
+                offsets[:len(values)] = values
+            else:
+                fields.setdefault(key, []).extend(values)
         else:
             index += 1
 
     return fields
+
+
+def apply_offset_section(fields: dict[str, list[Any]], key: str, values: list[Any]) -> None:
+    """Expand current 2x2 sections or legacy one-dimensional coordinate pairs."""
+    subscripts = key[key.index("(") + 1:-1].split(",")
+    if len(subscripts) not in (1, 2):
+        raise ValueError("OFFSETS requires one legacy subscript or two array subscripts.")
+    indices = []
+    for subscript in subscripts:
+        parts = subscript.strip().split(":")
+        try:
+            if len(parts) == 1:
+                selected = [int(parts[0])]
+            elif len(parts) == 2:
+                first = int(parts[0]) if parts[0] else 1
+                last = int(parts[1]) if parts[1] else 2
+                selected = list(range(first, last + 1))
+            else:
+                raise ValueError
+        except ValueError:
+            raise ValueError(f"Invalid OFFSETS subscript in {key}.") from None
+        if not selected or any(index not in (1, 2) for index in selected):
+            raise ValueError(f"OFFSETS subscripts must be between 1 and 2: {key}.")
+        indices.append(selected)
+    if len(indices) == 1:
+        positions = [coordinate - 1 for coordinate in indices[0]]
+        length = 2
+    else:
+        positions = [(compartment - 1) * 2 + coordinate - 1
+                     for compartment in indices[1] for coordinate in indices[0]]
+        length = 4
+    if len(values) > len(positions):
+        raise ValueError(f"Too many values for {key}.")
+    offsets = fields.setdefault("OFFSETS", [])
+    offsets.extend([0.0] * (length - len(offsets)))
+    for position, value in zip(positions, values):
+        offsets[position] = value
 
 
 def namelist_field_texts(raw: str) -> list[tuple[str, str]]:
@@ -789,6 +832,12 @@ def tokenize(body: str) -> list[Token]:
 
         ident = _IDENT_RE.match(body, index)
         if ident is not None:
+            if ident.group(0).upper() == "OFFSETS":
+                section = re.match(r"\s*\([^)]*\)", body[ident.end():])
+                if section is not None:
+                    tokens.append(Token("IDENT", "OFFSETS" + section.group(0).strip()))
+                    index = ident.end() + section.end()
+                    continue
             tokens.append(Token("IDENT", ident.group(0)))
             index = ident.end()
             continue
@@ -1137,7 +1186,13 @@ def mechanical_vent_from_fields(fields: dict[str, list[Any]]) -> MechanicalVent:
     areas = number_vector(fields, "AREAS", [0.25, 0.25], length=2)
     heights = number_vector(fields, "HEIGHTS", [2.75, 2.75], length=2)
     cutoffs = number_vector(fields, "CUTOFFS", [200.0, 300.0], length=2)
-    offsets = number_vector(fields, "OFFSETS", [0.0, 0.0], length=2)
+    # Fortran array order: (x, y) for From, followed by (x, y) for To.
+    # Legacy two-value inputs used one coordinate pair for both compartments.
+    if len(fields.get("OFFSETS", [])) > 4:
+        raise ValueError("Mechanical vent OFFSETS accepts at most four values.")
+    offsets = number_vector(fields, "OFFSETS", [0.0] * 4, length=4)
+    if len(fields.get("OFFSETS", [])) == 2:
+        offsets[2:] = offsets[:2]
     orientations = string_vector(fields, "ORIENTATIONS", ["VERTICAL", "VERTICAL"])
     orientations = pad_strings(orientations, "VERTICAL", 2)
 
@@ -1154,8 +1209,10 @@ def mechanical_vent_from_fields(fields: dict[str, list[Any]]) -> MechanicalVent:
         flow=number_field(fields, "FLOW", 0.02),
         begin_dropoff=cutoffs[0],
         zero_flow=cutoffs[1],
-        offset_x=offsets[0],
-        offset_y=offsets[1],
+        from_offset_x=offsets[0],
+        from_offset_y=offsets[1],
+        to_offset_x=offsets[2],
+        to_offset_y=offsets[3],
         filter_efficiency=number_field(fields, "FILTER_EFFICIENCY", 0.0),
         filter_time=number_field(fields, "FILTER_TIME", 0.0),
         criterion=string_field(fields, "CRITERION", "TIME").upper(),

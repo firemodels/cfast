@@ -323,14 +323,12 @@
         vtype = ventptr%shape
     else if (venttype=='M') then
         ventptr => mventinfo(ivent)
-        if (ventptr%room1<=n_rooms) then
-            iroom1 =ventptr%room1
-            iroom2 = ventptr%room2
-            roomptr => roominfo(room_choice)
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
+        if (room_choice==1) then
+            roomptr => roominfo(iroom1)
         else
-            iroom1 = ventptr%room2
-            iroom2 = ventptr%room1
-            roomptr => roominfo(room_choice)
+            roomptr => roominfo(iroom2)
         end if
 
         vheight = ventptr%height(room_choice)

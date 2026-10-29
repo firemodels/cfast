@@ -406,10 +406,10 @@
                 ! There is a possibility that the mechanical vent is not attached to any surfaces.
                 ! If this is the case, the assocated vent area will be counted as opening area for any surfaces.
                 side = 0
-                if (ventptr%yoffset .eq. 0._eb) side = 1
-                if (ventptr%xoffset .eq. roomptr%cwidth) side = 2
-                if (ventptr%yoffset .eq. roomptr%cdepth) side = 3
-                if (ventptr%xoffset .eq. 0._eb) side = 4
+                if (ventptr%offset(2,1) .eq. 0._eb) side = 1
+                if (ventptr%offset(1,1) .eq. roomptr%cwidth) side = 2
+                if (ventptr%offset(2,1) .eq. roomptr%cdepth) side = 3
+                if (ventptr%offset(1,1) .eq. 0._eb) side = 4
 
                 if (side .ne. 0) then
                     if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then

@@ -32,9 +32,9 @@ module spreadsheet_header_routines
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
+    integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext+20*mxmvents
     character(len=35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, cTarg, LabelsShort(36), LabelUnits(36)
-    integer position, i, j, iv
+    integer position, i, j, iv, endpoint
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
 
@@ -150,34 +150,36 @@ module spreadsheet_header_routines
     iv = 0
     do j = 1, n_mvents
         ventptr => mventinfo(j)
-        iv = iv + 1
-        position = position + 1
-        call toIntString(iv,cVent)
-        headertext(1,position) = LabelUnits(30)
-        headertext(2,position) = trim(LabelsShort(30))//trim(cVent)
-        call smvDeviceTag(headertext(2,position))
-        position = position + 1
-        headertext(1,position) = LabelUnits(31) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(31))//trim(cVent)
-        call smvDeviceTag(headertext(2,position))
-        do i = 1,2
-            call toIntString(i,cSlab)
+        do endpoint = 1, 2
+            iv = iv + 1
             position = position + 1
-            headertext(1,position) = LabelUnits(32) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(32))//trim(cVent)//'_'//trim(cSlab)
+            call toIntString(iv,cVent)
+            headertext(1,position) = LabelUnits(30)
+            headertext(2,position) = trim(LabelsShort(30))//trim(cVent)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(33) ! slab flow
-            headertext(2,position) = trim(LabelsShort(33))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(31) ! number of slabs
+            headertext(2,position) = trim(LabelsShort(31))//trim(cVent)
             call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(34) ! slab bottom
-            headertext(2,position) = trim(LabelsShort(34))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(35) ! slab top
-            headertext(2,position) = trim(LabelsShort(35))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
+            do i = 1,2
+                call toIntString(i,cSlab)
+                position = position + 1
+                headertext(1,position) = LabelUnits(32) ! slab temperature
+                headertext(2,position) = trim(LabelsShort(32))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(33) ! slab flow
+                headertext(2,position) = trim(LabelsShort(33))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(34) ! slab bottom
+                headertext(2,position) = trim(LabelsShort(34))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(35) ! slab top
+                headertext(2,position) = trim(LabelsShort(35))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+            end do
         end do
     end do
     

@@ -204,8 +204,11 @@
     if (n_mvents/=0) then
         do i = 1, n_mvents
             write (iofilsmv,'(a)') "MVENTPOS"
-            call get_vent_info ("M", i, iroom1, iroom2, xyz, vtype)
+            call get_vent_info ("M", i, iroom1, iroom2, xyz, vtype, room_choice=1)
             write (iofilsmv,"(1x,i3,1x,6(e11.4,1x))") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            write (iofilsmv,'(a)') "MVENTPOS"
+            call get_vent_info ("M", i, iroom1, iroom2, xyz, vtype, room_choice=2)
+            write (iofilsmv,"(1x,i3,1x,6(e11.4,1x))") iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -246,11 +249,12 @@
 
     ! ---------------------------------- get_vent_info -------------------------------------------------
 
-    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vtype)
+    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vtype, room_choice)
 
     ! get the shape data for mechanical flow vent external connections
 
     character(len=1), intent(in) :: venttype
+    integer, intent(in), optional :: room_choice
     integer, intent(in) :: ivent
     integer, intent(out) :: iroom1, iroom2
     real(eb), intent(out) :: xyz(6)
@@ -266,11 +270,11 @@
         if (ventptr%room1<=n_rooms) then
             iroom1 =ventptr%room1
             iroom2 = ventptr%room2
-            voffset = ventptr%offset(1)
+            voffset = ventptr%offset(1,1)
         else
             iroom1 =ventptr%room2
             iroom2 = ventptr%room1
-            voffset = ventptr%offset(2)
+            voffset = ventptr%offset(2,1)
         end if
         roomptr => roominfo(iroom1)
         if (ventptr%face==face_front) then
@@ -312,49 +316,47 @@
             xyz(6) = roomptr%cheight
         end if
         varea = ventptr%area
-        xyz(1) = ventptr%xoffset - sqrt(varea)/2
-        xyz(2) = ventptr%xoffset + sqrt(varea)/2
-        xyz(3) = ventptr%yoffset - sqrt(varea)/2
-        xyz(4) = ventptr%yoffset + sqrt(varea)/2
+        xyz(1) = ventptr%offset(1,1) - sqrt(varea)/2
+        xyz(2) = ventptr%offset(1,1) + sqrt(varea)/2
+        xyz(3) = ventptr%offset(1,1) - sqrt(varea)/2
+        xyz(4) = ventptr%offset(1,1) + sqrt(varea)/2
         vtype = ventptr%shape
     else if (venttype=='M') then
         ventptr => mventinfo(ivent)
-        if (ventptr%room1<=n_rooms) then
-            iroom1 =ventptr%room1
-            iroom2 = ventptr%room2
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
+        if (room_choice==1) then
             roomptr => roominfo(iroom1)
         else
-            iroom1 = ventptr%room2
-            iroom2 = ventptr%room1
-            roomptr => roominfo(iroom1)
+            roomptr => roominfo(iroom2)
         end if
 
-        vheight = ventptr%height(1)
-        varea = ventptr%diffuser_area(1)
-        if (ventptr%orientation(1)==1) then
-            if (ventptr%xoffset==0.0_eb.or.ventptr%xoffset==roomptr%cwidth) then
-                xyz(1) = ventptr%xoffset
-                xyz(2) = ventptr%xoffset
-                xyz(3) = ventptr%yoffset - sqrt(varea)/2
-                xyz(4) = ventptr%yoffset + sqrt(varea)/2
-            else if (ventptr%yoffset==0.0_eb.or.ventptr%yoffset==roomptr%cdepth) then
-                xyz(1) = ventptr%xoffset - sqrt(varea)/2
-                xyz(2) = ventptr%xoffset + sqrt(varea)/2
-                xyz(3) = ventptr%yoffset
-                xyz(4) = ventptr%yoffset
+        vheight = ventptr%height(room_choice)
+        varea = ventptr%diffuser_area(room_choice)
+        if (ventptr%orientation(room_choice)==1) then
+            if (ventptr%offset(1,room_choice)==0.0_eb.or.ventptr%offset(1,room_choice)==roomptr%cwidth) then
+                xyz(1) = ventptr%offset(1,room_choice)
+                xyz(2) = ventptr%offset(1,room_choice)
+                xyz(3) = ventptr%offset(2,room_choice) - sqrt(varea)/2
+                xyz(4) = ventptr%offset(2,room_choice) + sqrt(varea)/2
+            else if (ventptr%offset(2,room_choice)==0.0_eb.or.ventptr%offset(2,room_choice)==roomptr%cdepth) then
+                xyz(1) = ventptr%offset(1,room_choice) - sqrt(varea)/2
+                xyz(2) = ventptr%offset(1,room_choice) + sqrt(varea)/2
+                xyz(3) = ventptr%offset(2,room_choice)
+                xyz(4) = ventptr%offset(2,room_choice)
             else
-                xyz(1) = ventptr%xoffset
-                xyz(2) = ventptr%xoffset
-                xyz(3) = ventptr%yoffset - sqrt(varea)/2
-                xyz(4) = ventptr%yoffset + sqrt(varea)/2
+                xyz(1) = ventptr%offset(1,room_choice)
+                xyz(2) = ventptr%offset(1,room_choice)
+                xyz(3) = ventptr%offset(2,room_choice) - sqrt(varea)/2
+                xyz(4) = ventptr%offset(2,room_choice) + sqrt(varea)/2
             end if
             xyz(5) = vheight - sqrt(varea)/2
             xyz(6) = vheight + sqrt(varea)/2
         else
-            xyz(1) = ventptr%xoffset - sqrt(varea)/2
-            xyz(2) = ventptr%xoffset + sqrt(varea)/2
-            xyz(3) = ventptr%yoffset - sqrt(varea)/2
-            xyz(4) = ventptr%yoffset + sqrt(varea)/2
+            xyz(1) = ventptr%offset(1,room_choice) - sqrt(varea)/2
+            xyz(2) = ventptr%offset(1,room_choice) + sqrt(varea)/2
+            xyz(3) = ventptr%offset(2,room_choice) - sqrt(varea)/2
+            xyz(4) = ventptr%offset(2,room_choice) + sqrt(varea)/2
             xyz(5) = vheight
             xyz(6) = vheight
         end if

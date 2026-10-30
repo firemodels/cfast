@@ -4,13 +4,21 @@
 
 
 
-\section{What is Model Validation?}
+\section{What is Model Verification and Validation?}
 
-Key to ensuring the quality of the software is ongoing validation testing of the model. Validation typically involves comparing model simulations with experimental measurements. To say that the Consolidated Model of Fire and Smoke Transport (CFAST) is ``validated'' means that the model has been shown to be of a given level of accuracy for a given range of parameters for a given type of fire scenario. Although the CFAST developers periodically perform validation studies, it is ultimately the end user of the model who decides if the model is adequate for the job at hand. Thus, this Guide does not and cannot be considered comprehensive for every possible modeling scenario.
+Key to ensuring the quality of the software is ongoing {\em verification} and {\em validation} testing of the model. A variety of organizations have defined these two terms. In general those definitions broadly agree with one another. Below are the definitions from ASTM~E1355~\cite{CFAST:ASTM:E1355}, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' which defines verification as
+\begin{quote}
+    The process of determining that the implementation of a calculation method accurately represents the developer's conceptual description of the calculation method and the solution to the calculation method.
+\end{quote}
+and defines validation as
+\begin{quote}
+    The process of determining the degree to which a calculation method is an accurate representation of the real world from the perspective of the intended uses of the calculation method.
+\end{quote}
+Simply put, verification is a check of the math. Does the model contain the features and capabilities discussed in the model documentation, and are the equations for those properly solved? Model verification consists of a broad range of activities, from checking the computer program itself, to comparing calculations to analytical (exact) solutions, to understanding the impact on model outputs from a range of different model inputs. Verification is documented in Chapter~\ref{Verification_Chapter}.
 
-Although there are various definitions of model validation, for example those contained in ASTM E1355~\cite{CFAST:ASTM:E1355}, most define it as the process of determining how well the mathematical model predicts the actual physical phenomena of interest. Validation typically involves (1) comparing model predictions with experimental measurements, (2) quantifying the differences in light of uncertainties in both the measurements and the model inputs, and (3) deciding if the model is appropriate for the given application. This Guide only does (1) and (2). Number (3) is the responsibility of the model user.
+Validation is a check of the physics. Do the selected equations and model assumptions result in predictions that reasonably predict reality? The definition of reasonable may vary depending on the specific usage of the model. Validation typically involves (1) comparing model predictions with experimental measurements, (2) quantifying the differences in light of uncertainties in both the measurements and the model inputs, and (3) deciding if the model is appropriate for the given application. This Guide only does (1) and (2). Number (3) is the responsibility of the model user. To say that the Consolidated Model of Fire and Smoke Transport (CFAST) is ``validated'' means that the model has been shown to be of a given level of accuracy for a given range of parameters for a given type of fire scenario. Although the CFAST developers periodically perform validation studies, it is ultimately the end user of the model who decides if the model is adequate for the job at hand. Thus, this Guide does not and cannot be considered comprehensive for every possible modeling scenario. CFAST validation documentation begins with a description of the validation experiments in Chapter~\ref{Experiment_Chapter} followed by chapters summarizing the results.
 
-The following sections discuss key issues that you must consider when deciding whether or not CFAST has been validated. It depends on (a) the scenarios of interest, (b) the predicted quantities, and (c) the desired level of accuracy. Keep in mind that CFAST can be used to model most any compartment fire scenario and predict quantities of interest, but the prediction may not be accurate because of limitations in the description of the fire physics, and also because of limited information about the fuels, geometry, and so on.
+Deciding whether or not CFAST has been validated depends on (a) the scenarios of interest, (b) the predicted quantities, and (c) the desired level of accuracy. Keep in mind that CFAST can be used to model most any compartment fire scenario and predict quantities of interest, but the prediction may not be accurate because of limitations in the description of the fire physics, and also because of limited information about the fuels, geometry, and so on.
 
 
 \section{Blind, Specified, and Open Validation Experiments}

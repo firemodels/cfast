@@ -1,21 +1,11 @@
 % !TEX root = CFAST_Validation_Guide.tex
 
 \chapter{Verification}
+\label{Verification_Chapter}
 
-The terms {\em verification} and {\em validation} are often used interchangeably to mean the process of checking the accuracy of a numerical model. For many, this entails comparing model predictions with experimental measurements. However, there is now a fairly broad-based consensus that comparing model and experiment is largely what is considered {\em validation}. So what is {\em verification}? ASTM~E1355~\cite{CFAST:ASTM:E1355}, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' defines verification as
-\begin{quote}
-The process of determining that the implementation of a calculation method accurately represents the developer's conceptual description of the calculation method and the solution to the calculation method.
-\end{quote}
-and it defines validation as
-\begin{quote}
-The process of determining the degree to which a calculation method is an accurate representation of the real world from the perspective of the intended uses of the calculation method.
-\end{quote}
-Simply put, verification is a check of the math; validation is a check of the physics. If the model predictions closely match the results of experiments, using whatever metric is appropriate, it is assumed by most that the model suitably describes, via its mathematical equations, what is happening. It is also assumed that the solution of these equations must be correct. So why do we need to perform model verification? Why not just skip to validation and be done with it? The reason is that rarely do model and measurement agree so well in all applications that anyone would just accept its results unquestionably. Because there is inevitably differences between model and experiment, we need to know if these differences are due to limitations or errors in the numerical solution, or the physical sub-models, or both.
-
-Whereas model validation consists mainly of comparing predictions with experimental measurements, as documented later in this guide, model verification consists of a much broader range of activities, from checking the computer program itself, to comparing calculations to analytical (exact) solutions, to understanding the impact on model outputs from a range of different model inputs.
+If validation shows the model predictions closely match the results of experiments, using whatever metric is appropriate, it is assumed by most that the model suitably describes, via its mathematical equations, what is happening. It is also assumed that the solution of these equations must be correct. So why do we need to perform model verification? Why not just skip to validation and be done with it? The reason is that rarely do model and measurement agree so well in all applications that anyone would just accept its results unquestionably. Because there is inevitably differences between model and experiment, we need to know if these differences are due to limitations or errors in the numerical solution, or the physical sub-models, or both.
 
 A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.  For each of the examples, an analytical solution is presented and compared to the results of a matching CFAST simulation.
-
 
 The Verification suite also runs the distribution examples, \ct{Large_Building.in} and \ct{Users_Guide_Example.in}, from \ct{Verification/Bundle_Examples}. These cases check that the bundled input files can be read and run successfully. The platform bundle scripts copy these same files into the distribution.
 

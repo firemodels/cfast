@@ -1292,20 +1292,20 @@ def check_mechanical_vent_defaults():
                 assert math.isclose(vent.from_height, height / 2.0)
                 assert math.isclose(vent.to_height, height / 2.0)
                 assert tab.to_height_edit.text() == format_value(LENGTH, height / 2.0)
-                assert math.isclose(vent.offset_x, 0.0)
-                assert math.isclose(vent.offset_y, depth / 2.0)
-                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
+                assert math.isclose(vent.from_offset_x, 0.0)
+                assert math.isclose(vent.from_offset_y, depth / 2.0)
+                assert tab.from_offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
                 tab.from_orientation_combo.setCurrentText("Horizontal")
                 tab.to_orientation_combo.setCurrentText("Horizontal")
-                assert tab.offset_x_edit.text() == format_value(LENGTH, width / 2.0)
-                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
+                assert tab.from_offset_x_edit.text() == format_value(LENGTH, width / 2.0)
+                assert tab.from_offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
                 # Editing the summary must apply the same defaults as the detail controls.
                 with QSignalBlocker(tab.summary_table):
                     item = tab.summary_table.item(0, 5)
                     item.setText("Vertical")
                 tab.summary_item_changed(item)
-                assert tab.offset_x_edit.text() == format_value(LENGTH, 0.0)
-                assert tab.offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
+                assert tab.from_offset_x_edit.text() == format_value(LENGTH, 0.0)
+                assert tab.from_offset_y_edit.text() == format_value(LENGTH, depth / 2.0)
                 window.update_live_validation()
                 assert window.statusBar().currentMessage() == "No Errors"
 
@@ -1319,23 +1319,25 @@ def check_mechanical_vent_defaults():
         window.tabs.setCurrentWidget(tab)
         tab.add_vent()
         assert math.isclose(tab.vents[-1].to_height, 0.8)
-        assert math.isclose(tab.vents[-1].offset_y, 1.2)
+        assert math.isclose(tab.vents[-1].from_offset_y, 1.2)
         tab.from_orientation_combo.setCurrentText("Horizontal")
         tab.to_orientation_combo.setCurrentText("Horizontal")
         with tempfile.TemporaryDirectory(prefix="cedit-centered-vent-") as directory:
             path = Path(directory) / "mechanical.in"
             write_cfast_input(window.build_cfast_case(), path)
             vent = read_cfast_input(path).mechanical_vents[0]
-            assert math.isclose(vent.offset_x, 3.0)
-            assert math.isclose(vent.offset_y, 1.2)
+            assert math.isclose(vent.from_offset_x, 3.0)
+            assert math.isclose(vent.from_offset_y, 1.2)
         window.update_live_validation()
         assert window.statusBar().currentMessage() == "No Errors"
 
         # Orientation changes, loading, duplicating, and writing preserve custom offsets.
         tab.from_height_edit.setText("0.6 m")
         tab.to_height_edit.setText("0.7 m")
-        tab.offset_x_edit.setText("0.3 m")
-        tab.offset_y_edit.setText("0.4 m")
+        tab.from_offset_x_edit.setText("0.3 m")
+        tab.from_offset_y_edit.setText("0.4 m")
+        tab.to_offset_x_edit.setText("0.5 m")
+        tab.to_offset_y_edit.setText("0.6 m")
         tab.store_current_vent()
         tab.from_orientation_combo.setCurrentText("Vertical")
         tab.to_orientation_combo.setCurrentText("Vertical")
@@ -1349,8 +1351,10 @@ def check_mechanical_vent_defaults():
             for vent in tab.vents:
                 assert math.isclose(vent.from_height, 0.6)
                 assert math.isclose(vent.to_height, 0.7)
-                assert math.isclose(vent.offset_x, 0.3)
-                assert math.isclose(vent.offset_y, 0.4)
+                assert math.isclose(vent.from_offset_x, 0.3)
+                assert math.isclose(vent.from_offset_y, 0.4)
+                assert math.isclose(vent.to_offset_x, 0.5)
+                assert math.isclose(vent.to_offset_y, 0.6)
         window.update_live_validation()
         assert window.statusBar().currentMessage() == "No Errors"
 
@@ -1359,6 +1363,103 @@ def check_mechanical_vent_defaults():
         tab.store_current_vent()
         window.update_live_validation()
         assert "diffuser extends" in window.statusBar().currentMessage()
+    finally:
+        unit_system.set_indices(original_units)
+        window.deleteLater()
+
+
+def check_mechanical_vent_offsets():
+    """Each end retains its own coordinates, including indexed namelist input."""
+    from cfast_case import Compartment
+    from cfast_reader import mechanical_vent_from_fields, parse_namelists, read_cfast_input
+    from cfast_writer import write_cfast_input
+    from main_window import opening_case
+    from units import LENGTH, format_value, unit_system
+
+    def read_vent(assignment):
+        record = parse_namelists(
+            "&VENT TYPE='MECHANICAL', ID='offset_test', COMP_IDS='A','B', "
+            + assignment + " /"
+        )[0]
+        return mechanical_vent_from_fields(record.fields)
+
+    def coordinates(vent):
+        return (vent.from_offset_x, vent.from_offset_y, vent.to_offset_x, vent.to_offset_y)
+
+    for assignment in (
+        "OFFSETS = 0.3, 0.4, 0.5, 0.6",
+        "OFFSETS(1:2,1:2) = 0.3, 0.4, 0.5, 0.6",
+        "OFFSETS(:,2) = 0.5, 0.6, OFFSETS(:,1) = 0.3, 0.4",
+        "OFFSETS(2,2) = 0.6, OFFSETS(1,1) = 0.3, OFFSETS(2,1) = 0.4, OFFSETS(1,2) = 0.5",
+        "OFFSETS = 1, 2, 3, 4, OFFSETS(1:2,1:2) = 0.3, 0.4, 0.5, 0.6",
+        "OFFSETS(:,:) = 1, 2, 3, 4, OFFSETS = 0.3, 0.4, 0.5, 0.6",
+    ):
+        assert coordinates(read_vent(assignment)) == (0.3, 0.4, 0.5, 0.6), assignment
+    for assignment in ("OFFSETS = 2.4, 3.4", "OFFSETS(1:2) = 2.4, 3.4",
+                       "OFFSETS(:) = 2.4, 3.4"):
+        assert coordinates(read_vent(assignment)) == (2.4, 3.4, 2.4, 3.4)
+    assert coordinates(read_vent("OFFSETS(1:2,1) = 2.4, 3.4")) == (2.4, 3.4, 0.0, 0.0)
+    assert coordinates(read_vent("OFFSETS(1:2,2) = 2.4, 3.4")) == (0.0, 0.0, 2.4, 3.4)
+    assert coordinates(read_vent("")) == (0.0, 0.0, 0.0, 0.0)
+    for assignment in ("OFFSETS = 1, 2, 3, 4, 5", "OFFSETS(1:2,3) = 1, 2"):
+        try:
+            read_vent(assignment)
+        except ValueError as exc:
+            assert "OFFSETS" in str(exc)
+        else:
+            raise AssertionError(f"Invalid offsets accepted: {assignment}")
+
+    window = CeditMainWindow()
+    tab = window.mechanical_vents_tab
+    original_units = dict(unit_system.selected)
+    try:
+        for length_unit in (0, 3):
+            unit_system.set_index(LENGTH, length_unit)
+            case = opening_case()
+            case.compartments = [
+                Compartment(id="A", width=6.0, depth=4.0, height=3.0),
+                Compartment(id="B", width=8.0, depth=6.0, height=3.0),
+            ]
+            window.load_case(case)
+            tab.add_vent()
+            tab.from_compartment_edit.setCurrentText("A")
+            tab.to_compartment_edit.setCurrentText("B")
+            vent = tab.vents[-1]
+            assert all(math.isclose(actual, expected, abs_tol=1e-9)
+                       for actual, expected in zip(coordinates(vent), (0.0, 2.0, 0.0, 3.0)))
+            tab.from_orientation_combo.setCurrentText("Horizontal")
+            assert tab.from_offset_x_edit.text() == format_value(LENGTH, 3.0)
+            assert tab.to_offset_x_edit.text() == format_value(LENGTH, 0.0)
+            tab.to_orientation_combo.setCurrentText("Horizontal")
+            assert tab.to_offset_x_edit.text() == format_value(LENGTH, 4.0)
+            assert tab.from_offset_x_edit.text() == format_value(LENGTH, 3.0)
+
+            # Editing each field fires its normal signal and leaves the other end intact.
+            for end, axis, value in (("from", "x", 0.3), ("from", "y", 0.4),
+                                     ("to", "x", 0.5), ("to", "y", 0.6)):
+                edit = getattr(tab, f"{end}_offset_{axis}_edit")
+                assert edit.parentWidget().title() == f"{end.title()} Compartment"
+                edit.setText(f"{value} m")
+                edit.editingFinished.emit()
+            tab.from_orientation_combo.setCurrentText("Vertical")
+            tab.to_orientation_combo.setCurrentText("Vertical")
+            with tempfile.TemporaryDirectory(prefix="cedit-offsets-") as directory:
+                path = Path(directory) / "mechanical.in"
+                write_cfast_input(window.build_cfast_case(), path)
+                record = next(record for record in parse_namelists(path.read_text())
+                              if record.name == "VENT")
+                # Check the actual file order independently of the reader's mapping.
+                assert all(math.isclose(actual, expected, abs_tol=1e-5)
+                           for actual, expected in zip(record.fields["OFFSETS"], (0.3, 0.4, 0.5, 0.6)))
+                assert len(record.fields["OFFSETS"]) == 4
+                window.load_case(read_cfast_input(path))
+                tab.duplicate_vent()
+                for vent in tab.vents:
+                    assert all(math.isclose(actual, expected, abs_tol=1e-5)
+                               for actual, expected in zip(coordinates(vent), (0.3, 0.4, 0.5, 0.6)))
+            tab.clear_editor()
+            assert all(getattr(tab, f"{end}_offset_{axis}_edit").text() == ""
+                       for end in ("from", "to") for axis in ("x", "y"))
     finally:
         unit_system.set_indices(original_units)
         window.deleteLater()
@@ -2535,6 +2636,7 @@ def main() -> int:
             check_adiabatic_target,
             check_adiabatic_convection_coefficients,
             check_mechanical_vent_defaults,
+            check_mechanical_vent_offsets,
             check_detection_device_parameters,
             check_engineering_units_editor,
             check_quantity_display_precision,

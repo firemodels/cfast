@@ -163,8 +163,10 @@ class MechanicalVent:
     flow: float = 0.02
     begin_dropoff: float = 200.0
     zero_flow: float = 300.0
-    offset_x: float = 0.0
-    offset_y: float = 4.0
+    from_offset_x: float = 0.0
+    from_offset_y: float = 4.0
+    to_offset_x: float = 0.0
+    to_offset_y: float = 4.0
     filter_efficiency: float = 0.0
     filter_time: float = 0.0
     criterion: str = "TIME"

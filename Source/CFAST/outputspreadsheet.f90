@@ -1585,10 +1585,10 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    real(eb) :: f_height, avent, slabs, vflow
+    real(eb) :: f_height, avent, slabs, vflow, vheight, half_width, layer_height, slab_bottom, slab_top
     logical :: firstc
     integer :: position
-    integer :: i, j
+    integer :: i, j, endpoint, iroom
 
 
     type(vent_type), pointer :: ventptr
@@ -1673,28 +1673,37 @@ module spreadsheet_routines
         end do
     end do
 
-    ! mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
-    if (n_mvents/=0) then
-        do i = 1, n_mvents
-            ventptr => mventinfo(i)
-            avent = ventptr%current_area
-            call ssaddtolist (position,avent,outarray)
-            ! flow slabs for the vent
-            slabs = ventptr%n_slabs
-            call ssaddtolist (position,slabs,outarray)
-            do j = 1, 2
-                call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-                if (ventptr%room1<=n_rooms) then
-                call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
+    ! Mechanical endpoints follow the same order as the MVENTPOS geometry records.
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        do endpoint = 1, 2
+            iroom = ventptr%room1
+            if (endpoint==2) iroom = ventptr%room2
+            roomptr => roominfo(iroom)
+            avent = ventptr%diffuser_area(endpoint)*ventptr%opening_fraction
+            call ssaddtolist(position,avent,outarray)
+            call ssaddtolist(position,2._eb,outarray)
+            vheight = roomptr%z0 + ventptr%height(endpoint)
+            half_width = sqrt(ventptr%diffuser_area(endpoint))/2
+            layer_height = max(vheight-half_width,min(roomptr%depth(l)+roomptr%z0,vheight+half_width))
+            do j = u, l
+                slab_bottom = vheight-half_width
+                slab_top = vheight+half_width
+                if (ventptr%orientation(endpoint)==1) then
+                    if (j==u) slab_bottom = layer_height
+                    if (j==l) slab_top = layer_height
                 else
-                call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+                    if (j==u) slab_bottom = vheight
+                    if (j==l) slab_top = vheight
                 end if
-                call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
-                call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+                call ssaddtolist(position,roomptr%temp(j),outarray)
+                call ssaddtolist(position,-ventptr%mflow(endpoint,j),outarray)
+                call ssaddtolist(position,slab_bottom,outarray)
+                call ssaddtolist(position,slab_top,outarray)
             end do
         end do
-    end if
-    
+    end do
+
     ! target temperature
     if (n_targets/=0) then
         call get_target_temperatures

@@ -122,8 +122,10 @@ class MechanicalVentsTab(QWidget):
         self.flow_edit = UnitLineEdit()
         self.begin_dropoff_edit = UnitLineEdit()
         self.zero_flow_edit = UnitLineEdit()
-        self.offset_x_edit = UnitLineEdit()
-        self.offset_y_edit = UnitLineEdit()
+        self.from_offset_x_edit = UnitLineEdit()
+        self.from_offset_y_edit = UnitLineEdit()
+        self.to_offset_x_edit = UnitLineEdit()
+        self.to_offset_y_edit = UnitLineEdit()
         self.filter_efficiency_edit = UnitLineEdit()
         self.filter_time_edit = UnitLineEdit()
 
@@ -209,21 +211,17 @@ class MechanicalVentsTab(QWidget):
         bottom = QGridLayout()
         bottom.addWidget(QLabel("Flow Rate:"), 0, 0, alignment=Qt.AlignmentFlag.AlignRight)
         bottom.addWidget(self.flow_edit, 0, 1)
-        bottom.addWidget(QLabel("Vent Offset X:"), 0, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        bottom.addWidget(self.offset_x_edit, 0, 3)
-        bottom.addWidget(QLabel("Filter Efficiency:"), 0, 4, alignment=Qt.AlignmentFlag.AlignRight)
-        bottom.addWidget(self.filter_efficiency_edit, 0, 5)
+        bottom.addWidget(QLabel("Filter Efficiency:"), 0, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        bottom.addWidget(self.filter_efficiency_edit, 0, 3)
 
         bottom.addWidget(QLabel("Begin Dropoff At:"), 1, 0, alignment=Qt.AlignmentFlag.AlignRight)
         bottom.addWidget(self.begin_dropoff_edit, 1, 1)
-        bottom.addWidget(QLabel("Y:"), 1, 2, alignment=Qt.AlignmentFlag.AlignRight)
-        bottom.addWidget(self.offset_y_edit, 1, 3)
-        bottom.addWidget(QLabel("Begin Filter At:"), 1, 4, alignment=Qt.AlignmentFlag.AlignRight)
-        bottom.addWidget(self.filter_time_edit, 1, 5)
+        bottom.addWidget(QLabel("Begin Filter At:"), 1, 2, alignment=Qt.AlignmentFlag.AlignRight)
+        bottom.addWidget(self.filter_time_edit, 1, 3)
 
         bottom.addWidget(QLabel("Zero Flow At:"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
         bottom.addWidget(self.zero_flow_edit, 2, 1)
-        bottom.setColumnStretch(6, 1)
+        bottom.setColumnStretch(4, 1)
         outer.addLayout(bottom)
 
         self.editor_group.setLayout(outer)
@@ -238,6 +236,8 @@ class MechanicalVentsTab(QWidget):
             self.from_area_edit,
             self.from_height_edit,
             self.from_orientation_combo,
+            self.from_offset_x_edit,
+            self.from_offset_y_edit,
         ))
         layout.addWidget(self.build_compartment_group(
             "To Compartment",
@@ -245,11 +245,13 @@ class MechanicalVentsTab(QWidget):
             self.to_area_edit,
             self.to_height_edit,
             self.to_orientation_combo,
+            self.to_offset_x_edit,
+            self.to_offset_y_edit,
         ))
         group.setLayout(layout)
         return group
 
-    def build_compartment_group(self, title, compartment, area, height, orientation):
+    def build_compartment_group(self, title, compartment, area, height, orientation, offset_x, offset_y):
         group = QGroupBox(title)
         layout = QGridLayout()
 
@@ -260,6 +262,10 @@ class MechanicalVentsTab(QWidget):
         layout.addWidget(height, 1, 3)
         layout.addWidget(QLabel("Orientation:"), 2, 2, alignment=Qt.AlignmentFlag.AlignRight)
         layout.addWidget(orientation, 2, 3)
+        layout.addWidget(QLabel("Vent Offset X:"), 2, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(offset_x, 2, 1)
+        layout.addWidget(QLabel("Y:"), 3, 0, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(offset_y, 3, 1)
 
         group.setLayout(layout)
         return group
@@ -312,8 +318,10 @@ class MechanicalVentsTab(QWidget):
             self.flow_edit,
             self.begin_dropoff_edit,
             self.zero_flow_edit,
-            self.offset_x_edit,
-            self.offset_y_edit,
+            self.from_offset_x_edit,
+            self.from_offset_y_edit,
+            self.to_offset_x_edit,
+            self.to_offset_y_edit,
             self.filter_efficiency_edit,
             self.filter_time_edit,
             self.setpoint_edit,
@@ -360,8 +368,10 @@ class MechanicalVentsTab(QWidget):
                 flow=0.02,
                 begin_dropoff=200.0,
                 zero_flow=300.0,
-                offset_x=0.0,
-                offset_y=4.0,
+                from_offset_x=0.0,
+                from_offset_y=4.0,
+                to_offset_x=0.0,
+                to_offset_y=4.0,
                 filter_efficiency=0.0,
                 filter_time=0.0,
                 t_values=[0.0, 100.0, 500.0],
@@ -431,7 +441,7 @@ class MechanicalVentsTab(QWidget):
 
     def update_vent_from_summary(self, row: int):
         vent = self.vents[row]
-        previous_offsets = self.centered_offsets(vent)
+        previous_offsets = {end: self.centered_offsets(vent, end) for end in ("from", "to")}
         values = [self.summary_cell(row, col) for col in range(self.summary_table.columnCount())]
 
         vent.id = values[1] or vent.id
@@ -491,8 +501,10 @@ class MechanicalVentsTab(QWidget):
         self.flow_edit.setText(format_value(FLOWRATE, vent.flow))
         self.begin_dropoff_edit.setText(format_value(PRESSURE_DIFFERENCE, vent.begin_dropoff))
         self.zero_flow_edit.setText(format_value(PRESSURE_DIFFERENCE, vent.zero_flow))
-        self.offset_x_edit.setText(format_value(LENGTH, vent.offset_x))
-        self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
+        self.from_offset_x_edit.setText(format_value(LENGTH, vent.from_offset_x))
+        self.from_offset_y_edit.setText(format_value(LENGTH, vent.from_offset_y))
+        self.to_offset_x_edit.setText(format_value(LENGTH, vent.to_offset_x))
+        self.to_offset_y_edit.setText(format_value(LENGTH, vent.to_offset_y))
         self.filter_efficiency_edit.setText(f"{format_number(vent.filter_efficiency)} %")
         self.filter_time_edit.setText(format_value(TIME, vent.filter_time))
         self.set_combo_text(self.criterion_combo, criterion_display(vent.criterion))
@@ -527,8 +539,10 @@ class MechanicalVentsTab(QWidget):
             self.flow_edit,
             self.begin_dropoff_edit,
             self.zero_flow_edit,
-            self.offset_x_edit,
-            self.offset_y_edit,
+            self.from_offset_x_edit,
+            self.from_offset_y_edit,
+            self.to_offset_x_edit,
+            self.to_offset_y_edit,
             self.filter_efficiency_edit,
             self.filter_time_edit,
             self.setpoint_edit,
@@ -553,7 +567,7 @@ class MechanicalVentsTab(QWidget):
             return
 
         vent = self.vents[self.current_index]
-        previous_offsets = self.centered_offsets(vent)
+        previous_offsets = {end: self.centered_offsets(vent, end) for end in ("from", "to")}
         vent.id = self.id_edit.text().strip() or vent.id
         vent.from_comp_id = internal_compartment(
             self.from_compartment_edit.currentText().strip() or "OUTSIDE"
@@ -570,8 +584,10 @@ class MechanicalVentsTab(QWidget):
             vent.flow = parse_value(FLOWRATE, self.flow_edit.text(), "Flow Rate")
             vent.begin_dropoff = parse_value(PRESSURE_DIFFERENCE, self.begin_dropoff_edit.text(), "Begin Dropoff")
             vent.zero_flow = parse_value(PRESSURE_DIFFERENCE, self.zero_flow_edit.text(), "Zero Flow")
-            vent.offset_x = parse_value(LENGTH, self.offset_x_edit.text(), "Vent Offset X")
-            vent.offset_y = parse_value(LENGTH, self.offset_y_edit.text(), "Vent Offset Y")
+            vent.from_offset_x = parse_value(LENGTH, self.from_offset_x_edit.text(), "From Vent Offset X")
+            vent.from_offset_y = parse_value(LENGTH, self.from_offset_y_edit.text(), "From Vent Offset Y")
+            vent.to_offset_x = parse_value(LENGTH, self.to_offset_x_edit.text(), "To Vent Offset X")
+            vent.to_offset_y = parse_value(LENGTH, self.to_offset_y_edit.text(), "To Vent Offset Y")
             vent.filter_efficiency = parse_number(
                 self.filter_efficiency_edit.text(),
                 "Filter Efficiency",
@@ -600,9 +616,11 @@ class MechanicalVentsTab(QWidget):
             vent.t_values = []
             vent.f_values = []
 
-        if self.update_centered_offsets(vent, previous_offsets):
-            self.offset_x_edit.setText(format_value(LENGTH, vent.offset_x))
-            self.offset_y_edit.setText(format_value(LENGTH, vent.offset_y))
+        self.update_centered_offsets(vent, previous_offsets)
+        for end in ("from", "to"):
+            for axis in ("x", "y"):
+                edit = getattr(self, f"{end}_offset_{axis}_edit")
+                edit.setText(format_value(LENGTH, getattr(vent, f"{end}_offset_{axis}")))
         self.refresh_summary_table()
         self.summary_table.selectRow(self.current_index)
 
@@ -638,9 +656,11 @@ class MechanicalVentsTab(QWidget):
             # Start both ends at the connected compartment's mid-height.
             vent.from_height = height / 2.0
             vent.to_height = height / 2.0
-        offsets = self.centered_offsets(vent)
-        if offsets is not None:
-            vent.offset_x, vent.offset_y = offsets
+        for end in ("from", "to"):
+            offsets = self.centered_offsets(vent, end)
+            if offsets is not None:
+                setattr(vent, f"{end}_offset_x", offsets[0])
+                setattr(vent, f"{end}_offset_y", offsets[1])
         self.vents.append(vent)
         self.refresh_summary_table()
         self.select_row(len(self.vents) - 1)
@@ -664,8 +684,10 @@ class MechanicalVentsTab(QWidget):
             flow=source.flow,
             begin_dropoff=source.begin_dropoff,
             zero_flow=source.zero_flow,
-            offset_x=source.offset_x,
-            offset_y=source.offset_y,
+            from_offset_x=source.from_offset_x,
+            from_offset_y=source.from_offset_y,
+            to_offset_x=source.to_offset_x,
+            to_offset_y=source.to_offset_y,
             filter_efficiency=source.filter_efficiency,
             filter_time=source.filter_time,
             criterion=source.criterion,
@@ -740,25 +762,32 @@ class MechanicalVentsTab(QWidget):
         self.compartment_sizes = {comp.id: (comp.width, comp.depth) for comp in compartments if comp.id}
         self.set_compartment_ids([comp.id for comp in compartments])
 
-    def centered_offsets(self, vent: MechanicalVent) -> tuple[float, float] | None:
-        # Match Smokeview: use the first indoor compartment and first orientation.
-        size = self.compartment_sizes.get(vent.from_comp_id) or self.compartment_sizes.get(vent.to_comp_id)
+    def centered_offsets(self, vent: MechanicalVent, end: str) -> tuple[float, float] | None:
+        other_end = "to" if end == "from" else "from"
+        # Outside has no dimensions; use the connected indoor compartment as a fallback.
+        size = (self.compartment_sizes.get(getattr(vent, f"{end}_comp_id"))
+                or self.compartment_sizes.get(getattr(vent, f"{other_end}_comp_id")))
         if size is None:
             return None
         width, depth = size
-        return (width / 2.0 if vent.from_orientation == "HORIZONTAL" else 0.0, depth / 2.0)
+        orientation = getattr(vent, f"{end}_orientation")
+        return (width / 2.0 if orientation == "HORIZONTAL" else 0.0, depth / 2.0)
 
-    def update_centered_offsets(self, vent: MechanicalVent, previous: tuple[float, float] | None) -> bool:
-        offsets = self.centered_offsets(vent)
-        if previous is None or offsets is None or previous == offsets:
-            return False
-        # Compare displayed values to tolerate unit conversion rounding and retain custom offsets.
-        current = (vent.offset_x, vent.offset_y)
-        if any(format_value(LENGTH, value) != format_value(LENGTH, default)
-               for value, default in zip(current, previous)):
-            return False
-        vent.offset_x, vent.offset_y = offsets
-        return True
+    def update_centered_offsets(
+        self, vent: MechanicalVent, previous: dict[str, tuple[float, float] | None]
+    ):
+        for end in ("from", "to"):
+            offsets = self.centered_offsets(vent, end)
+            old_offsets = previous[end]
+            if old_offsets is None or offsets is None or old_offsets == offsets:
+                continue
+            # Compare displayed values to tolerate unit rounding and retain custom offsets.
+            current = (getattr(vent, f"{end}_offset_x"), getattr(vent, f"{end}_offset_y"))
+            if any(format_value(LENGTH, value) != format_value(LENGTH, default)
+                   for value, default in zip(current, old_offsets)):
+                continue
+            setattr(vent, f"{end}_offset_x", offsets[0])
+            setattr(vent, f"{end}_offset_y", offsets[1])
 
     def set_compartment_ids(self, compartment_ids: list[str]):
         self.compartment_ids = [comp_id for comp_id in compartment_ids if comp_id]

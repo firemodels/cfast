@@ -263,8 +263,7 @@ module cfast_types
                                             ! f(1) and f(2) are used for opening_initial_fraction and opening_final_fraction
         integer :: npoints                  ! number of points in arrays t, and f
         real(eb) :: area                    ! cross-sectional area of vent
-        real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
-        real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
+        real(eb), dimension(1:2,1:2) :: offset ! offset from origin in x, y direction, for room 1 and 2
         
         real(eb) :: cvent                   ! coefficient for vent flow. Default value 0.7
         
@@ -275,7 +274,6 @@ module cfast_types
         integer :: face                                 ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
         real(eb) :: absolute_sill                       ! absolute height of the sill
         real(eb) :: absolute_soffit                     ! absolute height of the soffit
-        real(eb), dimension(2) :: offset                ! vent offset from wall origin (1 = from room, 2 = to room)
 
         real(eb) :: h_mflow(2,2,2)                      ! (1>2 or 2>1, u or l, in or out)
         integer :: n_slabs

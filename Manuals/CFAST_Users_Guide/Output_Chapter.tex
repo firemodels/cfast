@@ -476,11 +476,11 @@ The second set of columns pertain to the detector/sprinkler output.
 The entries in this file pertain to the flow vents such as windows/doors, ceiling/floor vents, mechanical vents, and compartment leakage.
 \begin{description}
 \item[Time] (s)
-\item[Net Inflow] (kg/s): net mass flow into the current compartment through the current horizontal flow (door/windows) vent connected to the current compartment.
+\item[Net Inflow] (kg/s): net mass flow into the current compartment.
+\item[Total Inflow/Outflow Upper/Lower] (kg/s): mass flow into and out of the layers of the current compartment.
 \item[Opening Fraction]: fraction the vent is open. Zero indicates a fully-closed vent; one indicates a fully-opened vent.
 \item[Trace Species Flow] (kg): total mass of trace species through this vent up to the current time (mechanical vents only).
-\item[Trace Species Flow] (kg): total mass of trace species removed by a specified filter in this vent up to the current time (for mechanical vents only).
-\item[Net Inflow] (kg/s): net mass flow into the current compartment via wall and floor leakage (for each compartment that includes leakage).
+\item[Trace Species Filtered] (kg): total mass of trace species removed by a specified filter in this vent up to the current time (for mechanical vents only).
 \end{description}
 
 \subsection{Compartment Surface Temperature (project\_walls.csv)}

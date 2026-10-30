@@ -523,11 +523,11 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{FLOW}                   & Real                   & Sec.~\ref{info:VENT4}        & m$^3$/s            &                 \\ \hline
 \ct{FLOW_COEFFICIENT}       & Real                   & Sec.~\ref{info:VENT}         &                    & 0.7             \\ \hline
 \ct{FYI}                    & Character              & Sec.~\ref{info:VENT}         &                    &                 \\ \hline
-\ct{HEIGHT}                 & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
-\ct{HEIGHTS(1:2)}           & Real                   & Sec.~\ref{info:VENT3}        & m                  &                 \\ \hline
+\ct{HEIGHT}                 & Real                   & Sec.~\ref{info:VENT}         & m                  & TBD$^*$         \\ \hline
+\ct{HEIGHTS(1:2)}           & Real                   & Sec.~\ref{info:VENT3}        & m                  & TBD$^*$         \\ \hline
 \ct{ID}                     & Character              & Sec.~\ref{info:VENT3}        &                    &                 \\ \hline
-\ct{OFFSET}                 & Real                   & Sec.~\ref{info:VENT}         & m                  & 0               \\ \hline
-\ct{OFFSETS(1:2)}           & Real                   & Secs.~\ref{info:VENT2}       & m                  & 0,0             \\ \hline
+\ct{OFFSET}                 & Real                   & Sec.~\ref{info:VENT}         & m                  & TBD$^*$         \\ \hline
+\ct{OFFSETS(1:2,1:2)}       & Real                   & Secs.~\ref{info:VENT2}       & m                  & TBD$^*$         \\ \hline
 \ct{ORIENTATIONS(1:2)}      & Character              & Sec.~\ref{info:VENT3}        &                    & \ct{'VERTICAL'} \\ \hline
 \ct{POST_FRACTION}          & Real                   & Sec.~\ref{info:VENT3b}       &                    & 1               \\ \hline
 \ct{PRE_FRACTION}           & Real                   & Sec.~\ref{info:VENT3b}       &                    & 1               \\ \hline
@@ -538,6 +538,9 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{TYPE}                   & Character              & Sec.~\ref{info:VENT}         &                    &                 \\ \hline
 \ct{WIDTH}                  & Real                   & Sec.~\ref{info:VENT}         & m                  &                 \\ \hline
 \end{xltabular}
+
+\noindent 
+$^*$TBD stands for ``To Be Determined'' based on the compartment dimensions. Typically vents are centered on the appropriate compartment face.
 
 
 

@@ -1636,12 +1636,14 @@ continue
             read(lu,VENT)
 
             ! Wall vent
+
             if (trim(type) == 'WALL') then
+
                 counter1=counter1+1
 
                 call find_comp_idxes
 
-! only change vent order if one of the compartments is the outside
+                ! only change vent order if one of the compartments is the outside
                 if(i<mxrooms-1 .and. j<mxrooms-1) then
                    imin = i
                    jmax = j
@@ -1694,6 +1696,7 @@ continue
                 ventptr%sill   = bottom
                 ventptr%soffit = top
                 if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
+                if (top==0._eb .and. height == 0._eb) ventptr%soffit = bottom + (2.0_eb/2.4_eb)*(from_roomptr%cheight-bottom)
                 ventptr%absolute_soffit = ventptr%soffit + from_roomptr%z0
                 ventptr%absolute_sill   = ventptr%sill   + from_roomptr%z0
 
@@ -1707,7 +1710,8 @@ continue
 
                 call set_criterion
 
-                ! Mechanical vent
+            ! Mechanical vent
+
             else if (trim(type) == 'MECHANICAL') then
                 counter2=counter2+1
 
@@ -1755,8 +1759,10 @@ continue
                         if (heights(2)<0._eb) heights(2) = from_roomptr%cheight + heights(2)
                     end if
                 end if
+                if (orientations(1) == 'VERTICAL' .and. heights(1) == 0._eb) heights(1) = 0.5_eb * roominfo(ventptr%room1)%cheight
                 ventptr%height(1) = heights(1)
                 ventptr%diffuser_area(1) = areas(1)
+                if (orientations(2) == 'VERTICAL' .and. heights(2) == 0._eb) heights(2) = 0.5_eb * roominfo(ventptr%room2)%cheight
                 ventptr%height(2) = heights(2)
                 ventptr%diffuser_area(2) = areas(2)
 
@@ -1772,7 +1778,8 @@ continue
                     call set_criterion
                 end if
 
-                ! Ceiling/Floor vents
+            ! Ceiling/Floor vents
+
             else if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') then
                 counter3=counter3+1
 
@@ -1819,6 +1826,7 @@ continue
                 if (trim(criterion) /='NULL') then
                     call set_criterion 
                 end if
+
             end if
 
         end do read_vent_loop

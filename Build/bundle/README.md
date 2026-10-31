@@ -26,7 +26,7 @@ Build/bundle/build_macos_bundle.sh --manuals-from-release --upload
 
 Gatekeeper accepts a downloaded application only after it has a Developer ID signature and has been notarized by Apple. The bundle build takes its Developer ID identity from `CODESIGN_ID`, keeping it out of the repository. It signs CEditQt and its nested code, CFAST, Smokeview, and bundled runtime libraries with the hardened runtime, then signs the finished DMG. When notarization is enabled, the build submits the DMG to Apple and staples the resulting ticket.
 
-For a macOS scheduled job, use the wrapper script:
+Nightly macOS runs use `launchd` with the wrapper script:
 
 ```bash
 Build/bundle/run_macos_bundle.sh

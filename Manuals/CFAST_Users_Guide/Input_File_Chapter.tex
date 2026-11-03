@@ -413,15 +413,76 @@ All chlorine in the fuel is converted to HCl. HCN production is limited by both 
 \end{figure}
 
 
-\section{Adding Fires}
-\label{info:FIRE}
+Adding fires to a CFAST model consists of two parts. The first part is defining a fire. This includes defining the fuel propeties and the time dependence of the fire. The second part is assinging a defined fire to a compartment. A single compartment can be assigned multiple fires each of which can use the same or different fire definitions. Similarly, the same fire definition can be assigned to multiple compartments.
+
+When saving an input file, CEdit writes only the \ct{CHEM} and \ct{TABL} definitions referenced by a fire's \ct{FIRE_ID}. A fire definition shared by several fires is written once. For example, if \ct{Fire_3} references \ct{Fire_1_def} and no fire references \ct{Fire_3_def}, the unused \ct{Fire_3_def} chemistry and table are omitted. Unused definitions remain available in the current editing session, but are not retained when the saved file is reopened.
+
+\section{Defining a Fire}
 \label{sec:fire_inputs}
 
-Click on the {\bf Add New} button to introduce a fire. The {\bf Add t$^2$} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details.
+Click on the {\bf Add Fire Curve} button to introduce a fire. The {\bf Add t$^2$ Fire Curve} button creates a new fire with a quadratic heat release rate curve that can be edited in the table. This is useful because quadratic growth rates are commonly used in fire analyses. See Sec.~\ref{tsq} for details.
 
-The \textbf{From File} button imports fire definitions from one or more existing CFAST input files. Select the files, then use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the definitions to add. The list shows each definition's name, chemical formula, peak heat release rate, heat of combustion, and source file. CEdit reads the \ct{CHEM} and matching \ct{TABL} records, including the table's column labels. Legacy files containing \ct{FIRE}, \ct{CHEMI}, and named curve rows are also supported.
+The \textbf{Load Fire Curve} button imports fire definitions from one or more existing CFAST input files. Select the files, then use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the definitions to add. The list shows each definition's name, chemical formula, peak heat release rate, heat of combustion, and source file. CEdit reads the \ct{CHEM} and matching \ct{TABL} records, including the table's column labels. Legacy files containing \ct{FIRE}, \ct{CHEMI}, and named curve rows are also supported. 
 
-Click \textbf{OK} to add each selected definition and a new fire instance at the center of the first compartment, with ignition at time zero. Adjust the compartment, location, and ignition settings as needed. The source file's compartment and target assignments are not imported. Names already present in the case receive numeric suffixes so existing fires remain unchanged. Imported definitions are stored in the current case when it is saved; they are not linked to the source file.
+The \textbf{Remove Fire Curve} deletes the definition currently selected in the \textbf{Fuel Properties} block.
+
+\subsection{Fuel Properties}
+\label{info:CHEM}
+
+The \textbf{Fuel Properties} block in the lower left of the Fires tab contains the fuel's chemical composition, heat of combustion, and radiative fraction. Each fire definition can have a different chemical composition and time-dependent properties. 
+
+In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. The \ct{CHEM} line and any associated \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. A \ct{TABL} definition is optional when all fire properties are constant. For example, the following specifies a 300~kW methane fire with an area of 0.5~\unit{m^2} in a previously defined compartment \ct{C1}, without a \ct{TABL} definition:
+\begin{verbatim}
+    &FIRE ID = 'F1' COMP_ID = 'C1' FIRE_ID = 'F1_fire'
+    LOCATION = 2.5, 2.5 /
+    &CHEM ID = 'F1_fire' CARBON = 1 HYDROGEN = 4
+    HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35
+    HRR = 300 AREA = 0.5 CO_YIELD = 0.01 SOOT_YIELD = 0.015 /
+\end{verbatim}
+The heat release rate remains constant after ignition, subject to the usual oxygen and suppression limits. The \ct{CHEM} parameters are:
+\begin{description}
+    \item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition, if present. More than one fire instance may reference the same definition.
+    \item[C] (default: 0; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule. Fuel atom counts must be nonnegative, and at least one of \ct{CARBON}, \ct{HYDROGEN}, \ct{OXYGEN}, \ct{NITROGEN}, or \ct{CHLORINE} must be positive. An empty fuel molecule is an input error; no default fuel composition is assumed.
+    \item[H] (default: 0; namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
+    \item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.
+    \item[N] (default: 0; namelist: \ct{N}) Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
+    \item[Cl] (default: 0; namelist: \ct{CHLORINE}) Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
+    \item[Heat of Combustion] (default: 50000~kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed.
+    \item[Radiative Fraction] (default: 0.35; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. In CFAST 8 beta, omitting this parameter uses 0.35; earlier namelist readers used zero. Specify zero explicitly for a non-radiating fire. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+    \item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
+\end{description}
+
+Once a fuel is defined, CEdit will compute the heat of combustion based on oxygen which is the energy released per unit mass of oxygen consumed. This value is computed assuming complete combustion of the fuel with any chlorine going to HCl. The result is displayed next to the heat of combustion with the label $\Delta \rm{H}_{\rm{c} , \rm{O}_2}$ (energy per unit mass of oxygen). For typical combustibles this value will be near 13,100~\unit{kJ/kg}~\cite{Huggett:1980}. This value, adjusted for the time-dependent soot, CO, and HCN yields, is used by CFAST when limiting combustion based on available oxygen during entrainment.
+
+\subsection{Time-Dependent Properties}
+\label{info:FIRE2}
+
+Time-dependent fire quantities are listed in the table, with a maximum of 199 points. Data points are linearly interpolated. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition. If there are multiple rows, the data is written to a set of \ct{TABL} lines.
+\begin{description}
+    \item[Time] (units: s; namelist: \ct{'TIME'}) Time from ignition.
+    \item[HRR] (units: kW; namelist: \ct{'HRR'}) Heat release rate as a function of time.
+    \item[Height] (units: m; namelist: \ct{'HEIGHT'}) Height of the base of the fire above the floor of the compartment.
+    \item[Area] (units: \unit{m^2}; namelist: \ct{'AREA'}) Area of the base of the fire.  The Fire Froude number is defined $$\dot{Q}^* = \dot{Q}/(\rho_\infty c_p T_\infty \sqrt{gD} D^2)$$ It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+    \item[CO Yield] (units: kg/kg; namelist: \ct{'CO_YIELD'}) Mass of CO produced per unit mass of fuel consumed.
+    \item[Soot Yield] (units: kg/kg; namelist: \ct{'SOOT_YIELD'}) Mass of soot produced per unit mass of fuel consumed.
+    \item[HCN Yield] (units: kg/kg; namelist: \ct{'HCN_YIELD'}) Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+    \item[TS Yield] (units: kg/kg; namelist: \ct{'TS_YIELD'}) Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
+\end{description}
+
+
+\subsection{Special Topic: t-Squared Fires}
+\label{tsq}
+
+Use the `Add t$^2$' button to create a new fire with a heat release rate that grows as a function of the time squared~\cite{Schifiliti:2002}:
+\be
+\dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
+\ee
+The curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
+
+\section{Adding a Fire to a Compartment}
+\label{info:FIRE}
+
+Click \textbf{Add Fire to Comp} to add a fire definition to a compartment. This adds a row to the fires table at the top of the tab. The \textbf{Fire} block will default to a fire at the center of the first compartment with ignition at time zero. Adjust the compartment, location, and ignition settings as needed and pick a fire definition. 
 
 In the text input file, the following parameters are stored within the namelist group \ct{FIRE}:
 \begin{description}
@@ -432,76 +493,20 @@ In the text input file, the following parameters are stored within the namelist 
 \item[Set Point] (namelist: \ct{SETPOINT}) The critical value of temperature or heat flux at which ignition will occur.
 \item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
 \item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
-\item[Suppression Parameters] Two parameters are used to characterize the suppression of the fire. The first is the \textbf{Decay Time Constant} (default: 432.8~s; namelist: \ct{DECAY_TIME}), and the second is the \textbf{Spray Density} (default: $6.316 \times 10^{-5}$~m/s; namelist: \ct{SPRAY_DENSITY}) These are empirical parameters obtained from a full-scale sprinkler suppression experiment that are appropriate for the given burning object or commodity class. The default values are chosen to be consistent with previous versions of CFAST for which the suppression characteristics were the same for every fire.
+\item[Suppression Parameters] Two parameters are used to characterize the suppression of the fire. The first is the \textbf{Decay Time Constant} (default: 432.8~s; namelist: \ct{DECAY_TIME}), and the second is the \textbf{Spray Density} (default: \num{6.316e-5}~m/s; namelist: \ct{SPRAY_DENSITY}) These are empirical parameters obtained from a full-scale sprinkler suppression experiment that are appropriate for the given burning object or commodity class. The default values are chosen to be consistent with previous versions of CFAST for which the suppression characteristics were the same for every fire.
 \end{description}
 Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the pyrolysis rate and the corresponding heat release rate are assumed to decrease exponentially:
 \be
    \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = \tau_0 \, \left( \frac{u_{\rm w,0}}{u_{\rm w}} \right)^{1.8}
 \ee
-where $\tau$ is referred to as the decay time constant, typically expressed in seconds, and $u_{\rm w}$ is the water spray density, expressed in units of volume per unit area per unit time, such as \unit{L/(min \, m^2)}, \unit{gal/(min \, ft^2)}, or the equivalent velocity\footnote{For consistency with past versions of CFAST, the specified \ct{SPRAY_DENSITY} is expressed in units of m/s in the text-based input file.} in units of mm/s or m/s. The parameters $\tau_0$ and $u_{\rm w,0}$ are emprically derived from a full-scale sprinkler suppression experiment in which the decay time constant is inferred for a specific object or commodity class subjected to a specific spray density. Past versions of CFAST pegged the value of $\tau_0 \, u_{\rm w,0}^{1.8}$ to 3 where  $\tau_0$ was expressed in seconds and $u_{\rm w,0}$ in mm/s. The more general approach retains the basic concept of Madrzykowski and Evans, but allows the end user to specify different suppression parameters for each fire. Note the following caveats for sprinkler suppression:
+where $\tau$ is referred to as the decay time constant, typically expressed in seconds, and $u_{\rm w}$ is the water spray density, expressed in units of volume per unit area per unit time, such as \unit{L/(min.m^2)}, \unit{gal/(min.ft^2)}, or the equivalent velocity\footnote{For consistency with past versions of CFAST, the specified \ct{SPRAY_DENSITY} is expressed in units of m/s in the text-based input file.} in units of mm/s or m/s. The parameters $\tau_0$ and $u_{\rm w,0}$ are emprically derived from a full-scale sprinkler suppression experiment in which the decay time constant is inferred for a specific object or commodity class subjected to a specific spray density. Past versions of CFAST pegged the value of $\tau_0 \, u_{\rm w,0}^{1.8}$ to 3 where  $\tau_0$ was expressed in seconds and $u_{\rm w,0}$ in mm/s. The more general approach retains the basic concept of Madrzykowski and Evans, but allows the end user to specify different suppression parameters for each fire. Note the following caveats for sprinkler suppression:
 \begin{enumerate}
 \item The first sprinkler activated controls the heat release rate of the fire. Subsequent sprinkler activations have no additional effect.
 \item The water spray has no effect on the gas temperature or secondary sprinkler activation times.
 \item A sprinkler can only reduce the heat release rate of the fire; thus, the fire cannot overwhelm an under-designed sprinkler system.
 \end{enumerate}
 
-
-\section{Fuel Properties}
-
-The \textbf{Fuel Properties} block in the lower left of the Fires tab contains the fuel's chemical composition, heat of combustion, and radiative fraction. Each fire can have a different chemical composition and time-dependent properties. Alternatively, two or more fires can reference the same set of properties.
-
-When saving an input file, CEdit writes only the \ct{CHEM} and \ct{TABL} definitions referenced by a fire's \ct{FIRE_ID}. A definition shared by several fires is written once. For example, if \ct{Fire_3} references \ct{Fire_1_Fire} and no fire references \ct{Fire_3_Fire}, the unused \ct{Fire_3_Fire} chemistry and table are omitted. Unused definitions remain available in the current editing session, but are not retained when the saved file is reopened.
-
-In a text input file, the \ct{FIRE_ID} on a \ct{FIRE} line identifies the associated fire definition. The \ct{CHEM} line and any associated \ct{TABL} definition must use that same identifier. The area, heat release rate, and yield values specified by \ct{CHEM} are constant; a column with the corresponding label in the matching \ct{TABL} definition replaces the constant value with a time-dependent history. A \ct{TABL} definition is optional when all fire properties are constant. For example, the following specifies a 300~kW methane fire with an area of 0.5~\unit{m^2} in a previously defined compartment \ct{C1}, without a \ct{TABL} definition:
-\begin{verbatim}
-&FIRE ID = 'F1' COMP_ID = 'C1' FIRE_ID = 'F1_fire'
-      LOCATION = 2.5, 2.5 /
-&CHEM ID = 'F1_fire' CARBON = 1 HYDROGEN = 4
-      HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35
-      HRR = 300 AREA = 0.5 CO_YIELD = 0.01 SOOT_YIELD = 0.015 /
-\end{verbatim}
-The heat release rate remains constant after ignition, subject to the usual oxygen and suppression limits. The \ct{CHEM} parameters are:
-\begin{description}
-\item[Fire Properties ID] (namelist: \ct{ID}) Identifier for the fire properties. It must match \ct{FIRE_ID} on each \ct{FIRE} line that uses the definition and \ct{ID} on its \ct{TABL} definition, if present. More than one fire instance may reference the same definition.
-\item[C] (default: 0; namelist: \ct{CARBON}) Number of carbon atoms in the fuel molecule. Fuel atom counts must be nonnegative, and at least one of \ct{CARBON}, \ct{HYDROGEN}, \ct{OXYGEN}, \ct{NITROGEN}, or \ct{CHLORINE} must be positive. An empty fuel molecule is an input error; no default fuel composition is assumed.
-\item[H] (default: 0; namelist: \ct{HYDROGEN}) Number of hydrogen atoms in the fuel molecule.
-\item[O] (default: 0; namelist: \ct{O}) Number of oxygen atoms in the fuel molecule.
-\item[N] (default: 0; namelist: \ct{N}) Number of nitrogen atoms in the fuel molecule. Nitrogen not converted to HCN forms N$_2$.
-\item[Cl] (default: 0; namelist: \ct{CHLORINE}) Number of chlorine atoms in the fuel molecule. CFAST assumes that all fuel chlorine forms HCl.
-\item[Heat of Combustion] (default: 50000 kJ/kg; namelist: \ct{HEAT_OF_COMBUSTION}) Energy released per unit mass of fuel consumed.
-\item[Radiative Fraction] (default: 0.35; namelist: \ct{RADIATIVE_FRACTION}) Fraction of the combustion energy emitted as thermal radiation. In CFAST 8 beta, omitting this parameter uses 0.35; earlier namelist readers used zero. Specify zero explicitly for a non-radiating fire. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
-\item[Flaming Transition Time] (default: 0; namelist: \ct{FLAMING_TRANSITION_TIME}) Time after ignition at which soot production changes from the smoldering category to the flaming category. This parameter changes the category used for smoke-detector calculations, not the total soot yield.
-\end{description}
-
-Once a fuel is defined, CEdit will compute the heat of combustion based on oxygen which is the energy released per unit mass of oxygen consumed. This value is computed assuming complete combustion of the fuel with any chlorine going to HCl. The result is displayed next to the heat of combustion with the label $\Delta \rm{H}_{\rm{c} , \rm{O}_2}$ (energy per unit mass of oxygen). For typical combustibles this value will be near 13,100~\unit{kJ/kg}~\cite{Huggett:1980}. This value, adjusted for the time-dependent soot, CO, and HCN yields, is used by CFAST when limiting combustion based on available oxygen during entrainment.
-
-\section{Time-Dependent Properties}
-\label{info:FIRE2}
-
-Time-dependent fire quantities are listed in the table, with a maximum of 199 points. Data points are linearly interpolated. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. A rectangular block copied from a spreadsheet is pasted into the fire table starting at the selected cell in the upper left corner of the selected range. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet. The splitter between the table and the plot can be moved to provide more room while entering or pasting a fire definition.
-\begin{description}
-\item[Time] (units: s; namelist: \ct{'TIME'}) Time from ignition.
-\item[HRR] (units: kW; namelist: \ct{'HRR'}) Heat release rate as a function of time.
-\item[Height] (units: m; namelist: \ct{'HEIGHT'}) Height of the base of the fire above the floor of the compartment.
-\item[Area] (units: \unit{m^2}; namelist: \ct{'AREA'}) Area of the base of the fire.  The Fire Froude number is defined $$\dot{Q}^* = \dot{Q}/(\rho_\infty c_p T_\infty \sqrt{gD} D^2)$$ It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
-\item[CO Yield] (units: kg/kg; namelist: \ct{'CO_YIELD'}) Mass of CO produced per unit mass of fuel consumed.
-\item[Soot Yield] (units: kg/kg; namelist: \ct{'SOOT_YIELD'}) Mass of soot produced per unit mass of fuel consumed.
-\item[HCN Yield] (units: kg/kg; namelist: \ct{'HCN_YIELD'}) Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (units: kg/kg; namelist: \ct{'TS_YIELD'}) Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
-\end{description}
-
-
-\section{Special Topic: t-Squared Fires}
-\label{tsq}
-
-Use the `Add t$^2$' button to create a new fire with a heat release rate that grows as a function of the time squared~\cite{Schifiliti:2002}:
-\be
-   \dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
-\ee
-The curve is written directly into the fire table, where the time, heat release rate, height, area, and yield values may be edited. A typical workflow is to develop the desired heat release rate history in a spreadsheet, copy the rows and columns of interest, select the upper-left destination cell in the CFAST fire table, and paste the data. The plot below the table updates from the table values and provides a visual check of the fire definition. Plateau or decay periods can be created by adding rows to the table with the desired time and HRR values.
-
-
-
+Clicking \textbf{Remove Fire from Comp} will delete the currently selected compartment fire in the \textbf{Fire} block. It does not delete the associated fire definition.
 
 \chapter{Measurement and Fire Protection Devices}
 \label{info:DEVC}
@@ -536,7 +541,7 @@ A target is any object heated by thermal radiation and convection. If a target i
 \item[Material] (namelist: \ct{MATL_ID}) The material the target is made of. Any material defined on the Thermal Properties tab (Section~\ref{info:MATL}) may be used here. Each target must have a material assigned. There can be only one material per target. If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify no material or arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.
 \item[Thickness] (units: \unit{m}; namelist: \ct{THICKNESS}) The thickness of the target. For a plate target this is the total thickness. For a cylinder target this is the radius.
 \item[Internal Temperature at] (default: 0.5; namelist: \ct{TEMPERATURE_DEPTH}) The depth at which the target temperature is reported. It can be specified either as a fraction of the target thickness or as a depth in units of meters. The choice of one or the other is indicated in the input file via the namelist parameter  \ct{DEPTH_UNITS} which is either \ct{'FRACTION'} or \ct{'METERS'}.
-\item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, calculates the adiabatic surface temperature of the target using the emissivity of the assigned \ct{MATL_ID}. Checking this box prompts the user for the front and back convection coefficients, each 10~\unit{W/(m^2 K)} by default. These values are converted to \unit{kW/(m^2 K)} when writing \ct{CONVECTION_COEFFICIENTS(1:2)} to the input file.
+\item[Adiabatic] (namelist: \ct{ADIABATIC_TARGET}) If checked, calculates the adiabatic surface temperature of the target using the emissivity of the assigned \ct{MATL_ID}. Checking this box prompts the user for the front and back convection coefficients, each 10~\unit{W/(m^2.K)} by default. These values are converted to \unit{kW/(m^2.K)} when writing \ct{CONVECTION_COEFFICIENTS(1:2)} to the input file.
 \item[Surface Temperature] (namelist: \ct{SURFACE_TEMPERATURE}) Fixed target surface temperature in \unit{\degreeCelsius}; default is the initial interior ambient temperature. This value is used for the calculation of the gauge heat flux; that is, when a heat flux gauge is maintained at some elevated temperature.
 \end{description}
 

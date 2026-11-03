@@ -34,7 +34,7 @@ or a final pressure rise of 1728 Pa.  Figure \ref{fig:Temperature_Equilibrium} s
 \subsection{Temperature Equilibrium via a Window}
 \label{basic_tempequilib_window}
 
-Now an open window is added to the compartment, with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior, which are consistent with the expected results..
+Now an open window is added to the compartment, with an exterior temperature of 25~\unit{\degreeCelsius}. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior, which are consistent with the expected results..
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -148,11 +148,11 @@ where the heat of combustion of methane is taken to be 50 000 kJ/kg. For complet
    \mathrm{CH_4 + 2 \, O_2 \to CO_2 + 2 \, H_2O}
    \label{eq:Methane_Combustion}
 \end{equation}
-The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the total mass of CO$_2$ produced by the fire is
+The molecular weight of CH$_4$ is 16~\unit{g/mol} and CO$_2$ is 44~\unit{g/mol}; thus, the total mass of CO$_2$ produced by the fire is
 \begin{equation}
    m_{\rm CO_2} = 0.0066 \; {\rm kg} \times  \frac{ 44 \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01815 \; {\rm kg}
 \end{equation}
-The molecular weight of H$_2$O is 18~g/mol; thus, the total mass of H$_2$O produced by the fire is
+The molecular weight of H$_2$O is 18~\unit{g/mol}; thus, the total mass of H$_2$O produced by the fire is
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
@@ -231,12 +231,12 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \label{methane_flame_simple}
 \label{species_test}
 
-A simple 5 kW methane flame is burned inside a closed 5~m x 5~m x 5~m compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of carbon dioxide and water produced is calculated. The combustion of a methane is described by the following single-step reaction:
+A simple 5~kW methane flame is burned inside a closed 5~m by 5~m by 5~m compartment for 100~s. Initially, the relative humidity within the compartment is 0~\%. The total mass of carbon dioxide and water produced is calculated. The combustion of a methane is described by the following single-step reaction:
 \be
    \mathrm{CH_4} +  2 \, \mathrm{O_2}  \rightarrow  \mathrm{CO_2} + 2 \, \mathrm{H_2O}
 \ee
 
-With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), 0.027 kg of CO$_2$ and 0.022 kg of H$_2$O are produced by the fire. Figure~\ref{fig_methane_flame_yields} compares the mass of the combustion products to their expected values.
+With a total mass of methane burned of 0.01~kg (5~kW / 50000~\unit{MJ/kg} $\times$ 100~s), 0.027~kg of CO$_2$ and 0.022~kg of H$_2$O are produced by the fire. Figure~\ref{fig_methane_flame_yields} compares the mass of the combustion products to their expected values.
 
 \begin{figure}[ht]
 \centering
@@ -245,7 +245,7 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 \label{fig_methane_flame_yields}
 \end{figure}
 
-For a more complex test, we add non-zero yields of CO, soot, HCN, and HCl to the reaction. A 5~kW fire of C$_{12}$H$_9$O$_3$N$_2$Cl is burned inside the same 5~m x 5~m x 5~m compartment for 100~s, again with an initial relative humidity of zero.  Yields of soot, CO, and HCN are assumed to be 0.186 kg/kg, 0.063 kg/kg, and 0.05 kg/kg, respectively. All chlorine in the fuel is converted to HCl. With a total mass of fuel burned of 0.05 kg, 0.057 kg of CO$_2$, 0.013 kg of H$_2$O, 0.003 kg of CO, 0.0025 kg of HCN, and 0.007 kg of HCl are produced by the fire. Figure~\ref{fig_species_test_yields} compares the mass of the combustion products to their expected values.
+For a more complex test, we add non-zero yields of CO, soot, HCN, and HCl to the reaction. A 5~kW fire of C$_{12}$H$_9$O$_3$N$_2$Cl is burned inside the same 5~m by 5~m by 5~m compartment for 100~s, again with an initial relative humidity of zero.  Yields of soot, CO, and HCN are assumed to be 0.186~\unit{kg/kg}, 0.063~\unit{kg/kg}, and 0.05~\unit{kg/kg}, respectively. All chlorine in the fuel is converted to HCl. With a total mass of fuel burned of 0.05~kg, 0.057~kg of CO$_2$, 0.013~kg of H$_2$O, 0.003~kg of CO, 0.0025~kg of HCN, and 0.007 kg of HCl are produced by the fire. Figure~\ref{fig_species_test_yields} compares the mass of the combustion products to their expected values.
 
 \begin{figure}[ht]
 \centering
@@ -257,7 +257,7 @@ For a more complex test, we add non-zero yields of CO, soot, HCN, and HCl to the
 \subsection{Trace Species}
 \label{Trace_Species_1}
 
-With the same 5 kW methane flame as in the previous section, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
+With the same 5 kW methane flame as in the previous section, we add a trace species yield of 0.001~\unit{kg/kg}. With a total mass of methane burned of 0.01~kg (5~kW / 50000~\unit{MJ/kg} $\times$ 100~s), a total mass of 0.00001~kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
 
 \begin{figure}[ht]
 \centering
@@ -266,7 +266,7 @@ With the same 5 kW methane flame as in the previous section, we add a trace spec
 \label{fig_trace_1}
 \end{figure}
 
-With the same 5 kW methane flame, we add a second compartment with mechanical ventilation flowing both directions from room to room. Figure~\ref{fig_trace_2} compares the expected and calculated values. Without filtering, one half the trace species mass should ultimately end up in each room (Figure~\ref{fig_trace_2}a).  With 100 \% filtering, the trace species mass should trend to zero (Figure~\ref{fig_trace_2}b).
+With the same 5 kW methane flame, we add a second compartment with mechanical ventilation flowing both directions from room to room. Figure~\ref{fig_trace_2} compares the expected and calculated values. Without filtering, one half the trace species mass should ultimately end up in each room (Figure~\ref{fig_trace_2}a).  With 100~\% filtering, the trace species mass should trend to zero (Figure~\ref{fig_trace_2}b).
 
 \begin{figure}[ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -286,7 +286,7 @@ With the same 5 kW methane flame, we add a second compartment with mechanical ve
 \subsection{Air Flow Through a Single Compartment}
 \label{ventilation_1}
 
-The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is \cite{Emmons:SFPE}:
+The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~\unit{m^3/s}. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is \cite{Emmons:SFPE}:
 \begin{equation}
 \Delta{P} = \frac{1}{2\rho}\brackets{\frac{\dot{m}}{CA}}^2
 \end{equation}
@@ -309,7 +309,7 @@ Figure~\ref{fig:vent1} shows how the pressure changes as air flows through the c
 \label{sec:vent2}
 \label{ventilation_2}
 
-A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows  temperature and pressure as the air flows through the fourth compartment. As expected, the temperature remains at ambient conditions and flow in the lower compartment matches flow out the upper compartment
+A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~\unit{m^3/s} and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~\unit{m^2} and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~\unit{m^3/s}. Figure~\ref{ventilation_2TP} shows  temperature and pressure as the air flows through the fourth compartment. As expected, the temperature remains at ambient conditions and flow in the lower compartment matches flow out the upper compartment
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -325,7 +325,7 @@ A similar setup to the one used in Section~\ref{sec:specmass4} is employed here.
 \subsection{Non Steady-State Air Flow}
 \label{ventilation_3}
 
-The same setup that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
+The same setup that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~\unit{m^2}. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~\unit{m^3/s}, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -368,7 +368,7 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \subsection{Flow Through Different Vent Types}
 \label{VVent_Tests}
 
-A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12 kg/s). Vertical and horizontal natural flow vents connect this compartment to two other compartments stacked vertically.  Finally, the structure is vented to the outside by either a vertical or horizontal flow vent in the rooms removed from the one where air is supplied. Figure~\ref{fig:vvent} shows a sample of the mass flow through the vents.
+A fan is supplies air into a compartment at a constant rate of 0.1~\unit{m^3/s} (0.12~\unit{kg/s}). Vertical and horizontal natural flow vents connect this compartment to two other compartments stacked vertically.  Finally, the structure is vented to the outside by either a vertical or horizontal flow vent in the rooms removed from the one where air is supplied. Figure~\ref{fig:vvent} shows a sample of the mass flow through the vents.
 
 \begin{figure}
 \begin{center}
@@ -390,7 +390,7 @@ This case tests the computation of the surface opening fraction. A three-compart
 \end{equation}
 where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. It should be noted that each compartment has 10 surfaces.
 
-For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~sec, 0.5~sec, and 1~sec, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figure~\ref{SOF_Result_1}. Note that the vent opening fraction is different than surface opening fraction.
+For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~s, 0.5~s, and 1~s, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figure~\ref{SOF_Result_1}. Note that the vent opening fraction is different than surface opening fraction.
 
 \begin{figure}[!ht]
 \centering
@@ -416,7 +416,7 @@ For this verification case, the upper layer thickness for each compartment is se
 \label{Leakage_1}
 \label{Leakage_2}
 
-Air is supplied to the floor of three compartments (3 m x 3 m x 3 m) at ambient condition via a single mechanical vent in each compartment with a flowrate of 0.05~m$^3$/s. The first compartment has leakage defined with a flow coefficient of 0.02. This results in a total leakage area of 0.0153~m$^2$. This is 0.000284~m$^2$/m$^2$ of leakage based on the total area of the room boundaries (54~m$^2$). The second compartment assigns that leakage ratio to walls, floor, and ceiling. The third compartment assigns the entire leakage area to just the floor at a ratio of 0.00170~m$^2$/m$^2$. The total flow out of each compartment should equal the total mechanical flow into each compartment. At ambient density, the flow rate of 0.05~m$^3$/s is 0.06~kg/s. Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ where the discharge coefficient for leakage is taken to be 1. Solving for $\Delta P$ using the leak area, mechanical flowrate, and ambient density gives a pressure rise of 6.36~Pa.
+Air is supplied to the floor of three compartments (3~m by 3~m by 3~m) at ambient condition via a single mechanical vent in each compartment with a flowrate of 0.05~\unit{m^3/s}. The first compartment has leakage defined with a flow coefficient of 0.02. This results in a total leakage area of 0.0153\unit{m^2}. This is 0.000284~\unit{m^2/m^2} of leakage based on the total area of the room boundaries (54~m\unit{m^2}). The second compartment assigns that leakage ratio to walls, floor, and ceiling. The third compartment assigns the entire leakage area to just the floor at a ratio of 0.00170~\unit{m^2/m^2}. The total flow out of each compartment should equal the total mechanical flow into each compartment. At ambient density, the flow rate of 0.05~\unit{m^3/s} is 0.06~\unit{kg/s}. Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ where the discharge coefficient for leakage is taken to be 1. Solving for $\Delta P$ using the leak area, mechanical flowrate, and ambient density gives a pressure rise of 6.36~Pa.
 
 The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
@@ -431,6 +431,21 @@ The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
 \FloatBarrier
 
+\section{Geometry}
+\label{geometry}
+
+\label{volume_check}
+Three compartments (3~m x 3~m x 3~m) each with door opening that is 1~m wide by 2~m tall have a constant 900~kW fire. The first compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then 4~\unit{m^2} to the ceiling. The second compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then tapering to 4~\unit{m^2} at 2.5~m. The third compartment is defined with a cross-sectional area that is 4~\unit{m^2} from the floor up to 0.5~m and then increasing to 9~\unit{m^2} at 2.5~m. With the same fire size and door opening, similar layer heights are expected, however, different layer volumes will result. The CFAST predicted steady-state layer height is used to determine the expected layer volume.
+
+\begin{figure}[h]
+    \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+        \includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Volume_Check_Layer} &
+        \includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Volume_Check_Volume} \\
+    \end{tabular*}
+    \caption[Results of the test case \ct{Volume_Check.in}]{CFAST layer heights and Expected and CFAST calculated layer volumes for the case \\ \ct{Volume_Check.in}.}
+    \label{Volume_Check_Results}
+\end{figure}
+
 
 \section{Heat Transfer}
 \label{radiation}
@@ -440,11 +455,11 @@ The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
 The case \ct{radiation_1.in} specifies the constant heat release rate and fire area directly on \ct{CHEM}, without a \ct{TABL} definition. This also verifies that constant fire properties can be used without a time-dependent table.
 
-A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. Because the purpose of this case is to test the point source radiation model and the heating of a thermally-thin target, there is a 20~m$^2$ vent located in the center of the ceiling to exhaust the smoke from the fire and maintain an ambient temperature lower layer. A 1.5~mm thick sheet of plain carbon steel is placed 2~m to the right of the fire. It is oriented directly at the fire. The target is heated by the thermal radiation from the fire, and it is cooled via convective and radiative loss. The net radiative heat transfer to the target is given by:
+A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. Because the purpose of this case is to test the point source radiation model and the heating of a thermally-thin target, there is a 20~\unit{m^2} vent located in the center of the ceiling to exhaust the smoke from the fire and maintain an ambient temperature lower layer. A 1.5~mm thick sheet of plain carbon steel is placed 2~m to the right of the fire. It is oriented directly at the fire. The target is heated by the thermal radiation from the fire, and it is cooled via convective and radiative loss. The net radiative heat transfer to the target is given by:
 \begin{equation}
 \dqr'' = \epsilon \frac{\chi_{\rm r} \, \dot{Q}}{4\pi \, r^2} + 2\epsilon \sigma ( T_{\rm g}^4 - T_{\rm s}^4)
 \end{equation}
-where $\epsilon$ is the emissivity of the target, $\chi_{\rm r}$ represents the radiative heat fraction of the fire, $\dot{Q}$ is the heat release rate of the fire, $r$ is the distance between the fire and the target and $\sigma$ is the Stefan-Boltzmann constant, which has a value of $5.67 \times 10^{-11}$~kW/(m$^2 \cdot$K$^4$). Additionally, $T_{\rm g}$ is the temperature of the gas surrounding the target and $T_{\rm s}$ is the temperature of the target's surface. The convective heat flux to a solid surface is governed by the following equations:
+where $\epsilon$ is the emissivity of the target, $\chi_{\rm r}$ represents the radiative heat fraction of the fire, $\dot{Q}$ is the heat release rate of the fire, $r$ is the distance between the fire and the target and $\sigma$ is the Stefan-Boltzmann constant, which has a value of $5.67 \times 10^{-11}$~\unit{kW/(m^2.K^4)}. Additionally, $T_{\rm g}$ is the temperature of the gas surrounding the target and $T_{\rm s}$ is the temperature of the target's surface. The convective heat flux to a solid surface is governed by the following equations:
 \begin{equation}
 \dqc'' = h(T_{\rm g}-T_{\rm s}) \quad ; \quad  h = C|T_{\rm g} - T_{\rm s}|^{1/3}
 \end{equation}
@@ -464,7 +479,7 @@ where $\delta$, $\rho$ and $C_{\rm p}$ are the thickness, density and specific h
 \subsection{Measuring the Temperature Change of a Cylindrical Target}
 \label{radiation_2}
 
-A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are placed in a furnace\footnote{CFAST has an option to create a uniform temperature environment for diagnostic purposes. The option must be invoked by adding a special comment to the input file.} with uniform temperature of 500~$^\circ$C. The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
+A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are placed in a furnace\footnote{CFAST has an option to create a uniform temperature environment for diagnostic purposes. The option must be invoked by adding a special comment to the input file.} with uniform temperature of 500~\unit{\degreeCelsius} The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
 \begin{equation}
 \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2} \quad ; \quad \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
 \end{equation}
@@ -512,7 +527,7 @@ where $Q_{\rm i}$ is the radiative heat transfer to the surface due to the emiss
 \begin{equation}
 \mathrm{\alpha_{\rm g}\brackets{T_{\rm w}, T_g}} = \frac{1}{A_{\rm i}} \sum_{j \neq i} \left[ A_{\rm i}F_{\rm i-j} - S_{\rm i}S_{\rm j}\brackets{T_{\rm w,j}, T_{\rm g}} \right]
 \end{equation}
-The total emissivity and the hemisperical absorptivity of the gas medium for targets on the top surface calculated by CFAST are compared with the benchmark results reported by \cite{Tam:2018, Tam:2019}. Two emitting temperatures $T_{\rm w}$ are considered. Results for $T_{\rm w}$ = 226.85 $^\circ$C case and $T_{\rm w}$ = 1226.85 $^\circ$C case are presented in Figure~\ref{fig:rad4_1}.
+The total emissivity and the hemisperical absorptivity of the gas medium for targets on the top surface calculated by CFAST are compared with the benchmark results reported by \cite{Tam:2018, Tam:2019}. Two emitting temperatures $T_{\rm w}$ are considered. Results for $T_{\rm w}$ = 226.85~\unit{\degreeCelsius} case and $T_{\rm w}$ = 1226.85~\unit{\degreeCelsius} case are presented in Figure~\ref{fig:rad4_1}.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -560,7 +575,7 @@ Consider a 6~m by 6~m by 8~m enclosure with a constant 50~kW fire located at a f
 \subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
 \label{sprinkler_1}
 
-A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~$^\circ$C and a spray density of 0.07~mm/s. The sprinkler link temperature can be calculated by integrating the following equation \cite{Schifiliti:2002}:
+A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~\unit{\degreeCelsius} and a spray density of 0.07\unit{mm/s}. The sprinkler link temperature can be calculated by integrating the following equation \cite{Schifiliti:2002}:
 \begin{equation}
 \frac{{\rm d} \TL}{{\rm d} t} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
 \end{equation}
@@ -568,7 +583,7 @@ where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, a
 \begin{equation}
 \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = \tau_0 \, \left( \frac{ u_{\rm w,0} }{u_{\rm w} } \right)^{1.8}  \quad ; \quad \tau_0 \, u_{\rm w,0}^{1.8} = 3
 \end{equation}
-where $u_{\rm w}$ is the sprinkler spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
+where $u_{\rm w}$ is the sprinkler spray density, expressed in units of \unit{mm/s}. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -605,7 +620,7 @@ The simulation runs for 60~s. Figure~\ref{fig:suppression} compares the calculat
 
 \section{Fire Ignition}
 
-Two small fires are located in a single compartment some distance away from a larger initiating fire burning in the center of the compartment. The two smaller fires are set to ignite at an incident heat flux of 6~kW/m$^2$ and 200~\degc, respectively. Figures~\ref{fireigntion1} and \ref{fireignition2} show the heat release rate, incident heat flux, and surface temperature for the two fires overlayed with the calculated ignition time.
+Two small fires are located in a single compartment some distance away from a larger initiating fire burning in the center of the compartment. The two smaller fires are set to ignite at an incident heat flux of 6~kW/m$^2$ and 200~\unit{\degreeCelsius}, respectively. Figures~\ref{fireigntion1} and \ref{fireignition2} show the heat release rate, incident heat flux, and surface temperature for the two fires overlayed with the calculated ignition time.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}

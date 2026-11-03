@@ -1016,7 +1016,8 @@ module fire_routines
             else
                 tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
-            if (w>0.0_eb.and.xin>w/2) then
+
+            if (w>0.0_eb.and.xin>w*0.5_eb) then
                 !compartment is a hallway and we've hit the walls, use delichastsios
                 tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*xin/h*(w/h)**onethird))
             end if

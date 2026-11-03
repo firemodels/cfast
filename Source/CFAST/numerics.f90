@@ -1398,13 +1398,13 @@
             ipar(3) = i
         end if
     end do
-    if (vmax <= 0.0d0) go to 30
-    sum = 0.0d0
-    do  i = 1,neq
-        sum = sum + ((v(i)/wt(i))/vmax)**2
-    end do
-    ddanrm = vmax*sqrt(sum/neq)
-30  continue
+    if (vmax > 0.0d0) then
+        sum = 0.0d0
+        do i = 1,neq
+            sum = sum + ((v(i)/wt(i))/vmax)**2
+        end do
+        ddanrm = vmax*sqrt(sum/neq)
+    end if
 
     end function ddanrm
 

@@ -20,7 +20,7 @@ module solve_routines
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
-    use utility_routines, only: mat2mult, interp, shellsort, get_filenumber
+    use utility_routines, only: mat2mult, interp, shellsort, get_filenumber, volume_interp
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
@@ -1207,7 +1207,8 @@ module solve_routines
                 roomptr%depth(u) = roomptr%volume(u)/roomptr%floor_area
                 roomptr%depth(l) = roomptr%volume(l)/roomptr%floor_area
             else
-                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%volume(l),1,roomptr%depth(l))
+                call volume_interp(roomptr%var_volume,roomptr%var_height,roomptr%var_area,roomptr%nvars,roomptr%volume(l),& 
+                                   roomptr%depth(l))
                 roomptr%depth(u) = roomptr%cheight - roomptr%depth(l)
             end if
 

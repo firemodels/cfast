@@ -9,7 +9,7 @@
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files
     use utility_routines, only: emix, get_filenumber
-    
+
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, material_type, vent_type, &
         visual_type
 
@@ -48,7 +48,7 @@
     logical, intent(in), optional :: open_outputs
     logical :: do_open_outputs
     real(eb) :: temparea(mxpts), temphgt(mxpts), deps1, rti
-    real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx
+    real(eb) :: xloc, yloc, zloc, zbot, ztop, dheight, xx
     integer :: ios, i, j, itop, ibot, iroom
     integer :: itype, npts, ioff, ioff2
 
@@ -57,7 +57,7 @@
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(material_type), pointer :: thrmpptr
-    type(vent_type), pointer :: ventptr    
+    type(vent_type), pointer :: ventptr
 
     do_open_outputs = .true.
     if (present(open_outputs)) do_open_outputs = open_outputs
@@ -73,7 +73,7 @@
     end if
 
     n_matl = 0
- 
+
     ! read in the input file in new (namelist) or old (.csv) format
     call namelist_input
 
@@ -89,7 +89,7 @@
     thrmpptr%c(1) = 900.0_eb
     thrmpptr%rho(1) = 800.0_eb
     thrmpptr%thickness(1) = 0.0120_eb
-   
+
     ! now we can check the input data for consistency
 
     ! check for temperature outside reasonable limits
@@ -144,7 +144,7 @@
         call cfastexit('readinputfile',4)
         stop
     end if
-    
+
     !make sure wall vent specifications are correct
     do i = 1,n_hvents
         ventptr => hventinfo(i)
@@ -165,7 +165,7 @@
             stop
         end if
     end do
-    
+
     ! add leakage if it's specified
     call initialize_leakage
 
@@ -266,7 +266,7 @@
 
     ! initialize variables that will change when ambient conditions change
     call initialize_ambient
-    
+
     ! check targets to set flag for targets exposed to the exterior
     do i = 1, n_targets
         targptr => targetinfo(i)
@@ -289,7 +289,7 @@
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
         if (iroom<1.or.iroom>n_rooms) then
-            write (errormessage,104) 
+            write (errormessage,104)
 104         format('***Error, Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             call cfastexit('readinputfile',13)
             stop
@@ -345,10 +345,10 @@
     logical ex
     integer :: ld, ios
     character(len=256) :: revision, revision_date, compile_date, buf
-    
+
     ! get the input file parts
     call exehandle (exepath, inputfile, project, extension)
-    
+
     ! form the file names for datafiles
     ld = len_trim (project)
     outputfile    = project(1:ld) // '.out'
@@ -356,7 +356,7 @@
     smvdata       = project(1:ld) // '.plt'
     smvcsv        =  project(1:ld)// '_zone.csv'
     smvsinfo      = project(1:ld) // '.sinfo'
-    
+
     ! spreadsheet output files
     sscompartment = project(1:ld) // '_compartments.csv'
     ssdevice      = project(1:ld) // '_devices.csv'
@@ -487,12 +487,12 @@
     !> \param   inputfile (output): input file name
     !> \param   project  (output): root of input file name
     !> \param   extension (output): file extension of input file
-    
+
     subroutine exehandle (exepath, inputfile, project, extension)
 
     character(len=*), intent(out) :: exepath, inputfile, project, extension
     integer :: status, nargs, dot_pos, ilen
-    
+
     nargs = command_argument_count() + 1
 
     if (nargs<2) then
@@ -512,11 +512,11 @@
         project = inputfile(:ilen)
         extension = ""
     end if
-    
+
     end subroutine exehandle
 
     ! --------------------------- setup_slice_iso -------------------------------------------
-    
+
 !> \brief   allocate and initialize slice file and iso surface variables after reading input file
 
     subroutine setup_slice_iso

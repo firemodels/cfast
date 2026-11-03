@@ -6,6 +6,8 @@ $RUNCFAST -d Bundle_Examples Users_Guide_Example.in
 $RUNCFAST -d Energy_Balance sealed_test.in
 $RUNCFAST -d Energy_Balance sealed_test_2_layers.in
 
+$RUNCFAST -d Geometry Volume_Check.in
+
 $RUNCFAST -d Fires Ignition_Test.in
 
 $RUNCFAST -d Mass_Balance species_mass_1.in

@@ -241,9 +241,8 @@
                 dheight = roomptr%var_height(j) - roomptr%var_height(j-1)
                 if (roomptr%var_area(j)/=roomptr%var_area(j-1)) then
                     ! if the area changes, we assume it's a pyramid
-                    pyramid_height = dheight/(1.0_eb-sqrt(roomptr%var_area(j)/roomptr%var_area(j-1)))
-                    roomptr%var_volume(j) = roomptr%var_volume(j-1) + &
-                        (roomptr%var_area(j-1)*pyramid_height-roomptr%var_area(j)*(pyramid_height-dheight))/3.0_eb
+                    roomptr%var_volume(j) = roomptr%var_volume(j-1) + dheight / 3.0_eb * &
+                        (roomptr%var_area(j-1) + sqrt(roomptr%var_area(j-1)*roomptr%var_area(j)) + roomptr%var_area(j))
                 else
                     roomptr%var_volume(j) = roomptr%var_volume(j-1) + roomptr%var_area(j)*dheight
                 end if

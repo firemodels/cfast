@@ -192,6 +192,49 @@
 
     end subroutine mat2mult
 
+    ! --------------------------- volume_interp -------------------------------------------
+
+    subroutine volume_interp (x,y,z,npts,t,yint)
+
+    ! interpolates room height given a volume from the floor.
+    ! arguments: x,y,z - arrays of size npts to be interpolated at x=t
+    !            yint (output) - interpolated value of the y array at t
+
+    real(eb), intent(in) :: x(*), y(*), z(*), t
+    real(eb), intent(out) :: yint
+    real(eb) :: h,onth=1._EB/3._EB,v1,sqrt_a21
+    integer, intent(in) :: npts
+    integer :: n
+    
+    
+    if (t <x(1)) then
+       yint = y(1)
+    elseif (t> x(npts)) then
+       yint = y(npts)
+    else
+       do n=2,npts
+          if (t<=x(n)) then
+             if (z(n-1)==z(n)) then
+                yint = y(n-1) + (y(n)-y(n-1)) * (t-x(n-1)) / (x(n)-x(n-1))
+             else
+                v1 = t - x(n-1)
+                h = (y(n)-y(n-1))
+                if (z(n-1) > z(n)) then
+                   sqrt_a21 = sqrt(z(n)/z(n-1))
+                   yint = y(n-1) + h/(sqrt_a21-1) * ((1+3*v1*(sqrt_a21-1)/(h*z(n-1)))**onth - 1)
+                else
+                   v1 = x(n) - x(n-1) - v1
+                   sqrt_a21 = sqrt(z(n-1)/z(n))
+                   yint = y(n-1) + h - h/(sqrt_a21-1) * ((1+3*v1*(sqrt_a21-1)/(h*z(n)))**onth - 1)
+                endif
+             endif
+             return
+          end if
+       enddo
+    end if
+
+
+    end subroutine volume_interp
     ! --------------------------- interp -------------------------------------------
 
     subroutine interp (x,y,n,t,icode,yint)

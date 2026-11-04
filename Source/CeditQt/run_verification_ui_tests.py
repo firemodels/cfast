@@ -833,6 +833,97 @@ def check_compartment_header_palettes():
         table.deleteLater()
 
 
+def check_compartment_leakage_methods():
+    """Leakage methods hide inactive inputs and never save both methods as active."""
+    from cfast_case import CfastCase, Compartment
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
+    from tabs.compartments_tab import CompartmentsTab
+    from units import FLOW_COEFFICIENT, format_value
+
+    tab = CompartmentsTab()
+    case = CfastCase(compartments=[
+        Compartment("Coefficient", 3.6, 2.4, 2.4, flow_coefficient=0.07),
+        Compartment("Ratios", 3.6, 2.4, 2.4, wall_leak_area_ratio=0.001,
+                    floor_leak_area_ratio=0.002, ceiling_leak_area_ratio=0.003),
+    ])
+
+    def assert_method(index):
+        assert tab.leakage_method_combo.currentIndex() == index
+        assert tab.flow_coefficient_edit.isVisibleTo(tab) == (index == 0)
+        for edit in (tab.wall_leak_area_ratio_edit, tab.floor_leak_area_ratio_edit,
+                     tab.ceiling_leak_area_ratio_edit):
+            assert edit.isVisibleTo(tab) == (index == 1)
+        for page_index in range(2):
+            page = tab.leakage_inputs.widget(page_index)
+            form = page.layout()
+            for row in range(form.rowCount()):
+                label = form.itemAt(row, form.ItemRole.LabelRole).widget()
+                assert label.isVisibleTo(tab) == (page_index == index)
+
+    try:
+        tab.load_case(case)
+        assert_method(0)
+        tab.summary_table.setCurrentCell(1, 0)
+        assert_method(1)
+        tab.summary_table.setCurrentCell(0, 0)
+        tab.leakage_method_combo.setCurrentIndex(1)
+        assert_method(1)
+        assert tab.compartments[0].flow_coefficient == 0.0
+        # A zero-valued choice survives refresh, navigation, and duplication.
+        tab.width_edit.editingFinished.emit()
+        tab.summary_table.setCurrentCell(1, 0)
+        tab.summary_table.setCurrentCell(0, 0)
+        assert_method(1)
+        tab.duplicate_compartment()
+        assert_method(1)
+        tab.move_compartment_down()
+        assert_method(1)
+
+        tab.wall_leak_area_ratio_edit.setText("0.004")
+        tab.floor_leak_area_ratio_edit.setText("0.005")
+        tab.ceiling_leak_area_ratio_edit.setText("0.006")
+        # Hidden invalid text must not interfere with the selected method.
+        tab.flow_coefficient_edit.setText("invalid")
+        tab.ceiling_leak_area_ratio_edit.editingFinished.emit()
+        with tempfile.TemporaryDirectory(prefix="cedit-leakage-") as directory:
+            path = Path(directory) / "leakage.in"
+            for method in (1, 0):
+                tab.leakage_method_combo.setCurrentIndex(method)
+                if method == 0:
+                    tab.flow_coefficient_edit.setText(format_value(FLOW_COEFFICIENT, 0.08))
+                    tab.wall_leak_area_ratio_edit.setText("invalid")
+                saved = CfastCase()
+                tab.add_to_case(saved)
+                write_cfast_input(saved, path)
+                reopened = read_cfast_input(path)
+                c = reopened.compartments[tab.selected_index]
+                assert c.flow_coefficient == (0.08 if method == 0 else 0.0)
+                assert (c.wall_leak_area_ratio, c.floor_leak_area_ratio,
+                        c.ceiling_leak_area_ratio) == ((0.0, 0.0, 0.0) if method == 0
+                                                     else (0.004, 0.005, 0.006))
+                selected = tab.selected_index
+                tab.load_case(reopened)
+                tab.summary_table.setCurrentCell(selected, 0)
+                assert_method(method)
+
+        # Imported files follow CFAST's coefficient precedence without changing on load.
+        case.compartments[0].wall_leak_area_ratio = 0.001
+        case.compartments[1].flow_coefficient = 0.08
+        tab.load_case(case)
+        assert_method(0)
+        assert tab.compartments[0].wall_leak_area_ratio == 0.001
+        tab.add_to_case(CfastCase())
+        assert tab.compartments[0].wall_leak_area_ratio == 0.0
+        assert tab.compartments[1].wall_leak_area_ratio == 0.0
+        tab.load_case(CfastCase(compartments=[]))
+        assert_method(0)
+        tab.add_compartment()
+        assert_method(0)
+    finally:
+        tab.deleteLater()
+
+
 def check_target_material_initialization():
     """Regression for #2458: no demo or implicit default target material."""
     from cfast_case import Target
@@ -2640,6 +2731,7 @@ def main() -> int:
         editor_checks = (
             check_verification_case_discovery,
             check_compartment_header_palettes,
+            check_compartment_leakage_methods,
             check_target_material_initialization,
             check_target_temperature_depth,
             check_target_material_validation,

@@ -622,17 +622,20 @@ module solve_routines
             if (tout == tstop) then 
                call output_results (t)
                call output_spreadsheet(t)
-               ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
-               ! smokeview are what is expected.
-               smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
-               smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
-               smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
-               smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
-               call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
-               call output_spreadsheet_smokeview(t)
-               call output_status (t, dt)
-               call output_slicedata(t,first_time)
-               call output_isodata(t,first_time) 
+               if (ismv) then
+                  ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
+                  call collect_fire_data_for_smokeview (nfires)
+                  ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
+                  ! smokeview are what is expected.               smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
+                  smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
+                  smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
+                  smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
+                  call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
+                  call output_spreadsheet_smokeview(t)
+                  call output_status (t, dt)
+                  call output_slicedata(t,first_time)
+                  call output_isodata(t,first_time) 
+               endif
             end if 
             
             total_steps = total_steps + 1

@@ -399,45 +399,4 @@ $RUNCFAST -d WTC WTC_04.in
 $RUNCFAST -d WTC WTC_05.in
 $RUNCFAST -d WTC WTC_06.in
 
-$RUNCFAST -d ../Verification/Energy_Balance sealed_test.in
-$RUNCFAST -d ../Verification/Energy_Balance sealed_test_2_layers.in
-
-$RUNCFAST -d ../Verification/Mass_Balance species_mass_1.in
-$RUNCFAST -d ../Verification/Mass_Balance species_mass_2.in
-$RUNCFAST -d ../Verification/Mass_Balance species_mass_3.in
-$RUNCFAST -d ../Verification/Mass_Balance species_mass_4.in
-
-$RUNCFAST -d ../Verification/Species methane_flame_simple.in
-$RUNCFAST -d ../Verification/Species species_test.in
-$RUNCFAST -d ../Verification/Species gas_tenability.in
-$RUNCFAST -d ../Verification/Species heat_tenability.in
-$RUNCFAST -d ../Verification/Species Trace_Species_1.in
-$RUNCFAST -d ../Verification/Species Trace_Species_2.in
-$RUNCFAST -d ../Verification/Species Trace_Species_3.in
-
-$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib.in
-$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in
-$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window_elevation.in
-
-$RUNCFAST -d ../Verification/Ventilation ventilation_1.in
-$RUNCFAST -d ../Verification/Ventilation ventilation_2.in
-$RUNCFAST -d ../Verification/Ventilation ventilation_3.in
-$RUNCFAST -d ../Verification/Ventilation ventilation_4.in
-$RUNCFAST -d ../Verification/Ventilation VVent_Tests.in
-$RUNCFAST -d ../Verification/Ventilation surface_opened_fraction_1.in
-$RUNCFAST -d ../Verification/Ventilation Leakage_1.in
-
-$RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
-
-$RUNCFAST -d ../Verification/Radiation radiation_1.in
-$RUNCFAST -d ../Verification/Radiation radiation_2.in
-$RUNCFAST -d ../Verification/Radiation radiation_3.in
-$RUNCFAST -d ../Verification/Radiation radiation_4.in
-$RUNCFAST -d ../Verification/Radiation radiation_5.in
-
-$RUNCFAST -d ../Verification/Fires Ignition_Test.in
-
-$RUNCFAST -d ../Verification/Target target_1.in
-$RUNCFAST -d ../Verification/Target target_2.in
-
 

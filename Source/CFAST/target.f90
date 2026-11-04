@@ -132,14 +132,14 @@ module target_routines
         ilayer = u
         if (targptr%center(3)<roomptr%depth(l)) ilayer = l
         nu_co2 = exp(roomptr%species_output(ilayer,co2)/5._eb)
-        fed_gas_increment = (dt/60._eb)*nu_co2*((roomptr%species_output(ilayer,co)*10000)/35000._eb + &
-            (roomptr%species_output(ilayer,hcn)*10000)**2.36_eb/1.2e6_eb)
+        fed_gas_increment = (dt/60._eb)*((nu_co2*roomptr%species_output(ilayer,co)*10000)/35000._eb + &
+            (nu_co2*roomptr%species_output(ilayer,hcn)*10000)**2.36_eb/1.2e6_eb)
         targptr%dfed_gas = targptr%dfed_gas + fed_gas_increment
         targptr%fed_gas = targptr%fed_gas + fed_gas_increment
         if (targptr%flux_incident_front<2500._eb) then
             fed_heat_increment = (dt/60._eb)*1/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61))
         else
-            fed_heat_increment = (dt/60._eb)*(1._eb/(4.2*targptr%flux_incident_front/1000._eb)**(-1.9_eb)) + &
+            fed_heat_increment = (dt/60._eb)*(1._eb/(4.2*(targptr%flux_incident_front*0.001_eb)**(-1.9_eb))) + &
                 (dt/60._eb)*(1._eb/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61)))
         end if
         targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment

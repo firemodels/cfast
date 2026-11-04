@@ -643,38 +643,29 @@ Two small fires are located in a single compartment some distance away from a la
 
 \section{Tenability}
 
+The tenability tests use a 6~m by 6~m by 3~m compartment with a 175~kW fire at the center of the floor. The fuel is C$_2$H$_4$N$_1$ with 5\,\% CO and HCN yields. Two targets are placed at 2.5~m above the floor at distances of 3~m and 0.5~m from the fire.
+
 \subsection{Gas Tenability}
 \label{gas_tenability}
 
-For the same scenario as the example in section \ref{methane_flame_simple}, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
-
-\begin{eqnarray}
-    \nu_{\rm CO_2} &=& e^{\varphi_{\rm CO_2} \, / \, 5} = e^{0.0223 \, / \, 5} \approx 1 \\[.1in]
-    \Delta \chi_{\FED} &=&  \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t =  \frac{13.7 \cdot 1}{35 000} \frac{1}{60} = 0.0000066
-\end{eqnarray}
-for a 1 s increment. The following figure compares the calculated FED to its expected value.
+Since the two devices are at the same height, they are exposed to the same layer conditions for gas concentrations. Using the predicted layer height, the CO$_2$, CO, and HCN concentrations can be obtained over time as a function of the layer the target sits in. The asphyxiant gas fractional effective does (FED) over time can then be calculated and compared to the CFAST predicted values for the two targets.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/gas_tenability}
-\caption[Results of the test case \ct{gas_tenability.in}]{Expected and CFAST calculated values for fractional effective dose due to asphyxiant gases in a one room test case \ct{gas_tenability.in}.}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/FED_gas}
+\caption[Results of the test case \ct{fed.in}]{Expected and CFAST calculated values for fractional effective dose due to asphyxiant gases in a one room test case \ct{fed.in}.}
 \label{fig_gas_tenability}
 \end{figure}
 
 \subsection{Heat Tenability}
 \label{heat_tenability}
 
-A compartment is maintained at a constant 100 \degc and a target is placed in the center of the compartment. Heat flux to the target is less than 2.5 kW/m$^2$.  Heat tenability can be calculated by
-
-\be
-    \Delta \chi_{\FED} = \frac{1}{4.1 \times 10^8 \, T^{-3.61}} \, \Delta t = 0.00068
-\ee
-for a 1 s increment. The following figure compares the calculated FED to its expected value.
+The thermal FED is a function of the radiative and convective exposure to the targets. The radiative component is only include if the incident radiant flux is greater than 2.5~\unit{kW/m^2}. The first target at 3~m from the fire does not see a radiant flux greater than 2.5~\unit{kW/m^2}. The second target does. Using the CFAST predicted target gas temperatures an incident radiant flux, the thermal FED can be computed and compared to the CFAST predicted values for the two targets.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/heat_tenability}
-\caption[Results of the test case \ct{heat_tenability.in}]{Expected and CFAST calculated values for fractional effective dose due to convected heat in a one room test case \ct{heat_tenability.in}.}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/FED_heat}
+\caption[Results of the test case \ct{fed.in}]{Expected and CFAST calculated values for fractional effective dose due to convected heat in a one room test case \ct{fed.in}.}
 \label{fig_heat_tenability}
 \end{figure}
 

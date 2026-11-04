@@ -1,8 +1,5 @@
 import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
-from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
 import os
 
 t= np.array([50.,58.])

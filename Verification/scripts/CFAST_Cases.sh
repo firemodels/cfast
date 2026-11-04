@@ -33,8 +33,6 @@ $RUNCFAST -d Radiation radiation_5.in
 $RUNCFAST -d Species Trace_Species_1.in
 $RUNCFAST -d Species Trace_Species_2.in
 $RUNCFAST -d Species Trace_Species_3.in
-$RUNCFAST -d Species gas_tenability.in
-$RUNCFAST -d Species heat_tenability.in
 $RUNCFAST -d Species methane_flame_simple.in
 $RUNCFAST -d Species species_test.in
 
@@ -43,6 +41,7 @@ $RUNCFAST -d Sprinkler suppression.in
 
 $RUNCFAST -d Target target_1.in
 $RUNCFAST -d Target target_2.in
+$RUNCFAST -d Target fed.in
 
 $RUNCFAST -d Thermal_Equilibrium basic_tempequilib.in
 $RUNCFAST -d Thermal_Equilibrium basic_tempequilib_window.in

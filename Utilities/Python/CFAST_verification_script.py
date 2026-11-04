@@ -36,6 +36,7 @@ print("suppression...");                       safe_run("./scripts/suppression.p
 print("target_2...");                          safe_run("./scripts/target_2.py")
 print("generate_cedit_figures...");            safe_run("../../Manuals/CFAST_Users_Guide/generate_cedit_figures.py", [])
 print("volume_check...");                          safe_run("./scripts/volume_check.py")
+print("fed...");                          safe_run("./scripts/fed.py")
 
 # Dataplot and scatplot options
 

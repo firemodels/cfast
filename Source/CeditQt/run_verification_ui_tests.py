@@ -2304,7 +2304,7 @@ def check_fire_import():
             dialog.deleteLater()
 
             button = next(button for button in tab.findChildren(QPushButton)
-                          if button.text() == "From File")
+                          if button.text() == "Load Fire Curve")
             file_picker = "tabs.fires_tab.QFileDialog.getOpenFileNames"
             dialog_exec = "tabs.fires_tab.FireImportDialog.exec"
             with patch(file_picker, return_value=([], "")):

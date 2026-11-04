@@ -347,7 +347,7 @@ module solve_routines
 
     ! main solve loop
 
-    do while (idid>=0 .and. t<tstop)
+    main_loop: do while (idid>=0 .and. t<tstop)
         ! DASSL equation with most error
         ieqmax = 0
 
@@ -484,7 +484,7 @@ module solve_routines
             return
         end if
 
-        if (t<tstop) then
+        do_ddassl: if (t<tstop) then
             idset = 0
             ipar(2) = some
             told = t
@@ -618,29 +618,31 @@ module solve_routines
             ! calculate gas dosage
             call update_species (dt)
 
+            ! call output routines one more time for final timestep
+            if (tout == tstop) then 
+               call output_results (t)
+               call output_spreadsheet(t)
+               ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
+               ! smokeview are what is expected.
+               smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
+               smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
+               smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
+               smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
+               call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
+               call output_spreadsheet_smokeview(t)
+               call output_status (t, dt)
+               call output_slicedata(t,first_time)
+               call output_isodata(t,first_time) 
+            end if 
+            
             total_steps = total_steps + 1
             if (stp_cnt_max>=0.and.total_steps>stp_cnt_max) then
                 call delete_output_files (stopfile)
                 write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
                 call cfastexit ('solve_simulation', 5)
             end if
-        end if
-    end do
-
-    ! call output routines one more time for final timestep
-    call output_results (t)
-    call output_spreadsheet(t)
-    ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
-    ! smokeview are what is expected.
-    smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
-    smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
-    smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
-    smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
-    call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
-    call output_spreadsheet_smokeview(t)
-    call output_status (t, dt)
-    call output_slicedata(t,first_time)
-    call output_isodata(t,first_time)    
+        end if do_ddassl
+    end do main_loop
     
     end subroutine solve_simulation
 

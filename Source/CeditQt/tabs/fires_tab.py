@@ -953,6 +953,7 @@ class FiresTab(QWidget):
     def clear_editor(self):
         self.loading = True
         try:
+            self.current_property_id = ""
             for widget in [
                 self.decay_time_edit,
                 self.spray_density_edit,
@@ -1356,9 +1357,9 @@ class FiresTab(QWidget):
     def next_curve_id(self, prefix: str) -> str:
         number = 1
         used = {prop.id for prop in self.fire_properties}
-        while f"{prefix}_{number}" in used:
+        while f"{prefix}_{number}_Def" in used:
             number += 1
-        return f"{prefix}_{number}_def"
+        return f"{prefix}_{number}_Def"
 
     def add_new_fire(self):
         self.save_current_editor()

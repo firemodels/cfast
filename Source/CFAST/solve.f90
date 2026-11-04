@@ -347,8 +347,7 @@ module solve_routines
 
     ! main solve loop
 
-    do while (idid>=0 .and. t+0.000001_eb<=tstop)
-
+    main_loop: do while (idid>=0 .and. t<tstop)
         ! DASSL equation with most error
         ieqmax = 0
 
@@ -402,7 +401,7 @@ module solve_routines
         if (idid>0) then
 
             ! printed output
-            if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
+            if (t>=min(tprint,tstop).and.iprint) then
                 i_time_step = int(tprint)
                 call output_results (t)
                 call output_status (t, dt)
@@ -410,7 +409,7 @@ module solve_routines
             end if
 
             ! smokeview output
-            if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
+            if (t>=min(tsmv,tstop).and.ismv) then
                 i_time_step = int(tsmv)
                 ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
                 call collect_fire_data_for_smokeview (nfires)
@@ -437,8 +436,8 @@ module solve_routines
                 first_time = 0
             end if
 
-            ! spreadsheet output
-            if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
+            ! spreadsheet 
+            if (t>=min(tspread,tstop).and.ispread) then
                 call output_spreadsheet(t)
                 i_time_step = int(tspread)
                 tspread =tspread + dspread
@@ -450,7 +449,7 @@ module solve_routines
             end if
 
             ! diagnostic output
-            if (t+0.0001_eb>tpaws) then
+            if (t>=tpaws) then
                 i_time_step = int(tpaws)
                 call output_results (t)
                 tpaws = tstop + 1.0_eb
@@ -485,7 +484,7 @@ module solve_routines
             return
         end if
 
-        if (t<tstop) then
+        do_ddassl: if (t<tstop) then
             idset = 0
             ipar(2) = some
             told = t
@@ -619,15 +618,35 @@ module solve_routines
             ! calculate gas dosage
             call update_species (dt)
 
+            ! call output routines one more time for final timestep
+            if (tout == tstop) then 
+               call output_results (t)
+               call output_spreadsheet(t)
+               if (ismv) then
+                  ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
+                  call collect_fire_data_for_smokeview (nfires)
+                  ! Using the absolute room pressure minus the absolute ref pressure makes sure that the relp values going to
+                  ! smokeview are what is expected.               smv_relp(1:n_rooms) = roominfo(1:n_rooms)%absp - pressure_ref
+                  smv_zlay(1:n_rooms) = roominfo(1:n_rooms)%depth(l)
+                  smv_tu(1:n_rooms) = roominfo(1:n_rooms)%temp(u)
+                  smv_tl(1:n_rooms) = roominfo(1:n_rooms)%temp(l)
+                  call output_smokeview_plot_data(t,n_rooms,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
+                  call output_spreadsheet_smokeview(t)
+                  call output_status (t, dt)
+                  call output_slicedata(t,first_time)
+                  call output_isodata(t,first_time) 
+               endif
+            end if 
+            
             total_steps = total_steps + 1
             if (stp_cnt_max>=0.and.total_steps>stp_cnt_max) then
                 call delete_output_files (stopfile)
                 write (errormessage,'(a,1pg11.3,a,g11.3)') 'Stopped by user request at T = ', t, ' DT = ', dt
                 call cfastexit ('solve_simulation', 5)
             end if
-        end if
-    end do
-
+        end if do_ddassl
+    end do main_loop
+    
     end subroutine solve_simulation
 
 ! --------------------------- update_solution -------------------------------------------

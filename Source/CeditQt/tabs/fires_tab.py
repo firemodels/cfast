@@ -635,7 +635,6 @@ class FiresTab(QWidget):
             self.x_position_edit,
             self.y_position_edit,
             self.setpoint_edit,
-            self.property_id_edit,
             self.carbon_edit,
             self.hydrogen_edit,
             self.oxygen_edit,
@@ -1022,11 +1021,21 @@ class FiresTab(QWidget):
     def property_editor_selection_changed(self, index: int):
         if self.loading or index < 0:
             return
-        prop_id = self.property_id_edit.itemText(index).strip()
-        prop = self.find_property(prop_id)
+
+        new_prop_id = self.property_id_edit.itemText(index).strip()
+
+        # Save changes to the property that was displayed before switching.
+        old_prop = self.find_property(self.current_property_id)
+        if old_prop is not None and old_prop.id != new_prop_id:
+            try:
+                self.save_property_editor(old_prop)
+            except ValueError:
+                pass
+
+        prop = self.find_property(new_prop_id)
         if prop is None:
             return
-        self.current_property_id = prop.id
+
         self.loading = True
         try:
             self.load_property_editor(prop)
@@ -1052,12 +1061,35 @@ class FiresTab(QWidget):
             if fire.fire_property_id == old_id:
                 fire.fire_property_id = new_id
         self.update_property_choices()
-        self.property_id_edit.setCurrentText(new_id)
-        if self.fire_property_combo.currentText().strip() == old_id:
-            self.fire_property_combo.setCurrentText(new_id)
+
+        self.loading = True
+        try:
+            self.property_id_edit.setCurrentText(new_id)
+
+            # Keep the selected compartment fire's assignment control in sync
+            # with its (possibly renamed) FireDefinition reference.
+            fire = self.selected_fire()
+            if fire is not None:
+                if fire.fire_property_id:
+                    set_combo_text(self.fire_property_combo, fire.fire_property_id)
+                else:
+                    self.fire_property_combo.setCurrentIndex(-1)
+        finally:
+            self.loading = False
+
+        # Refresh every summary row so fires in all compartments immediately
+        # show the renamed property ID, not only the currently selected row.
         self.rebuild_summary_table()
         self.select_summary_row_without_loading(self.current_index)
         self.update_curve_reference_errors()
+
+
+#        self.property_id_edit.setCurrentText(new_id)
+#        if self.fire_property_combo.currentText().strip() == old_id:
+#            self.fire_property_combo.setCurrentText(new_id)
+#        self.rebuild_summary_table()
+#        self.select_summary_row_without_loading(self.current_index)
+#        self.update_curve_reference_errors()
 
     def update_plot_for_property(self, prop: FireProperty | None):
         self.plot_canvas.plot_fire(prop)
@@ -1218,34 +1250,7 @@ class FiresTab(QWidget):
         fire.x_position = parse_value(LENGTH, self.x_position_edit.text(), "X Position", 0.0)
         fire.y_position = parse_value(LENGTH, self.y_position_edit.text(), "Y Position", 0.0)
 
-    def save_current_editor(self):
-        fire = self.selected_fire()
-        if fire is None:
-            prop = self.selected_property()
-            if prop is None:
-                return
-            prop.carbon = parse_int(self.carbon_edit.text(), "C", 0)
-            prop.hydrogen = parse_int(self.hydrogen_edit.text(), "H", 0)
-            prop.oxygen = parse_int(self.oxygen_edit.text(), "O", 0)
-            prop.nitrogen = parse_int(self.nitrogen_edit.text(), "N", 0)
-            prop.chlorine = parse_int(self.chlorine_edit.text(), "Cl", 0)
-            prop.heat_of_combustion = parse_value(HOC, self.heat_of_combustion_edit.text(), "Heat of Combustion", 50000.0)
-            prop.radiative_fraction = parse_number(self.radiative_fraction_edit.text(), "Radiative Fraction", 0.35)
-            prop.ramp = self.extract_ramp()
-            self.update_plot_for_property(prop)
-            return
-
-        old_prop_id = fire.fire_property_id
-        self.save_current_fire_only()
-        new_prop_id = self.property_id_edit.currentText().strip() or fire.fire_property_id
-        old_prop = self.find_property(old_prop_id)
-        prop = self.find_property(new_prop_id)
-
-        if prop is None:
-            self.update_curve_reference_errors()
-            return
-
-        prop.id = new_prop_id
+    def save_property_editor(self, prop: FireProperty):
         prop.carbon = parse_int(self.carbon_edit.text(), "C", 0)
         prop.hydrogen = parse_int(self.hydrogen_edit.text(), "H", 0)
         prop.oxygen = parse_int(self.oxygen_edit.text(), "O", 0)
@@ -1264,9 +1269,21 @@ class FiresTab(QWidget):
         )
         prop.ramp = self.extract_ramp()
 
-        fire.fire_property_id = prop.id
-        self.update_property_choices()
-        set_combo_text(self.fire_property_combo, prop.id)
+    def save_current_editor(self):
+        # The selected compartment fire and the property shown in the fuel
+        # property editor are independent. Save each without changing the
+        # fire's assigned curve merely because another property is displayed.
+        fire = self.selected_fire()
+        if fire is not None:
+            self.save_current_fire_only()
+
+        prop = self.find_property(self.current_property_id)
+        if prop is None:
+            self.update_curve_reference_errors()
+            return
+
+        self.save_property_editor(prop)
+        self.update_plot_for_property(prop)
 
     def extract_ramp(self) -> list[FireRampPoint]:
         points: list[FireRampPoint] = []
@@ -1362,6 +1379,10 @@ class FiresTab(QWidget):
         return f"{prefix}_{number}_Def"
 
     def add_new_fire(self):
+        selected_fire = self.selected_fire()
+        assigned_property_id = (
+            selected_fire.fire_property_id if selected_fire is not None else None
+        )
         self.save_current_editor()
         prop_id = self.next_curve_id("Fire")
         prop = FireProperty(
@@ -1384,9 +1405,28 @@ class FiresTab(QWidget):
             self.load_property_editor(prop)
         finally:
             self.loading = False
+        # Creating a definition must not assign it to the selected
+        # compartment fire. Restore both the model reference and its combo.
+        if selected_fire is not None:
+            selected_fire.fire_property_id = assigned_property_id or ""
+            self.loading = True
+            try:
+                if assigned_property_id:
+                    set_combo_text(self.fire_property_combo, assigned_property_id)
+                else:
+                    self.fire_property_combo.setCurrentIndex(-1)
+            finally:
+                self.loading = False
+
         self.update_plot_for_property(prop)
+        self.rebuild_summary_table()
+        self.select_summary_row_without_loading(self.current_index)
 
     def add_t_squared_fire(self):
+        selected_fire = self.selected_fire()
+        assigned_property_id = (
+            selected_fire.fire_property_id if selected_fire is not None else None
+        )
         self.save_current_editor()
         prop_id = self.next_curve_id("T2_Fire")
         t_peak = 300.0
@@ -1411,7 +1451,22 @@ class FiresTab(QWidget):
             self.load_property_editor(prop)
         finally:
             self.loading = False
+        # Creating a definition must not assign it to the selected
+        # compartment fire. Restore both the model reference and its combo.
+        if selected_fire is not None:
+            selected_fire.fire_property_id = assigned_property_id or ""
+            self.loading = True
+            try:
+                if assigned_property_id:
+                    set_combo_text(self.fire_property_combo, assigned_property_id)
+                else:
+                    self.fire_property_combo.setCurrentIndex(-1)
+            finally:
+                self.loading = False
+
         self.update_plot_for_property(prop)
+        self.rebuild_summary_table()
+        self.select_summary_row_without_loading(self.current_index)
 
     def remove_fire(self):
         if not 0 <= self.current_index < len(self.fires):

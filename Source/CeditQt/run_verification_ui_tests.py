@@ -2339,11 +2339,23 @@ def check_fire_import():
                 button.click()
             assert len(messages) == 1
             assert all(name in messages[0] for name in ("empty.in", "invalid.in", "missing.in"))
-            assert len(tab.fires) == len(baseline.fires) + 1
+            assert tab.fires == baseline.fires
+            assert len(tab.fire_properties) == len(baseline.fire_properties) + 1
+            assert tab.fire_properties[-1].id == "Fuel"
 
+            tab.add_fire_to_comp()
+            tab.fire_property_combo.setCurrentText("Fuel")
+            assert len(tab.fires) == len(baseline.fires) + 1
             with patch(file_picker, return_value=([str(source)], "")), \
                     patch(dialog_exec, return_value=QDialog.DialogCode.Accepted):
                 button.click()
+            assert len(tab.fires) == len(baseline.fires) + 1
+            assert len(tab.fire_properties) == len(baseline.fire_properties) + 2
+            assert tab.fire_properties[-1].id == "Fuel_2"
+
+            tab.add_fire_to_comp()
+            tab.fire_property_combo.setCurrentText("Fuel_2")
+
             result = window.build_cfast_case()
             assert len(result.fires) == len(baseline.fires) + 2
             assert result.fires[:len(baseline.fires)] == baseline.fires
@@ -2381,13 +2393,13 @@ def check_unused_fire_definitions():
     case = opening_case()
     room = case.compartments[0]
     case.fire_properties = [
-        FireProperty(id=f"Fire_{i}_Fire", ramp=[
+        FireProperty(id=f"Fire_{i}_Def", ramp=[
             FireRampPoint(0, 0), FireRampPoint(300, 1000),
             FireRampPoint(600, 200 if i == 1 else 0),
         ]) for i in range(1, 4)
     ]
     case.fires = [FireDefinition(
-        id=f"Fire_{i}", comp_id=room.id, fire_property_id=f"Fire_{i}_Fire",
+        id=f"Fire_{i}", comp_id=room.id, fire_property_id=f"Fire_{i}_Def",
         x_position=room.width / 2, y_position=room.depth / 2,
     ) for i in range(1, 4)]
     window = CeditMainWindow()
@@ -2395,17 +2407,17 @@ def check_unused_fire_definitions():
         window.load_case(case)
         tab = window.fires_tab
         tab.select_fire(2)
-        tab.fire_property_combo.setCurrentText("Fire_1_Fire")
+        tab.fire_property_combo.setCurrentText("Fire_1_Def")
         expected = copy.deepcopy(window.build_cfast_case())
-        assert expected.fires[2].fire_property_id == "Fire_1_Fire"
+        assert expected.fires[2].fire_property_id == "Fire_1_Def"
         with tempfile.TemporaryDirectory(prefix="cedit-unused-fires-") as directory:
             path = Path(directory) / "shared.in"
             assert window.write_case_to_path(path) == path
             records = parse_namelists(path.read_text())
             assert [record.fields["ID"][0] for record in records if record.name == "CHEM"] == [
-                "Fire_1_Fire", "Fire_2_Fire"]
+                "Fire_1_Def", "Fire_2_Def"]
             tables = [record for record in records if record.name == "TABL"]
-            assert {record.fields["ID"][0] for record in tables} == {"Fire_1_Fire", "Fire_2_Fire"}
+            assert {record.fields["ID"][0] for record in tables} == {"Fire_1_Def", "Fire_2_Def"}
             assert len(tables) == 8  # One header and three points per used definition.
             reopened = read_cfast_input(path)
             assert reopened.fires == expected.fires
@@ -2414,7 +2426,7 @@ def check_unused_fire_definitions():
 
             # Reusing the old definition must include it again on the next save.
             tab.select_fire(2)
-            tab.fire_property_combo.setCurrentText("Fire_3_Fire")
+            tab.fire_property_combo.setCurrentText("Fire_3_Def")
             assert window.write_case_to_path(path) == path
             assert len(read_cfast_input(path).fire_properties) == 3
 

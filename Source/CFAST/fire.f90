@@ -499,7 +499,7 @@ module fire_routines
         end if
         c1 = 0.196*(grav_con*rho_inf**2/(cpg*t_inf))**onethird  ! under normal conditions, 0.071_eb
         c2 = 2.9_eb/((gsqrt*cpg*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
-        entrainment_rate = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
+        entrainment_rate = (c1*qj**onethird*deltaz**fivethirds*(1.0_eb+c2*qj**twothirds*deltaz**(-fivethirds)) * factor)/xf
     else
         entrainment_rate = 0.0_eb
     end if
@@ -938,6 +938,7 @@ module fire_routines
                 tplume_ceiling, vplume_ceiling)
             call get_ceiling_jet_temp_and_velocity(hrr, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, &
                 hall_width, tcj, vcj)
+
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
                 vg(1) = vg(1) + vcj*xdistance/r
@@ -1008,18 +1009,17 @@ module fire_routines
         end if
 
         if (zin>=zceil-delta_cj) then
-            ! if compartment is not a hallway or distance is smaller than 1/2 hallway width, use alpert and heskestad
-
-            !ceiling jet temperature
+            ! ceiling jet temperature
+            ! If disance is outside the turning radius pick Delichastsios if a hallway and distance > w/2 
+            ! otherwise use Alpert and Heskestad
             if (r/h<=0.2_eb) then
                 tcj = tplume
             else
-                tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
-            end if
-
-            if (w>0.0_eb.and.xin>w*0.5_eb) then
-                !compartment is a hallway and we've hit the walls, use delichastsios
-                tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*xin/h*(w/h)**onethird))
+               tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-fourthirds)
+               ! If the compartment is a hallway and the distance is greater than half the width of the hallway,
+               ! use the max of Delichastsios correlation or the Alpert/Heskestad correlation.
+               if (w>0.0_eb.and.xin>w*0.5_eb) &
+                  tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*xin/h*(w/h)**onethird))
             end if
 
             ! ceiling jet velocity
@@ -1094,11 +1094,11 @@ module fire_routines
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
             deltaz = max(0.1_eb,zin-zfire-z0_prime)
-            t_excess = min(t_max,9.1_eb*(tu/(grav_con*cpg**2*rho**2))**onethird * hrr_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(tu/(grav_con*cpg**2*rho**2))**onethird * hrr_c**twothirds * deltaz**(-fivethirds))
         else
             ! fire and target point are both in the same layer
             deltaz = max(0.1_eb,zin-zfire-z0)
-            t_excess = min(t_max,9.1_eb*(t_inf/(grav_con*cpg**2*rho**2))**onethird * hrr_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(t_inf/(grav_con*cpg**2*rho**2))**onethird * hrr_c**twothirds * deltaz**(-fivethirds))
         end if
 
         ! plume velocity

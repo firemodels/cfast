@@ -53,6 +53,8 @@ class Compartment:
     mechanical_count: int = 0
     detector_count: int = 0
     target_count: int = 0
+    # Editor-only choice, retained when all leakage values are zero.
+    use_leak_area_ratios: bool | None = field(default=None, compare=False, repr=False)
 
 
 @dataclass

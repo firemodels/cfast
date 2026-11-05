@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QRadioButton,
+    QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -218,6 +219,8 @@ class CompartmentsTab(QWidget):
         self.wall_leak_area_ratio_edit = UnitLineEdit()
         self.floor_leak_area_ratio_edit = UnitLineEdit()
         self.ceiling_leak_area_ratio_edit = UnitLineEdit()
+        self.leakage_method_combo = QComboBox()
+        self.leakage_method_combo.addItems(["Flow Coefficient", "Leak Area Ratios"])
 
         self.area_table = UnitTableWidget(6, 2)
         self.area_table.setHorizontalHeaderLabels(area_headers())
@@ -384,7 +387,7 @@ class CompartmentsTab(QWidget):
 
         middle_row = QHBoxLayout()
         middle_row.addWidget(self.build_geometry_group(), 1)
-        middle_row.addWidget(self.build_advanced_group(), 1)
+        middle_row.addWidget(self.build_flow_panel(), 1)
         group_layout.addLayout(middle_row)
 
         materials_group = QGroupBox("Materials")
@@ -430,30 +433,49 @@ class CompartmentsTab(QWidget):
         )
         return label
 
-    def build_advanced_group(self) -> QGroupBox:
-        group = QGroupBox("Advanced")
+    def build_flow_panel(self) -> QWidget:
+        group = QWidget()
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
 
-        flow_box = QGroupBox("Flow Characteristics")
+        flow_box = QGroupBox("Flow Configuration")
         flow_layout = QVBoxLayout()
         flow_layout.addWidget(self.normal_radio)
         flow_layout.addWidget(self.shaft_radio)
         flow_layout.addWidget(self.hall_radio)
 
-        form_layout = QFormLayout()
-        form_layout.addRow("Flow Coefficient:", self.flow_coefficient_edit)
-        form_layout.addRow("Wall Leak Area Ratio:", self.wall_leak_area_ratio_edit)
-        form_layout.addRow("Floor Leak Area Ratio:", self.floor_leak_area_ratio_edit)
-        form_layout.addRow("Ceiling Leak Area Ratio:", self.ceiling_leak_area_ratio_edit)
-        flow_layout.addLayout(form_layout)
         flow_box.setLayout(flow_layout)
+
+        leakage_box = QGroupBox("Leakage")
+        leakage_layout = QVBoxLayout(leakage_box)
+        method_layout = QFormLayout()
+        method_layout.addRow("Method:", self.leakage_method_combo)
+        leakage_layout.addLayout(method_layout)
+        self.leakage_inputs = QStackedWidget()
+        for rows in (
+            (("Flow Coefficient:", self.flow_coefficient_edit),),
+            (("Wall Leak Area Ratio:", self.wall_leak_area_ratio_edit),
+             ("Floor Leak Area Ratio:", self.floor_leak_area_ratio_edit),
+             ("Ceiling Leak Area Ratio:", self.ceiling_leak_area_ratio_edit)),
+        ):
+            page = QWidget()
+            form_layout = QFormLayout(page)
+            form_layout.setContentsMargins(0, 0, 0, 0)
+            for label, edit in rows:
+                form_layout.addRow(label, edit)
+            self.leakage_inputs.addWidget(page)
+        leakage_layout.addWidget(self.leakage_inputs)
+
+        flow_column = QVBoxLayout()
+        flow_column.addWidget(flow_box)
+        flow_column.addWidget(leakage_box)
 
         area_box = QGroupBox("Variable Cross-sectional Area")
         area_layout = QVBoxLayout()
         area_layout.addWidget(self.area_table)
         area_box.setLayout(area_layout)
 
-        layout.addWidget(flow_box, 1)
+        layout.addLayout(flow_column, 1)
         layout.addWidget(area_box, 1)
         group.setLayout(layout)
         return group
@@ -480,12 +502,17 @@ class CompartmentsTab(QWidget):
         self.flow_group.buttonClicked.connect(
             lambda *_args: self.save_detail_to_selected()
         )
+        self.leakage_method_combo.currentIndexChanged.connect(self.leakage_method_changed)
         self.area_table.cellChanged.connect(
             lambda *_args: self.save_detail_to_selected()
         )
         self.materials_table.cellChanged.connect(
             lambda *_args: self.save_detail_to_selected()
         )
+
+    def leakage_method_changed(self, index: int):
+        self.leakage_inputs.setCurrentIndex(index)
+        self.save_detail_to_selected()
 
     def add_compartment(self):
         self.save_detail_to_selected()
@@ -712,12 +739,25 @@ class CompartmentsTab(QWidget):
         self.wall_leak_area_ratio_edit.setText(format_number(c.wall_leak_area_ratio))
         self.floor_leak_area_ratio_edit.setText(format_number(c.floor_leak_area_ratio))
         self.ceiling_leak_area_ratio_edit.setText(format_number(c.ceiling_leak_area_ratio))
+        use_ratios = self.uses_leak_area_ratios(c)
+        self.leakage_method_combo.setCurrentIndex(1 if use_ratios else 0)
+        self.leakage_inputs.setCurrentIndex(self.leakage_method_combo.currentIndex())
 
         self.load_materials_table(c)
         self.load_area_table(c)
         self.fyi_edit.setText(c.fyi)
 
         self.loading = False
+
+    @staticmethod
+    def uses_leak_area_ratios(compartment: Compartment) -> bool:
+        if compartment.use_leak_area_ratios is not None:
+            return compartment.use_leak_area_ratios
+        # CFAST gives a positive flow coefficient precedence over ratios.
+        return compartment.flow_coefficient <= 0.0 and any((
+            compartment.wall_leak_area_ratio, compartment.floor_leak_area_ratio,
+            compartment.ceiling_leak_area_ratio,
+        ))
 
     def clear_detail(self):
         self.loading = True
@@ -740,6 +780,8 @@ class CompartmentsTab(QWidget):
             edit.clear()
 
         self.normal_radio.setChecked(True)
+        self.leakage_method_combo.setCurrentIndex(0)
+        self.leakage_inputs.setCurrentIndex(0)
         self.clear_materials_table()
         self.area_table.clearContents()
         self.area_table.setRowCount(6)
@@ -885,22 +927,24 @@ class CompartmentsTab(QWidget):
             c.origin_z = parse_value(LENGTH, self.z_edit.text() or "0", "Z Position")
             c.shaft = self.shaft_radio.isChecked()
             c.hall = self.hall_radio.isChecked()
-            c.flow_coefficient = parse_value(
-                FLOW_COEFFICIENT, self.flow_coefficient_edit.text(),
-                "Flow Coefficient", default=0.0,
-            )
-            c.wall_leak_area_ratio = parse_number(
-                self.wall_leak_area_ratio_edit.text() or "0",
-                "Wall Leak Area Ratio",
-            )
-            c.floor_leak_area_ratio = parse_number(
-                self.floor_leak_area_ratio_edit.text() or "0",
-                "Floor Leak Area Ratio",
-            )
-            c.ceiling_leak_area_ratio = parse_number(
-                self.ceiling_leak_area_ratio_edit.text() or "0",
-                "Ceiling Leak Area Ratio",
-            )
+            use_ratios = self.leakage_method_combo.currentIndex() == 1
+            coefficient = 0.0
+            ratios = (0.0, 0.0, 0.0)
+            if use_ratios:
+                ratios = tuple(parse_number(edit.text() or "0", label) for edit, label in (
+                    (self.wall_leak_area_ratio_edit, "Wall Leak Area Ratio"),
+                    (self.floor_leak_area_ratio_edit, "Floor Leak Area Ratio"),
+                    (self.ceiling_leak_area_ratio_edit, "Ceiling Leak Area Ratio"),
+                ))
+            else:
+                coefficient = parse_value(
+                    FLOW_COEFFICIENT, self.flow_coefficient_edit.text(),
+                    "Flow Coefficient", default=0.0,
+                )
+            c.use_leak_area_ratios = use_ratios
+            c.flow_coefficient = coefficient
+            (c.wall_leak_area_ratio, c.floor_leak_area_ratio,
+             c.ceiling_leak_area_ratio) = ratios
             c.fyi = self.fyi_edit.text().strip()
             self.save_materials_from_table(c)
             self.save_area_from_table(c)
@@ -982,6 +1026,15 @@ class CompartmentsTab(QWidget):
         ids_seen: set[str] = set()
 
         for row, compartment in enumerate(self.compartments, start=1):
+            # Normalize every compartment, including rows not visited since import.
+            compartment.use_leak_area_ratios = self.uses_leak_area_ratios(compartment)
+            if compartment.use_leak_area_ratios:
+                compartment.flow_coefficient = 0.0
+            else:
+                compartment.wall_leak_area_ratio = 0.0
+                compartment.floor_leak_area_ratio = 0.0
+                compartment.ceiling_leak_area_ratio = 0.0
+
             if not compartment.id:
                 raise ValueError(f"Compartments row {row}: ID is required.")
 

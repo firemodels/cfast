@@ -19,6 +19,8 @@ real(eb), parameter :: sigma = 5.67e-8_eb
 
 real(eb), parameter :: onethird = 1.0_eb/3.0_eb
 real(eb), parameter :: twothirds = 2.0_eb/3.0_eb
+real(eb), parameter :: fourthirds = 4.0_eb/3.0_eb
+real(eb), parameter :: fivethirds = 5.0_eb/3.0_eb
 
 real(eb), parameter :: grav_con = 9.80665_eb
 real(eb), parameter :: gsqrt = sqrt(grav_con)

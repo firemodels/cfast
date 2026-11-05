@@ -89,9 +89,6 @@ df = df.drop(df[(df["Time"] > 30) & (df["Time"] < 40)].index)
 df = df.drop(df[(df["Time"] > 40) & (df["Time"] < 50)].index)
 df = df.drop(df[(df["Time"] > 50) & (df["Time"] < 60)].index)
 
-
-print(df)
-
 outfile = os.path.join(data_dir, 'fed.csv')
 
 df.to_csv(outfile, header=True, index=False)

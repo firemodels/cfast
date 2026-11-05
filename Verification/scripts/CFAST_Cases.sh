@@ -7,6 +7,7 @@ $RUNCFAST -d Energy_Balance sealed_test.in
 $RUNCFAST -d Energy_Balance sealed_test_2_layers.in
 
 $RUNCFAST -d Geometry Volume_Check.in
+$RUNCFAST -d Geometry hallway_check.in
 
 $RUNCFAST -d Fires Ignition_Test.in
 

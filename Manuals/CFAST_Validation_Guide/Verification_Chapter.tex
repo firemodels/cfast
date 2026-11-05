@@ -434,8 +434,10 @@ The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 \section{Geometry}
 \label{geometry}
 
+\subsection{Varying Cross-Sectional Area}
+
 \label{volume_check}
-Three compartments (3~m x 3~m x 3~m) each with door opening that is 1~m wide by 2~m tall have a constant 900~kW fire. The first compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then 4~\unit{m^2} to the ceiling. The second compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then tapering to 4~\unit{m^2} at 2.5~m. The third compartment is defined with a cross-sectional area that is 4~\unit{m^2} from the floor up to 0.5~m and then increasing to 9~\unit{m^2} at 2.5~m. With the same fire size and door opening, similar layer heights are expected, however, different layer volumes will result. The CFAST predicted steady-state layer height is used to determine the expected layer volume.
+Three compartments (3~m by 3~m by 3~m) each with door opening that is 1~m wide by 2~m tall have a constant 900~kW fire. The first compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then 4~\unit{m^2} to the ceiling. The second compartment is defined with a cross-sectional area that is 9~\unit{m^2} from the floor up to 0.5~m and then tapering to 4~\unit{m^2} at 2.5~m. The third compartment is defined with a cross-sectional area that is 4~\unit{m^2} from the floor up to 0.5~m and then increasing to 9~\unit{m^2} at 2.5~m. With the same fire size and door opening, similar layer heights are expected, however, different layer volumes will result. The CFAST predicted steady-state layer height is used to determine the expected layer volume.
 
 \begin{figure}[h]
     \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -446,6 +448,19 @@ Three compartments (3~m x 3~m x 3~m) each with door opening that is 1~m wide by 
     \label{Volume_Check_Results}
 \end{figure}
 
+\subsection{Hallways}
+
+\label{hallway_check}
+Two compartments (4~m by 10~m by 2.5~m) each with an opening that is 10~m wide by 2.5~m tall have a constant 500~kW fire that is 1~\unit{m^2} in area.  The fire is placed 1~m from the narrow end of the compartment. The second compartment is defined as a hallway. Four heat detectors are placed in each compartment at 0~m, 2~m, and 8~m from the center of the fire. At 0~m, the heat detector is within the turning radius of the plume, and the temperature at the detector should be just the plume temperature. At 2~m, the detector is exactly one-half the width of 4~m, and the temperature at the detector should be given by the Alpert and Heskestad ceiling jet correlation~\cite{Alpert:SFPE} for both compartments. At 8~m the non-hallway compartment should still use the Alpert and Heskestad ceiling jet correlation, and the hallway compartment should use the Delichastsios correlation~\cite{Alpert:SFPE}. 
+
+\begin{figure}[h]
+    \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+        \includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/hallway_check_1} &
+        \includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/hallway_check_2} \\
+    \end{tabular*}
+    \caption[Results of the test case \ct{hallway_check.in}]{CFAST layer heights and Expected and CFAST calculated layer volumes for the case \\ \ct{hallway_check.in}.}
+    \label{hallway_check_Results}
+\end{figure}
 
 \section{Heat Transfer}
 \label{radiation}

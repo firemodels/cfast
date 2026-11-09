@@ -833,7 +833,7 @@ save_build_status()
 
 email_build_status()
 {
-   local label subject
+   local label subject branch
    stop_time=$(date)
    if [[ $platform == osx ]]; then
       IFORT_VERSION=$(gfortran --version 2>&1)
@@ -850,14 +850,15 @@ email_build_status()
       [[ -z $GITURL ]] || printf 'Linux bundle, Manuals: %s\n' "$GITURL"
    } >> "$TIME_LOG"
    if [[ -s $ERROR_LOG ]]; then
-      label='failure'
-      [[ ! -s $WARNING_LOG ]] || label='failure and warnings'
+      label='failure.'
+      [[ ! -s $WARNING_LOG ]] || label='failure and warnings.'
    elif [[ -s $WARNING_LOG ]]; then
-      label='success with warnings'
+      label='success with warnings!'
    else
-      label='success'
+      label='success!'
    fi
-   subject="CFASTbot build $label on ${hostname}. Revision ${GIT_REVISION}."
+   branch=$(git -C "$cfastrepo" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
+   subject="cfastbot $label Version: ${CFAST_REVISION:-$GIT_REVISION}, Branch: $branch"
    # Keep the exact body and mail diagnostics even if delivery fails.
    {
       [[ ! -s $ERROR_LOG ]] || cat "$ERROR_LOG"
@@ -869,7 +870,8 @@ email_build_status()
       echo "Build report: $OUTPUT_DIR/email_body.txt"
       return 0
    fi
-   if ! mail -S posix -S "reply-to=${mailTo// /,}" -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
+   # Use the same configured sender and mail transport as Firebot.
+   if ! mail -s "$subject" $mailTo < "$OUTPUT_DIR/email_body.txt" > "$OUTPUT_DIR/email.log" 2>&1; then
       echo "Could not send CFASTbot status email; see $OUTPUT_DIR/email.log" >&2
       return 1
    fi

@@ -26,6 +26,11 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 - Avoid major code or documentation changes near a release unless the maintainers approve them.
 - When asked to write a commit message, use a consistent leading tag such as `CFAST Source`, `CFAST User Guide`, `CFAST Tech Guide`, `CFAST Validation Guide`, `CFAST Configuration Guide`, `CFAST Validation`, `CFAST Verification`, `Bibliography`, or `Python`.
 
+## Python dependency compatibility across Firemodels
+
+- Keep Python dependencies compatible across FDS, CFAST, and SMV on Linux, macOS, and Windows; scope platform- or Python-specific pins with environment markers.
+- Validate dependency changes against the supported Python versions and affected CI/bundle builds; explicitly report any untested configurations.
+
 ## Fortran source style
 
 - Use `IMPLICIT NONE`.

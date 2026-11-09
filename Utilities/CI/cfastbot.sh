@@ -923,14 +923,12 @@ reporoot=$(cd "$CI_DIR/../../.." && pwd)
 GITSTATUS_DIR=${CFAST_CI_STATE_DIR:-$HOME/.cfastbot}
 OUTPUT_DIR=${CFAST_CI_OUTPUT_DIR:?Run this script through run_cfastbot.sh}
 HISTORY_DIR=$GITSTATUS_DIR/history
-EMAIL_LIST=$GITSTATUS_DIR/cfastbot_email_list.sh
 ERROR_LOG=$OUTPUT_DIR/errors
 WARNING_LOG=$OUTPUT_DIR/warnings
 TIME_LOG=$OUTPUT_DIR/timings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 NEWGUIDE_DIR=$OUTPUT_DIR/NEW_GUIDES
 mkdir -p "$HISTORY_DIR"
-[[ ! -f $EMAIL_LIST ]] || source "$EMAIL_LIST"
 QUEUE=
 platform=linux
 cfast_platform=linux
@@ -947,6 +945,8 @@ fi
 export platform cfast_platform
 UPLOAD=
 PYTHON_ENV_ACTIVE=
+# Use mailToCFAST exported by the calling shell unless overridden with -m.
+mailTo=${mailToCFAST:-}
 while (($#)); do
    case "$1" in
       -q) QUEUE=$2; shift 2;;
@@ -959,7 +959,6 @@ cfastrepo=$reporoot/cfast
 fdsrepo=$reporoot/fds
 smvrepo=$reporoot/smv
 exprepo=$reporoot/exp
-mailTo=${mailTo:-${mailToCFAST:-}}
 if [[ -z $mailTo && $platform != osx ]]; then mailTo=$(git -C "$cfastrepo" config user.email || whoami); fi
 hostname=$(hostname)
 start_time=$(date)

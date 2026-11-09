@@ -44,7 +44,13 @@ Run from `cfast/Utilities/CI` in the prepared repository collection:
 ./run_cfastbot.sh -q firebot -U -m your@email.address
 ```
 
-Cases run locally and sequentially by default; `-q` selects a Slurm partition, `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, `cfastbot_email_list.sh` supplies the recipient if configured. Linux also falls back to the configured Git email. On macOS, an unconfigured recipient leaves the report in `email_body.txt` without requiring email delivery.
+Cases run locally and sequentially by default; `-q` selects a Slurm partition, `-U` enables uploads, and `-m` sets the notification email. `-h` displays help. When `-m` is omitted, the exported `mailToCFAST` variable supplies the notification list. Set it in the account's `$HOME/.bashrc`, using spaces between addresses. For the NIST firebot account, include `-r firebot@nist.gov` to select the sender:
+
+```bash
+export mailToCFAST="-r firebot@nist.gov user1@host1.com user2@host2.com"
+```
+
+Put the export before any `.bashrc` return that skips non-interactive shells. For cron commands using `bash -lc`, ensure the account's login startup file (usually `$HOME/.bash_profile`) sources `.bashrc`. Exporting is required so the launcher and bot subprocesses inherit the list. The `-m` option overrides the exported list, including any sender option. CFASTbot does not load a separate mailing-list file. Linux falls back to the configured Git email or local username when no list is supplied. On macOS, an unconfigured recipient leaves the report in `email_body.txt` without requiring email delivery.
 
 The launcher finds sibling `fds`, `exp`, and `smv` repositories from its own location. Every invocation runs the complete pipeline: clean CFAST builds (GNU on macOS, Intel on Linux), Smokeview builds (Clang on macOS, Intel on Linux), Verification/Validation, CEditQt checks, figures, and manuals. Each V&V case gets a short debug initialization run (two iterations) and one full release simulation. The separate UI check imports and saves the input without running CFAST; its rewritten inputs and logs do not replace the simulation CSV files used for plotting. It uses Python and LaTeX; Slurm is required only when `-q` is supplied. Standalone suite execution does not require the Smokeview or manual toolchains.
 

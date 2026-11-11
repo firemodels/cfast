@@ -1,5 +1,4 @@
 @echo off
-setlocal
 set clean_cfast=false
 set arg1=
 set arg2=
@@ -37,6 +36,7 @@ exit /b 0
 if x%arg1% == xbot goto skip1
 call ..\..\scripts\setup_intel_compilers.bat intel64
 :skip1
+setlocal
 
 set version=Test Version     :
 if "x%arg2%" == "xrelease" (

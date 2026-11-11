@@ -4,7 +4,7 @@ CFAST is a two-zone fire model that predicts the thermal environment caused by a
 
 Smokeview ([SMV](https://github.com/firemodels/smv)) is a visualization program used to display [FDS](https://github.com/firemodels/fds) and CFAST simulation results.
 
-<!--
+<!-- 
 For more information, including a link to our discussion forum, please visit the [CFAST website](https://pages.nist.gov/cfast/).
 -->
 

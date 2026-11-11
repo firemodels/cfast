@@ -619,7 +619,7 @@ module solve_routines
             call update_species (dt)
 
             ! call output routines one more time for final timestep
-            if (tout == tstop) then 
+            if (t == tstop) then 
                call output_results (t)
                call output_spreadsheet(t)
                if (ismv) then

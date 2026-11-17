@@ -28,6 +28,11 @@ from cfast_case import (
 
 _IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][-+]?\d+)?")
+_SURFACE_ARRAY_DEFAULTS = {
+    f"{surface}_{parameter}": default
+    for surface in ("CEILING", "WALL", "FLOOR")
+    for parameter, default in (("MATL_ID", "OFF"), ("THICKNESS", 0.0))
+}
 
 
 # Current executable namelists from Source/CFAST/input_namelist.f90.
@@ -715,7 +720,19 @@ def parse_fields(body: str) -> dict[str, list[Any]]:
 
                 values.append(token.value)
 
-            if key.startswith("OFFSETS("):
+            base_key = key.split("(", 1)[0]
+            if base_key in _SURFACE_ARRAY_DEFAULTS:
+                start = 0
+                if "(" in key:
+                    subscript = key[key.index("(") + 1:-1].strip()
+                    if not subscript.isdigit():
+                        raise ValueError(f"{base_key} requires a layer index between 1 and 3: {key}.")
+                    start = int(subscript) - 1
+                if not 0 <= start < 3 or start + len(values) > 3:
+                    raise ValueError(f"{base_key} has only three layers: {key}.")
+                array = fields.setdefault(base_key, [_SURFACE_ARRAY_DEFAULTS[base_key]] * 3)
+                array[start:start + len(values)] = values
+            elif key.startswith("OFFSETS("):
                 apply_offset_section(fields, key, values)
             elif key == "OFFSETS":
                 offsets = fields.setdefault(key, [])
@@ -832,10 +849,11 @@ def tokenize(body: str) -> list[Token]:
 
         ident = _IDENT_RE.match(body, index)
         if ident is not None:
-            if ident.group(0).upper() == "OFFSETS":
+            name = ident.group(0).upper()
+            if name == "OFFSETS" or name in _SURFACE_ARRAY_DEFAULTS:
                 section = re.match(r"\s*\([^)]*\)", body[ident.end():])
                 if section is not None:
-                    tokens.append(Token("IDENT", "OFFSETS" + section.group(0).strip()))
+                    tokens.append(Token("IDENT", name + section.group(0).strip()))
                     index = ident.end() + section.end()
                     continue
             tokens.append(Token("IDENT", ident.group(0)))

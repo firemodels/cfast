@@ -1269,7 +1269,7 @@ class FiresTab(QWidget):
         )
         prop.ramp = self.extract_ramp()
 
-    def save_current_editor(self):
+    def save_current_editor(self, *, refresh_plot: bool = True):
         # The selected compartment fire and the property shown in the fuel
         # property editor are independent. Save each without changing the
         # fire's assigned curve merely because another property is displayed.
@@ -1283,7 +1283,8 @@ class FiresTab(QWidget):
             return
 
         self.save_property_editor(prop)
-        self.update_plot_for_property(prop)
+        if refresh_plot:
+            self.update_plot_for_property(prop)
 
     def extract_ramp(self) -> list[FireRampPoint]:
         points: list[FireRampPoint] = []
@@ -1543,7 +1544,8 @@ class FiresTab(QWidget):
         self.spray_density_label.setText(f"Spray Density ({unit_label(SPRAY_DENSITY)}):")
 
     def add_to_case(self, case: CfastCase):
-        self.save_current_editor()
+        # The edit handlers update the plot; assembling input need not draw it.
+        self.save_current_editor(refresh_plot=False)
         case.fires = list(self.fires)
         case.fire_properties = list(self.fire_properties)
 

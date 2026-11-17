@@ -1760,7 +1760,8 @@ class CeditMainWindow(QMainWindow):
         box.setWindowTitle("About CFAST Editor (CEdit)")
         box.setText(
             "Python/PySide6 front end for editing and running CFAST input files.\n\n"
-            f"{version_text}"
+            f"{version_text}\n"
+            f"Python runtime: {sys.version.split()[0]}"
         )
         pixmap = cedit_about_pixmap()
         if pixmap.isNull():

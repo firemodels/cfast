@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 import os
 import re
 import subprocess
@@ -395,6 +396,7 @@ class CeditMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self._suppress_live_validation = False
         self.current_path: Path | None = None
         self.setWindowTitle(cedit_window_title(self.current_path))
         self.resize(1200, 800)
@@ -708,6 +710,12 @@ class CeditMainWindow(QMainWindow):
         return row
 
     def build_cfast_case(self, require_compartments: bool = True):
+        # Committing editor values can refresh tables and emit itemChanged.
+        # Reading the case for validation or saving must not count as an edit.
+        with self.suspend_live_validation():
+            return self._build_cfast_case(require_compartments)
+
+    def _build_cfast_case(self, require_compartments: bool):
         case = CfastCase()
         case.extra_namelists = list(self.extra_namelists)
         self.simulation_tab.add_to_case(case)
@@ -737,7 +745,23 @@ class CeditMainWindow(QMainWindow):
             widget.itemChanged.connect(self.schedule_live_validation)
 
     def schedule_live_validation(self, *_args):
+        if self._suppress_live_validation:
+            return
+        widget = self.sender()
+        while widget is not None and widget is not self:
+            if getattr(widget, "loading", False):
+                return
+            widget = widget.parent()
         self.live_validation_timer.start()
+
+    @contextmanager
+    def suspend_live_validation(self):
+        previous = self._suppress_live_validation
+        self._suppress_live_validation = True
+        try:
+            yield
+        finally:
+            self._suppress_live_validation = previous
 
     def set_validation_status(self, message: str | None = None):
         if message:
@@ -750,6 +774,7 @@ class CeditMainWindow(QMainWindow):
             self.statusBar().showMessage("No Errors")
 
     def update_live_validation(self):
+        self.live_validation_timer.stop()
         if self.cfast_is_running():
             return
 
@@ -1081,6 +1106,11 @@ class CeditMainWindow(QMainWindow):
             )
 
     def load_case(self, case: CfastCase):
+        self.live_validation_timer.stop()
+        with self.suspend_live_validation():
+            self._load_case(case)
+
+    def _load_case(self, case: CfastCase):
         self.extra_namelists = list(getattr(case, "extra_namelists", []))
         self.simulation_tab.load_case(case)
         self.thermal_properties_tab.load_case(case)

@@ -401,9 +401,9 @@ module fire_routines
         hrr = hrr_c/(1.0_eb-chirad)
         upper_plume_height = max (0.0_eb, min(layer_thickness,(room_height - z_fire_position)))
 
-        call heskestad_plume (hrr, hrr_c, upper_plume_height, fire_area, &
+        call heskestad_plume (hrr, hrr_c, fire_area, &
            min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position), &
-            interior_ambient_temperature, entrainment_rate_upper)
+            upper_plume_height, interior_ambient_temperature, entrainment_rate_upper)
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
@@ -453,13 +453,11 @@ module fire_routines
 
 !> \param   q_t (input): total fire HRR (w)
 !> \param   q_c (input): convective fire HRR (w)
-!> \param   fire_area (input): cross sectional area at the base of the fire
-!> \param   x (input): distance from fire to wall in x direction (m)
-!> \param   y (input): distance from fire to wall in y direction (m)
-!> \param   z (input): height of the base of the fire (m)
-!> \param   t_inf (input): ambient temperature at base of the fire
-!> \param   pyrolysis_rate (input): mass loss rate of the fire (kg/s)
-!> \param   fire_area (input): cross sectional area at the base of the fire
+!> \param   fire_area (input): cross sectional area at the base of the fire (m^2)
+!> \param   x (input): distance from fire to nearest wall in x direction (m)
+!> \param   y (input): distance from fire to nearest wall in y direction (m)
+!> \param   z (input): height above the base of the fire at which entrainment is calculated (m)
+!> \param   t_inf (input): ambient temperature at base of the fire (K)
 !> \param   entrainment_rate (output): net entrainment rate up to height z (kg/s)
 
     subroutine heskestad_plume (q_t, q_c, fire_area, x, y, z, t_inf, entrainment_rate)

@@ -606,16 +606,17 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         ],
     )
 
-    misc_fields = [
-        f"ADIABATIC = {cfast_logical(case.adiabatic_surfaces)}",
-        f"LOWER_OXYGEN_LIMIT = {cfast_number(case.lower_oxygen_limit)}",
-        f"MAX_ITERATION = {cfast_number(case.max_iteration)}",
-        f"OVERWRITE = {cfast_logical(case.overwrite)}",
-        f"SPECIFIC_EXTINCTION = {cfast_vector(case.specific_extinction)}",
-    ]
-
+    misc_fields = []
+    if case.adiabatic_surfaces:
+        misc_fields.append("ADIABATIC = .TRUE.")
+    misc_fields.append(f"LOWER_OXYGEN_LIMIT = {cfast_number(case.lower_oxygen_limit)}")
+    if case.max_iteration != -1:
+        misc_fields.append(f"MAX_ITERATION = {cfast_number(case.max_iteration)}")
     if case.max_time_step is not None:
-        misc_fields.insert(3, f"MAX_TIME_STEP = {cfast_number(case.max_time_step)}")
+        misc_fields.append(f"MAX_TIME_STEP = {cfast_number(case.max_time_step)}")
+    if not case.overwrite:
+        misc_fields.append("OVERWRITE = .FALSE.")
+    misc_fields.append(f"SPECIFIC_EXTINCTION = {cfast_vector(case.specific_extinction)}")
 
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")
@@ -684,17 +685,44 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
             f"WIDTH = {cfast_number(compartment.width)}",
             f"ORIGIN = {cfast_vector((compartment.origin_x, compartment.origin_y, compartment.origin_z))}",
             f"GRID = {cfast_vector(compartment.grid)}",
-            f"CEILING_MATL_ID = {cfast_string_vector(compartment.ceiling_matl_id)}",
-            f"CEILING_THICKNESS = {cfast_vector(compartment.ceiling_thickness)}",
-            f"WALL_MATL_ID = {cfast_string_vector(compartment.wall_matl_id)}",
-            f"WALL_THICKNESS = {cfast_vector(compartment.wall_thickness)}",
-            f"FLOOR_MATL_ID = {cfast_string_vector(compartment.floor_matl_id)}",
-            f"FLOOR_THICKNESS = {cfast_vector(compartment.floor_thickness)}",
-            f"HALL = {cfast_logical(compartment.hall)}",
-            f"SHAFT = {cfast_logical(compartment.shaft)}",
-            f"LEAK_AREA_RATIO = {cfast_vector((compartment.wall_leak_area_ratio, compartment.floor_leak_area_ratio, compartment.ceiling_leak_area_ratio))}",
-            f"FLOW_COEFFICIENT = {cfast_number(compartment.flow_coefficient)}",
         ]
+
+        for surface in ("ceiling", "wall", "floor"):
+            material_ids = getattr(compartment, f"{surface}_matl_id")
+            thicknesses = getattr(compartment, f"{surface}_thickness")
+            active = [i for i, material_id in enumerate(material_ids)
+                      if material_id.strip().upper() != "OFF"]
+            if not active:
+                continue
+            prefix = surface.upper()
+            if active == list(range(len(active))):
+                # A short namelist array assignment leaves the trailing defaults intact.
+                fields.append(f"{prefix}_MATL_ID = {cfast_string_vector(material_ids[:len(active)])}")
+                fields.append(f"{prefix}_THICKNESS = {cfast_vector(thicknesses[:len(active)])}")
+            else:
+                # Preserve positions when an unused layer precedes an active one.
+                for i in active:
+                    fields.append(f"{prefix}_MATL_ID({i + 1}) = {cfast_string(material_ids[i])}")
+                    fields.append(f"{prefix}_THICKNESS({i + 1}) = {cfast_number(thicknesses[i])}")
+
+        if compartment.hall:
+            fields.append("HALL = .TRUE.")
+        if compartment.shaft:
+            fields.append("SHAFT = .TRUE.")
+        leak_area_ratios = (
+            compartment.wall_leak_area_ratio,
+            compartment.floor_leak_area_ratio,
+            compartment.ceiling_leak_area_ratio,
+        )
+        use_ratios = compartment.use_leak_area_ratios
+        if use_ratios is None:
+            # Imported cases follow CFAST's flow-coefficient precedence.
+            use_ratios = compartment.flow_coefficient <= 0.0 and any(leak_area_ratios)
+        if use_ratios:
+            if any(leak_area_ratios):
+                fields.append(f"LEAK_AREA_RATIO = {cfast_vector(leak_area_ratios)}")
+        elif compartment.flow_coefficient != 0.0:
+            fields.append(f"FLOW_COEFFICIENT = {cfast_number(compartment.flow_coefficient)}")
 
         if compartment.cross_section_heights and compartment.cross_section_areas:
             fields.append(
@@ -825,9 +853,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                 f"FLOW = {cfast_number(vent.flow)}",
                 f"CUTOFFS = {cfast_vector((vent.begin_dropoff, vent.zero_flow))}",
                 f"OFFSETS = {cfast_vector((vent.from_offset_x, vent.from_offset_y, vent.to_offset_x, vent.to_offset_y))}",
-                f"FILTER_EFFICIENCY = {cfast_number(vent.filter_efficiency)}",
-                f"FILTER_TIME = {cfast_number(vent.filter_time)}",
             ]
+
+            if vent.filter_efficiency != 0.0:
+                fields.append(f"FILTER_EFFICIENCY = {cfast_number(vent.filter_efficiency)}")
+            if vent.filter_time != 0.0:
+                fields.append(f"FILTER_TIME = {cfast_number(vent.filter_time)}")
 
             if criterion == "TIME" and t_values and f_values:
                 fields.extend(
@@ -869,10 +900,12 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
                     else f"SURFACE_ORIENTATION = {cfast_string(target.surface_orientation)}"
                 ),
                 f"MATL_ID = {cfast_string(target.matl_id)}",
-                f"THICKNESS = {cfast_number(target.thickness)}",
                 f"TEMPERATURE_DEPTH = {cfast_number(target.temperature_depth)}",
                 f"DEPTH_UNITS = {cfast_string(target.depth_units.upper())}",
             ]
+
+            if target.thickness != 0.0:
+                fields.append(f"THICKNESS = {cfast_number(target.thickness)}")
 
             if target.adiabatic:
                 fields.extend([
@@ -980,20 +1013,22 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
     for prop in case.fire_properties:
         if prop.id not in referenced_property_ids:
             continue
-        add_wrapped_namelist(
-            lines,
-            "CHEM",
-            [
-                f"ID = {cfast_string(prop.id)}",
-                f"CARBON = {prop.carbon}",
-                f"CHLORINE = {prop.chlorine}",
-                f"HYDROGEN = {prop.hydrogen}",
-                f"NITROGEN = {prop.nitrogen}",
-                f"OXYGEN = {prop.oxygen}",
-                f"HEAT_OF_COMBUSTION = {cfast_number(prop.heat_of_combustion)}",
-                f"RADIATIVE_FRACTION = {cfast_number(prop.radiative_fraction)}",
-            ],
-        )
+        fields = [
+            f"ID = {cfast_string(prop.id)}",
+            f"CARBON = {prop.carbon}",
+        ]
+        if prop.chlorine != 0:
+            fields.append(f"CHLORINE = {prop.chlorine}")
+        fields.append(f"HYDROGEN = {prop.hydrogen}")
+        if prop.nitrogen != 0:
+            fields.append(f"NITROGEN = {prop.nitrogen}")
+        if prop.oxygen != 0:
+            fields.append(f"OXYGEN = {prop.oxygen}")
+        fields.extend([
+            f"HEAT_OF_COMBUSTION = {cfast_number(prop.heat_of_combustion)}",
+            f"RADIATIVE_FRACTION = {cfast_number(prop.radiative_fraction)}",
+        ])
+        add_wrapped_namelist(lines, "CHEM", fields)
 
         lines.append(
             f"&TABL ID = {cfast_string(prop.id)}, "

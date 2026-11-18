@@ -28,7 +28,7 @@ The list uses numeric GitHub account IDs, including `preneke` and `rpeacoc`. Bot
 
 ## Scan behavior
 
-Jobs use disposable GitHub-hosted runners and trusted policy code. The scanner updates ClamAV signatures, checks detection with EICAR, and scans all files in both the submitted commit and merge result. Git fetches and verifies the objects; regular blobs are written as data without checkout, hooks, or filters. PR code is never executed. Scan jobs have read-only permissions and no project secrets.
+Jobs use disposable GitHub-hosted runners and trusted policy code. `clamav-cache.yml` refreshes cached ClamAV packages and signatures at midnight Eastern (including daylight saving time), subject to GitHub scheduling delays. Run **Refresh ClamAV cache** manually from Actions to seed the cache after installation. PR jobs restore this cache; a missing cache, a cache over 30 hours old, or incompatible runner dependencies triggers a fresh download. Only the refresh workflow saves the cache. The scanner checks detection with EICAR and scans all files in both the submitted commit and merge result. Git fetches and verifies the objects; regular blobs are written as data without checkout, hooks, or filters. PR code is never executed. Scan jobs have read-only permissions and no project secrets.
 
 Links, submodules, unresolved LFS pointers, oversized files, incomplete coverage, scanner errors, and timeouts fail the scan. Limits are 512 MiB per file, 4 GiB of source data, and 100,000 files per snapshot. Conflicting or stale PRs are not admitted. A clean scan does not replace code review or isolated testing.
 

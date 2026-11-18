@@ -40,7 +40,5 @@ axe-playwright-python==0.1.8
 pyee
 greenlet
 
-# Local utility packages (imports fdsplotlib)
--e ../../fds/Utilities/Python
-
-
+# fdsplotlib is provided by the shared FDS Python environment.
+# Keep external checkout paths out of this manifest so Dependabot can resolve it.

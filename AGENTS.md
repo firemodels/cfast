@@ -29,6 +29,7 @@ These rules adapt the firemodels [Developer Commit Guidelines](https://github.co
 ## Python dependency compatibility across Firemodels
 
 - Keep Python dependencies compatible across FDS, CFAST, and SMV on Linux, macOS, and Windows; scope platform- or Python-specific pins with environment markers.
+- FDS and CFAST use one shared FDS Python environment. Do not introduce incompatible pip requirements or separate environments. Before changing CFAST requirements, compare them with the current FDS requirements (use `fds_fork` when it is the designated reference). Keep shared package constraints and pins synchronized, including transitive dependency constraints; do not update an individual pin without checking the packages that require it.
 - Validate dependency changes against the supported Python versions and affected CI/bundle builds; explicitly report any untested configurations.
 
 ## Fortran source style

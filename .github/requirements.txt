@@ -31,7 +31,7 @@ spacy==3.8.18; python_version >= "3.10"
 thinc==8.3.14; python_version >= "3.10"
 ctranslate2==4.8.4
 sentencepiece==0.2.2
-stanza==1.10.1
+stanza==1.15.1
 
 # Online-manual accessibility audit (axe-core is bundled by the adapter).
 # Playwright constrains the compatible versions of these runtime dependencies.

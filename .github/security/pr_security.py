@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 
 ADMISSION = "CFAST / PR admission"
@@ -58,11 +59,22 @@ def prepare():
     status(SCAN, "pending")
     for attempt in range(10):
         candidate = pull.get("merge_commit_sha")
+        if not pull.get("merged"):
+            # Read the merge ref directly; the pull response may be stale.
+            try:
+                candidate = api(f"/repos/{repository}/git/ref/pull/{int(os.environ['PR_NUMBER'])}/merge")["object"]["sha"]
+            except urllib.error.HTTPError as error:
+                if error.code != 404:
+                    raise
         if candidate:
             commit = api(f"/repos/{repository}/git/commits/{candidate}")
-            if pull.get("merged") or [p["sha"] for p in commit["parents"]] == [base, head]:
+            parents = [p["sha"] for p in commit["parents"]]
+            if pull.get("merged") or parents == [base, head]:
                 merge = candidate
                 break
+            print(f"Merge {candidate}: parents={parents}; expected={[base, head]}")
+        else:
+            print(f"Merge attempt {attempt + 1}: no merge SHA available")
         if pull.get("mergeable") is False:
             break
         time.sleep(3)
@@ -70,6 +82,11 @@ def prepare():
         if pull["head"]["sha"] != head or (not pull.get("merged") and
                 (pull["state"] != "open" or pull["base"]["sha"] != base)):
             raise RuntimeError("PR changed while preparing scan")
+    if not merge:
+        if pull["state"] == "open":
+            status(ADMISSION, "failure")
+        status(SCAN, "error")
+        raise RuntimeError("Cannot prepare merge snapshot; see merge diagnostics above")
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write(f"trusted={str(member).lower()}\nbase_sha={base}\nmerge_sha={merge}\n")
     if pull["state"] == "open" and member and merge:

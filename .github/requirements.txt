@@ -2,7 +2,7 @@
 
 # Mirrored from fds/.github/requirements.txt; keep package requirements synchronized.
 
-numpy<2
+numpy<3
 matplotlib
 pandas
 scipy

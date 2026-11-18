@@ -1,5 +1,5 @@
 ## Consolidated Fire and Smoke Transport (CFAST)
-
+# dummy commit to test Actions
 CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure.
 
 Smokeview ([SMV](https://github.com/firemodels/smv)) is a visualization program used to display [FDS](https://github.com/firemodels/fds) and CFAST simulation results.

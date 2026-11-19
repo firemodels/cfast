@@ -112,7 +112,7 @@ CFAST does not include predefined thermal properties for compartment materials. 
 
 \section{Adding Thermal Properties From Another File}
 
-The \textbf{From File} button imports thermal properties from one or more existing CFAST input files. Select the desired files with extensions \ct{.in} or \ct{.cfast}. CEdit reads the \ct{MATL} records from all selected files and displays the available materials in a single list. Use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the materials to add, then click \textbf{OK}. Materials whose \ct{ID}s already exist in the current case are skipped. CEdit reports the numbers of materials added and duplicate \ct{ID}s are skipped.
+The \textbf{From File} button imports thermal properties from one or more existing CFAST input files. Select the desired files with extensions \ct{.in} or \ct{.cfast}. CEdit reads the \ct{MATL} records from all selected files and displays the available materials in a single list. Use the checkboxes or the \textbf{Select All} and \textbf{Deselect All} buttons to choose the materials to add, then click \textbf{OK}. Materials whose \ct{ID}s already exist in the current case are skipped. CEdit reports the number of materials added and duplicate \ct{ID}s are skipped.
 
 
 
@@ -253,7 +253,7 @@ Construction Element   & Leakage                        & \shortstack{Leakage Ar
 
 \begin{description}
 \item[FYI] Optional descriptive text retained with the compartment but not used in the calculation.
-\item[GRID] (default: 50,50,50; namelist: \ct{GRID(1:3)} Number of Smokeview sampling points along $x$, $y$, and $z$ axes. These parameters are purely for visualization within Smokeview for depicting plume and ceiling jet profiles.
+\item[GRID] (default: 50,50,50; namelist: \ct{GRID(1:3))} Number of Smokeview sampling points along $x$, $y$, and $z$ axes. These parameters are purely for visualization within Smokeview for depicting plume and ceiling jet profiles.
 \end{description}
 
 
@@ -612,7 +612,7 @@ By default, slice (contour) files are generated with a grid of 50 points in each
 \begin{description}
 \item[Width (cells)] (default: 50; namelist: \ct{COMP/GRID(1)}) Contour slice points in the $x$ direction.
 \item[Depth (cells)] (default: 50; namelist: \ct{COMP/GRID(2)}) Contour slice points in the $y$ direction.
-\item[Height (cells)] (default: 50; namelist: \ct{COMP/GRID(3)}) Contour slice points in the $x$ direction.
+\item[Height (cells)] (default: 50; namelist: \ct{COMP/GRID(3)}) Contour slice points in the $z$ direction.
 \end{description}
 Sample visualizations are included below.
 

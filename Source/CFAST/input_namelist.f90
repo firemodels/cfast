@@ -1660,8 +1660,8 @@ continue
                 ventptr => hventinfo(counter1)
 
                 if (.not.newid(id)) then
-                    write(errormessage,'(3a,i0,a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
-                        'Check wall v ', counter1, ' for vent ',trim(id), ' &VENT number ', &
+                    write(errormessage,'(3a,i0,3a,i0)') '***Error, Not a unique identifier for &VENT ',trim(id), &
+                        '. Check wall vent ', counter1, ' for vent ',trim(id), ' &VENT number ', &
                         counter1 + counter2 + counter3
                     call cfastexit('read_vent', 6)
                 end if

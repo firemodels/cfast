@@ -14,6 +14,7 @@ rm -f $docpdf
 gitrevision=`git describe --long --dirty`
 echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
 trap 'rm -f ../Bibliography/gitrevision.tex' EXIT
+trap 'echo "$doc build failed; see $doc.err" >&2' ERR
 pdflatex -interaction nonstopmode $doc &> $doc.err
 biber $doc &> $doc.err
 

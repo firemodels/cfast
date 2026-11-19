@@ -73,3 +73,6 @@ html{scroll-padding-top:176px}
   .page-layout{padding-top:0}
   body::after{content:"DRAFT FOR REVIEW";position:fixed;top:45%;left:0;width:100%;text-align:center;transform:rotate(-30deg);font-size:42pt;font-weight:800;color:#777;opacity:.15;pointer-events:none;z-index:100}
 }
+
+/* Lift dot ink slightly while retaining native italic accent attachment. */
+article math mover.dot-accent>mo{position:relative;top:-0.10em}

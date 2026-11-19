@@ -275,60 +275,61 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\dbydt}[1]{\frac{\rd {#1}}{\rd t}}
 \newcommand{\dbydx}[1]{\frac{\partial {#1}}{\partial x}}
 \newcommand{\ddt}{\frac{\rd}{\rd t}}
-\newcommand{\superscript}[1]{\ensuremath{^{\textnormal{\scriptsize \hbox{#1}}}}}
-\newcommand{\subscript}[1]{\ensuremath{_{\textnormal{\scriptsize \hbox{#1}}}}}
+\newcommand{\superscript}[1]{\ensuremath{\sp{\textnormal{\scriptsize \hbox{#1}}}}}
+\newcommand{\subscript}[1]{\ensuremath{\sb{\textnormal{\scriptsize \hbox{#1}}}}}
 
 \newcommand{\textct}[1]{\texttt{\small #1}}
 
+% Use \sb/\sp in macros: TeX4ht activates _/^ only after the preamble.
 \newcommand{\sss}{\scriptscriptstyle}
 
-\newcommand{\cp}{{\rm c}_{\rm p}}
-\newcommand{\cv}{{\rm c}_{\rm v}}
+\newcommand{\cp}{{\mathrm{c}}\sb{\mathrm{p}}}
+\newcommand{\cv}{{\mathrm{c}}\sb{\mathrm{v}}}
 
 \newcommand{\trho}{\tilde{\rho}}
-\newcommand{\chia}{\chi_{\rm a}}
-\newcommand{\chir}{\chi_{\rm r}}
+\newcommand{\chia}{\chi\sb{\mathrm{a}}}
+\newcommand{\chir}{\chi\sb{\mathrm{r}}}
 \newcommand{\dph}{{\delta\phi}}
 \newcommand{\dth}{{\delta\theta}}
 \newcommand{\tp}{\tilde{p}}
 \newcommand{\dQ}{\dot{Q}}
-\newcommand{\dQc}{\dot{Q}_{\rm c}}
-\newcommand{\dQr}{\dot{Q}_{\rm r}}
+\newcommand{\dQc}{\dot{Q}\sb{\mathrm{c}}}
+\newcommand{\dQr}{\dot{Q}\sb{\mathrm{r}}}
 \newcommand{\Dh}{\Delta H}
-\newcommand{\DhO}{\Delta H_\OTWO}
-\newcommand{\Tp}{T_{\rm p}}
-\newcommand{\Tu}{T_{\rm u}}
-\newcommand{\Tl}{T_{\rm l}}
-\newcommand{\Ti}{T_i}
-\newcommand{\Tw}{T_{\rm w}}
-\newcommand{\Ts}{T_{\rm s}}
-\newcommand{\Tg}{T_{\rm g}}
-\newcommand{\TL}{T_{\rm L}}
-\newcommand{\Vu}{V_{\rm u}}
-\newcommand{\Vl}{V_{\rm l}}
-\newcommand{\Vi}{V_i}
+\newcommand{\DhO}{\Delta H\sb{\OTWO}}
+\newcommand{\Tp}{T\sb{\mathrm{p}}}
+\newcommand{\Tu}{T\sb{\mathrm{u}}}
+\newcommand{\Tl}{T\sb{\mathrm{l}}}
+\newcommand{\Ti}{T\sb{i}}
+\newcommand{\Tw}{T\sb{\mathrm{w}}}
+\newcommand{\Ts}{T\sb{\mathrm{s}}}
+\newcommand{\Tg}{T\sb{\mathrm{g}}}
+\newcommand{\TL}{T\sb{\mathrm{L}}}
+\newcommand{\Vu}{V\sb{\mathrm{u}}}
+\newcommand{\Vl}{V\sb{\mathrm{l}}}
+\newcommand{\Vi}{V\sb{i}}
 \newcommand{\doh}{\dot{h}}
-\newcommand{\dhl}{\dot{h}_{\rm l}}
-\newcommand{\dhu}{\dot{h}_{\rm u}}
-\newcommand{\dmal}{\dot{m}_{\rm l}}
-\newcommand{\dmau}{\dot{m}_{\rm u}}
+\newcommand{\dhl}{\dot{h}\sb{\mathrm{l}}}
+\newcommand{\dhu}{\dot{h}\sb{\mathrm{u}}}
+\newcommand{\dmal}{\dot{m}\sb{\mathrm{l}}}
+\newcommand{\dmau}{\dot{m}\sb{\mathrm{u}}}
 \newcommand{\dq}{\dot{q}}
-\newcommand{\dqc}{\dot{q}_{\rm c}}
-\newcommand{\dqr}{\dot{q}_{\rm r}}
-\newcommand{\dql}{\dot{q}_{\rm l}}
-\newcommand{\dqu}{\dot{q}_{\rm u}}
-\newcommand{\dqi}{\dot{q}_i}
+\newcommand{\dqc}{\dot{q}\sb{\mathrm{c}}}
+\newcommand{\dqr}{\dot{q}\sb{\mathrm{r}}}
+\newcommand{\dql}{\dot{q}\sb{\mathrm{l}}}
+\newcommand{\dqu}{\dot{q}\sb{\mathrm{u}}}
+\newcommand{\dqi}{\dot{q}\sb{i}}
 \newcommand{\dm}{\dot{m}}
-\newcommand{\dme}{\dot{m}_{\rm e}}
-\newcommand{\dmp}{\dot{m}_{\rm p}}
-\newcommand{\dml}{\dot{m}_{\rm l}}
-\newcommand{\dmu}{\dot{m}_{\rm u}}
-\newcommand{\dmi}{\dot{m}_i}
-\newcommand{\dmf}{\dot{m}_{\rm f}}
+\newcommand{\dme}{\dot{m}\sb{\mathrm{e}}}
+\newcommand{\dmp}{\dot{m}\sb{\mathrm{p}}}
+\newcommand{\dml}{\dot{m}\sb{\mathrm{l}}}
+\newcommand{\dmu}{\dot{m}\sb{\mathrm{u}}}
+\newcommand{\dmi}{\dot{m}\sb{i}}
+\newcommand{\dmf}{\dot{m}\sb{\mathrm{f}}}
 \newcommand{\dV}{\dot{V}}
-\newcommand{\ml}{m_{\rm l}}
-\newcommand{\mmu}{m_{\rm u}}
-\newcommand{\mi}{m_i}
+\newcommand{\ml}{m\sb{\mathrm{l}}}
+\newcommand{\mmu}{m\sb{\mathrm{u}}}
+\newcommand{\mi}{m\sb{i}}
 
 \newcommand{\be}{\begin{equation}}
 \newcommand{\ee}{\end{equation}}
@@ -342,11 +343,11 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\SH}{\hbox{Sh}}
 \newcommand{\WE}{\hbox{We}}
 
-\newcommand{\COTWO}{{\tiny \hbox{CO}_2}}
-\newcommand{\OTWO}{{\tiny \hbox{O}_2}}
+\newcommand{\COTWO}{{\tiny \hbox{CO}\sb{2}}}
+\newcommand{\OTWO}{{\tiny \hbox{O}\sb{2}}}
 \newcommand{\CO}{{\tiny \hbox{CO}}}
-\newcommand{\HTWOO}{{\tiny \hbox{H}_2\hbox{O}}}
-\newcommand{\NTWO}{{\tiny \hbox{N}_2}}
+\newcommand{\HTWOO}{{\tiny \hbox{H}\sb{2}\hbox{O}}}
+\newcommand{\NTWO}{{\tiny \hbox{N}\sb{2}}}
 \newcommand{\F}{{\tiny \hbox{F}}}
 \newcommand{\So}{{\tiny \hbox{S}}}
 \newcommand{\M}{{\tiny \hbox{M}}}
@@ -360,9 +361,9 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\FED}{{\tiny \hbox{FED}}}
 \newcommand{\UHC}{{\tiny \hbox{UHC}}}
 
-\newcommand{\asqh}{$A_T/A\sqrt{h}$}
-\newcommand{\degc}{$^{\circ}$C\xspace}
-\newcommand{\degf}{$^{\circ}$F\xspace}
+\newcommand{\asqh}{$A\sb{T}/A\sqrt{h}$}
+\newcommand{\degc}{$\sp{\circ}$C\xspace}
+\newcommand{\degf}{$\sp{\circ}$F\xspace}
 
 \newcommand{\dx}{\delta x}
 \newcommand{\dy}{\delta y}

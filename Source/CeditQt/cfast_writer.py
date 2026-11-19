@@ -99,8 +99,8 @@ def validate_fire_property(prop) -> None:
             raise ValueError(f"Fire properties {prop.id!r}: time must be non-negative.")
         if point.hrr < 0.0:
             raise ValueError(f"Fire properties {prop.id!r}: HRR must be non-negative.")
-        if point.area < 0.0:
-            raise ValueError(f"Fire properties {prop.id!r}: area must be non-negative.")
+        if point.area <= 0.0:
+            raise ValueError(f"Fire properties {prop.id!r}: area must be positive.")
         if point.height < 0.0:
             raise ValueError(f"Fire properties {prop.id!r}: height must be non-negative.")
 

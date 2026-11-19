@@ -816,9 +816,14 @@ class CeditMainWindow(QMainWindow):
         self.targets_tab.set_compartment_ids(compartment_ids)
         self.targets_tab.set_fires(self.fires_tab.fires)
         self.targets_tab.set_material_ids(material_ids)
-        self.targets_tab.set_material_properties(
-            self.thermal_properties_tab.materials_from_table()
-        )
+        try:
+            materials = self.thermal_properties_tab.materials_from_table()
+        except ValueError as exc:
+            # Invalid or unfinished material edits must not interrupt loading
+            # or escape the tab-change signal handler.
+            materials = []
+            self.set_validation_status(str(exc))
+        self.targets_tab.set_material_properties(materials)
         self.detection_suppression_tab.set_compartments(self.compartments_tab.compartments)
         self.output_tab.set_compartments(self.compartments_tab.compartments)
 
@@ -1018,7 +1023,7 @@ class CeditMainWindow(QMainWindow):
             message += "\n\nImport warnings:\n" + "\n".join(result.warnings)
 
         self.simulation_tab.set_message(message)
-        self.statusBar().showMessage("No Errors")
+        self.update_live_validation()
 
     def cfast_text_file_path(self, suffix: str) -> Path | None:
         if self.current_path is None:

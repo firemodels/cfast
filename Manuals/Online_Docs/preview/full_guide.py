@@ -87,7 +87,7 @@ def expected_pages(inv):
 def preflight(inv):
     manual = inv.get('manual', TECH)
     errors = list(inv['missing'])
-    env_path = '/Library/TeX/texbin:/opt/homebrew/bin:' + os.environ.get('PATH', '')
+    env_path = os.environ.get('PATH', '') + ':/Library/TeX/texbin:/opt/homebrew/bin'
     for tool in ['make4ht', 'biber', 'dvisvgm', 'kpsewhich', 'pdftocairo', 'pdftops']:
         if not shutil.which(tool, path=env_path):
             errors.append('Missing tool: ' + tool)
@@ -403,6 +403,8 @@ def build_full(args):
                 if '[ERROR]' in line and '.tex' in line:
                     detail.append(line + ('\n' + lines[i + 1] if i + 1 < len(lines) else ''))
                     break
+            if not detail:
+                detail = lines[-20:]
             raise RuntimeError('Conversion failed.\n' + '\n'.join(detail)
                                + f'\nFull log: {tex / "conversion.log"}') from error
         log = (tex / 'conversion.log').read_text()

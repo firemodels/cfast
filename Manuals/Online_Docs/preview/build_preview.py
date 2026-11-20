@@ -33,7 +33,7 @@ GUIDE = MANUALS / TECH.directory
 
 def run(args, cwd, log=None, progress=False):
     env = os.environ.copy()
-    env['PATH'] = '/Library/TeX/texbin:/opt/homebrew/bin:' + env['PATH']
+    env['PATH'] += ':/Library/TeX/texbin:/opt/homebrew/bin'
     env['TEXINPUTS'] = '.:../LaTeX_Style_Files:'
     env['texmf_casefold_search'] = '0'
     env['XDG_CACHE_HOME'] = str(Path(cwd) / '.cache')

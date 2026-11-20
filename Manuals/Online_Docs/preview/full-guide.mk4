@@ -6,7 +6,10 @@
 local original_testlogfile = Make.testlogfile
 if original_testlogfile then
   Make.testlogfile = function(parameters)
-    local path = mkutils.file_in_builddir(parameters.input .. '.log', parameters)
+    local path = parameters.input .. '.log'
+    if parameters.builddir and parameters.builddir ~= '' then
+      path = parameters.builddir .. '/' .. path
+    end
     local file = io.open(path, 'r')
     if not file then return original_testlogfile(parameters) end
     local has_error = false
@@ -56,7 +59,21 @@ end})
 
 -- Use the standard filters explicitly, after the serialization repair.
 local domfilter = require "make4ht-domfilter"
+-- TeX Live 2024 has no tablecaption filter. Keep captions directly in tables.
+local function tablecaption(dom)
+  for _, caption in ipairs(dom:query_selector("table caption")) do
+    local parent = caption:get_parent()
+    while parent and parent:get_element_name() ~= "table" do
+      parent = parent:get_parent()
+    end
+    if parent then
+      parent:add_child_node(caption:copy_node(), 1)
+      caption:remove_node()
+    end
+  end
+  return dom
+end
 Make:match("html?$", domfilter {
-  "fixinlines", "idcolons", "joincharacters", "tablecaption", "mathmlfixes",
+  "fixinlines", "idcolons", "joincharacters", tablecaption, "mathmlfixes",
   "tablerows", "booktabs", "sectionid", "itemparagraphs"
 })

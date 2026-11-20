@@ -466,7 +466,6 @@ def make_reader(tex, site, fallbacks, pages=None, full=False, manual=TECH):
     revision = 'sha256:' + hashlib.sha256(json.dumps(signature, sort_keys=True).encode()).hexdigest()[:12]
     template = (HERE / 'reader.html').read_text()
     if full:
-        template = template.replace('<body>', '<body data-language-manifest="../languages.json">')
         template = template.replace('IN THIS PREVIEW', 'IN THIS MANUAL').replace(
             'Selected chapters from the<br>CFAST {{MANUAL_TITLE}}.',
             'Complete manual.')
@@ -568,9 +567,7 @@ def main():
     parser.add_argument('--output', type=Path, help='Build root; defaults to a separate directory per manual')
     parser.add_argument('--full', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('--manual', choices=list(MANUAL_SPECS), default='tech')
-    parser.add_argument('--language', default='en', choices=['en', 'es'])
     parser.add_argument('--check', action='store_true', help='Check inputs without converting or writing output')
-    parser.add_argument('--refresh-languages', action='store_true', help='Refresh the registry of completed editions')
     parser.add_argument('--reuse-conversion', action='store_true', help='Restyle unchanged converted HTML')
     from full_guide import build_full
     build_full(parser.parse_args())

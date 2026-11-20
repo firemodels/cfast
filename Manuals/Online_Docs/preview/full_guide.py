@@ -16,7 +16,6 @@ from manual_sources import GRAPHIC, uncomment, active_geometry, slug
 from manual_sources import inventory as source_inventory
 
 MAIN = TECH.main
-LANGUAGES = {'en': 'English', 'es': 'Español'}
 EXTERNAL_DOCUMENT = re.compile(r'\\externaldocument(?:\[([^\]]*)\])?\{([^{}]+)\}')
 REFERENCE = re.compile(r'\\(ref|eqref|pageref)\{([^{}]+)\}')
 
@@ -85,7 +84,7 @@ def expected_pages(inv):
             + inv.get('appendix_slugs', ['appendix-' + chr(97 + i) for i in range(inv['appendices'])]))
 
 
-def preflight(inv, language):
+def preflight(inv):
     manual = inv.get('manual', TECH)
     errors = list(inv['missing'])
     env_path = '/Library/TeX/texbin:/opt/homebrew/bin:' + os.environ.get('PATH', '')
@@ -309,129 +308,10 @@ def discover_pages(tex, inv):
     return pages
 
 
-def translate_edition(site, pages, language, translator=None, cache_root=None, manual=TECH):
-    """Translate prose offline, retaining all scientific markup and anchors."""
-    from translate_preview import translation_units, apply_translation
-    documents, titles, stats, heading_labels = {}, {}, {}, {}
-    for position, page in enumerate(pages, 1):
-        file = site / page['file']
-        doc = html.parse(str(file), parser=html.HTMLParser(encoding='utf-8'))
-        units = translation_units(doc, include_tables=True)
-        from translate_argos import generate_cache
-        print(f'Translating page {position}/{len(pages)}: {file.stem}', flush=True)
-        cache = cache_root / language / (file.stem + '.json')
-        blocks, stats[file.stem] = generate_cache(units, cache, translator)
-        entries = {entry['id']: entry for entry in blocks}
-        if set(entries) != {unit['id'] for unit in units}:
-            raise RuntimeError(f'Translation inventory changed: {cache}')
-        math_before = [etree.tostring(n, with_tail=False) for n in doc.xpath('//math')]
-        ids_before = doc.xpath('//@id')
-        for unit in units:
-            entry = entries[unit['id']]
-            if entry['source_sha256'] != unit['sha256']:
-                raise RuntimeError(f'Stale translation: {cache}, {unit["id"]}')
-            apply_translation(unit, entry['translation'])
-        assert ids_before == doc.xpath('//@id'), 'Translation changed anchors'
-        assert math_before == [etree.tostring(n, with_tail=False) for n in doc.xpath('//math')], 'Translation changed math'
-        titles[page['file']] = reader.plain(doc.xpath('//article/h1')[0])
-        for heading in doc.xpath('//article//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]'):
-            label = reader.plain(heading)
-            marker = heading.find('span')
-            if marker is not None and marker.get('class') == 'titlemark':
-                label = label.removeprefix(reader.plain(marker)).strip()
-            for anchor in heading.xpath('.//@id | ./@id'):
-                heading_labels[(page['file'], anchor)] = label
-        documents[page['file']] = doc
-    search = []
-    for name, doc in documents.items():
-        doc.getroot().set('lang', language)
-        doc.find('head/title').text = titles[name] + ' — CFAST'
-        # Translate the reader separately from protected chapter markup.
-        localize_full_interface(doc, manual)
-        for link in doc.xpath('//article//div[@class="tableofcontents"]//a[@href]'):
-            target = urlsplit(link.get('href'))
-            label = heading_labels.get((target.path or name, target.fragment))
-            if label is not None and not len(link):
-                link.text = label
-        for link in doc.xpath('//nav[@class="chapter-nav"]/a'):
-            link.findall('span')[-1].text = titles.get(link.get('href'), link.findall('span')[-1].text)
-        for link in doc.xpath('//nav[@class="page-navigation"]/a'):
-            link.find('small').tail = titles.get(link.get('href'), link.find('small').tail)
-        headings = {n.get('id'): reader.plain(n) for n in doc.xpath('//article//h2[@id] | //article//h3[@id]')}
-        for link in doc.xpath('//aside[@class="page-toc"]//nav/a'):
-            link.text = headings[link.get('href')[1:]]
-        from accessibility import figure_labels
-        figure_labels(doc.getroot(), language)
-        for picker in doc.xpath('//label[@class="language-picker"]'):
-            picker.find('span').text = 'Idioma'
-            select = picker.find('select')
-            select.set('aria-label', 'Idioma')
-            for child in list(select):
-                select.remove(child)
-            etree.SubElement(select, 'option', value=name, selected='selected').text = LANGUAGES[language]
-        (site / name).write_text('<!doctype html>\n' + etree.tostring(doc, encoding='unicode', method='html'))
-        title, anchor, texts = titles[name], '', []
-        for node in doc.xpath('//article')[0]:
-            if node.tag in {'h1', 'h2', 'h3'}:
-                if texts:
-                    search.append({'title': title, 'chapter': titles[name], 'url': name + ('#' + anchor if anchor else ''), 'text': ' '.join(texts)})
-                title, anchor, texts = reader.plain(node), node.get('id', ''), []
-            elif isinstance(node.tag, str):
-                texts.append(reader.plain(node))
-        if texts:
-            search.append({'title': title, 'chapter': titles[name], 'url': name + ('#' + anchor if anchor else ''), 'text': ' '.join(texts)})
-    (site / 'search-index.json').write_text(json.dumps(search, ensure_ascii=False))
-    return stats
-
-
-def localize_full_interface(doc, manual=TECH):
-    labels = {
-        '//a[@class="skip-link"]': 'Saltar al contenido',
-        '//span[@class="brand-name"]/span': 'DOCUMENTACIÓN TÉCNICA',
-        '//span[@class="edition"]': 'VERSIÓN 8',
-        '//div[@class="header-links"]/a': 'Manual PDF (inglés) ↗',
-        '//div[@class="manual-name"]': manual.title_es,
-        '//div[@class="volume"]': manual.subtitle_es,
-        '//button[@class="search-trigger"]/span': '⌕ Buscar en este manual',
-        '//div[@class="nav-heading"]': 'EN ESTE MANUAL',
-        '//div[@class="sidebar-footer"]/p': 'Traducción automática. Las figuras y el PDF conservan el contenido original en inglés.',
-        '//div[@class="sidebar-footer"]/a': 'Descargar el PDF en inglés ↓',
-        '//div[@class="breadcrumb"]/a': manual.title_es,
-        '//div[@class="breadcrumb"]/span[last()]': manual.subtitle_es,
-        '//aside[@class="page-toc"]/div': 'EN ESTA PÁGINA',
-        '//a[@class="back-top"]': 'Volver arriba ↑',
-        '//label[@id="search-title"]': 'Buscar en el manual',
-        '//div[@id="search-status"]': 'Buscar en este manual.',
-        '//footer[@class="page-footer"]/span[1]': 'CFAST · ' + manual.title_es,
-        '//footer[@class="page-footer"]/a': 'Ver el código LaTeX original ↗',
-    }
-    for xpath, label in labels.items():
-        for node in doc.xpath(xpath):
-            for child in list(node):
-                node.remove(child)
-            node.text = label
-    for node in doc.xpath('//div[@class="eyebrow"]'):
-        node.text = node.text.replace('CHAPTER', 'CAPÍTULO').replace('APPENDIX', 'APÉNDICE').replace('FRONT MATTER', 'PRELIMINARES').replace('REFERENCES', 'REFERENCIAS')
-    for node in doc.xpath('//nav[@class="page-navigation"]/a/small'):
-        node.text = 'Anterior' if node.text == 'Previous' else 'Siguiente'
-    for node in doc.xpath('//input[@id="search-input"]'):
-        node.set('placeholder', 'Buscar términos o temas…')
-    for node in doc.xpath('//div[@class="sidebar-footer"]/span'):
-        node.tail = ' Edición traducida'
-    for node in doc.xpath('//footer[@class="page-footer"]/span[2]'):
-        node.text = node.text.replace('Source revision', 'Revisión del original')
-    aria = {'Open chapter navigation': 'Abrir la navegación por capítulos',
-            'Chapter navigation': 'Navegación por capítulos', 'On this page': 'En esta página',
-            'Previous and next pages': 'Páginas anterior y siguiente', 'Close search': 'Cerrar búsqueda',
-            'Scrollable equation or table': 'Ecuación o tabla desplazable'}
-    for node in doc.xpath('//*[@aria-label]'):
-        node.set('aria-label', aria.get(node.get('aria-label'), node.get('aria-label')))
-
-
-def publish(candidate, root, language):
+def publish(candidate, root):
     """Call only after validation. Registry advertises completed editions only."""
     root.mkdir(parents=True, exist_ok=True)
-    destination, backup = root / language, root / ('.previous-' + language)
+    destination, backup = root / 'en', root / '.previous-en'
     if backup.exists():
         raise RuntimeError(f'Recover or remove the prior interrupted publication first: {backup}')
     old = destination.exists()
@@ -445,28 +325,10 @@ def publish(candidate, root, language):
         raise
     if old:
         shutil.rmtree(backup)
-    refresh_registry(root)
-
-
-def refresh_registry(root):
-    # Reconstruct rather than merge: missing/failed editions cannot survive in
-    # the registry. Serialize final publication in a multi-job Actions workflow.
-    root.mkdir(parents=True, exist_ok=True)
-    editions = []
-    for code, label in LANGUAGES.items():
-        proof = root / code / 'build-manifest.json'
-        if not proof.is_file():
-            continue
-        data = json.loads(proof.read_text())
-        pages = data.get('pages', [])
-        if (data.get('complete') and data.get('language') == code and pages
-                and all(Path(p).name == p and (root / code / p).is_file() for p in pages)):
-            editions.append({'code': code, 'label': label, 'pages': pages, 'revision': data['cfast_revision']})
-    tmp = root / '.languages.json.tmp'
-    tmp.write_text(json.dumps({'languages': editions}, ensure_ascii=False, indent=2) + '\n')
-    tmp.replace(root / 'languages.json')
-    (root / 'index.html').write_text('<!doctype html><meta charset="utf-8"><title>CFAST Online Manual</title>'
-        + ''.join(f'<p><a href="{entry["code"]}/index.html">{entry["label"]}</a></p>' for entry in editions))
+    (root / 'languages.json').unlink(missing_ok=True)
+    (root / 'index.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<meta http-equiv="refresh" content="0;url=en/index.html"><title>CFAST Online Manual</title>'
+        '<a href="en/index.html">Open manual</a></html>')
     if root.name == 'html' and root.parent.name in {m.output for m in MANUALS.values()}:
         from build_catalog import refresh_catalog
         refresh_catalog(root.parent.parent)
@@ -490,76 +352,15 @@ def input_signature(inv):
     return signature
 
 
-def english_edition(output, manual=TECH):
-    source = output / 'html/en'
-    manifest = source / 'build-manifest.json'
-    message = f'Build English first: python3 preview/build_preview.py --manual {manual.key} --language en'
-    if not manifest.is_file():
-        raise RuntimeError('No completed English edition found. ' + message)
-    data = json.loads(manifest.read_text())
-    if data.get('manual', 'tech') != manual.key:
-        raise RuntimeError(f'English edition belongs to another manual. {message}')
-    names = data.get('pages', [])
-    if (not data.get('complete') or data.get('language') != 'en' or not names
-            or any(Path(name).name != name or not (source / name).is_file() for name in names)):
-        raise RuntimeError('The English edition is incomplete. ' + message)
-    return source, data, [{'file': name} for name in names]
-
-
-def build_translated(args, output):
-    from translate_argos import ArgosTranslator
-    manual = MANUALS[getattr(args, 'manual', 'tech')]
-    source, english, pages = english_edition(output, manual)
-    reader.validate(source, pages)
-    translator = ArgosTranslator(args.language)
-    print(f'Translating completed English edition ({english["cfast_revision"]}) '
-          f'to {LANGUAGES[args.language]}; no LaTeX conversion.', flush=True)
-    if args.check:
-        print('English edition and installed Argos model checks passed. No translation performed.')
-        return
-    source_hashes = {p['file']: reader.sha(source / p['file']) for p in pages}
-    candidate = Path(tempfile.mkdtemp(prefix='edition-', dir=output))
-    try:
-        shutil.copytree(source, candidate, dirs_exist_ok=True)
-        (candidate / 'build-manifest.json').unlink()
-        stats = translate_edition(candidate, pages, args.language, translator, output / 'translation-cache', manual)
-        counts = reader.validate(candidate, pages)
-        # Fail safely if another job replaced English while translation ran.
-        if source_hashes != {p['file']: reader.sha(source / p['file']) for p in pages}:
-            raise RuntimeError('English changed during translation; rerun this language build.')
-        (candidate / 'index.html').write_text('<!doctype html><html lang="' + args.language + '">'
-            f'<meta charset="utf-8"><meta http-equiv="refresh" content="0;url={manual.entry}">'
-            f'<title>CFAST</title><a href="{manual.entry}">' + LANGUAGES[args.language] + '</a></html>')
-        manifest = {**english, 'complete': True, 'language': args.language, 'validation': counts,
-                    'translation': translator.provenance, 'translation_stats': stats,
-                    'english_pages_sha256': source_hashes,
-                    'limitations': english.get('limitations', []) + [
-                        'Machine translation; technical terminology requires human review.',
-                        'Figure artwork, PDF, and protected scientific notation remain as in English.']}
-        (candidate / 'build-manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
-        publish(candidate, output / 'html', args.language)
-    finally:
-        if candidate.exists():
-            shutil.rmtree(candidate)
-    print(f'Ready: {output / "html" / args.language / "index.html"}')
-
-
 def build_full(args):
     manual = MANUALS[getattr(args, 'manual', 'tech')]
     output = (args.output or reader.DOCS / 'build' / manual.output).resolve()
     for manifest in (output / 'html').glob('*/build-manifest.json'):
         if json.loads(manifest.read_text()).get('manual', 'tech') != manual.key:
             raise RuntimeError(f'Output belongs to another manual: {output}. Choose a separate --output directory.')
-    if args.refresh_languages:
-        refresh_registry(output / 'html')
-        print(f'Refreshed available languages: {output / "html/languages.json"}')
-        return
-    if args.language != 'en':
-        build_translated(args, output)
-        return
     print('Checking English guide sources, figures, and tools…', flush=True)
     inv = inventory(manual)
-    preflight(inv, args.language)
+    preflight(inv)
     if args.check:
         print('Input checks passed. No files converted or built.')
         return
@@ -616,42 +417,20 @@ def build_full(args):
     candidate = Path(tempfile.mkdtemp(prefix='edition-', dir=output))
     try:
         pages, revision = reader.make_reader(tex, candidate, {}, pages=pages, full=True, manual=manual)
-        from translate_preview import translation_units
-        translation_inputs = output / 'translation-inputs'
-        translation_inputs.mkdir(exist_ok=True)
-        for position, page in enumerate(pages, 1):
-            doc = html.parse(str(candidate / page['file']))
-            units = translation_units(doc, include_tables=True)
-            print(f'Preparing translation input {position}/{len(pages)}: '
-                  f'{page["file"]} ({len(units)} prose blocks)', flush=True)
-            (translation_inputs / (Path(page['file']).stem + '.json')).write_text(json.dumps([
-                {'id': unit['id'], 'source_sha256': unit['sha256'], 'source': unit['source']}
-                for unit in units], ensure_ascii=False, indent=2))
         counts = reader.validate(candidate, pages, progress=True)
         print(f'Validation passed: {len(pages)} pages, '
               f'{sum(p["math"] for p in counts.values())} math expressions.', flush=True)
-        manifest = {'complete': True, 'manual': manual.key, 'entry': manual.entry, 'language': args.language, 'cfast_revision': revision,
+        manifest = {'complete': True, 'manual': manual.key, 'entry': manual.entry, 'language': 'en', 'cfast_revision': revision,
                     'pages': [page['file'] for page in pages], 'validation': counts,
                     'source_sha256': signature, 'pdf_sha256': reader.sha(reader.MANUALS / manual.directory / manual.pdf),
                     'limitations': ['Uses local figure inputs; release archive download is not yet integrated.',
                                     'Print covers remain in the PDF; generated HTML includes front matter and all content chapters.',
                                     'Full-guide visual review is required after the first build.']}
         (candidate / 'build-manifest.json').write_text(json.dumps(manifest, indent=2))
-        # A static selector is useful even without JS; JS refreshes availability
-        # from the shared registry after other language builds complete.
-        for page in pages:
-            path = candidate / page['file']
-            doc = html.parse(str(path))
-            picker = etree.Element('label', {'class': 'language-picker'})
-            etree.SubElement(picker, 'span').text = 'Idioma' if args.language == 'es' else 'Language'
-            select = etree.SubElement(picker, 'select', {'aria-label': 'Idioma' if args.language == 'es' else 'Language'})
-            etree.SubElement(select, 'option', value=page['file'], selected='selected').text = LANGUAGES[args.language]
-            doc.xpath('//div[@class="header-links"]')[0].insert(1, picker)
-            path.write_text('<!doctype html>\n' + etree.tostring(doc, encoding='unicode', method='html'))
-        print('Publishing English edition and updating the language dropdown…', flush=True)
-        publish(candidate, output / 'html', args.language)
+        print('Publishing English manual…', flush=True)
+        publish(candidate, output / 'html')
     finally:
         if candidate.exists():
             shutil.rmtree(candidate)
-    print(f'Ready: {output / "html" / args.language / "index.html"}')
+    print(f'Ready: {output / "html/en/index.html"}')
     print(f'Serve with: python3 -m http.server 8766 --bind 127.0.0.1 --directory {output / "html"}')

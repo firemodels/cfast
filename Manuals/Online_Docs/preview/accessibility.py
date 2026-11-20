@@ -26,7 +26,7 @@ def heading_levels(body):
         stack.append((original, level))
 
 
-def figure_labels(body, language='en'):
+def figure_labels(body):
     """Associate the actual caption, retaining its navigable MathML.
 
     Captions are a baseline alternative, not proof of an adequate description
@@ -41,13 +41,13 @@ def figure_labels(body, language='en'):
             caption.set('id', f'a11y-caption-{index}')
         for part, image in enumerate(figure.xpath('.//img'), 1):
             label = re.match(r'(?:Figure|Figura)\s+[^:]+', text(caption))
-            name = label[0] if label else ('Figura' if language == 'es' else 'Figure')
+            name = label[0] if label else 'Figure'
             if len(figure.xpath('.//img')) > 1:
-                name += f', {"imagen" if language == "es" else "image"} {part}'
+                name += f', image {part}'
             image.set('alt', name)
             image.set('aria-describedby', caption.get('id'))
             image.set('data-description-review', 'caption-only')
-    object_image_labels(body, language)
+    object_image_labels(body)
     # The generated Validation histogram gallery has no captions. Its source
     # identifiers provide navigation labels, not descriptions of the plotted data.
     for image in body.xpath('.//img[not(@aria-describedby)]'):
@@ -55,11 +55,11 @@ def figure_labels(body, language='en'):
             continue
         match = re.search(r'(?:^|/)([A-Za-z][A-Za-z0-9_]*_Histogram)-[0-9a-f]{12}\.svg$', image.get('src', ''))
         if match:
-            image.set('alt', ('Gráfico: ' if language == 'es' else 'Plot: ') + match[1].replace('_', ' '))
+            image.set('alt', 'Plot: ' + match[1].replace('_', ' '))
             image.set('data-description-review', 'source-label-only')
 
 
-def object_image_labels(body, language='en'):
+def object_image_labels(body):
     """Use inspected Smokeview object-table labels, not inferred artwork meaning."""
     canonical = lambda node: unicodedata.normalize('NFKC', text(node))
     for index, table in enumerate(body.xpath('.//table'), 1):
@@ -87,7 +87,7 @@ def object_image_labels(body, language='en'):
             identifier = canonical(cells[0])
             for column, cell in enumerate(cells):
                 for image in cell.xpath('.//img'):
-                    label = ('Objeto Smokeview ' if language == 'es' else 'Smokeview object ') + identifier
+                    label = 'Smokeview object ' + identifier
                     if states and column < len(states) and states[column]:
                         label += ', ' + states[column]
                     image.set('alt', label)

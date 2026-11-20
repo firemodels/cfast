@@ -1,0 +1,35 @@
+name: Deploy online manuals
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'firemodels/cfast' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download prepared manuals
+        run: |
+          curl --fail --location --retry 3 \
+            https://github.com/firemodels/cfast/releases/download/online-docs-preview/online-docs.zip \
+            --output online-docs.zip
+          unzip -q online-docs.zip -d _site
+          test -f _site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment

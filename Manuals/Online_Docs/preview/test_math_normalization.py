@@ -55,6 +55,36 @@ class MathTypographyTests(unittest.TestCase):
         normalize_math(body)
         return body
 
+    def test_delimiters_around_nested_fractions_are_single_tokens(self):
+        body = self.convert('<mrow><mo fence="true" form="prefix"> (</mo><mrow>'
+                            '<mfrac><mi>a</mi><mi>b</mi></mfrac>'
+                            '<mo fence="true" form="prefix"> [</mo><mi>x</mi>'
+                            '<mo fence="true" form="postfix">] </mo></mrow>'
+                            '<mo fence="true" form="postfix">)</mo></mrow>'
+                            '<mo fence="true" stretchy="false"> | </mo>'
+                            '<mtext> unchanged text </mtext>')
+        self.assertEqual(body.xpath('.//mo/text()'), ['(', '[', ']', ')', '|'])
+        self.assertEqual(len(body.xpath('.//mfrac')), 1)
+        self.assertEqual(body.xpath('string(.//mo[text()="|"]/@stretchy)'), 'false')
+        self.assertEqual(body.xpath('string(.//mtext)'), ' unchanged text ')
+        once = etree.tostring(body)
+        normalize_math(body)
+        self.assertEqual(etree.tostring(body), once)
+
+    def test_named_operators_are_visible_tokens_with_limits_preserved(self):
+        body = self.convert('<munder><mrow class="qopname"> min</mrow><mi>x</mi></munder>'
+                            '<mo>⁡</mo><mrow class="qopname">max</mrow>'
+                            '<msub><mrow class="other qopname"> log </mrow><mn>10</mn></msub>'
+                            '<mrow class="qopname"><mi>sin</mi></mrow>')
+        self.assertEqual(body.xpath('.//mi[@mathvariant="normal"]/text()'), ['min', 'max', 'log'])
+        self.assertTrue(body.xpath('.//munder[mi="min"][mi="x"]'))
+        self.assertTrue(body.xpath('.//msub[mi="log"][mn="10"]'))
+        self.assertTrue(body.xpath('.//mrow[@class="qopname"]/mi[text()="sin"]'))
+        self.assertEqual(body.xpath('string(.//mo)'), '⁡')
+        once = etree.tostring(body)
+        normalize_math(body)
+        self.assertEqual(etree.tostring(body), once)
+
     def test_divergence_and_dotted_mass_2_6(self):
         body = self.convert('<mi class="MathClass-op">∇</mi><mo>⁡</mo>'
                             '<mspace class="negthinspace" width="-0.17em"></mspace>'

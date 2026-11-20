@@ -192,6 +192,20 @@ def plain(element):
 def normalize_math(body):
     """Preserve differential operators and clearly separated math accents."""
     align_equation_numbers(body)
+    # TeX4ht can emit " (" for a \left delimiter. MathML Core then treats
+    # it as a multi-character operator and does not stretch it like ")".
+    for delimiter in body.xpath('.//math//mo[@fence="true"][not(*)]'):
+        delimiter.text = (delimiter.text or '').strip()
+
+    # Plain text in an mrow is not a MathML token and disappears in native
+    # browser rendering. Keep named operators such as min, max, and log.
+    for operator in body.xpath(
+            './/math//mrow[contains(concat(" ",normalize-space(@class)," ")," qopname ")][not(*)]'):
+        if (operator.text or '').strip():
+            operator.tag = 'mi'
+            operator.text = operator.text.strip()
+            operator.set('mathvariant', operator.get('mathvariant', 'normal'))
+
     # MathML Core does not inherit legacy mstyle mathvariant onto single-letter
     # mi tokens. Preserve explicit LaTeX roman type on the token itself (SP 811,
     # 10.2.3), including differential d/D, units, and descriptive subscripts.

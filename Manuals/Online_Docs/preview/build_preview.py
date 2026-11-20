@@ -35,6 +35,7 @@ def run(args, cwd, log=None, progress=False):
     env = os.environ.copy()
     env['PATH'] = '/Library/TeX/texbin:/opt/homebrew/bin:' + env['PATH']
     env['TEXINPUTS'] = '.:../LaTeX_Style_Files:'
+    env['texmf_casefold_search'] = '0'
     env['XDG_CACHE_HOME'] = str(Path(cwd) / '.cache')
     # MacTeX does not discover Homebrew's Ghostscript library automatically.
     if 'LIBGS' not in env and Path('/opt/homebrew/lib/libgs.dylib').exists():

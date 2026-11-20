@@ -2,6 +2,7 @@
 
 # Add LaTeX search path; Paths are ':' separated
 export TEXINPUTS=".:../LaTeX_Style_Files:"
+export texmf_casefold_search=0
 
 clean_build=1
 

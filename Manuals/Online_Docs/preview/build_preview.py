@@ -474,12 +474,13 @@ def make_reader(tex, site, fallbacks, pages=None, full=False, manual=TECH):
     for name in ['reader.css', 'reader.js']:
         template = template.replace(f'assets/{name}', f'assets/{name}?v={sha(HERE / name)[:12]}')
     search = []
+    current_page = 'aria-current="page"'
     for position, page in enumerate(pages):
         if full:
             print(f'Writing page {position + 1}/{len(pages)}: {page["file"]}', flush=True)
         nav = ''.join(
             f'<a class="chapter-link {"active" if p is page else ""}" '
-            f'{"aria-current=\"page\"" if p is page else ""} href="{p["file"]}">'
+            f'{current_page if p is page else ""} href="{p["file"]}">'
             f'<span class="chapter-number">{p["number"] or ""}</span>'
             f'<span>{html.escape(p["title"])}</span></a>' for p in pages)
         toc = ''.join(f'<a class="{"subsection" if sub else ""}" href="#{anchor}">{html.escape(title)}</a>'

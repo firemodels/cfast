@@ -1,7 +1,5 @@
 "use strict";
-const spanish = document.documentElement.lang === "es";
 async function addManualsNavigation() {
-  if (!document.body.dataset.languageManifest) return;
   const catalog = new URL("../../../manuals.json", location.href);
   try {
     const response = await fetch(catalog, {cache: "no-store"});
@@ -11,39 +9,13 @@ async function addManualsNavigation() {
     const link = document.createElement("a");
     link.className = "all-manuals";
     const home = new URL("index.html", catalog);
-    if (spanish) home.searchParams.set("language", "es");
     link.href = home.href;
-    link.textContent = spanish ? "Todos los manuales" : "All manuals";
+    link.textContent = "All manuals";
     header.prepend(link);
     document.body.dataset.manualsCatalog = "available";
   } catch { /* Standalone manual servers do not have a shared catalog. */ }
 }
 addManualsNavigation();
-document.querySelector(".language-picker select")?.addEventListener("change", event => {
-  const target = new URL(event.target.value, location.href);
-  if (event.target.selectedOptions[0].dataset.keepSection !== "false") target.hash = location.hash;
-  location.assign(target.href);
-});
-async function refreshLanguages() {
-  const manifest = document.body.dataset.languageManifest;
-  const select = document.querySelector(".language-picker select");
-  if (!manifest || !select) return;
-  try {
-    const response = await fetch(manifest, {cache: "no-store"});
-    if (!response.ok) return;
-    const {languages} = await response.json();
-    const page = location.pathname.split("/").pop() || "index.html";
-    const options = languages.filter(edition => edition.pages.includes(page)).map(edition => {
-      const option = document.createElement("option");
-      option.textContent = edition.label;
-      option.value = new URL(`${edition.code}/${page}`, new URL(manifest, location.href)).href;
-      option.selected = edition.code === document.documentElement.lang;
-      return option;
-    });
-    if (options.some(option => option.selected)) select.replaceChildren(...options);
-  } catch { /* Keep the working, current-edition option if the registry is unavailable. */ }
-}
-refreshLanguages();
 const dialog = document.querySelector("#search-dialog");
 const input = document.querySelector("#search-input");
 const results = document.querySelector("#search-results");
@@ -61,7 +33,7 @@ async function openSearch() {
   dialog.showModal();
   input.focus();
   try { await loadIndex(); renderSearch(); }
-  catch { status.textContent = spanish ? "No se pudo cargar la búsqueda. Recargue la página." : "Search could not load. Please reload the page."; }
+  catch { status.textContent = "Search could not load. Please reload the page."; }
 }
 document.querySelector(".search-trigger").addEventListener("click", openSearch);
 document.addEventListener("keydown", event => {
@@ -77,7 +49,7 @@ dialog.addEventListener("click", event => { if (event.target === dialog) {
 function renderSearch() {
   results.replaceChildren();
   const query = input.value.trim().toLowerCase();
-  if (!query) { status.textContent = document.body.dataset.languageManifest ? (spanish ? "Buscar en este manual." : "Search this manual.") : (spanish ? "Buscar en el capítulo traducido." : "Search the chapters included in this preview."); return; }
+  if (!query) { status.textContent = "Search this manual."; return; }
   if (!searchIndex) return;
   const terms = query.split(/\s+/);
   const matches = searchIndex.map(item => {
@@ -85,7 +57,7 @@ function renderSearch() {
     return {item, score: terms.every(term => text.includes(term)) ?
       1 + (item.title.toLowerCase().includes(query) ? 10 : 0) + (text.includes(query) ? 3 : 0) : 0};
   }).filter(result => result.score).sort((a, b) => b.score - a.score);
-  status.textContent = spanish ? `${matches.length} ${matches.length === 1 ? "sección encontrada" : "secciones encontradas"}` : `${matches.length} matching section${matches.length === 1 ? "" : "s"}`;
+  status.textContent = `${matches.length} matching section${matches.length === 1 ? "" : "s"}`;
   for (const {item} of matches.slice(0, 25)) {
     const link = document.createElement("a");
     link.className = "search-result";
@@ -128,7 +100,7 @@ function updateScrollRegions() {
     if (overflowing) {
       region.setAttribute("tabindex", "0");
       region.setAttribute("role", "region");
-      region.setAttribute("aria-label", spanish ? "Ecuación o tabla desplazable" : "Scrollable equation or table");
+      region.setAttribute("aria-label", "Scrollable equation or table");
     } else {
       region.removeAttribute("tabindex");
       region.removeAttribute("role");
@@ -171,7 +143,7 @@ function positionEquationNumbers() {
     const region = math.closest('.table-scroll');
     if (!region) continue;
     // Recognize native arrays as well as newly marked builds, so shared reader
-    // updates also fix previously generated English and translated editions.
+    // updates also fix previously generated manual pages.
     const cells = [];
     for (const table of math.querySelectorAll('mtable')) {
       const numbers = new Set();

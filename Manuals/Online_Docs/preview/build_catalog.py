@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the shared manuals home page from completed editions only."""
+"""Generate the manuals home page from completed English builds."""
 import argparse
 import hashlib
 import html
@@ -11,8 +11,6 @@ import tempfile
 from manuals import MANUALS
 
 HERE = Path(__file__).resolve().parent
-LANGUAGES = {'en': 'English', 'es': 'Español'}
-CATALOG_ORDER = ['tech', 'user', 'validation', 'config']
 
 
 def write_atomic(path, content):
@@ -24,92 +22,44 @@ def write_atomic(path, content):
 
 def catalog_entries(root):
     entries = []
-    for key in CATALOG_ORDER:
-        manual = MANUALS[key]
-        editions = []
-        for code, label in LANGUAGES.items():
-            folder = root / manual.output / 'html' / code
-            try:
-                proof = json.loads((folder / 'build-manifest.json').read_text())
-            except (OSError, ValueError):
-                continue
-            pages = proof.get('pages', [])
-            if (proof.get('complete') is True and proof.get('language') == code
-                    and proof.get('manual', 'tech') == manual.key and pages
-                    and (folder / 'index.html').is_file()
-                    and all(Path(p).name == p and (folder / p).is_file() for p in pages)):
-                editions.append({'code': code, 'label': label,
-                                 'url': f'{manual.output}/html/{code}/index.html'})
-        if editions:
-            entries.append({'key': manual.key, 'title': manual.title,
-                            'subtitle': manual.subtitle, 'title_es': manual.title_es,
-                            'subtitle_es': manual.subtitle_es, 'editions': editions})
+    for manual in MANUALS.values():
+        folder = root / manual.output / 'html/en'
+        try:
+            proof = json.loads((folder / 'build-manifest.json').read_text())
+        except (OSError, ValueError):
+            continue
+        pages = proof.get('pages', [])
+        if (proof.get('complete') is True and proof.get('language') == 'en'
+                and proof.get('manual', 'tech') == manual.key and pages
+                and (folder / 'index.html').is_file()
+                and all(Path(p).name == p and (folder / p).is_file() for p in pages)):
+            entries.append({'key': manual.key, 'title': manual.title, 'subtitle': manual.subtitle,
+                            'url': f'{manual.output}/html/en/index.html'})
     return entries
 
 
-def refresh_catalog(root, update_readers=False):
+def refresh_catalog(root):
     root = Path(root).resolve()
     root.mkdir(parents=True, exist_ok=True)
     destination = root / 'index.html'
-    marker = '<!-- CFAST manuals catalog -->'
-    if destination.exists() and marker not in destination.read_text():
+    if destination.exists() and '<!-- CFAST manuals catalog -->' not in destination.read_text():
         raise RuntimeError(f'Refusing to replace an unrelated home page: {destination}')
     entries = catalog_entries(root)
     cards = []
     for entry in entries:
-        edition = next((e for e in entry['editions'] if e['code'] == 'en'), entry['editions'][0])
-        link = f'<a href="{html.escape(edition["url"], quote=True)}">{html.escape(entry["title"])}</a>'
+        link = f'<a href="{html.escape(entry["url"], quote=True)}">{html.escape(entry["title"])}</a>'
         cards.append(f'<section class="manual-card"><p class="volume">{html.escape(entry["subtitle"])}</p>'
-                             f'<h3>{link}</h3></section>')
+                     f'<h3>{link}</h3></section>')
     cards = ('<section class="publication"><h2>NIST TN 1889</h2>'
              f'<div class="manual-grid">{"".join(cards)}</div></section>') if cards else ''
     content = (HERE / 'catalog.html').read_text().replace('{{CARDS}}', cards)
-    available = {e['code'] for entry in entries for e in entry['editions']}
-    options = ''.join(f'<option value="{code}">{label}</option>' for code, label in LANGUAGES.items() if code in available)
-    content = content.replace('{{LANGUAGES}}', options or '<option value="en">English</option>')
     content = content.replace('{{EMPTY}}', '' if entries else '<p>No manuals have completed building yet.</p>')
-    for name in ['catalog.css', 'catalog.js']:
-        shutil.copy2(HERE / name, root / name)
-        digest = hashlib.sha256((HERE / name).read_bytes()).hexdigest()[:12]
-        content = content.replace(name + '"', name + '?v=' + digest + '"')
-    # Known locations also discover converters that started before this feature.
-    registry = {'kind': 'cfast-manual-catalog', 'manuals': entries,
-                'locations': [{'key': m.key, 'title': m.title, 'subtitle': m.subtitle,
-                               'title_es': m.title_es, 'subtitle_es': m.subtitle_es,
-                               'output': m.output} for m in [MANUALS[key] for key in CATALOG_ORDER]],
-                'languages': LANGUAGES}
-    write_atomic(root / 'manuals.json', json.dumps(registry, ensure_ascii=False, indent=2))
+    shutil.copy2(HERE / 'catalog.css', root / 'catalog.css')
+    digest = hashlib.sha256((HERE / 'catalog.css').read_bytes()).hexdigest()[:12]
+    content = content.replace('catalog.css"', 'catalog.css?v=' + digest + '"')
+    write_atomic(root / 'manuals.json', json.dumps({'kind': 'cfast-manual-catalog', 'manuals': entries}, indent=2))
     write_atomic(destination, content)
-    if update_readers:
-        # Upgrade presentation assets without running TeX or translation.
-        assets = {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest()[:12]
-                  for name in ['reader.js', 'reader.css']}
-        from lxml import html as dom, etree
-        for entry in entries:
-            for edition in entry['editions']:
-                folder = (root / edition['url']).parent
-                for name in assets:
-                    shutil.copy2(HERE / name, folder / 'assets' / name)
-                for page in folder.glob('*.html'):
-                    doc = dom.parse(str(page))
-                    scripts = doc.xpath('//script[starts-with(@src,"assets/reader.js")]')
-                    if not scripts:
-                        continue
-                    # Upgrade existing editions as well as future template builds.
-                    if not doc.xpath('//div[@class="draft-banner"]'):
-                        banner = etree.Element('div', {'class': 'draft-banner', 'lang': 'en'})
-                        banner.text = 'DRAFT FOR REVIEW'
-                        doc.xpath('//header[@class="site-header"]')[0].addnext(banner)
-                    for footer in doc.xpath('//footer[@class="page-footer"]'):
-                        if not footer.xpath('./strong[@class="draft-status"]'):
-                            status = etree.Element('strong', {'class': 'draft-status', 'lang': 'en'})
-                            status.text = 'DRAFT FOR REVIEW'
-                            footer.insert(0, status)
-                    for script in scripts:
-                        script.set('src', 'assets/reader.js?v=' + assets['reader.js'])
-                    for style in doc.xpath('//link[starts-with(@href,"assets/reader.css")]'):
-                        style.set('href', 'assets/reader.css?v=' + assets['reader.css'])
-                    write_atomic(page, '<!doctype html>\n' + etree.tostring(doc, encoding='unicode', method='html'))
+    (root / 'catalog.js').unlink(missing_ok=True)
     return entries
 
 
@@ -117,5 +67,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=HERE.parent / 'build')
     args = parser.parse_args()
-    entries = refresh_catalog(args.root, update_readers=True)
+    entries = refresh_catalog(args.root)
     print(f'Manuals home: {args.root.resolve() / "index.html"} ({len(entries)} completed manuals)')

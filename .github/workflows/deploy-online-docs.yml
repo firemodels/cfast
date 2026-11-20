@@ -23,7 +23,7 @@ jobs:
       - name: Download prepared manuals
         run: |
           curl --fail --location --retry 3 \
-            https://github.com/firemodels/cfast/releases/download/online-docs-preview/online-docs.zip \
+            https://github.com/firemodels/test_bundles/releases/download/CFAST_TEST/online-docs.zip \
             --output online-docs.zip
           unzip -q online-docs.zip -d _site
           test -f _site/index.html

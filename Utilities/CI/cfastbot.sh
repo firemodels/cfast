@@ -902,8 +902,10 @@ finalize_build_status()
 
 upload_guides()
 {
+   local online_docs=
+   if [[ $platform == linux ]]; then online_docs="$GITSTATUS_DIR/online-docs.zip"; fi
    if [[ "$UPLOAD" == "1" && -e $GUIDES2GH && ! -s $ERROR_LOG && ! -s $WARNING_LOG ]]; then
-      run_logged "$OUTPUT_DIR/stage7_upload" "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" || return 1
+      run_logged "$OUTPUT_DIR/stage7_upload" "$GUIDES2GH" "$cfastrepo/Manuals" "$GITSTATUS_DIR/VERSION_LATEST" "$online_docs" || return 1
       GITURL=https://github.com/$GH_OWNER/$GH_REPO/releases/tag/$GH_CFAST_TAG
    fi
    return 0
@@ -982,6 +984,11 @@ missing=0
 for program in python3 "$fortran" pdflatex biber; do
    command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" | tee -a "$ERROR_LOG" >&2; missing=1; }
 done
+if [[ $platform == linux ]]; then
+   for program in make4ht dvisvgm kpsewhich pdftocairo pdftops; do
+      command -v "$program" >/dev/null || { echo "Missing CI prerequisite: $program" | tee -a "$ERROR_LOG" >&2; missing=1; }
+   done
+fi
 if [[ -n $QUEUE ]]; then
    for program in sbatch squeue scancel; do
       command -v "$program" >/dev/null || { echo "Missing Slurm command: $program." | tee -a "$ERROR_LOG" >&2; missing=1; }
@@ -1175,6 +1182,12 @@ fi
   cd "$cfastrepo/Manuals/CFAST_Configuration_Guide" || exit 1
   run_logged "$OUTPUT_DIR/stage6_cfast_config_guide" ./make_guide.sh
   check_guide $OUTPUT_DIR/stage6_cfast_config_guide $cfastrepo/Manuals/CFAST_Configuration_Guide CFAST_Configuration_Guide.pdf 'CFAST Configuration Guide'
+
+  if [[ $platform == linux ]]; then
+     [[ ! -s $ERROR_LOG && ! -s $WARNING_LOG ]] || exit 1
+     echo Building CFAST online manuals
+     run_logged "$OUTPUT_DIR/stage6_online_docs" "$cfastrepo/Manuals/Online_Docs/build.sh" || exit 1
+  fi
 
 #*** output hashes needed for bundling
   VERSION_LATEST=$GITSTATUS_DIR/VERSION_LATEST

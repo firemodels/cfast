@@ -2,6 +2,7 @@
 set -euo pipefail
 FROMDIR=${1:?Manual directory required}
 VERSIONDIR=${2:-${CFAST_CI_STATE_DIR:-$HOME/.cfastbot}/VERSION_LATEST}
+ONLINE_DOCS=${3:-}
 : "${GH_OWNER:?Set GH_OWNER}" "${GH_REPO:?Set GH_REPO}" "${GH_CFAST_TAG:?Set GH_CFAST_TAG}"
 
 upload_asset() {
@@ -32,6 +33,10 @@ done
 for key in CFAST_HASH SMV_HASH CFAST_REVISION SMV_REVISION; do
   [[ -s $VERSIONDIR/$key ]] || { echo "Missing version metadata: $VERSIONDIR/$key" >&2; exit 1; }
 done
+if [[ -n $ONLINE_DOCS && ! -s $ONLINE_DOCS ]]; then
+  echo "Missing online manuals: $ONLINE_DOCS" >&2
+  exit 1
+fi
 for guide in CFAST_Tech_Ref CFAST_Users_Guide CFAST_Validation_Guide CFAST_Configuration_Guide; do
   upload_asset "$FROMDIR/$guide/$guide.pdf"
 done
@@ -40,3 +45,4 @@ for key in CFAST_HASH SMV_HASH CFAST_REVISION SMV_REVISION; do
   printf '%s %s\n' "$key" "$(head -1 "$VERSIONDIR/$key")"
 done > "$info"
 upload_asset "$info"
+if [[ -n $ONLINE_DOCS ]]; then upload_asset "$ONLINE_DOCS"; fi

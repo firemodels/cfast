@@ -78,6 +78,7 @@ fdsplotlib.scatplot(saved_data,drange,
                     Scatterplot_Inputs_File=Scatterplot_Inputs_File,
                     Stats_Output=Stats_Output,
                     Scatterplot_Dir=Scatterplot_Dir,
+                    model_prefix="CFAST",
                     verbose=True,
                     )
 

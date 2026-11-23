@@ -28,7 +28,7 @@ jobs:
           unzip -q online-docs.zip -d _site
           test -f _site/index.html
       - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
       - uses: actions/deploy-pages@v4

@@ -1,16 +1,16 @@
 &HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
- 
-!! Scenario Configuration 
-&TIME SIMULATION = 360 PRINT = 50 SMOKEVIEW = 1 SPREADSHEET = 1 / 
-&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 24 EXTERIOR_TEMPERATURE = 24 /
-&MISC  MAX_TIME_STEP = 0.01 / 
 
- 
-!! Material Properties 
-&MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)', 
+!! Scenario Configuration
+&TIME SIMULATION = 360 PRINT = 50 SMOKEVIEW = 1 SPREADSHEET = 1 /
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 24 EXTERIOR_TEMPERATURE = 24 /
+&MISC  MAX_TIME_STEP = 0.01 /
+
+
+!! Material Properties
+&MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)',
       CONDUCTIVITY = 0.48 DENSITY = 1440 SPECIFIC_HEAT = 0.84, THICKNESS = 0.012 EMISSIVITY = 0.9 /
- 
-!! Compartments 
+
+!! Compartments
 &COMP ID = 'Bedroom 2'
       DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 3.38
       CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
@@ -47,7 +47,7 @@
       DEPTH = 1.47 HEIGHT = 2.4 WIDTH = 1.68
       CEILING_MATL_ID = 'GYP1/2' CEILING_THICKNESS = 0.012 WALL_MATL_ID = 'GYP1/2' WALL_THICKNESS = 0.012 FLOOR_MATL_ID = 'OFF'
       ORIGIN = 15.14, 0.91, 0 GRID = 50, 50, 50 /
- 
+
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Bedroom 2', 'Kitchen', BOTTOM = 0 HEIGHT = 1.98, WIDTH = 0.61
   FACE = 'RIGHT' OFFSET = 2.2 /
@@ -67,10 +67,10 @@
   FACE = 'RIGHT' OFFSET = 2 /
 &VENT TYPE = 'WALL' ID = 'WallVent_9' COMP_IDS = 'Bedroom 3', 'Hallway', BOTTOM = 0 HEIGHT = 0.0254, WIDTH = 0.61
   FACE = 'FRONT' OFFSET = 1 /
- 
-!! Fires 
-&FIRE ID = 'Dunes 2000 Mattress 2'  COMP_ID = 'Bedroom 1', FIRE_ID = 'Dunes 2000 Mattress 2_Fire'  LOCATION = 1.3, 3.1 / 
-&CHEM ID = 'Dunes 2000 Mattress 2_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 16090 RADIATIVE_FRACTION = 0.35 / 
+
+!! Fires
+&FIRE ID = 'Dunes 2000 Mattress 2'  COMP_ID = 'Bedroom 1', FIRE_ID = 'Dunes 2000 Mattress 2_Fire'  LOCATION = 1.3, 3.1 /
+&CHEM ID = 'Dunes 2000 Mattress 2_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 16090 RADIATIVE_FRACTION = 0.35 /
 &TABL ID = 'Dunes 2000 Mattress 2_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Dunes 2000 Mattress 2_Fire', DATA = 0, 0, 0.3, 0.33, 0.0506, 0.135, 0, 0, 0 /
 &TABL ID = 'Dunes 2000 Mattress 2_Fire', DATA = 3, 0, 0.3, 0.33, 0.0506, 0.135, 0, 0, 0 /
@@ -134,17 +134,17 @@
 &TABL ID = 'Dunes 2000 Mattress 2_Fire', DATA = 177, 184.72, 0.3, 0.33, 0.0506, 0.135, 0, 0, 0 /
 &TABL ID = 'Dunes 2000 Mattress 2_Fire', DATA = 180, 193.21, 0.3, 0.33, 0.0506, 0.135, 0, 0, 0 /
 &TABL ID = 'Dunes 2000 Mattress 2_Fire', DATA = 190, 0, 0.3, 0.33, 0.0506, 0.135, 0, 0, 0 /
- 
+
 !! Devices
-&DEVC ID = 'HeatDetector_1' COMP_ID = 'Bedroom 2' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
-&DEVC ID = 'HeatDetector_2' COMP_ID = 'Bedroom 1' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
-&DEVC ID = 'HeatDetector_3' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
-&DEVC ID = 'HeatDetector_4' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
-&DEVC ID = 'HeatDetector_5' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 31, RTI = 5 /
+&DEVC ID = 'HeatDetector_1' COMP_ID = 'Bedroom 2' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 34, RTI = 5 /
+&DEVC ID = 'HeatDetector_2' COMP_ID = 'Bedroom 1' LOCATION = 0.38, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 34, RTI = 5 /
+&DEVC ID = 'HeatDetector_3' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 34, RTI = 5 /
+&DEVC ID = 'HeatDetector_4' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19 TYPE = 'HEAT_DETECTOR' SETPOINT = 34, RTI = 5 /
+&DEVC ID = 'HeatDetector_5' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28 TYPE = 'HEAT_DETECTOR' SETPOINT = 34, RTI = 5 /
 &DEVC ID = 'SmokeDetector_6' COMP_ID = 'Bedroom 2' LOCATION = 0.38, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_7' COMP_ID = 'Bedroom 1' LOCATION = 0.38, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_8' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_9' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_10' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28 TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
- 
+
 &TAIL /

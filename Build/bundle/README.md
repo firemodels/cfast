@@ -4,6 +4,14 @@ This directory contains the platform bundle scripts for CFAST 8. Run the command
 
 All platform bundle scripts pass `--clean-cfast` when building CFAST so each bundle build recompiles it with fresh object and module files. Direct-make fallbacks also clean before compiling. Use `--no-build-cfast` only to package an executable that has already been built and verified.
 
+The bundle scripts reset and clean the local `cfast` checkout before building. Commit changes to the bundle scripts before running them, or the build discards the edits and names the bundle `-dirty`.
+
+## Python
+
+The shared FDS Python environment requires Python 3.9 through 3.14 on every platform; the range is enforced by `python_requires` in `fds/Utilities/Python/setup.py`, so `pip` refuses to install `fds/.github/requirements.txt` into any other version. The macOS and Windows bundle scripts create that environment from the interpreter that runs them: `python3` on `PATH` for macOS, and the interpreter that launches `build_windows_bundle.py` for Windows. The Linux script does not create a Python environment; build CEditQt with a supported Python before running it.
+
+On a managed machine where the system Python may be updated without notice, install a supported version for your user only and leave the system Python alone. On macOS, `brew install python@3.14` provides `python3.14`. On Windows, `winget install --id Python.Python.3.14 --scope user --override "InstallAllUsers=0 PrependPath=0 Include_launcher=1 InstallLauncherAllUsers=0"` (or the python.org installer with "Use admin privileges when installing py.exe" and "Add python.exe to PATH" unchecked) installs to `%LOCALAPPDATA%\Programs\Python\Python314` and registers the interpreter with the `py` launcher without changing `python` on `PATH`.
+
 ## Quick Start
 
 ### macOS
@@ -61,11 +69,19 @@ To upload the installer to the test bundle release after it is built:
 python Build\bundle\build_windows_bundle.py --manuals-from-release --upload
 ```
 
+If `python` on `PATH` is not a supported version, run the script through the `py` launcher instead:
+
+```powershell
+py -3.14 Build\bundle\build_windows_bundle.py --manuals-from-release
+```
+
 For a Windows scheduled task, use the wrapper script:
 
 ```powershell
 Build\bundle\run_windows_bundle.ps1
 ```
+
+The wrapper runs the newest supported Python known to the `py` launcher, falling back to `python` on `PATH`, and writes a timestamped log of each run to `Build\bundle\logs`.
 
 By default, `--upload` pushes to `firemodels/test_bundles` release tag `CFAST_TEST`. Override this with:
 
@@ -97,7 +113,7 @@ The macOS and Windows scripts build CFAST, CEditQt, and Smokeview unless disable
 
 Common:
 
-- Python 3
+- Python 3.9 through 3.14
 - CFAST build tools for the selected compiler/platform
 - CEditQt Python dependencies
 - PyInstaller for CEditQt app builds

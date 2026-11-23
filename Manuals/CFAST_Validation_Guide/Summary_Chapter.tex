@@ -8,7 +8,7 @@ How to best quantify the comparisons between model predictions and experiments i
 
 A true validation of a model would involve proper statistical treatment of all the inputs and outputs of the model with appropriate experimental data to allow comparisons over the full range of the model. Thus, the comparisons of the differences between model predictions and experimental data discussed here are intentionally simple and vary from test to test and from variable to variable due to the changing nature of the tests and typical use of different variables. The following table lists the summary statistics for the different quantities of interest examined in this Guide. the table lists the bias and relative standard deviation of the predicted values. It also lists the total number of experimental data sets on which these statistics are based, as well as the total number of point to point comparisons. Obviously, the more data sets and the more points, the more reliable the statistics.
 
-For further details about model uncertainty and the meaning of these statistics, see the Refs. \cite{FDS_Validation_Guide_6, NRCNUREG1824}.
+For further details about model uncertainty and the meaning of these statistics, see the Refs. \cite{~\unit{\degreeCelsius}_Validation_Guide_6, NRCNUREG1824}.
 
 \begin{table}
 
@@ -25,7 +25,7 @@ CFAST predictions in this validation study were consistent with numerous earlier
 \section{Normality Tests}
 \label{normality_tests}
 
-The histograms on the following pages display the distribution of the quantity $\ln(M/E)$, where $M$ is a random variable representing the \underline{M}odel prediction and $E$ is a random variable representing the \underline{E}xperimental measurement. From the development of the statistics used to compare model and experimental values~\cite{FDS_Validation_Guide_6}, $\ln(M/E)$ is assumed to be normally distributed. To test this assumption for each of the quantities of interest listed in Table~\ref{summary_stats}, Spiegelhalter's normality test has been applied~\cite{Spiegelhalter:Biometrika1983}. This test examines a set of values, $x_1,...,x_n$ whose mean and standard deviation are computed as follows:
+The histograms on the following pages display the distribution of the quantity $\ln(M/E)$, where $M$ is a random variable representing the \underline{M}odel prediction and $E$ is a random variable representing the \underline{E}xperimental measurement. From the development of the statistics used to compare model and experimental values~\cite{~\unit{\degreeCelsius}_Validation_Guide_6}, $\ln(M/E)$ is assumed to be normally distributed. To test this assumption for each of the quantities of interest listed in Table~\ref{summary_stats}, Spiegelhalter's normality test has been applied~\cite{Spiegelhalter:Biometrika1983}. This test examines a set of values, $x_1,...,x_n$ whose mean and standard deviation are computed as follows:
 \be
    \bar{x} = \sum_{i=1}^n x_i  \quad ; \quad \sigma^2 = \frac{1}{n-1}  \sum_{i=1}^n \left( x_i - \bar{x} \right)^2
 \ee

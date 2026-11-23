@@ -16,7 +16,7 @@ For most of the examples presented in this section, the same basic geometry is u
 \subsection{Temperature Equilibrium via Heat Conduction}
 \label{basic_tempequilib}
 
-As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
+As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\unit{\degreeCelsius} to 25~\unit{\degreeCelsius} allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
 \begin{equation}
    P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101325 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103053 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
 \end{equation}
@@ -48,7 +48,7 @@ Now an open window is added to the compartment, with an exterior temperature of 
 \subsection{Temperature Equilibrium via a Window at a High Elevation}
 \label{basic_tempequilib_window_elevation}
 
-With the exterior temperature still set to 25~\degc, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case, which are consistent with the expected results.
+With the exterior temperature still set to 25~\unit{\degreeCelsius}, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case, which are consistent with the expected results.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -62,7 +62,7 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
 \label{sealed_test}
 
-A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  From Eqs. (2.5) and (2.6) in the CFAST Technical Guide~\cite{CFAST_Tech_Guide_6}, the governing equation for the pressure and temperature of the single zone compartment are:
+A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  From Eqs. (2.5) and (2.6) in the CFAST Technical Reference Guide~\cite{CFAST_Tech_Guide_6}, the governing equation for the pressure and temperature of the single zone compartment are:
 \begin{eqnarray}
    \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{q}   \label{eq1}
  \\[0.1in]
@@ -156,7 +156,7 @@ The molecular weight of H$_2$O is 18~\unit{g/mol}; thus, the total mass of H$_2$
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
-CFAST predicts that the final mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_8} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
+CFAST predicts that the final mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with Eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_8} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
 Y_k = \frac{X_{k} M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
 \end{equation}
@@ -193,7 +193,7 @@ The same natural gas fire described in Section~\ref{sec:spec1} burns in a compar
 \subsection{A Fire in a Compartment Connected to Another via a Ceiling Vent}
 \label{species_mass_3}
 
-The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
+The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~\unit{m^2}. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
 Figure~\ref{specmass2} shows the resulting product masses, which are consistent with the expected results.
 \begin{figure}[!ht]
 \centering
@@ -350,7 +350,7 @@ where $C$ is the orifice coefficient taken to be 0.7, $\rho$ is the gas density 
 \begin{equation}
 \dot{m} = {\rm sign} \brackets{\frac{\Delta P_t + \Delta P_b}{2}} \, \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
 \end{equation}
-The equation for the velocity profile of air traveling through the doorway can be produced after rearranging equation~\ref{eq:mdot}:
+The equation for the velocity profile of air traveling through the doorway can be produced after rearranging Eq.~\ref{eq:mdot}:
 \begin{equation}
 v(z) = \frac{\dot{m}}{\delta A \, \rho} = {\rm sign}(\Delta{P(z)}) \, C \sqrt{\frac{2|\Delta{P(z)}|}{\rho}}
 \end{equation}
@@ -416,7 +416,7 @@ For this verification case, the upper layer thickness for each compartment is se
 \label{Leakage_1}
 \label{Leakage_2}
 
-Air is supplied to the floor of three compartments (3~m by 3~m by 3~m) at ambient condition via a single mechanical vent in each compartment with a flowrate of 0.05~\unit{m^3/s}. The first compartment has leakage defined with a flow coefficient of 0.02. This results in a total leakage area of 0.0153\unit{m^2}. This is 0.000284~\unit{m^2/m^2} of leakage based on the total area of the room boundaries (54~m\unit{m^2}). The second compartment assigns that leakage ratio to walls, floor, and ceiling. The third compartment assigns the entire leakage area to just the floor at a ratio of 0.00170~\unit{m^2/m^2}. The total flow out of each compartment should equal the total mechanical flow into each compartment. At ambient density, the flow rate of 0.05~\unit{m^3/s} is 0.06~\unit{kg/s}. Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ where the discharge coefficient for leakage is taken to be 1. Solving for $\Delta P$ using the leak area, mechanical flowrate, and ambient density gives a pressure rise of 6.36~Pa.
+Air is supplied to the floor of three compartments (3~m by 3~m by 3~m) at ambient condition via a single mechanical vent in each compartment with a flowrate of 0.05~\unit{m^3/s}. The first compartment has leakage defined with a flow coefficient of 0.02. This results in a total leakage area of 0.0153\unit{m^2}. This is 0.000284~\unit{m^2/m^2} of leakage based on the total area of the room boundaries (54~m\unit{m^2}). The second compartment assigns that leakage ratio to walls, floor, and ceiling. The third compartment assigns the entire leakage area to just the floor at a ratio of 0.00170~\unit{m^2/m^2}. The total flow out of each compartment should equal the total mechanical flow into each compartment. At ambient density, the flow rate of 0.05~\unit{m^3/s} is 0.06~\unit{kg/s}. Equation 4.5 from the CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_8} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dV = C A \sqrt{2 \Delta P/\rho}$ where the discharge coefficient for leakage is taken to be 1. Solving for $\Delta P$ using the leak area, mechanical flowrate, and ambient density gives a pressure rise of 6.36~Pa.
 
 The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
@@ -551,7 +551,7 @@ The total emissivity and the hemisperical absorptivity of the gas medium for tar
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_emissivity_1500_top_gas}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_absorptivity_1500_top_gas}
 \end{tabular*}
-\caption[Results of $T_w$ = 1226.85 $^\circ$C case \ct{radiation_5.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case \ct{radiation_5.in}.}
+\caption[Results of $T_w$ = 1226.85~\unit{\degreeCelsius} case \ct{radiation_5.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case \ct{radiation_5.in}.}
 \label{fig:rad4_1}
 \end{figure}
 
@@ -635,7 +635,7 @@ The simulation runs for 60~s. Figure~\ref{fig:suppression} compares the calculat
 
 \section{Fire Ignition}
 
-Two small fires are located in a single compartment some distance away from a larger initiating fire burning in the center of the compartment. The two smaller fires are set to ignite at an incident heat flux of 6~kW/m$^2$ and 200~\unit{\degreeCelsius}, respectively. Figures~\ref{fireigntion1} and \ref{fireignition2} show the heat release rate, incident heat flux, and surface temperature for the two fires overlayed with the calculated ignition time.
+Two small fires are located in a single compartment some distance away from a larger initiating fire burning in the center of the compartment. The two smaller fires are set to ignite at an incident heat flux of 6~\unit{kW/m^2} and 200~\unit{\degreeCelsius}, respectively. Figures~\ref{fireigntion1} and \ref{fireignition2} show the heat release rate, incident heat flux, and surface temperature for the two fires overlayed with the calculated ignition time.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}

@@ -6,7 +6,7 @@
 
 This chapter contains a brief description of the experiments that were used for model validation. Only enough detail is included here to provide a general understanding of the model simulations. Anyone wishing to use the experimental measurements for validation ought to consult the cited test reports or other publications for a comprehensive description.
 
-Much of the content follows the ~\unit{\degreeCelsius} Validation Guide \cite{~\unit{\degreeCelsius}_Validation_Guide_6} and the verification and validation guide for nuclear power plants developed by the US NRC \cite{NRCNUREG1824}. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as open calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs.
+Much of the content follows the FDS Validation Guide \cite{FDS_Validation_Guide_6} and the verification and validation guide for nuclear power plants developed by the US NRC \cite{NRCNUREG1824}. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as open calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs.
 
 
 \FloatBarrier
@@ -586,7 +586,7 @@ the cooking oil fires and tests that used a smoldering ignition source were not 
 
 Although a load cell was used in the experiments to measure the mass loss rate of the fuel package, the mass loss data
 were not reliable enough to reconstruct the HRR curves for each test. Instead, the HRR curves were determined by approximating
-the fire growth using a $t^2$ ramp, as in Eq.~(\ref{eq:t_squared}). The parameters for the $t^2$ ramp were calibrated in ~\unit{\degreeCelsius}
+the fire growth using a $t^2$ ramp, as in Eq.~(\ref{eq:t_squared}). The parameters for the $t^2$ ramp were calibrated in FDS
 by using the temperature measured at the highest thermocouple in the tree (2~cm below the ceiling) in the fire room.
 \be
 \dot Q = \dot Q_0 \left( \frac{t}{\tau} \right)^2
@@ -1174,7 +1174,7 @@ A diagram of the test structure is displayed in Figure~\ref{fig:VTT_Schematic}. 
 \section{WTC Spray Burner Test Series}
 
 As part of its investigation of the World Trade Center disaster, the Building and Fire Research Laboratory at NIST conducted several series of fire experiments to both gain insight into the
-observed fire behavior and to validate ~\unit{\degreeCelsius} for use in reconstructing the fires. The first series of experiments involved a relatively simple compartment with a liquid spray burner and
+observed fire behavior and to validate FDS for use in reconstructing the fires. The first series of experiments involved a relatively simple compartment with a liquid spray burner and
 various structural elements with varying amounts of sprayed fire-resistive materials (SFRM). A diagram of the compartment is shown in figure~\ref{WTC_Drawing}.
 A complete description of the experiments can be found in the NIST WTC report NCSTAR~1-5B~\cite{NIST_NCSTAR_1-5B}.
 The overall enclosure was rectangular, as were the vents and most of the obstructions. The compartment walls and ceiling were made of 2.54~cm thick marinite. The manufacturer provided the thermal properties of the material used in the calculation. The density was 737~\unit{kg/m^3}, conductivity 0.12~\unit{W/(m.K)}, and the specific heat ranged from 1.17~\unit{kJ/(kg.K)} at 93~\unit{\degreeCelsius} to

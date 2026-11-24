@@ -15,6 +15,6 @@ Target Temperature,Measured Temperature Rise (°C),Predicted Temperature Rise (�
 Surface Temperature,Measured Temperature Rise (°C),Predicted Temperature Rise (°C),10,1000,0.03 0.95,EastOutside,1.5,7,yes,loglog,SCRIPT_FIGURES/Scatterplots/Surface_Temperature
 Target Heat Flux,Measured Heat Flux (kW/m²),Predicted Heat Flux (kW/m²),0.1,120,0.03 0.95,EastOutside,1.5,11,yes,loglog,SCRIPT_FIGURES/Scatterplots/Target_Heat_Flux
 Surface Heat Flux,Measured Heat Flux (kW/m²),Predicted Heat Flux (kW/m²),0.1,120,0.03 0.95,EastOutside,1.5,11,yes,loglog,SCRIPT_FIGURES/Scatterplots/Surface_Heat_Flux
-Smoke Alarm Activation Time (Temperature Surrogate),Measured Time to Activation (s),Predicted Time to Activation (s),10,300,0.03 0.95,EastOutside,1.5,34,yes,loglog,SCRIPT_FIGURES/Scatterplots/Smoke_Alarm_Activation_Time
-Smoke Alarm Activation Time (Smoke Obscuration),Measured Time to Activation (s),Predicted Time to Activation (s),10,300,0.03 0.95,EastOutside,1.5,34,yes,loglog,SCRIPT_FIGURES/Scatterplots/Smoke_Alarm_Activation_Time_bySmoke
+Smoke Alarm Activation Time Temperature Surrogate,Measured Time to Activation (s),Predicted Time to Activation (s),10,300,0.03 0.95,EastOutside,1.5,34,yes,loglog,SCRIPT_FIGURES/Scatterplots/Smoke_Alarm_Activation_Time
+Smoke Alarm Activation Time Smoke Obscuration,Measured Time to Activation (s),Predicted Time to Activation (s),10,300,0.03 0.95,EastOutside,1.5,34,yes,loglog,SCRIPT_FIGURES/Scatterplots/Smoke_Alarm_Activation_Time_bySmoke
 Sprinkler Activation Time,Measured Time to Activation (s),Predicted Time to Activation (s),10,400,0.03 0.95,EastOutside,1.5,6,yes,loglog,SCRIPT_FIGURES/Scatterplots/Sprinkler_Activation_Time

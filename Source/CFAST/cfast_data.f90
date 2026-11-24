@@ -129,8 +129,6 @@ module namelist_data
 
     implicit none
     
-    logical :: convert_negative_distances = .true.  ! true to convert negative vent, fire, and target locations
-                                                    ! to distance from compartment origin
     integer :: input_file_line_number               ! current line number read in a namelist-format input file
     character(len=lbufln) :: input_file_line        ! text of current line read in a namelist-format input file
     logical :: compflag = .false.                   ! true if each namelist type has been read in

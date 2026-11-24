@@ -2117,6 +2117,73 @@ def check_derived_unit_input_files():
         window.deleteLater()
 
 
+def check_wall_vent_legacy_top():
+    """Legacy TOP takes precedence and becomes Height in the editor and saved file."""
+    from cfast_reader import parse_namelists, read_cfast_input
+    from units import LENGTH, format_value
+
+    window = CeditMainWindow()
+    try:
+        with tempfile.TemporaryDirectory(prefix="cedit-wall-vent-top-") as directory:
+            source = Path(directory) / "legacy.in"
+            output = Path(directory) / "saved.in"
+            compartments = (
+                "&COMP ID='Other', WIDTH=5, DEPTH=5, HEIGHT=6 /\n"
+                "&COMP ID='Room', WIDTH=5, DEPTH=5, HEIGHT=4 /\n"
+            )
+            for dimensions, expected_bottom, expected_height in (
+                ("TOP=1.6, BOTTOM=0", 0.0, 1.6),
+                ("TOP=2.5, BOTTOM=0.5", 0.5, 2.0),
+                ("TOP=2.5, BOTTOM=0.5, HEIGHT=1", 0.5, 2.0),
+                ("TOP=-0.5, BOTTOM=0.5", 0.5, 3.0),
+                ("TOP=-0.5, BOTTOM=0.5, HEIGHT=1", 0.5, 3.0),
+                ("TOP=0, BOTTOM=0.5, HEIGHT=1", 0.5, 1.0),
+                ("BOTTOM=0.5, HEIGHT=1", 0.5, 1.0),
+                ("TOP=0, BOTTOM=0.5", 0.5, 2.0),
+                ("BOTTOM=0.5", 0.5, 2.0),
+            ):
+                vent = (
+                    "&VENT TYPE='WALL', ID='Door', COMP_IDS='Room','OUTSIDE', "
+                    f"WIDTH=0.8, {dimensions} /\n"
+                )
+                for vents_first in (False, True):
+                    source.write_text(
+                        "&HEAD VERSION=8000 /\n"
+                        + (vent + compartments if vents_first else compartments + vent),
+                        encoding="utf-8",
+                    )
+                    case = read_cfast_input(source)
+                    assert case.wall_vents[0].bottom == expected_bottom
+                    assert math.isclose(case.wall_vents[0].height, expected_height)
+                    window.load_case(case)
+                    assert window.wall_vents_tab.bottom_edit.text() == format_value(LENGTH, expected_bottom)
+                    assert window.wall_vents_tab.height_edit.text() == format_value(LENGTH, expected_height)
+                    assert window.write_case_to_path(output) == output
+                    saved = read_cfast_input(output)
+                    assert saved.wall_vents[0].bottom == expected_bottom
+                    assert math.isclose(saved.wall_vents[0].height, expected_height)
+                    saved_vent = next(record for record in parse_namelists(output.read_text())
+                                      if record.name == "VENT")
+                    assert "TOP" not in saved_vent.fields
+                    assert math.isclose(saved_vent.fields["HEIGHT"][0], expected_height)
+
+            # A nonzero negative TOP remains authoritative even if it resolves to zero.
+            source.write_text(compartments + vent.replace(dimensions, "TOP=-4, HEIGHT=1"),
+                              encoding="utf-8")
+            assert read_cfast_input(source).wall_vents[0].height == 0.0
+
+            source.write_text(vent.replace(dimensions, "TOP=-0.5"), encoding="utf-8")
+            try:
+                read_cfast_input(source)
+            except ValueError as exc:
+                assert "could not import &VENT" in str(exc)
+                assert "Cannot resolve negative TOP: compartment 'Room' does not exist" in str(exc)
+            else:
+                raise AssertionError("Negative TOP requires the referenced compartment")
+    finally:
+        window.deleteLater()
+
+
 def check_surface_connections_removed():
     """Legacy surface connections must not be exposed or saved by the UI."""
     from dataclasses import replace
@@ -2748,6 +2815,7 @@ def main() -> int:
             check_units_start_in_si,
             check_simulation_unit_display,
             check_derived_unit_input_files,
+            check_wall_vent_legacy_top,
             check_surface_connections_removed,
             check_unrecognized_namelists,
             check_debug_output,

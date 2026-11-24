@@ -24,8 +24,7 @@
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
         tablinfo, init_fire
     use namelist_data, only: input_file_line_number, input_file_line, headflag, timeflag, initflag, miscflag, matlflag, &
-        compflag, devcflag, tablflag, insfflag, fireflag, ventflag, diagflag, slcfflag, isofflag, &
-        convert_negative_distances
+        compflag, devcflag, tablflag, insfflag, fireflag, ventflag, diagflag, slcfflag, isofflag
     use option_data, only: option, on, off, frad, fpsteady
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, &
@@ -773,11 +772,9 @@
                 targptr%room_id = compartment_id
 
                 ! position and normal vector
-                if (convert_negative_distances) then
-                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
-                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
-                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
-                end if
+                if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
                 targptr%center = location
                 targptr%normal = normal
                 targptr%surface_orientation = surface_orientation
@@ -896,11 +893,9 @@
                 end if
 
                 ! position and normal vector
-                if (convert_negative_distances) then
-                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
-                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
-                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
-                end if
+                if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                if (location(3)<0._eb) location(3) = roomptr%cheight + location(3)
                 dtectptr%center = location
                 
                 ! detector response and sprinkler flowrate
@@ -1182,10 +1177,8 @@ continue
             fireptr%spray_density = 1000._eb*spray_density
             
             ! position
-            if (convert_negative_distances) then
-                if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
-                if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
-            end if
+            if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+            if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
             fireptr%z_position = 0.0_eb
@@ -1688,11 +1681,9 @@ continue
 
                 ! position
                 ventptr%width  = width
-                if (convert_negative_distances) then
-                    from_roomptr => roominfo(ventptr%room1)
-                    if (top<0._eb) top = from_roomptr%cheight + top
-                    if (bottom<0._eb) bottom = from_roomptr%cheight + bottom
-                end if
+                from_roomptr => roominfo(ventptr%room1)
+                if (top<0._eb) top = from_roomptr%cheight + top
+                if (bottom<0._eb) bottom = from_roomptr%cheight + bottom
                 ventptr%sill   = bottom
                 ventptr%soffit = top
                 if (top==0._eb .and. height /= 0._eb) ventptr%soffit = bottom + height
@@ -1749,15 +1740,13 @@ continue
                 end do 
 
                 ! diffuser locations
-                if (convert_negative_distances) then
-                    if (ventptr%room1<n_rooms) then
-                        from_roomptr => roominfo(ventptr%room1)
-                        if (heights(1)<0._eb) heights(1) = from_roomptr%cheight + heights(1)
-                    end if
-                    if (ventptr%room2<n_rooms) then
-                        from_roomptr => roominfo(ventptr%room2)
-                        if (heights(2)<0._eb) heights(2) = from_roomptr%cheight + heights(2)
-                    end if
+                if (ventptr%room1<n_rooms) then
+                    from_roomptr => roominfo(ventptr%room1)
+                    if (heights(1)<0._eb) heights(1) = from_roomptr%cheight + heights(1)
+                end if
+                if (ventptr%room2<n_rooms) then
+                    from_roomptr => roominfo(ventptr%room2)
+                    if (heights(2)<0._eb) heights(2) = from_roomptr%cheight + heights(2)
                 end if
                 if (orientations(1) == 'VERTICAL' .and. heights(1) == 0._eb) heights(1) = 0.5_eb * roominfo(ventptr%room1)%cheight
                 ventptr%height(1) = heights(1)

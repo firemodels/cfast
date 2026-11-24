@@ -689,7 +689,7 @@ class DetectionSuppressionTab(QWidget):
             x_position=compartment.width / 2 if compartment else 0.0,
             y_position=compartment.depth / 2 if compartment else 0.0,
             z_position=compartment.height if compartment else 0.0,
-            spray_density=1.4e-4,
+            spray_density=6.316e-5,
         )
         self.devices.append(device)
         self.rebuild_summary_table()

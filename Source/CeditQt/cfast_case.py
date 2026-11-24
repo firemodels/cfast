@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 _FORMULA_SUBSCRIPTS = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 
 
-def formula_subscript(value: int) -> str:
-    return "" if value == 1 else str(value).translate(_FORMULA_SUBSCRIPTS)
+def formula_subscript(value: float) -> str:
+    return "" if value == 1 else str(value).removesuffix(".0").translate(_FORMULA_SUBSCRIPTS)
 
 
 @dataclass
@@ -270,10 +270,10 @@ class FireRampPoint:
 @dataclass
 class FireProperty:
     id: str
-    carbon: int = 1
-    hydrogen: int = 4
-    oxygen: int = 0
-    nitrogen: int = 0
+    carbon: float = 1.0
+    hydrogen: float = 4.0
+    oxygen: float = 0.0
+    nitrogen: float = 0.0
     chlorine: int = 0
     heat_of_combustion: float = 50000.0
     radiative_fraction: float = 0.35
@@ -369,11 +369,11 @@ class CfastCase:
     fire_chem_id: str = "Initial Fire_Fire"
     fire_location_x: float = 2.5
     fire_location_y: float = 2.5
-    carbon: int = 1
+    carbon: float = 1.0
     chlorine: int = 0
-    hydrogen: int = 4
-    nitrogen: int = 0
-    oxygen: int = 0
+    hydrogen: float = 4.0
+    nitrogen: float = 0.0
+    oxygen: float = 0.0
     heat_of_combustion: float = 50000.0
     radiative_fraction: float = 0.35
     fire_ramp: list[FireRampPoint] = field(default_factory=list)

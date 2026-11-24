@@ -525,8 +525,8 @@ def read_legacy_fire_properties(text: str) -> list[FireProperty]:
             chemistry[:5], (12.0107, 1.00794, 15.9994, 14.0067, 35.453)))
         hcn = 27.02864 * nitrogen / molar_mass if molar_mass else 0.0
         properties.append(FireProperty(
-            id=name, carbon=int(carbon), hydrogen=int(hydrogen), oxygen=int(oxygen),
-            nitrogen=int(nitrogen), chlorine=int(chlorine),
+            id=name, carbon=carbon, hydrogen=hydrogen, oxygen=oxygen,
+            nitrogen=nitrogen, chlorine=int(chlorine),
             heat_of_combustion=hoc / 1000.0, radiative_fraction=radiation,
             ramp=[FireRampPoint(values["TIME"][i], values["HRR"][i] / 1000.0,
                                 values["HEIGH"][i], values["AREA"][i], values["CO"][i],
@@ -1289,10 +1289,10 @@ def fire_from_fields(fields: dict[str, list[Any]]) -> FireDefinition:
 def fire_property_from_fields(fields: dict[str, list[Any]]) -> FireProperty:
     return FireProperty(
         id=required_string(fields, "ID", "CHEM ID"),
-        carbon=int(number_field(fields, "CARBON", 1)),
-        hydrogen=int(number_field(fields, "HYDROGEN", 4)),
-        oxygen=int(number_field(fields, "OXYGEN", 0)),
-        nitrogen=int(number_field(fields, "NITROGEN", 0)),
+        carbon=number_field(fields, "CARBON", 1.0),
+        hydrogen=number_field(fields, "HYDROGEN", 4.0),
+        oxygen=number_field(fields, "OXYGEN", 0.0),
+        nitrogen=number_field(fields, "NITROGEN", 0.0),
         chlorine=int(number_field(fields, "CHLORINE", 0)),
         heat_of_combustion=number_field(fields, "HEAT_OF_COMBUSTION", 50000.0),
         radiative_fraction=number_field(fields, "RADIATIVE_FRACTION", 0.35),

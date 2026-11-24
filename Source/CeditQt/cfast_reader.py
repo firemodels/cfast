@@ -401,7 +401,9 @@ def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
     except ValueError as exc:
         raise ValueError(f"{path}: {exc}") from exc
 
-    for record in records:
+    # Legacy wall-vent TOP values may need a compartment's ceiling height.
+    # Import vents last so COMP records can appear anywhere in the input.
+    for record in sorted(records, key=lambda record: record.name == "VENT"):
         if record.name in {"CHEM", "TABL"}:
             continue
         try:
@@ -1136,7 +1138,7 @@ def add_vent(
     vent_type = string_field(fields, "TYPE", "WALL").upper()
 
     if vent_type == "WALL":
-        case.wall_vents.append(wall_vent_from_fields(fields))
+        case.wall_vents.append(wall_vent_from_fields(fields, case.compartments))
     elif vent_type in {"CEILING", "FLOOR"}:
         case.ceiling_floor_vents.append(ceiling_floor_vent_from_fields(fields, vent_type))
     elif vent_type == "MECHANICAL":
@@ -1145,17 +1147,32 @@ def add_vent(
         warnings.append(f"Unsupported vent type {vent_type!r}.")
 
 
-def wall_vent_from_fields(fields: dict[str, list[Any]]) -> WallVent:
+def wall_vent_from_fields(
+    fields: dict[str, list[Any]], compartments: list[Compartment]
+) -> WallVent:
     comp_ids = string_vector(fields, "COMP_IDS", ["", "OUTSIDE"])
     t_values = number_vector(fields, "T", [])
     f_values = number_vector(fields, "F", [])
+
+    bottom = number_field(fields, "BOTTOM", 0.0)
+    top = number_field(fields, "TOP", 0.0)
+    if top != 0.0:
+        if top < 0.0:
+            comp_id = comp_ids[0] if comp_ids else ""
+            compartment = next((comp for comp in compartments if comp.id == comp_id), None)
+            if compartment is None:
+                raise ValueError(f"Cannot resolve negative TOP: compartment {comp_id!r} does not exist.")
+            top += compartment.height
+        height = top - bottom
+    else:
+        height = number_field(fields, "HEIGHT", 2.0)
 
     return WallVent(
         id=required_string(fields, "ID", "wall vent ID"),
         first_comp_id=comp_ids[0] if comp_ids else "",
         second_comp_id=comp_ids[1] if len(comp_ids) > 1 else "OUTSIDE",
-        bottom=number_field(fields, "BOTTOM", 0.0),
-        height=number_field(fields, "HEIGHT", 2.0),
+        bottom=bottom,
+        height=height,
         width=number_field(fields, "WIDTH", 1.0),
         face=string_field(fields, "FACE", "FRONT").upper(),
         offset=number_field(fields, "OFFSET", 0.0),

@@ -87,7 +87,7 @@ module fire_data
 
     real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and vent jets
     real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
-    real(eb), dimension(2) :: sigma_s = default_sigma_s ! extinction coefficient for flaming and smoldering smoke
+    real(eb) :: sigma_s = default_sigma_s ! extinction coefficient smoke
 
     integer :: n_fires                                  ! number of fires in the current simulation
     type(fire_type), allocatable, dimension(:), target :: fireinfo

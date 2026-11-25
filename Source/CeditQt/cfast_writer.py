@@ -620,7 +620,7 @@ def write_cfast_input(case: CfastCase, path: str | Path) -> None:
         misc_fields.append(f"MAX_TIME_STEP = {cfast_number(case.max_time_step)}")
     if not case.overwrite:
         misc_fields.append("OVERWRITE = .FALSE.")
-    misc_fields.append(f"SPECIFIC_EXTINCTION = {cfast_vector(case.specific_extinction)}")
+    misc_fields.append(f"SPECIFIC_EXTINCTION = {cfast_number(case.specific_extinction)}")
 
     add_wrapped_namelist(lines, "MISC", misc_fields)
     lines.append("")

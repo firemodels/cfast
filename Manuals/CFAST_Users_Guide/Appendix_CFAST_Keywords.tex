@@ -64,7 +64,7 @@ The following abbreviated example illustrates the structure of \ct{Users_Guide_E
 &TAIL /
 \end{lstlisting}
 
-Table~\ref{tbl:namelistgroups} provides a quick reference to the supported namelist groups, the section where each is introduced in the document, and the table containing all of the keywords for each group. The legacy \ct{CONN} group is ignored in CFAST 8 beta; see Sec.~\ref{sec:changes_from_v7} for migration guidance.
+Table~\ref{tbl:namelistgroups} provides a quick reference to the supported namelist groups, the section where each is introduced in the document, and the table containing all of the keywords for each group. The legacy \ct{CONN} group is ignored in CFAST 8 beta; see Sec.~\ref{sec:changes_from_v7} for migration guidance. Unless otherwise noted, all \ct{ID} character strings are limited to 128 characters.
 
 \begin{table}[ht]
 \begin{center}
@@ -114,7 +114,6 @@ Group Name & Namelist Group Description  & Reference Sec.    & Parameter Table \
 \ct{CHLORINE}                            & Real                   & Sec.~\ref{info:CHEM}         &                    & 0 \\ \hline
 \ct{COMP_ID}                             & Character              & Sec.~\ref{info:CHEM}         &                    & \ct{'NULL'} \\ \hline
 \ct{CO_YIELD}                            & Real                   & Sec.~\ref{info:CHEM}         & kg/kg              & 0 \\ \hline
-\ct{FLAMING_TRANSITION_TIME}             & Real                   & Sec.~\ref{info:CHEM}         & s                  & 0 \\ \hline
 \ct{HCN_YIELD}                           & Real                   & Sec.~\ref{info:CHEM}         & kg/kg              & 0 \\ \hline
 \ct{HEAT_OF_COMBUSTION}                  & Real                   & Sec.~\ref{info:CHEM}         & kJ/kg              & 50000 \\ \hline
 \ct{HRR}                                 & Real                   & Sec.~\ref{info:CHEM}         & kW                 & 0 \\ \hline
@@ -394,7 +393,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \ct{MAX_ITERATION}                       & Real                   & Sec.~\ref{info:MISC}         &                    & Unlimited \\ \hline
 \ct{MAX_TIME_STEP}                       & Real                   & Sec.~\ref{info:MISC}         & s                  & 1 \\ \hline
 \ct{OVERWRITE}                           & Logical                & Sec.~\ref{info:MISC}         &                    & \ct{T} \\ \hline
-\ct{SPECIFIC_EXTINCTION}                 & Real Doublet           & Sec.~\ref{info:MISC}         & \unit{m^2/kg}      & 8700,4400 \\ \hline
+\ct{SPECIFIC_EXTINCTION}                 & Real                   & Sec.~\ref{info:MISC}         & \unit{m^2/kg}      & 8700,4400 \\ \hline
 \end{xltabular}
 
 

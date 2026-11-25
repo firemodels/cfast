@@ -91,11 +91,9 @@ class SimulationTab(QWidget):
         self.max_iteration_edit.setToolTip("Use -1 for unlimited solver iterations.")
         self.overwrite_checkbox = QCheckBox("Overwrite Existing Output Files")
         self.overwrite_checkbox.setChecked(True)
-        self.flaming_extinction_edit = UnitLineEdit()
-        self.smoldering_extinction_edit = UnitLineEdit()
+        self.extinction_edit = UnitLineEdit()
         self._extinction_values: dict[QLineEdit, tuple[float, str]] = {}
-        self.set_extinction_value(self.flaming_extinction_edit, 8700.0)
-        self.set_extinction_value(self.smoldering_extinction_edit, 4400.0)
+        self.set_extinction_value(self.extinction_edit, 8700.0)
 
         self.message_panel = QPlainTextEdit()
         self.message_panel.setReadOnly(True)
@@ -161,8 +159,7 @@ class SimulationTab(QWidget):
         self.lower_oxygen_limit_edit.setText(format_mass_fraction(case.lower_oxygen_limit))
         self.max_iteration_edit.setText(str(case.max_iteration))
         self.overwrite_checkbox.setChecked(case.overwrite)
-        self.set_extinction_value(self.flaming_extinction_edit, case.specific_extinction[0])
-        self.set_extinction_value(self.smoldering_extinction_edit, case.specific_extinction[1])
+        self.set_extinction_value(self.extinction_edit, case.specific_extinction[0])
 
     def build_times_group(self):
         group = QGroupBox("Simulation Times")
@@ -215,8 +212,7 @@ class SimulationTab(QWidget):
             ("Lower Oxygen Limit:", self.lower_oxygen_limit_edit, 1, 0),
             ("Maximum Solver Iterations:", self.max_iteration_edit, 2, 0),
             ("Maximum Time Step:", self.max_time_step_edit, 3, 0),
-            ("Flaming Extinction Coefficient:", self.flaming_extinction_edit, 1, 2),
-            ("Smoldering Extinction Coefficient:", self.smoldering_extinction_edit, 2, 2),
+            ("Extinction Coefficient:", self.extinction_edit, 1, 2),
         ]
         for label, widget, row, col in fields:
             layout.addWidget(QLabel(label), row, col, alignment=Qt.AlignmentFlag.AlignRight)
@@ -242,7 +238,7 @@ class SimulationTab(QWidget):
                     self.normalize_value_edit(edit, kind, field_name, allow_default)
                 )
             )
-        for edit in (self.flaming_extinction_edit, self.smoldering_extinction_edit):
+        for edit in (self.extinction_edit):
             edit.editingFinished.connect(lambda edit=edit: self.normalize_extinction(edit))
         self.pressure_edit.editingFinished.connect(self.normalize_pressure)
         self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
@@ -418,8 +414,7 @@ class SimulationTab(QWidget):
         case.overwrite = self.overwrite_checkbox.isChecked()
         extinction = []
         for edit, name in (
-            (self.flaming_extinction_edit, "Flaming Extinction Coefficient"),
-            (self.smoldering_extinction_edit, "Smoldering Extinction Coefficient"),
+            (self.extinction_edit, "Flaming Extinction Coefficient"),
         ):
             value = self.extinction_value(edit, name)
             if not math.isfinite(value) or value < 0:

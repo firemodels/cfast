@@ -6,7 +6,7 @@ module spreadsheet_header_routines
 
     use cfast_types, only: target_type, detector_type, vent_type
     
-    use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
+    use cparams, only: u, l, soot, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
         mxvvents, mxmvents, mxext, mxleaks, mxfslab, ns, smoked
     
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo

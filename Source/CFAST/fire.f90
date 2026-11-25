@@ -10,8 +10,8 @@ module fire_routines
         
     use cenviro, only: cp, mw_n2, mw_o2, mw_co2, mw_h2o, mw_c, mw_co, mw_hcn, mw_hcl
     use cparams, only: u, l, m, q, ts, fuel, n2, o2, o2f, mxfires, mxrooms, fuel_moles, fuel_q, fuel_n2, fuel_o2, fuel_co2, &
-        fuel_co, fuel_hcn, fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, soot_flaming, soot_smolder, ct, &
-        mx_hsep, t_max, ns_mass, flaming, smoldering, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, &
+        fuel_co, fuel_hcn, fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, ct, &
+        mx_hsep, t_max, ns_mass, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, &
         check_state, set_state
     use fire_data, only: n_fires, fireinfo, lower_o2_limit, tgignt, sigma_s
     use option_data, only: option, on, off
@@ -46,7 +46,7 @@ module fire_routines
 
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
-        q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
+        q_entrained, hrr_r, hrr_c
     real(eb) :: mdot_pyrolysis_unburned, factor
     real(eb) :: m_entrained
     integer iroom, i
@@ -61,8 +61,8 @@ module fire_routines
         iroom = fireptr%room
         roomptr => roominfo(iroom)
         
-        call interpolate_pyrolysis(i,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_soot_flaming, &
-            y_soot_smolder,y_co,y_hcn,y_trace)
+        call interpolate_pyrolysis(i,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
+            y_co,y_hcn,y_trace)
 
         fireptr%mdot_pyrolysis   = mdot_t
         fireptr%qdot_theoretical = qdot_t
@@ -72,7 +72,7 @@ module fire_routines
         species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)
 
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, hoc_t, y_soot, &
-            y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
+            y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, area_t, fireptr%mdot_entrained, &
             fireptr%mdot_plume, qdot_t, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
         fireptr%firearea = area_t
@@ -134,12 +134,12 @@ module fire_routines
 !> \param   y_trace (output): current trace species yield for the fire
 
     subroutine interpolate_pyrolysis (ifire,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
-                                      y_soot_flaming, y_soot_smolder,y_co,y_hcn, y_trace)
+                                      y_co,y_hcn, y_trace)
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: tsec
-    real(eb), intent(out) :: mdot_t, area_t, height_t, qdot_t, hoc_t, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming 
-    real(eb), intent(out) :: y_soot_smolder, y_co, y_hcn, y_trace
+    real(eb), intent(out) :: mdot_t, area_t, height_t, qdot_t, hoc_t, n_C, n_H, n_O, n_N, n_Cl, y_soot
+    real(eb), intent(out) :: y_co, y_hcn, y_trace
 
     real(eb) :: xxtime, tau, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: id, ifact
@@ -163,8 +163,6 @@ module fire_routines
         n_Cl = 0.0_eb
         hoc_t = 5.0e7_eb
         y_soot = 0.0_eb
-        y_soot_flaming = 0.0_eb
-        y_soot_smolder = 0.0_eb
         y_co = 0.0_eb
         y_hcn = 0.0_eb
         y_trace = 0.0_eb
@@ -203,13 +201,6 @@ module fire_routines
     call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,qdot_t)
     call interp(fireptr%t_hoc,fireptr%hoc,fireptr%n_hoc,xxtime,1,hoc_t)
     call interp(fireptr%t_soot,fireptr%y_soot,fireptr%n_soot,xxtime,1,y_soot)
-    if (xxtime>=fireptr%flaming_transition_time) then
-        y_soot_flaming = y_soot
-        y_soot_smolder = 0.0_eb
-    else
-        y_soot_flaming = 0.0_eb
-        y_soot_smolder = y_soot
-    end if
     call interp(fireptr%t_co,fireptr%y_co,fireptr%n_co,xxtime,1,y_co)
     if (fireptr%n_hcn>0) then
         call interp(fireptr%t_hcn,fireptr%y_hcn,fireptr%n_hcn,xxtime,1,y_hcn)
@@ -253,8 +244,6 @@ module fire_routines
 !> \param   room_depth (input): depth of the room (z direction) (m)
 !> \param   hoc (input): current heat of combustion (j/kg)
 !> \param   y_soot (input): current species yield for soot overall (kg/kg)
-!> \param   y_soot_smolder (input): current species yield for smoldering soot (kg/kg)
-!> \param   y_soot_flaming (input): current species yield for flaming soot (kg/kg)
 !> \param   hoc (input): y_co (input): current species yield for CO (kg/kg)
 !> \param   hoc (input): y_hcn (input): current species yield for HCN (kg/kg)
 !> \param   hoc (input): y_trace (input): current species yield for trace species (kg/kg)
@@ -279,16 +268,15 @@ module fire_routines
 !> \param   hrr_upper (output): heat release rate in the upper plume (w)
 
     subroutine do_fire (ifire, iroom, pyrolysis_rate, room_height, room_width, room_depth, hoc, &
-        y_soot, y_soot_flaming, y_soot_smolder, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, molar_mass, species_mass, &
+        y_soot, y_co, y_hcn, y_trace, n_C, n_H, n_O, n_N, n_Cl, molar_mass, species_mass, &
         x_fire_position, y_fire_position, z_fire_position, fire_area, entrainment_rate, plume_flow_rate, hrr, &
         species_mass_rate, hrr_c, hrr_r, hrr_lower, hrr_upper)
 
     use utility_routines, only: d1mach
 
     integer, intent(in) :: ifire, iroom
-    real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
-                            y_co, y_hcn, y_trace
-    real(eb), intent(in) :: n_C ,n_H, n_O, n_N, n_Cl
+    real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_co, y_hcn, y_trace, &
+                            n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: molar_mass, species_mass(2,ns), x_fire_position, y_fire_position, z_fire_position, fire_area
     real(eb), intent(out) :: entrainment_rate, plume_flow_rate, species_mass_rate(2,ns), hrr_c, hrr_r, hrr_lower, hrr_upper
 
@@ -372,8 +360,8 @@ module fire_routines
 
             ! now do the kinetics scheme
             source_o2 = roomptr%species_fraction(l,o2)
-            call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-                y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
+            call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_co, y_hcn, n_C, n_H, &
+                             n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
 
             ! next guess for plume entrainment just uses the calculated constrained HRR
             if (abs(hrr-hrr_constrained)>atol) then
@@ -406,7 +394,9 @@ module fire_routines
             upper_plume_height, interior_ambient_temperature, entrainment_rate_upper)
 
         source_o2 = roomptr%species_fraction(u,o2)
-        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+        
+        
+        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, &
             y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
 
         species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
@@ -422,7 +412,7 @@ module fire_routines
         pyrolysis_rate_upper = species_mass_rate(u,fuel)
         source_o2 = lower_o2_limit+0.02
         entrainment_rate_upper = 1000.0_eb*(pyrolysis_rate_upper*hoc)/(o2f*source_o2)
-        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, &
             y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, pyrolysis_rate_constrained, xmass)
         species_mass_rate(u,fuel_moles) = pyrolysis_rate_upper/molar_mass
         species_mass_rate(u,fuel_Q) = hrr
@@ -514,8 +504,6 @@ module fire_routines
 !> \param   source_room (input): compartment that contains this fire
 !> \param   hoc (input): heat of combustion of the fuel (W/kg))
 !> \param   y_soot (input): current species yield for soot overall (kg/kg)
-!> \param   y_soot_smolder (input): current species yield for smoldering soot (kg/kg)
-!> \param   y_soot_flaming (input): current species yield for flaming soot (kg/kg)
 !> \param   hoc (input): y_co (input): current species yield for CO (kg/kg)
 !> \param   hoc (input): y_hcn (input): current species yield for HCN (kg/kg)
 !> \param   hoc (input): y_trace (input): current species yield for trace species (kg/kg)
@@ -531,7 +519,7 @@ module fire_routines
 !> \param   species_rates (output): production rates of species based on calculated yields and constrained (kg/s)
 !> \param   pyrolysis rate (output): fuel and oxygen are naturally negative (kg/s)
 
-    subroutine chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+    subroutine chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, &
        y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     ! note that the kinetics scheme is implemented here.  however, applying it to the
@@ -539,20 +527,16 @@ module fire_routines
     ! somewhat complex. Care should be exercised in making changes either here or in the source interface routine.
 
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl
-    real(eb), intent(in) :: y_soot_flaming, y_soot_smolder
     real(eb), intent(in) :: source_o2, lower_o2_limit
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
 
     real(eb) :: o2_entrained, o2_factor, o2_available, o2f2
-    real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl, nu_hcn, nu_n2, nu_soot_flaming, nu_soot_smolder
-    real(eb) :: net_n2, net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_soot_flaming, &
-        net_soot_smolder
+    real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl, nu_hcn, nu_n2
+    real(eb) :: net_n2, net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct
     real(eb) :: factor
 
     ! now do the chemistry balance with supplied inputs.
     nu_soot = molar_mass/mw_c*y_soot
-    nu_soot_flaming = molar_mass/mw_c*y_soot_flaming
-    nu_soot_smolder = molar_mass/mw_c*y_soot_smolder
     nu_hcn = min(n_N,molar_mass/mw_hcn*y_hcn)
     nu_hcl = n_Cl
     nu_co = molar_mass/mw_co*y_co
@@ -583,8 +567,6 @@ module fire_routines
     net_hcl = pyrolysis_rate_constrained*nu_hcl*mw_hcl/molar_mass
     net_hcn = pyrolysis_rate_constrained*nu_hcn*mw_hcn/molar_mass
     net_soot = pyrolysis_rate_constrained*nu_soot*mw_c/molar_mass
-    net_soot_flaming = pyrolysis_rate_constrained*nu_soot_flaming*mw_c/molar_mass
-    net_soot_smolder = pyrolysis_rate_constrained*nu_soot_smolder*mw_c/molar_mass
     net_n2 = pyrolysis_rate_constrained*nu_n2*mw_n2/molar_mass
     net_ct = 0.0_eb
     
@@ -600,8 +582,6 @@ module fire_routines
         net_hcl = factor*net_hcl
         net_hcn = factor*net_hcn
         net_soot = factor*net_soot
-        net_soot_flaming = factor*net_soot_flaming
-        net_soot_smolder = factor*net_soot_smolder
         net_n2 = factor*net_n2
     end if 
 
@@ -615,8 +595,6 @@ module fire_routines
     species_rates(fuel) = net_fuel
     species_rates(h2o) = net_h2o
     species_rates(soot) = net_soot
-    species_rates(soot_flaming) = net_soot_flaming
-    species_rates(soot_smolder) = net_soot_smolder
     species_rates(ct) = net_ct
 
     end subroutine chemistry
@@ -768,7 +746,7 @@ module fire_routines
     real(eb), intent(out) :: hrr, species_mass_rate(2,ns)
 
     real(eb) :: xmass(ns), source_o2, xxmolar_mass, hrr_constrained, pyrolysis_rate_constrained, tjet, hoc, flowfrac
-    real(eb) :: y_soot, y_flaming_soot, y_smolder_soot, y_co, y_hcn
+    real(eb) :: y_soot, y_co, y_hcn
     real(eb) :: nu_o2, nu_co2, nu_co, nu_hcn, nu_hcl, nu_h2o, nu_soot
     real(eb) :: n_n, n_o, n_c, n_cl,n_h
     type(room_type), pointer :: room1ptr, room2ptr
@@ -790,8 +768,6 @@ module fire_routines
         hoc = room2ptr%species_mass(u,fuel_Q)/room2ptr%species_mass(u,fuel)
         xxmolar_mass = room2ptr%species_mass(u,fuel)/room2ptr%species_mass(u,fuel_moles)
         y_soot = room2ptr%species_mass(u,fuel_soot)/room2ptr%species_mass(u,fuel)
-        y_flaming_soot = y_soot
-        y_smolder_soot = 0.0_eb
         y_co = room2ptr%species_mass(u,fuel_co)/room2ptr%species_mass(u,fuel)
         y_hcn = room2ptr%species_mass(u,fuel_hcn)/room2ptr%species_mass(u,fuel)
         nu_soot = y_soot*xxmolar_mass/mw_c
@@ -808,7 +784,7 @@ module fire_routines
         n_c = nu_co2 + nu_hcn + nu_co + nu_soot
         n_o = max(0.0_eb,2.0_eb*nu_co2 - 2.0_eb*nu_o2 + nu_h2o + nu_co)
         
-        call chemistry (netfuel, xxmolar_mass, entrainment_rate, hoc, y_soot, y_flaming_soot, y_smolder_soot, y_co, &
+        call chemistry (netfuel, xxmolar_mass, entrainment_rate, hoc, y_soot, y_co, &
             y_hcn, n_c, n_h, n_o, n_n, n_cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
         hrr = hrr_constrained
         
@@ -1178,10 +1154,7 @@ module fire_routines
         ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
         ! of 8700 m^2/kg or 8700/ln(10)=3778 converted to optical density
         do layer = u, l
-            roomptr%species_output(layer,soot_flaming) = roomptr%species_rho(layer,soot_flaming) * sigma_s(flaming)/log(10._eb)
-            roomptr%species_output(layer,soot_smolder) = roomptr%species_rho(layer,soot_smolder) * sigma_s(smoldering)/log(10._eb)
-            roomptr%species_output(layer,soot) = roomptr%species_output(layer,soot_flaming) + &
-                roomptr%species_output(layer,soot_smolder)
+            roomptr%species_output(layer,soot) = roomptr%species_rho(layer,soot) * sigma_s/log(10._eb)
         end do
 
         ! ct is the integration of the total "junk" being transported

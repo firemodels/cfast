@@ -923,8 +923,8 @@
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight.or. &
-                    dtectptr%center(1)<0._eb.or &
-                    dtectptr%center(2)<0._eb or.dtectptr%center(3)<0._eb) then
+                    dtectptr%center(1)<0._eb.or.&
+                    dtectptr%center(2)<0._eb.or.         dtectptr%center(3)<0._eb) then
                     write (errormessage,5339) n_detectors,roomptr%id
                     call cfastexit('read_devc',12)
                 end if

@@ -744,7 +744,7 @@ module target_routines
     real(eb), intent(out) :: tdtect
 
     real(eb) :: tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
-       bnp1, denom, fact1, fact2, delta, tmp, tlink_smld, tlinko_smld, delta_smld, trig_smld
+       bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(len=133) :: messg
     character(len=11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)

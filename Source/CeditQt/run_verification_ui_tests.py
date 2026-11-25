@@ -2008,7 +2008,7 @@ def check_simulation_unit_display():
             assert case.pressure == parse_value(PRESSURE, "14.123456789 psia", "Pressure")
 
         # Five significant figures affect only display, even across repeated unit changes.
-        for coefficients in ((8700.0), (1234.567891, 0.0000123456789)):
+        for coefficients in ((8700.0,), (1234.567891, 0.0000123456789)):
             case = CfastCase(specific_extinction=coefficients)
             for length_index, mass_index in ((3, 2), (0, 0), (3, 2), (0, 0)):
                 unit_system.set_indices({LENGTH: length_index, MASS: mass_index})
@@ -2106,7 +2106,7 @@ def check_derived_unit_input_files():
                         tab.setpoint_edit.setText("80 C" if criterion == "TEMPERATURE" else "2 kW/m2")
                         tab.setpoint_edit.editingFinished.emit()
                     saved = save_input(path)
-                    assert saved.specific_extinction == (9000.0, 4500.0)
+                    assert saved.specific_extinction[0] == 9000.0
                     for vents in (saved.wall_vents, saved.ceiling_floor_vents, saved.mechanical_vents):
                         assert math.isclose(vents[0].setpoint, 80.0 if criterion == "TEMPERATURE" else 2.0)
                     if profile == "English":

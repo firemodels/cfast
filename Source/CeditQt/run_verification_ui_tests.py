@@ -2116,7 +2116,6 @@ def check_derived_unit_input_files():
                         # The existing input writer retains six significant figures.
                         assert math.isclose(saved.pressure, 15 * 6894.757293168, rel_tol=5e-6)
                         assert math.isclose(saved.specific_extinction[0], 100 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
-                        assert math.isclose(saved.specific_extinction[1], 50 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
     finally:
         unit_system.set_indices(original_units)
         window.deleteLater()

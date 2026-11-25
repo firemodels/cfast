@@ -238,7 +238,7 @@ class SimulationTab(QWidget):
                     self.normalize_value_edit(edit, kind, field_name, allow_default)
                 )
             )
-        self.extinction_edit.editingFinished.connect(self.normalize_extinction)
+        self.extinction_edit.editingFinished.connect(lambda: self.normalize_extinction(self.extinction_edit))
         self.pressure_edit.editingFinished.connect(self.normalize_pressure)
         self.relative_humidity_edit.editingFinished.connect(self.normalize_relative_humidity)
         self.lower_oxygen_limit_edit.editingFinished.connect(self.normalize_lower_oxygen_limit)

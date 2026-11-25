@@ -401,7 +401,9 @@ def read_cfast_input_with_warnings(path: str | Path) -> ImportResult:
     except ValueError as exc:
         raise ValueError(f"{path}: {exc}") from exc
 
-    for record in records:
+    # Legacy wall-vent TOP values may need a compartment's ceiling height.
+    # Import vents last so COMP records can appear anywhere in the input.
+    for record in sorted(records, key=lambda record: record.name == "VENT"):
         if record.name in {"CHEM", "TABL"}:
             continue
         try:
@@ -523,8 +525,8 @@ def read_legacy_fire_properties(text: str) -> list[FireProperty]:
             chemistry[:5], (12.0107, 1.00794, 15.9994, 14.0067, 35.453)))
         hcn = 27.02864 * nitrogen / molar_mass if molar_mass else 0.0
         properties.append(FireProperty(
-            id=name, carbon=int(carbon), hydrogen=int(hydrogen), oxygen=int(oxygen),
-            nitrogen=int(nitrogen), chlorine=int(chlorine),
+            id=name, carbon=carbon, hydrogen=hydrogen, oxygen=oxygen,
+            nitrogen=nitrogen, chlorine=int(chlorine),
             heat_of_combustion=hoc / 1000.0, radiative_fraction=radiation,
             ramp=[FireRampPoint(values["TIME"][i], values["HRR"][i] / 1000.0,
                                 values["HEIGH"][i], values["AREA"][i], values["CO"][i],
@@ -1136,7 +1138,7 @@ def add_vent(
     vent_type = string_field(fields, "TYPE", "WALL").upper()
 
     if vent_type == "WALL":
-        case.wall_vents.append(wall_vent_from_fields(fields))
+        case.wall_vents.append(wall_vent_from_fields(fields, case.compartments))
     elif vent_type in {"CEILING", "FLOOR"}:
         case.ceiling_floor_vents.append(ceiling_floor_vent_from_fields(fields, vent_type))
     elif vent_type == "MECHANICAL":
@@ -1145,17 +1147,32 @@ def add_vent(
         warnings.append(f"Unsupported vent type {vent_type!r}.")
 
 
-def wall_vent_from_fields(fields: dict[str, list[Any]]) -> WallVent:
+def wall_vent_from_fields(
+    fields: dict[str, list[Any]], compartments: list[Compartment]
+) -> WallVent:
     comp_ids = string_vector(fields, "COMP_IDS", ["", "OUTSIDE"])
     t_values = number_vector(fields, "T", [])
     f_values = number_vector(fields, "F", [])
+
+    bottom = number_field(fields, "BOTTOM", 0.0)
+    top = number_field(fields, "TOP", 0.0)
+    if top != 0.0:
+        if top < 0.0:
+            comp_id = comp_ids[0] if comp_ids else ""
+            compartment = next((comp for comp in compartments if comp.id == comp_id), None)
+            if compartment is None:
+                raise ValueError(f"Cannot resolve negative TOP: compartment {comp_id!r} does not exist.")
+            top += compartment.height
+        height = top - bottom
+    else:
+        height = number_field(fields, "HEIGHT", 2.0)
 
     return WallVent(
         id=required_string(fields, "ID", "wall vent ID"),
         first_comp_id=comp_ids[0] if comp_ids else "",
         second_comp_id=comp_ids[1] if len(comp_ids) > 1 else "OUTSIDE",
-        bottom=number_field(fields, "BOTTOM", 0.0),
-        height=number_field(fields, "HEIGHT", 2.0),
+        bottom=bottom,
+        height=height,
         width=number_field(fields, "WIDTH", 1.0),
         face=string_field(fields, "FACE", "FRONT").upper(),
         offset=number_field(fields, "OFFSET", 0.0),
@@ -1272,10 +1289,10 @@ def fire_from_fields(fields: dict[str, list[Any]]) -> FireDefinition:
 def fire_property_from_fields(fields: dict[str, list[Any]]) -> FireProperty:
     return FireProperty(
         id=required_string(fields, "ID", "CHEM ID"),
-        carbon=int(number_field(fields, "CARBON", 1)),
-        hydrogen=int(number_field(fields, "HYDROGEN", 4)),
-        oxygen=int(number_field(fields, "OXYGEN", 0)),
-        nitrogen=int(number_field(fields, "NITROGEN", 0)),
+        carbon=number_field(fields, "CARBON", 1.0),
+        hydrogen=number_field(fields, "HYDROGEN", 4.0),
+        oxygen=number_field(fields, "OXYGEN", 0.0),
+        nitrogen=number_field(fields, "NITROGEN", 0.0),
         chlorine=int(number_field(fields, "CHLORINE", 0)),
         heat_of_combustion=number_field(fields, "HEAT_OF_COMBUSTION", 50000.0),
         radiative_fraction=number_field(fields, "RADIATIVE_FRACTION", 0.35),

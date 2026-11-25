@@ -1251,10 +1251,10 @@ class FiresTab(QWidget):
         fire.y_position = parse_value(LENGTH, self.y_position_edit.text(), "Y Position", 0.0)
 
     def save_property_editor(self, prop: FireProperty):
-        prop.carbon = parse_int(self.carbon_edit.text(), "C", 0)
-        prop.hydrogen = parse_int(self.hydrogen_edit.text(), "H", 0)
-        prop.oxygen = parse_int(self.oxygen_edit.text(), "O", 0)
-        prop.nitrogen = parse_int(self.nitrogen_edit.text(), "N", 0)
+        prop.carbon = parse_number(self.carbon_edit.text(), "C", 0.0)
+        prop.hydrogen = parse_number(self.hydrogen_edit.text(), "H", 0.0)
+        prop.oxygen = parse_number(self.oxygen_edit.text(), "O", 0.0)
+        prop.nitrogen = parse_number(self.nitrogen_edit.text(), "N", 0.0)
         prop.chlorine = parse_int(self.chlorine_edit.text(), "Cl", 0)
         prop.heat_of_combustion = parse_value(
             HOC,

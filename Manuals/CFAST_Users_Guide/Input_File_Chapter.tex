@@ -24,7 +24,7 @@ The \ct{HEAD} line of the input file will contain the \textbf{Title} and a \ct{V
 \label{info:TIME}
 
 \begin{description}
-\item[Simulation Time] (default: 900 s; namelist: \ct{SIMULATION}): Duration of the simulation.
+\item[Simulation Time] (default: 3600 s; namelist: \ct{SIMULATION}): Duration of the simulation.
 
 \item[Text Output Interval] (default: 60 s; namelist: \ct{PRINT}): Time interval between diagnostic outputs. If equal to zero, no output values will appear.
 
@@ -280,7 +280,7 @@ Wall vents are doors or windows that connect compartments that physically overla
 \item[First Compartment] (namelist: \ct{COMP_IDS(1)}) First of the two compartments connected by a door or window. All specifications of the vent are made relative to the floor of the first compartment.
 \item[Second Compartment] (namelist: \ct{COMP_IDS(2)}) Second of the two compartments connected by a door or window.
 \item[Bottom] (default: 0 m; namelist: \ct{BOTTOM}) Distance of the bottom of the opening to the floor of the first compartment.
-\item[Height] (default: 2 m; namelist: \ct{HEIGHT}) Height of the opening relative to the bottom of the opening.
+\item[Height] (default: 2 m; namelist: \ct{HEIGHT}) Height of the opening relative to the \textbf{Bottom}. Note that older versions of CFAST used the parameter \ct{TOP} to designate the height of the vent off the floor of the compartment. This parameter is still accepted, even though \textbf{Height} is preferred.
 \item[Width] (default: 1 m; namelist: \ct{WIDTH}) The width of the opening.
 \item[Vent Offset] (default: 1.3 m; namelist: \ct{OFFSET}) For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment.
 \item[Face] (default: \ct{'FRONT'}; namelist: \ct{FACE}) The wall on which the vent is positioned.  Choices are \ct{'FRONT'}, \ct{'REAR'}, \ct{'RIGHT'}, and \ct{'LEFT'}. The Front and Rear faces are parallel to the $x$-axis; the Left and Right are parallel to the $y$-axis.

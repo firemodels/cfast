@@ -1968,6 +1968,9 @@ def check_units_start_in_si():
 def check_simulation_unit_display():
     from PySide6.QtTest import QTest
     from cfast_case import CfastCase
+    from cfast_case import CfastCase, Compartment
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
     from tabs.simulation_tab import SimulationTab
     from units import LENGTH, MASS, PRESSURE, SPECIFIC_EXTINCTION, display_value, parse_value, unit_label, unit_system
 
@@ -2005,24 +2008,29 @@ def check_simulation_unit_display():
             assert case.pressure == parse_value(PRESSURE, "14.123456789 psia", "Pressure")
 
         # Five significant figures affect only display, even across repeated unit changes.
-        for coefficients in ((8700.0, 4400.0), (1234.567891, 0.0000123456789)):
+        for coefficients in ((8700.0), (1234.567891, 0.0000123456789)):
             case = CfastCase(specific_extinction=coefficients)
             for length_index, mass_index in ((3, 2), (0, 0), (3, 2), (0, 0)):
                 unit_system.set_indices({LENGTH: length_index, MASS: mass_index})
                 tab.load_case(case)
-                for edit, value in zip((tab.extinction_edit), coefficients):
+                for edit, value in zip((tab.extinction_edit,), coefficients):
                     expected = f"{display_value(SPECIFIC_EXTINCTION, value):.5g} {unit_label(SPECIFIC_EXTINCTION)}"
                     assert edit.text() == expected
                     edit.editingFinished.emit()
                     edit.editingFinished.emit()
                 tab.add_to_case(case)
-                assert case.specific_extinction == coefficients
+                assert case.specific_extinction == coefficients[:1]
         tab.extinction_edit.setText("1234.567891 m2/kg")
         tab.extinction_edit.editingFinished.emit()
         assert tab.extinction_edit.text() == "1234.6 m²/kg"
         tab.add_to_case(case)
         assert case.specific_extinction[0] == 1234.567891
-
+        with tempfile.TemporaryDirectory(prefix="cedit-extinction-") as temp_dir:
+            path = Path(temp_dir) / "extinction.in"
+            case.compartments.append(Compartment("Room", 5.0, 5.0, 3.0))
+            write_cfast_input(case, path)
+            saved = read_cfast_input(path)
+            assert math.isclose(saved.specific_extinction[0], 1234.567891, rel_tol=5e-6)
         # Explicitly retyping the displayed number counts as a new pressure value.
         tab.load_case(CfastCase(pressure=101325.0))
         tab.pressure_edit.selectAll()

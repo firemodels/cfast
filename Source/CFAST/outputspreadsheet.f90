@@ -18,7 +18,7 @@ module spreadsheet_routines
     
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: radi_verification_flag
-    use fire_data, only: n_fires, fireinfo
+    use fire_data, only: n_fires, fireinfo, sigma_s
     use room_data, only: n_rooms, roominfo, pressure_ref
     use setup_data, only: iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, ssoutoptions, errormessage
@@ -889,7 +889,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot)
-                    ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                    ssvalue = ssvalue*log10/sigma_s ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot)
                 end if

@@ -424,8 +424,8 @@
                     if (k == 1) then
                         ! reference point for z is at roomptr%cheight
                         abs_cheight = roomptr%z0 + roomptr%cheight
-                        lowest  = abs_cheight - (roomptr%z0 + ventptr%height(1) + length/2._eb)
-                        highest = abs_cheight - (roomptr%z0 + ventptr%height(1) - length/2._eb)
+                        lowest  = abs_cheight - (roomptr%z0 + ventptr%height(1) + length*0.5_eb)
+                        highest = abs_cheight - (roomptr%z0 + ventptr%height(1) - length*0.5_eb)
 
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb
@@ -439,8 +439,8 @@
                     else if (k == 2) then
                         ! reference point for z is at 0
                         abs_cheight = roomptr%z0 + roomptr%cheight
-                        lowest  = roomptr%z0 + ventptr%height(1) - length/2._eb
-                        highest = roomptr%z0 + ventptr%height(1) + length/2._eb
+                        lowest  = roomptr%z0 + ventptr%height(1) - length*0.5_eb
+                        highest = roomptr%z0 + ventptr%height(1) + length*0.5_eb
 
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb

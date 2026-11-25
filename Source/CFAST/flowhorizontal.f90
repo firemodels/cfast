@@ -8,7 +8,7 @@ module hflow_routines
     
     use cfast_types, only: room_type, vent_type
     
-    use cenviro, only: cp
+    use cenviro, only: cp, rhofac
     use cparams, only: l, u, m, q, mxrooms, mxhvents, mxfslab, deltatemp_min
     use diag_data, only: dbtime, residual_debug_print
     use option_data, only: option, on
@@ -366,7 +366,7 @@ module hflow_routines
     real(eb) :: hdot, rhol
 
     hdot = cp*(tu-tl)*mdot
-    rhol = 352.981915_eb/tl
+    rhol = rhofac/tl
     entrainment_rate = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * z
 
     end subroutine poreh_plume
@@ -446,7 +446,7 @@ module hflow_routines
 
             ! fail safe in case interpolation calculation fails
             if (yn(nneut)<yelev(i).or.yn(nneut)>yelev(i+1)) then
-                yn(nneut) = (yelev(i)+yelev(i+1))/2.0_eb
+                yn(nneut) = (yelev(i)+yelev(i+1))*0.5_eb
             end if
             yvelev(nvelev) = yn(nneut)
             dpv1m2(nvelev) = 0.0_eb
@@ -457,7 +457,7 @@ module hflow_routines
     dpv1m2(nvelev) = dp1m2(nelev)
     nslab = nvelev - 1
     do i = 1, nslab
-        yslab(i) = (yvelev(i)+yvelev(i+1))/2.0_eb
+        yslab(i) = (yvelev(i)+yvelev(i+1))*0.5_eb
     end do
 
     ! initialize cfast data structures for flow storage

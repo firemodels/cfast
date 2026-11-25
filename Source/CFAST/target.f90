@@ -116,7 +116,7 @@ module target_routines
                 call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                     wfluxin,wfluxout,iwbound,tgrad)
             else if (iieq==cylpde) then
-                wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                wfluxavg = (wfluxin+wfluxout)*0.5_eb
                 iwbound = 4
                 call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                     dt,wk(1),wrho(1),wspec(1),xl,tgrad)
@@ -676,9 +676,9 @@ module target_routines
             nx = nnodes_trg
             dr = (diam/2)/nx
 
-            if (r<=dr/2.0_eb) then
+            if (r<=dr*0.5_eb) then
                 tempx = targptr%temperature(1)
-            else if (r>=(diam/2)-dr/2.0_eb) then
+            else if (r>=(diam/2)-dr*0.5_eb) then
                 tempx = targptr%temperature(nx)
             else
                 rint = r/dr-0.5_eb
@@ -773,7 +773,7 @@ module target_routines
         velo = max(dtectptr%velocity_o,cjetvelocitymin)
 
         if (dtectptr%dtype==smoked) then
-            trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
+            trig = log10(1._eb/(1._eb-dtectptr%trigger*0.01_eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
@@ -789,8 +789,8 @@ module target_routines
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
             anp1 = bnp1*tjet
-            denom = 1.0_eb + dstep*bnp1*.5_eb
-            fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
+            denom = 1.0_eb + dstep*bnp1*0.5_eb
+            fact1 = (1.0_eb - dstep*bn*0.5_eb)/denom
             fact2 = dstep/denom
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then

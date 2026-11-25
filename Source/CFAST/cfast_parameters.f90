@@ -44,7 +44,7 @@
     integer, parameter :: mxvvents=mxitems          ! maximum number of vertical flow vents
 
     integer, parameter :: mxmvents=mxitems          ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = int(real(mxmvents,eb)/2._eb)     ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxfan = int(real(mxmvents,eb)*0.5_eb)     ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
     integer, parameter :: mxduct = mxfan+2          ! maximum number of ducts in a mechanical ventilation system
@@ -147,6 +147,7 @@
     module defaults
     
     use precision_parameters
+    use cenviro, only : 
 
     integer, parameter :: default_version = 0
 

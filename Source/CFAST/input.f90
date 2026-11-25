@@ -135,8 +135,8 @@
     do i = 1, n_fires
         fireptr => fireinfo(i)
         roomptr => roominfo(fireptr%room)
-        if ((fireptr%x_position<0.0_eb).or.(fireptr%x_position>roomptr%cwidth)) fireptr%x_position = roomptr%cwidth/2.0_eb
-        if ((fireptr%y_position<0.0_eb).or.(fireptr%y_position>roomptr%cdepth)) fireptr%y_position = roomptr%cdepth/2.0_eb
+        if ((fireptr%x_position<0.0_eb).or.(fireptr%x_position>roomptr%cwidth)) fireptr%x_position = roomptr%cwidth*0.5_eb
+        if ((fireptr%y_position<0.0_eb).or.(fireptr%y_position>roomptr%cdepth)) fireptr%y_position = roomptr%cdepth*0.5_eb
         if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
     if (lower_o2_limit<0.0_eb.or.lower_o2_limit>0.230_eb) then

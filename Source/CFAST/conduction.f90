@@ -292,7 +292,7 @@ module conduction_routines
     real(eb) :: alpha, dr, factor, dt_iter
     real(eb) :: ddif(2)
 
-    dr = (diam/2.0_eb)/nnodes
+    dr = (diam*0.5_eb)/nnodes
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     if (dt_iter.gt.0.0_eb) then

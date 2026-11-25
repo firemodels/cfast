@@ -889,7 +889,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot)
-                    ssvalue = ssvalue*log10/sigma_s ! converts converts od to mg/m^3
+                    ssvalue = ssvalue*log10eb/sigma_s ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot)
                 end if
@@ -1290,9 +1290,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_incident_front/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_incident_front*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position, targptr%flux_incident_back/1000._eb,outarray)
+                    call ssaddtolist (position, targptr%flux_incident_back*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1301,9 +1301,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_net(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_net(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1347,9 +1347,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_radiation(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_radiation(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1358,9 +1358,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_convection(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_convection(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1369,9 +1369,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_fire(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_fire(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_fire(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_fire(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1380,9 +1380,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_surface(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_surface(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_surface(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_surface(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1391,9 +1391,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_gas(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_gas(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_gas(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_gas(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1402,9 +1402,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_target(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_target(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1413,9 +1413,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_net_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_net_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1424,9 +1424,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_radiation_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_radiation_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1435,9 +1435,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_convection_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_convection_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1446,9 +1446,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_target_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_target_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do

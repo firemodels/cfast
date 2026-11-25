@@ -8,7 +8,7 @@ module fire_routines
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
         
-    use cenviro, only: cp, mw_n2, mw_o2, mw_co2, mw_h2o, mw_c, mw_co, mw_hcn, mw_hcl
+    use cenviro, only: cp, mw_n2, mw_o2, mw_co2, mw_h2o, mw_c, mw_co, mw_hcn, mw_hcl, rhofac
     use cparams, only: u, l, m, q, ts, fuel, n2, o2, o2f, mxfires, mxrooms, fuel_moles, fuel_q, fuel_n2, fuel_o2, fuel_co2, &
         fuel_co, fuel_hcn, fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, ct, &
         mx_hsep, t_max, ns_mass, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, &
@@ -455,7 +455,7 @@ module fire_routines
     real(eb), intent(in) :: q_t, q_c, z, t_inf, fire_area, x, y
     real(eb), intent(out) :: entrainment_rate
 
-    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
+    real(eb), parameter :: cpg = cp*0.001_eb ! correlation uses different units
     real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
     real(eb) :: c1, c2
 
@@ -464,14 +464,14 @@ module fire_routines
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
     ! V&V experiments show no effect for walls
-    if (x<=sqrt(fire_area)/2.or.y<=sqrt(fire_area)/2) xf = 1.0_eb 
-    if (x<=sqrt(fire_area)/2.and.y<=sqrt(fire_area)/2) xf = 4.0_eb
+    if (x<=sqrt(fire_area)*0.5_eb.or.y<=sqrt(fire_area)*0.5_eb) xf = 1.0_eb 
+    if (x<=sqrt(fire_area)*0.5_eb.and.y<=sqrt(fire_area)*0.5_eb) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q_t*xf
     if (z>0.0_eb.and.qj>0.0_eb) then
         d = sqrt(fire_area*xf/pio4)
-        rho_inf = 352.981915_eb/t_inf
+        rho_inf = rhofac/t_inf
         qstar = qj/(rho_inf*cpg*t_inf*gsqrt*d**(2.5_eb))
         z0 = d*(-1.02_eb + 1.4_eb*qstar**0.4_eb)
 
@@ -540,10 +540,10 @@ module fire_routines
     nu_hcn = min(n_N,molar_mass/mw_hcn*y_hcn)
     nu_hcl = n_Cl
     nu_co = molar_mass/mw_co*y_co
-    nu_h2o = (n_H - nu_hcl - nu_hcn)/2.0_eb
+    nu_h2o = (n_H - nu_hcl - nu_hcn)*0.5_eb
     nu_co2 = n_C  - nu_co - nu_hcn - nu_soot
-    nu_o2 = nu_co2 + (nu_h2o + nu_co - n_O)/2.0_eb
-    nu_n2 = (n_N - nu_hcn)/2.0_eb
+    nu_o2 = nu_co2 + (nu_h2o + nu_co - n_O)*0.5_eb
+    nu_n2 = (n_N - nu_hcn)*0.5_eb
 
     ! calculate the actual burning rate constrained by available o2.
 
@@ -878,8 +878,8 @@ module fire_routines
             y_fire_position = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
             xf = 1.0_eb
             ! V&V experiments show no effect for walls
-            if (x_fire_position<=sqrt(fireptr%firearea)/2.or.y_fire_position<=sqrt(fireptr%firearea)/2) xf = 1.0_eb
-            if (x_fire_position<=sqrt(fireptr%firearea)/2.and.y_fire_position<=sqrt(fireptr%firearea)/2) xf = 4.0_eb
+            if (x_fire_position<=sqrt(fireptr%firearea)*0.5_eb.or.y_fire_position<=sqrt(fireptr%firearea)*0.5_eb) xf = 1.0_eb
+            if (x_fire_position<=sqrt(fireptr%firearea)*0.5_eb.and.y_fire_position<=sqrt(fireptr%firearea)*0.5_eb) xf = 4.0_eb
             hrr = xf*fireptr%qdot_actual
             chirad = fireptr%chirad
             area = xf*fireptr%firearea
@@ -949,7 +949,7 @@ module fire_routines
     real(eb), intent(in) :: hrr, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
 
-    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
+    real(eb), parameter :: cpg = cp*0.001_eb ! correlation uses different units
     real(eb), parameter :: deltaT_0star_at_p2 = (0.225_eb+0.27_eb*0.2_eb)**(-4._eb/3._eb)
     real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj
 
@@ -973,7 +973,7 @@ module fire_routines
         else
             t_inf = tu
         end if
-        rho_inf = 352.981915_eb/t_inf
+        rho_inf = rhofac/t_inf
 
         !ceiling jet thickness
         if (r/h>=0.26_eb) then
@@ -997,7 +997,7 @@ module fire_routines
             end if
 
             ! ceiling jet velocity
-            qstar_h = (hrr/1000._eb)/(rho_inf*cpg*t_inf*gsqrt*h**2.5_eb)
+            qstar_h = (hrr*0.001_eb)/(rho_inf*cpg*t_inf*gsqrt*h**2.5_eb)
             if (r/h<=0.17_eb) then
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*3.61_eb
             else
@@ -1035,7 +1035,7 @@ module fire_routines
     real(eb), intent(in) :: hrr, chirad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, uplume
 
-    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
+    real(eb), parameter :: cpg = cp*0.001_eb ! correlation uses different units
     real(eb) :: t_inf, rho, hrr_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u, u_max
 
     ! default is for temperature to be the layer temperature at the desired location
@@ -1048,7 +1048,7 @@ module fire_routines
 
     ! for the algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (hrr>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
-        hrr_c = hrr*(1.0_eb - chirad)/1000.0_eb
+        hrr_c = hrr*(1.0_eb - chirad)*0.001_eb
         d = sqrt(area/pio4)
 
         if (zfire<=zlayer) then
@@ -1057,8 +1057,8 @@ module fire_routines
             t_inf = tu
         end if
 
-        rho = 352.981915_eb/t_inf
-        qstar = (hrr/1000._eb)/(rho*cpg*t_inf*gsqrt*d**2.5_eb)
+        rho = rhofac/t_inf
+        qstar = (hrr*0.001_eb)/(rho*cpg*t_inf*gsqrt*d**2.5_eb)
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         z_flame = max(0.1_eb,d*(-1.02_eb+3.7_eb*qstar**0.4_eb))
 
@@ -1066,7 +1066,7 @@ module fire_routines
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
-            rho = 352.981915_eb/tu
+            rho = rhofac/tu
             deltaz = max(0.1_eb,zin-zfire-z0_prime)
             t_excess = min(t_max,9.1_eb*(tu/(grav_con*cpg**2*rho**2))**onethird * hrr_c**twothirds * deltaz**(-fivethirds))
         else
@@ -1082,7 +1082,7 @@ module fire_routines
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
 
         sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
-        if (r>d*(1.0_eb-(zin-zfire)/z_flame)/2.0_eb) then
+        if (r>d*(1.0_eb-(zin-zfire)/z_flame)*0.5_eb) then
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if
         tplume = t_inf + t_excess
@@ -1154,7 +1154,7 @@ module fire_routines
         ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
         ! of 8700 m^2/kg or 8700/ln(10)=3778 converted to optical density
         do layer = u, l
-            roomptr%species_output(layer,soot) = roomptr%species_rho(layer,soot) * sigma_s/log10
+            roomptr%species_output(layer,soot) = roomptr%species_rho(layer,soot) * sigma_s/log10eb
         end do
 
         ! ct is the integration of the total "junk" being transported

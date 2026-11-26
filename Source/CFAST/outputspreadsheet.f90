@@ -889,7 +889,7 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot)
-                    ssvalue = ssvalue*log10eb/sigma_s ! converts converts od to mg/m^3
+                    ssvalue = ssvalue*log10eb/sigma_s*1.e6_eb ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot)
                 end if

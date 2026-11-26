@@ -13,7 +13,7 @@ module target_routines
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: verification_ast, radiative_incident_flux_ast, radi_verification_flag, partial_pressure_co2, &
         partial_pressure_h2o, verification_fire_heat_flux
-    use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
+    use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, nnodes_trg, idx_tempf_trg, &
         idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd, cjetvelocitymin
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: option, off
@@ -116,7 +116,7 @@ module target_routines
                 call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                     wfluxin,wfluxout,iwbound,tgrad)
             else if (iieq==cylpde) then
-                wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                wfluxavg = (wfluxin+wfluxout)*0.5_eb
                 iwbound = 4
                 call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                     dt,wk(1),wrho(1),wspec(1),xl,tgrad)
@@ -676,9 +676,9 @@ module target_routines
             nx = nnodes_trg
             dr = (diam/2)/nx
 
-            if (r<=dr/2.0_eb) then
+            if (r<=dr*0.5_eb) then
                 tempx = targptr%temperature(1)
-            else if (r>=(diam/2)-dr/2.0_eb) then
+            else if (r>=(diam/2)-dr*0.5_eb) then
                 tempx = targptr%temperature(nx)
             else
                 rint = r/dr-0.5_eb
@@ -744,7 +744,7 @@ module target_routines
     real(eb), intent(out) :: tdtect
 
     real(eb) :: tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
-       bnp1, denom, fact1, fact2, delta, tmp, tlink_smld, tlinko_smld, delta_smld, trig_smld
+       bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(len=133) :: messg
     character(len=11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
@@ -772,34 +772,14 @@ module target_routines
         vel = max(dtectptr%velocity,cjetvelocitymin)
         velo = max(dtectptr%velocity_o,cjetvelocitymin)
 
-        if (dtectptr%dtype==smoked .and. .not.dtectptr%dual_detector) then
-            trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
+        if (dtectptr%dtype==smoked) then
+            trig = log10(1._eb/(1._eb-dtectptr%trigger*0.01_eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
                 delta = (trig-tlinko)/(tlink-tlinko)
             else
                 delta = 10
-            end if
-        else if (dtectptr%dtype==smoked .and. dtectptr%dual_detector) then
-            trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
-            tlinko = dtectptr%value
-            tlink = dtectptr%obscuration_flaming
-            if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
-                delta = (trig-tlinko)/(tlink-tlinko)
-            else
-                delta = 10
-            end if
-            trig_smld = log10(1._eb/(1._eb-dtectptr%trigger_smolder/100._eb))
-            tlinko_smld = dtectptr%value_smolder
-            tlink_smld = dtectptr%obscuration_smolder
-            if (tlinko_smld<trig_smld.and.trig_smld<=tlink_smld.and..not.dtectptr%activated) then
-                delta_smld = (trig_smld-tlinko_smld)/(tlink_smld-tlinko_smld)
-            else
-                delta_smld = 10
-            end if
-            if (delta_smld < delta) then
-                delta = delta_smld
             end if
         else if (dtectptr%dtype>=heatd) then
             rti = dtectptr%rti
@@ -809,8 +789,8 @@ module target_routines
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
             anp1 = bnp1*tjet
-            denom = 1.0_eb + dstep*bnp1*.5_eb
-            fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
+            denom = 1.0_eb + dstep*bnp1*0.5_eb
+            fact1 = (1.0_eb - dstep*bn*0.5_eb)/denom
             fact2 = dstep/denom
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
@@ -821,9 +801,6 @@ module target_routines
         end if
         if (imode>0) then
             dtectptr%value = tlink
-            if (dtectptr%dual_detector) then
-                dtectptr%value_smolder = tlink_smld
-            end if
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
@@ -898,12 +875,8 @@ module target_routines
         dtectptr%velocity = vg(4)
         if (zloc>roomptr%depth(l)) then
             dtectptr%obscuration = roomptr%species_output(u,soot)
-            dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
-            dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
         else
             dtectptr%obscuration = roomptr%species_output(l,soot)
-            dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
-            dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
         end if
     end do
 

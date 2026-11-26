@@ -8,7 +8,7 @@ module initialization_routines
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
 
-    use cenviro, only: constvar, odevara, rgas
+    use cenviro, only: constvar, odevara, rgas, mw_h2o, mw_air
     use cparams, only: u, l, mxrooms, mxthrmplen, mxmatl, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
@@ -206,7 +206,7 @@ module initialization_routines
         ! wall leakage
         if (roomptr%cvent > 0.0_eb) then
             area = 2 * ((roomptr%cwidth + roomptr%cdepth) * roomptr%cheight + roomptr%cwidth * roomptr%cdepth)
-            leak_area = roomptr%cvent*sqrt(rho_leak/2._EB)
+            leak_area = roomptr%cvent*sqrt(rho_leak*0.5_eb)
             ! wall
             n_leaks = n_leaks + 1
             counter = counter + 1
@@ -672,7 +672,6 @@ module initialization_routines
         fireinfo(1:mxfires)%reported = .false.
         fireinfo(1:mxfires)%modified_plume = 1
         fireinfo(1:mxfires)%chirad = default_radiative_fraction
-        fireinfo(1:mxfires)%flaming_transition_time = 0._eb
 
         fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
         fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
@@ -722,7 +721,7 @@ module initialization_routines
         ! tables in the handbook of physics and chemistry.
         xt = interior_ambient_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
-        xh2o = exp(xtemp)/default_pressure*(18.016_eb/28.584_eb)
+        xh2o = exp(xtemp)/default_pressure*(mw_h2o/mw_air)
         initial_mass_fraction(h2o) = relative_humidity*xh2o
 
         ! normalize the compartment atmosphere

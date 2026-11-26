@@ -164,7 +164,7 @@ module output_routines
 5000 format (' ')
 5010 format ('Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure')
 5020 format ('               Temp.     Temp       Height      Vol             Absor      Absorb')
-5030 FORMAT ('               (C)       (C)        (m)         (m^3)           (1/m)      (1/m)       (Pa)')
+5030 FORMAT ('                (C)       (C)        (m)        (m^3)           (1/m)      (1/m)         (Pa)')
 5040 format (100('-'))
 5070 format (a13,3(1pg11.4),1x,1pg9.2,'(',i3,'%) ',1pg10.3,1x,1pg10.3,3x,1pg10.3)
 5071 format (a13,1pg11.4,11(' '),11(' '),1x,1pg9.2,7(' '),1pg10.3,1x,10(' '),3x,1pg10.3)
@@ -228,8 +228,8 @@ module output_routines
          'Compartment    Fire          Ign   Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
          'Convec.   Radiat.    Pyrolysate  Trace',/, &
          '                                   Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
-         '                                   (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)       ', &
-         '(W)       (W)        (kg)        (kg)' ,/,' ',146('-'))
+         '                                   (kg/s)    (kg/s)    (W)        (m)       (W)       (W)       (W)       ', &
+         '  (W)       (W)         (kg)      (kg)' ,/,' ',146('-'))
 5010 format (14x,a12,4x,a,3x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5030 format (a14,20x,3(1pg10.3),10x,3(1pg10.3))
 5040 format ('Outside',87x,1pg10.3)
@@ -500,9 +500,9 @@ module output_routines
 
 5000 format (' ')
 5010 format (' Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure',/, &
-    '               Temp.   Temp.   Height  Rate      Size',/, &
-    '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)',/,' ',68('-'))
-5020 format ('  Outside',39x,1pg10.3)
+             '               Temp.   Temp.   Height  Rate      Size',/, &
+             '                (C)     (C)     (m)    (kg/s)    (W)         (Pa)',/,' ',68('-'))
+5020 format ('  Outside',40x,1pg10.3)
 5030 format (i5,7x,2f8.1,2x,1pg9.2,3(1pg10.3))
 5040 format (i5,7x,f8.1,8(' '),2x,8(' '),3(1pg10.3))
     end subroutine results_compressed
@@ -559,9 +559,9 @@ module output_routines
     5000 format (//,'SURFACES AND TARGETS',//, &
     'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     ', &
     'Net          Gas         Heat',/, &
-    '               Temp.     Temp.     Temp.     Temp.                  Temp.     Temp.     Temp.    Flux         Flux', &
+    '               Temp.     Temp.     Temp.     Temp.                  Temp.      Temp.     Temp.     Flux         Flux', &
     '         FED         FED',/, &
-    '               (C)       (C)       (C)       (C)                    (C)       (C)       (C)      (W/m^2)      (W/m^2)' &
+    '               (C)       (C)       (C)       (C)                    (C)         (C)       (C)     (W/m^2)      (W/m^2)' &
     ,/,172('-'))
 5010 format (a14,4(1pg10.3))
 5020 format (54x,a8,4x,3(1pg10.3),1x,6(1pg10.3,3x))
@@ -715,9 +715,9 @@ module output_routines
     
 5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling    ', &
-    'Shaft    Hall   Wall         Floor',/, &
+    'Shaft    Hall    Wall         Floor',/, &
     '                                                                        Height       Height                     ', &
-    'Leakage      Leakage',/, 33x,5('(m)',10x),14x,2('(m^2)',8x),/,133('-'))
+    'Leakage      Leakage',/, 34x,5('(m)',10x),14x,2('(m^2)',8x),/,133('-'))
 5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
 5020 format (//,'COMPARTMENT MATERIALS',//,'Compartment',t14,'Name',t32,'Surface',t44,'Layer', &
     t52,5(a13,3x),2x,'Material',/,t52,5(a13,3x),/,141('-'))
@@ -786,11 +786,11 @@ module output_routines
     
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
 5010 format (//,'VENT CONNECTIONS',//,'Wall Vents (Doors, Windows, ...)',//, &
-    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &
+    'From           To              Vent      Width        Sill       Soffit      Open/Close  Trigger', &
     '                 Initial     Initial     Final       Final',/, &
     'Compartment    Compartment     Number                Height      Height      Type        Value  ', &
     '     Target      Time        Fraction    Time        Fraction',/, &
-    41X,4('(m)         '),'(C/W/m^2)',15x,'(s)',21x,'(s)',/,157('-'))
+    42X,3('(m)',9x),11x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,157('-'))
 5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
 5025 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
      
@@ -1004,7 +1004,7 @@ module output_routines
 
 5000 format (//,'All compartment surfaces are adiabatic.')
      5010 format (//,'THERMAL PROPERTIES',//,a,2x,'Conductivity',6X,'Specific Heat',5X, 'Density',8X,'Thickness',&
-          5X,'Emissivity',/,a,2x,'(W/(m C))         (J/(kg C))        (kg/m^3)       (m)',/,a)
+          5X,'Emissivity',/,a,2x,' (W/(m C))         (J/(kg C))       (kg/m^3)          (m)',/,a)
 5040 format (a,2x,4(1pg13.3,3x),1pg13.3)
 5050 format (a,2x,3(1pg13.3,3x),1pg13.3)
 5060 format (' ')
@@ -1016,6 +1016,7 @@ module output_routines
 !> \brief   outputs the fire specification for all the object fires
 
     subroutine output_initial_fires
+    use cenviro, only: mw_hcn, mw_hcl
 
     integer :: io, i, is
     real(eb) :: y_hcn, y_hcl
@@ -1033,7 +1034,7 @@ module output_routines
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%id), io, fire_geometry(fireptr%modified_plume)
-            write (iofilo,5030) roomptr%id, ftype(fireptr%chemistry_type), fireptr%flaming_transition_time, fireptr%x_position, &
+            write (iofilo,5030) roomptr%id, ftype(fireptr%chemistry_type), fireptr%x_position, &
                 fireptr%y_position, fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit, fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
@@ -1043,8 +1044,8 @@ module output_routines
             write (iofilo,5010) ('-',i = 1,is-1)
             do i = 1, fireptr%n_qdot
                 write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
-                y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
-                y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
+                y_HCN = fireptr%n_N*mw_hcn/fireptr%molar_mass
+                y_HCl = fireptr%n_Cl*mw_hcl/fireptr%molar_mass
                 write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do
@@ -1054,9 +1055,9 @@ module output_routines
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
      5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
-          '   Time to Flaming      Position (x,y,z)     Relative    Lower O2    Radiative',/ &
+          '   Position (x,y,z)     Relative    Lower O2    Radiative',/ &
           ,73x,'Humidity    Limit       Fraction',/110('-'))
-5030 format (a14,1x,a13,3x,f9.1,8x,3(f7.2),2x,f7.1,6x,f7.3,5x,f7.2//)
+5030 format (a14,1x,a13,3x,8x,3(f7.2),2x,f7.1,6x,f7.3,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
@@ -1109,11 +1110,11 @@ module output_routines
 
     if (n_detectors/=0) write (iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
-         ,'Target  Compartment        Type           Position (x, y, z)            Activation     Flaming        Smoldering',/ &
-         ,'                                                                        Obscuration    Obscuration    Obscuration    ', &
-         'Temperature   RTI           Spray Density',/ &
-         ,'                                         (m)      (m)      (m)          (%/m)          (%/m)          (%/m)        ', &
-         '  (C)           (m s)^1/2     (mm/s)',/ &
+         ,'Target  Compartment        Type           Position (x, y, z)            Activation     ',/ &
+         ,'                                                                        Obscuration    ', &
+          'Temperature     RTI         Spray Density',/ &
+         ,'                                         (m)      (m)      (m)          (%/m)          ', &
+          '    (C)      (m s)^1/2         (mm/s)',/ &
          ,160('-'))
 
     do idtect = 1, n_detectors
@@ -1122,11 +1123,7 @@ module output_routines
         roomptr => roominfo(iroom)
         itype = dtectptr%dtype
         if (itype==smoked) then
-            if (dtectptr%dual_detector) then
-                write (outbuf,5015) idtect, roomptr%id, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger, dtectptr%trigger_smolder
-            else
-                write (outbuf,5010) idtect, roomptr%id, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
-            end if
+            write (outbuf,5010) idtect, roomptr%id, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
         else if (itype==heatd) then
             write (outbuf,5020) idtect, roomptr%id, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-kelvin_c_offset, dtectptr%rti
         else
@@ -1134,8 +1131,7 @@ module output_routines
                 dtectptr%trigger-kelvin_c_offset, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
-5015    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),18x,f10.2,5x,f10.2)
-5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),45x,2(5x,f10.2),5x,1pe10.2)
+5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),20x,2(5x,f10.2),5x,1pe10.2)
 
         write (iofilo,'(a)') trim(outbuf)
     end do

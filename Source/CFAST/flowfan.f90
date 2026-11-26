@@ -8,7 +8,7 @@ module mflow_routines
     use cfast_types, only: room_type, vent_type
     
     use cenviro, only: cp
-    use cparams, only: u, l, m, q, soot, soot_flaming, soot_smolder, ts, mxrooms
+    use cparams, only: u, l, m, q, soot, ts, mxrooms
     use option_data, only: option, off
     use room_data, only: n_rooms, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
     use vent_data, only: n_mvents, mventinfo
@@ -104,14 +104,6 @@ module mflow_routines
             ! amount filtered for smoke and trace species
             uflw_filtered(iroom,soot+2,u) = uflw_filtered(iroom,soot+2,u) + max(0.0_eb,filter*fu*uflw_totals(soot+2))
             uflw_filtered(iroom,soot+2,l) = uflw_filtered(iroom,soot+2,l) + max(0.0_eb,filter*fl*uflw_totals(soot+2))
-            uflw_filtered(iroom,soot_flaming+2,u) = uflw_filtered(iroom,soot_flaming+2,u) + &
-                max(0.0_eb,filter*fu*uflw_totals(soot_flaming+2))
-            uflw_filtered(iroom,soot_flaming+2,l) = uflw_filtered(iroom,soot_flaming+2,l) + &
-                max(0.0_eb,filter*fl*uflw_totals(soot_flaming+2))
-            uflw_filtered(iroom,soot_smolder+2,u) = uflw_filtered(iroom,soot_smolder+2,u) + &
-                max(0.0_eb,filter*fu*uflw_totals(soot_smolder+2))
-            uflw_filtered(iroom,soot_smolder+2,l) = uflw_filtered(iroom,soot_smolder+2,l) + &
-                max(0.0_eb,filter*fl*uflw_totals(soot_smolder+2))
             uflw_filtered(iroom,ts+2,u) = uflw_filtered(iroom,ts+2,u) + max(0.0_eb,filter*fu*uflw_totals(ts+2))
             uflw_filtered(iroom,ts+2,l) = uflw_filtered(iroom,ts+2,l) + max(0.0_eb,filter*fl*uflw_totals(ts+2))
         end if

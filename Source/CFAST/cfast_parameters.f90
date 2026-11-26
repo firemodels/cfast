@@ -20,7 +20,7 @@
 
     ! fire related input parameters
     integer, parameter :: mxpts = 200               ! maximum number of data points in a input curve/ramp
-    integer, parameter :: ns = 23                   ! number of species
+    integer, parameter :: ns = 21                   ! number of species
     integer, parameter :: ns_mass = 9               ! number of species that count toward total mass
     integer, parameter :: mxfires = mxitems         ! maximum number of fires
     integer, parameter :: mxtabls = mxfires         ! maximum number of table inputs, currently only used for fires
@@ -34,8 +34,6 @@
     integer, parameter :: trigger_by_time = 1       ! indicies for fire ignition type (also used by vents)
     integer, parameter :: trigger_by_temp = 2
     integer, parameter :: trigger_by_flux = 3
-    integer, parameter :: flaming = 1               ! used for specific extinction coefficients
-    integer, parameter :: smoldering = 2    
 
     ! ventilation parameters
     integer, parameter :: mxhvents = mxitems        ! maximum number of horizontal flow vents
@@ -46,7 +44,7 @@
     integer, parameter :: mxvvents=mxitems          ! maximum number of vertical flow vents
 
     integer, parameter :: mxmvents=mxitems          ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = int(real(mxmvents,eb)/2._eb)     ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxfan = int(real(mxmvents,eb)*0.5_eb)     ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
     integer, parameter :: mxduct = mxfan+2          ! maximum number of ducts in a mechanical ventilation system
@@ -117,20 +115,18 @@
     integer, parameter :: fuel = 7
     integer, parameter :: h2o = 8
     integer, parameter :: soot = 9
-    integer, parameter :: soot_flaming = 10
-    integer, parameter :: soot_smolder = 11
-    integer, parameter :: ct = 12
-    integer, parameter :: ts = 13
-    integer, parameter :: fuel_moles = 14
-    integer, parameter :: fuel_Q = 15
-    integer, parameter :: fuel_n2 = 16
-    integer, parameter :: fuel_o2 = 17
-    integer, parameter :: fuel_co2 = 18
-    integer, parameter :: fuel_co = 19
-    integer, parameter :: fuel_hcn = 20
-    integer, parameter :: fuel_hcl = 21
-    integer, parameter :: fuel_h2o = 22
-    integer, parameter :: fuel_soot = 23
+    integer, parameter :: ct = 10
+    integer, parameter :: ts = 11
+    integer, parameter :: fuel_moles = 12
+    integer, parameter :: fuel_Q = 13
+    integer, parameter :: fuel_n2 = 14
+    integer, parameter :: fuel_o2 = 15
+    integer, parameter :: fuel_co2 = 16
+    integer, parameter :: fuel_co = 17
+    integer, parameter :: fuel_hcn = 18
+    integer, parameter :: fuel_hcl = 19
+    integer, parameter :: fuel_h2o = 20
+    integer, parameter :: fuel_soot = 21
 
     ! detector types
     integer, parameter :: smoked = 1    ! smoke detector
@@ -151,6 +147,7 @@
     module defaults
     
     use precision_parameters
+    use cenviro, only : 
 
     integer, parameter :: default_version = 0
 
@@ -170,7 +167,7 @@
     ! fire-related default values
     real(eb), parameter :: default_lower_oxygen_limit = 0.15_eb
     real(eb), parameter :: default_radiative_fraction = 0.35_eb
-    real(eb), dimension(2), parameter :: default_sigma_s = (/8700._eb, 4400._eb/) ! mulholland, F&M 24, 227(2000)
+    real(eb), parameter :: default_sigma_s = 8700._eb ! mulholland, F&M 24, 227(2000)
     
     ! sprinkler/detector defaults
     real(eb), parameter :: default_rti = 50._eb

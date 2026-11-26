@@ -64,8 +64,8 @@ module vflow_routines
             ! flow information for smokeview is relative to top room
             ventptr%temp_slab(iflow) = temperature_vent(iflow)
             ventptr%flow_slab(iflow) = mass_flow_vent(iflow)
-            ventptr%ybot_slab(iflow) = max(0.0_eb,(ventptr%area - sqrt(area))/2.0_eb)
-            ventptr%ytop_slab(iflow) = min(ventptr%area,(ventptr%area + sqrt(area))/2.0_eb)
+            ventptr%ybot_slab(iflow) = max(0.0_eb,(ventptr%area - sqrt(area))*0.5_eb)
+            ventptr%ytop_slab(iflow) = min(ventptr%area,(ventptr%area + sqrt(area))*0.5_eb)
         end do
 
         ! set up flow variables for DAE solver

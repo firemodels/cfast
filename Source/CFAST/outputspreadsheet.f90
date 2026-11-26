@@ -12,13 +12,13 @@ module spreadsheet_routines
     use cfast_types, only: fire_type, room_type, detector_type, target_type, vent_type, ssout_type, vent_type
 
     use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mxss, cjetvelocitymin, &
-        n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
+        ns, soot, smoked, mxss, cjetvelocitymin, &
+        n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, ct, ts, &
         fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
     
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: radi_verification_flag
-    use fire_data, only: n_fires, fireinfo
+    use fire_data, only: n_fires, fireinfo, sigma_s
     use room_data, only: n_rooms, roominfo, pressure_ref
     use setup_data, only: iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, ssoutoptions, errormessage
@@ -100,10 +100,6 @@ module spreadsheet_routines
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULH2O_'//trim(cRoom), 'H2O Upper Layer', roomptr%id, species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULOD_'//trim(cRoom), 'Soot Density Upper Layer', roomptr%id, &
                 smoke_units)
-            call ssaddtoheader (sscompinfo, n_sscomp, 'ULODF_'//trim(cRoom), 'OD from Flaming Upper Layer', &
-                roomptr%id, smoke_units)
-            call ssaddtoheader (sscompinfo, n_sscomp, 'ULODS_'//trim(cRoom), 'OD from Smoldering Upper Layer', &
-                roomptr%id,smoke_units)
             if (.not. roomptr%shaft) then
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLN2_'//trim(cRoom), 'N2 Lower Layer', roomptr%id, species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLO2_'//trim(cRoom), 'O2 Lower Layer', roomptr%id, species_units)
@@ -115,10 +111,6 @@ module spreadsheet_routines
                     species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLH2O_'//trim(cRoom), 'H2O Lower Layer', roomptr%id, species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLOD_'//trim(cRoom), 'Soot Density Lower Layer', roomptr%id, &
-                    smoke_units)
-                call ssaddtoheader (sscompinfo, n_sscomp, 'LLODF_'//trim(cRoom), 'OD from Flaming Lower Layer', roomptr%id, &
-                    smoke_units)
-                call ssaddtoheader (sscompinfo, n_sscomp, 'LLODS_'//trim(cRoom), 'OD from Smoldering Lower Layer', roomptr%id, &
                     smoke_units)
             end if
         end do
@@ -347,10 +339,6 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Soot Upper Layer Mass', &
                 roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'Soot from Flaming Upper Layer Mass', &
-                roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'Soot from Smoldering Upper Layer Mass', &
-                roomptr%id,'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', &
                 roomptr%id,'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMF_'//trim(cRoom), 'Fuel Upper Layer Mass', roomptr%id, 'mole')
@@ -383,10 +371,6 @@ module spreadsheet_routines
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Soot Lower Layer Mass', &
-                    roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'Soot from Flaming Lower Layer Mass', &
-                    roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'Soot from Smoldering Lower Layer Mass', &
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', &
                     roomptr%id,'kg')
@@ -905,41 +889,9 @@ module spreadsheet_routines
             if (roomptr%id==device) then
                 if (index(measurement,'Mass')==0) then
                     ssvalue = roomptr%species_output(layer,soot)
-                    ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                    ssvalue = ssvalue*log10eb/sigma_s*1.e6_eb ! converts converts od to mg/m^3
                 else
                     ssvalue = roomptr%species_mass(layer,soot)
-                end if
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('OD from Flaming Upper Layer', 'Soot from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', &
-          'Soot from Flaming Lower Layer Mass')
-        do i = 1, n_rooms+1
-            layer = u
-            if (index(measurement,'Upper')==0) layer = l
-            roomptr => roominfo(i)
-            if (roomptr%id==device) then
-                if (index(measurement,'Mass')==0) then
-                    ssvalue = roomptr%species_output(layer,soot_flaming)
-                    ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
-                else
-                    ssvalue = roomptr%species_mass(layer,soot_flaming)
-                end if
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('OD from Smoldering Upper Layer', 'Soot from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', &
-          'Soot from Smoldering Lower Layer Mass')
-        do i = 1, n_rooms+1
-            layer = u
-            if (index(measurement,'Upper')==0) layer = l
-            roomptr => roominfo(i)
-            if (roomptr%id==device) then
-                if (index(measurement,'Mass')==0) then
-                    ssvalue = roomptr%species_output(layer,soot_smolder)
-                    ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
-                else
-                    ssvalue = roomptr%species_mass(layer,soot_smolder)
                 end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
@@ -1338,9 +1290,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_incident_front/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_incident_front*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position, targptr%flux_incident_back/1000._eb,outarray)
+                    call ssaddtolist (position, targptr%flux_incident_back*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1349,9 +1301,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_net(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_net(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1395,9 +1347,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_radiation(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_radiation(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1406,9 +1358,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_convection(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_convection(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1417,9 +1369,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_fire(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_fire(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_fire(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_fire(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1428,9 +1380,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_surface(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_surface(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_surface(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_surface(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1439,9 +1391,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_gas(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_gas(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_gas(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_gas(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1450,9 +1402,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_target(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_target(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1461,9 +1413,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_net_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_net_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_net_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1472,9 +1424,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_radiation_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_radiation_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1483,9 +1435,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_convection_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_convection_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_convection_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do
@@ -1494,9 +1446,9 @@ module spreadsheet_routines
             targptr => targetinfo(i)
             if (targptr%id==device) then
                 if (index(measurement,'Back')==0) then
-                    call ssaddtolist (position,targptr%flux_target_gauge(1)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target_gauge(1)*0.001_eb,outarray)
                 else
-                    call ssaddtolist (position,targptr%flux_target_gauge(2)/1000._eb,outarray)
+                    call ssaddtolist (position,targptr%flux_target_gauge(2)*0.001_eb,outarray)
                 end if
             end if
         end do

@@ -26,7 +26,7 @@ module solve_routines
 
     use cfast_types, only: fire_type, room_type, target_type, vent_type
     
-    use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma, mw_co2, mw_h2o
+    use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma, mw_co2, mw_h2o, mw_air
     use cparams, only: u, l, m, q, mxrooms, mxtarg, mxnode, mxbranch, mxdiscon, maxeq, ns, check_state, set_state, update_state, &
         nwal, ns_mass, vminfrac, n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition, &
         radiation_fix
@@ -1057,9 +1057,9 @@ module solve_routines
 
             ! define wall centers
             xmax = roomptr%cwidth
-            xmid = xmax/2.0_eb
+            xmid = xmax*0.5_eb
             ymax = roomptr%cdepth
-            ymid = ymax/2.0_eb
+            ymid = ymax*0.5_eb
             zmax = roomptr%z1
 
             ! ceiling
@@ -1132,7 +1132,7 @@ module solve_routines
         ! tables in the handbook of physics and chemistry.
         xt = exterior_ambient_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
-        xh2o = exp(xtemp)/default_pressure*(mw_h2o*1000._eb/28.584_eb)
+        xh2o = exp(xtemp)/default_pressure*(mw_h2o/mw_air)
         roomptr%species_fraction(u,h2o) = relative_humidity*xh2o
         roomptr%species_fraction(l,h2o) = relative_humidity*xh2o
 
@@ -1277,8 +1277,8 @@ module solve_routines
 
             do i = 1, 4
                 zlay = roomptr%depth(l)
-                roomptr%wall_center(3,i+1) =  (roomptr%z1+zlay)/2.0_eb
-                roomptr%wall_center(3,i+5) = zlay/2.0_eb
+                roomptr%wall_center(3,i+1) =  (roomptr%z1+zlay)*0.5_eb
+                roomptr%wall_center(3,i+5) = zlay*0.5_eb
             end do
 
             ! Eliminate very small noise in the pressure equation. This was added to correct

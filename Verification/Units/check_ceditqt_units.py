@@ -565,8 +565,7 @@ def check_ui_matrix(repo_root):
                 check_text(sim.pressure_edit.toolTip(), "pressure", case.pressure, "pressure tooltip")
                 for attr in ("interior_o2_mass_fraction", "exterior_o2_mass_fraction", "lower_oxygen_limit"):
                     field(sim, attr + "_edit", "mass_fraction", getattr(case, attr))
-                for name, value in zip(("flaming", "smoldering"), case.specific_extinction):
-                    field(sim, name + "_extinction_edit", "specific_extinction", value, rel_tol=5e-5)
+                field(sim, "extinction_edit", "specific_extinction", case.specific_extinction[0], rel_tol=5e-5)
                 covered_tabs.add(window.thermal_properties_tab)
                 for row, material in enumerate(case.materials):
                     for col, (attr, kind) in enumerate((("conductivity", "conductivity"), ("specific_heat", "specific_heat"),

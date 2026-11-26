@@ -101,7 +101,6 @@ CFAST_NAMELIST_PARAMETERS: dict[str, set[str]] = {
         "RTI",
         "SETPOINT",
         "SPRAY_DENSITY",
-        "SETPOINTS",
         "ADIABATIC_TARGET",
         "CONVECTION_COEFFICIENTS",
         "FYI",

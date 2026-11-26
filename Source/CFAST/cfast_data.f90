@@ -12,8 +12,10 @@ module cenviro
     real(eb), parameter :: cp = 1012.0_eb
     real(eb), parameter :: gamma = 1.40_eb
     real(eb), parameter :: rgas = (gamma-1.0_eb)/gamma*cp
+    real(eb), parameter :: rhofac = 101325._eb/rgas
     real(eb), parameter :: mw_n2 = 28.01340e-3_eb, mw_o2 = 31.99880e-3_eb, mw_co2 = 44.00950e-3_eb, mw_h2o = 18.01528e-3_eb, &
-                           mw_c = 12.01070e-3_eb, mw_co = 28.01010e-3_eb, mw_hcn = 27.02534e-3_eb, mw_hcl = 36.46094e-3_eb 
+                           mw_c = 12.01070e-3_eb, mw_co = 28.01010e-3_eb, mw_hcn = 27.02534e-3_eb, mw_hcl = 36.46094e-3_eb, &
+                           mw_air = 0.028584_eb
 
 end module cenviro
 
@@ -87,7 +89,7 @@ module fire_data
 
     real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and vent jets
     real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
-    real(eb), dimension(2) :: sigma_s = default_sigma_s ! extinction coefficient for flaming and smoldering smoke
+    real(eb) :: sigma_s = default_sigma_s ! extinction coefficient smoke
 
     integer :: n_fires                                  ! number of fires in the current simulation
     type(fire_type), allocatable, dimension(:), target :: fireinfo

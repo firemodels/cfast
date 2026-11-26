@@ -347,7 +347,7 @@
     integer, intent(in) :: lu
     integer :: ios
     real(eb) :: max_time_step, max_iteration, lower_oxygen_limit
-    real(eb), dimension(2) :: specific_extinction
+    real(eb) :: specific_extinction
     logical :: adiabatic
     namelist /MISC/ adiabatic, max_time_step, max_iteration, lower_oxygen_limit, specific_extinction, overwrite
 
@@ -412,7 +412,7 @@
     integer, intent(in) :: lu
     type(material_type), pointer :: thrmpptr
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
-    character(len=64) :: id, material
+    character(len=128) :: id, material
     character(len=128) :: fyi
     namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness, fyi
 
@@ -508,8 +508,8 @@
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     real(eb), dimension(3) :: ceiling_thickness, floor_thickness, wall_thickness
     logical :: hall, shaft
-    character(len=64) :: id
-    character(len=64), dimension(3) :: ceiling_matl_id, floor_matl_id, wall_matl_id
+    character(len=128) :: id
+    character(len=128), dimension(3) :: ceiling_matl_id, floor_matl_id, wall_matl_id
     character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
         ceiling_matl_id, floor_matl_id, wall_matl_id,ceiling_thickness, floor_thickness, wall_thickness, &
@@ -675,8 +675,8 @@
     
     integer :: ios
     integer :: iroom, ii, jj ,i1, counter1, counter2
-    character(len=64) :: compartment_id
-    character(len=64) :: tcname
+    character(len=128) :: compartment_id
+    character(len=128) :: tcname
     logical :: idcheck
 
     type(room_type), pointer :: roomptr
@@ -685,13 +685,12 @@
 
     real(eb) :: thickness, surface_temperature, temperature_depth, rti, setpoint, spray_density
     real(eb),dimension(3) :: location,normal
-    real(eb),dimension(2) :: setpoints
-    character(len=64) :: comp_id, id, matl_id, type, depth_units, surface_orientation
-    character(len=128) :: fyi
+    character(len=64) ::  type, depth_units, surface_orientation
+    character(len=128) :: comp_id, id, matl_id, fyi
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
     namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, surface_orientation, &
-        surface_temperature, thickness, rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
+        surface_temperature, thickness, rti, setpoint, spray_density, adiabatic_target, convection_coefficients, fyi
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -881,14 +880,8 @@
                 else
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint
-                        dtectptr%dual_detector = .FALSE. 
-                    else if (setpoints(1) /= -1001._eb) then
-                        dtectptr%trigger = setpoints(2)
-                        dtectptr%trigger_smolder = setpoints(1)
-                        dtectptr%dual_detector = .TRUE.
                     else
                         dtectptr%trigger = default_activation_obscuration
-                        dtectptr%dual_detector = .FALSE. 
                     end if
                 end if
 
@@ -929,7 +922,9 @@
                 end if
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
-                    dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
+                    dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight.or. &
+                    dtectptr%center(1)<0._eb.or.&
+                    dtectptr%center(2)<0._eb.or.         dtectptr%center(3)<0._eb) then
                     write (errormessage,5339) n_detectors,roomptr%id
                     call cfastexit('read_devc',12)
                 end if
@@ -966,7 +961,6 @@
     thickness                       = 0._eb
     rti                             = default_rti
     setpoint                        = -1001._eb
-    setpoints                       = (/-1001._eb, -1001._eb/)
     spray_density                   = 6.316e-5_eb
     adiabatic_target                = .false.
     convection_coefficients(:)      = 0._eb
@@ -989,7 +983,7 @@
 
     type(table_type),   pointer :: tablptr
 
-    character(len=64) :: id
+    character(len=128) :: id
     character(len=64), dimension(mxtablcols) :: labels
     real(eb), dimension(mxtablcols) :: data
     
@@ -1091,15 +1085,15 @@ continue
     
     integer :: ios, i, ii, jj, iroom
     real(eb) :: tmpcond
-    character(len=64) :: compartment_id
+    character(len=128) :: compartment_id
 
     type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
     type(target_type), pointer :: targptr
 
     real(eb) :: decay_time, spray_density, setpoint
-    character(len=64) :: comp_id, devc_id, fire_id, id, ignition_criterion
-    character(len=128) :: fyi
+    character(len=64) ::  ignition_criterion
+    character(len=128) :: comp_id, devc_id, fire_id, id, fyi
     real(eb), dimension(2) :: location
     namelist /FIRE/ comp_id, decay_time, devc_id, fire_id, fyi, id, ignition_criterion, location, setpoint, spray_density
 
@@ -1181,8 +1175,9 @@ continue
             if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
-            fireptr%z_position = 0.0_eb
-            if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
+            fireptr%z_position = 0._eb
+            if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or. &
+                fireptr%x_position<0._eb         .or.fireptr%y_position<0._eb) then
                 write (errormessage,5323) ii
                 call cfastexit('read_fire',5)
             end if
@@ -1291,11 +1286,11 @@ continue
 
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
-        soot_yield, trace_yield, flaming_transition_time
-    character(len=64) :: comp_id, id, table_id
+        soot_yield, trace_yield
+    character(len=128) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
-        table_id, trace_yield, flaming_transition_time
+        table_id, trace_yield
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -1378,7 +1373,6 @@ continue
                     fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
                         14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
                     fireptr%chirad = radiative_fraction
-                    fireptr%flaming_transition_time = flaming_transition_time
                     ohcomb = heat_of_combustion *1.e3_eb
                     if (ohcomb<=0.0_eb) then
                         write (errormessage,5001) ohcomb
@@ -1500,7 +1494,6 @@ continue
     soot_yield                = 0._eb
     table_id                  = 'NULL'
     trace_yield               = 0._eb
-    flaming_transition_time   = 0._eb
 
     end subroutine set_defaults
 
@@ -1554,7 +1547,7 @@ continue
 
     integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, ipts, ic
     integer :: ios, abort_vent
-    character(len=64) :: compartment_id
+    character(len=128) :: compartment_id
 
     type(room_type), pointer :: from_roomptr, to_roomptr
     type(target_type), pointer :: targptr
@@ -1565,9 +1558,10 @@ continue
     real(eb), dimension(2) :: areas, cutoffs, heights
     real(eb), dimension(2,2) :: offsets
     real(eb), dimension(mxpts) :: t, f
-    character(len=64),dimension(2) :: comp_ids, orientations
-    character(len=64) :: criterion, devc_id, face, id, shape, type
-    character(len=128) :: fyi
+    character(len=128),dimension(2) :: comp_ids
+    character(len=64),dimension(2) :: orientations
+    character(len=64) :: criterion, face, shape, type
+    character(len=128) :: devc_id, id, fyi
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
         filter_time, flow, height, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
         setpoint, shape, t, top, type, width, fyi, flow_coefficient
@@ -1961,13 +1955,13 @@ continue
     integer, intent(in) :: lu
 
     integer :: ios, ii, icomp, jj, counter
-    character(len=64) :: compartment_id
+    character(len=128) :: compartment_id
 
     type(visual_type), pointer :: sliceptr
     type(room_type), pointer :: roomptr
 
     real(eb) :: value
-    character(len=64) :: comp_id
+    character(len=128) :: comp_id
     namelist /ISOF/ comp_id, value
 
     counter = 0
@@ -2055,14 +2049,14 @@ continue
     integer, intent(in) :: lu
     
     integer :: ios, ii, jj, icomp, counter
-    character(len=64) :: compartment_id
+    character(len=128) :: compartment_id
 
     type(room_type), pointer :: roomptr
     type(visual_type), pointer :: sliceptr
 
     real(eb) :: position
     character(len=64) :: domain,plane
-    character(len=64) :: comp_id
+    character(len=128) :: comp_id
     namelist /SLCF/ domain, plane, position, comp_id
 
     rewind (unit=lu)

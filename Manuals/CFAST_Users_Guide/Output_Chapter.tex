@@ -232,13 +232,13 @@ All of the inputs for targets come from the Targets tab discussed in chapter \re
 The entry for each detector or sprinkler shows the compartment and position of the device and its activation characteristics. For smoke detectors, activation is based on the smoke obscuration at the position of the detector; for heat detectors and sprinklers, the temperature of the detector.
 \begin{lstlisting}[basicstyle=\tiny]
 DETECTORS/ALARMS/SPRINKLERS
-Target Compartment Type   Position (x, y, z) Activation  Flaming     Smoldering
-                                             Obscuration Obscuration Obscuration Temperature RTI        Spray Density
-                          (m)  (m)  (m)      (%/m)       (%/m)       (%/m)       (C)         (m s)^1/2  (mm/s)
+Target Compartment Type   Position (x, y, z) Activation
+                                             Obscuration Temperature RTI        Spray Density
+                          (m)  (m)  (m)      (%/m)       (C)         (m s)^1/2  (mm/s)
 ---------------------------------------------------------------------------------------------------------------------
-  1    Comp 1      SPRINK 3.00 3.00 2.97                                         73.89       100.00     7.00E-02
+  1    Comp 1      SPRINK 3.00 3.00 2.97                 73.89       100.00     7.00E-02
   2    Comp 1      SMOKE  2.00 2.00 2.97     23.93
-  3    Comp 1      HEAT   2.00 2.00 2.97                                         30.00         5.00
+  3    Comp 1      HEAT   2.00 2.00 2.97                 30.00         5.00
 \end{lstlisting}
 All of the inputs for detectors and sprinklers come from the Detector / Suppression tab discussed in Sec.~\ref{info:DEVC2}. Units for position are all in m.
 
@@ -309,7 +309,7 @@ In all cases, the flux to/from a target is net radiation or net convection. That
 
 \subsection{Output for Gas Species}
 
-The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume \% for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``OD S'' and ``OD F'' are the optical densities resulting from only smoldering and flaming smoke production, respectively. ``TS'' is trace species.
+The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume \% for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\tiny]
 UPPER LAYER SPECIES
@@ -361,7 +361,7 @@ Comp 2         Outside                      0.6667E+02                0.2223E-01
 
 CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snapshot of the modeling data at an instant of time. This interval is set on the Simulation tab discussed in Sec.~\ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
 
-Spreadsheet files contain the full output set for the selected categories. Gas concentrations in the compartment spreadsheet are mole fractions (\ct{mol_frac}); the compartment smoke columns \ct{ULOD}, \ct{LLOD}, and their flaming and smoldering components contain smoke mass concentrations in mg/m$^3$. Target and sensor obscuration and Smokeview optical-density output retain units of m$^{-1}$.
+Spreadsheet files contain the full output set for the selected categories. Gas concentrations in the compartment spreadsheet are mole fractions (\ct{mol_frac}); the compartment smoke columns \ct{ULOD} and \ct{LLOD} contain smoke mass concentrations in mg/m$^3$. Target and sensor obscuration and Smokeview optical-density output retain units of m$^{-1}$.
 
 Several spreadsheet files are generated with each CFAST simulation:
 
@@ -394,8 +394,6 @@ There are three sets of information in this file. The first includes compartment
 \item[Unburned Fuel Upper/Lower Layer] (mole fraction):  Unburned fuel concentration in the upper (or lower) layer in the current compartment
 \item[H2O Upper/Lower Layer] (mole fraction):  water vapor concentration in the upper (or lower) layer in the current compartment
 \item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration in the upper (or lower) layer in the current compartment
-\item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration from flaming-generated smoke in the upper (or lower) layer in the current compartment
-\item[Smoke Concentration Upper/Lower Layer] (mg/m$^3$): smoke mass concentration from smoldering-generated smoke in the upper (or lower) layer in the current compartment
 \item[Trace Species Upper/Lower Layer] (kg):  total mass of trace species in the upper (or lower) layer in the current compartment
 \item[HRR Door Jet Fires] (W): total heat release rate of all door jet fires \emph{adding} heat to this compartment.
 \end{description}
@@ -468,8 +466,6 @@ The second set of columns pertain to the detector/sprinkler output.
 \item[HCL Upper/Lower Layer] (kg):  total HCl mass in the upper (or lower) layer in the current compartment
 \item[H2O Upper/Lower Layer] (kg):  total water vapor mass in the upper (or lower) layer in the current compartment
 \item[Soot Upper/Lower Layer] (kg):  total soot mass in the upper (or lower) layer in the current compartment
-\item[Soot from Flaming Upper/Lower Layer] (kg):  total soot mass from flaming-generated smoke in the upper (or lower) layer in the current compartment
-\item[Soot from Smoldering Upper/Lower Layer] (kg):  total soot mass from smoldering-generated smoke in the upper (or lower) layer in the current compartment
 \item[Trace Species Upper/Lower Layer] (kg):  total mass of trace species in the upper (or lower) layer in the current compartment
 \end{description}
 

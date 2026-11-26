@@ -1958,7 +1958,7 @@ def check_units_start_in_si():
             assert window.simulation_tab.interior_temperature_edit.text() == "20 °C"
             assert window.simulation_tab.pressure_edit.text() == "101325 Pa"
             assert window.simulation_tab.interior_o2_mass_fraction_edit.text() == "0.23 kg/kg"
-            assert window.simulation_tab.flaming_extinction_edit.text() == "8700 m²/kg"
+            assert window.simulation_tab.extinction_edit.text() == "8700 m²/kg"
     finally:
         unit_system.set_indices(original_units)
         if window is not None:
@@ -1968,6 +1968,9 @@ def check_units_start_in_si():
 def check_simulation_unit_display():
     from PySide6.QtTest import QTest
     from cfast_case import CfastCase
+    from cfast_case import CfastCase, Compartment
+    from cfast_reader import read_cfast_input
+    from cfast_writer import write_cfast_input
     from tabs.simulation_tab import SimulationTab
     from units import LENGTH, MASS, PRESSURE, SPECIFIC_EXTINCTION, display_value, parse_value, unit_label, unit_system
 
@@ -2005,24 +2008,29 @@ def check_simulation_unit_display():
             assert case.pressure == parse_value(PRESSURE, "14.123456789 psia", "Pressure")
 
         # Five significant figures affect only display, even across repeated unit changes.
-        for coefficients in ((8700.0, 4400.0), (1234.567891, 0.0000123456789)):
+        for coefficients in ((8700.0,), (1234.567891, 0.0000123456789)):
             case = CfastCase(specific_extinction=coefficients)
             for length_index, mass_index in ((3, 2), (0, 0), (3, 2), (0, 0)):
                 unit_system.set_indices({LENGTH: length_index, MASS: mass_index})
                 tab.load_case(case)
-                for edit, value in zip((tab.flaming_extinction_edit, tab.smoldering_extinction_edit), coefficients):
+                for edit, value in zip((tab.extinction_edit,), coefficients):
                     expected = f"{display_value(SPECIFIC_EXTINCTION, value):.5g} {unit_label(SPECIFIC_EXTINCTION)}"
                     assert edit.text() == expected
                     edit.editingFinished.emit()
                     edit.editingFinished.emit()
                 tab.add_to_case(case)
-                assert case.specific_extinction == coefficients
-        tab.flaming_extinction_edit.setText("1234.567891 m2/kg")
-        tab.flaming_extinction_edit.editingFinished.emit()
-        assert tab.flaming_extinction_edit.text() == "1234.6 m²/kg"
+                assert case.specific_extinction == coefficients[:1]
+        tab.extinction_edit.setText("1234.567891 m2/kg")
+        tab.extinction_edit.editingFinished.emit()
+        assert tab.extinction_edit.text() == "1234.6 m²/kg"
         tab.add_to_case(case)
         assert case.specific_extinction[0] == 1234.567891
-
+        with tempfile.TemporaryDirectory(prefix="cedit-extinction-") as temp_dir:
+            path = Path(temp_dir) / "extinction.in"
+            case.compartments.append(Compartment("Room", 5.0, 5.0, 3.0))
+            write_cfast_input(case, path)
+            saved = read_cfast_input(path)
+            assert math.isclose(saved.specific_extinction[0], 1234.567891, rel_tol=5e-6)
         # Explicitly retyping the displayed number counts as a new pressure value.
         tab.load_case(CfastCase(pressure=101325.0))
         tab.pressure_edit.selectAll()
@@ -2066,10 +2074,9 @@ def check_derived_unit_input_files():
                     window.load_case(case)
                     sim = window.simulation_tab
                     if profile == "English":
-                        assert sim.flaming_extinction_edit.text().endswith(" ft²/lbm")
-                        assert sim.smoldering_extinction_edit.text().endswith(" ft²/lbm")
+                        assert sim.extinction_edit.text().endswith(" ft²/lbm")
                         expected_extinction = 8700 * 0.4535924 / 0.3048 ** 2
-                        assert sim.flaming_extinction_edit.text() == f"{expected_extinction:.5g} ft²/lbm"
+                        assert sim.extinction_edit.text() == f"{expected_extinction:.5g} ft²/lbm"
                         coefficient = window.compartments_tab.flow_coefficient_edit.text()
                         assert coefficient.endswith(" ft³/(s √(psi))")
                         assert math.isclose(float(coefficient.split()[0]),
@@ -2094,24 +2101,21 @@ def check_derived_unit_input_files():
                         assert math.isclose(vents[0].setpoint, setpoint)
 
                     # Explicit SI entries also work while English is selected.
-                    sim.flaming_extinction_edit.setText("9000 m2/kg")
-                    sim.smoldering_extinction_edit.setText("4500 m²/kg")
+                    sim.extinction_edit.setText("9000 m2/kg")
                     for tab in tabs:
                         tab.setpoint_edit.setText("80 C" if criterion == "TEMPERATURE" else "2 kW/m2")
                         tab.setpoint_edit.editingFinished.emit()
                     saved = save_input(path)
-                    assert saved.specific_extinction == (9000.0, 4500.0)
+                    assert saved.specific_extinction[0] == 9000.0
                     for vents in (saved.wall_vents, saved.ceiling_floor_vents, saved.mechanical_vents):
                         assert math.isclose(vents[0].setpoint, 80.0 if criterion == "TEMPERATURE" else 2.0)
                     if profile == "English":
                         sim.pressure_edit.setText("15 psia")
-                        sim.flaming_extinction_edit.setText("100 ft2/lbm")
-                        sim.smoldering_extinction_edit.setText("50 ft2/lbm")
+                        sim.extinction_edit.setText("100 ft2/lbm")
                         saved = save_input(path)
                         # The existing input writer retains six significant figures.
                         assert math.isclose(saved.pressure, 15 * 6894.757293168, rel_tol=5e-6)
                         assert math.isclose(saved.specific_extinction[0], 100 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
-                        assert math.isclose(saved.specific_extinction[1], 50 * 0.3048 ** 2 / 0.4535924, rel_tol=5e-6)
     finally:
         unit_system.set_indices(original_units)
         window.deleteLater()

@@ -488,7 +488,7 @@ In the text input file, the following parameters are stored within the namelist 
 \item[Fire ID] (namelist: \ct{ID}) Unique name of the fire.
 \item[Compartment] (namelist: \ct{COMP_ID}) Name of the compartment where the fire occurs.
 \item[Position X, Y] (default: compartment center; namelist: \ct{LOCATION(1:2)}) Position of the center of the base of the fire. Positive values area relative to the front left corner of the compartment and negative values are relative to the rear right corner of the compartment.
-\item[Ignition Criterion] (namelist: \ct{IGNITION_CRITERION}) Ignition can be controlled by a user-specified \textbf{Time} (\ct{IGNITION_CRITERION}='TIME'}), target's \textbf{Temperature} (\ct{IGNITION_CRITERION}='TEMPERAURE'}), or incident \textbf{Heat Flux} (\ct{IGNITION_CRITERION}='FLUX'}).
+\item[Ignition Criterion] (namelist: \ct{IGNITION_CRITERION}) Ignition can be controlled by a user-specified \textbf{Time} (\ct{IGNITION_CRITERION='TIME'}), target's \textbf{Temperature} (\ct{IGNITION_CRITERION='TEMPERAURE'}), or incident \textbf{Heat Flux} (\ct{IGNITION_CRITERION='FLUX'}).
 \item[Set Point] (namelist: \ct{SETPOINT}) The critical value of time, temperature, heat flux at which ignition will occur.
 \item[Ignition Target] (namelist: \ct{DEVC_ID}) User-specified target used to calculate surface temperature or incident heat flux to ignite the fire. Target is typically placed at the base of the fire to be ignited.
 \item[Referenced Fire Properties ID] (namelist: \ct{FIRE_ID}) The name of the associated fire definition for this fire instance can be selected from a list of fire definitions.
